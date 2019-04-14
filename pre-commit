@@ -12,18 +12,17 @@
 
 # make sure table types are Temporary (i.e. not Standard)
 function checkTempTableUsage {
-  grep -e TableTypes.Standard src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java
-  if [ $? == 0 ]; then
-    echo "src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java contains TableTypes.Standard, aborting"
-    exit 1
-  fi
 
-  grep -e TableTypes.Standard src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java
+  grep -e TableTypes.Standard $1
   if [ $? == 0 ]; then
-    echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains TableTypes.Standard, aborting"
+    echo "$1 contains TableTypes.Standard, aborting"
     exit 1
   fi
 }
+
+checkTempTableUsage "src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java"
+checkTempTableUsage "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java"
+checkTempTableUsage "src/com/eleybourn/bookcatalogue/database/DBDefinitions.java"
 
 MF=AndroidManifest.xml
 echo "Cleaning $MF"

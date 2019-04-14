@@ -505,7 +505,7 @@ public abstract class BookBaseFragment
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                             Logger.debug("onActivityResult",
-                                           "wasCancelled= " + data.getBooleanExtra(
+                                         "wasCancelled= " + data.getBooleanExtra(
                                                  UniqueId.BKEY_CANCELED, false));
                         }
                     }
@@ -514,10 +514,10 @@ public abstract class BookBaseFragment
 
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.warn("BookBaseFragment.onActivityResult",
-                                   "NOT HANDLED:",
-                                   "requestCode=" + requestCode,
-                                   "resultCode=" + resultCode);
+                    Logger.warnWithStackTrace("BookBaseFragment.onActivityResult",
+                                "NOT HANDLED:",
+                                "requestCode=" + requestCode,
+                                "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -888,7 +888,7 @@ public abstract class BookBaseFragment
                 s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
             } else {
-                Logger.debug(BookBaseFragment.class,"debugDumpViewTree", sb);
+                Logger.debug(BookBaseFragment.class, "debugDumpViewTree", sb);
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

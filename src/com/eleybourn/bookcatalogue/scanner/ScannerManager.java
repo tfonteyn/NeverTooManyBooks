@@ -133,13 +133,13 @@ public final class ScannerManager {
                 /* text hardcoded as a it is a product name */
                 "ZXing",
                 (d, which) -> installScanner(activity,
-                               "market://details?id=com.google.zxing.client.android"));
+                                             "market://details?id=com.google.zxing.client.android"));
         dialog.setButton(
                 AlertDialog.BUTTON_NEGATIVE,
                 /* text hardcoded as a it is a product name */
                 "pic2shop",
                 (d, which) -> installScanner(activity,
-                               "market://details?id=com.visionsmarts.pic2shop"));
+                                             "market://details?id=com.visionsmarts.pic2shop"));
 
         dialog.setButton(
                 AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),

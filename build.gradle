@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
-//if (project.hasProperty("BookCatalogue.signing")
-//        && new File(project.property("BookCatalogue.signing")).exists()) {
-//    apply from: project.property("MyProject.signing")
-//}
+if (project.hasProperty("BookCatalogue.signing")
+        && new File(project.property("BookCatalogue.signing")).exists()) {
+    apply from: project.property("MyProject.signing")
+}
 
 buildscript {
     repositories {
@@ -28,7 +28,7 @@ allprojects {
   AndroidX release notes:  https://developer.android.com/jetpack/androidx/androidx-rn
  */
 dependencies {
-    // Can't get the Amazon one online.
+    // Can't get the Amazon jar online.
     implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
     // standard Android support libs
     implementation 'androidx.core:core:1.1.0-alpha05'

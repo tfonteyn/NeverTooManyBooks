@@ -25,11 +25,11 @@ import android.app.Activity;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-
-import java.util.Locale;
 
 /**
  * Edit the language field.

@@ -61,6 +61,15 @@ public final class BooklistStyles {
     public static final int BUILTIN_MAX_ID = -19;
 
     private static final int BUILTIN_AUTHOR_THEN_SERIES = -1;
+    /**
+     * Hardcoded initial/default style. Avoids having the create the full set of styles just
+     * to load the default one.
+     */
+    public static final BooklistStyle DEFAULT_STYLE =
+            new BooklistStyle(BUILTIN_AUTHOR_THEN_SERIES,
+                              R.string.style_builtin_author_series,
+                              BooklistGroup.RowKind.AUTHOR,
+                              BooklistGroup.RowKind.SERIES);
     private static final int BUILTIN_UNREAD_AUTHOR_THEN_SERIES = -2;
     private static final int BUILTIN_COMPACT = -3;
     private static final int BUILTIN_TITLE_FIRST_LETTER = -4;
@@ -79,16 +88,6 @@ public final class BooklistStyles {
     private static final int BUILTIN_RATING = -17;
     private static final int BUILTIN_BOOKSHELF = -18;
     private static final int BUILTIN_DATE_LAST_UPDATE = -19;
-
-    /**
-     * Hardcoded initial/default style. Avoids having the create the full set of styles just
-     * to load the default one.
-     */
-    public static final BooklistStyle DEFAULT_STYLE =
-            new BooklistStyle(BUILTIN_AUTHOR_THEN_SERIES,
-                              R.string.style_builtin_author_series,
-                              BooklistGroup.RowKind.AUTHOR,
-                              BooklistGroup.RowKind.SERIES);
 
     private BooklistStyles() {
     }

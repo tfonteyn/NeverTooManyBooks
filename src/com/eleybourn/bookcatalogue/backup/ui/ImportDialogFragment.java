@@ -46,6 +46,7 @@ public class ImportDialogFragment
             newInstance(settings).show(fm, TAG);
         }
     }
+
     /**
      * Constructor.
      *

@@ -38,16 +38,14 @@ public class BackupTask
     private final ExportSettings mSettings;
     @NonNull
     private final File mTmpFile;
-
+    @NonNull
+    private final ProgressDialogFragment<ExportSettings> mFragment;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
      */
     @Nullable
     private Exception mException;
-
-    @NonNull
-    private final ProgressDialogFragment<ExportSettings> mFragment;
 
     /**
      * Constructor.

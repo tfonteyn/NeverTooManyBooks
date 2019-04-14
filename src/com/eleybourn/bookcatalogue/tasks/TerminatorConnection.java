@@ -212,8 +212,8 @@ public final class TerminatorConnection
                 if (mConnection.isOpen) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                         Logger.debug(this, "run",
-                                    "Closing TerminatorConnection: "
-                                            + mConnection.con.getURL());
+                                     "Closing TerminatorConnection: "
+                                             + mConnection.con.getURL());
                     }
                     mConnection.close();
                 }

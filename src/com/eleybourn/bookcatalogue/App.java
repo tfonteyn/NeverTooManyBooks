@@ -160,7 +160,6 @@ public class App
     }
 
     /**
-     *
      * WARNING: try not to use this to get resource strings!
      * Doing so can return inconsistent translations.
      * Only use when you're absolutely sure there is no other option.
@@ -464,11 +463,11 @@ public class App
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             //API 24: newConfig.getLocales().get(0)
             Logger.debug(this,
-                  "onConfigurationChanged",
-                           "" + newConfig.locale);
+                         "onConfigurationChanged",
+                         "" + newConfig.locale);
         }
 
     }

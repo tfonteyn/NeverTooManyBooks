@@ -1753,7 +1753,7 @@ public class DBA
             // handle the author.
             Author author = tocEntry.getAuthor();
             if (author.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
                     Logger.debug(this,
                                  "updateOrInsertTOC",
                                  "inserting author: " + author.stringEncoded());
@@ -1763,7 +1763,7 @@ public class DBA
 
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
                     Logger.debug(this,
                                  "updateOrInsertTOC",
                                  "inserting tocEntry: " + tocEntry.stringEncoded());

@@ -248,20 +248,20 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
                     Logger.debug(this, "onActivityResult",
-                                "REQ_NAV_PANEL_SETTINGS");
+                                 "REQ_NAV_PANEL_SETTINGS");
                 }
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED:
                         App.setNeedsRecreating();
                         break;
                 }
-                 return;
+                return;
 
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "onActivityResult",
-                                "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
@@ -269,7 +269,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "onActivityResult",
-                                "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
+                                 "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
 
@@ -277,7 +277,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "onActivityResult",
-                                "REQ_NAV_PANEL_ADMIN");
+                                 "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
@@ -347,7 +347,6 @@ public abstract class BaseActivity
                     App.setIsRecreating();
                 }
                 break;
-
         }
     }
 }

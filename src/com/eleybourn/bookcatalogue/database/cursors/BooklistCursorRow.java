@@ -221,10 +221,10 @@ public class BooklistCursorRow
                     case "1":
                         return context.getString(R.string.lbl_read);
                     default:
-                        if (BuildConfig.DEBUG) {
-                            Logger.debug(this,
-                                  "formatRowGroup",
-                                           "Unknown read status=" + s);
+                        if (BuildConfig.DEBUG /* WARN */) {
+                            Logger.warn(this,
+                                         "formatRowGroup",
+                                         "Unknown read status=" + s);
                         }
                         break;
                 }

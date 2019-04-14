@@ -153,7 +153,7 @@ public final class AmazonManager
             parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
         }

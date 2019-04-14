@@ -114,7 +114,7 @@ public class TaskManager {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                     for (TaskInfo i : mManagedTasks) {
                         Logger.debug(TaskManager.this, "onTaskFinished",
-                                    "Task `" + i.task.getName() + "` still running");
+                                     "Task `" + i.task.getName() + "` still running");
                     }
                 }
             }
@@ -437,8 +437,8 @@ public class TaskManager {
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.debug(this, "deliver",
-                            "'TaskFinishedMessage' to listener: " + listener,
-                            "mTask=`" + mTask + '`');
+                             "'TaskFinishedMessage' to listener: " + listener,
+                             "mTask=`" + mTask + '`');
             }
             listener.onTaskFinished(mTaskManager, mTask);
             return false;
@@ -474,8 +474,8 @@ public class TaskManager {
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.debug(this, "deliver",
-                            "'TaskProgressMessage' to listener: " + listener,
-                            "mMessage=`" + mMessage + '`');
+                             "'TaskProgressMessage' to listener: " + listener,
+                             "mMessage=`" + mMessage + '`');
             }
             listener.onProgress(mCount, mMax, mMessage);
             return false;
@@ -506,8 +506,8 @@ public class TaskManager {
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.debug(this, "deliver",
-                            "'TaskUserMessage' to listener: " + listener,
-                            "mMessage=`" + mMessage + '`');
+                             "'TaskUserMessage' to listener: " + listener,
+                             "mMessage=`" + mMessage + '`');
             }
             listener.onUserMessage(mMessage);
             return false;

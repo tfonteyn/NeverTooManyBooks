@@ -130,7 +130,7 @@ public class ISBN {
                 return;
             }
         } catch (NumberFormatException e) {
-            if (BuildConfig.DEBUG /* always debug */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.error(this, e);
             }
         }
@@ -142,7 +142,7 @@ public class ISBN {
                 mDigits = digits;
             }
         } catch (NumberFormatException e) {
-            if (BuildConfig.DEBUG /* always debug */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.error(this, e);
             }
         }
@@ -194,7 +194,7 @@ public class ISBN {
     public static boolean matches(@Nullable final String isbn1,
                                   @Nullable final String isbn2) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(ISBN.class,"matches", isbn1 + " ?= " + isbn2);
+            Logger.debug(ISBN.class, "matches", isbn1 + " ?= " + isbn2);
         }
         if (isbn1 == null || isbn2 == null) {
             return false;

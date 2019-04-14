@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.database;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -15,9 +13,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
@@ -106,7 +104,7 @@ public class DBCleaner {
         booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
         booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
 
-        //TODO: DOM_BOOK_PAGES is an integer, but often handled as a String....
+        //TOMF: DOM_BOOK_PAGES is an integer, but often handled as a String....
 
         //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
@@ -126,8 +124,8 @@ public class DBCleaner {
             if (name != null && name.length() > 3) {
                 String iso = LocaleUtils.getISO3Language(name);
                 Logger.debug(this,
-                      "updateLanguages",
-                               "Global language update of `" + name + "` to `" + iso + '`');
+                             "updateLanguages",
+                             "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {
                     mDb.updateLanguage(name, iso);
                 }

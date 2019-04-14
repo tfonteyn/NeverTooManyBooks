@@ -520,8 +520,8 @@ public class UpdateFieldsFromInternetTask
             default:
                 // No idea how to handle this for non-arrays
                 throw new IllegalTypeException("Illegal usage `" + usage.usage
-                                                           + "` for field `"
-                                                           + usage.fieldId + '`');
+                                                       + "` for field `"
+                                                       + usage.fieldId + '`');
         }
     }
 

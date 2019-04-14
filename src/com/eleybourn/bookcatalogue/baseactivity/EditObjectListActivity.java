@@ -87,7 +87,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseListActivity {
 
     /** t. */
-    public static final String TAG = EditObjectListActivity.class.getSimpleName();
+    private static final String TAG = EditObjectListActivity.class.getSimpleName();
 
     /** if there was no key passed in, use this one for the savedInstance and return value */
     private static final String BKEY_LIST = TAG + ":tmpList";
@@ -169,8 +169,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * TOMF: code nearly identical with {@link EditBookTocFragment#onDrop(int, int)}
      *
-     * @param fromPosition  original position of the row
-     * @param toPosition    where the row was dropped
+     * @param fromPosition original position of the row
+     * @param toPosition   where the row was dropped
      */
     private void onDrop(final int fromPosition,
                         final int toPosition) {

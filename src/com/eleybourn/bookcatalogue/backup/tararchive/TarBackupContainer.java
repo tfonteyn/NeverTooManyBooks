@@ -105,14 +105,14 @@ public class TarBackupContainer
     @NonNull
     public BackupReader newReader(@NonNull final Context context)
             throws IOException {
-        return new TarBackupReader(context,this);
+        return new TarBackupReader(context, this);
     }
 
     @Override
     @NonNull
     public BackupWriter newWriter(@NonNull final Context context)
             throws IOException {
-        return new TarBackupWriter(context,this);
+        return new TarBackupWriter(context, this);
     }
 
     /**

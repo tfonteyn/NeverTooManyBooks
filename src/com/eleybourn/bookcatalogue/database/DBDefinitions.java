@@ -20,9 +20,12 @@
 
 package com.eleybourn.bookcatalogue.database;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -31,6 +34,7 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
 /**
  * IMPORTANT: do NOT auto-format! It will cause chaos in the order of definitions.
@@ -645,43 +649,55 @@ public final class DBDefinitions {
     /* ========================================================================================== */
 
 
-
     /**
      * {@link #TBL_BOOKS_FTS}
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
-    static final DomainDefinition DOM_FTS_AUTHOR_NAME =
-            new DomainDefinition("author_name", ColumnInfo.TYPE_TEXT, true);
+    static final DomainDefinition DOM_FTS_AUTHOR_NAME;
     /** Base Name of BOOK_LIST-related tables. */
-    private static final String DB_TB_BOOK_LIST_NAME = "book_list_tmp";
+    private static final String DB_TN_BOOK_LIST_NAME;
     /** Keeps track of nodes in the list. Added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_node_settings")
-                    .setAlias("blns");
+    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS;
     /** Should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_BOOK_LIST =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME)
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("bl");
+    public static final TableDefinition TBL_BOOK_LIST;
     /** Should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_ROW_NAVIGATOR =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos")
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("blrp");
+    public static final TableDefinition TBL_ROW_NAVIGATOR;
     /**
      * Should NOT be added to {@link #ALL_TABLES}.
      * <p>
      * This table should always be created without column constraints applied,
      * with the exception of the "_id" primary key autoincrement
      */
-    public static final TableDefinition TBL_ROW_NAVIGATOR_FLATTENED =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos_flattened")
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("blrpf");
+    public static final TableDefinition TBL_ROW_NAVIGATOR_FLATTENED;
 
+    static {
+        DOM_FTS_AUTHOR_NAME =
+                new DomainDefinition("author_name", ColumnInfo.TYPE_TEXT, true);
+
+        DB_TN_BOOK_LIST_NAME = "book_list_tmp";
+
+        TBL_BOOK_LIST_NODE_SETTINGS =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
+                        .setAlias("blns");
+
+        TBL_BOOK_LIST =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME)
+                        //RELEASE MUST use TableTypes.Temporary
+                        .setType(TableTypes.Temporary)
+                        .setAlias("bl");
+
+        TBL_ROW_NAVIGATOR =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos")
+                        //RELEASE MUST use TableTypes.Temporary
+                        .setType(TableTypes.Temporary)
+                        .setAlias("blrp");
+
+        TBL_ROW_NAVIGATOR_FLATTENED =
+                new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos_flattened")
+                        //RELEASE MUST use TableTypes.Temporary
+                        .setType(TableTypes.Temporary)
+                        .setAlias("blrpf");
+    }
     /* ========================================================================================== */
 
     static {
@@ -975,5 +991,23 @@ public final class DBDefinitions {
     }
 
     private DBDefinitions() {
+    }
+
+    /*
+     * Developer sanity checks.
+     */
+    static {
+        if (BuildConfig.DEBUG /* always */) {
+            Set<String> tNames = new HashSet<>();
+            Set<String> tAliases = new HashSet<>();
+            for (TableDefinition table : ALL_TABLES.values()) {
+                if (!tNames.add(table.getName())) {
+                    throw new IllegalStateException("Duplicate table name");
+                }
+                if (!tAliases.add(table.getAlias())) {
+                    throw new IllegalStateException("Duplicate table alias");
+                }
+            }
+        }
     }
 }

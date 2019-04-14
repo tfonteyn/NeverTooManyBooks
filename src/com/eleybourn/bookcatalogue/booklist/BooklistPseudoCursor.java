@@ -116,7 +116,7 @@ public class BooklistPseudoCursor
             mMruList[i] = -1;
         }
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugExit(this, "BooklistPseudoCursor " + this);
         }
     }
@@ -253,7 +253,7 @@ public class BooklistPseudoCursor
         // Purge them
         for (Integer i : toPurge) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this,"purgeOldCursors", "Removing cursor at " + i);
+                Logger.debug(this, "purgeOldCursors", "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             if (c != null) {
@@ -380,13 +380,13 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "Close ", this);
         }
         super.close();
 
         clearCursors();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugExit(this, "Close ", this);
         }
     }

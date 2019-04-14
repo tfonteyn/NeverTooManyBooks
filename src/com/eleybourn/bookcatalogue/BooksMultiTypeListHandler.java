@@ -174,9 +174,9 @@ public class BooksMultiTypeListHandler
 
         }
 //        else if (root instanceof ImageView) {
-            // experiments from the original code never worked.
-            // Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
-            // but will NOT scale up to fill the provided space.
+        // experiments from the original code never worked.
+        // Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
+        // but will NOT scale up to fill the provided space.
 //        }
 
         root.setPadding((int) (scale * root.getPaddingLeft()),
@@ -291,7 +291,8 @@ public class BooksMultiTypeListHandler
                     .setIcon(R.drawable.ic_delete);
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, Menu.NONE, R.string.menu_edit_book)
                     .setIcon(R.drawable.ic_edit);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, Menu.NONE, R.string.menu_edit_book_notes)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, Menu.NONE,
+                         R.string.menu_edit_book_notes)
                     .setIcon(R.drawable.ic_note);
 
                 if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
@@ -316,22 +317,26 @@ public class BooksMultiTypeListHandler
                 break;
 
             case RowKind.AUTHOR:
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, Menu.NONE, R.string.menu_author_details)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, Menu.NONE,
+                         R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, Menu.NONE, R.string.menu_edit_author)
                     .setIcon(R.drawable.ic_edit);
                 if (row.isAuthorComplete()) {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE, R.string.menu_set_incomplete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE,
+                             R.string.menu_set_incomplete)
                         .setIcon(R.drawable.ic_check_box);
                 } else {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE, R.string.menu_set_complete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE,
+                             R.string.menu_set_complete)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
                 break;
 
             case RowKind.SERIES:
                 if (row.getSeriesId() != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, Menu.NONE, R.string.menu_delete_series)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, Menu.NONE,
+                             R.string.menu_delete_series)
                         .setIcon(R.drawable.ic_delete);
                     menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, Menu.NONE, R.string.menu_edit_series)
                         .setIcon(R.drawable.ic_edit);

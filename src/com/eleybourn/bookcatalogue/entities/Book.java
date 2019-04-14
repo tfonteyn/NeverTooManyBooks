@@ -529,7 +529,7 @@ public class Book
      * Use the book's language setting to determine the Locale.
      *
      * @param updateLanguage <tt>true</tt> to update the language field with the iso3 code
-     *                      if needed. <tt>false</tt> to leave it unchanged.
+     *                       if needed. <tt>false</tt> to leave it unchanged.
      *
      * @return the locale, or the users preferred locale if no language was set.
      */
@@ -540,7 +540,7 @@ public class Book
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
             int len = lang.length();
             // try to convert to is3 if needed.
-            if (len != 2 && len !=3) {
+            if (len != 2 && len != 3) {
                 lang = LocaleUtils.getISO3Language(lang);
             }
             // we now have an iso3 code, or an invalid language.

@@ -248,10 +248,10 @@ public class DBHelper
                 stmt.bindLong(1, id);
                 stmt.bindString(2, String.valueOf(id));
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
                         Logger.debug(BooklistStyles.class, "prepareStylesTable",
-                                    "Ignore the debug message about inserting -1 here...");
+                                     "Ignore the debug message about inserting -1 here...");
                     }
                 }
                 stmt.executeInsert();
@@ -271,8 +271,8 @@ public class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
 
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this, "onCreate", "database: " + db.getPath());
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
         }
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
@@ -596,8 +596,8 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this, "onUpgrade",
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onUpgrade",
                          "Old database version: " + oldVersion,
                          "Upgrading database: " + db.getPath());
         }

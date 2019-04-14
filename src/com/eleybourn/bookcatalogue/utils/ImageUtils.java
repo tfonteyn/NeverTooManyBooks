@@ -81,12 +81,12 @@ public final class ImageUtils {
                                     final int maxHeight,
                                     final boolean upscale) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class,"setImageView",
-                           "maxWidth=" + maxWidth,
-                           "maxHeight=" + maxHeight,
-                           "upscale=" + upscale,
-                                 bm != null ? "bm.width=" + bm.getWidth() : "no bm",
-                                 bm != null ? "bm.height=" + bm.getHeight() : "no bm");
+            Logger.debug(ImageUtils.class, "setImageView",
+                         "maxWidth=" + maxWidth,
+                         "maxHeight=" + maxHeight,
+                         "upscale=" + upscale,
+                         bm != null ? "bm.width=" + bm.getWidth() : "no bm",
+                         bm != null ? "bm.height=" + bm.getHeight() : "no bm");
         }
 
         destView.setMaxWidth(maxWidth);
@@ -262,18 +262,18 @@ public final class ImageUtils {
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class,"createScaledBitmap",
-                           "filename = " + fileSpec,
-                           "exact=" + exact,
-                           "maxWidth=" + maxWidth,
-                           "opt.outWidth=" + opt.outWidth,
-                           "widthRatio=" + widthRatio,
-                           "maxHeight=" + maxHeight,
-                           "opt.outHeight=" + opt.outHeight,
-                           "heightRatio=" + heightRatio,
-                           "ratio=" + ratio,
-                           "idealSampleSize =" + idealSampleSize,
-                           "samplePow2=" + samplePow2);
+            Logger.debug(ImageUtils.class, "createScaledBitmap",
+                         "filename = " + fileSpec,
+                         "exact=" + exact,
+                         "maxWidth=" + maxWidth,
+                         "opt.outWidth=" + opt.outWidth,
+                         "widthRatio=" + widthRatio,
+                         "maxHeight=" + maxHeight,
+                         "opt.outHeight=" + opt.outHeight,
+                         "heightRatio=" + heightRatio,
+                         "ratio=" + ratio,
+                         "idealSampleSize =" + idealSampleSize,
+                         "samplePow2=" + samplePow2);
         }
 
         final Bitmap bm;
@@ -292,7 +292,7 @@ public final class ImageUtils {
                     // TODO: Need a way to try loading images after GC().
                     // Otherwise, covers in cover browser will stay blank.
                     Logger.warn(ImageUtils.class, "createScaledBitmap",
-                                              "Unexpectedly failed to decode bitmap; memory exhausted?");
+                                "Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
@@ -318,9 +318,9 @@ public final class ImageUtils {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class,"createScaledBitmap",
-                           "bm.width=" + bm.getWidth(),
-                           "bm.height=" + bm.getHeight());
+            Logger.debug(ImageUtils.class, "createScaledBitmap",
+                         "bm.width=" + bm.getWidth(),
+                         "bm.height=" + bm.getHeight());
         }
 
         return bm;
@@ -343,7 +343,7 @@ public final class ImageUtils {
         try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (IOException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(ImageUtils.class, e);
             }
         }
@@ -396,9 +396,9 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.debug(ImageUtils.class,"getBitmap",
-                           "Array " + bytes.length + " bytes",
-                           "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Logger.debug(ImageUtils.class, "getBitmap",
+                         "Array " + bytes.length + " bytes",
+                         "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -512,11 +512,11 @@ public final class ImageUtils {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
                 Logger.debug(this, "ImageSize",
-                            "metrics.widthPixels=" + metrics.widthPixels,
-                            "metrics.heightPixels=" + metrics.heightPixels,
-                            "small=" + small,
-                            "standard=" + standard,
-                            "large=" + large);
+                             "metrics.widthPixels=" + metrics.widthPixels,
+                             "metrics.heightPixels=" + metrics.heightPixels,
+                             "small=" + small,
+                             "standard=" + standard,
+                             "large=" + large);
             }
         }
     }

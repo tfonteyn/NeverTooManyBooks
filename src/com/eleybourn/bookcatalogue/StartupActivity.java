@@ -170,8 +170,8 @@ public class StartupActivity
             public void run() {
                 // onCreate being stage 0
                 mStartupStage++;
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this,"startNextStage", "stage=" + mStartupStage);
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debug(this, "startNextStage", "stage=" + mStartupStage);
                 }
 
                 switch (mStartupStage) {
@@ -378,18 +378,12 @@ public class StartupActivity
                     this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     UniqueId.REQ_ANDROID_PERMISSIONS);
-            if (BuildConfig.DEBUG) {
-                Logger.debugExit(this, "initStorage", "false");
-            }
             return false;
         }
 
         int msgId = StorageUtils.initSharedDirectories();
         if (msgId != 0) {
             UserMessage.showUserMessage(this, msgId);
-        }
-        if (BuildConfig.DEBUG) {
-            Logger.debugExit(this, "initStorage", "true");
         }
 
         return true;
@@ -399,11 +393,8 @@ public class StartupActivity
         try {
             mDb = new DBA(this);
         } catch (DBHelper.UpgradeException e) {
-            if (BuildConfig.DEBUG) {
-                Logger.warn(this,"openDBA", e.getLocalizedMessage());
-            }
-            App.showNotification(this, R.string.error_unknown,
-                                 getString(e.messageId));
+           Logger.warn(this, "openDBA", e.getLocalizedMessage());
+            App.showNotification(this, R.string.error_unknown, getString(e.messageId));
             finish();
         }
     }
@@ -667,7 +658,7 @@ public class StartupActivity
             mDb.analyze();
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 mDb.recreateTriggers();
             }
 

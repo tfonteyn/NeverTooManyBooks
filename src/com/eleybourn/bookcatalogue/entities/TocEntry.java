@@ -87,14 +87,6 @@ public class TocEntry
     /** in-memory use only. Indicates this is a 'B' == "book title", or 'T' == "toc" */
     private char mType;
 
-    public char getType() {
-        return mType;
-    }
-
-    public void setType(final char type) {
-        mType = type;
-    }
-
     /**
      * Constructor.
      *
@@ -178,6 +170,14 @@ public class TocEntry
         } else {
             return new TocEntry(author, title, "");
         }
+    }
+
+    public char getType() {
+        return mType;
+    }
+
+    public void setType(final char type) {
+        mType = type;
     }
 
     @Override
@@ -269,7 +269,8 @@ public class TocEntry
         mAuthor.fixupId(db);
         //TOMF: book locale, but if TOC is present in multiple books... which book locale ?
         //TOMF: finding an existing TOC relies on exact match of the title. To easy to end up with duplicates due to a typo in a title.
-        mId = db.getTocEntryId(mAuthor.getId(), mTitle.toLowerCase(LocaleUtils.getPreferredLocal()));
+        mId = db.getTocEntryId(mAuthor.getId(),
+                               mTitle.toLowerCase(LocaleUtils.getPreferredLocal()));
         return mId;
     }
 
@@ -347,7 +348,7 @@ public class TocEntry
      * <p>
      * ENHANCE: Think about actually updating the column to 0%10 as a cache for a book
      * having multiple authors without the need to 'count' them in the book_author table ?
-     *
+     * <p>
      * ENHANCE: currently we use the bit definitions directly. Should use the enum as an enum.
      */
     public enum Type {

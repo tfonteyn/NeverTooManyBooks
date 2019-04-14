@@ -61,8 +61,7 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
  * @author Philip Warner
  */
 public class PreferredStylesActivity
-        extends EditObjectListActivity<BooklistStyle>
-        implements AdapterView.OnItemLongClickListener {
+        extends EditObjectListActivity<BooklistStyle> {
 
     private static final int REQ_EDIT_STYLE = 0;
 
@@ -90,7 +89,8 @@ public class PreferredStylesActivity
         // We want context menus on the ListView
         //getListView().setOnCreateContextMenuListener(this);
         // no, we don't, as we'll use long click to bring up custom context menus WITH icons
-        getListView().setOnItemLongClickListener(this);
+        //getListView().setLongClickable(true);
+        getListView().setOnItemLongClickListener(this::onItemLongClick);
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -111,7 +111,6 @@ public class PreferredStylesActivity
      * Reminder: the item row itself has to have:  android:longClickable="true".
      * Otherwise the click will only work on the 'blank' bits of the row.
      */
-    @Override
     public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
                                    @NonNull final View view,
                                    final int position,

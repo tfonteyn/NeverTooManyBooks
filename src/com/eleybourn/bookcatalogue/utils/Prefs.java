@@ -87,7 +87,7 @@ public final class Prefs {
      * DEBUG method.
      */
     public static void dumpPreferences(@Nullable final String uuid) {
-        if (BuildConfig.DEBUG /* always debug */) {
+        if (BuildConfig.DEBUG /* always */) {
             Map<String, ?> map = uuid != null ? App.getPrefs(uuid).getAll()
                                               : App.getPrefs().getAll();
             List<String> keyList = new ArrayList<>(map.keySet());
@@ -367,9 +367,9 @@ public final class Prefs {
                             }
 
                         } else if (!key.startsWith("state_current_group")) {
-                            Logger.warn(Prefs.class,"migratePreV200preferences",
-                                           "unknown key=" + key,
-                                           "value=" + oldValue);
+                            Logger.warn(Prefs.class, "migratePreV200preferences",
+                                        "unknown key=" + key,
+                                        "value=" + oldValue);
                         }
                         break;
                 }

@@ -10,7 +10,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 /**
  * A bitmask is stored as an int in the database. But the DataManager loads it as a long.
  * We need it as a boolean.
- *
+ * <p>
  * Transform setting/resetting a single bit.
  * A 'get' returns a Boolean
  * A 'set will store it back as a long with the bit set/reset.

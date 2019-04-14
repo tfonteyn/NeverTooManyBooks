@@ -99,13 +99,13 @@ public class CoverHandler {
     /**
      * Constructor.
      */
-    public CoverHandler(@NonNull final Fragment fragment,
-                        @NonNull final DBA db,
-                        @NonNull final BookManager bookManager,
-                        @NonNull final Fields.Field isbnField,
-                        @NonNull final Fields.Field coverField,
-                        final int maxWidth,
-                        final int maxHeight) {
+    CoverHandler(@NonNull final Fragment fragment,
+                 @NonNull final DBA db,
+                 @NonNull final BookManager bookManager,
+                 @NonNull final Fields.Field isbnField,
+                 @NonNull final Fields.Field coverField,
+                 final int maxWidth,
+                 final int maxHeight) {
         mFragment = fragment;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
@@ -154,7 +154,7 @@ public class CoverHandler {
     /**
      * Dual usage: context menu for the image and from {@link Fragment#onOptionsItemSelected}.
      */
-    public void prepareCoverImageViewContextMenu() {
+    void prepareCoverImageViewContextMenu() {
 
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(mActivity, null).getMenu();
@@ -265,7 +265,7 @@ public class CoverHandler {
     /**
      * (re)load the image into the view.
      */
-    public void updateCoverView() {
+    void updateCoverView() {
         ImageUtils.setImageView(mCoverField.getView(), getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
@@ -294,7 +294,7 @@ public class CoverHandler {
         String uuid = (String) mCoverField.getView().getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.debugWithStackTrace(this,"getUuid","UUID was not available on the view t");
+            Logger.debugWithStackTrace(this, "getUuid", "UUID was not available on the view t");
             uuid = mDb.getBookUuid(mBookManager.getBook().getId());
         }
         return uuid;
@@ -378,11 +378,11 @@ public class CoverHandler {
             mGotCameraImage = true;
 
         } else {
-            if (BuildConfig.DEBUG) {
-                Logger.warn(this,"addCoverFromCamera",
-                               "camera image empty", "onActivityResult",
-                               "requestCode=" + requestCode,
-                               "resultCode=" + resultCode);
+            if (BuildConfig.DEBUG  /* WARN */ ) {
+                Logger.warn(this, "addCoverFromCamera",
+                            "camera image empty", "onActivityResult",
+                            "requestCode=" + requestCode,
+                            "resultCode=" + resultCode);
             }
         }
     }
@@ -625,7 +625,7 @@ public class CoverHandler {
     /**
      * Dismiss the cover browser.
      */
-    public void dismissCoverBrowser() {
+    void dismissCoverBrowser() {
         if (mCoverBrowserFragment != null) {
             mCoverBrowserFragment.dismiss();
             mCoverBrowserFragment = null;
@@ -687,18 +687,19 @@ public class CoverHandler {
                         // Update the ImageView with the new image
                         updateCoverView();
                     } else {
-                        if (BuildConfig.DEBUG) {
-                            Logger.warn(this,"onActivityResult",
-                                           "RESULT_OK, but no image file?",
-                                           "requestCode=" + requestCode,
-                                           "resultCode=" + resultCode);
+                        if (BuildConfig.DEBUG /* WARN */ ) {
+                            Logger.warn(this, "onActivityResult",
+                                        "RESULT_OK, but no image file?",
+                                        "requestCode=" + requestCode,
+                                        "resultCode=" + resultCode);
                         }
                     }
                 } else {
-                    if (BuildConfig.DEBUG) {
-                        Logger.warn(this,"onActivityResult", "FAILED",
-                                       "requestCode=" + requestCode,
-                                       "resultCode=" + resultCode);
+                    if (BuildConfig.DEBUG /* WARN */ ) {
+                        Logger.warn(this, "onActivityResult",
+                                    "FAILED",
+                                    "requestCode=" + requestCode,
+                                    "resultCode=" + resultCode);
                     }
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }

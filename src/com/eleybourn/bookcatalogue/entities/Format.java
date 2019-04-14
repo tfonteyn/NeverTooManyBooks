@@ -17,9 +17,8 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * ENHANCE: make a separate table for the format.
  * <p>
  * {@link DBDefinitions#DOM_BOOK_FORMAT}
- *
+ * <p>
  * Good description:  http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format
- *
  */
 public final class Format {
 
@@ -29,7 +28,7 @@ public final class Format {
     // use all lowercase keys!
     static {
         // mass market paperback
-        MAPPER.put("mmpb",R.string.book_format_paperback);
+        MAPPER.put("mmpb", R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
         MAPPER.put("tp", R.string.book_format_trade_paperback);
         MAPPER.put("hc", R.string.book_format_hardcover);

@@ -217,7 +217,8 @@ public final class DateUtils {
 
         // try System Locale.
         try {
-            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, LocaleUtils.getSystemLocale());
+            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
+                                                       LocaleUtils.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
         } catch (ParseException ignore) {

@@ -156,7 +156,7 @@ public class FastScrollListView
          * Set as the 'super' listener, forwarding events to the 'user' listener set
          * via {@link #setOnScrollListener(OnScrollListener)}.
          */
-        super.setOnScrollListener( new OnScrollListener() {
+        super.setOnScrollListener(new OnScrollListener() {
             @Override
             public void onScroll(@NonNull final AbsListView view,
                                  final int firstVisibleItem,

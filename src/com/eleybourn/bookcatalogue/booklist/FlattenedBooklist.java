@@ -63,7 +63,7 @@ public class FlattenedBooklist
                              @NonNull final String tableName) {
         TableDefinition flat = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
-        //RELEASE Make sure is TEMPORARY
+        //RELEASE MUST use TableTypes.Temporary
         flat.setType(TableTypes.Temporary);
 
         init(db.getUnderlyingDatabase(), flat);

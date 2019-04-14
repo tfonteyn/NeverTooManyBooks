@@ -22,14 +22,14 @@ package com.eleybourn.bookcatalogue.backup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
 import java.io.File;
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
- *
+ * <p>
  * Used be the CSV file import class. It check for a cover with the UUID or the id
  *
  * @author pjw

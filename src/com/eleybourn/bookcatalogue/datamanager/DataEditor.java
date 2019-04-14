@@ -26,7 +26,8 @@ import androidx.annotation.NonNull;
  *
  * @author pjw
  */
-public interface DataEditor extends DataViewer {
+public interface DataEditor
+        extends DataViewer {
 
     /**
      * Save current data TO the passed DataManager.

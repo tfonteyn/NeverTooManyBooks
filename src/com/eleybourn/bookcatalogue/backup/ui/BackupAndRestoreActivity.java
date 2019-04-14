@@ -264,7 +264,7 @@ public class BackupAndRestoreActivity
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Logger.debug(this, "handleReadFromArchiveResults",
-                        "Imported: " + resultSettings);
+                         "Imported: " + resultSettings);
         }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {

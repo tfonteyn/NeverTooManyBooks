@@ -96,7 +96,7 @@ public final class StorageUtils {
     /** permanent location for log files. */
     private static final String LOG_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "log";
     /** serious errors are written to this file. */
-    private static final String ERROR_LOG_FILE = "warnWithStackTrace.log";
+    private static final String ERROR_LOG_FILE = "error.log";
     /**
      * Filenames *STARTING* with this prefix are considered purgeable.
      */
@@ -294,9 +294,9 @@ public final class StorageUtils {
             size += purgeFile(name, reallyDelete);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class,"purgeDir",
-                           "dir=" + dir,
-                           "size=" + size);
+            Logger.debug(StorageUtils.class, "purgeDir",
+                         "dir=" + dir,
+                         "size=" + size);
         }
         return size;
     }
@@ -429,7 +429,8 @@ public final class StorageUtils {
                 }
             }
         } catch (RuntimeException e) {
-            Logger.error(StorageUtils.class, e, "Failed to get external storage from environment variables");
+            Logger.error(StorageUtils.class, e,
+                         "Failed to get external storage from environment variables");
         }
 
         final Set<String> paths = new HashSet<>();
@@ -481,12 +482,13 @@ public final class StorageUtils {
                     }
                 }
             } catch (IOException e) {
-                Logger.error(StorageUtils.class, e, "Failed to read directory " + dir.getAbsolutePath());
+                Logger.error(StorageUtils.class, e,
+                             "Failed to read directory " + dir.getAbsolutePath());
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class,"findCsvFiles", debugInfo);
+            Logger.debug(StorageUtils.class, "findCsvFiles", debugInfo);
         }
 
         // Sort descending based on modified date
@@ -541,8 +543,8 @@ public final class StorageUtils {
                 file.delete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     Logger.debug(StorageUtils.class,
-                          "deleteFile",
-                                   "file=" + file.getAbsolutePath());
+                                 "deleteFile",
+                                 "file=" + file.getAbsolutePath());
                 }
             } catch (RuntimeException e) {
                 Logger.error(StorageUtils.class, e);
@@ -560,9 +562,9 @@ public final class StorageUtils {
     public static boolean renameFile(@NonNull final File src,
                                      @NonNull final File dst) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class,"renameFile",
-                           "src=" + src.getAbsolutePath(),
-                           "dst=" + dst.getAbsolutePath());
+            Logger.debug(StorageUtils.class, "renameFile",
+                         "src=" + src.getAbsolutePath(),
+                         "dst=" + dst.getAbsolutePath());
         }
         if (src.exists()) {
             try {

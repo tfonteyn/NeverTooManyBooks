@@ -148,7 +148,7 @@ public abstract class ManagedTask
         } catch (InterruptedException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.debug(ManagedTask.this, "run",
-                            "ManagedTask=" + getName() + " was interrupted");
+                             "ManagedTask=" + getName() + " was interrupted");
             }
             mCancelFlg = true;
         } catch (Exception e) {
@@ -164,8 +164,8 @@ public abstract class ManagedTask
                             listener -> {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                                     Logger.debug(ManagedTask.this, "run",
-                                                "ManagedTask=" + getName(),
-                                                "Delivering 'onTaskFinished' to: " + listener);
+                                                 "ManagedTask=" + getName(),
+                                                 "Delivering 'onTaskFinished' to: " + listener);
                                 }
                                 listener.onTaskFinished(ManagedTask.this);
                                 return false;

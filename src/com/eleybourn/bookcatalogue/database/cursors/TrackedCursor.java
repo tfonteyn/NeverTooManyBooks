@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -89,8 +88,8 @@ public class TrackedCursor
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             Logger.debug(this,
-                  "TrackedCursor", "instances created: "
-                    + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+                         "TrackedCursor", "instances created: "
+                                 + DEBUG_INSTANCE_COUNTER.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
 
@@ -160,17 +159,17 @@ public class TrackedCursor
             @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
-                Logger.debug(TrackedCursor.class,"dumpCursors", "No cursors");
+                Logger.debug(TrackedCursor.class, "dumpCursors", "No cursors");
             } else {
                 for (TrackedCursor c : cursors) {
                     Logger.debug(TrackedCursor.class,
-                          "dumpCursors",
-                                   "Cursor " + c.getCursorId());
+                                 "dumpCursors",
+                                 "Cursor " + c.getCursorId());
                     for (StackTraceElement s : c.getStackTrace()) {
-                        Logger.debug(TrackedCursor.class,"dumpCursors",
-                                       s.getFileName(),
-                                       "Line=" + s.getLineNumber(),
-                                       "Method=" + s.getMethodName());
+                        Logger.debug(TrackedCursor.class, "dumpCursors",
+                                     s.getFileName(),
+                                     "Line=" + s.getLineNumber(),
+                                     "Method=" + s.getMethodName());
                     }
                 }
             }
@@ -213,8 +212,8 @@ public class TrackedCursor
                 mIsClosedFlg = true;
             }
             Logger.debug(this,
-                  "close", "instances left: "
-                    + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+                         "close", "instances left: "
+                                 + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }
 

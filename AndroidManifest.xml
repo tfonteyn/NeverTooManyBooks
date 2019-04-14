@@ -32,13 +32,14 @@
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="amazon.app_key"
-            android:value="" />
+            android:value="c1d585f1a2bf41c1b3eb5479093f8532" />
+
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"

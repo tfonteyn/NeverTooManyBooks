@@ -105,13 +105,13 @@ public class ISFDBBook
 
     }
 
-    private String mPath;
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
+    private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
     private List<Editions.Edition> mEditions;
     /** set during book load, used during content table load. */
@@ -184,7 +184,7 @@ public class ISFDBBook
         mEditions = editions;
 
         Editions.Edition edition = editions.get(0);
-        mPath = ISFDBManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId );
+        mPath = ISFDBManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book
         if (edition.doc != null) {

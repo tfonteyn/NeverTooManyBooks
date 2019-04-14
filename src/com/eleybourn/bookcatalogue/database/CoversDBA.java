@@ -172,8 +172,8 @@ public final class CoversDBA
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
-        if (BuildConfig.DEBUG /* always debug */) {
-            Logger.debug(sInstance,"getInstance", "instances created: " + noi);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debug(sInstance, "getInstance", "instances created: " + noi);
         }
         return sInstance;
     }
@@ -232,10 +232,10 @@ public final class CoversDBA
         // must be in a synchronized, as we use noi twice.
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
-            if (BuildConfig.DEBUG /* always debug */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debug(this,
-                      "close",
-                               "instances left: " + INSTANCE_COUNTER);
+                             "close",
+                             "instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
@@ -403,8 +403,8 @@ public final class CoversDBA
         @Override
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            if (BuildConfig.DEBUG) {
-                Logger.debug(this,"onCreate", "database: " + db.getPath());
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
             }
             TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }
@@ -417,10 +417,10 @@ public final class CoversDBA
         public void onUpgrade(@NonNull final SQLiteDatabase db,
                               final int oldVersion,
                               final int newVersion) {
-            if (BuildConfig.DEBUG) {
-                Logger.debug(this,"onUpgrade",
-                               "Old database version: " + oldVersion,
-                               "Upgrading database: " + db.getPath());
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debugEnter(this, "onUpgrade",
+                             "Old database version: " + oldVersion,
+                             "Upgrading database: " + db.getPath());
             }
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);

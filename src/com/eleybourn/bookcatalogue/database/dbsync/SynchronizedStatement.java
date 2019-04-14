@@ -55,7 +55,7 @@ public class SynchronizedStatement
         // this is not a debug flag, but used to get a shared versus exclusive lock
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
 
-        if (BuildConfig.DEBUG /* always debug */) {
+        if (BuildConfig.DEBUG /* always */) {
             mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
         }
     }
@@ -83,8 +83,8 @@ public class SynchronizedStatement
     public void bindString(final int index,
                            @Nullable final String value) {
         if (value == null) {
-            if (BuildConfig.DEBUG /* always debug */) {
-                Logger.debugWithStackTrace(this,"bindString","binding NULL");
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debugWithStackTrace(this, "bindString", "binding NULL");
             }
             mStatement.bindNull(index);
         } else {
@@ -144,8 +144,8 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this,"simpleQueryForLong", mStatement);
-                Logger.debug(this,"simpleQueryForLong", "result: " + result);
+                Logger.debug(this, "simpleQueryForLong", mStatement);
+                Logger.debug(this, "simpleQueryForLong", "result: " + result);
             }
             return result;
         } finally {
@@ -167,8 +167,8 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this,"simpleQueryForLongOrZero", mStatement);
-                Logger.debug(this,"simpleQueryForLongOrZero", "result: " + result);
+                Logger.debug(this, "simpleQueryForLongOrZero", mStatement);
+                Logger.debug(this, "simpleQueryForLongOrZero", "result: " + result);
             }
             return result;
         } catch (SQLiteDoneException ignore) {
@@ -191,7 +191,7 @@ public class SynchronizedStatement
     public long count() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
             if (!mIsCount) {
-                Logger.debugWithStackTrace(this,"count","count statement not a count?");
+                Logger.debugWithStackTrace(this, "count", "count statement not a count?");
             }
         }
         return simpleQueryForLongOrZero();
@@ -213,8 +213,8 @@ public class SynchronizedStatement
         try {
             String result = mStatement.simpleQueryForString();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Logger.debug(this,"simpleQueryForString", mStatement);
-                Logger.debug(this,"simpleQueryForString", result);
+                Logger.debug(this, "simpleQueryForString", mStatement);
+                Logger.debug(this, "simpleQueryForString", result);
             }
             return result;
 
@@ -238,9 +238,9 @@ public class SynchronizedStatement
         try {
             return mStatement.simpleQueryForString();
         } catch (SQLiteDoneException e) {
-            if (BuildConfig.DEBUG /* always print debug */ ) {
-                Logger.debug(this,"simpleQueryForStringOrNull", mStatement);
-                Logger.debug(this,"simpleQueryForStringOrNull", "NULL");
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debug(this, "simpleQueryForStringOrNull", mStatement);
+                Logger.debug(this, "simpleQueryForStringOrNull", "NULL");
             }
             return null;
         } finally {
@@ -263,7 +263,7 @@ public class SynchronizedStatement
         }
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE) {
-                Logger.debug(this,"execute", mStatement);
+                Logger.debug(this, "execute", mStatement);
             }
             mStatement.execute();
         } catch (SQLException e) {
@@ -289,8 +289,8 @@ public class SynchronizedStatement
         try {
             int rowsAffected = mStatement.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_UPDATE_DELETE) {
-                Logger.debug(this,"executeUpdateDelete", mStatement);
-                Logger.debug(this,"executeUpdateDelete", "rowsAffected=" + rowsAffected);
+                Logger.debug(this, "executeUpdateDelete", mStatement);
+                Logger.debug(this, "executeUpdateDelete", "rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } catch (SQLException e) {
@@ -316,8 +316,8 @@ public class SynchronizedStatement
             long id = mStatement.executeInsert();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT) {
-                Logger.debug(this,"executeInsert", mStatement);
-                Logger.debug(this,"executeInsert", "id=" + id);
+                Logger.debug(this, "executeInsert", mStatement);
+                Logger.debug(this, "executeInsert", "id=" + id);
             }
             if (id == -1) {
                 Logger.warnWithStackTrace(this, "Insert failed");
@@ -337,8 +337,8 @@ public class SynchronizedStatement
     protected void finalize()
             throws Throwable {
         if (BuildConfig.DEBUG && !mIsClosed) {
-            Logger.warn(this,"finalize",
-                           "Finalizing non-closed statement (potential warnWithStackTrace/small)\n"
+            Logger.warn(this, "finalize",
+                        "Finalizing non-closed statement (potential error/small)\n"
                                 + mStatement);
         }
         mStatement.close();

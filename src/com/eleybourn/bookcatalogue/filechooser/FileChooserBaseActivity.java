@@ -51,13 +51,11 @@ public abstract class FileChooserBaseActivity
         FileListerAsyncTask.FileListerListener,
         OnPathChangedListener {
 
-    private static final String TAG = FileChooserBaseActivity.class.getSimpleName();
-
-    /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
-    public static final String BKEY_MODE = TAG + ":mode";
     public static final int MODE_SAVE = 0;
     public static final int MODE_OPEN = 1;
-
+    private static final String TAG = FileChooserBaseActivity.class.getSimpleName();
+    /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
+    public static final String BKEY_MODE = TAG + ":mode";
     /** Flag indicating nature of this activity. */
     private boolean mIsSave;
 
@@ -137,7 +135,8 @@ public abstract class FileChooserBaseActivity
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
                 //noinspection ConstantConditions
-                UserMessage.showUserMessage(frag.getView(), R.string.warning_select_an_existing_file);
+                UserMessage.showUserMessage(frag.getView(),
+                                            R.string.warning_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -154,7 +153,8 @@ public abstract class FileChooserBaseActivity
             File file = bf.getSelectedFile();
             if (file.exists() && !file.isFile()) {
                 //noinspection ConstantConditions
-                UserMessage.showUserMessage(frag.getView(), R.string.warning_select_a_non_directory);
+                UserMessage.showUserMessage(frag.getView(),
+                                            R.string.warning_select_a_non_directory);
                 return;
             }
             onSave(file);
@@ -177,7 +177,7 @@ public abstract class FileChooserBaseActivity
      * Start a task suited to building a list of files.
      */
     protected abstract void startFileLister(@NonNull final FragmentActivity context,
-                                                           @NonNull final File root);
+                                            @NonNull final File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to

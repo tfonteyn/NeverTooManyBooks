@@ -100,6 +100,11 @@ public class BooksOnBookshelf
         BookChangedListener,
         ProgressDialogFragment.OnTaskFinishedListener {
 
+    /**
+     * Set to true to enable true rebuild for debugging. See {@link #initBookList(boolean)}.
+     */
+    private static final boolean DEBUG_THE_REBUILD_ISSUE = false;
+
     /** Preference name - Saved position of last top row. */
     public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
@@ -207,6 +212,7 @@ public class BooksOnBookshelf
         // use the custom fast scroller (the ListView in the XML is our custom version).
         getListView().setFastScrollEnabled(true);
         // Using {@link SimpleDialog#showContextMenu} for context menus.
+        //getListView().setLongClickable(true);
         getListView().setOnItemLongClickListener((parent, view, position, id) -> {
             mListCursor.moveToPosition(position);
 
@@ -248,8 +254,8 @@ public class BooksOnBookshelf
     /**
      * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int position) {
+    private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                                  final int position) {
         mListCursor.moveToPosition(position);
 
         return mListHandler.onContextItemSelected(menuItem,
@@ -493,12 +499,12 @@ public class BooksOnBookshelf
 
                         case R.id.MENU_DEBUG_DUMP_STYLE:
                             Logger.debug(this,
-                                  "onOptionsItemSelected",
-                                           mCurrentBookshelf.getStyle(mDb));
+                                         "onOptionsItemSelected",
+                                         mCurrentBookshelf.getStyle(mDb));
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
-                            Logger.debug(this,"onOptionsItemSelected", Tracker.getEventsInfo());
+                            Logger.debug(this, "onOptionsItemSelected", Tracker.getEventsInfo());
                             return true;
 
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
@@ -840,8 +846,8 @@ public class BooksOnBookshelf
             int last = listView.getLastVisiblePosition();
             int centre = (last + first) / 2;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
-                               " New List: (" + first + ", " + last + ")<-" + centre);
+                Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                             " New List: (" + first + ", " + last + ")<-" + centre);
             }
             // Get the first 'target' and make it 'best candidate'
             BookRowInfo best = targetRows.get(0);
@@ -857,14 +863,14 @@ public class BooksOnBookshelf
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
-                               " Best listPosition @" + best.listPosition);
+                Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                             " Best listPosition @" + best.listPosition);
             }
             // Try to put at top if not already visible, or only partially visible
             if (first >= best.listPosition || last <= best.listPosition) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                    Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
-                                   " Adjusting position");
+                    Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                                 " Adjusting position");
                 }
                 // setSelectionFromTop does not seem to always do what is expected.
                 // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -991,8 +997,8 @@ public class BooksOnBookshelf
                 if (bsName != null && !bsName.equalsIgnoreCase(mCurrentBookshelf.getName())) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                         Logger.debug(this,
-                              "mBookshelfSpinner onItemSelected",
-                                       "spinning to shelf: " + bsName);
+                                     "mBookshelfSpinner onItemSelected",
+                                     "spinning to shelf: " + bsName);
                     }
 
                     // make the new shelf the current
@@ -1121,8 +1127,8 @@ public class BooksOnBookshelf
     private BooklistBuilder createBooklistBuilder() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.debug(this,
-                  "createBooklistBuilder",
-                           mCurrentBookshelf.getStyle(mDb));
+                         "createBooklistBuilder",
+                         mCurrentBookshelf.getStyle(mDb));
         }
 
         // get a new builder and add the required extra domains
@@ -1153,7 +1159,7 @@ public class BooksOnBookshelf
         // After rebuild(false) all rows which don't show an expanded node are gone.
         //
         boolean fullRebuild;
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+        if (DEBUG_THE_REBUILD_ISSUE) {
             fullRebuild = isFullRebuild;
         } else {
             fullRebuild = true;
@@ -1372,7 +1378,7 @@ public class BooksOnBookshelf
                                 @NonNull final BooklistBuilder bookListBuilder) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.debug(this,"constructor", "mIsFullRebuild=" + isFullRebuild);
+                Logger.debug(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
             }
 
             mFragment = fragment;
@@ -1562,13 +1568,13 @@ public class BooksOnBookshelf
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Logger.debug("doInBackground",
-                                   "\n Build: " + (t1 - t0),
-                                   "\n Position: " + (t2 - t1),
-                                   "\n Select: " + (t3 - t2),
-                                   "\n Count(" + count + "): " + (t4 - t3)
-                                           + '/' + (t5 - t4) + '/' + (t6 - t5),
-                                   "\n ====== ",
-                                   "\n Total time: " + (t6 - t0) + "nano");
+                                 "\n Build: " + (t1 - t0),
+                                 "\n Position: " + (t2 - t1),
+                                 "\n Select: " + (t3 - t2),
+                                 "\n Count(" + count + "): " + (t4 - t3)
+                                         + '/' + (t5 - t4) + '/' + (t6 - t5),
+                                 "\n ====== ",
+                                 "\n Total time: " + (t6 - t0) + "nano");
                 }
 
                 if (isCancelled()) {
@@ -1591,7 +1597,7 @@ public class BooksOnBookshelf
         @AnyThread
         private void cleanup() {
             if (BuildConfig.DEBUG) {
-                Logger.debugWithStackTrace(this,"cleanup");
+                Logger.debugWithStackTrace(this, "cleanup");
             }
             if (tempList != null && tempList != mHolder.listCursor) {
                 if (mHolder.listCursor == null

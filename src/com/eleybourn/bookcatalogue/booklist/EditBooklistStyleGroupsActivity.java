@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -149,7 +148,7 @@ public class EditBooklistStyleGroupsActivity
         mStyle.updatePreferences(allPreferences);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debug(this,"onSave", mStyle);
+            Logger.debug(this, "onSave", mStyle);
         }
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         setResult(Activity.RESULT_OK, data);

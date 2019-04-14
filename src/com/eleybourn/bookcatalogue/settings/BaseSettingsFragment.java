@@ -62,15 +62,17 @@ public abstract class BaseSettingsFragment
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
                     // This re-surfaces sometimes after a careless dev. change.
-                    Logger.debugWithStackTrace(this,"getSummary",
-                                 "MultiSelectListPreference:"
-                                         + "\n s=" + s
-                                         + "\n key=" + msp.getKey()
-                                         + "\n entries="
-                                         + Csv.join(",", Arrays.asList(msp.getEntries()))
-                                         + "\n entryValues="
-                                         + Csv.join(",", Arrays.asList(msp.getEntryValues()))
-                                         + "\n values=" + msp.getValues()
+                    Logger.debugWithStackTrace(this, "getSummary",
+                                               "MultiSelectListPreference:"
+                                                       + "\n s=" + s
+                                                       + "\n key=" + msp.getKey()
+                                                       + "\n entries="
+                                                       + Csv.join(",",
+                                                                  Arrays.asList(msp.getEntries()))
+                                                       + "\n entryValues="
+                                                       + Csv.join(",", Arrays.asList(
+                                                       msp.getEntryValues()))
+                                                       + "\n values=" + msp.getValues()
 
                     );
                 } else {
@@ -140,7 +142,6 @@ public abstract class BaseSettingsFragment
                 //noinspection unchecked
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                //noinspection ConstantConditions
                 Logger.warnWithStackTrace(this, entry.getValue().getClass().getCanonicalName());
             }
         }

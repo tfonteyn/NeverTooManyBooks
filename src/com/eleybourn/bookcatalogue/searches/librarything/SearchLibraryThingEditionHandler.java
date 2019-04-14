@@ -3,10 +3,10 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.util.List;
 
 /**
  * Parser Handler to collect the edition data.

@@ -162,8 +162,8 @@ public class CoverBrowser
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this,"onViewCreated", savedInstanceState);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            Logger.debugEnter(this, "onViewCreated", savedInstanceState);
         }
 
         mActivity = (BaseActivity) requireActivity();
@@ -206,7 +206,7 @@ public class CoverBrowser
             String fileSpec = (String) mImageSwitcherView.getTag();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(CoverBrowser.this, "mImageSwitcherView.onClick",
-                            "fileSpec=" + fileSpec);
+                             "fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
@@ -315,7 +315,7 @@ public class CoverBrowser
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }
         mFileManager.onSaveInstanceState(outState);
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Logger.debugExit(this, "onSaveInstanceState", outState);
         }
     }
@@ -525,9 +525,9 @@ public class CoverBrowser
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                     Logger.debug(this, "download",
-                                "isbn=" + isbn,
-                                "size=" + size,
-                                "fileSpec=" + fileSpec);
+                                 "isbn=" + isbn,
+                                 "size=" + size,
+                                 "fileSpec=" + fileSpec);
                 }
 
                 // Is the file present && good ?
@@ -553,10 +553,10 @@ public class CoverBrowser
                                 mFiles.put(key, fileSpec);
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                                     Logger.debug(this, "download",
-                                                "FOUND",
-                                                "isbn=" + isbn,
-                                                "size=" + size,
-                                                "fileSpec=" + fileSpec);
+                                                 "FOUND",
+                                                 "isbn=" + isbn,
+                                                 "size=" + size,
+                                                 "fileSpec=" + fileSpec);
                                 }
                                 return fileSpec;
 
@@ -837,14 +837,14 @@ public class CoverBrowser
 
             // Get the image file; try the sizes in order as specified here.
             File imageFile = mFileManager.getFile(holder.isbn, SearchSites.ImageSizes.SMALL,
-                                                 SearchSites.ImageSizes.MEDIUM,
-                                                 SearchSites.ImageSizes.LARGE);
+                                                  SearchSites.ImageSizes.MEDIUM,
+                                                  SearchSites.ImageSizes.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
-                            "position=" + position,
-                            "isbn=" + holder.isbn,
-                            "fileSpec=" + imageFile);
+                             "position=" + position,
+                             "isbn=" + holder.isbn,
+                             "fileSpec=" + imageFile);
             }
 
             // See if file is present.
@@ -864,8 +864,8 @@ public class CoverBrowser
 
                     } catch (RejectedExecutionException e) {
                         // some books have a LOT of editions...
-                        if (BuildConfig.DEBUG /* always log. */) {
-                            Logger.debug(this,"onBindViewHolder",
+                        if (BuildConfig.DEBUG /* always */) {
+                            Logger.debug(this, "onBindViewHolder",
                                          "isbn=" + holder.isbn,
                                          "Exception msg=" + e.getLocalizedMessage());
                         }

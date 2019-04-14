@@ -114,8 +114,8 @@ public class SendAllBooksTask
         // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
         App.showNotification(context, R.string.gr_title_send_book,
                              context.getString(R.string.gr_send_all_books_results,
-                                                            mCount, mSent, mNoIsbn,
-                                                            mNotFound));
+                                               mCount, mSent, mNoIsbn,
+                                               mNotFound));
 
         return true;
     }

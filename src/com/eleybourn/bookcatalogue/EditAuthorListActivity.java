@@ -111,7 +111,8 @@ public class EditAuthorListActivity
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
-                UserMessage.showUserMessage(mAuthorNameView, R.string.warning_author_already_in_list);
+                UserMessage.showUserMessage(mAuthorNameView,
+                                            R.string.warning_author_already_in_list);
                 return;
             }
         }

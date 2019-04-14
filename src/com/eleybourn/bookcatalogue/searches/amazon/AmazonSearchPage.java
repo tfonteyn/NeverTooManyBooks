@@ -28,10 +28,6 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * <p>
  * NOTE: The project manifest must contain the app key granted by Amazon.
  * For testing purposes this key can be empty.
- * <p>
- * <p>
- * Not used, but as a reminder this url is also usable:
- * http://www.amazon.com/gp/product/ASIN-VALUE-HERE
  *
  * @author pjw
  */
@@ -43,84 +39,95 @@ public final class AmazonSearchPage {
 
     /** key into the Manifest meta-data. */
     private static final String AMAZON_KEY = "amazon.app_key";
+    /** Amazon app key. Will be empty if there was no key. */
+    @NonNull
+    private static final String mAmazonAppKey = App.getManifestString(AMAZON_KEY);
+    ;
 
     private AmazonSearchPage() {
     }
 
+    /**
+     * @param author to search for
+     * @param series to search for
+     */
     public static void open(@NonNull final Activity activity,
                             @Nullable final String author,
                             @Nullable final String series) {
+
         try {
-            openLink(activity, author, series);
+            String cAuthor = cleanupSearchString(author);
+            String cSeries = cleanupSearchString(series);
+
+            // if no key, don't even bother with the AssociatesAPI.
+            if (mAmazonAppKey.isEmpty()) {
+                openIntent(activity, buildUrl(cAuthor, cSeries));
+            } else {
+                openLink(activity, cAuthor, cSeries);
+            }
+
         } catch (RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(AmazonSearchPage.class, e, "Unable to call the Amazon API");
             UserMessage.showUserMessage(activity, R.string.error_unexpected_error);
-            /* This code works, but Amazon have a nasty tendency to cancel Associate IDs... */
-//            String baseUrl = "http://www.amazon.com/gp/search?"
-//                    + "index=books&t=philipwarneri-20&tracking_id=philipwarner-20";
-//            String extra = buildSearchArgs(author, series);
-//            if (extra != null && !extra.isEmpty()) {
-//               activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra)));
-//            }
-        }
-    }
-
-    private static void openLink(@NonNull final Context context,
-                                 @Nullable String author,
-                                 @Nullable String series) {
-        // Build the URL and args
-        author = cleanupSearchString(author);
-        series = cleanupSearchString(series);
-
-        String extra = buildSearchArgs(author, series);
-
-        String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
-        if (extra != null && !extra.isEmpty()) {
-            url += extra;
-        }
-
-        // Try to setup the API calls; if not possible, just open directly and return
-        try {
-            // Init Amazon API
-            AssociatesAPI.initialize(
-                    new AssociatesAPI.Config(
-                            App.getManifestString(AMAZON_KEY), context));
-
-            LinkService linkService = AssociatesAPI.getLinkService();
-            try {
-                linkService.overrideLinkInvocation(new WebView(context), url);
-            } catch (RuntimeException e2) {
-                OpenSearchPageRequest request =
-                        new OpenSearchPageRequest("books", author + ' ' + series);
-                linkService.openRetailPage(request);
-            }
-        } catch (NotInitializedException e) {
-            Logger.error(AmazonSearchPage.class, e, "Unable to use Amazon API, starting external browser instead");
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS)));
         }
     }
 
     /**
+     * Start an intent to open a web page e.g. start a browser.
      *
+     * @param context caller context
+     * @param url     url to open
+     */
+    private static void openIntent(@NonNull final Context context,
+                                   @NonNull final String url) {
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS)));
+    }
+
+    /**
+     * Use Amazon AssociatesAPI to open the search.
+     *
+     * @param context caller context
+     * @param author  to search for
+     * @param series  to search for
+     */
+    private static void openLink(@NonNull final Context context,
+                                 @Nullable final String author,
+                                 @Nullable final String series) {
+
+        String url = buildUrl(author, series);
+        try {
+            AssociatesAPI.initialize(new AssociatesAPI.Config(mAmazonAppKey, context));
+            LinkService linkService = AssociatesAPI.getLinkService();
+
+            try {
+                linkService.overrideLinkInvocation(new WebView(context), url);
+
+            } catch (RuntimeException e) {
+                Logger.error(AmazonSearchPage.class, e);
+                linkService.openRetailPage(
+                        new OpenSearchPageRequest("books", author + ' ' + series));
+            }
+        } catch (IllegalArgumentException | NotInitializedException e) {
+            Logger.error(AmazonSearchPage.class, e);
+            openIntent(context, url);
+        }
+    }
+
+    /**
      * @param author to search for
      * @param series to search for
      *
-     * @return the search arguments, or null upon error
+     * @return the search url, at worst the Amazon search home page.
      */
-    @Nullable
-    private static String buildSearchArgs(@Nullable String author,
-                                          @Nullable String series) {
-        // This code works, but Amazon have a nasty tendency to cancel Associate IDs...
-        //String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
+    private static String buildUrl(@Nullable final String author,
+                                   @Nullable final String series) {
         String extra = "";
-        // http://www.amazon.com/gp/search?index=books&field-author=steven+a.+mckay&field-keywords=the+forest+lord
         if (author != null && !author.isEmpty()) {
             try {
                 extra += "&field-author=" + URLEncoder.encode(author, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Logger.error(AmazonSearchPage.class, e, "Unable to add author to URL");
-                return null;
             }
         }
 
@@ -129,10 +136,10 @@ public final class AmazonSearchPage {
                 extra += "&field-keywords=" + URLEncoder.encode(series, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Logger.error(AmazonSearchPage.class, e, "Unable to add series to URL");
-                return null;
             }
         }
-        return extra.trim();
+
+        return AmazonManager.getBaseURL() + SUFFIX_BASE_URL + extra.trim();
     }
 
     @NonNull

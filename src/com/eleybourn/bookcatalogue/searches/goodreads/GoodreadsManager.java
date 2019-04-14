@@ -501,7 +501,7 @@ public class GoodreadsManager
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
         }
@@ -956,7 +956,7 @@ public class GoodreadsManager
     public boolean noKey() {
         boolean noKey = DEV_KEY.isEmpty() || DEV_SECRET.isEmpty();
         if (noKey) {
-            Logger.warn(this,"noKey", "Goodreads dev key not available");
+            Logger.warn(this, "noKey", "Goodreads dev key not available");
         }
         return noKey;
     }
@@ -1054,7 +1054,7 @@ public class GoodreadsManager
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
-                Logger.warn(this,"requestAuthorization", "replacing with: " + authUrl);
+                Logger.warn(this, "requestAuthorization", "replacing with: " + authUrl);
             }
         }
 

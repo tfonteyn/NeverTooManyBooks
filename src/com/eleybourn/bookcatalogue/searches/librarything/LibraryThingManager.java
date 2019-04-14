@@ -270,7 +270,7 @@ public class LibraryThingManager
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.debug(LibraryThingManager.class,"searchEditions", "isbn=" + isbn);
+            Logger.debug(LibraryThingManager.class, "searchEditions", "isbn=" + isbn);
         }
 
         // add the original isbn, as there might be more images at the time this search is done.
@@ -292,13 +292,13 @@ public class LibraryThingManager
             parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(LibraryThingManager.class, e);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.debug(LibraryThingManager.class,"searchEditions", "editions=" + editions);
+            Logger.debug(LibraryThingManager.class, "searchEditions", "editions=" + editions);
         }
         return editions;
     }
@@ -436,7 +436,7 @@ public class LibraryThingManager
             parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
         }

@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -131,8 +130,8 @@ class TaskQueueDBHelper
     @Override
     @CallSuper
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this,"onCreate", "database: " + db.getPath());
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
         }
 
         for (String TABLE : TABLES) {
@@ -154,8 +153,8 @@ class TaskQueueDBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this,"onUpgrade", "database: " + db.getPath());
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugEnter(this, "onUpgrade", "database: " + db.getPath());
         }
 
         int currVersion = oldVersion;

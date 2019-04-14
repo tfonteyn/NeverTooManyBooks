@@ -79,22 +79,22 @@ public class ImportCSVTask
             mImporter.doBooks(in, new LocalCoverFinder(mSettings.file.getParent()),
                               new Importer.ImportListener() {
 
-                                   @Override
-                                   public void onProgress(@NonNull final String message,
-                                                          final int position) {
-                                       publishProgress(message, position);
-                                   }
+                                  @Override
+                                  public void onProgress(@NonNull final String message,
+                                                         final int position) {
+                                      publishProgress(message, position);
+                                  }
 
-                                   @Override
-                                   public boolean isCancelled() {
-                                       return ImportCSVTask.this.isCancelled();
-                                   }
+                                  @Override
+                                  public boolean isCancelled() {
+                                      return ImportCSVTask.this.isCancelled();
+                                  }
 
-                                   @Override
-                                   public void setMax(final int max) {
-                                       mFragment.setMax(max);
-                                   }
-                               });
+                                  @Override
+                                  public void setMax(final int max) {
+                                      mFragment.setMax(max);
+                                  }
+                              });
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
             Logger.error(this, e);

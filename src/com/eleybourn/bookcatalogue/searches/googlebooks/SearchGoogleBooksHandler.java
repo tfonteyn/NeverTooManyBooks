@@ -23,11 +23,11 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.util.ArrayList;
 
 /**
  * An XML handler for the Google Books return.

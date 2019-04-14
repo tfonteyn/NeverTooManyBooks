@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 
@@ -28,7 +27,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SHOW_DEBUG_MENU = true;
 
     /** Enable strict mode reporting on network,disc,... usage. */
-    public static final boolean STRICT_MODE = false;
+    public static final boolean STRICT_MODE = true;
 
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
@@ -36,15 +35,8 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
 
-
+    /** to be removed soon. */
     public static final boolean TMP_ANTHOLOGY = true;
-
-    public static final boolean BOOKLIST_BUILDER = false;
-
-    /** specific to debugging the broken {@link BooklistBuilder#rebuild()}. */
-    public static final boolean BOOKLIST_BUILDER_REBUILD = false;
-
-    public static final boolean BOOKS_ON_BOOKSHELF = false;
 
 
 
@@ -58,9 +50,6 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
 
-    /** {@link CoverBrowser}. */
-    public static final boolean COVER_BROWSER = false;
-
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
 
@@ -70,17 +59,21 @@ public final class DEBUG_SWITCHES {
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
 
-    /** track the flow of onLoadFieldsFromBook/onSaveFieldsToBook. */
-    public static final boolean FIELD_BOOK_TRANSFERS = false;
-
     /** all things XML related. */
     public static final boolean XML = false;
 
 
 
-
-
     /* ****************************************************************************************** */
+
+    /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
+    public static final boolean BOOKLIST_BUILDER = false;
+
+    /** {@link BooksOnBookshelf}. */
+    public static final boolean BOOKS_ON_BOOKSHELF = false;
+
+    /** {@link CoverBrowser}. */
+    public static final boolean COVER_BROWSER = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;

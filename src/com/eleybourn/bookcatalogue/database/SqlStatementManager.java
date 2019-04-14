@@ -20,8 +20,6 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -142,7 +140,7 @@ public class SqlStatementManager
             throws Throwable {
         if (!mStatements.isEmpty()) {
             if (BuildConfig.DEBUG) {
-                Logger.debug(this,"finalize", "closing statements.");
+                Logger.debug(this, "finalize", "closing statements.");
             }
             close();
         }

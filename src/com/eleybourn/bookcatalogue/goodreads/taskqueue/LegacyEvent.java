@@ -98,7 +98,7 @@ public class LegacyEvent
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
                                         () -> QueueManager.getQueueManager()
-                                                    .deleteEvent(getId())));
+                                                          .deleteEvent(getId())));
 
     }
 }

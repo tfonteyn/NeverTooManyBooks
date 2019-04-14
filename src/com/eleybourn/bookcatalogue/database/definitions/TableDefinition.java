@@ -116,7 +116,7 @@ public class TableDefinition
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.debug(TableDefinition.class,"drop", "TABLE:" + name);
+            Logger.debug(TableDefinition.class, "drop", "TABLE:" + name);
         }
         db.execSQL("DROP TABLE IF EXISTS " + name);
     }
@@ -978,7 +978,7 @@ public class TableDefinition
         @NonNull
         String getPredicate() {
             List<DomainDefinition> pk = mParent.getPrimaryKey();
-            if (BuildConfig.DEBUG /* always debug */) {
+            if (BuildConfig.DEBUG /* always */) {
                 if (pk.isEmpty()) {
                     throw new IllegalStateException("no primary key on table: " + mParent);
                 }

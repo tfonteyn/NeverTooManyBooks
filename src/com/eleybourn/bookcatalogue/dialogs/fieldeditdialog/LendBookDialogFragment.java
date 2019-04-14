@@ -121,7 +121,7 @@ public class LendBookDialogFragment
     /**
      * Constructor.
      *
-     * @param book   to lend
+     * @param book to lend
      *
      * @return the instance
      */

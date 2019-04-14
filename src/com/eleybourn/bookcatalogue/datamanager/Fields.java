@@ -480,7 +480,7 @@ public class Fields {
     @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.isEmpty()) {
-            return "No warnWithStackTrace";
+            return "No error";
         } else {
             StringBuilder message = new StringBuilder();
             Iterator<ValidatorException> iterator = mValidationExceptions.iterator();
@@ -1419,8 +1419,8 @@ public class Fields {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
-                if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debugWithStackTrace(this,"findViewById","Activity is NULL");
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debugWithStackTrace(this, "findViewById", "Activity is NULL");
                 }
                 return null;
             }
@@ -1456,15 +1456,15 @@ public class Fields {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
-                if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debugWithStackTrace(this,"findViewById","Fragment is NULL");
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debugWithStackTrace(this, "findViewById", "Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
-                if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debugWithStackTrace(this,"findViewById","View is NULL");
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.debugWithStackTrace(this, "findViewById", "View is NULL");
                 }
                 return null;
             }

@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * If a given domain is not present in the Cursor, a {@link ColumnNotPresentException}
  * will be thrown at the time of fetching the value.
- *
+ * <p>
  * Tip: when using a ColumnMapper as a parameter to a constructor, e.g.
  * {@link com.eleybourn.bookcatalogue.entities.Bookshelf#Bookshelf(long, ColumnMapper)}
  * always pass the id separately. This gives the calling code a change to use for example
@@ -92,7 +92,6 @@ public class ColumnMapper {
     }
 
     /**
-     *
      * @param domain the name of the domain to get
      *
      * @return <tt>true</tt> if this mapper contains the specified domain.
@@ -283,7 +282,7 @@ public class ColumnMapper {
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(this, "Unknown type","key=" + col.getKey());
+                        Logger.warnWithStackTrace(this, "Unknown type", "key=" + col.getKey());
                         break;
                 }
             }

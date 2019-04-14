@@ -24,7 +24,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -266,7 +265,8 @@ public class BackupInfo
      * @return <tt>true</tt> if the number of books are known
      */
     public boolean hasBookCount() {
-        return mBundle.containsKey(INFO_NUMBER_OF_BOOKS) && mBundle.getInt(INFO_NUMBER_OF_BOOKS) > 0;
+        return mBundle.containsKey(INFO_NUMBER_OF_BOOKS) && mBundle.getInt(
+                INFO_NUMBER_OF_BOOKS) > 0;
     }
 
     public int getBookCount() {
@@ -290,7 +290,8 @@ public class BackupInfo
      * @return <tt>true</tt> if the number of books are known
      */
     public boolean hasCoverCount() {
-        return mBundle.containsKey(INFO_NUMBER_OF_COVERS) && mBundle.getInt(INFO_NUMBER_OF_COVERS) > 0;
+        return mBundle.containsKey(INFO_NUMBER_OF_COVERS) && mBundle.getInt(
+                INFO_NUMBER_OF_COVERS) > 0;
     }
 
     public int getCoverCount() {
@@ -305,7 +306,7 @@ public class BackupInfo
      */
     public boolean isValid() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.debug(this,"isValid", mBundle.toString());
+            Logger.debug(this, "isValid", mBundle.toString());
         }
         // extremely simple check: we assume that if one field is present, the rest will be there.
         return mBundle.containsKey(INFO_ARCHIVER_VERSION);

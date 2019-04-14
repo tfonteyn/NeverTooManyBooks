@@ -184,7 +184,7 @@ public abstract class BaseActivityWithTasks
                     mTaskManager = controller.getTaskManager();
                 } else {
                     Logger.warnWithStackTrace(this, "Have ID(" + mTaskManagerId + "),"
-                                         + " but can not find controller getting TaskManager");
+                            + " but can not find controller getting TaskManager");
                 }
             }
 

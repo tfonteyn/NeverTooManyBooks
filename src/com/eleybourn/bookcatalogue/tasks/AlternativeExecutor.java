@@ -19,7 +19,7 @@ import com.eleybourn.bookcatalogue.CoverBrowser;
  * Main (only?) purpose is to provide a second Executor.
  * This allows to run specific tasks that we don't want to submit (and wait on) the
  * shared one in AsyncTask.
- *
+ * <p>
  * Example: {@link CoverBrowser} uses the default one to get thumbnails, but uses this
  * alternative one to get the larger preview image semi-immediately.
  */

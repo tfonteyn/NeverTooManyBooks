@@ -831,7 +831,7 @@ public class BooklistStyle
 
     /**
      * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
-     *
+     * <p>
      * Custom serialization support. The signature of this method should never be changed.
      *
      * @see Serializable

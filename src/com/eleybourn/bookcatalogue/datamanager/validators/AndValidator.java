@@ -21,11 +21,11 @@ package com.eleybourn.bookcatalogue.datamanager.validators;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.datamanager.Datum;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; ALL validators must be true.

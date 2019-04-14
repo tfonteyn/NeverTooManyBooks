@@ -321,8 +321,8 @@ public class SearchAmazonHandler
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.debug(this, "handleListPrice",
-                            "mCurrencyCode=" + mCurrencyCode,
-                            "mCurrencyAmount=" + mCurrencyAmount);
+                             "mCurrencyCode=" + mCurrencyCode,
+                             "mCurrencyAmount=" + mCurrencyAmount);
             }
         }
     }

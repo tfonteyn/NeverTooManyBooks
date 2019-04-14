@@ -22,12 +22,12 @@ package com.eleybourn.bookcatalogue.datamanager.validators;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.Date;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-
-import java.util.Date;
 
 /**
  * Validator to apply a default value and validate as a Date.

@@ -91,7 +91,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
 
 /**
  * WARNING: EXPERIMENTAL
- *
+ * <p>
  * There are two types of XML here.
  * <p>
  * Type based, where the t name is the type. Used by:
@@ -160,7 +160,7 @@ public class XmlExporter
     /**
      * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ExportListener)}.
      * Not in direct use yet.
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Override

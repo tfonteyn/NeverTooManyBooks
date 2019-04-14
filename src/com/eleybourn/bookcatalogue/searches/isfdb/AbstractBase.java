@@ -121,10 +121,10 @@ abstract class AbstractBase {
 
                         String redirectedUrl = ISFDBManager.getBaseURL() + location;
 
-                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                             Logger.debug(this, "loadPage", "redirecting",
-                                        "Location=" + response.header("Location"),
-                                        "path=" + redirectedUrl);
+                                         "Location=" + response.header("Location"),
+                                         "path=" + redirectedUrl);
                         }
 
                         mDoc = null;

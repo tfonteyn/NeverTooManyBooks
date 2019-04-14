@@ -41,7 +41,8 @@ public class IsbnToIdHandler
         extends ApiHandler {
 
     /** Param 1: isbn; param 2: dev key. */
-    private static final String URL =  GoodreadsManager.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
+    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
+
     /**
      * Constructor.
      *

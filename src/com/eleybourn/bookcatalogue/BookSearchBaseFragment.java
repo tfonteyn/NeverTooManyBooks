@@ -31,7 +31,7 @@ public abstract class BookSearchBaseFragment
         implements SearchCoordinator.SearchCoordinatorListener {
 
     /** t. */
-    public static final String TAG = BookSearchBaseFragment.class.getSimpleName();
+    private static final String TAG = BookSearchBaseFragment.class.getSimpleName();
 
     /** stores an active search id, or 0 when none active. */
     private static final String BKEY_SEARCH_MANAGER_ID = TAG + ":SearchManagerId";
@@ -220,10 +220,10 @@ public abstract class BookSearchBaseFragment
 
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.warn(this,"BookSearchBaseFragment.onActivityResult",
-                                   "NOT HANDLED:",
-                                   "requestCode=" + requestCode,
-                                   "resultCode=" + resultCode);
+                    Logger.warnWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
+                                "NOT HANDLED:",
+                                "requestCode=" + requestCode,
+                                "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

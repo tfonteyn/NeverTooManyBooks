@@ -73,7 +73,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class CropImageActivity
         extends CropMonitoredActivity {
 
-    public static final String TAG = CropImageActivity.class.getSimpleName();
+    private static final String TAG = CropImageActivity.class.getSimpleName();
 
     public static final String BKEY_SCALE = TAG + ":scale";
     public static final String BKEY_DATA = TAG + ":data";

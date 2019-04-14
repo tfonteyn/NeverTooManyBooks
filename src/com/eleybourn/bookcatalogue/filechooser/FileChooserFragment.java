@@ -162,7 +162,7 @@ public class FileChooserFragment
 
         requireActivity().getWindow()
                          .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
-                         | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                                                   | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     /**

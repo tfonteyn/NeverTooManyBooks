@@ -19,7 +19,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill"
+            tools:ignore="Autofill,LabelFor"
             />
 
         <!-- an ASIN for a book is the ISBN10 code. Re-enable this if we ever support non-books? -->

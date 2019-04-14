@@ -144,7 +144,7 @@ public abstract class SimpleListAdapter<T>
     /**
      * Called when an otherwise inactive part of the row is clicked.
      *
-     * @param item   The object associated with this row
+     * @param item The object associated with this row
      */
     protected void onRowClick(@NonNull final T item,
                               final int position) {

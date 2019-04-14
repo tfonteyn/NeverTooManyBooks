@@ -2,11 +2,11 @@ package com.eleybourn.bookcatalogue.booklist.filters;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.utils.StringList;
-
-import java.util.List;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...).
@@ -43,7 +43,7 @@ public class ListOfValuesFilter<T>
             public String encode(@NonNull final T element) {
                 return element.toString();
             }
-        }).encode(',',list);
+        }).encode(',', list);
     }
 
     @Override

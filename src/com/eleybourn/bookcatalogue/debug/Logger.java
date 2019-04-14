@@ -86,7 +86,7 @@ public final class Logger {
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(WARN, msg, null);
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
     }
@@ -104,7 +104,7 @@ public final class Logger {
         Throwable e = new RuntimeException();
         String msg = concat(params);
         writeToLog(WARN, msg, e);
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg, e);
         }
     }
@@ -119,7 +119,7 @@ public final class Logger {
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(INFO, msg, null);
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.i(tag(object), Tracker.State.Running.toString() + '|' + msg);
         }
     }
@@ -129,7 +129,7 @@ public final class Logger {
     public static void debugEnter(@NonNull final Object object,
                                   @NonNull final String methodName,
                                   @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Enter.toString() + '|' + methodName + '|' + concat(params));
         }
@@ -138,7 +138,7 @@ public final class Logger {
     public static void debugExit(@NonNull final Object object,
                                  @NonNull final String methodName,
                                  @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Exit.toString() + '|' + methodName + '|' + concat(params));
         }
@@ -147,7 +147,7 @@ public final class Logger {
     public static void debug(@NonNull final Object object,
                              @NonNull final String methodName,
                              @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params));
         }
@@ -156,7 +156,7 @@ public final class Logger {
     public static void debugWithStackTrace(@NonNull final Object object,
                                            @NonNull final String methodName,
                                            @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params),
                   new RuntimeException());
@@ -169,7 +169,7 @@ public final class Logger {
     public static void debugWithStackTrace(@NonNull final Object object,
                                            @NonNull final Throwable e,
                                            @NonNull final Object... params) {
-        if (BuildConfig.DEBUG /* always log */) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Running.toString() + '|' + concat(params), e);
         }

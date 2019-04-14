@@ -25,13 +25,13 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
@@ -125,7 +125,7 @@ public class Datum {
 
     /**
      * DEBUG
-     *
+     * <p>
      * Format the passed bundle in a way that is convenient for display.
      *
      * @param bundle Bundle to format, strings will be trimmed before adding

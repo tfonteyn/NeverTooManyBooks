@@ -31,7 +31,8 @@ import java.io.InputStream;
  *
  * @author pjw
  */
-public interface Importer extends Closeable {
+public interface Importer
+        extends Closeable {
 
     /**
      * Import books from an InputStream.

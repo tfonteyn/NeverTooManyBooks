@@ -111,8 +111,8 @@ public class SynchronizedDb {
                 int refs = (Integer) f.get(db);
                 if (msg != null) {
                     Logger.debug(SynchronizedDb.class,
-                          "printRefCount",
-                                   "DBRefs (" + msg + "): " + refs);
+                                 "printRefCount",
+                                 "DBRefs (" + msg + "): " + refs);
 //                    if (refs < 100) {
 //                        Logger.debug(SynchronizedDb.class,
 //                              "printRefCount",
@@ -166,10 +166,10 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always */) {
                     Logger.debug(this,
-                          "openWithRetries",
-                                   db.getPath() + "|retriesLeft=" + retriesLeft);
+                                 "openWithRetries",
+                                 db.getPath() + "|retriesLeft=" + retriesLeft);
                     debugDumpInfo(db);
                 }
                 return db;
@@ -206,8 +206,8 @@ public class SynchronizedDb {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
                     Logger.debug(this,
-                          "debugDumpInfo",
-                                   s + " => " + cursor.getString(0));
+                                 "debugDumpInfo",
+                                 s + " => " + cursor.getString(0));
                 }
             }
         }
@@ -532,7 +532,8 @@ public class SynchronizedDb {
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                Logger.warnWithStackTrace(this, "Starting a transaction when one is already started");
+                Logger.warnWithStackTrace(this,
+                                          "Starting a transaction when one is already started");
             }
         } catch (RuntimeException e) {
             txLock.unlock();
@@ -588,8 +589,8 @@ public class SynchronizedDb {
             sIsCollationCaseSensitive = collationIsCaseSensitive();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
                 Logger.debug(this,
-                      "isCollationCaseSensitive",
-                               sIsCollationCaseSensitive);
+                             "isCollationCaseSensitive",
+                             sIsCollationCaseSensitive);
             }
         }
         return sIsCollationCaseSensitive;

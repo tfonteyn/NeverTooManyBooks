@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.goodreads.api;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -145,9 +144,9 @@ public class BookshelfListApiHandler
         Bundle results = mFilters.getData();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this,"run", "Found "
-                          + results.getLong(GrBookshelfFields.TOTAL)
-                          + " shelves in " + (System.nanoTime() - t0) + "nano");
+            Logger.debug(this, "run", "Found "
+                    + results.getLong(GrBookshelfFields.TOTAL)
+                    + " shelves in " + (System.nanoTime() - t0) + "nano");
         }
 
         return results;

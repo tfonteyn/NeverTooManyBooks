@@ -45,7 +45,7 @@ public abstract class ReaderEntityAbstract
     @NonNull
     private final BackupEntityType mType;
 
-    public ReaderEntityAbstract(@NonNull final BackupEntityType type) {
+    protected ReaderEntityAbstract(@NonNull final BackupEntityType type) {
         mType = type;
     }
 

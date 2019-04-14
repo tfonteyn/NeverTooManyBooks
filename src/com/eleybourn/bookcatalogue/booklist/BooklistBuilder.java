@@ -413,8 +413,8 @@ public class BooklistBuilder
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            Logger.debug(this,"rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            Logger.debug(this, "rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
         }
 
         // Build base data
@@ -422,8 +422,8 @@ public class BooklistBuilder
 
         // Rebuild all the rest
         for (SynchronizedStatement stmt : mLevelBuildStmts) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                Logger.debug(this,"rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debug(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
             }
             stmt.execute();
         }
@@ -651,7 +651,7 @@ public class BooklistBuilder
      */
     public void build(final int preferredState,
                       final long previouslySelectedBookId) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "build", mBooklistBuilderId);
         }
 
@@ -861,10 +861,10 @@ public class BooklistBuilder
                                                 + ',' + DOM_BL_NODE_EXPANDED
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                     Logger.debug(this,
-                          "build", "add|" + STMT_NAV_IX_1
-                                  + '|' + ixStmt1.toString());
+                                 "build", "add|" + STMT_NAV_IX_1
+                                         + '|' + ixStmt1.toString());
                 }
                 mLevelBuildStmts.add(ixStmt1);
                 ixStmt1.execute();
@@ -880,10 +880,10 @@ public class BooklistBuilder
                                                 + " ON " + mNavTable
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                     Logger.debug(this,
-                          "build", "add|" + STMT_NAV_IX_2
-                                  + '|' + ixStmt2.toString());
+                                 "build", "add|" + STMT_NAV_IX_2
+                                         + '|' + ixStmt2.toString());
                 }
                 mLevelBuildStmts.add(ixStmt2);
                 ixStmt2.execute();
@@ -894,24 +894,24 @@ public class BooklistBuilder
                 mSyncedDb.analyze(mNavTable);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.debug(this,"build",
-                                   "\nT01: " + (t1_basic_setup_done - t0),
-                                   "\nT02: " + (t2_groups_processed - t1_basic_setup_done),
-                                   "\nT03: " + (t3 - t2_groups_processed),
-                                   "\nT04: " + (t4_buildSqlComponents - t3),
-                                   "\nT05: " + (t5_build_join - t4_buildSqlComponents),
-                                   "\nT06: " + (t6_build_where - t5_build_join),
-                                   "\nT07: " + (t7_sortColumns_processed - t6_build_where),
-                                   "\nT08: " + (t8_BaseBuild_executed - t7_sortColumns_processed),
-                                   "\nT09: " + (t9_table_optimized - t8_BaseBuild_executed),
-                                   "\nT10: " + (t10_nav_table_build - t9_table_optimized),
-                                   "\nT11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build),
-                                   "\nT12: " + (t12_nav_table_index_IX2_created
-                                           - t11_nav_table_index_IX1_created),
-                                   "\nT13: " + (System.nanoTime()
-                                           - t12_nav_table_index_IX2_created),
-                                   "\n============================",
-                                   "\nTotal time: " + (System.nanoTime() - t0) + "nano");
+                    Logger.debug(this, "build",
+                                 "\nT01: " + (t1_basic_setup_done - t0),
+                                 "\nT02: " + (t2_groups_processed - t1_basic_setup_done),
+                                 "\nT03: " + (t3 - t2_groups_processed),
+                                 "\nT04: " + (t4_buildSqlComponents - t3),
+                                 "\nT05: " + (t5_build_join - t4_buildSqlComponents),
+                                 "\nT06: " + (t6_build_where - t5_build_join),
+                                 "\nT07: " + (t7_sortColumns_processed - t6_build_where),
+                                 "\nT08: " + (t8_BaseBuild_executed - t7_sortColumns_processed),
+                                 "\nT09: " + (t9_table_optimized - t8_BaseBuild_executed),
+                                 "\nT10: " + (t10_nav_table_build - t9_table_optimized),
+                                 "\nT11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build),
+                                 "\nT12: " + (t12_nav_table_index_IX2_created
+                                         - t11_nav_table_index_IX1_created),
+                                 "\nT13: " + (System.nanoTime()
+                                         - t12_nav_table_index_IX2_created),
+                                 "\n============================",
+                                 "\nTotal time: " + (System.nanoTime() - t0) + "nano");
                 }
                 mSyncedDb.setTransactionSuccessful();
 
@@ -923,7 +923,7 @@ public class BooklistBuilder
 
             }
         } finally {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.debugExit(this, "build", mBooklistBuilderId);
             }
         }
@@ -982,10 +982,10 @@ public class BooklistBuilder
         // Always save the state-preserving navigator for rebuilds
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debug(this,
-                  "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
-                          + '|' + navStmt.toString());
+                         "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
+                                 + '|' + navStmt.toString());
         }
         mLevelBuildStmts.add(navStmt);
 
@@ -1130,10 +1130,10 @@ public class BooklistBuilder
 
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.debug(this,
-                      "baseBuildWithoutTriggers",
-                               "add|" + "Level" + i + '|' + stmt.toString());
+                             "baseBuildWithoutTriggers",
+                             "add|" + "Level" + i + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
@@ -1172,10 +1172,10 @@ public class BooklistBuilder
 //                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
 //                    + ',' + DOM_BL_ROOT_KEY + ')';
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.debug(this,
-                      "baseBuildWithoutTriggers",
-                               "add|" + STMT_IX_1 + '|' + stmt.toString());
+                             "baseBuildWithoutTriggers",
+                             "add|" + STMT_IX_1 + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1188,8 +1188,8 @@ public class BooklistBuilder
                 //noinspection UnusedAssignment
                     i++) {
                 Logger.debug(this,
-                      "baseBuildWithoutTriggers",
-                               "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
+                             "baseBuildWithoutTriggers",
+                             "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
             }
         }
     }
@@ -1708,10 +1708,10 @@ public class BooklistBuilder
                     + "\n END";
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.debug(this,
-                      "makeNestedTriggers",
-                               "add|" + tgName + '|' + stmt.toString());
+                             "makeNestedTriggers",
+                             "add|" + tgName + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1731,10 +1731,10 @@ public class BooklistBuilder
                 + "\n END";
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debug(this,
-                  "makeNestedTriggers",
-                           "add", currentValueTriggerName, stmt);
+                         "makeNestedTriggers",
+                         "add", currentValueTriggerName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -1884,10 +1884,10 @@ public class BooklistBuilder
         SynchronizedStatement stmt =
                 mStatements.add(tgForwardName, oneBigTrigger.toString());
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debug(this,
-                  "makeSingleTrigger",
-                           "add", tgForwardName, stmt);
+                         "makeSingleTrigger",
+                         "add", tgForwardName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -2141,9 +2141,9 @@ public class BooklistBuilder
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this,"pseudoCount",
-                           name + '=' + count + " completed in "
-                                   + (System.nanoTime() - t0) + "nano");
+            Logger.debug(this, "pseudoCount",
+                         name + '=' + count + " completed in "
+                                 + (System.nanoTime() - t0) + "nano");
         }
         return count;
     }
@@ -2272,8 +2272,8 @@ public class BooklistBuilder
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Logger.debug(this,
-                      "expandAll",
-                               (System.nanoTime() - t0) + "nano");
+                             "expandAll",
+                             (System.nanoTime() - t0) + "nano");
             }
 
             if (txLock != null) {
@@ -2410,10 +2410,10 @@ public class BooklistBuilder
         if (!mStatements.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.debug(this,
-                      "cleanup",
-                               "Finalizing with active mStatements (this is not an warnWithStackTrace): ");
+                             "cleanup",
+                             "Finalizing with active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
-                    Logger.debug(this,"cleanup", name);
+                    Logger.debug(this, "cleanup", name);
                 }
             }
 
@@ -2423,8 +2423,8 @@ public class BooklistBuilder
         if (mNavTable != null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.debug(this,
-                      "cleanup",
-                               "Finalizing with mNavTable (this is not an warnWithStackTrace)");
+                             "cleanup",
+                             "Finalizing with mNavTable (this is not an error)");
             }
 
             try {
@@ -2437,8 +2437,8 @@ public class BooklistBuilder
         if (mListTable != null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.debug(this,
-                      "cleanup",
-                               "Finalizing with mListTable (this is not an warnWithStackTrace)");
+                             "cleanup",
+                             "Finalizing with mListTable (this is not an error)");
             }
 
             try {
@@ -2455,8 +2455,8 @@ public class BooklistBuilder
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
                 Logger.debug(this,
-                      "cleanup",
-                               "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+                             "cleanup",
+                             "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
         }
@@ -2508,10 +2508,10 @@ public class BooklistBuilder
                             || (mode == PREF_MODE_NESTED_TRIGGERS);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this,"CompatibilityMode",
-                               "\nlistMode          : " + mode,
-                               "\nuseTriggers       : " + useTriggers,
-                               "\nnestedTriggers    : " + nestedTriggers);
+                Logger.debug(this, "CompatibilityMode",
+                             "\nlistMode          : " + mode,
+                             "\nuseTriggers       : " + useTriggers,
+                             "\nnestedTriggers    : " + nestedTriggers);
             }
         }
 
@@ -2740,9 +2740,9 @@ public class BooklistBuilder
             mListTable.create(mSyncedDb, false);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this,"recreateTable",
-                               "Drop   = " + (t1 - t0) + "nano",
-                               "Create = " + (System.nanoTime() - t1) + "nano");
+                Logger.debug(this, "recreateTable",
+                             "Drop   = " + (t1 - t0) + "nano",
+                             "Create = " + (System.nanoTime() - t1) + "nano");
             }
         }
 

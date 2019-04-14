@@ -76,6 +76,7 @@ public class EditBookshelfListActivity
         populateList();
 
         // Using {@link SimpleDialog#showContextMenu} for context menus.
+        //getListView().setLongClickable(true);
         getListView().setOnItemLongClickListener((parent, view, position, id) -> {
 
             // legal trick to get an instance of Menu.
@@ -105,8 +106,8 @@ public class EditBookshelfListActivity
     /**
      * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int position) {
+    private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                                  final int position) {
 
         Bookshelf bookshelf = mList.get(position);
         switch (menuItem.getItemId()) {

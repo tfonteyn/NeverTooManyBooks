@@ -27,7 +27,7 @@ import java.io.OutputStream;
 
 /**
  * TOMF: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
- *
+ * <p>
  * Interface definition for an exporter.
  *
  * @author pjw

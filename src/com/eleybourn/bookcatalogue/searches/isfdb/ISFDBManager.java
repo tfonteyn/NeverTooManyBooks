@@ -7,15 +7,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 public class ISFDBManager
         implements SearchSites.SearchSiteManager {

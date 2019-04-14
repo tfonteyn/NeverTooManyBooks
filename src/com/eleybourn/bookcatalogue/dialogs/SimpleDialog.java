@@ -166,10 +166,10 @@ public final class SimpleDialog {
      *
      * @see #selectItemDialog
      */
-    public static void showContextMenu(@NonNull final LayoutInflater inflater,
-                                       @NonNull final String title,
-                                       @NonNull final Menu menu,
-                                       @NonNull final OnClickListener<MenuItem> resultListener) {
+    private static void showContextMenu(@NonNull final LayoutInflater inflater,
+                                        @NonNull final String title,
+                                        @NonNull final Menu menu,
+                                        @NonNull final OnClickListener<MenuItem> resultListener) {
         List<SimpleDialogItem<MenuItem>> items = new ArrayList<>();
         for (int i = 0; i < menu.size(); i++) {
             items.add(new SimpleDialogMenuItem(menu.getItem(i)));
@@ -255,6 +255,7 @@ public final class SimpleDialog {
      * <pre>
      * {@code
      * <p>
+     *     //getListView().setLongClickable(true);
      *    getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
      *      @Override public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
      *                                               @NonNull final View view,

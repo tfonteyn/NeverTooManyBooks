@@ -37,7 +37,7 @@ public final class DebugReport {
 
     /** files with these prefixes will be bundled in the report. */
     private static final String[] FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "warnWithStackTrace.log", "export.csv"};
+            "DbUpgrade", "DbExport", "error.log", "export.csv"};
 
     private DebugReport() {
     }
@@ -195,7 +195,7 @@ public final class DebugReport {
         message.append("Details:\n\n")
                .append(activity.getString(R.string.debug_body)).append("\n\n");
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Logger.debug(DebugReport.class, "sendDebugInfo", message);
         }
 

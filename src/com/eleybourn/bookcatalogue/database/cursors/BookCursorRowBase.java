@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -35,6 +34,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;

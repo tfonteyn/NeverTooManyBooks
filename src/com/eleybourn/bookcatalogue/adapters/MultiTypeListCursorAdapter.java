@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,7 +141,7 @@ public class MultiTypeListCursorAdapter
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             for (String s : section) {
-                Logger.debug(this,"getSectionTextForPosition", "Section: " + s);
+                Logger.debug(this, "getSectionTextForPosition", "Section: " + s);
             }
         }
         return section;

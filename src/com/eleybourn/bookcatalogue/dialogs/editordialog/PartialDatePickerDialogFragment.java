@@ -28,7 +28,6 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -124,7 +123,8 @@ public class PartialDatePickerDialogFragment
             date = value.toString();
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-            Logger.debug(PartialDatePickerDialogFragment.class,"newInstance", "date.toString(): " + date);
+            Logger.debug(PartialDatePickerDialogFragment.class, "newInstance",
+                         "date.toString(): " + date);
         }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();

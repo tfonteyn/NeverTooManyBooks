@@ -100,7 +100,7 @@ public final class LocaleUtils {
     public static boolean isChanged(@NonNull final Context context) {
         boolean changed = !from(context).equals(getPreferredLocal());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debug(LocaleUtils.class,"isChanged", "==false");
+            Logger.debug(LocaleUtils.class, "isChanged", "==false");
         }
         return changed;
     }
@@ -270,9 +270,9 @@ public final class LocaleUtils {
     public static String getDisplayName(@NonNull final Context context,
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG) {
-            Logger.debug(LocaleUtils.class,
-                  "getDisplayName",
-                           "iso=" + iso, toDebugString(context));
+            Logger.debugEnter(LocaleUtils.class,
+                         "getDisplayName",
+                         "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);
     }

@@ -419,7 +419,7 @@ public class XmlImporter
         try {
             parser = factory.newSAXParser();
         } catch (SAXException | ParserConfigurationException e) {
-            if (BuildConfig.DEBUG /* always log */) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
             throw new IOException("Unable to create XML parser", e);
@@ -615,7 +615,7 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (NumberFormatException e) {
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG /* WARN */) {
                         Logger.warn(this, "TagInfo",
                                     "invalid id in xml t: " + name);
                     }
