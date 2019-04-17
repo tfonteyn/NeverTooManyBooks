@@ -113,7 +113,7 @@ TODO: uniform quotes in all string:
 
     <string name="error_not_available">not available</string>
 
-    <string name="error_no_external_crop_app">Couldn\'t find an image-cropping application</string>
+    <string name="error_no_external_crop_app">Could not find an image-cropping application</string>
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
@@ -1061,8 +1061,7 @@ TODO: uniform quotes in all string:
 
     <string name="import_error_csv_file_not_found">No export files found</string>
     <string name="import_warning_select_csv_file">
-        More than one export file was found.
-        Please select an export file to import from the list below:
+        More than one file was found. Please select the one to import:
     </string>
 
     <!-- Displayed when a CSV import fails -->

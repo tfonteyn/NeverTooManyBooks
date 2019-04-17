@@ -51,7 +51,7 @@
         app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
         tools:ignore="SelectableText"
-        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        tools:text="@tools:sample/lorem/random"
         />
 
     <TextView

@@ -34,7 +34,6 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
 /**
  * IMPORTANT: do NOT auto-format! It will cause chaos in the order of definitions.
@@ -406,7 +405,7 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_LOCATION, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
         DOM_BOOK_PAGES =
-                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_INTEGER, true)
+                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
         DOM_BOOK_READ =
                 new DomainDefinition(KEY_READ, ColumnInfo.TYPE_BOOLEAN, true)

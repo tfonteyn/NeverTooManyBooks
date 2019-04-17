@@ -50,7 +50,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListHandler;
@@ -68,7 +67,6 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditFormatDialog;
@@ -152,7 +150,6 @@ public class BooksMultiTypeListHandler
      */
     int getAbsolutePosition(@NonNull final View v) {
         final RowViewHolder holder = (RowViewHolder) v.getTag();
-        Objects.requireNonNull(holder);
         return holder.absolutePosition;
     }
 
@@ -270,82 +267,78 @@ public class BooksMultiTypeListHandler
      *
      * @param row Row view pointing to current row for this context menu
      *
-     * @see SimpleDialog.SimpleDialogMenuItem : can't use SubMenu.
+     * @return <tt>true</tt> if there actually is a menu to show.
+     * <tt>false</tt> if not OR if the only menus would be the 'search Amazon' set.
      */
-    void prepareListViewContextMenu(@NonNull final Menu /* in/out */ menu,
-                                    @NonNull final BooklistCursorRow row) {
+    boolean prepareListViewContextMenu(@NonNull final Menu /* in/out */ menu,
+                                       @NonNull final BooklistCursorRow row) {
         menu.clear();
 
         int rowKind = row.getRowKind();
         switch (rowKind) {
             case RowKind.BOOK:
                 if (row.isRead()) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, Menu.NONE, R.string.menu_set_unread)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 } else {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, Menu.NONE, R.string.menu_set_read)
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
                         .setIcon(R.drawable.ic_check_box);
                 }
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, Menu.NONE, R.string.menu_delete_book)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
                     .setIcon(R.drawable.ic_delete);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, Menu.NONE, R.string.menu_edit_book)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
                     .setIcon(R.drawable.ic_edit);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, Menu.NONE,
-                         R.string.menu_edit_book_notes)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, 0, R.string.menu_edit_book_notes)
                     .setIcon(R.drawable.ic_note);
 
-                if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
+                if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mDb.getLoaneeByBookId(row.getBookId());
                     if (isAvailable) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, Menu.NONE,
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0,
                                  R.string.menu_loan_lend_book)
                             .setIcon(R.drawable.ic_people);
                     } else {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, Menu.NONE,
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
                                  R.string.menu_loan_return_book)
                             .setIcon(R.drawable.ic_people);
                     }
                 }
 
-                menu.add(Menu.NONE, R.id.MENU_SHARE, Menu.NONE, R.string.menu_share_this)
+                menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, Menu.NONE,
+                menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0,
                          R.string.gr_menu_send_to_goodreads)
                     .setIcon(R.drawable.ic_goodreads);
                 break;
 
             case RowKind.AUTHOR:
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, Menu.NONE,
-                         R.string.menu_author_details)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, Menu.NONE, R.string.menu_edit_author)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit_author)
                     .setIcon(R.drawable.ic_edit);
                 if (row.isAuthorComplete()) {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE,
-                             R.string.menu_set_incomplete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_incomplete)
                         .setIcon(R.drawable.ic_check_box);
                 } else {
-                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, Menu.NONE,
-                             R.string.menu_set_complete)
+                    menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_complete)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
                 break;
 
             case RowKind.SERIES:
                 if (row.getSeriesId() != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, Menu.NONE,
-                             R.string.menu_delete_series)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete_series)
                         .setIcon(R.drawable.ic_delete);
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, Menu.NONE, R.string.menu_edit_series)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit_series)
                         .setIcon(R.drawable.ic_edit);
                     if (row.isSeriesComplete()) {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, Menu.NONE,
+                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
                                  R.string.menu_set_incomplete)
                             .setIcon(R.drawable.ic_check_box);
                     } else {
-                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, Menu.NONE,
+                        menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
                                  R.string.menu_set_complete)
                             .setIcon(R.drawable.ic_check_box_outline_blank);
                     }
@@ -354,35 +347,35 @@ public class BooksMultiTypeListHandler
 
             case RowKind.PUBLISHER:
                 if (!row.getPublisherName().isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, Menu.NONE, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.LANGUAGE:
                 if (!row.getLanguageCode().isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, Menu.NONE, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.LOCATION:
                 if (!row.getLocation().isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, Menu.NONE, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.GENRE:
                 if (!row.getGenre().isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, Menu.NONE, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.FORMAT:
                 if (!row.getFormat().isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, Menu.NONE, R.string.menu_edit)
+                    menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -392,7 +385,12 @@ public class BooksMultiTypeListHandler
                 break;
         }
 
-        // add Amazon menus ?
+        // if there are no specific menus for the current row.
+        if (menu.size() == 0) {
+            return false;
+        }
+
+        // at least one other menu item; now add Amazon menus ?
         boolean hasAuthor = row.hasAuthorId() && row.getAuthorId() > 0;
         boolean hasSeries = row.hasSeriesId() && row.getSeriesId() > 0;
         if (hasAuthor || hasSeries) {
@@ -402,6 +400,8 @@ public class BooksMultiTypeListHandler
                                     hasAuthor && hasSeries);
             subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
         }
+
+        return true;
     }
 
     /**
@@ -457,6 +457,7 @@ public class BooksMultiTypeListHandler
             }
 
             case R.id.MENU_BOOK_EDIT_LOAN:
+                // reports back to the Activity via the BookChangedListener interface
                 LendBookDialogFragment.show(activity.getSupportFragmentManager(),
                                             bookId, row.getAuthorId(), row.getTitle());
                 return true;
@@ -942,12 +943,12 @@ public class BooksMultiTypeListHandler
 
             // visibility is independent from actual data, so set here.
             readView = convertView.findViewById(R.id.read);
-            readView.setVisibility(Fields.isVisible(DBDefinitions.KEY_READ) ? View.VISIBLE
-                                                                            : View.GONE);
+            readView.setVisibility(Fields.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
+                                                                         : View.GONE);
 
             // visibility is independent from actual data, so set here.
             coverView = convertView.findViewById(R.id.coverImage);
-            if (Fields.isVisible(UniqueId.BKEY_COVER_IMAGE)
+            if (Fields.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 coverView.setVisibility(View.VISIBLE);
                 // apply the scale as set per booklist style.
@@ -1001,12 +1002,12 @@ public class BooksMultiTypeListHandler
             titleView.setText(row.getTitle());
 
             // Read
-            if (Fields.isVisible(DBDefinitions.KEY_READ)) {
+            if (Fields.isUsed(DBDefinitions.KEY_READ)) {
                 readView.setChecked(row.isRead());
             }
 
             // Series number
-            if (Fields.isVisible(DBDefinitions.KEY_SERIES)
+            if (Fields.isUsed(DBDefinitions.KEY_SERIES)
                     && row.hasSeriesNumber()) {
 
                 String number = row.getSeriesNumber();
@@ -1030,7 +1031,7 @@ public class BooksMultiTypeListHandler
                 seriesNumLongView.setVisibility(View.GONE);
             }
 
-            if (Fields.isVisible(UniqueId.BKEY_COVER_IMAGE)
+            if (Fields.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, row.getBookUuid());
@@ -1131,6 +1132,10 @@ public class BooksMultiTypeListHandler
                     // second level uses a smaller font
                     return R.layout.booksonbookshelf_row_level_2;
                 default:
+                    if (BuildConfig.DEBUG) {
+                        Logger.debug(this, "getDefaultLayoutId",
+                                     "level=" + level);
+                    }
                     // this is in fact either level 3 or 4 for non-Book rows; uses a smaller font
                     return R.layout.booksonbookshelf_row_level_3;
             }
@@ -1172,7 +1177,7 @@ public class BooksMultiTypeListHandler
          * @param level  for this row
          */
         public void setText(@StringRes final int textId,
-                            @IntRange(from = 1, to = 2) final int level) {
+                            @IntRange(from = 1) final int level) {
             setText(mTextView.getContext().getString(textId), level);
         }
 
@@ -1183,7 +1188,7 @@ public class BooksMultiTypeListHandler
          * @param level for this row
          */
         public void setText(@Nullable final String text,
-                            @IntRange(from = 1, to = 2) final int level) {
+                            @IntRange(from = 1) final int level) {
             int visibility = View.VISIBLE;
 
             if (text != null && !text.isEmpty()) {

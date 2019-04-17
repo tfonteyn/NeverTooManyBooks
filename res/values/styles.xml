@@ -133,7 +133,7 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!-- file info for "txt_fileName" -->
+    <!-- file info fields for a File selection screen -->
     <style name="txt_row_fileInfo">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -314,7 +314,7 @@
 
     <!-- Menu label for options in a list -->
     <style name="row_option_menu" parent="@style/row_in_ListView">
-        <item name="android:layout_margin">@dimen/border_double</item>
+        <item name="android:padding">@dimen/border_double</item>
         <item name="android:drawablePadding">@dimen/border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>

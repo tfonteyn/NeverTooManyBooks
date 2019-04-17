@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
 public class OpenLibraryManager
-        implements SearchSites.SearchSiteManager {
+        implements SearchSiteManager {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "OpenLibrary.";
@@ -106,7 +106,7 @@ public class OpenLibraryManager
     @Override
     @WorkerThread
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final SearchSites.ImageSizes size) {
+                              @Nullable final ImageSizes size) {
 
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -158,7 +158,7 @@ public class OpenLibraryManager
     }
 
     @Override
-    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+    public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // all sizes
         return true;
     }

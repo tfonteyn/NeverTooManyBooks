@@ -194,8 +194,7 @@ public class EditBookFieldsFragment
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
-        mFields.getField(R.id.coverImage)
-               .getView()
+        mFields.getField(R.id.coverImage).getView()
                .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
@@ -258,8 +257,9 @@ public class EditBookFieldsFragment
     }
 
     private void populateSeriesListField(@NonNull final Book book) {
-        boolean visible = mFields.getField(R.id.series).isVisible();
-        if (visible) {
+
+        if (mFields.getField(R.id.series).isUsed()) {
+
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
                 getBookManager().setDirty(true);
@@ -272,10 +272,12 @@ public class EditBookFieldsFragment
                 newText = getString(R.string.btn_set_series);
             }
             mFields.getField(R.id.series).setValue(newText);
+
+            setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
+
+        } else {
+            setVisibility(View.GONE, R.id.series, R.id.lbl_series);
         }
-        requireView().findViewById(R.id.lbl_series).setVisibility(
-                visible ? View.VISIBLE : View.GONE);
-        requireView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     //</editor-fold>
@@ -300,8 +302,8 @@ public class EditBookFieldsFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        if (mFields.getField(R.id.coverImage).isVisible()) {
-            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, Menu.NONE, R.string.menu_cover_replace)
+        if (mFields.getField(R.id.coverImage).isUsed()) {
+            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0, R.string.menu_cover_replace)
                 .setIcon(R.drawable.ic_add_a_photo)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }

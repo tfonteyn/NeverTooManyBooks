@@ -216,11 +216,10 @@ public abstract class SendBooksTask
          */
         @Override
         @NonNull
-        public View getView(@NonNull final Context context,
+        public View getView(@NonNull final LayoutInflater inflater,
                             @NonNull final BindableItemCursor cursor,
                             @NonNull final ViewGroup parent) {
-            View view = LayoutInflater.from(context)
-                                      .inflate(R.layout.row_event_info, parent, false);
+            View view = inflater.inflate(R.layout.row_event_info, parent, false);
             view.setTag(R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder(view);
             holder.event = this;

@@ -183,7 +183,7 @@ public class FTSSearchActivity
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, Menu.NONE, R.string.rebuild_fts)
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);

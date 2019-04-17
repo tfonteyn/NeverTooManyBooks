@@ -11,15 +11,18 @@
             * Better Anthology support (Edit/View/cross-book) and morphed into “Table of Content” or “TOC”\n
             * TOC auto populated (ISFDB site only!).\n
             * Language field shows the translated name in the current locale.\n
+            * More local support in general (formatting etc.)
             * Books & Anthology/TOC titles now have a “first published” field.\n
             * Books Editions (1st, book-club, etc).\n
             * Book paid price.\n
             * Book date acquired.\n
+            * Book pages is now alphanumeric\n
             * Currency support for prices.\n
             * Styles now exported/imported in XML format.\n
             * Export of all tables can also be done in XML (no import yet).\n
             * Better support for rotating the screen.\n
             * LibraryThing & ISFDB local id for future usage.\n
+            * Experimental: New Search website: OpenLibrary\n
             * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
             * Removed: The old “Classic” view is gone.\n
         </p>]]>

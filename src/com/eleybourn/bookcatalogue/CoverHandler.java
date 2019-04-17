@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
@@ -38,9 +37,9 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -116,18 +115,16 @@ public class CoverHandler {
         mCoverField = coverField;
         mIsbnField = isbnField;
 
-        if (mCoverField.isVisible()) {
-            // add context menu to the cover image
-            mCoverField.getView().setOnLongClickListener(v -> {
-                prepareCoverImageViewContextMenu();
-                return true;
-            });
+        // add context menu to the cover image
+        mCoverField.getView().setOnLongClickListener(v -> {
+            prepareCoverImageViewContextMenu();
+            return true;
+        });
 
-            //Allow zooming by clicking on the image
-            mCoverField.getView().setOnClickListener(
-                    v -> ZoomedImageDialogFragment.show(mActivity.getSupportFragmentManager(),
-                                                        getCoverFile()));
-        }
+        //Allow zooming by clicking on the image
+        mCoverField.getView().setOnClickListener(
+                v -> ZoomedImageDialogFragment.show(mActivity.getSupportFragmentManager(),
+                                                    getCoverFile()));
     }
 
     /**
@@ -158,48 +155,49 @@ public class CoverHandler {
 
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(mActivity, null).getMenu();
-        menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, Menu.NONE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, Menu.NONE,
-                                                 R.string.menu_cover_replace);
-        replaceSubmenu.setIcon(R.drawable.ic_find_replace);
+        SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0,
+                                                 R.string.menu_cover_replace)
+                                     .setIcon(R.drawable.ic_find_replace);
 
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, Menu.NONE,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, 0,
                            R.string.menu_cover_add_from_camera)
                       .setIcon(R.drawable.ic_add_a_photo);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, Menu.NONE,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 0,
                            R.string.menu_cover_add_from_gallery)
                       .setIcon(R.drawable.ic_image);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, Menu.NONE,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 0,
                            R.string.menu_cover_search_alt_editions)
                       .setIcon(R.drawable.ic_find_replace);
 
-        SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, Menu.NONE,
-                                                R.string.menu_cover_rotate);
-        rotateSubmenu.setIcon(R.drawable.ic_rotate_right);
+        SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, 0,
+                                                R.string.menu_cover_rotate)
+                                    .setIcon(R.drawable.ic_rotate_right);
 
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, Menu.NONE,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, 0,
                           R.string.menu_cover_rotate_cw)
                      .setIcon(R.drawable.ic_rotate_right);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, Menu.NONE,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, 0,
                           R.string.menu_cover_rotate_ccw)
                      .setIcon(R.drawable.ic_rotate_left);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, Menu.NONE,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, 0,
                           R.string.menu_cover_rotate_180)
                      .setIcon(R.drawable.ic_swap_vert);
 
-        menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, Menu.NONE, R.string.menu_cover_crop)
+        menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 0, R.string.menu_cover_crop)
             .setIcon(R.drawable.ic_crop);
 
         // display
         String menuTitle = mActivity.getString(R.string.title_cover);
-        SimpleDialog.onCreateViewContextMenu(mCoverField.getView(), menu, menuTitle,
-                                             this::onViewContextItemSelected);
+        PopupMenuDialog.onCreateViewContextMenu(mActivity,
+                                                mCoverField.getView(), menuTitle, menu,
+                                                this::onViewContextItemSelected);
     }
 
     /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     * Using {@link PopupMenuDialog} for context menus.
      *
      * @param menuItem that the user selected
      * @param view     the view the menu belongs to
@@ -318,7 +316,7 @@ public class CoverHandler {
             FragmentManager fm = mFragment.requireFragmentManager();
             mCoverBrowserFragment = (CoverBrowser) fm.findFragmentByTag(CoverBrowser.TAG);
             if (mCoverBrowserFragment == null) {
-                mCoverBrowserFragment = CoverBrowser.newInstance(isbn, SearchSites.Site.SEARCH_ALL);
+                mCoverBrowserFragment = CoverBrowser.newInstance(isbn, Site.SEARCH_ALL);
                 mCoverBrowserFragment.show(fm, CoverBrowser.TAG);
             }
             // allow a callback when the user clicks on the image they want to use.
@@ -378,7 +376,7 @@ public class CoverHandler {
             mGotCameraImage = true;
 
         } else {
-            if (BuildConfig.DEBUG  /* WARN */ ) {
+            if (BuildConfig.DEBUG  /* WARN */) {
                 Logger.warn(this, "addCoverFromCamera",
                             "camera image empty", "onActivityResult",
                             "requestCode=" + requestCode,
@@ -655,24 +653,21 @@ public class CoverHandler {
             // coming back from CoverBrowser with the selected image.
             case UniqueId.REQ_ALT_EDITION:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //noinspection ConstantConditions
                     onImageSelected(data.getStringExtra(UniqueId.BKEY_FILE_SPEC));
                 }
                 return true;
 
             case UniqueId.REQ_ACTION_IMAGE_CAPTURE:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-
-                    Bundle extras = data.getExtras();
-                    Objects.requireNonNull(extras);
-                    addCoverFromCamera(requestCode, resultCode, extras);
+                    //noinspection ConstantConditions
+                    addCoverFromCamera(requestCode, resultCode, data.getExtras());
                 }
                 return true;
 
             case UniqueId.REQ_ACTION_GET_CONTENT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //noinspection ConstantConditions
                     addCoverFromGallery(data);
                 }
                 return true;
@@ -687,7 +682,7 @@ public class CoverHandler {
                         // Update the ImageView with the new image
                         updateCoverView();
                     } else {
-                        if (BuildConfig.DEBUG /* WARN */ ) {
+                        if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this, "onActivityResult",
                                         "RESULT_OK, but no image file?",
                                         "requestCode=" + requestCode,
@@ -695,7 +690,7 @@ public class CoverHandler {
                         }
                     }
                 } else {
-                    if (BuildConfig.DEBUG /* WARN */ ) {
+                    if (BuildConfig.DEBUG /* WARN */) {
                         Logger.warn(this, "onActivityResult",
                                     "FAILED",
                                     "requestCode=" + requestCode,

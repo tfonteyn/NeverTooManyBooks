@@ -5,9 +5,9 @@
     android:orientation="horizontal"
     >
 
-    <!-- what the user sees, with a drawable (icon) added from code -->
+    <!-- what the user sees, with an optional drawable at the 'start' added from code -->
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/menu_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/border_double"
@@ -16,16 +16,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:drawableStart="@drawable/ic_image"
         tools:text="menu item"
-        />
-
-    <!-- we *may* need the RadioButton; it's used as 'selector' in the item interface, but not always implemented -->
-    <RadioButton
-        android:id="@+id/selector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:text=""
-        android:visibility="gone"
         />
 
 </LinearLayout>

@@ -54,7 +54,7 @@ public class SearchTask
     private final int mProgressTitleResId;
 
     @NonNull
-    private final SearchSites.SearchSiteManager mSearchSiteManager;
+    private final SearchSiteManager mSearchSiteManager;
 
     /** identifier for this task. */
     private final int mTaskId;
@@ -85,8 +85,8 @@ public class SearchTask
      * @param searchSiteManager the search site manager
      */
     SearchTask(@NonNull final TaskManager manager,
-               @NonNull final SearchSites.Site site,
-               @NonNull final SearchSites.SearchSiteManager searchSiteManager) {
+               @NonNull final Site site,
+               @NonNull final SearchSiteManager searchSiteManager) {
         super(manager, site.getName());
         mTaskId = site.id;
         mSearchSiteManager = searchSiteManager;

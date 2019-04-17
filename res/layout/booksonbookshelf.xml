@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    tools:context=".BooksOnBookshelf"
     >
 
     <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
@@ -100,11 +101,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_divider"
-            fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
             fslv:overlay="@drawable/fast_scroll_overlay"
+            fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
             fslv:textColor="?android:attr/textColorPrimary"
             >
-        <requestFocus />
+
+            <requestFocus />
         </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

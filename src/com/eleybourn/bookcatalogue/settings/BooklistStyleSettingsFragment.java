@@ -140,8 +140,8 @@ public class BooklistStyleSettingsFragment
         switch (requestCode) {
             case REQ_EDIT_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
                     // replace the current style with the edited copy
+                    //noinspection ConstantConditions
                     mStyle = data.getParcelableExtra(REQUEST_BKEY_STYLE);
                     // sanity check
                     Objects.requireNonNull(mStyle);

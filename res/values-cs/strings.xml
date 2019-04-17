@@ -416,7 +416,9 @@
     <string name="X_file_size">Velikost</string>
     <string name="X_updated">Aktualizování</string>
     <string name="import_error_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
-    <string name="import_warning_select_csv_file">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
+    <string name="import_warning_select_csv_file">
+        Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih
+    </string>
     <string name="X_error_starting_import_arg">Vyskytl se problém při zahájení importu: %1$s</string>
     <string name="hint_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.\n\n
         Prostřednictvím tlačítka \‘Přizpůsobit\’ (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.

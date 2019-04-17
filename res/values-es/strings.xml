@@ -439,7 +439,9 @@
     <string name="X_file_size">Tamaño</string>
     <string name="X_updated">Actualizado</string>
     <string name="import_error_csv_file_not_found">No se han encontrado archivos exportados</string>
-    <string name="import_warning_select_csv_file">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
+    <string name="import_warning_select_csv_file">
+        Se ha encontrado más de un archivo; por favor, seleccione el archivo que desea importar:
+    </string>
     <string name="X_error_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
     <string name="hint_booklist_style_menu">
         Esta opción le permite seleccionar el estilo de los listados.\n

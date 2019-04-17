@@ -467,6 +467,7 @@ public class BookSearchByIsbnFragment
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Objects.requireNonNull(data);
+
                         //noinspection ConstantConditions
                         mIsbnSearchText = mScanner.getBarcode(data);
                         prepareSearch();

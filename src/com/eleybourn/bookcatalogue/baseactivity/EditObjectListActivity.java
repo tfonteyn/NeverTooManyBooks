@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -84,7 +83,7 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  * @author Philip Warner
  */
 public abstract class EditObjectListActivity<T extends Parcelable>
-        extends BaseListActivity {
+        extends BaseActivity {
 
     /** t. */
     private static final String TAG = EditObjectListActivity.class.getSimpleName();
@@ -95,6 +94,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** The key to use in the Bundle to get the array. */
     @Nullable
     private final String mBKey;
+
+    protected DBA mDb;
 
     /** the rows. */
     protected ArrayList<T> mList;
@@ -112,12 +113,14 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             }
         }
     };
+    /** The adapter for the list. */
     protected ArrayAdapter<T> mListAdapter;
-
     @Nullable
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
+    /** The View for the list. */
+    protected TouchListView mListView;
 
     /**
      * Constructor.
@@ -144,9 +147,16 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         // see getList for full details as to where we "get" the list from
         mList = getList(savedInstanceState);
+
+        mListView = findViewById(android.R.id.list);
+        View emptyView = findViewById(android.R.id.empty);
+        if (emptyView != null) {
+            mListView.setEmptyView(emptyView);
+        }
+
         // setup the adapter
         mListAdapter = createListAdapter(mList);
-        setListAdapter(mListAdapter);
+        mListView.setAdapter(mListAdapter);
 
         setTextOrHideView(R.id.title, mBookTitle);
 
@@ -163,7 +173,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         });
 
         // Handle drop events; also preserves current position.
-        ((TouchListView) getListView()).setOnDropListener(this::onDrop);
+        mListView.setOnDropListener(this::onDrop);
     }
 
     /**
@@ -185,8 +195,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mListAdapter.insert(item, toPosition);
         onListChanged();
 
-        final ListView listView = getListView();
-        final int firstVisiblePosition = listView.getFirstVisiblePosition();
+        final int firstVisiblePosition = mListView.getFirstVisiblePosition();
         final int newFirst;
         if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
             newFirst = firstVisiblePosition - 1;
@@ -194,21 +203,21 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             newFirst = firstVisiblePosition;
         }
 
-        View firstView = listView.getChildAt(0);
+        View firstView = mListView.getChildAt(0);
         final int offset = firstView.getTop();
 
         // re-position the list
-        listView.post(() -> {
-            listView.requestFocusFromTouch();
-            listView.setSelectionFromTop(newFirst, offset);
-            listView.post(() -> {
+        mListView.post(() -> {
+            mListView.requestFocusFromTouch();
+            mListView.setSelectionFromTop(newFirst, offset);
+            mListView.post(() -> {
                 for (int i = 0; ; i++) {
-                    View c = listView.getChildAt(i);
+                    View c = mListView.getChildAt(i);
                     if (c == null) {
                         break;
                     }
-                    if (listView.getPositionForView(c) == toPosition) {
-                        listView.setSelectionFromTop(toPosition, c.getTop());
+                    if (mListView.getPositionForView(c) == toPosition) {
+                        mListView.setSelectionFromTop(toPosition, c.getTop());
                         //c.requestFocusFromTouch();
                         break;
                     }
@@ -252,15 +261,15 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * Replace the current list.
      */
     protected void setList(@NonNull final ArrayList<T> newList) {
-        View listView = getListView().getChildAt(0);
-        final int savedTop = listView != null ? listView.getTop() : 0;
-        final int savedRow = getListView().getFirstVisiblePosition();
+        View view = mListView.getChildAt(0);
+        final int savedTop = view != null ? view.getTop() : 0;
+        final int savedRow = mListView.getFirstVisiblePosition();
 
         mList = newList;
         mListAdapter = createListAdapter(mList);
-        setListAdapter(mListAdapter);
+        mListView.setAdapter(mListAdapter);
 
-        getListView().post(() -> getListView().setSelectionFromTop(savedRow, savedTop));
+        mListView.post(() -> mListView.setSelectionFromTop(savedRow, savedTop));
     }
 
     /**
@@ -368,5 +377,14 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         outState.putParcelableArrayList(mBKey != null ? mBKey : BKEY_LIST, mList);
         outState.putLong(DBDefinitions.KEY_ID, mRowId);
         outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
+    }
+
+    @Override
+    @CallSuper
+    protected void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 }

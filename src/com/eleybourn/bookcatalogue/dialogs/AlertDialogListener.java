@@ -4,8 +4,13 @@ public interface AlertDialogListener {
 
     void onPositiveButton();
 
+    /**
+     * Optional
+     */
     @SuppressWarnings({"unused", "EmptyMethod"})
-    void onNeutralButton();
+    default void onNeutralButton() {
+        // do nothing
+    }
 
     void onNegativeButton();
 }

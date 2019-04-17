@@ -155,28 +155,28 @@ public class PartialDatePickerDialogFragment
         }
 
         // experimenting.... PartialDatePickerDialog UI needs a refresh.
-        if (false) {
-            // if set, has range 1..12
-            if (mMonth != null) {
-                // change to 0..11 range.
-                mMonth--;
-            }
-
-            Calendar cal = Calendar.getInstance(LocaleUtils.getSystemLocale());
-            if (mYear == null) {
-                mYear = cal.get(Calendar.YEAR);
-                mMonth = cal.get(Calendar.MONTH);
-                mDay = cal.get(Calendar.DAY_OF_MONTH);
-            } else if (mMonth == null) {
-                mMonth = 0;
-                mDay = 1;
-            } else if (mDay == null) {
-                mDay = 1;
-            }
-
-            return new DatePickerDialog(requireContext(), myDateListener, mYear, mMonth, mDay);
-
-        } else {
+//        if (false) {
+//            // if set, has range 1..12
+//            if (mMonth != null) {
+//                // change to 0..11 range.
+//                mMonth--;
+//            }
+//
+//            Calendar cal = Calendar.getInstance(LocaleUtils.getSystemLocale());
+//            if (mYear == null) {
+//                mYear = cal.get(Calendar.YEAR);
+//                mMonth = cal.get(Calendar.MONTH);
+//                mDay = cal.get(Calendar.DAY_OF_MONTH);
+//            } else if (mMonth == null) {
+//                mMonth = 0;
+//                mDay = 1;
+//            } else if (mDay == null) {
+//                mDay = 1;
+//            }
+//
+//            return new DatePickerDialog(requireContext(), myDateListener, mYear, mMonth, mDay);
+//
+//        } else {
             // Create the dialog and listen (locally) for its events
             PartialDatePickerDialog editor = new PartialDatePickerDialog(requireContext());
             if (mTitleId != 0) {
@@ -185,7 +185,7 @@ public class PartialDatePickerDialogFragment
             editor.updateDisplay();
 
             return editor;
-        }
+//        }
     }
 
     /**

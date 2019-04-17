@@ -244,7 +244,7 @@ public class SearchCoordinator {
      * Start a search.
      *
      * @param searchFlags    bitmask with sites to search,
-     *                       see {@link SearchSites.Site#SEARCH_ALL} and individual flags
+     *                       see {@link Site#SEARCH_ALL} and individual flags
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
      * @param author         to search for (can be empty)
@@ -264,7 +264,7 @@ public class SearchCoordinator {
         }
 
         // dev sanity check
-        if ((searchFlags & SearchSites.Site.SEARCH_ALL) == 0) {
+        if ((searchFlags & Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
         // dev sanity check
@@ -319,7 +319,7 @@ public class SearchCoordinator {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
                     mWaitingForIsbn = false;
-                    tasksStarted = startSearches(SearchSites.Site.SEARCH_AMAZON);
+                    tasksStarted = startSearches(Site.SEARCH_AMAZON);
                 }
             } else {
                 // Run one at a time, startNext() defined the order.
@@ -531,7 +531,7 @@ public class SearchCoordinator {
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
-            for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
+            for (Site site : SearchSites.getSitesByReliability()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -548,7 +548,7 @@ public class SearchCoordinator {
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just use the default order
-            for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
+            for (Site site : SearchSites.getSitesByReliability()) {
                 results.add(site.id);
             }
         }
@@ -625,7 +625,7 @@ public class SearchCoordinator {
      */
     private boolean startNext() {
         // Loop though in 'search-priority' order
-        for (SearchSites.Site site : SearchSites.getSites()) {
+        for (Site site : SearchSites.getSites()) {
             // If this search includes the source, check it
             if (site.isEnabled() && ((mSearchFlags & site.id) != 0)) {
                 // If the source has not been searched, search it
@@ -647,7 +647,7 @@ public class SearchCoordinator {
     private boolean startSearches(final int sources) {
         boolean atLeastOneStarted = false;
         // Loop searches in priority order
-        for (SearchSites.Site source : SearchSites.getSites()) {
+        for (Site source : SearchSites.getSites()) {
             // If this search includes the source, check it
             if (source.isEnabled() && ((sources & source.id) != 0)) {
                 // If the source has not been searched, search it
@@ -669,12 +669,12 @@ public class SearchCoordinator {
      *
      * @return <tt>true</tt> if the search was started.
      */
-    private boolean startOneSearch(@NonNull final SearchSites.Site site) {
+    private boolean startOneSearch(@NonNull final Site site) {
         if (mCancelledFlg) {
             return false;
         }
 
-        SearchSites.SearchSiteManager sm = site.getSearchSiteManager();
+        SearchSiteManager sm = site.getSearchSiteManager();
 
         // special case, some sites can only be searched with an ISBN
         if (sm.isIsbnOnly() && !mHasValidIsbn) {

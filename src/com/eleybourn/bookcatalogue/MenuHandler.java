@@ -49,24 +49,23 @@ final class MenuHandler {
      */
     static void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                                          0, R.string.menu_add_book);
+                                          0, R.string.menu_add_book)
+                              .setIcon(R.drawable.ic_add);
 
-        subMenu.setIcon(R.drawable.ic_add)
-               .getItem()
-               .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        subMenu.getItem().setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, Menu.NONE,
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, 0,
                     R.string.menu_add_book_by_barcode_scan)
                .setIcon(R.drawable.ic_add_a_photo);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, Menu.NONE,
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, 0,
                     R.string.menu_add_book_by_isbn)
                .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, Menu.NONE,
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, 0,
                     R.string.menu_search_internet)
                .setIcon(R.drawable.ic_zoom_in);
-        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, Menu.NONE,
+        subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, 0,
                     R.string.menu_add_book_manually)
-               .setIcon(R.drawable.ic_add);
+               .setIcon(R.drawable.ic_keyboard);
     }
 
     /**
@@ -121,10 +120,9 @@ final class MenuHandler {
      */
     static SubMenu addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                                          0, R.string.amazon_ellipsis);
-
-        subMenu.setIcon(R.drawable.ic_search)
-               .setHeaderIcon(R.drawable.ic_search);
+                                          0, R.string.amazon_ellipsis)
+                              .setIcon(R.drawable.ic_search)
+                              .setHeaderIcon(R.drawable.ic_search);
 
         // we use the group to make the entry visible/invisible, hence it's == the actual id.
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
@@ -193,8 +191,7 @@ final class MenuHandler {
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonSearchPage.open(activity, book.getPrimaryAuthor(),
-                                      book.getPrimarySeries());
+                AmazonSearchPage.open(activity, book.getPrimaryAuthor(), book.getPrimarySeries());
                 return true;
 
             default:

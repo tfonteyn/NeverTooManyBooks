@@ -420,8 +420,13 @@
     <string name="X_in">İçinde</string>
     <string name="X_file_size">Boyut</string>
     <string name="X_updated">Güncellenmiş</string>
-    <string name="import_error_csv_file_not_found">Herhangi bir dışa aktarma dosyası bulunamadı</string>
-    <string name="import_warning_select_csv_file">Birden fazla dışa aktarma dosyası bulundu; lütfen içe aktarmak üzere aşağıdaki dışa aktarma dosyalarından birini seçin</string>
+    <string name="import_error_csv_file_not_found">
+        Herhangi bir dışa aktarma dosyası bulunamadı
+    </string>
+    <string name="import_warning_select_csv_file">
+        Birden fazla dışa aktarma dosyası bulundu;
+        lütfen içe aktarmak üzere aşağıdaki dışa aktarma dosyalarından birini seçin
+    </string>
     <string name="X_error_starting_import_arg">İçe aktarmaya başlarken bir hata oluştu: %1$s</string>
     <string name="hint_booklist_style_menu">
         Bu seçke size dizelge biçemini seçmenize olanak tanır.\n

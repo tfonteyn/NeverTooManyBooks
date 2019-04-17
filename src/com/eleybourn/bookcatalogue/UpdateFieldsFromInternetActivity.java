@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
@@ -65,13 +65,13 @@ public class UpdateFieldsFromInternetActivity
 
     /**
      * optionally limit the sites to search on.
-     * By default uses {@link SearchSites.Site#SEARCH_ALL}
+     * By default uses {@link Site#SEARCH_ALL}
      */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** which fields to update and how. */
     private final Map<String, Fields.FieldUsage> mFieldUsages = new LinkedHashMap<>();
     /** where to look. */
-    private int mSearchSites = SearchSites.Site.SEARCH_ALL;
+    private int mSearchSites = Site.SEARCH_ALL;
     /** 0 for all books, or a specific book. */
     private long mBookId;
 
@@ -113,7 +113,7 @@ public class UpdateFieldsFromInternetActivity
     }
 
     private void readArgs(@NonNull final Bundle args) {
-        mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
+        mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, Site.SEARCH_ALL);
         mBookId = args.getLong(DBDefinitions.KEY_ID, 0L);
         if (mBookId > 0) {
             mAuthorFormatted = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
@@ -150,7 +150,7 @@ public class UpdateFieldsFromInternetActivity
             findViewById(R.id.author).setVisibility(View.GONE);
         }
 
-        if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
+        if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
             LibraryThingManager.showLtAlertIfNecessary(this, false,
                                                        "update_from_internet");
         }
@@ -225,7 +225,7 @@ public class UpdateFieldsFromInternetActivity
                               @NonNull final Fields.FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
-        if (Fields.isVisible(fieldId)) {
+        if (Fields.isUsed(fieldId)) {
             mFieldUsages.put(fieldId,
                              new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
@@ -246,7 +246,7 @@ public class UpdateFieldsFromInternetActivity
                               @NonNull final Fields.FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
-        if (Fields.isVisible(visField)) {
+        if (Fields.isUsed(visField)) {
             mFieldUsages.put(fieldId,
                              new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
@@ -331,7 +331,7 @@ public class UpdateFieldsFromInternetActivity
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, Menu.NONE, R.string.lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 

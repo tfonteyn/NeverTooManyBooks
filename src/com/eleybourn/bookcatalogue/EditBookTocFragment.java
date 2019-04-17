@@ -60,7 +60,7 @@ import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
@@ -286,8 +286,7 @@ public class EditBookTocFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, Menu.NONE,
-                 R.string.menu_populate_toc)
+        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
             .setIcon(R.drawable.ic_autorenew);
         // don't call super. We don't want the clutter in this tab.
     }
@@ -319,22 +318,23 @@ public class EditBookTocFragment
         TocEntry tocEntry = mListAdapter.getItem(position);
 
         // legal trick to get an instance of Menu.
-        Menu menu = new PopupMenu(view.getContext(), null).getMenu();
-        menu.add(Menu.NONE, R.id.MENU_EDIT, Menu.NONE, R.string.menu_edit)
+        Menu menu = new PopupMenu(getContext(), null).getMenu();
+        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
-        menu.add(Menu.NONE, R.id.MENU_DELETE, Menu.NONE, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         // display the menu
         //noinspection ConstantConditions
         String menuTitle = tocEntry.getTitle();
-        SimpleDialog.onCreateListViewContextMenu(view, menu, menuTitle, position,
-                                                 this::onListViewContextItemSelected);
+        //noinspection ConstantConditions
+        PopupMenuDialog.onCreateListViewContextMenu(getContext(), position, menuTitle, menu,
+                                                    this::onListViewContextItemSelected);
         return true;
     }
 
     /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     * Using {@link PopupMenuDialog} for context menus.
      */
     private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                   final int position) {

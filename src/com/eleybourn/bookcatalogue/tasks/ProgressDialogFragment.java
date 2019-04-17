@@ -243,15 +243,23 @@ public class ProgressDialogFragment<Results>
                 mProgressBar.setMax(mMax);
                 mUpdateMax = false;
             }
+
             // only update when changed
             if (message != null && !message.equals(mMessage)) {
                 mMessage = message;
-                //noinspection ConstantConditions
-                mMessageView.setText(mMessage);
+                if (mMessageView != null) {
+                    mMessageView.setText(mMessage);
+                } else {
+                    Logger.warnWithStackTrace(this, "mMessageView was NULL");
+                }
             }
 
             if (absPosition != null) {
-                mProgressBar.setProgress(absPosition);
+                if (mProgressBar != null) {
+                    mProgressBar.setProgress(absPosition);
+                } else {
+                    Logger.warnWithStackTrace(this, "mProgressBar was NULL");
+                }
             }
         }
     }
@@ -278,11 +286,10 @@ public class ProgressDialogFragment<Results>
             // only update when changed
             if (message != null && !message.equals(mMessage)) {
                 mMessage = message;
-                if (getDialog() != null) {
-                    //noinspection ConstantConditions
+                if (mMessageView != null) {
                     mMessageView.setText(mMessage);
                 } else {
-                    Logger.warnWithStackTrace(this, "Dialog was NULL");
+                    Logger.warnWithStackTrace(this, "mMessageView was NULL");
                 }
             }
         }

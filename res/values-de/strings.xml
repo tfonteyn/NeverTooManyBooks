@@ -611,7 +611,7 @@
     <string name="X_updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
     <string name="import_warning_select_csv_file">
-        Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste
+        Mehr als eine Datei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste:
     </string>
     <string name="X_error_starting_import_arg">Problem beim Start des Imports: %1$s</string>
     <string name="hint_booklist_style_menu">

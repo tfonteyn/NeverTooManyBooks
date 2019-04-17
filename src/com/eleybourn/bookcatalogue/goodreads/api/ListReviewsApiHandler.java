@@ -364,7 +364,7 @@ public class ListReviewsApiHandler
                 //          <book>
                 .s(XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XML_ID, ReviewFields.GR_BOOK_ID)
+                .longBody(XML_ID, ReviewFields.DBA_GR_BOOK_ID)
                 //              <isbn>0583120911</isbn>
                 .stringBody(XML_ISBN, ReviewFields.DBA_ISBN)
                 //              <isbn13>9780583120913</isbn13>
@@ -472,7 +472,6 @@ public class ListReviewsApiHandler
         public static final String START = "__start";
         public static final String END = "__end";
         public static final String TOTAL = "__total";
-        public static final String GR_BOOK_ID = "__gr_book_id";
         public static final String GR_REVIEW_ID = "__gr_review_id";
         public static final String ISBN13 = "__isbn13";
         public static final String SMALL_IMAGE = "__smallImage";
@@ -488,14 +487,16 @@ public class ListReviewsApiHandler
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
 
-        public static final String DBA_PAGES = DBDefinitions.DOM_BOOK_PAGES.name;
+        public static final String DBA_GR_BOOK_ID = DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name;
         public static final String DBA_ISBN = DBDefinitions.DOM_BOOK_ISBN.name;
+
+        public static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
         public static final String DBA_TITLE = DBDefinitions.DOM_TITLE.name;
-        public static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
-        public static final String DBA_FORMAT = DBDefinitions.DOM_BOOK_FORMAT.name;
         public static final String DBA_PUBLISHER = DBDefinitions.DOM_BOOK_PUBLISHER.name;
         public static final String DBA_DESCRIPTION = DBDefinitions.DOM_BOOK_DESCRIPTION.name;
-        public static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
+        public static final String DBA_FORMAT = DBDefinitions.DOM_BOOK_FORMAT.name;
+        public static final String DBA_PAGES = DBDefinitions.DOM_BOOK_PAGES.name;
+        public static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
         public static final String DBA_RATING = DBDefinitions.DOM_BOOK_RATING.name;
         public static final String DBA_READ_START = DBDefinitions.DOM_BOOK_READ_START.name;
         public static final String DBA_READ_END = DBDefinitions.DOM_BOOK_READ_END.name;

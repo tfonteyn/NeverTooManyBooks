@@ -217,7 +217,7 @@
     <string name="lbl_given_names">Voornamen</string>
     <string name="X_title_edit_author">Bewerken auteurdetails</string>
     <string name="warning_immediate_global_changes">
-        NB: Alle opgeslagen veranderingen worden direct en overal toegepast
+        Let op: Veranderingen worden direct en globaal toegepast!
     </string>
     <string name="menu_cover_replace">Vervangen…</string>
     <string name="menu_cover_search_alt_editions">Van andere uitgaven…</string>
@@ -608,8 +608,7 @@
     <string name="X_updated">Bijgewerkt</string>
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
     <string name="import_warning_select_csv_file">
-        Meer dan een exportbestand gevonden.
-        Selecteer aub een exportbestand om te importeren uit de lijst hieronder
+        Meer dan een bestand gevonden. Selecteer aub het gewenste bestand om te importeren:
     </string>
     <string name="X_error_starting_import_arg">
         Het is een probleem bij het starten van de import van: %1$s</string>

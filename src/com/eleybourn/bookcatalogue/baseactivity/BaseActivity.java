@@ -40,15 +40,11 @@ import com.google.android.material.navigation.NavigationView;
  */
 public abstract class BaseActivity
         extends AppCompatActivity
-        implements
-        NavigationView.OnNavigationItemSelectedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     /** The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
-    @Nullable
-    private NavigationView mNavigationView;
 
     /**
      * Override this and return the id you need.
@@ -74,14 +70,8 @@ public abstract class BaseActivity
             setContentView(layoutId);
         }
 
-        /*
-         Using a {@link NavigationView} and matching {@link Toolbar}
-         see https://developer.android.com/training/implementing-navigation/nav-drawer
-         */
-        setDrawerLayout(findViewById(R.id.drawer_layout));
-        setNavigationView(findViewById(R.id.nav_view));
-
         initToolbar();
+        initNavigationPanel();
     }
 
     /**
@@ -145,29 +135,26 @@ public abstract class BaseActivity
         }
     }
 
-    @SuppressWarnings("unused")
-    @Nullable
-    public NavigationView getNavigationView() {
-        return mNavigationView;
-    }
-
-    private void setNavigationView(@Nullable final NavigationView navigationView) {
-        mNavigationView = navigationView;
-        if (mNavigationView != null) {
-            mNavigationView.setNavigationItemSelectedListener(this);
+    /**
+     * Using a {@link NavigationView} and matching {@link Toolbar}
+     * see https://developer.android.com/training/implementing-navigation/nav-drawer
+     * <p>
+     * These are optional in our layouts.
+     */
+    private void initNavigationPanel() {
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
     }
 
-    public void closeNavigationDrawer() {
+    @CallSuper
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawers();
         }
-    }
 
-    @Override
-    @CallSuper
-    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-        closeNavigationDrawer();
         switch (item.getItemId()) {
             case R.id.nav_search:
                 onSearchRequested();
@@ -204,13 +191,6 @@ public abstract class BaseActivity
             default:
                 return false;
         }
-    }
-
-    /**
-     * @param drawerLayout your custom one
-     */
-    private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
-        mDrawerLayout = drawerLayout;
     }
 
     @Override
@@ -296,7 +276,6 @@ public abstract class BaseActivity
         Tracker.exitOnActivityResult(this);
     }
 
-
     /**
      * Check if edits need saving.
      * If they don't, simply finish the activity, otherwise ask the user.
@@ -306,13 +285,12 @@ public abstract class BaseActivity
      */
     public void finishIfClean(final boolean isDirty) {
         if (isDirty) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(
-                    this,
-                    /* only runs if user clicks 'exit' */
-                    () -> {
-                        setResult(Activity.RESULT_CANCELED);
-                        finish();
-                    });
+            StandardDialogs.showConfirmUnsavedEditsDialog(this,
+                                                          () -> {
+                                                              /* only runs if user clicks 'exit' */
+                                                              setResult(Activity.RESULT_CANCELED);
+                                                              finish();
+                                                          });
         } else {
             setResult(Activity.RESULT_CANCELED);
             finish();

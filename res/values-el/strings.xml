@@ -437,7 +437,9 @@
     <string name="X_file_size">Μέγεθος</string>
     <string name="X_updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
-    <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
+    <string name="import_warning_select_csv_file">
+        Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω
+    </string>
     <string name="X_error_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
     <string name="hint_booklist_style_menu">
         Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.

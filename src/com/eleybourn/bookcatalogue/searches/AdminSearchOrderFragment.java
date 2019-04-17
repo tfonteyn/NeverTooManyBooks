@@ -33,7 +33,7 @@ public class AdminSearchOrderFragment
     public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
 
     private ListView mListView;
-    private ArrayList<SearchSites.Site> mList;
+    private ArrayList<Site> mList;
     private SearchSiteListAdapter mListAdapter;
     private boolean mIsDirty;
 
@@ -65,7 +65,7 @@ public class AdminSearchOrderFragment
             }
 
             // update the list
-            SearchSites.Site item = mListAdapter.getItem(fromPosition);
+            Site item = mListAdapter.getItem(fromPosition);
             mListAdapter.remove(item);
             mListAdapter.insert(item, toPosition);
             mListAdapter.notifyDataSetChanged();
@@ -76,7 +76,7 @@ public class AdminSearchOrderFragment
 
 
     @Nullable
-    public ArrayList<SearchSites.Site> getList() {
+    public ArrayList<Site> getList() {
         // have we been brought to the front ?
         if (mListView != null) {
             // walk the list, and use the position of the item as the site.priority
@@ -93,7 +93,10 @@ public class AdminSearchOrderFragment
     }
 
     private class SearchSiteListAdapter
-            extends ArrayAdapter<SearchSites.Site> {
+            extends ArrayAdapter<Site> {
+
+        @NonNull
+        private final LayoutInflater mInflater;
 
         /**
          * Constructor.
@@ -102,8 +105,9 @@ public class AdminSearchOrderFragment
          * @param list    of sites
          */
         SearchSiteListAdapter(@NonNull final Context context,
-                              @NonNull final List<SearchSites.Site> list) {
+                              @NonNull final List<Site> list) {
             super(context, 0, list);
+            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull
@@ -117,8 +121,7 @@ public class AdminSearchOrderFragment
                 holder = (Holder) convertView.getTag();
             } else {
                 // Not recycling, get a new View and make the holder for it.
-                convertView = LayoutInflater.from(getContext())
-                                            .inflate(R.layout.row_edit_searchsite, parent, false);
+                convertView = mInflater.inflate(R.layout.row_edit_searchsite, parent, false);
 
                 holder = new Holder(convertView);
                 holder.checkableView.setTag(holder);
@@ -145,7 +148,7 @@ public class AdminSearchOrderFragment
         final View rowDetailsView;
         @NonNull
         final TextView nameView;
-        SearchSites.Site site;
+        Site site;
 
         public Holder(@NonNull final View rowView) {
             rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);

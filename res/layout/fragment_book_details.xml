@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -44,8 +45,8 @@
             android:id="@+id/title"
             style="@style/txt_detail_large"
             android:layout_width="0dp"
-            app:layout_constraintStart_toEndOf="@id/read"
             app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintStart_toEndOf="@id/read"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
             tools:text="Anna Karenina"
@@ -198,6 +199,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
             tools:ignore="NestedScrolling"
             tools:visibility="visible"
+            tools:listitem="@layout/row_toc_entry_with_author"
             />
 
         <!-- Publishing -->
@@ -533,7 +535,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
             tools:ignore="SelectableText"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            tools:text="@tools:sample/lorem/random"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -240,9 +240,14 @@ public class FileChooserFragment
     protected class FileDetailsAdapter
             extends ArrayAdapter<FileDetails> {
 
+        @NonNull
+        private final LayoutInflater mInflater;
+
         FileDetailsAdapter(@NonNull final Context context,
                            @NonNull final ArrayList<FileDetails> items) {
             super(context, 0, items);
+
+            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull
@@ -253,8 +258,7 @@ public class FileChooserFragment
 
             final FileDetails item = getItem(position);
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext())
-                                            .inflate(R.layout.row_file_info, parent, false);
+                convertView = mInflater.inflate(R.layout.row_filechooser, parent, false);
             }
 
             //noinspection ConstantConditions

@@ -574,7 +574,7 @@ public class BooklistBuilder
      * Set the filter for only books with named title with added wildcards.
      * <p>
      * An empty filter will silently be rejected.
-     * TOMF: lowercase ? locale ?
+     * {@link WildcardFilter} is case insensitive.
      *
      * @param filter the title to limit the search for.
      */
@@ -2151,7 +2151,7 @@ public class BooklistBuilder
     /**
      * @return the number of levels in the list, including the 'base' books level
      */
-    int numLevels() {
+    int levels() {
         return mStyle.groupCount() + 1;
     }
 

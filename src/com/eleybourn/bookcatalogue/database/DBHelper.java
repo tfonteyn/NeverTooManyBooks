@@ -598,8 +598,8 @@ public class DBHelper
 
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(this, "onUpgrade",
-                         "Old database version: " + oldVersion,
-                         "Upgrading database: " + db.getPath());
+                              "Old database version: " + oldVersion,
+                              "Upgrading database: " + db.getPath());
         }
         if (oldVersion < 71) {
             throw new UpgradeException(R.string.error_database_upgrade_failed);
@@ -629,9 +629,8 @@ public class DBHelper
             curVersion = 100;
 
             /* now using the 'real' cache directory */
-            StorageUtils.deleteFile(
-                    new File(StorageUtils.getSharedStorage()
-                                     + File.separator + "tmp_images"));
+            StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
+                                                     + File.separator + "tmp_images"));
 
             // migrate old properties.
             Prefs.migratePreV200preferences(App.PREF_LEGACY_BOOK_CATALOGUE);

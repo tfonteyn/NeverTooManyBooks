@@ -163,7 +163,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)) {
+                if (Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -181,7 +181,7 @@ public class EditBookFragment
                                              getString(R.string.lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
-        if (Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)) {
+        if (Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
             mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
                                                  getString(R.string.tab_lbl_content)));
         }
@@ -205,11 +205,6 @@ public class EditBookFragment
                 Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
                 mActivity.setResult(Activity.RESULT_OK, data);
                 mActivity.finish();
-            }
-
-            @Override
-            public void onNeutralButton() {
-                // Remain editing
             }
 
             @Override

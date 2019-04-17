@@ -341,8 +341,8 @@ public class BooklistPseudoCursor
     /**
      * @return the number of levels in the book list (includes the 'book' level!)
      */
-    public int numLevels() {
-        return mBuilder.numLevels();
+    public int levels() {
+        return mBuilder.levels();
     }
 
     /**

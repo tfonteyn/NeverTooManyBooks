@@ -49,7 +49,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -87,7 +87,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * @author Philip Warner
  */
 public class LibraryThingManager
-        implements SearchSites.SearchSiteManager {
+        implements SearchSiteManager {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "LibraryThing.";
@@ -352,7 +352,7 @@ public class LibraryThingManager
     @WorkerThread
     @Override
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final SearchSites.ImageSizes size) {
+                              @Nullable final ImageSizes size) {
 
         // sanity check
         if (noKey()) {
@@ -442,11 +442,11 @@ public class LibraryThingManager
         }
 
         if (fetchThumbnail) {
-            File file = getCoverImage(isbn, SearchSites.ImageSizes.LARGE);
+            File file = getCoverImage(isbn, SearchSiteManager.ImageSizes.LARGE);
             if (file == null) {
-                file = getCoverImage(isbn, SearchSites.ImageSizes.MEDIUM);
+                file = getCoverImage(isbn, SearchSiteManager.ImageSizes.MEDIUM);
                 if (file == null) {
-                    file = getCoverImage(isbn, SearchSites.ImageSizes.SMALL);
+                    file = getCoverImage(isbn, SearchSiteManager.ImageSizes.SMALL);
                 }
             }
             if (file != null) {
@@ -475,7 +475,7 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+    public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // all sizes
         return true;
     }

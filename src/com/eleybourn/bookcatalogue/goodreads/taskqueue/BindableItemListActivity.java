@@ -24,12 +24,13 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
 
@@ -37,14 +38,15 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursorAdapter
  * @author pjw
  */
 abstract class BindableItemListActivity
-        extends BaseListActivity
+        extends BaseActivity
         implements BindableItemBinder {
+
+    protected DBA mDb;
 
     /** Cursor for list. */
     private BindableItemCursor mBindableItems;
-    /** Adapter for list. */
+    /** The adapter for the list. */
     private BindableItemCursorAdapter mListAdapter;
-
     /**
      * Listener to handle add/change/delete.
      */
@@ -65,11 +67,14 @@ abstract class BindableItemListActivity
         mDb = new DBA(this);
         super.onCreate(savedInstanceState);
 
+        /** The View for the list. */
+        ListView listView = findViewById(android.R.id.list);
+
         mBindableItems = getBindableItemCursor();
         mListAdapter = new BindableItemCursorAdapter(this, this, mBindableItems);
-        setListAdapter(mListAdapter);
+        listView.setAdapter(mListAdapter);
 
-        getListView().setOnItemClickListener(this::onListItemClick);
+        listView.setOnItemClickListener(this::onListItemClick);
     }
 
     /**
@@ -100,6 +105,9 @@ abstract class BindableItemListActivity
     @CallSuper
     protected void onDestroy() {
         closeCursor(mBindableItems);
+        if (mDb != null) {
+            mDb.close();
+        }
         super.onDestroy();
     }
 

@@ -7,7 +7,9 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
 /**
- * an SQL WHERE clause  (column LIKE '%text%').
+ * An SQL WHERE clause  (column LIKE '%text%').
+ * Note that the LIKE usage means this is case insensitive.
+ *
  * <p>
  * FIXME: bad stopgap... use PreparedStatements instead !
  */

@@ -22,6 +22,9 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 public class TocAdapter
         extends ArrayAdapter<TocEntry> {
 
+    @NonNull
+    private final LayoutInflater mInflater;
+
     @LayoutRes
     private final int mRowLayoutId;
 
@@ -37,6 +40,7 @@ public class TocAdapter
                       @LayoutRes final int rowLayoutId,
                       @NonNull final List<TocEntry> objects) {
         super(context, rowLayoutId, objects);
+        mInflater = LayoutInflater.from(context);
         mRowLayoutId = rowLayoutId;
     }
 
@@ -51,8 +55,7 @@ public class TocAdapter
             holder = (Holder) convertView.getTag();
         } else {
             // Not recycling, get a new View and make the holder for it.
-            convertView = LayoutInflater.from(getContext())
-                                        .inflate(mRowLayoutId, parent, false);
+            convertView = mInflater.inflate(mRowLayoutId, parent, false);
             holder = new Holder(convertView);
         }
 

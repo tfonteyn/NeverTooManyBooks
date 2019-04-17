@@ -513,7 +513,9 @@
     <string name="X_file_size">Taille</string>
     <string name="X_updated">Mis à jour</string>
     <string name="import_error_csv_file_not_found">Aucun fichier export n\'a été trouvé</string>
-    <string name="import_warning_select_csv_file">Plusieurs fichiers export ont été trouvés ; veuillez en choisir un dans la liste ci-dessous</string>
+    <string name="import_warning_select_csv_file">
+        Plusieurs fichiers ont été trouvés; veuillez en choisir un dans la liste ci-dessous:
+    </string>
     <string name="X_error_starting_import_arg">Un problème a été rencontré lors de l\'export : %1$s</string>
     <string name="hint_booklist_style_menu">
         Ce menu vous permet de sélectionner le style de la liste.\n

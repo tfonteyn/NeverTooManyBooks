@@ -93,26 +93,6 @@ public class BookFragment
         mBook = book;
     }
 
-    /**
-     * We're read only.
-     *
-     * @return <tt>false</tt>
-     */
-    @Override
-    public boolean isDirty() {
-        return false;
-    }
-
-    /**
-     * We're read only.
-     *
-     * @param isDirty ignored.
-     */
-    @Override
-    public void setDirty(final boolean isDirty) {
-        // ignore
-    }
-
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -175,30 +155,18 @@ public class BookFragment
         mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                .setFormatter(new Fields.LanguageFormatter());
         mFields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-               .setFormatter(new Fields.FieldFormatter() {
-                   @NonNull
-                   @Override
-                   public String format(@NonNull final Field field,
-                                        @Nullable final String source) {
-                       if (source != null && !source.isEmpty() && !"0".equals(source)) {
-                           try {
-                               int pages = Integer.parseInt(source);
-                               return getString(R.string.lbl_x_pages, pages);
-                           } catch (NumberFormatException ignore) {
-                               // don't log, both formats are valid.
-                           }
-                           // stored pages was alphanumeric.
-                           return source;
+               .setFormatter((field, source) -> {
+                   if (source != null && !source.isEmpty() && !"0".equals(source)) {
+                       try {
+                           int pages = Integer.parseInt(source);
+                           return getString(R.string.lbl_x_pages, pages);
+                       } catch (NumberFormatException ignore) {
+                           // don't log, both formats are valid.
                        }
-                       return "";
+                       // stored pages was alphanumeric.
+                       return source;
                    }
-
-                   @NonNull
-                   @Override
-                   public String extract(@NonNull final Field field,
-                                         @NonNull final String source) {
-                       throw new UnsupportedOperationException();
-                   }
+                   return "";
                });
         mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
         mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
@@ -298,9 +266,8 @@ public class BookFragment
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
-        mFields.getField(R.id.coverImage)
-               .getView()
-               .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
+        mFields.getField(R.id.coverImage).getView().setTag(R.id.TAG_UUID,
+                                                           book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
@@ -316,9 +283,13 @@ public class BookFragment
 
         // can't use showHideFields as the field could contain "0" (as a String)
         Field editionsField = mFields.getField(R.id.edition);
-        if ("0".equals(editionsField.getValue().toString())) {
-            requireView().findViewById(R.id.lbl_edition).setVisibility(View.GONE);
-            requireView().findViewById(R.id.edition).setVisibility(View.GONE);
+        // only bother when it's in use
+        if (editionsField.isUsed()) {
+            if ("0".equals(editionsField.getValue().toString())) {
+                setVisibility(View.GONE, R.id.edition, R.id.lbl_edition);
+            } else {
+                setVisibility(View.VISIBLE, R.id.edition, R.id.lbl_edition);
+            }
         }
     }
 
@@ -388,6 +359,7 @@ public class BookFragment
         Field field = mFields.getField(R.id.author);
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         int authorsCount = list.size();
+        // yes, there should not be a book without authors. But let's keep this 'proper'
         boolean visible = authorsCount != 0;
         if (visible) {
             field.setValue(Csv.join(", ", list, Author::getDisplayName));
@@ -406,17 +378,14 @@ public class BookFragment
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
 
-        boolean visible = seriesCount != 0 && Fields.isVisible(DBDefinitions.KEY_SERIES);
+        boolean visible = seriesCount != 0 && Fields.isUsed(DBDefinitions.KEY_SERIES);
         if (visible) {
             field.setValue(Csv.join("\n", list, Series::getDisplayName));
-            field.getView().setVisibility(View.VISIBLE);
+            setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
         } else {
             field.setValue("");
-            field.getView().setVisibility(View.GONE);
+            setVisibility(View.GONE, R.id.series, R.id.lbl_series);
         }
-        // and the label
-        requireView().findViewById(R.id.lbl_series)
-                     .setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 
@@ -428,29 +397,27 @@ public class BookFragment
      */
     private void populateLoanedToField(@Nullable final String loanee) {
         Field field = mFields.getField(R.id.loaned_to);
-        if (loanee == null || loanee.isEmpty()) {
-            field.setValue("");
-            field.getView().setVisibility(View.GONE);
-        } else {
+        if (loanee != null && !loanee.isEmpty()) {
             field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
             field.getView().setVisibility(View.VISIBLE);
-
-            field.getView()
-                 .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                     /**
-                      * yes, icons are not supported here, but:
-                      * TODO: convert to SimpleDialog context menu.... if I can be bothered.
-                      */
-                     @Override
-                     @CallSuper
-                     public void onCreateContextMenu(@NonNull final ContextMenu menu,
-                                                     @NonNull final View v,
-                                                     @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
-                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, Menu.NONE,
-                                  R.string.menu_loan_return_book)
-                             .setIcon(R.drawable.ic_people);
-                     }
-                 });
+            field.getView().setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                /**
+                 * yes, icons are not supported here, but:
+                 * TODO: convert to SimpleDialog context menu.... if I can be bothered.
+                 */
+                @Override
+                @CallSuper
+                public void onCreateContextMenu(@NonNull final ContextMenu menu,
+                                                @NonNull final View v,
+                                                @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
+                    menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                             R.string.menu_loan_return_book)
+                        .setIcon(R.drawable.ic_people);
+                }
+            });
+        } else {
+            field.setValue("");
+            field.getView().setVisibility(View.GONE);
         }
     }
 
@@ -462,7 +429,7 @@ public class BookFragment
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean visible = Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)
+        boolean visible = Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)
                 && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
@@ -560,7 +527,7 @@ public class BookFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, Menu.NONE, R.string.menu_edit_book)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
             .setIcon(R.drawable.ic_edit)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -581,7 +548,7 @@ public class BookFragment
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
-        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
+        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);

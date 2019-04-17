@@ -89,7 +89,7 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShelfAddBookHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -102,7 +102,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * @author Philip Warner
  */
 public class GoodreadsManager
-        implements SearchSites.SearchSiteManager {
+        implements SearchSiteManager {
 
     /**
      * website & Root URL for API calls. Right now, identical,
@@ -861,11 +861,11 @@ public class GoodreadsManager
     @Override
     @WorkerThread
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final SearchSites.ImageSizes size) {
+                              @Nullable final ImageSizes size) {
         if (!hasValidCredentials()) {
             return null;
         }
-        return SearchSites.getCoverImageFallback(this, isbn);
+        return SearchSiteManager.getCoverImageFallback(this, isbn);
     }
 
     /**
@@ -936,14 +936,9 @@ public class GoodreadsManager
     }
 
     @Override
-    public boolean isIsbnOnly() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+    public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // support 1 size only
-        return SearchSites.ImageSizes.LARGE.equals(size);
+        return SearchSiteManager.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

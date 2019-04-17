@@ -42,7 +42,6 @@ public final class AmazonSearchPage {
     /** Amazon app key. Will be empty if there was no key. */
     @NonNull
     private static final String mAmazonAppKey = App.getManifestString(AMAZON_KEY);
-    ;
 
     private AmazonSearchPage() {
     }

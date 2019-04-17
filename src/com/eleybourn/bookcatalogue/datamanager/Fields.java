@@ -187,8 +187,8 @@ public class Fields {
     /**
      * This should NEVER happen, but it does. See Issue #505. So we need more info about why & when.
      * <p>
-     * // Allow for the (apparent) possibility that the view may have been removed due
-     * // to a tab change or similar. See Issue #505.
+     * Allow for the (apparent) possibility that the view may have been removed due
+     * to a tab change or similar. See Issue #505.
      * <p>
      * Every field MUST have an associated View object, but sometimes it is not found.
      * When not found, the app crashes.
@@ -222,11 +222,18 @@ public class Fields {
                 msg += ownerClass.getClass().getCanonicalName() + " (" + ownerClass + ')';
             }
         }
-        throw new IllegalStateException("Unable to get associated View object\n" + msg);
+        throw new NullPointerException("Unable to get associated View object\n" + msg);
     }
 
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param fieldName to lookup
+     *
+     * @return <tt>true</tt> if the user wants to use this field.
+     */
     @SuppressWarnings("WeakerAccess")
-    public static boolean isVisible(@NonNull final String fieldName) {
+    public static boolean isUsed(@NonNull final String fieldName) {
         return App.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
@@ -389,9 +396,9 @@ public class Fields {
      * Reset all field visibility based on user preferences.
      */
     @SuppressWarnings("WeakerAccess")
-    public void setVisibility() {
+    public void resetVisibility() {
         for (Field field : mAllFields) {
-            field.setVisibility();
+            field.resetVisibility();
         }
     }
 
@@ -685,8 +692,10 @@ public class Fields {
          * @return The extracted value
          */
         @NonNull
-        String extract(@NonNull Field field,
-                       @NonNull String source);
+        default String extract(@NonNull final Fields.Field field,
+                               @NonNull final String source) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -697,14 +706,6 @@ public class Fields {
         /** DEBUG only. */
         @Nullable
         Object dbgGetOwnerClass();
-
-        /**
-         * Get the context from the host object. Can be null if the host has gone.
-         *
-         * @return context, or null.
-         */
-        @Nullable
-        Context getContext();
 
         @Nullable
         View findViewById(@IdRes int id);
@@ -1268,12 +1269,6 @@ public class Fields {
                 return mCurrencyCode + ' ' + source;
             }
         }
-
-        @NonNull
-        public String extract(@NonNull final Field field,
-                              @NonNull final String source) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     /**
@@ -1411,12 +1406,6 @@ public class Fields {
 
         @Override
         @Nullable
-        public Context getContext() {
-            return mActivity.get();
-        }
-
-        @Override
-        @Nullable
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
                 if (BuildConfig.DEBUG /* always */) {
@@ -1443,13 +1432,6 @@ public class Fields {
         @Nullable
         public Object dbgGetOwnerClass() {
             return mFragment.get();
-        }
-
-        @Override
-        @Nullable
-        public Context getContext() {
-            Fragment frag = mFragment.get();
-            return frag != null ? frag.getContext() : null;
         }
 
         @Override
@@ -1485,9 +1467,12 @@ public class Fields {
         /** Field ID. */
         @IdRes
         public final int id;
+        /** Owning collection. */
+        @NonNull
+        private final WeakReference<Fields> mFields;
         /** Visibility group name. Used in conjunction with preferences to show/hide Views. */
         @NonNull
-        public final String group;
+        private final String group;
         /**
          * column name (can be blank) used to access a {@link DataManager} (or Bundle/Cursor).
          * <p>
@@ -1504,21 +1489,16 @@ public class Fields {
          */
         @NonNull
         private final String mColumn;
-        /** Owning collection. */
-        @NonNull
-        private final WeakReference<Fields> mFields;
+
         /** FieldFormatter to use (can be null). */
         @Nullable
-        public FieldFormatter formatter;
-        /** FieldValidator to use (can be null). */
-        @Nullable
-        private FieldValidator mFieldValidator;
-        /** Has the field been set to visible. **/
-        private boolean mIsVisible;
-        /** Accessor to use (automatically defined). */
-        private FieldDataAccessor mFieldDataAccessor;
-        /** TextWatcher, used for EditText fields only. */
-        private TextWatcher mTextWatcher;
+        FieldFormatter formatter;
+
+        /** The view for this field; looked up on first use, then cached. */
+        private View mFieldView;
+
+        /** Is the field in use; i.e. is it enabled in the user-preferences. **/
+        private boolean mIsUsed;
 
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
@@ -1528,10 +1508,21 @@ public class Fields {
          */
         private boolean mDoNoFetch;
 
+        /** FieldValidator to use (can be null). */
+        @Nullable
+        private FieldValidator mFieldValidator;
+
+        /** Accessor to use (automatically defined). */
+        @NonNull
+        private FieldDataAccessor mFieldDataAccessor;
+
+        /** TextWatcher, used for EditText fields only. */
+        private TextWatcher mTextWatcher;
+
         /**
          * Constructor.
          *
-         * @param fields              Parent object
+         * @param fields              Parent collection
          * @param fieldId             Layout ID
          * @param sourceColumn        Source database column. Can be empty.
          * @param visibilityGroupName Visibility group. Can be blank.
@@ -1547,74 +1538,70 @@ public class Fields {
             group = visibilityGroupName;
 
             // Lookup the view. Fields will have the context set to the activity/fragment.
-            final View view = mFields.get().getFieldContext().findViewById(id);
+            final View view = getView();
 
             // Set the appropriate accessor
-            if (view == null) {
-                // if the field does not have a View, then we provide generic String storage for it.
-                mFieldDataAccessor = new StringDataAccessor();
-            } else {
-                if (view instanceof Spinner) {
-                    mFieldDataAccessor = new SpinnerAccessor();
+            if (view instanceof Spinner) {
+                mFieldDataAccessor = new SpinnerAccessor();
 
-                } else if (view instanceof Checkable) {
-                    mFieldDataAccessor = new CheckableAccessor();
-                    addTouchSignalsDirty(view);
+            } else if (view instanceof Checkable) {
+                mFieldDataAccessor = new CheckableAccessor();
+                addTouchSignalsDirty(view);
 
-                } else if (view instanceof EditText) {
-                    mFieldDataAccessor = new EditTextAccessor();
-                    EditText et = (EditText) view;
-                    mTextWatcher = new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(@NonNull final CharSequence s,
-                                                      final int start,
-                                                      final int count,
-                                                      final int after) {
-                        }
-
-                        @Override
-                        public void onTextChanged(@NonNull final CharSequence s,
+            } else if (view instanceof EditText) {
+                mFieldDataAccessor = new EditTextAccessor();
+                EditText et = (EditText) view;
+                mTextWatcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(@NonNull final CharSequence s,
                                                   final int start,
-                                                  final int before,
-                                                  final int count) {
-                        }
+                                                  final int count,
+                                                  final int after) {
+                    }
 
-                        @Override
-                        public void afterTextChanged(@NonNull final Editable s) {
-                            // when the device is rotated, I've not found a way yet
-                            // to disable/enable the text watcher like the Edit accessor set()
-                            // does.
-                            // so.. the extract() had to be added here.
-                            setValue(extract(s.toString()));
-                        }
-                    };
-                    et.addTextChangedListener(mTextWatcher);
+                    @Override
+                    public void onTextChanged(@NonNull final CharSequence s,
+                                              final int start,
+                                              final int before,
+                                              final int count) {
+                    }
 
-                } else if (view instanceof Button) {
-                    // a Button *is* a TextView, but this is cleaner
-                    mFieldDataAccessor = new TextViewAccessor();
-                } else if (view instanceof TextView) {
-                    mFieldDataAccessor = new TextViewAccessor();
+                    @Override
+                    public void afterTextChanged(@NonNull final Editable s) {
+                        // when the device is rotated, I've not found a way yet
+                        // to disable/enable the text watcher like the Edit accessor set()
+                        // does.
+                        // so.. the extract() had to be added here.
+                        setValue(extract(s.toString()));
+                    }
+                };
+                et.addTextChangedListener(mTextWatcher);
 
-                } else if (view instanceof ImageView) {
-                    //ENHANCE: ImageViewAccessor needs more work
-                    Logger.debug(this, "Field", "ImageViewAccessor needs more work, disabled.");
+            } else if (view instanceof Button) {
+                // a Button *is* a TextView, but this is cleaner
+                mFieldDataAccessor = new TextViewAccessor();
+            } else if (view instanceof TextView) {
+                mFieldDataAccessor = new TextViewAccessor();
+
+            } else if (view instanceof ImageView) {
+                //ENHANCE: ImageViewAccessor needs more work
+                Logger.debug(this, "Field", "ImageViewAccessor needs more work, disabled.");
 //                    mFieldDataAccessor = new ImageViewAccessor(fields.getFieldContext().getContext());
-                    // temp dummy, does not actually work for images of course
-                    mFieldDataAccessor = new StringDataAccessor();
+                // temp dummy, does not actually work for images of course
+                mFieldDataAccessor = new StringDataAccessor();
 
-                } else if (view instanceof RatingBar) {
-                    mFieldDataAccessor = new RatingBarAccessor();
-                    addTouchSignalsDirty(view);
+            } else if (view instanceof RatingBar) {
+                mFieldDataAccessor = new RatingBarAccessor();
+                addTouchSignalsDirty(view);
 
-                } else {
-                    //noinspection ConstantConditions
-                    throw new IllegalTypeException(view.getClass().getCanonicalName());
-                }
-                mIsVisible = Fields.isVisible(group);
-                if (!mIsVisible) {
-                    view.setVisibility(View.GONE);
-                }
+            } else {
+                //noinspection ConstantConditions
+                throw new IllegalTypeException(view.getClass().getCanonicalName());
+            }
+
+            mIsUsed = Fields.isUsed(group);
+            if (!mIsUsed) {
+                view.setVisibility(View.GONE);
             }
         }
 
@@ -1696,22 +1683,20 @@ public class Fields {
         }
 
         /**
-         * @return visibility status
+         * Is the field in use; i.e. is it enabled in the user-preferences.
+         *
+         * @return <tt>true</tt> if the field *can* be visible
          */
-        public boolean isVisible() {
-            return mIsVisible;
+        public boolean isUsed() {
+            return mIsUsed;
         }
 
         /**
          * Reset one fields visibility based on user preferences.
          */
-        private void setVisibility() {
-            // Lookup the view
-            final View view = mFields.get().getFieldContext().findViewById(id);
-            if (view != null) {
-                mIsVisible = Fields.isVisible(group);
-                view.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
-            }
+        private void resetVisibility() {
+            mIsUsed = Fields.isUsed(group);
+            getView().setVisibility(mIsUsed ? View.VISIBLE : View.GONE);
         }
 
         /**
@@ -1748,18 +1733,20 @@ public class Fields {
          *
          * @return Resulting View
          *
-         * @throws NullPointerException if view is not found, which should never happen
          * @see #debugNullView
          */
         @SuppressWarnings("unchecked")
         @NonNull
         public <T extends View> T getView() {
-            T view = (T) mFields.get().getFieldContext().findViewById(id);
-            if (view == null) {
-                debugNullView(this);
-                throw new NullPointerException("view is NULL");
+            if (mFieldView == null) {
+                mFieldView = mFields.get().getFieldContext().findViewById(id);
+                // see comment on debugNullView
+                if (mFieldView == null) {
+                    // the debug call ends with throwing an exception.
+                    debugNullView(this);
+                }
             }
-            return view;
+            return (T) mFieldView;
         }
 
         /**
@@ -1771,8 +1758,7 @@ public class Fields {
          */
         @NonNull
         public Locale getLocale() {
-            //noinspection ConstantConditions
-            return mFields.get().getFieldContext().getContext().getResources().getConfiguration().locale;
+            return getView().getResources().getConfiguration().locale;
         }
 
         /**
@@ -1878,4 +1864,3 @@ public class Fields {
         }
     }
 }
-

@@ -423,7 +423,9 @@
     <string name="X_file_size">Dimensioni</string>
     <string name="X_updated">Aggiornato</string>
     <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
-    <string name="import_warning_select_csv_file">È stato trovato più di un file di esportazione; scegli un file di esportazione da importare dall\'elenco qui sotto</string>
+    <string name="import_warning_select_csv_file">
+        È stato trovato più di un file; scegli un file da importare dall\'elenco qui sotto:
+    </string>
     <string name="X_error_starting_import_arg">Si è verificato un problema all\'avvio dell\'importazione: %1$s</string>
     <string name="hint_booklist_style_menu">
         Questo menu permette di scegliere lo stile dell\'elenco.\n

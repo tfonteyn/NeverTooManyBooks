@@ -24,6 +24,9 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 public class BookshelfAdapter
         extends ArrayAdapter<Bookshelf> {
 
+    @NonNull
+    private final LayoutInflater mInflater;
+
     @LayoutRes
     private final int mRowLayoutId;
 
@@ -39,6 +42,8 @@ public class BookshelfAdapter
                             @LayoutRes final int rowLayoutId,
                             @NonNull final List<Bookshelf> objects) {
         super(context, rowLayoutId, objects);
+
+        mInflater = LayoutInflater.from(context);
         mRowLayoutId = rowLayoutId;
     }
 
@@ -56,7 +61,7 @@ public class BookshelfAdapter
             holder = (Holder) convertView.getTag();
         } else {
             // Not recycling, get a new View and make the holder for it.
-            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, parent, false);
+            convertView = mInflater.inflate(mRowLayoutId, parent, false);
             holder = new Holder(convertView);
         }
 

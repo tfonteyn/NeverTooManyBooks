@@ -54,11 +54,10 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
-import com.eleybourn.bookcatalogue.datamanager.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
@@ -193,15 +192,7 @@ public abstract class BookBaseFragment
         mFields.setAfterFieldChangeListener(null);
         Book book = getBookManager().getBook();
         loadFieldsFrom(book);
-        mFields.setAfterFieldChangeListener(new AfterFieldChangeListener() {
-            private static final long serialVersionUID = -4893882810164263510L;
-
-            @Override
-            public void afterFieldChange(@NonNull final Field field,
-                                         @Nullable final String newValue) {
-                getBookManager().setDirty(true);
-            }
-        });
+        mFields.setAfterFieldChangeListener((field, newValue) -> getBookManager().setDirty(true));
     }
 
     /**
@@ -285,7 +276,7 @@ public abstract class BookBaseFragment
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
-        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
+        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
             menu.add(R.id.MENU_BOOK_EDIT_LOAN,
                      R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
@@ -309,7 +300,7 @@ public abstract class BookBaseFragment
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
+        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = mDb.getLoaneeByBookId(book.getId()) == null;
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -370,7 +361,7 @@ public abstract class BookBaseFragment
 
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link SimpleDialog#selectFieldDialog} with a list of strings
+     * Allows us to show a {@link PopupMenuDialog#selectFieldDialog} with a list of strings
      * to choose from.
      *
      * @param field         {@link Field} to edit
@@ -382,8 +373,8 @@ public abstract class BookBaseFragment
                          @StringRes final int dialogTitleId,
                          @IdRes final int fieldButtonId,
                          @NonNull final List<String> list) {
-        // only bother when visible
-        if (!field.isVisible()) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
             return;
         }
 
@@ -394,8 +385,8 @@ public abstract class BookBaseFragment
 
         // Get the drop-down button for the list and setup dialog
         requireView().findViewById(fieldButtonId).setOnClickListener(
-                v -> SimpleDialog.selectFieldDialog(mActivity.getLayoutInflater(),
-                                                    getString(dialogTitleId), field, list));
+                v -> PopupMenuDialog.selectFieldDialog(mActivity,
+                                                       getString(dialogTitleId), field, list));
     }
 
     /**
@@ -415,8 +406,8 @@ public abstract class BookBaseFragment
                              @StringRes final int dialogTitleId,
                              @IdRes final int fieldButtonId,
                              final boolean multiLine) {
-        // only bother when visible
-        if (!field.isVisible()) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
             return;
         }
 
@@ -440,8 +431,8 @@ public abstract class BookBaseFragment
                                @NonNull final Field field,
                                @StringRes final int dialogTitleId,
                                final boolean todayIfNone) {
-        // only bother when visible
-        if (!field.isVisible()) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
             return;
         }
 
@@ -466,8 +457,8 @@ public abstract class BookBaseFragment
                                  @NonNull final Field field,
                                  @StringRes final int dialogTitleId,
                                  @NonNull final CheckListEditorDialogFragment.CheckListEditorListGetter<T> listGetter) {
-        // only bother when visible
-        if (!field.isVisible()) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
             return;
         }
 
@@ -515,9 +506,9 @@ public abstract class BookBaseFragment
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.warnWithStackTrace("BookBaseFragment.onActivityResult",
-                                "NOT HANDLED:",
-                                "requestCode=" + requestCode,
-                                "resultCode=" + resultCode);
+                                              "NOT HANDLED:",
+                                              "requestCode=" + requestCode,
+                                              "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -544,7 +535,8 @@ public abstract class BookBaseFragment
      * @param hideIfEmpty set to <tt>true</tt> when displaying; <tt>false</tt> when editing.
      */
     void showHideFields(final boolean hideIfEmpty) {
-        mFields.setVisibility();
+        // reset to user-preferences.
+        mFields.resetVisibility();
 
         // actual book
         showHide(hideIfEmpty, R.id.coverImage);
@@ -608,16 +600,9 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Text fields:
-     * Hide text field (View.GONE) if it does not have any useful data.
-     * Don't show a field if it is already hidden (assumed by user preference)
-     * <p>
-     * ImageView:
-     * use the visibility status of the ImageView itself for the relatedFields
-     *
-     * @param hideIfEmpty   hide if empty
+     * @param hideIfEmpty   hide the field if it's empty
      * @param fieldId       layout resource id of the field
-     * @param relatedFields list of fields whose visibility will also be set based
+     * @param relatedFields list of fields whose visibility will also be set, based
      *                      on the first field
      */
     private void showHide(final boolean hideIfEmpty,
@@ -627,7 +612,9 @@ public abstract class BookBaseFragment
         if (view != null) {
             int visibility = view.getVisibility();
             if (hideIfEmpty) {
+                // Don't check/show a field if it is already hidden (assumed by user preference)
                 if (visibility != View.GONE) {
+
                     // hide any unchecked Checkable.
                     if (view instanceof Checkable) {
                         visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
@@ -635,7 +622,7 @@ public abstract class BookBaseFragment
 
                     } else if (!(view instanceof ImageView)) {
                         // don't act on ImageView, but all other fields can be string tested.
-                        // Use the fields getValue, so we don't need to know the View class.
+
                         final String value = mFields.getField(fieldId).getValue().toString().trim();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
@@ -660,7 +647,7 @@ public abstract class BookBaseFragment
                                      @NonNull @IdRes final int... fields) {
         final View baselineField = requireView().findViewById(fieldToSet);
         if (baselineField != null) {
-            baselineField.setVisibility(allFieldsAreGone(fields) ? View.GONE : visibility);
+            baselineField.setVisibility(isVisibilityGone(fields) ? View.GONE : visibility);
         }
     }
 
@@ -669,7 +656,7 @@ public abstract class BookBaseFragment
      *
      * @return <tt>true</tt> if all fields have visibility == View.GONE
      */
-    private boolean allFieldsAreGone(@IdRes @NonNull final int[] fields) {
+    private boolean isVisibilityGone(@IdRes @NonNull final int[] fields) {
         boolean isGone = true;
         for (int fieldId : fields) {
             View field = requireView().findViewById(fieldId);
@@ -683,11 +670,15 @@ public abstract class BookBaseFragment
 
     /**
      * Set the visibility for a list of fields.
+     *
+     * @param visibility to use
+     * @param fields     list of fields to set visibility on
      */
-    private void setVisibility(final int visibility,
-                               @NonNull @IdRes final int... fields) {
+    protected void setVisibility(final int visibility,
+                                 @NonNull @IdRes final int... fields) {
+        View root = requireView();
         for (int fieldId : fields) {
-            View field = requireView().findViewById(fieldId);
+            View field = root.findViewById(fieldId);
             if (field != null) {
                 field.setVisibility(visibility);
             }

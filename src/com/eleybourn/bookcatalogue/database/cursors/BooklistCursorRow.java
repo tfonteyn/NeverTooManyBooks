@@ -65,8 +65,11 @@ public class BooklistCursorRow
     @NonNull
     private final BooklistBuilder mBuilder;
 
-    /** level text. Uses a dynamically set domain. */
-    private final int[] mLevelCol = {-2, -2};
+    /**
+     * level text. Uses a dynamically set domain.
+     * Why 6 members? because at 2 it took me an hour to figure out why we crashed...
+     */
+    private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2};
 
     /**
      * Constructor.
@@ -162,7 +165,7 @@ public class BooklistCursorRow
     /**
      * @return the level of this row.
      */
-    @IntRange(from = 1, to = 2)
+    @IntRange(from = 1)
     public int getLevel() {
         return mMapper.getInt(DOM_BL_NODE_LEVEL);
     }
@@ -170,15 +173,21 @@ public class BooklistCursorRow
     /**
      * Get the text associated with the matching level group for the current item.
      *
-     * @param level to get; 1 or 2.
+     * @param level to get
      *
-     * @return the text for that level
+     * @return the text for that level, or null if there was none.
      */
     @Nullable
-    public String getLevelText(@IntRange(from = 1, to = 2) final int level) {
+    public String getLevelText(@IntRange(from = 1) final int level) {
         // bail out if there is no data on level
         if (mBuilder.getStyle().groupCount() < level) {
             return null;
+        }
+        if (BuildConfig.DEBUG) {
+            if (level > mLevelCol.length) {
+                throw new IllegalArgumentException(
+                        "level=" + level + " is larger than mLevelCol size");
+            }
         }
 
         int index = level - 1;
@@ -202,10 +211,16 @@ public class BooklistCursorRow
      * was needed or on any failure
      */
     @Nullable
-    private String formatRowGroup(@IntRange(from = 1, to = 2) final int level,
+    private String formatRowGroup(@IntRange(from = 1) final int level,
                                   @Nullable final String s) {
         if (s == null) {
             return null;
+        }
+
+        // sanity check.
+        if (mBuilder.getStyle().groupCount() < level) {
+            throw new IllegalArgumentException(
+                    "groupCount=" + mBuilder.getStyle().groupCount() + " < level=" + level);
         }
 
         Context context = mBuilder.getContext();
@@ -223,8 +238,8 @@ public class BooklistCursorRow
                     default:
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this,
-                                         "formatRowGroup",
-                                         "Unknown read status=" + s);
+                                        "formatRowGroup",
+                                        "Unknown read status=" + s);
                         }
                         break;
                 }

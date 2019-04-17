@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -38,7 +39,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
@@ -56,11 +57,16 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author Philip Warner
  */
 public class GoodreadsSearchResultsActivity
-        extends BaseListActivity {
+        extends BaseActivity {
 
     private static final String TAG = GoodreadsSearchResultsActivity.class.getSimpleName();
 
     public static final String BKEY_SEARCH_CRITERIA = TAG + ":criteria";
+
+    private DBA mDb;
+
+    /** The View for the list. */
+    private ListView mListView;
 
     @Override
     protected int getLayoutId() {
@@ -74,6 +80,8 @@ public class GoodreadsSearchResultsActivity
 
         mDb = new DBA(this);
 
+        mListView = findViewById(android.R.id.list);
+
         // Look for search criteria
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
 
@@ -85,6 +93,15 @@ public class GoodreadsSearchResultsActivity
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -121,7 +138,7 @@ public class GoodreadsSearchResultsActivity
         }
 
         ArrayAdapter<GoodreadsWork> adapter = new ResultsAdapter(this, works);
-        setListAdapter(adapter);
+        mListView.setAdapter(adapter);
     }
 
     /**
@@ -170,6 +187,9 @@ public class GoodreadsSearchResultsActivity
     private class ResultsAdapter
             extends ArrayAdapter<GoodreadsWork> {
 
+        @NonNull
+        private final LayoutInflater mInflater;
+
         /**
          * Constructor.
          *
@@ -179,6 +199,7 @@ public class GoodreadsSearchResultsActivity
         ResultsAdapter(@NonNull final Context context,
                        @NonNull final List<GoodreadsWork> objects) {
             super(context, 0, objects);
+            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull
@@ -191,8 +212,7 @@ public class GoodreadsSearchResultsActivity
                 holder = (Holder) convertView.getTag();
             } else {
                 // Not recycling, get a new View and make the holder for it.
-                convertView = LayoutInflater.from(getContext())
-                                            .inflate(R.layout.goodreads_work_item, parent, false);
+                convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
 
                 holder = new Holder(convertView);
                 convertView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));

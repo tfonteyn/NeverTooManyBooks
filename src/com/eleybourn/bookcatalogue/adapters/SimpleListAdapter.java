@@ -79,6 +79,9 @@ import com.eleybourn.bookcatalogue.R;
 public abstract class SimpleListAdapter<T>
         extends ArrayAdapter<T> {
 
+    @NonNull
+    private final LayoutInflater mInflater;
+
     @LayoutRes
     private final int mRowLayoutId;
 
@@ -86,6 +89,7 @@ public abstract class SimpleListAdapter<T>
                                 @LayoutRes final int rowLayoutId,
                                 @NonNull final List<T> list) {
         super(context, rowLayoutId, list);
+        mInflater = LayoutInflater.from(context);
         mRowLayoutId = rowLayoutId;
     }
 
@@ -103,7 +107,7 @@ public abstract class SimpleListAdapter<T>
             holder = (SimpleHolder) convertView.getTag(R.id.TLV_ROW_TAG);
         } else {
             // Not recycling, get a new View and make the holder for it.
-            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, parent, false);
+            convertView = mInflater.inflate(mRowLayoutId, parent, false);
             holder = new SimpleHolder(convertView);
         }
 

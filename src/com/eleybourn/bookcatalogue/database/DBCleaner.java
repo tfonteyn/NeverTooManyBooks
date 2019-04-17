@@ -104,13 +104,10 @@ public class DBCleaner {
         booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
         booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
 
-        //TOMF: DOM_BOOK_PAGES is an integer, but often handled as a String....
-
         //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
         //TODO: covers.db, filename column -> delete rows where the uuid is invalid
     }
-
 
 
     /* ****************************************************************************************** */

@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
@@ -193,14 +193,14 @@ public class AdminActivity
      * Ask before importing.
      */
     private void confirmToImportFromCSV() {
-        final AlertDialog dialog = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setMessage(R.string.warning_import_be_cautious)
                 .setTitle(R.string.title_import_book_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> {/* do nothing */ })
                 .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
-                .create();
-        dialog.show();
+                .create()
+                .show();
     }
 
     /**
@@ -218,10 +218,11 @@ public class AdminActivity
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
-                SimpleDialog.selectFileDialog(getLayoutInflater(),
-                                              getString(R.string.import_warning_select_csv_file),
-                                              files,
-                                              item -> importFromCSV(item.getItem()));
+                PopupMenuDialog.selectFileDialog(this,
+                                                 getString(R.string.lbl_import_from_csv),
+                                                 getString(R.string.import_warning_select_csv_file),
+                                                 files,
+                                                 this::importFromCSV);
             }
         }
     }

@@ -250,7 +250,7 @@ public class ImportAllTask
     private void processReview(@NonNull final DBA db,
                                @NonNull final Bundle review) {
 
-        long grId = review.getLong(ReviewFields.GR_BOOK_ID);
+        long grId = review.getLong(ReviewFields.DBA_GR_BOOK_ID);
 
         // Find the books in our database - NOTE: may be more than one!
         // First look by goodreads book ID
@@ -393,26 +393,32 @@ public class ImportAllTask
         // ReviewFields.DBA_NOTES);
 
         addStringIfNonBlank(review, ReviewFields.DBA_TITLE,
-                            bookData, ReviewFields.DBA_TITLE);
+                            bookData, DBDefinitions.DOM_TITLE.name);
+
         addStringIfNonBlank(review, ReviewFields.DBA_DESCRIPTION,
-                            bookData, ReviewFields.DBA_DESCRIPTION);
+                            bookData, DBDefinitions.DOM_BOOK_DESCRIPTION.name);
+
         addStringIfNonBlank(review, ReviewFields.DBA_FORMAT,
-                            bookData, ReviewFields.DBA_FORMAT);
+                            bookData, DBDefinitions.DOM_BOOK_FORMAT.name);
+
         addStringIfNonBlank(review, ReviewFields.DBA_PUBLISHER,
-                            bookData, ReviewFields.DBA_PUBLISHER);
-        addStringIfNonBlank(review, ReviewFields.DBA_TITLE,
-                            bookData, ReviewFields.DBA_TITLE);
-        addLongIfPresent(review, ReviewFields.GR_BOOK_ID,
+                            bookData, DBDefinitions.DOM_BOOK_PUBLISHER.name);
+
+        addLongIfPresent(review, ReviewFields.DBA_GR_BOOK_ID,
                          bookData, DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
-        addLongIfPresent(review, ReviewFields.DBA_PAGES,
-                         bookData, ReviewFields.DBA_PAGES);
+
+        // v200: Now storing as a string
+        addStringIfNonBlank(review, ReviewFields.DBA_PAGES,
+                            bookData, DBDefinitions.DOM_BOOK_PAGES.name);
+
         addDateIfValid(review, ReviewFields.DBA_READ_START,
-                       bookData, ReviewFields.DBA_READ_START);
+                       bookData, DBDefinitions.DOM_BOOK_READ_START.name);
+
+        String readEnd = addDateIfValid(review, ReviewFields.DBA_READ_END,
+                                        bookData, DBDefinitions.DOM_BOOK_READ_END.name);
 
         Double rating = addDoubleIfPresent(review, ReviewFields.DBA_RATING,
-                                           bookData, ReviewFields.DBA_RATING);
-        String readEnd = addDateIfValid(review, ReviewFields.DBA_READ_END,
-                                        bookData, ReviewFields.DBA_READ_END);
+                                           bookData, DBDefinitions.DOM_BOOK_RATING.name);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
@@ -587,7 +593,7 @@ public class ImportAllTask
     @Nullable
     private String addDateIfValid(@NonNull final Bundle source,
                                   @NonNull final String sourceKey,
-                                  @NonNull final Bundle book,
+                                  @NonNull final Bundle bookData,
                                   @NonNull final String destKey) {
 
         if (!source.containsKey(sourceKey)) {
@@ -605,7 +611,7 @@ public class ImportAllTask
         }
 
         val = DateUtils.utcSqlDateTime(d);
-        book.putString(destKey, val);
+        bookData.putString(destKey, val);
         return val;
     }
 
@@ -630,13 +636,13 @@ public class ImportAllTask
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
                                      @NonNull final String sourceKey,
-                                     @NonNull final Bundle dest,
+                                     @NonNull final Bundle bookData,
                                      @NonNull final String destKey) {
 
         if (source.containsKey(sourceKey)) {
             String val = source.getString(sourceKey);
             if (val != null && !val.isEmpty()) {
-                dest.putString(destKey, val);
+                bookData.putString(destKey, val);
             }
         }
     }
@@ -646,12 +652,12 @@ public class ImportAllTask
      */
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final String sourceKey,
-                                  @NonNull final Bundle book,
+                                  @NonNull final Bundle bookData,
                                   @NonNull final String destKey) {
 
         if (source.containsKey(sourceKey)) {
             long val = source.getLong(sourceKey);
-            book.putLong(destKey, val);
+            bookData.putLong(destKey, val);
         }
     }
 
@@ -662,13 +668,13 @@ public class ImportAllTask
     private Double addDoubleIfPresent(@NonNull final Bundle source,
                                       @SuppressWarnings("SameParameterValue")
                                       @NonNull final String sourceKey,
-                                      @NonNull final Bundle book,
+                                      @NonNull final Bundle bookData,
                                       @SuppressWarnings("SameParameterValue")
                                       @NonNull final String destKey) {
 
         if (source.containsKey(sourceKey)) {
             double val = source.getDouble(sourceKey);
-            book.putDouble(destKey, val);
+            bookData.putDouble(destKey, val);
             return val;
         } else {
             return null;

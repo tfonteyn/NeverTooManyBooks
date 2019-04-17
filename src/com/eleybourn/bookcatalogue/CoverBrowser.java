@@ -58,8 +58,10 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.EditorDialogFragment;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.SearchSites.ImageSizes;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager.ImageSizes;
+import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.AlternativeExecutor;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -127,7 +129,7 @@ public class CoverBrowser
      *
      * @param isbn        ISBN of book
      * @param searchSites bitmask with sites to search,
-     *                    see {@link SearchSites.Site#SEARCH_ALL} and individual flags
+     *                    see {@link Site#SEARCH_ALL} and individual flags
      *
      * @return the instance
      */
@@ -135,7 +137,7 @@ public class CoverBrowser
     public static CoverBrowser newInstance(@NonNull final String isbn,
                                            final int searchSites) {
         // dev sanity check
-        if ((searchSites & SearchSites.Site.SEARCH_ALL) == 0) {
+        if ((searchSites & Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
         if (LibraryThingManager.noKey()) {
@@ -437,7 +439,7 @@ public class CoverBrowser
          * Constructor.
          *
          * @param initialSearchSites bitmask with sites to search,
-         *                           see {@link SearchSites.Site#SEARCH_ALL} and individual flags
+         *                           see {@link Site#SEARCH_ALL} and individual flags
          * @param savedInstanceState to read our options from.
          */
         FileManager(final int initialSearchSites,
@@ -496,7 +498,7 @@ public class CoverBrowser
         /**
          * Download a file if not present and keep a record of it.
          * <p>
-         * ENHANCE: use {@link SearchSites.SearchSiteManager#isAvailable()}.
+         * ENHANCE: use {@link SearchSiteManager#isAvailable()}.
          * <p>
          * Reminder: the for() loop will bailout (return) as soon as a cover file is found.
          * i.e. for each edition of the isbn, we try to get an image from the search-sites.
@@ -538,13 +540,13 @@ public class CoverBrowser
                     mFiles.remove(key);
                 }
 
-                for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
+                for (Site site : SearchSites.getSitesForCoverSearches()) {
                     // Are we allowed to search this site ?
                     if (site.isEnabled()
                             // and should we search this site ?
                             && ((mSearchSites & site.id) != 0)
                     ) {
-                        SearchSites.SearchSiteManager sm = site.getSearchSiteManager();
+                        SearchSiteManager sm = site.getSearchSiteManager();
                         // don't search the same site for all sizes if it only supports one size.
                         if (sm.supportsImageSize(size)) {
                             File file = sm.getCoverImage(isbn, size);
@@ -706,7 +708,7 @@ public class CoverBrowser
         protected String doInBackground(final Void... params) {
             try {
                 return mFileManager.download(mGalleryViewHolder.isbn,
-                                             ImageSizes.SMALL, ImageSizes.MEDIUM, ImageSizes.LARGE);
+                                             SearchSiteManager.ImageSizes.SMALL, SearchSiteManager.ImageSizes.MEDIUM, SearchSiteManager.ImageSizes.LARGE);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
@@ -764,8 +766,8 @@ public class CoverBrowser
         @WorkerThread
         protected String doInBackground(final Void... params) {
             try {
-                return mFileManager.download(mIsbn, ImageSizes.LARGE, ImageSizes.MEDIUM,
-                                             ImageSizes.SMALL);
+                return mFileManager.download(mIsbn, SearchSiteManager.ImageSizes.LARGE, SearchSiteManager.ImageSizes.MEDIUM,
+                                             SearchSiteManager.ImageSizes.SMALL);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
@@ -836,9 +838,9 @@ public class CoverBrowser
             holder.isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
-            File imageFile = mFileManager.getFile(holder.isbn, SearchSites.ImageSizes.SMALL,
-                                                  SearchSites.ImageSizes.MEDIUM,
-                                                  SearchSites.ImageSizes.LARGE);
+            File imageFile = mFileManager.getFile(holder.isbn, SearchSiteManager.ImageSizes.SMALL,
+                                                  SearchSiteManager.ImageSizes.MEDIUM,
+                                                  SearchSiteManager.ImageSizes.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",

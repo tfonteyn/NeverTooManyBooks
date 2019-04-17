@@ -84,7 +84,7 @@ public class SearchAdminActivity
 
     private void initSingleTab(@NonNull final String tag,
                                @StringRes final int titleId,
-                               @NonNull final ArrayList<SearchSites.Site> list) {
+                               @NonNull final ArrayList<Site> list) {
         setTitle(titleId);
         mAdapter.add(new FragmentHolder(getSupportFragmentManager(),
                                         tag, getString(titleId)));
@@ -93,8 +93,8 @@ public class SearchAdminActivity
         // indicate to the user this is the 'use' scenario (instead of 'save')
         confirmBtn.setText(R.string.btn_use);
         confirmBtn.setOnClickListener(v -> {
-            int sites = SearchSites.Site.SEARCH_ALL;
-            for (SearchSites.Site site : list) {
+            int sites = Site.SEARCH_ALL;
+            for (Site site : list) {
                 sites = site.isEnabled() ? sites | site.id
                                          : sites & ~site.id;
             }
@@ -124,7 +124,7 @@ public class SearchAdminActivity
                 //ENHANCE: compare this approach to what is used in EditBookFragment & children.
                 // Decide later...
 
-                ArrayList<SearchSites.Site> list;
+                ArrayList<Site> list;
                 list = ((AdminSearchOrderFragment)
                         mAdapter.getItem(TAB_ORDER)).getList();
                 if (list != null) {
@@ -206,7 +206,7 @@ public class SearchAdminActivity
             fragment = fm.findFragmentByTag(tag);
             if (fragment == null) {
 
-                ArrayList<SearchSites.Site> list;
+                ArrayList<Site> list;
                 if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
                     list = SearchSites.getSites();
                 } else /* if (t.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {

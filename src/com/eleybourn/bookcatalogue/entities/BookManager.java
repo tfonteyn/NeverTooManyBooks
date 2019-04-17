@@ -14,7 +14,10 @@ public interface BookManager {
 
     void setBook(@NonNull Book book);
 
-    boolean isDirty();
+    default boolean isDirty() {
+        return false;
+    }
 
-    void setDirty(boolean isDirty);
+    default void setDirty(boolean isDirty) {
+    }
 }

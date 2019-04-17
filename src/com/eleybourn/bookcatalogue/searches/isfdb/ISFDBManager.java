@@ -3,22 +3,20 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 public class ISFDBManager
-        implements SearchSites.SearchSiteManager {
+        implements SearchSiteManager {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "ISFDB.";
@@ -35,22 +33,6 @@ public class ISFDBManager
     public static String getBaseURL() {
         //noinspection ConstantConditions
         return App.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
-    }
-
-    /**
-     * ENHANCE: For now, always returns the image from the first edition found.
-     *
-     * @param isbn to search for
-     * @param size of image to get.
-     *
-     * @return found/saved File, or null when none found (or any other failure)
-     */
-    @Nullable
-    @Override
-    @WorkerThread
-    public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final SearchSites.ImageSizes size) {
-        return SearchSites.getCoverImageFallback(this, isbn);
     }
 
     @Override
@@ -70,9 +52,9 @@ public class ISFDBManager
     }
 
     @Override
-    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+    public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // support 1 size only
-        return SearchSites.ImageSizes.LARGE.equals(size);
+        return SearchSiteManager.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

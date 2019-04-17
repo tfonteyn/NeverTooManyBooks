@@ -405,7 +405,9 @@
     <string name="X_file_size">Размер</string>
     <string name="X_updated">Обновлено</string>
     <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
-    <string name="import_warning_select_csv_file">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
+    <string name="import_warning_select_csv_file">
+        Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка
+    </string>
     <string name="X_error_starting_import_arg">Возникла проблема при начале импорта: %1$s</string>
     <string name="hint_booklist_style_menu">
         Это меню позволяет Вам выбрать стиль списка.\n

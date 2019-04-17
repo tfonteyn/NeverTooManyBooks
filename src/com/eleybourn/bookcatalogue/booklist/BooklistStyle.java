@@ -593,17 +593,22 @@ public class BooklistStyle
     /**
      * Check if the style can show the passed level.
      *
-     * @param level to check, range 1,2
+     * @param level to check, 1-based.
      *
      * @return <tt>true</tt> if this style can show the desired level
      */
-    public boolean showLevel(@IntRange(from = 1, to = 2) final int level) {
+    public boolean hasSummaryForLevel(@IntRange(from = 1, to = 3) final int level) {
         switch (level) {
+            case 3:
+                // we might have 3 groups, but we do not support more then 2 summary levels.
+                return false;
             case 2:
                 return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0;
             case 1:
                 return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0;
+
             default:
+                // sanity catch
                 return false;
         }
     }

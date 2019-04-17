@@ -268,7 +268,7 @@ public class TocEntry
     public long fixupId(@NonNull final DBA db) {
         mAuthor.fixupId(db);
         //TOMF: book locale, but if TOC is present in multiple books... which book locale ?
-        //TOMF: finding an existing TOC relies on exact match of the title. To easy to end up with duplicates due to a typo in a title.
+        //TODO: finding an existing TOC relies on exact match of the title. Make flexible? how?
         mId = db.getTocEntryId(mAuthor.getId(),
                                mTitle.toLowerCase(LocaleUtils.getPreferredLocal()));
         return mId;

@@ -778,12 +778,5 @@ public class Book
             }
             return Csv.toDisplayString(list, null);
         }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final Fields.Field field,
-                              @NonNull final String source) {
-            throw new UnsupportedOperationException();
-        }
     }
 }

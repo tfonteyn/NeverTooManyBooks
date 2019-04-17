@@ -3,13 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView"
+    style="@style/row_option_menu"
     >
+
+    <!--style="@style/txt_row_fileInfo"-->
 
     <TextView
         android:id="@+id/name"
-        style="@style/txt_row_fileInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +22,8 @@
 
     <TextView
         android:id="@+id/size"
-        style="@style/txt_row_fileInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBaseline_toBaselineOf="@id/date"
@@ -32,7 +35,8 @@
 
     <TextView
         android:id="@+id/date"
-        style="@style/txt_row_fileInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintStart_toEndOf="@id/size"

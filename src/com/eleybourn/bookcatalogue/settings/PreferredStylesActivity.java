@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -51,7 +50,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 
 /**
  * Activity to edit the list of styles.
@@ -89,22 +88,12 @@ public class PreferredStylesActivity
         // We want context menus on the ListView
         //getListView().setOnCreateContextMenuListener(this);
         // no, we don't, as we'll use long click to bring up custom context menus WITH icons
-        //getListView().setLongClickable(true);
-        getListView().setOnItemLongClickListener(this::onItemLongClick);
+        mListView.setOnItemLongClickListener(this::onItemLongClick);
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_styles_editor, null);
         }
-    }
-
-    /**
-     * Required by parent class since we do not pass a key for the intent to get the list.
-     */
-    @Override
-    @NonNull
-    protected ArrayList<BooklistStyle> getList() {
-        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
     }
 
     /**
@@ -119,25 +108,25 @@ public class PreferredStylesActivity
 
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(view.getContext(), null).getMenu();
-        menu.add(Menu.NONE, R.id.MENU_CLONE, Menu.NONE, R.string.menu_duplicate)
+        menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
         //noinspection ConstantConditions
         if (style.isUserDefined()) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT, Menu.NONE, R.string.menu_edit)
+            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE, Menu.NONE, R.string.menu_delete)
+            menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
         }
 
         // display the menu
         String menuTitle = style.getDisplayName(this);
-        SimpleDialog.onCreateListViewContextMenu(view, menu, menuTitle, position,
-                                                 this::onListViewContextItemSelected);
+        PopupMenuDialog.onCreateListViewContextMenu(this, position, menuTitle, menu,
+                                                    this::onListViewContextItemSelected);
         return true;
     }
 
     /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     * Using {@link PopupMenuDialog} for context menus.
      */
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                  final int position) {
@@ -166,7 +155,6 @@ public class PreferredStylesActivity
 
             default:
                 return false;
-
         }
     }
 
@@ -183,6 +171,15 @@ public class PreferredStylesActivity
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
                 .putExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE, (Parcelable) style);
         startActivityForResult(intent, REQ_EDIT_STYLE);
+    }
+
+    /**
+     * Required by parent class since we do not pass a key for the intent to get the list.
+     */
+    @Override
+    @NonNull
+    protected ArrayList<BooklistStyle> getList() {
+        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
     }
 
     @Override
@@ -204,7 +201,7 @@ public class PreferredStylesActivity
             case REQ_EDIT_STYLE: {
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE: {
-                        Objects.requireNonNull(data);
+                        //noinspection ConstantConditions
                         BooklistStyle style = data.getParcelableExtra(
                                 BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
                         handleStyleChange(style);

@@ -45,7 +45,6 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UniqueMap;
@@ -555,16 +554,6 @@ public class BooklistGroup
     }
 
     /**
-     * ENHANCE: add support for all? columns not handled yet. Status: 2019-01-06
-     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
-     * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}
-     * <p>
-     * {@link DBDefinitions#DOM_BOOK_PRICE_LISTED}
-     * {@link DBDefinitions#DOM_BOOK_PRICE_LISTED_CURRENCY}
-     * {@link DBDefinitions#DOM_BOOK_PRICE_PAID}
-     * {@link DBDefinitions#DOM_BOOK_PRICE_PAID_CURRENCY}
-     * <p>
-     * <p>
      * Get a RowKind with the static method: {@link #get(int kind)}.
      * <p>
      * We create them all once at startup and keep them cached,
@@ -736,7 +725,7 @@ public class BooklistGroup
             // NEWKIND: ROW_KIND_x
 
             // Sanity check as our code relies on this
-            for (int kind = 0; kind < (ROW_KIND_MAX - 1); kind++) {
+            for (int kind = 0; kind <= ROW_KIND_MAX; kind++) {
                 if (!ALL_KINDS.containsKey(kind)) {
                     throw new IllegalStateException("Missing kind " + kind);
                 }
@@ -774,6 +763,7 @@ public class BooklistGroup
         }
 
         /**
+         * @param kind    1 to max. The kind==0 should be created with the no-args constructor.
          * @param domains all underlying domains.
          *                The first element will be used as the displayDomain.
          */
