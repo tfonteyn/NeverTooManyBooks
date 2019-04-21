@@ -53,7 +53,7 @@ public class EditBookNotesFragment
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
     /**
@@ -65,15 +65,11 @@ public class EditBookNotesFragment
     /** Field drop down list. */
     private List<String> mPricePaidCurrencies;
 
-    /* ------------------------------------------------------------------------------------------ */
-
     @Override
     @NonNull
     protected BookManager getBookManager() {
         return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -82,6 +78,7 @@ public class EditBookNotesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
@@ -191,8 +188,6 @@ public class EditBookNotesFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Field editors callbacks">
     @Override

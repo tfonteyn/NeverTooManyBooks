@@ -14,7 +14,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class GlobalSettingsFragment
         extends BaseSettingsFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = GlobalSettingsFragment.class.getSimpleName();
 
     @Override

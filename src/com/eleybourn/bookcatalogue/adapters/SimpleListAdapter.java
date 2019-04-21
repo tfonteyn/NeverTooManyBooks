@@ -72,7 +72,7 @@ import com.eleybourn.bookcatalogue.R;
  *     <item name="SLA_ROW_TAG" type="id"/>
  *  </pre>
  * <p>
- * SLA_ROW_TAG is used to store our t.
+ * SLA_ROW_TAG is used to store our tag.
  *
  * @author Philip Warner
  */
@@ -163,7 +163,7 @@ public abstract class SimpleListAdapter<T>
     }
 
     /**
-     * Basic info for each row, stored with t id: R.id.SLA_ROW_TAG
+     * Basic info for each row, stored with tag id: R.id.SLA_ROW_TAG
      */
     static class SimpleHolder {
 

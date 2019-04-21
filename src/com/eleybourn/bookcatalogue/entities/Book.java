@@ -460,7 +460,7 @@ public class Book
     @Nullable
     public String getPrimaryAuthor() {
         ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        return !list.isEmpty() ? list.get(0).getDisplayName() : null;
+        return list.isEmpty() ? null : list.get(0).getLabel();
     }
 
     /**
@@ -475,7 +475,7 @@ public class Book
         if (list.isEmpty()) {
             return "";
         } else {
-            newText = list.get(0).getDisplayName();
+            newText = list.get(0).getLabel();
             if (list.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
@@ -502,7 +502,7 @@ public class Book
     @Nullable
     public String getPrimarySeries() {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        return !list.isEmpty() ? list.get(0).getName() : null;
+        return list.isEmpty() ? null : list.get(0).getName();
     }
 
     /**
@@ -517,7 +517,7 @@ public class Book
         if (list.isEmpty()) {
             return "";
         } else {
-            newText = list.get(0).getDisplayName();
+            newText = list.get(0).getLabel();
             if (list.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
@@ -598,26 +598,6 @@ public class Book
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_AUTHORS));
     }
-
-//    /**
-//     * Lend this book to someone.
-//     *
-//     * @param db     the database
-//     * @param loanee person to lend to
-//     */
-//    public void lend(final DBA db,
-//                     final String loanee) {
-//        db.insertLoan(getId(), loanee);
-//    }
-//
-//    /**
-//     * A loaned book is returned.
-//     *
-//     * @param db the database
-//     */
-//    public void loanReturned(final DBA db) {
-//        db.deleteLoan(getId());
-//    }
 
     /**
      * Used to edit the Editions of this Book.

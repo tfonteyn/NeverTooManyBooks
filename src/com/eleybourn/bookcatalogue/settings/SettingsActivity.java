@@ -49,7 +49,7 @@ public class SettingsActivity
     }
 
     /**
-     * create a new fragment instance from the t.
+     * create a new fragment instance from the tag.
      *
      * @param tag name of fragment to instantiate
      *

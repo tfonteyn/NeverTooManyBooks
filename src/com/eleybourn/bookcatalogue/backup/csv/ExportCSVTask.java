@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class ExportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = ExportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;

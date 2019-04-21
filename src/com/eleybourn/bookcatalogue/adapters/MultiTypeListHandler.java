@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.adapters;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;

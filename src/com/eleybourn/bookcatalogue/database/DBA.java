@@ -570,7 +570,6 @@ public class DBA
     /**
      * Used by {@link CsvImporter}.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
         return sSyncedDb.inTransaction();
     }
@@ -2335,7 +2334,7 @@ public class DBA
                 // all books (with WHERE clause passed in).
                 + " ("
                 + "SELECT DISTINCT " + SqlColumns.BOOK + " FROM " + TBL_BOOKS.ref()
-                + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+                + (whereClause.isEmpty() ? "" : " WHERE " + " (" + whereClause + ')')
 //                + " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
                 + " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_LC) + ' ' + COLLATION + " ASC"
                 + ") b"
@@ -2462,6 +2461,28 @@ public class DBA
                 + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
+    }
+
+    /**
+     * Return a {@link Cursor} for the given {@link Book} id.
+     * <p>
+     * The columns fetched are limited to what is needed for the
+     * {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} so called "extras" fields.
+     *
+     * @param bookId to retrieve
+     *
+     * @return @return {@link Cursor} containing all records, if any
+     */
+    @NonNull
+    public Cursor fetchBookExtrasById(final long bookId) {
+
+        String sql = "SELECT "
+                + SqlColumns.AUTHOR_FORMATTED
+                + ',' + DOM_BOOK_LOCATION
+                + ',' + DOM_BOOK_FORMAT
+                + ',' + DOM_BOOK_PUBLISHER
+                + " FROM " + TBL_BOOKS + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?";
+        return sSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -3666,7 +3687,6 @@ public class DBA
 
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            //noinspection UnusedAssignment
             t0 = System.nanoTime();
         }
         boolean gotError = false;

@@ -20,13 +20,10 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,14 +31,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
@@ -58,10 +53,15 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.RadioGroupRecyclerAdapter;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -114,7 +114,7 @@ public class BooksOnBookshelf
     /** Holder for all (semi)supported search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
 
-    /** Flag (potentially) set in {@link #onActivityResult}. Indicates if list rebuild is needed.*/
+    /** Flag (potentially) set in {@link #onActivityResult}. Indicates if list rebuild is needed. */
     @Nullable
     private Boolean mAfterOnActivityResultDoFullRebuild;
     /** Flag to indicate that a list has been successfully loaded. Affects the way we save state. */
@@ -244,7 +244,7 @@ public class BooksOnBookshelf
     private void setActivityTitle() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mCurrentBookshelf.getStyle(mDb).getDisplayName(this));
+            actionBar.setTitle(mCurrentBookshelf.getStyle(mDb).getLabel(this));
             actionBar.setSubtitle(null);
         }
     }
@@ -337,7 +337,11 @@ public class BooksOnBookshelf
         if (mListHasBeenLoaded) {
             mTopRow = mListView.getFirstVisiblePosition();
             View v = mListView.getChildAt(0);
-            mTopRowOffset = v == null ? 0 : v.getTop();
+            if (v != null) {
+                mTopRowOffset = v.getTop();
+            } else {
+                mTopRowOffset = 0;
+            }
 
             App.getPrefs().edit()
                .putInt(PREF_BOB_TOP_ROW, mTopRow)
@@ -395,7 +399,7 @@ public class BooksOnBookshelf
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SHOW_DEBUG_MENU) {
+        if (BuildConfig.DEBUG /* always */) {
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                               0, R.string.debug);
 
@@ -433,7 +437,7 @@ public class BooksOnBookshelf
                 return true;
 
             default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SHOW_DEBUG_MENU) {
+                if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
                         case R.id.MENU_DEBUG_DUMP_PREFS:
                             Prefs.dumpPreferences(null);
@@ -769,7 +773,6 @@ public class BooksOnBookshelf
 
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            //noinspection UnusedAssignment
             t0 = System.nanoTime();
         }
 
@@ -1107,7 +1110,7 @@ public class BooksOnBookshelf
      */
     private void doSortMenu(final boolean showAll) {
         // always create a new fragment. We only 'leave' it with a dismiss.
-        SortMenuFragment.newInstance(showAll)
+        SortMenuFragment.newInstance(showAll, mCurrentBookshelf.getStyle(mDb))
                         .show(getSupportFragmentManager(), SortMenuFragment.TAG);
     }
 
@@ -1130,7 +1133,11 @@ public class BooksOnBookshelf
          */
         mTopRow = mListView.getFirstVisiblePosition();
         View view = mListView.getChildAt(0);
-        mTopRowOffset = (view != null) ? view.getTop() : 0;
+        if (view != null) {
+            mTopRowOffset = view.getTop();
+        } else {
+            mTopRowOffset = 0;
+        }
 
         // New style, so use the user-pref for rebuild
         mRebuildState = BooklistBuilder.getListRebuildState();
@@ -1233,117 +1240,101 @@ public class BooksOnBookshelf
         }
     }
 
+    /**
+     * FIXME: using onCreateView we need to set to dialog layout in onResume or the list is height=0
+     *  But... match_parent with a small amount of list items, makes the dialog to large.
+     *  Solution: blast the dialog, and do this as a actual Fragment swapped in and out.
+     */
     public static class SortMenuFragment
             extends DialogFragment {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         public static final String TAG = SortMenuFragment.class.getSimpleName();
 
         private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
+        private static final String BKEY_CURRENT_STYLE = TAG + ":currentStyle";
 
         private boolean mShowAllStyles;
-        private long mCurrentStyleId;
+        private BooklistStyle mCurrentStyle;
 
         /** The sort menu is tied to the main class, so might as well give full access. */
         private BooksOnBookshelf mActivity;
 
-        static SortMenuFragment newInstance(final boolean showAllStyles) {
+        static SortMenuFragment newInstance(final boolean showAllStyles,
+                                            @NonNull final BooklistStyle currentStyle) {
             SortMenuFragment frag = new SortMenuFragment();
             Bundle args = new Bundle();
             args.putBoolean(BKEY_SHOW_ALL_STYLES, showAllStyles);
+            args.putParcelable(BKEY_CURRENT_STYLE, currentStyle);
             frag.setArguments(args);
             return frag;
         }
 
-        @NonNull
+        @Nullable
         @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        public View onCreateView(@NonNull final LayoutInflater inflater,
+                                 @Nullable final ViewGroup container,
+                                 @Nullable final Bundle savedInstanceState) {
+
+            return inflater.inflate(R.layout.dialog_styles_menu, container);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull final View view,
+                                  @Nullable final Bundle savedInstanceState) {
+
             mActivity = (BooksOnBookshelf) requireActivity();
+            Bundle args = getArguments();
+            Objects.requireNonNull(args,"getArguments() must not be null!");
+            mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
+            mCurrentStyle = args.getParcelable(BKEY_CURRENT_STYLE);
 
-            mShowAllStyles = requireArguments().getBoolean(BKEY_SHOW_ALL_STYLES);
-            mCurrentStyleId = mActivity.mCurrentBookshelf.getStyle(mActivity.mDb).getId();
+            // add the styles
+            List<BooklistStyle> list = new ArrayList<>(
+                    BooklistStyles.getStyles(mActivity.mDb, mShowAllStyles).values());
 
-            LayoutInflater inflater = mActivity.getLayoutInflater();
-            @SuppressLint("InflateParams")
-            View root = inflater.inflate(R.layout.dialog_styles_menu, null);
+            //noinspection ConstantConditions
+            RadioGroupRecyclerAdapter<BooklistStyle> adapter =
+                    new RadioGroupRecyclerAdapter<>(getContext(), list, mCurrentStyle,
+                                                    (v) -> {
+                                                        BooklistStyle style = (BooklistStyle) v.getTag();
+                                                        dismiss();
+                                                        mActivity.onStyleSelected(style);
+                                                    });
 
-            // first section is a list of the styles
-            ViewGroup viewGroup = root.findViewById(R.id.radio_buttons);
-            for (BooklistStyle style : BooklistStyles.getStyles(mActivity.mDb,
-                                                                mShowAllStyles).values()) {
-                addStyleButtonMenuItem(inflater, viewGroup, style);
-            }
+            RecyclerView stylesView = view.findViewById(R.id.styles);
+            stylesView.setLayoutManager(new LinearLayoutManager(getContext()));
+            stylesView.setAdapter(adapter);
 
-            // second section are options to do 'more things then listed'
-            ViewGroup menu = root.findViewById(R.id.menu);
+            TextView moreOrLessView = view.findViewById(R.id.menu_show_more_or_less);
             @StringRes
             int moreOrLess = mShowAllStyles ? R.string.menu_show_fewer_ellipsis
                                             : R.string.menu_show_more_ellipsis;
-
-            addStyleTextMenuItem(
-                    inflater, menu, moreOrLess, v -> {
-                        dismiss();
-                        mActivity.doSortMenu(!mShowAllStyles);
-                    });
-
-            addStyleTextMenuItem(
-                    inflater, menu, R.string.menu_customize_ellipsis,
-                    v -> {
-                        dismiss();
-                        Intent intent = new Intent(mActivity, PreferredStylesActivity.class);
-                        startActivityForResult(intent,
-                                               UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
-                    });
-
-            return new AlertDialog.Builder(requireActivity())
-                    .setTitle(R.string.title_select_style)
-                    .setView(root)
-                    .create();
-        }
-
-        /**
-         * Add a radio box to the sort options dialogue.
-         *
-         * @param inf        the inflater to use
-         * @param radioGroup group to add the radio button to.
-         * @param style      the style to be applied
-         */
-        private void addStyleButtonMenuItem(@NonNull final LayoutInflater inf,
-                                            @NonNull final ViewGroup radioGroup,
-                                            @NonNull final BooklistStyle style) {
-            CompoundButton btn = (CompoundButton) inf.inflate(R.layout.row_style_menu_radio,
-                                                              radioGroup, false);
-            btn.setText(style.getDisplayName(inf.getContext()));
-            btn.setChecked(mCurrentStyleId == style.getId());
-            btn.setOnClickListener(v -> {
-                mActivity.onStyleSelected(style);
+            moreOrLessView.setText(moreOrLess);
+            moreOrLessView.setOnClickListener(v -> {
                 dismiss();
+                mActivity.doSortMenu(!mShowAllStyles);
             });
 
-            radioGroup.addView(btn);
+            view.findViewById(R.id.menu_customize_ellipsis)
+                .setOnClickListener(v -> {
+                    dismiss();
+                    Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
+                    startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
+                });
         }
 
-        /**
-         * Add a text menu-item to the sort options dialog.
-         *
-         * @param inf       the inflater to use
-         * @param viewGroup group to add the menu-item to
-         * @param stringId  the text for this menu item
-         * @param listener  to call when the item is clicked
-         */
-        private void addStyleTextMenuItem(@NonNull final LayoutInflater inf,
-                                          @NonNull final ViewGroup viewGroup,
-                                          @StringRes final int stringId,
-                                          @NonNull final OnClickListener listener) {
-
-            TextView textView = (TextView) inf.inflate(R.layout.row_style_menu_text,
-                                                       viewGroup, false);
-            Typeface tf = textView.getTypeface();
-            textView.setTypeface(tf, Typeface.ITALIC);
-            textView.setText(stringId);
-            textView.setOnClickListener(listener);
-
-            viewGroup.addView(textView);
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Force the enclosing dialog to be big enough. This is due to dynamically adding views.
+            Dialog dialog = getDialog();
+            if (dialog != null) {
+                int width = ViewGroup.LayoutParams.MATCH_PARENT;
+                int height = ViewGroup.LayoutParams.MATCH_PARENT;
+                //noinspection ConstantConditions
+                dialog.getWindow().setLayout(width, height);
+            }
         }
     }
 
@@ -1355,7 +1346,7 @@ public class BooksOnBookshelf
     private static class GetBookListTask
             extends AsyncTask<Void, Object, BuilderHolder> {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         private static final String TAG = GetBookListTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
@@ -1514,7 +1505,6 @@ public class BooksOnBookshelf
             try {
                 long t0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t0 = System.nanoTime();
                 }
                 // Build the underlying data
@@ -1532,7 +1522,6 @@ public class BooksOnBookshelf
 
                 long t1;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t1 = System.nanoTime();
                 }
 
@@ -1544,7 +1533,6 @@ public class BooksOnBookshelf
 
                 long t2;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t2 = System.nanoTime();
                 }
 
@@ -1555,18 +1543,15 @@ public class BooksOnBookshelf
 
                 long t3;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t3 = System.nanoTime();
                 }
                 // get a count() from the cursor in background task because the setAdapter() call
                 // will do a count() and potentially block the UI thread while it pages through the
                 // entire cursor. If we do it here, subsequent calls will be fast.
-                @SuppressWarnings("UnusedAssignment")
                 int count = tempList.getCount();
 
                 long t4;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t4 = System.nanoTime();
                 }
                 mHolder.resultUniqueBooks = tempList.getUniqueBookCount();
@@ -1577,14 +1562,12 @@ public class BooksOnBookshelf
 
                 long t5;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t5 = System.nanoTime();
                 }
                 mHolder.resultTotalBooks = tempList.getBookCount();
 
                 long t6;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     t6 = System.nanoTime();
                 }
 
@@ -1838,7 +1821,11 @@ public class BooksOnBookshelf
          */
         void update(@IntRange(from = 0) final int firstVisibleItem) {
 
-            mLastTopRow = firstVisibleItem >= 0 ? firstVisibleItem : 0;
+            if (firstVisibleItem >= 0) {
+                mLastTopRow = firstVisibleItem;
+            } else {
+                mLastTopRow = 0;
+            }
 
             if (isVisible[0]) {
                 if (mListCursor.moveToPosition(mLastTopRow)) {

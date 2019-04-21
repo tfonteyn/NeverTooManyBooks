@@ -40,6 +40,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
@@ -245,7 +246,7 @@ public class EditSeriesListActivity
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         private static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
 
         private EditSeriesListActivity mActivity;
@@ -288,7 +289,9 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             mActivity = (EditSeriesListActivity) requireActivity();
 
-            final Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
+            Bundle args = requireArguments();
+
+            final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
                 mSeriesName = series.getName();
@@ -397,9 +400,9 @@ public class EditSeriesListActivity
                 holder = new Holder(convertView);
             }
             // Setup the variant fields in the holder
-            holder.rowSeriesView.setText(item.getDisplayName());
+            holder.rowSeriesView.setText(item.getLabel());
 
-            if (item.getDisplayName().equals(item.getSortName())) {
+            if (item.getLabel().equals(item.getSortName())) {
                 holder.rowSeriesSortView.setVisibility(View.GONE);
             } else {
                 holder.rowSeriesSortView.setVisibility(View.VISIBLE);

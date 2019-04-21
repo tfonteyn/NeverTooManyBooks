@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -59,6 +60,7 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -88,10 +90,10 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_TITLE;
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = EditBookTocFragment.class.getSimpleName();
 
-    /** the book. */
+    /** The book. */
     private String mIsbn;
     /** primary author of the book. */
     private String mBookAuthor;
@@ -112,15 +114,11 @@ public class EditBookTocFragment
      */
     private ArrayList<Editions.Edition> mISFDBEditions;
 
-    /* ------------------------------------------------------------------------------------------ */
-
     @Override
     @NonNull
     protected BookManager getBookManager() {
         return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -144,17 +142,15 @@ public class EditBookTocFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        View view = requireView();
-
         // Author to use if mMultipleAuthorsView is set to false
         mBookAuthor = getBookManager().getBook().getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
         mIsbn = getBookManager().getBook().getString(DBDefinitions.KEY_ISBN);
 
+        View view = requireView();
+        // adding a new TOC entry
         view.findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
-
-        mMultipleAuthorsView = view.findViewById(R.id.multiple_authors);
 
         mListView = view.findViewById(android.R.id.list);
 
@@ -168,7 +164,7 @@ public class EditBookTocFragment
     }
 
     /**
-     * TOMF: code nearly identical with {@link EditObjectListActivity#onDrop(int, int)}
+     * TOMF: code nearly identical with {@link EditObjectListActivity} #onDrop
      *
      * @param fromPosition original position of the row
      * @param toPosition   where the row was dropped
@@ -227,17 +223,22 @@ public class EditBookTocFragment
     }
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Populate">
 
     @Override
     protected void initFields() {
         super.initFields();
 
-        /* Anthology is provided as a bitmask, see {@link Book#initValidators()}*/
-        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS);
-        mFields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
+        Fields.Field field;
+        // Anthology is provided as a bitmask, see {@link Book#initValidators()}
+        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
+               .getView().setOnClickListener((v) -> {
+            // enable controls as applicable.
+            mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
+        });
+
+        field = mFields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
+        mMultipleAuthorsView = field.getView();
     }
 
     @Override
@@ -245,6 +246,9 @@ public class EditBookTocFragment
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
         super.onLoadFieldsFromBook(book, setAllFrom);
+
+        mMultipleAuthorsView.setEnabled(getBookManager().getBook()
+                                                        .getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // populateFields
         populateContentList();
@@ -267,8 +271,6 @@ public class EditBookTocFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment shutdown">
 
     @Override
@@ -279,8 +281,6 @@ public class EditBookTocFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Menu Handlers">
 
     @Override
@@ -288,12 +288,14 @@ public class EditBookTocFragment
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
             .setIcon(R.drawable.ic_autorenew);
-        // don't call super. We don't want the clutter in this tab.
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 //noinspection ConstantConditions
@@ -356,8 +358,6 @@ public class EditBookTocFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="ISFDB interface">
 
@@ -446,15 +446,14 @@ public class EditBookTocFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * Create a new entry.
      */
     private void newEntry() {
         mEditPosition = null;
 
-        EditTocEntry.show(this);
+        EditTocEntry.show(this,
+                          mMultipleAuthorsView.isChecked());
     }
 
     /**
@@ -470,7 +469,7 @@ public class EditBookTocFragment
 
         EditTocEntry.show(this,
                           mMultipleAuthorsView.isChecked(),
-                          item.getAuthor().getDisplayName(),
+                          item.getAuthor().getLabel(),
                           item.getTitle(),
                           item.getFirstPublication());
     }
@@ -515,7 +514,7 @@ public class EditBookTocFragment
     public static class ConfirmToc
             extends DialogFragment {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         private static final String TAG = ConfirmToc.class.getSimpleName();
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
@@ -552,7 +551,10 @@ public class EditBookTocFragment
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
-            Bundle args = requireArguments();
+
+            Bundle args = getArguments();
+            Objects.requireNonNull(args,"getArguments() must not be null!");
+
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
             final long tocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
@@ -604,10 +606,13 @@ public class EditBookTocFragment
         }
     }
 
+    /**
+     * Dialog to add a new TOCEntry, or edit an existing one.
+     */
     public static class EditTocEntry
             extends DialogFragment {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         private static final String TAG = EditTocEntry.class.getSimpleName();
 
         private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
@@ -621,10 +626,11 @@ public class EditBookTocFragment
          * <p>
          * Show dialog for a new entry.
          */
-        public static void show(@NonNull final Fragment target) {
+        public static void show(@NonNull final Fragment target,
+                                final boolean hasMultipleAuthors) {
             FragmentManager fm = target.requireFragmentManager();
             if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, false, "", "", "")
+                newInstance(target, hasMultipleAuthors, "", "", "")
                         .show(fm, TAG);
             }
         }
@@ -673,7 +679,7 @@ public class EditBookTocFragment
 
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
-            Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
+            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
 
             @SuppressLint("InflateParams")
             final View root = requireActivity().getLayoutInflater()
@@ -842,7 +848,7 @@ public class EditBookTocFragment
             }
 
             holder.titleView.setText(item.getTitle());
-            holder.authorView.setText(item.getAuthor().getDisplayName());
+            holder.authorView.setText(item.getAuthor().getLabel());
 
             String year = item.getFirstPublication();
             if (year.isEmpty()) {

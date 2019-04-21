@@ -2714,8 +2714,8 @@ public class BooklistBuilder
         @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
             //TOMF TODO: shallow copy, is that enough or a bug ? check calling code
-            //      * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
-            //     * elements themselves are not copied.)
+            //      Returns a shallow copy of this <tt>ArrayList</tt> instance.
+            //     (The elements themselves are not copied.)
             return (ArrayList<DomainDefinition>) mGroupedDomains.clone();
         }
 
@@ -2853,13 +2853,13 @@ public class BooklistBuilder
 //      summary.addDomain(DOM_BL_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
 //      summary.addDomain(DOM_BL_ROOT_KEY);
 //      //summary.addDomain(DOM_PARENT_KEY);
-//		
+//
 //      BooklistSeriesLevel seriesLevel = null;
 //      BooklistAuthorLevel authorLevel = null;
 //      boolean hasLevelLOANED = false;
-//		
+//
 //      final long t0a = System.nanoTime();
-//	
+//
 //      for (BooklistLevel l : mLevels) {
 //          //
 //          //  Build each row-kind group.
@@ -2870,7 +2870,7 @@ public class BooklistBuilder
 //          //  ****************************************************************************************
 //          //
 //			switch (l.kind) {
-//			
+//
 //			case RowKind.SERIES:
 //				l.displayDomain = DOM_SERIES_TITLE;
 //				seriesLevel = (BooklistSeriesLevel) l; // getLevel(RowKind.SERIES);
@@ -2945,7 +2945,7 @@ public class BooklistBuilder
 //				throw new IllegalTypeException(l.kind.toString());
 //
 //			}
-//			// Copy the current groups to this level item; this effectively accumulates 'group by' domains 
+//			// Copy the current groups to this level item; this effectively accumulates 'group by' domains
 //			// down each level so that the top has fewest groups and the bottom level has groups for all levels.
 //			l.groupDomains = (ArrayList<DomainDefinition>) summary.cloneGroups();
 //		}
@@ -2975,7 +2975,7 @@ public class BooklistBuilder
 //		// The seriesLevel and authorLevel fields will influenced the nature of the join. If at a later
 //		// stage some row kinds introduce more table dependencies, a flag (or object) can be set
 //		// when processing the level to inform the joining code (below) which tables need to be added.
-//		// 
+//		//
 //		// Aside: The sql used prior to using DbUtils is included as comments below the call that replaced it.
 //		//
 //		String sql = summary.buildBaseInsert(mLevels.get(0).getCompoundKey());
@@ -2994,7 +2994,7 @@ public class BooklistBuilder
 //		}
 //			/*
 //			if (!bookshelf.isEmpty()) {
-//				sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS + 
+//				sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS +
 //						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
 //				sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK_ID + "\n";
 //			} else {
@@ -3006,7 +3006,7 @@ public class BooklistBuilder
 //		if (hasLevelLOANED) {
 //			join.join(TBL_BOOK_LOANEE);
 //		}
-//		
+//
 //		// Specify a parent in the join, because the last table joined was one of BOOKS or LOAN.
 //		join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
 //		if (authorLevel == null || !authorLevel.allAuthors) {
@@ -3120,7 +3120,7 @@ public class BooklistBuilder
 //			mListTable.drop(mSyncedDb);
 //			mListTable.create(mSyncedDb, false);
 //		} finally {
-//			mListTable.setName(listNameSave);			
+//			mListTable.setName(listNameSave);
 //		}
 //		//mSyncedDb.execSQL("Create View " + TBL_BOOK_LIST + " as select * from " + mListTable);
 //
@@ -3144,11 +3144,11 @@ public class BooklistBuilder
 //						fullInsert+=", ";
 //						fullValues += ", ";
 //					}
-//					fullInsert += d; 
-//					fullValues += "new." + d; 
+//					fullInsert += d;
+//					fullValues += "new." + d;
 //				}
 //			}
-//			fullInsert += ") " + fullValues + ");";			
+//			fullInsert += ") " + fullValues + ");";
 //
 //			String tgForwardName = "header_Z_F";
 //			mSyncedDb.execSQL("Drop Trigger if exists " + tgForwardName);
@@ -3158,14 +3158,14 @@ public class BooklistBuilder
 //					"	End";
 //			SQLiteStatement stmt = mStatements.add(tgForwardName, tgForwardSql);
 //			mLevelBuildStmts.add(stmt);
-//			stmt.execute();			
+//			stmt.execute();
 //		}
 //		*/
 //
 //		// Now make some BEFORE INSERT triggers to build hierarchy;
 //      // no trigger on root level (index = 0).
 //		//String[] tgLines = new String[mLevels.size()];
-//		
+//
 //		for (int i = mLevels.size()-1; i >= 0; i--) {
 //			final BooklistLevel l = mLevels.get(i);
 //			final int levelId = i + 1;
@@ -3207,12 +3207,12 @@ public class BooklistBuilder
 //		String tgSql = "Create Trigger " + tgName + " instead of  insert on " + TBL_BOOK_LIST + " for each row when new.level = " + (mLevels.size()+1) +
 //				"	Begin\n";
 //		for(String s: tgLines) {
-//			tgSql += "		" + s + ";\n";			
+//			tgSql += "		" + s + ";\n";
 //		}
 //
 //		tgSql += "\n	" + fullIns + ") " + values + ");\n";
 //		tgSql += "	End";
-//		
+//
 //		SQLiteStatement tgStmt = mStatements.add(tgName, tgSql);
 //		mLevelBuildStmts.add(tgStmt);
 //		tgStmt.execute();
@@ -3247,7 +3247,7 @@ public class BooklistBuilder
 //			//mSyncedDb.execSQL(ix3cSql);
 //			long t1d = System.nanoTime();
 //			//mSyncedDb.analyze(mListTable);
-//			
+//
 //			long t2 = System.nanoTime();
 //
 //			// Now build each summary level query based on the prior level.
@@ -3296,7 +3296,7 @@ public class BooklistBuilder
 //			long t3a = System.nanoTime();
 //			mSyncedDb.analyze(mListTable);
 //			long t3b = System.nanoTime();
-//			
+//
 //			// Now build a lookup table to match row sort position to row ID. This is used to match a specific
 //			// book (or other row in result set) to a position directly.
 //			mNavTable.drop(mSyncedDb);
@@ -3306,7 +3306,7 @@ public class BooklistBuilder
 //					" ,\n	Case When " + DOM_BL_NODE_LEVEL + " = 1 Then 1 \n" +
 //					"	When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL Then 0\n	Else 1 end,\n "+
 //					"	Case When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL Then 0 Else 1 end\n"+
-//					" From " + mListTable.ref() + "\n	left outer join " + TBL_BOOK_LIST_NODE_SETTINGS.ref() + 
+//					" From " + mListTable.ref() + "\n	left outer join " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
 //					"\n		On " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " = " + mListTable.dot(DOM_BL_ROOT_KEY) +
 //					"\n			And " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + " = " + mLevels.get(0).kind +
 //					"\n	Order by " + mSortColumnList;
@@ -3323,7 +3323,7 @@ public class BooklistBuilder
 //			long t4b = System.nanoTime();
 //			mSyncedDb.analyze(mNavTable);
 //			long t4c = System.nanoTime();
-//			
+//
 //			/*
 //			// Create Index book_list_tmp_row_pos_1_ix2 on book_list_tmp_row_pos_1(level, expanded, root_key);
 //			long t5 = System.nanoTime();
@@ -3348,7 +3348,7 @@ public class BooklistBuilder
 //			long t10 = System.nanoTime();
 //			//mSyncedDb.analyze(mTableName);
 //			long t11 = System.nanoTime();
-//			
+//
 //			Logger.info("T0a: " + (t0a-t0));
 //			Logger.info("T0b: " + (t0b-t0a));
 //			Logger.info("T0c: " + (t0c-t0b));
@@ -3383,8 +3383,8 @@ public class BooklistBuilder
 //
 //			mSummary = summary;
 //
-//			
-//			// Get the final result			
+//
+//			// Get the final result
 //			return getList();
 //			//sql = "select * from " + mTableName + " Order by " + mSortColumnList;
 //

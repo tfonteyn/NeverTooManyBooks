@@ -31,7 +31,7 @@
     <!-- basic horizontal divider line -->
     <style name="div_horizontal">
         <item name="android:layout_width">match_parent</item>
-        <!-- reminder: don't set layout_height to warp_content, will CF the layout -->
+        <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">@dimen/margin_div</item>
         <item name="android:layout_marginBottom">@dimen/margin_div</item>
@@ -209,6 +209,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
     </style>
+
     <!-- *************************************************************************************** -->
     <!-- TouchListView rows -->
     <!-- *************************************************************************************** -->
@@ -326,6 +327,7 @@
         <item name="android:layout_marginTop">@dimen/border</item>
         <item name="android:layout_marginBottom">@dimen/border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:background">@android:drawable/list_selector_background</item>
     </style>
 
     <!-- Used for a dedicated 'help' TextView associated with an option -->
@@ -412,6 +414,14 @@
         <item name="android:padding">@dimen/border_double</item>
     </style>
 
+    <!-- the title TextView in a DialogFragment. Used as a normal field on the layout. -->
+    <style name="dialogTitle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
     <!-- Style for keys on the isbn search keyboard -->
     <style name="isbnSearchKey">
         <item name="android:layout_width">0dp</item>
@@ -469,45 +479,6 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- When multiple elements are on the same 'line' and 1 or more, or all, can become
-            Visibility.GONE, we use an invisible View at the start of the row.
-            The height (== vertical space it takes) of this View must be the same as the largest
-            element on that row.
-            layout_height: set to the same text size as the element(s) on the row.
-            layout_marginTop: fiddled until it all looked good. ==> FIXME
 
-            Solution: use an invisible TextView/EditText as the base. But that's overkill...
-    -->
-    <!-- *************************************************************************************** -->
 
-    <!-- FIXME: combo of layout_height and layout_marginTop should be considered a hack. -->
-    <style name="baseline_lbl_textField_small">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/text_size_small</item>
-        <item name="android:layout_marginTop">6dp</item>
-        <item name="android:visibility">invisible</item>
-    </style>
-
-    <!-- FIXME: combo of layout_height and layout_marginTop should be considered a hack. -->
-    <style name="baseline_lbl_textField_medium">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/text_size_medium</item>
-        <item name="android:layout_marginTop">6dp</item>
-        <item name="android:visibility">invisible</item>
-    </style>
-
-    <!-- FIXME: combo of layout_height and layout_marginTop should be considered a hack. -->
-    <style name="baseline_EditText">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/text_size_medium</item>
-        <item name="android:layout_marginTop">28dp</item>
-        <item name="android:visibility">invisible</item>
-    </style>
-
-    <!-- Multiple buttons on the same row. A button is (theoretically always 48dp high. -->
-    <style name="baseline_buttons">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/button_height</item>
-        <item name="android:visibility">invisible</item>
-    </style>
 </resources>

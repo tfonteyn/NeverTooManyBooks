@@ -23,11 +23,8 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
 
-    /** Add a debug menu to the main activity's options menu. */
-    public static final boolean SHOW_DEBUG_MENU = true;
-
     /** Enable strict mode reporting on network,disc,... usage. */
-    public static final boolean STRICT_MODE = true;
+    public static final boolean STRICT_MODE = false;
 
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
@@ -91,7 +88,7 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchCoordinator} and related. */
-    public static final boolean SEARCH_INTERNET = true;
+    public static final boolean SEARCH_INTERNET = false;
 
     /**
      * GoodReads search, but also the sync API.
@@ -103,7 +100,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean LIBRARY_THING_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
-    public static final boolean ISFDB_SEARCH = true;
+    public static final boolean ISFDB_SEARCH = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;

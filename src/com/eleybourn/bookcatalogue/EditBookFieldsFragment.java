@@ -60,7 +60,7 @@ public class EditBookFieldsFragment
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Bookshelf>,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = EditBookFieldsFragment.class.getSimpleName();
 
     private static final int REQ_EDIT_AUTHORS = 0;
@@ -76,14 +76,11 @@ public class EditBookFieldsFragment
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
-    /* ------------------------------------------------------------------------------------------ */
     @Override
     @NonNull
     protected BookManager getBookManager() {
         return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -117,8 +114,6 @@ public class EditBookFieldsFragment
     protected void initFields() {
         super.initFields();
 
-        Field field;
-
         // book fields
 
         mFields.add(R.id.title, DBDefinitions.KEY_TITLE);
@@ -127,12 +122,12 @@ public class EditBookFieldsFragment
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
-        field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
+        Field coverImageField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(requireActivity());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
-                                         mFields.getField(R.id.isbn), field,
+                                         mFields.getField(R.id.isbn), coverImageField,
                                          displaySizes.small, displaySizes.small);
 
         // defined, but handled manually
@@ -167,8 +162,11 @@ public class EditBookFieldsFragment
                     startActivityForResult(intent, REQ_EDIT_SERIES);
                 });
 
+        Field field;
+
         field = mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
+
 
         // Personal fields
 
@@ -203,8 +201,6 @@ public class EditBookFieldsFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Populate">
 
@@ -282,8 +278,6 @@ public class EditBookFieldsFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment shutdown">
 
     @Override
@@ -294,39 +288,6 @@ public class EditBookFieldsFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Menu handlers">
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        if (mFields.getField(R.id.coverImage).isUsed()) {
-            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0, R.string.menu_cover_replace)
-                .setIcon(R.drawable.ic_add_a_photo)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        }
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.SUBMENU_THUMB_REPLACE:
-                // Show the context menu for the cover thumbnail
-                mCoverHandler.prepareCoverImageViewContextMenu();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Field editors callbacks">
 
@@ -367,8 +328,6 @@ public class EditBookFieldsFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     @Override
     @CallSuper

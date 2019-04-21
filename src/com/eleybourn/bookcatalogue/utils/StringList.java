@@ -299,6 +299,7 @@ public class StringList<E> {
                 }
                 inEsc = false;
             } else {
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (c) {
                     case '\\':
                         inEsc = true;
@@ -347,7 +348,6 @@ public class StringList<E> {
      *
      * @return Converted string
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String encode(final char delim,
                          @NonNull final Collection<E> list) {

@@ -233,13 +233,13 @@ public class BooksMultiTypeListHandler
         if (row.hasAuthorId() && row.getAuthorId() > 0) {
             Author author = db.getAuthor(row.getAuthorId());
             if (author != null) {
-                return author.getDisplayName();
+                return author.getLabel();
             }
 
         } else if (row.getRowKind() == RowKind.BOOK) {
             List<Author> authors = db.getAuthorsByBookId(row.getBookId());
             if (!authors.isEmpty()) {
-                return authors.get(0).getDisplayName();
+                return authors.get(0).getLabel();
             }
         }
         return null;
@@ -295,17 +295,17 @@ public class BooksMultiTypeListHandler
                 if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mDb.getLoaneeByBookId(row.getBookId());
                     if (isAvailable) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0,
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, MenuHandler.MENU_ORDER_LENDING,
                                  R.string.menu_loan_lend_book)
                             .setIcon(R.drawable.ic_people);
                     } else {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, MenuHandler.MENU_ORDER_LENDING,
                                  R.string.menu_loan_return_book)
                             .setIcon(R.drawable.ic_people);
                     }
                 }
 
-                menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
+                menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.MENU_ORDER_SHARE, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
 
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0,

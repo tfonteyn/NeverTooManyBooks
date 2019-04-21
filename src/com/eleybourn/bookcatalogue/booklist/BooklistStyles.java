@@ -316,6 +316,7 @@ public final class BooklistStyles {
     }
 
     /**
+     * @param db     the database
      * @param getAll if <tt>true</tt> then also return the non-preferred styles
      *
      * @return all styles, with the preferred styles at the front of the list.
@@ -447,7 +448,8 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to the id.
      *
-     * @param name of the style
+     * @param context caller context
+     * @param name    of the style
      *
      * @return internal id, or the default style id if not found.
      */
@@ -456,7 +458,7 @@ public final class BooklistStyles {
 
         // check builtin first.
         for (BooklistStyle style : getBuiltinStyles().values()) {
-            if (style.getDisplayName(context).equals(name)) {
+            if (style.getLabel(context).equals(name)) {
                 return style.getId();
             }
         }
@@ -464,7 +466,7 @@ public final class BooklistStyles {
         // try user-defined
         try (DBA db = new DBA(context)) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
-                if (style.getDisplayName(context).equals(name)) {
+                if (style.getLabel(context).equals(name)) {
                     return style.getId();
                 }
             }

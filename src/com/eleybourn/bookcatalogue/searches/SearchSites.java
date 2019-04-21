@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.App;
  */
 public final class SearchSites {
 
-    /** t. */
+    /** tag. */
     public static final String TAG = SearchSites.class.getSimpleName();
 
     /** */

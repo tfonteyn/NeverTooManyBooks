@@ -87,7 +87,7 @@ public class EditBooklistStyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         setTitle(getString(R.string.name_colon_value,
-                           getString(R.string.pg_groupings), mStyle.getDisplayName(this)));
+                           getString(R.string.pg_groupings), mStyle.getLabel(this)));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),

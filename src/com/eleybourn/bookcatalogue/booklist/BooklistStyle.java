@@ -56,6 +56,7 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.entities.Entity;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
@@ -94,7 +95,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * @author Philip Warner
  */
 public class BooklistStyle
-        implements Serializable, Parcelable {
+        implements Serializable, Parcelable, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
@@ -326,7 +327,7 @@ public class BooklistStyle
         if (doNew) {
             // get a copy of the name first
             //noinspection ConstantConditions
-            setName(getDisplayName(context));
+            setName(getLabel(context));
             // now reset the other identifiers.
             mId = 0;
             mNameResId = 0;
@@ -464,6 +465,7 @@ public class BooklistStyle
      * Negative id's: builtin styles
      * 0: a user-defined style which has not been saved yet
      */
+    @Override
     public long getId() {
         return mId;
     }
@@ -476,7 +478,7 @@ public class BooklistStyle
      * @return the system name or user-defined name based on kind of style this object defines.
      */
     @NonNull
-    public String getDisplayName(@NonNull final Context context) {
+    public String getLabel(@NonNull final Context context) {
         if (mNameResId != 0) {
             return context.getString(mNameResId);
         } else {

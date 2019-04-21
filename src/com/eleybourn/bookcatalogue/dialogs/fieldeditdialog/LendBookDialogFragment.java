@@ -45,6 +45,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
@@ -61,7 +62,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class LendBookDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = LendBookDialogFragment.class.getSimpleName();
 
     private static final String[] PROJECTION = {
@@ -138,9 +139,11 @@ public class LendBookDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final FragmentActivity mActivity = requireActivity();
+        final FragmentActivity activity = requireActivity();
+
         Bundle args = requireArguments();
-        mDb = new DBA(mActivity);
+
+        mDb = new DBA(activity);
         final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
@@ -150,7 +153,7 @@ public class LendBookDialogFragment
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
                 mAuthorName = mDb.getAuthor(
-                        args.getLong(DBDefinitions.KEY_AUTHOR)).getDisplayName();
+                        args.getLong(DBDefinitions.KEY_AUTHOR)).getLabel();
             }
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
@@ -159,7 +162,7 @@ public class LendBookDialogFragment
         }
 
         @SuppressLint("InflateParams")
-        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
+        View root = activity.getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
         titleView.setText(args.getString(DBDefinitions.KEY_TITLE));
@@ -205,7 +208,7 @@ public class LendBookDialogFragment
 
         root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
-        return new AlertDialog.Builder(mActivity)
+        return new AlertDialog.Builder(activity)
                 .setView(root)
                 .setTitle(R.string.lbl_lend_to)
                 .create();

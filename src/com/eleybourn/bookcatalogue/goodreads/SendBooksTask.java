@@ -250,7 +250,7 @@ public abstract class SendBooksTask
             ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
             String author;
             if (!authors.isEmpty()) {
-                author = authors.get(0).getDisplayName();
+                author = authors.get(0).getLabel();
                 if (authors.size() > 1) {
                     author = author + ' ' + context.getString(R.string.and_others);
                 }

@@ -931,7 +931,7 @@ public class Fields {
 
     /**
      * ImageView accessor. Uses the UUID to load the image into the view.
-     * Sets a t {@link R.id#TAG_UUID} on the view with the UUID.
+     * Sets a tag {@link R.id#TAG_UUID} on the view with the UUID.
      * <p>
      * ENHANCE: currently limited to handling the cover image ONLY. Make this generic handling filenames instead of uuid's
      */
@@ -972,7 +972,7 @@ public class Fields {
         }
 
         /**
-         * Populates the view and sets the UUID (incoming value) as a t on the view.
+         * Populates the view and sets the UUID (incoming value) as a tag on the view.
          *
          * @param field which defines the View details
          * @param value to set: the book uuid !
@@ -986,7 +986,6 @@ public class Fields {
                 if (value.isEmpty()) {
                     imageFile = StorageUtils.getTempCoverFile();
                 } else {
-                    // We store the uuid as a t on the view.
                     imageView.setTag(R.id.TAG_UUID, value);
                     imageFile = StorageUtils.getCoverFile(value);
                 }

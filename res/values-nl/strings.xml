@@ -497,7 +497,7 @@
     <string name="title_clone_style_colon_name">Klonen van Stijl: %1$s</string>
     <string name="pg_filters">Boekfilters</string>
     <string name="X_title_add_style">Nieuwe stijl</string>
-    <string name="title_select_style">Selecteer stijl</string>
+    <string name="title_select_style">Selecteer een stijl</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>
     <string name="lbl_settings">Instellingen</string>

@@ -45,7 +45,9 @@ public abstract class EditAuthorBaseDialogFragment
         mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Author author = requireArguments().getParcelable(DBDefinitions.KEY_AUTHOR);
+        Bundle args = requireArguments();
+
+        final Author author = args.getParcelable(DBDefinitions.KEY_AUTHOR);
         Objects.requireNonNull(author);
         if (savedInstanceState == null) {
             mFamilyName = author.getFamilyName();

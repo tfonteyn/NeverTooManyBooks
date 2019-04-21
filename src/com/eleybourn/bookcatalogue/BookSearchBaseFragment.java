@@ -21,6 +21,7 @@ import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
@@ -30,7 +31,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment
         implements SearchCoordinator.SearchCoordinatorListener {
 
-    /** t. */
+    /** tag. */
     private static final String TAG = BookSearchBaseFragment.class.getSimpleName();
 
     /** stores an active search id, or 0 when none active. */
@@ -86,9 +87,14 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 0, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -97,6 +103,11 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.MENU_HIDE_KEYBOARD:
+                //noinspection ConstantConditions
+                Utils.hideKeyboard(getView());
+                return true;
+
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(requireContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,

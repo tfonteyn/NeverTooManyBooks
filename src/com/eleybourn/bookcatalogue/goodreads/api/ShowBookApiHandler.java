@@ -297,7 +297,7 @@ public abstract class ShowBookApiHandler
     @Nullable
     private ArrayList<String> mShelves;
     /**
-     * Create a new shelves collection when the "shelves" t is encountered.
+     * Create a new shelves collection when the "shelves" tag is encountered.
      */
     private final XmlHandler mHandleShelvesStart = context -> mShelves = new ArrayList<>();
     /**

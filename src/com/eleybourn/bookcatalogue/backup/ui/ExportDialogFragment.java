@@ -3,7 +3,9 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.EditText;
 
@@ -25,12 +27,12 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class ExportDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = ExportDialogFragment.class.getSimpleName();
 
     private ExportSettings mExportSettings;
 
-    private FragmentActivity mActivity;
+    private OnExportTypeSelectionDialogResultsListener mActivity;
 
     /**
      * (syntax sugar for newInstance)
@@ -69,37 +71,31 @@ public class ExportDialogFragment
         }
     }
 
-    /**
-     * Create the underlying dialog.
-     */
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        mActivity = requireActivity();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_export_options, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        mActivity = (OnExportTypeSelectionDialogResultsListener) requireActivity();
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_export_options, null);
-
-        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+        view.findViewById(R.id.confirm).setOnClickListener(v -> {
             updateOptions();
-            OnExportTypeSelectionDialogResultsListener listener =
-                    (OnExportTypeSelectionDialogResultsListener) mActivity;
-            listener.onExportTypeSelectionDialogResult(mExportSettings);
+            mActivity.onExportTypeSelectionDialogResult(mExportSettings);
             dismiss();
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
+        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
-        root.findViewById(R.id.cbx_xml_tables).setVisibility(View.VISIBLE);
-        root.findViewById(R.id.cbx_xml_tables_info).setVisibility(View.VISIBLE);
-
-        AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setView(root)
-                .setTitle(R.string.export_options_dialog_title)
-                .create();
-        dialog.setCanceledOnTouchOutside(false);
-        return dialog;
+        view.findViewById(R.id.cbx_xml_tables).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.cbx_xml_tables_info).setVisibility(View.VISIBLE);
     }
 
     private void updateOptions() {

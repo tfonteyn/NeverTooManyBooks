@@ -85,7 +85,7 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
 
-    /** t. */
+    /** tag. */
     private static final String TAG = EditObjectListActivity.class.getSimpleName();
 
     /** if there was no key passed in, use this one for the savedInstance and return value */
@@ -177,7 +177,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     }
 
     /**
-     * TOMF: code nearly identical with {@link EditBookTocFragment#onDrop(int, int)}
+     * TOMF: code nearly identical with {@link EditBookTocFragment} #onDrop
      *
      * @param fromPosition original position of the row
      * @param toPosition   where the row was dropped
@@ -228,9 +228,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     /**
      * try to load the list from:
-     * 1. savedInstanceState ?
-     * 2. intent extras ?
+     * 1. savedInstanceState using the key
+     * 2. intent extras using the key
+     *
      * 3. getList() from child ?
+     *
      * 4. throw FATAL error in the default {@link #getList()} method
      */
     @NonNull
@@ -241,6 +243,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         if (savedInstanceState != null) {
             list = savedInstanceState.getParcelableArrayList(key);
         }
+
         if (list == null) {
             list = getIntent().getParcelableArrayListExtra(key);
         }

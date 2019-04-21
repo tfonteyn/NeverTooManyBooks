@@ -33,6 +33,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -48,7 +50,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditPublisherDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
     private DBA mDb;
     private String mName;
@@ -83,7 +85,9 @@ public class EditPublisherDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Publisher publisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
+        Bundle args = requireArguments();
+
+        final Publisher publisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = publisher.getName();

@@ -33,7 +33,7 @@ public final class GoodreadsUtils {
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
 
-    /** task progress fragment t. */
+    /** task progress fragment tag. */
     private static final String TAG_GOODREADS_IMPORT_ALL = "grImportAll";
     private static final String TAG_GOODREADS_SEND_BOOKS = "grSendBooks";
     private static final String TAG_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";

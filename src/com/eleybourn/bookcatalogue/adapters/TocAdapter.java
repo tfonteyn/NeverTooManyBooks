@@ -92,7 +92,7 @@ public class TocAdapter
             titleView.setText(item.getTitle());
             // optional
             if (authorView != null) {
-                authorView.setText(item.getAuthor().getDisplayName());
+                authorView.setText(item.getAuthor().getLabel());
             }
             // optional
             if (firstPublicationView != null) {

@@ -282,7 +282,7 @@ public class CoverHandler {
     }
 
     /**
-     * We *should* have the uuid on a t on the over field view,
+     * We *should* have the uuid on a tag on the over field view,
      * but if not, we'll get it from the database.
      *
      * @return the uuid, or null when the book has no uuid.

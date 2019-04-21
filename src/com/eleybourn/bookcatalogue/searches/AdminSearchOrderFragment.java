@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
 public class AdminSearchOrderFragment
         extends Fragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
 
     private ListView mListView;
@@ -50,8 +50,8 @@ public class AdminSearchOrderFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle args = requireArguments();
-        mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
+        mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
         mListAdapter = new SearchSiteListAdapter(requireContext(), mList);
         mListView = requireView().findViewById(android.R.id.list);
         mListView.setAdapter(mListAdapter);

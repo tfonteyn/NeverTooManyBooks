@@ -6,6 +6,9 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 /**
+ *
+ * TOMF: this is crap... I must have been tired. Redo using {@link com.eleybourn.bookcatalogue.entities.Entity}
+ *
  * @param <T> - type of item in the checklist
  */
 public interface CheckListItem<T>
@@ -23,7 +26,7 @@ public interface CheckListItem<T>
     /**
      * @param context caller context
      *
-     * @return the label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog}.
+     * @return the label to use in a {@link CheckListEditorDialogFragment}.
      */
     String getLabel(@NonNull final Context context);
 }

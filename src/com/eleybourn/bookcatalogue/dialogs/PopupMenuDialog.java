@@ -264,7 +264,6 @@ public class PopupMenuDialog {
                          @NonNull final List<T> objects,
                          @NonNull final OnClickListener<T> listener) {
 
-
             mInflater = LayoutInflater.from(context);
             mListener = listener;
             mList = objects;
@@ -300,8 +299,8 @@ public class PopupMenuDialog {
         @Override
         public void onBindViewHolder(@NonNull final SimpleItemHolder<T> holder,
                                      final int position) {
-            T fieldValue = mList.get(position);
-            holder.textView.setText(mField.format(fieldValue.toString()));
+            holder.item = mList.get(position);
+            holder.textView.setText(mField.format(holder.item.toString()));
         }
 
         @Override
@@ -334,7 +333,7 @@ public class PopupMenuDialog {
             }
 
             //noinspection ConstantConditions
-            mSubMenuPointer = context.getDrawable(R.drawable.ic_arrow_right);
+            mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
         }
 
         @NonNull
@@ -414,9 +413,10 @@ public class PopupMenuDialog {
         @Override
         public void onBindViewHolder(@NonNull final FileDetailHolder holder,
                                      final int position) {
-            holder.item = mList.get(position);
+
             Context context = mInflater.getContext();
 
+            holder.item = mList.get(position);
             holder.name.setText(holder.item.getName());
             holder.path.setText(holder.item.getParent());
             holder.size.setText(Utils.formatFileSize(context, holder.item.length()));
@@ -475,6 +475,9 @@ public class PopupMenuDialog {
 
         @Override
         public void onClick(final View v) {
+            if (item == null) {
+                throw new IllegalStateException("item must be set in onBindViewHolder");
+            }
             mListener.onClick(item);
         }
     }

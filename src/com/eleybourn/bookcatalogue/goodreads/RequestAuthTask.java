@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 class RequestAuthTask
         extends AsyncTask<Void, Object, Integer> {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = RequestAuthTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;

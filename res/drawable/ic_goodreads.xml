@@ -1,8 +1,8 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="24dp"
-        android:height="24dp"
-        android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
 
     <path
         android:fillColor="?attr/fillColorVectorIcons"
@@ -12,5 +12,5 @@
         v-2.7
         q1.2 0.67 2.4 0.99 1.2 0.32 2.5 0.32 2.8 0 4.1-1.4 1.4-1.4 1.4-4.3v-1.4
         q-0.87 1.5-2.2 2.3-1.4 0.75-3.2 0.75-3.1 0-5.1-2.4-1.9-2.4-1.9-6.3 0-4 1.9-6.4 1.9-2.4 5.1-2.4 1.9 0 3.2 0.75
-        t2.2 2.3v-2.6h2.8z"/>
+        t2.2 2.3v-2.6h2.8z" />
 </vector>

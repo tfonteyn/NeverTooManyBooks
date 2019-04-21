@@ -94,7 +94,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
  * <p>
  * There are two types of XML here.
  * <p>
- * Type based, where the t name is the type. Used by:
+ * Type based, where the tag name is the type. Used by:
  * {@link BackupInfo}
  * {@link android.content.SharedPreferences}
  * {@link BooklistStyle}
@@ -849,7 +849,7 @@ public class XmlExporter
      * --- This includes the actual groups of the style: a CSV String of id's (kinds)
      * - Filters and Groups are flattened.
      * - each filter/group has a typed t
-     * - each preference in a group has a typed t.
+     * - each preference in a group has a typed tag.
      */
     static class StylesWriter
             implements EntityWriter<String> {

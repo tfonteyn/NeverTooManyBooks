@@ -15,7 +15,7 @@
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
     <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
-    <!-- store the uuid of a cover into a t on the view. -->
+    <!-- store the uuid of a cover into a tag on the view. -->
     <item name="TAG_UUID" type="id" />
 
     <!-- BEGIN predefined task ids -->
@@ -44,7 +44,7 @@
     <item name="MENU_EDIT" type="id"/>
     <item name="MENU_DELETE" type="id"/>
     <item name="MENU_CLONE" type="id"/>
-
+    <item name="MENU_HIDE_KEYBOARD" type="id" />
 
     <item name="SUBMENU_BOOK_ADD" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SCAN" type="id"/>
@@ -56,6 +56,7 @@
     <item name="MENU_BOOK_DELETE" type="id"/>
     <item name="MENU_BOOK_DUPLICATE" type="id"/>
     <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id"/>
+
     <item name="MENU_SHARE" type="id"/>
 
     <item name="MENU_BOOK_EDIT" type="id"/>
@@ -143,6 +144,7 @@
     <item name="TLV_ROW_TAG" type="id"/>
     <!-- the grabber handle -->
     <item name="TLV_ROW_GRABBER" type="id"/>
+
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 
 </resources>

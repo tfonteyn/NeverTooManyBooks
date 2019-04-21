@@ -1,27 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame"
-    android:fillViewport="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <LinearLayout
-        android:id="@+id/menu"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/dialog_title"
+        style="@style/dialogTitle"
+        android:text="@string/title_select_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/styles"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomDiv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title"
+        app:layout_constraintVertical_weight="1"
+        />
+
+    <View
+    android:id="@+id/bottomDiv"
+    style="@style/div_horizontal"
+    app:layout_constraintBottom_toTopOf="@id/menu_show_more_or_less"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    />
+
+    <TextView
+        android:id="@+id/menu_show_more_or_less"
+        style="@style/row_option_menu"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border"
-        android:orientation="vertical"
-        >
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@id/menu_customize_ellipsis"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="@string/menu_show_fewer_ellipsis"
+        />
 
-        <!-- radio buttons are added from code -->
-        <RadioGroup
-            android:id="@+id/radio_buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+    <TextView
+        android:id="@+id/menu_customize_ellipsis"
+        style="@style/row_option_menu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_customize_ellipsis"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="SelectableText"
+        />
 
-        <View style="@style/div_horizontal" />
-        <!-- other options are added here below -->
-    </LinearLayout>
-
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

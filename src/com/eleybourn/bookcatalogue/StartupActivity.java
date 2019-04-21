@@ -33,6 +33,7 @@ import android.text.Html;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -79,12 +80,12 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = StartupActivity.class.getSimpleName();
     /** Number of app startup's between offers to backup. */
-    private static final int PROMPT_WAIT_BACKUP = 5;
+    private static final int PROMPT_WAIT_BACKUP = 50;
     /** Number of app startup's between displaying the Amazon hint. */
-    private static final int PROMPT_WAIT_AMAZON = 7;
+    private static final int PROMPT_WAIT_AMAZON = 70;
 
 
     private static final Handler HANDLER = new Handler();

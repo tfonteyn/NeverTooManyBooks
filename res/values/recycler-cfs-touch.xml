@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- https://commonsware.com/ -->
+    <declare-styleable name="TouchRecyclerViewCFS">
+        <attr name="trv_normal_height" format="dimension" />
+        <attr name="trv_expanded_height" format="dimension" />
+        <attr name="trv_grabber" format="reference" />
+        <attr name="trv_background" format="color" />
+        <attr name="trv_remove_mode">
+            <enum name="none" value="-1" />
+            <enum name="fling" value="0" />
+            <enum name="slideRight" value="1" />
+            <enum name="slideLeft" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

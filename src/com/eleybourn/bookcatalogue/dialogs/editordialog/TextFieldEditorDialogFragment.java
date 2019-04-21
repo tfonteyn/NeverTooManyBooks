@@ -38,6 +38,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -57,7 +58,7 @@ public class TextFieldEditorDialogFragment
         extends
         EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = TextFieldEditorDialogFragment.class.getSimpleName();
 
     /** Argument: Dialog text/message. */
@@ -72,7 +73,7 @@ public class TextFieldEditorDialogFragment
     /**
      * Constructor.
      *
-     * @param callerTag     t of the calling fragment to send results back to.
+     * @param callerTag     tag of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param multiLine     <tt>true</tt> if the text box should allow multi-line
@@ -102,12 +103,13 @@ public class TextFieldEditorDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         readBaseArgs(savedInstanceState);
 
-        boolean multiLine = requireArguments().getBoolean(BKEY_MULTI_LINE);
-        // optional, use a simple text view by default.
-        int dialogLayoutId = requireArguments().getInt(UniqueId.BKEY_LAYOUT_ID,
-                                                       R.layout.dialog_edit_textfield);
+        Bundle args = requireArguments();
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        boolean multiLine = args.getBoolean(BKEY_MULTI_LINE);
+        // optional, use a simple text view by default.
+        int dialogLayoutId = args.getInt(UniqueId.BKEY_LAYOUT_ID, R.layout.dialog_edit_textfield);
+
+        args = savedInstanceState == null ? args : savedInstanceState;
         mText = args.getString(BKEY_TEXT, "");
 
         // Create the dialog and listen (locally) for its events

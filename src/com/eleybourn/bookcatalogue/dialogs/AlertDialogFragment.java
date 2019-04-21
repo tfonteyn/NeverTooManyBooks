@@ -53,28 +53,39 @@ public class AlertDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Bundle args = requireArguments();
-        final int title = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
-        String message;
-        if (args.containsKey(UniqueId.BKEY_DIALOG_MSG_ID)) {
-            message = requireActivity().getString(args.getInt(UniqueId.BKEY_DIALOG_MSG_ID));
-        } else {
-            message = args.getString(UniqueId.BKEY_DIALOG_MSG);
-        }
 
-        return new AlertDialog.Builder(getActivity())
+        AlertDialogListener listener = (AlertDialogListener) requireActivity();
+
+        @StringRes
+        int titleId = 0;
+        String message = null;
+
+        Bundle args = getArguments();
+        if (args != null) {
+            titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+            if (args.containsKey(UniqueId.BKEY_DIALOG_MSG_ID)) {
+                message = getString(args.getInt(UniqueId.BKEY_DIALOG_MSG_ID));
+            } else {
+                message = args.getString(UniqueId.BKEY_DIALOG_MSG);
+            }
+        }
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(title)
-                .setMessage(message)
                 .setPositiveButton(android.R.string.ok,
-                                   (d, which) -> ((AlertDialogListener) requireActivity())
-                                           .onPositiveButton()
+                                   (d, which) -> listener.onPositiveButton()
                 )
                 .setNegativeButton(android.R.string.cancel,
-                                   (d, which) -> ((AlertDialogListener) requireActivity())
-                                           .onNegativeButton()
+                                   (d, which) -> listener.onNegativeButton()
                 )
                 .create();
+
+        if (titleId != 0) {
+            dialog.setTitle(titleId);
+        }
+        if (message != null && !message.isEmpty()) {
+            dialog.setMessage(message);
+        }
+        return dialog;
     }
 
 }

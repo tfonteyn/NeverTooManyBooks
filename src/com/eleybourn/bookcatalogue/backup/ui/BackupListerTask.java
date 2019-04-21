@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class BackupListerTask
         extends FileListerAsyncTask {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = BackupListerTask.class.getSimpleName();
 
     /**

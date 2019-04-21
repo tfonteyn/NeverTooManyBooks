@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = BookSearchByTextFragment.class.getSimpleName();
 
     /** A list of author names we have already searched for in this session. */

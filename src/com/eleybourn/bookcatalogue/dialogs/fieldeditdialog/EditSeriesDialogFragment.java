@@ -34,6 +34,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
@@ -50,7 +52,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditSeriesDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     private DBA mDb;
@@ -88,7 +90,9 @@ public class EditSeriesDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
+        Bundle args = requireArguments();
+
+        final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = series.getName();

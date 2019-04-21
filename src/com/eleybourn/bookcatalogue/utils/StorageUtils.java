@@ -187,8 +187,6 @@ public final class StorageUtils {
         return new File(LOG_FILE_PATH);
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * @return the Shared Storage root Directory object
      */
@@ -229,8 +227,6 @@ public final class StorageUtils {
     public static void deleteTempCoverFile() {
         deleteFile(getTempCoverFile());
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * @param filename a generic filename.
@@ -285,7 +281,6 @@ public final class StorageUtils {
         }
         return totalSize;
     }
-    /* ------------------------------------------------------------------------------------------ */
 
     private static long purgeDir(@NonNull final File dir,
                                  final boolean reallyDelete) {
@@ -317,9 +312,6 @@ public final class StorageUtils {
         }
         return totalSize;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Standard File management methods
 
     /**
      * Delete *everything* in the temp file directory.
@@ -357,7 +349,6 @@ public final class StorageUtils {
         @SuppressWarnings("unused")
         StringBuilder debugInfo;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            //noinspection UnusedAssignment
             debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
 
@@ -696,6 +687,7 @@ public final class StorageUtils {
          *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
          *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
          */
+        //noinspection SwitchStatementWithTooFewBranches
         switch (Environment.getExternalStorageState()) {
             case Environment.MEDIA_MOUNTED:
                 // all ok

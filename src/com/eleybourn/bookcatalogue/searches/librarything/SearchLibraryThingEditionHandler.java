@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 class SearchLibraryThingEditionHandler
         extends DefaultHandler {
 
-    /** isbn t in an editions xml response. */
+    /** isbn tag in an editions xml response. */
     private static final String XML_ISBN = "isbn";
 
     private final StringBuilder mBuilder = new StringBuilder();

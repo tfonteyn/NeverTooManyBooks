@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 public class ProgressDialogFragment<Results>
         extends DialogFragment {
 
-    /** Fragment manager t used if no custom t is needed. */
+    /** Fragment manager tag used if no custom tag is needed. */
     public static final String TAG = ProgressDialogFragment.class.getSimpleName();
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
@@ -148,6 +148,8 @@ public class ProgressDialogFragment<Results>
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateDialog(this, savedInstanceState);
 
+        Bundle args = requireArguments();
+
         @SuppressLint("InflateParams")
         View root = requireActivity().getLayoutInflater()
                                      .inflate(R.layout.dialog_task_progress, null);
@@ -155,12 +157,12 @@ public class ProgressDialogFragment<Results>
         mMessageView = root.findViewById(R.id.message);
 
         // these are fixed
-        int titleId = requireArguments().getInt(UniqueId.BKEY_DIALOG_TITLE);
-        boolean isIndeterminate = requireArguments().getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+        boolean isIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
         //noinspection ConstantConditions
         mProgressBar.setIndeterminate(isIndeterminate);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        args = savedInstanceState == null ? args : savedInstanceState;
         // initial/current message.
         mMessage = args.getString(BKEY_CURRENT_MESSAGE);
         if (mMessage != null) {
@@ -192,14 +194,12 @@ public class ProgressDialogFragment<Results>
 
     /**
      * FIXME: horrible clutch....
-     * <p>
-     * Accessing the Fragment.getContext() "to early" will return a null.
-     * I've seen (2019-03-26) using identical code, in the same identical place
-     * succeed and fail. I presume due to internal timing.
-     * <p>
-     * So this is a FIXME HORRIBLE CLUTCH...  but it's 'good enough' for now.
-     * The alternative is to go back to using the AppContext as before, but needs
-     * more investigating first.
+     *  Accessing the Fragment.getContext() "to early" will return a null.
+     *  I've seen (2019-03-26) using identical code, in the same identical place
+     *  succeed and fail. I presume due to internal timing.
+     *  But it's 'good enough' for now.
+     *  The alternative is to go back to using the AppContext as before, but needs
+     *  more investigating first.
      *
      * @return the context of the fragment, or if that was null, the App context.
      */

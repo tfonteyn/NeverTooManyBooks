@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
+<com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:csf="http://schemas.android.com/apk/res-auto"
     android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
-    app:fastScrollEnabled="true"
-    app:fastScrollHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
-    app:fastScrollHorizontalTrackDrawable="@drawable/fast_scroll_track"
-    app:fastScrollVerticalThumbDrawable="@drawable/fast_scroll_thumb"
-    app:fastScrollVerticalTrackDrawable="@drawable/fast_scroll_track"
+    csf:cfsEnabled="true"
+    csf:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
+    csf:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"
+    csf:cfsVerticalThumbDrawable="@drawable/fast_scroll_thumb"
+    csf:cfsVerticalTrackDrawable="@drawable/fast_scroll_track"
+    csf:cfsOverlayDrawable="@drawable/fast_scroll_overlay"
     >
-    <!-- above fastScroll drawable must ALL 4 be specified, even when not using horizontal here
+    <!--
+     ALL 5 above fastScroll drawable attributes must be specified,
+     even when not using horizontal here
 
     If there are a lot of items, the thumb will get quite small. Known issue:
     https://issuetracker.google.com/issues/64729576
     -->
     <requestFocus />
-</androidx.recyclerview.widget.RecyclerView>
+</com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS>

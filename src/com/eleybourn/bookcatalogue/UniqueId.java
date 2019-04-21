@@ -181,7 +181,7 @@ public final class UniqueId {
     public static final String BKEY_COVER_IMAGE = "thumbnail";
 
     /**
-     * t of fragment to display if an Activity supports multiple.
+     * tag of fragment to display if an Activity supports multiple.
      * <p>
      * String
      */

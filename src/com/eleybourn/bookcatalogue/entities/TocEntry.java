@@ -172,6 +172,10 @@ public class TocEntry
         }
     }
 
+    /**
+     *
+     * @return 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
+     */
     public char getType() {
         return mType;
     }

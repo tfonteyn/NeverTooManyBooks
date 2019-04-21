@@ -23,10 +23,12 @@ import androidx.annotation.NonNull;
 
 import java.io.InputStream;
 
+import com.eleybourn.bookcatalogue.entities.Entity;
+
 /**
  * The interface of all images used in gallery.
  */
-public interface CropIImage {
+public interface CropIImage extends Entity {
 
     int UNCONSTRAINED = -1;
 
@@ -82,7 +84,7 @@ public interface CropIImage {
     int getHeight();
 
     @NonNull
-    String getDisplayName();
+    String getLabel();
 
     /** Get property of the image. */
     boolean isReadonly();

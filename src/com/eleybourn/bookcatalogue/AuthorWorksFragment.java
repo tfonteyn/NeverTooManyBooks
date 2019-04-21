@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
 
 /**
  * Display all TocEntry's for an Author.
@@ -31,7 +33,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 public class AuthorWorksFragment
         extends Fragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = AuthorWorksFragment.class.getSimpleName();
 
     private DBA mDb;
@@ -57,11 +59,12 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         mDb = new DBA(getContext());
         final Author author = mDb.getAuthor(authorId);
-        //noinspection ConstantConditions
-        getActivity().setTitle(author.getDisplayName());
-
         // the list of TOC entries.
+        //noinspection ConstantConditions
         mTocEntries = mDb.getTocEntryByAuthor(author, true);
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(author.getLabel() + '[' + mTocEntries.size() + ']');
 
 //        // for testing.
 //        for (int i=0; i < 300; i++) {
@@ -70,9 +73,7 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         RecyclerView listView = getView().findViewById(android.R.id.list);
-        LinearLayoutManager listViewLayoutManager = new LinearLayoutManager(getContext());
-        listView.setLayoutManager(listViewLayoutManager);
-
+        listView.setLayoutManager(new LinearLayoutManager(getContext()));
         TocAdapter adapter = new TocAdapter();
         listView.setAdapter(adapter);
     }
@@ -114,8 +115,10 @@ public class AuthorWorksFragment
     private static class TocViewHolder
             extends RecyclerView.ViewHolder {
 
-        /** Cache the drawable. */
+        /** It's a book. */
         private static Drawable sBookIndicator;
+        /** It's not a book. e.g. a short story... */
+        private static Drawable sStoryIndicator;
 
         @NonNull
         final TextView titleView;
@@ -134,6 +137,7 @@ public class AuthorWorksFragment
 
             if (sBookIndicator == null) {
                 sBookIndicator = itemView.getContext().getDrawable(R.drawable.ic_book);
+                sStoryIndicator = itemView.getContext().getDrawable(R.drawable.ic_lens);
             }
         }
 
@@ -142,7 +146,7 @@ public class AuthorWorksFragment
             switch (item.getType()) {
                 case 'T':
                     titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            null, null, null, null);
+                            sStoryIndicator, null, null, null);
                     break;
 
                 case 'B':
@@ -157,7 +161,7 @@ public class AuthorWorksFragment
             titleView.setText(item.getTitle());
             // optional
             if (authorView != null) {
-                authorView.setText(item.getAuthor().getDisplayName());
+                authorView.setText(item.getAuthor().getLabel());
             }
             // optional
             if (firstPublicationView != null) {
@@ -174,7 +178,8 @@ public class AuthorWorksFragment
     }
 
     public class TocAdapter
-            extends RecyclerView.Adapter<TocViewHolder> {
+            extends RecyclerView.Adapter<TocViewHolder>
+            implements SectionIndexerV2 {
 
         @NonNull
         @Override
@@ -195,6 +200,15 @@ public class AuthorWorksFragment
         @Override
         public int getItemCount() {
             return mTocEntries.size();
+        }
+
+        @Nullable
+        @Override
+        public String[] getSectionTextForPosition(final int position) {
+            // make sure it's still in range.
+            int index = MathUtils.clamp(position, 0, mTocEntries.size() - 1);
+
+            return new String[]{mTocEntries.get(index).getTitle().substring(0, 1).toUpperCase()};
         }
     }
 }

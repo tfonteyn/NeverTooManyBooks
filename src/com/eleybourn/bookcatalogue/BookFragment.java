@@ -18,6 +18,7 @@ import android.widget.ListView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
@@ -31,6 +32,7 @@ import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -51,7 +53,7 @@ public class BookFragment
         extends BookBaseFragment
         implements BookManager, BookChangedListener {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = BookFragment.class.getSimpleName();
 
     static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
@@ -71,8 +73,6 @@ public class BookFragment
 
     private FlattenedBooklist mFlattenedBooklist;
     private GestureDetector mGestureDetector;
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="BookManager interface">
 
@@ -94,8 +94,6 @@ public class BookFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -295,8 +293,6 @@ public class BookFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Init the flat booklist & fling handler">
 
     /**
@@ -304,11 +300,11 @@ public class BookFragment
      */
     @SuppressLint("ClickableViewAccessibility")
     private void initBooklist(@Nullable final Bundle savedInstanceState) {
-
+        // no arguments ? -> no list!
         if (getArguments() == null) {
             return;
         }
-        String list = requireArguments().getString(REQUEST_BKEY_FLAT_BOOKLIST);
+        String list = getArguments().getString(REQUEST_BKEY_FLAT_BOOKLIST);
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -324,7 +320,7 @@ public class BookFragment
             return;
         }
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         // ok, we absolutely have a list, get the position we need to be on.
         int pos = args.getInt(REQUEST_BKEY_FLAT_BOOKLIST_POSITION, 0);
 
@@ -362,7 +358,7 @@ public class BookFragment
         // yes, there should not be a book without authors. But let's keep this 'proper'
         boolean visible = authorsCount != 0;
         if (visible) {
-            field.setValue(Csv.join(", ", list, Author::getDisplayName));
+            field.setValue(Csv.join(", ", list, Author::getLabel));
             field.getView().setVisibility(View.VISIBLE);
         } else {
             field.setValue("");
@@ -380,7 +376,7 @@ public class BookFragment
 
         boolean visible = seriesCount != 0 && Fields.isUsed(DBDefinitions.KEY_SERIES);
         if (visible) {
-            field.setValue(Csv.join("\n", list, Series::getDisplayName));
+            field.setValue(Csv.join("\n", list, Series::getLabel));
             setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
         } else {
             field.setValue("");
@@ -462,8 +458,6 @@ public class BookFragment
     }
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment shutdown">
 
     /**
@@ -505,13 +499,12 @@ public class BookFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Menu handlers">
 
     @Override
     @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
                 mDb.deleteLoan(getBook().getId());
@@ -530,12 +523,28 @@ public class BookFragment
         menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
             .setIcon(R.drawable.ic_edit)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+        menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
+            .setIcon(R.drawable.ic_content_copy);
 
-        /*
-         * Only one of these two is made visible (or none if the book is not persisted yet).
-         */
+        // Only one of these two is made visible.
         menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
+
+        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
+            menu.add(R.id.MENU_BOOK_EDIT_LOAN,
+                     R.id.MENU_BOOK_EDIT_LOAN, MenuHandler.MENU_ORDER_LENDING,
+                     R.string.menu_loan_lend_book);
+            menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
+                     R.id.MENU_BOOK_LOAN_RETURNED, MenuHandler.MENU_ORDER_LENDING,
+                     R.string.menu_loan_return_book);
+        }
+
+        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.MENU_ORDER_SHARE, R.string.menu_share_this)
+            .setIcon(R.drawable.ic_share);
+
+        MenuHandler.addAmazonSearchSubMenu(menu);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -549,10 +558,12 @@ public class BookFragment
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
         if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
-            boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
+            boolean isAvailable = mDb.getLoaneeByBookId(getBook().getId()) == null;
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
         }
+
+        MenuHandler.prepareAmazonSearchSubMenu(menu, getBook());
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -560,7 +571,9 @@ public class BookFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
         switch (item.getItemId()) {
+
             case R.id.MENU_BOOK_EDIT:
                 Intent intent = new Intent(getContext(), EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_ID, getBook().getId())
@@ -568,11 +581,23 @@ public class BookFragment
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
 
+            case R.id.MENU_BOOK_DELETE:
+                StandardDialogs.deleteBookAlert(mActivity, mDb, getBook().getId(), () -> {
+                    mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                    mActivity.finish();
+                });
+                return true;
+
+            case R.id.MENU_BOOK_DUPLICATE:
+                Intent intentDup = new Intent(mActivity, EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, getBook().duplicate());
+                startActivityForResult(intentDup, UniqueId.REQ_BOOK_DUPLICATE);
+                return true;
+
             case R.id.MENU_BOOK_READ:
-                // toggle 'read' status
                 boolean isRead = getBook().getBoolean(Book.IS_READ);
+                // toggle 'read' status
                 if (getBook().setRead(mDb, !isRead)) {
-                    // reverse value obv.
                     mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
                 }
                 return true;
@@ -586,14 +611,20 @@ public class BookFragment
                 populateLoanedToField(null);
                 return true;
 
+            case R.id.MENU_SHARE:
+                startActivity(Intent.createChooser(getBook().getShareBookIntent(mActivity),
+                                                   getString(R.string.menu_share_this)));
+                return true;
+
             default:
+                if (MenuHandler.handleAmazonSearchSubMenu(mActivity, item, getBook())) {
+                    return true;
+                }
                 return super.onOptionsItemSelected(item);
         }
 
     }
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     @Override
     public void onActivityResult(final int requestCode,

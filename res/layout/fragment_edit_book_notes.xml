@@ -43,11 +43,15 @@
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <TextView
             android:id="@+id/lbl_read_start_end_baseline"
-            style="@style/baseline_lbl_textField_small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/read"
+            tools:ignore="SelectableText"
             />
 
         <TextView
@@ -55,7 +59,7 @@
             style="@style/lbl_editField"
             android:layout_width="0dp"
             android:text="@string/lbl_read_start"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
             app:layout_constraintStart_toStartOf="@id/read_start"
             />
 
@@ -64,14 +68,16 @@
             style="@style/lbl_editField"
             android:layout_width="0dp"
             android:text="@string/lbl_read_end"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
             app:layout_constraintStart_toStartOf="@id/read_end"
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <Button
             android:id="@+id/read_start_end_baseline"
-            style="@style/baseline_buttons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start_end_baseline"
             />
@@ -79,7 +85,7 @@
         <Button
             android:id="@+id/read_start"
             style="@style/buttonDataEntry"
-            app:layout_constraintBottom_toBottomOf="@id/read_start_end_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
             app:layout_constraintEnd_toStartOf="@id/read_end"
             app:layout_constraintStart_toStartOf="parent"
             />
@@ -87,7 +93,7 @@
         <Button
             android:id="@+id/read_end"
             style="@style/buttonDataEntry"
-            app:layout_constraintBottom_toBottomOf="@id/read_start_end_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/read_start"
             />
@@ -146,20 +152,12 @@
             app:layout_constraintTop_toBottomOf="@id/date_acquired"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
-            android:id="@+id/lbl_price_paid_baseline"
-            style="@style/baseline_EditText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
-            />
-
         <EditText
             android:id="@+id/price_paid"
             style="@style/priceTextEntry"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toStartOf="@id/price_paid_currency"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             tools:ignore="Autofill"
             tools:text="14.99"
             />
@@ -167,7 +165,7 @@
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
             style="@style/currencyTextEntry"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
             tools:ignore="Autofill,LabelFor"
@@ -176,7 +174,7 @@
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
             style="@style/dropDownMenuButton"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
             app:layout_constraintTop_toTopOf="@id/price_paid_currency"
@@ -188,7 +186,7 @@
             style="@style/lbl_editField"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_baseline"
+            app:layout_constraintTop_toBottomOf="@id/price_paid"
             />
 
         <Button
@@ -232,9 +230,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="Autofill"
+            tools:text="@tools:sample/lorem/random"
             />
-        <!-- FIXME:  when adding this to notes, Studio fails to go into design mode. Try again after next Studio updates.
-        tools:text="@tools:sample/lorem/random"-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -120,7 +120,7 @@ public class App
 
     /**
      * internal; check if an Activity should do a 'recreate()'.
-     * See {@link BaseActivity#onResume}.
+     * See {@link BaseActivity} in the onResume method.
      */
     private static final String PREF_ACTIVITY_RECREATE_STATUS = "App.RecreateActivityStatus";
     /** Activity is in need of recreating. */
@@ -131,7 +131,7 @@ public class App
     /**
      * NEWKIND: APP THEME.
      * 1. add it to themes.xml
-     * 2. add it to {@link R.array#pv_ui_theme},
+     * 2. add it to R.array.pv_ui_theme,
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */

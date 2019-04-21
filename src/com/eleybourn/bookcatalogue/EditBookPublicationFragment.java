@@ -47,7 +47,7 @@ public class EditBookPublicationFragment
         implements
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = EditBookPublicationFragment.class.getSimpleName();
 
     /**
@@ -63,14 +63,11 @@ public class EditBookPublicationFragment
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
 
-    /* ------------------------------------------------------------------------------------------ */
     @Override
     @NonNull
     protected BookManager getBookManager() {
         return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -148,8 +145,6 @@ public class EditBookPublicationFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Field editors callbacks">
 

@@ -34,6 +34,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -51,7 +53,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";
@@ -87,7 +89,10 @@ public class EditBookshelfDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         mActivity = requireActivity();
-        mBookshelf = requireArguments().getParcelable(BKEY_BOOKSHELF);
+
+        Bundle args = requireArguments();
+
+        mBookshelf = args.getParcelable(BKEY_BOOKSHELF);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = mBookshelf.getName();

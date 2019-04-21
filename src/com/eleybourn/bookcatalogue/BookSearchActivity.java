@@ -65,7 +65,7 @@ public class BookSearchActivity
     /**
      * @param tag for the required fragment
      *
-     * @return a new fragment instance from the t.
+     * @return a new fragment instance from the tag.
      */
     private Fragment createFragment(@NonNull final String tag) {
         if (BookSearchByIsbnFragment.TAG.equals(tag)) {

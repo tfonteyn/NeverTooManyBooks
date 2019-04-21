@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class ZoomedImageDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = ZoomedImageDialogFragment.class.getSimpleName();
 
     /**
@@ -67,8 +67,9 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
-        File imageFile = new File(Objects.requireNonNull(
-                requireArguments().getString(UniqueId.BKEY_FILE_SPEC)));
+        Bundle args = requireArguments();
+
+        File imageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 

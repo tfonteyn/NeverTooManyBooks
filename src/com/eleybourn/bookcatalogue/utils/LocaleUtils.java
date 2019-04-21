@@ -271,7 +271,7 @@ public final class LocaleUtils {
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG) {
             Logger.debugEnter(LocaleUtils.class,
-                         "getDisplayName",
+                         "getLabel",
                          "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);

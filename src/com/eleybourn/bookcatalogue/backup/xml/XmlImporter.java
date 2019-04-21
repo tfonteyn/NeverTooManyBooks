@@ -75,7 +75,7 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
-    /** a simple Holder for the current t name and attributes. */
+    /** a simple Holder for the current tag name and attributes. */
     private TagInfo mTag;
 
     /**
@@ -208,7 +208,7 @@ public class XmlImporter
                  .setStartAction(context -> {
                      // use as top-t
                      mTag = new TagInfo(context);
-                     // we only have a version on the top t, not on every t.
+                     // we only have a version on the top tag, not on every tag.
                      String version = context.getAttributes().getValue(XmlUtils.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
@@ -220,7 +220,7 @@ public class XmlImporter
                  })
                  .setEndAction(context -> accessor.endElement());
 
-        // typed t starts. for both attribute and body based elements.
+        // typed tag starts. for both attribute and body based elements.
         XmlFilter.XmlHandler startTypedTag = context -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(context);
@@ -230,7 +230,7 @@ public class XmlImporter
                              "startTypedTag",
                              "localName=`" + context.getLocalName() + '`', mTag);
             }
-            // if we have a value attribute, this t is done. Handle here.
+            // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
                 switch (mTag.type) {
                     case XmlUtils.XML_STRING:
@@ -262,7 +262,7 @@ public class XmlImporter
             }
         };
 
-        // the end of a typed t with a body
+        // the end of a typed tag with a body
         XmlFilter.XmlHandler endTypedTag = context -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.debug(this, "fromXml",
@@ -343,7 +343,7 @@ public class XmlImporter
                              "localName=`" + context.getLocalName() + '`', mTag);
             }
 
-            // if we have a value attribute, this t is done. Handle here.
+            // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
@@ -438,7 +438,7 @@ public class XmlImporter
     /**
      * Creates an XmlFilter that can read pre-v200 Info and Preferences XML format.
      * <p>
-     * This legacy format was flat, had a fixed t name ('item') and used an attribute 'type'.
+     * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
      * indicating int,string,...
      */
     private void createPreV200Filter(@NonNull final XmlFilter rootFilter,
@@ -518,13 +518,13 @@ public class XmlImporter
     interface EntityReader<K> {
 
         /**
-         * @return the t name for the list
+         * @return the tag name for the list
          */
         @NonNull
         String getListRoot();
 
         /**
-         * @return the t name for an element in the list
+         * @return the tag name for an element in the list
          */
         @NonNull
         String getElementRoot();
@@ -581,15 +581,15 @@ public class XmlImporter
         final String name;
         /**
          * value attribute (e.g. int,boolean,...),
-         * not used when the t body is used (String,..).
+         * not used when the tag body is used (String,..).
          * <p>
          * optional.
          */
         @Nullable
         final String value;
         /**
-         * - current use: the type of the element as set by the t itself.
-         * - pre-v200 backward compatibility: the type attribute of a generic 'item' t.
+         * - current use: the type of the element as set by the tag itself.
+         * - pre-v200 backward compatibility: the type attribute of a generic 'item' tag.
          */
         @NonNull
         String type;
@@ -818,7 +818,7 @@ public class XmlImporter
      * * Filters and Groups are flattened.
      * * - each filter has a t
      * * - actual groups are written as a set of id's (kinds)
-     * * - each preference in a group has a t.
+     * * - each preference in a group has a tag.
      */
     static class StylesReader
             implements EntityReader<String> {

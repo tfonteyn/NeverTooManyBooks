@@ -31,10 +31,7 @@ import android.widget.CursorAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.widgets.FastScrollListView;
+import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
 
 /**
  * Cursor adapter for flattened multi-typed ListViews.
@@ -47,7 +44,7 @@ import com.eleybourn.bookcatalogue.widgets.FastScrollListView;
  */
 public class MultiTypeListCursorAdapter
         extends CursorAdapter
-        implements FastScrollListView.FastScroller.SectionIndexerV2 {
+        implements SectionIndexerV2 {
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -64,6 +61,7 @@ public class MultiTypeListCursorAdapter
 
     /**
      * NOT USED. Should never be called. Die if it is.
+     * (Normally called from getView, but we override that)
      */
     @Override
     public void bindView(@NonNull final View view,
@@ -74,6 +72,7 @@ public class MultiTypeListCursorAdapter
 
     /**
      * NOT USED. Should never be called. Die if it is.
+     * (Normally called from getView, but we override that)
      */
     @NonNull
     @Override
@@ -110,6 +109,9 @@ public class MultiTypeListCursorAdapter
         return mListHandler.getViewTypeCount();
     }
 
+    /**
+     * The original/parent normally provides re-use of views in conjunction with newView/bindView.
+     */
     @NonNull
     @Override
     public View getView(final int position,
@@ -122,9 +124,10 @@ public class MultiTypeListCursorAdapter
     }
 
     /**
-     * this method gets called by {@link FastScrollListView.FastScroller}.
+     * Provide the text for the fast-scroller overlay of ListView
+     * and {@link com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
      * <p>
-     * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}.
+     * The actual text comes from {@link MultiTypeListHandler#getSectionText(Cursor)}}.
      */
     @Override
     @Nullable
@@ -139,11 +142,6 @@ public class MultiTypeListCursorAdapter
         final String[] section = mListHandler.getSectionText(listCursor);
         listCursor.moveToPosition(savedPos);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            for (String s : section) {
-                Logger.debug(this, "getSectionTextForPosition", "Section: " + s);
-            }
-        }
         return section;
     }
 }

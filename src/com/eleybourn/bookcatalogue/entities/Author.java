@@ -46,7 +46,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_C
  * @author Philip Warner
  */
 public class Author
-        implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, Utils.ItemWithIdFixup, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR =
@@ -269,6 +269,7 @@ public class Author
         mIsComplete = complete;
     }
 
+    @Override
     public long getId() {
         return mId;
     }
@@ -320,7 +321,7 @@ public class Author
      * @return formatted name
      */
     @NonNull
-    public String getDisplayName() {
+    public String getLabel() {
         if (!mGivenNames.isEmpty()) {
             return mGivenNames + ' ' + mFamilyName;
         } else {

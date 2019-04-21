@@ -57,7 +57,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITL
  * @author Philip Warner
  */
 public class Series
-        implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, Utils.ItemWithIdFixup, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR =
@@ -382,6 +382,7 @@ public class Series
         return 0;
     }
 
+    @Override
     public long getId() {
         return mId;
     }
@@ -394,7 +395,7 @@ public class Series
      * @return User visible name; consisting of "name" or "name (nr)"
      */
     @NonNull
-    public String getDisplayName() {
+    public String getLabel() {
         if (!mNumber.isEmpty()) {
             return mName + " (" + mNumber + ')';
         } else {
@@ -407,7 +408,7 @@ public class Series
      */
     @NonNull
     public String getSortName() {
-        return getDisplayName();
+        return getLabel();
     }
 
     /**

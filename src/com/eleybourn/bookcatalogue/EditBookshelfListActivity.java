@@ -60,8 +60,8 @@ public class EditBookshelfListActivity
 
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
-    /** The View for the list. */
-    private ListView mListView;
+    /** The adapter for the list. */
+    private ArrayAdapter<Bookshelf> mAdapter;
 
 
     @Override
@@ -76,17 +76,20 @@ public class EditBookshelfListActivity
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DBA(this);
 
-        mListView = findViewById(android.R.id.list);
+        ListView listView = findViewById(android.R.id.list);
 
-        populateList();
+        mList = mDb.getBookshelves();
+        mAdapter = new BookshelfAdapter(this, R.layout.row_bookshelf, mList);
+        listView.setAdapter(mAdapter);
 
         // click -> edit
-        mListView.setOnItemClickListener((parent, view, position, id) -> {
-            Bookshelf bookshelf = mList.get(position);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Bookshelf bookshelf = mAdapter.getItem(position);
+            //noinspection ConstantConditions
             doEditDialog(bookshelf);
         });
         // long-click -> menu
-        mListView.setOnItemLongClickListener((parent, view, position, id) -> {
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
             // legal trick to get an instance of Menu.
             Menu menu = new PopupMenu(view.getContext(), null).getMenu();
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
@@ -94,22 +97,12 @@ public class EditBookshelfListActivity
             menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
                 .setIcon(R.drawable.ic_delete);
             // display
-            String menuTitle = mList.get(position).getName();
+            //noinspection ConstantConditions
+            String menuTitle = mAdapter.getItem(position).getName();
             PopupMenuDialog.onCreateListViewContextMenu(this, position, menuTitle, menu,
                                                         this::onListViewContextItemSelected);
             return true;
         });
-    }
-
-
-    /**
-     * populate / refresh the list view.
-     */
-    private void populateList() {
-        mList = mDb.getBookshelves();
-        /** The adapter for the list. */
-        ArrayAdapter<Bookshelf> adapter = new BookshelfAdapter(this, R.layout.row_bookshelf, mList);
-        mListView.setAdapter(adapter);
     }
 
     /**
@@ -118,16 +111,18 @@ public class EditBookshelfListActivity
     private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                   final int position) {
 
-        Bookshelf bookshelf = mList.get(position);
+        Bookshelf bookshelf = mAdapter.getItem(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
+                //noinspection ConstantConditions
                 doEditDialog(bookshelf);
                 return true;
 
             case R.id.MENU_DELETE:
+                //noinspection ConstantConditions
                 if (!bookshelf.isDefault()) {
                     mDb.deleteBookshelf(bookshelf.getId());
-                    populateList();
+                    mAdapter.remove(bookshelf);
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
@@ -145,7 +140,7 @@ public class EditBookshelfListActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
             .setIcon(R.drawable.ic_add)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -168,13 +163,13 @@ public class EditBookshelfListActivity
      */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment.show(getSupportFragmentManager(), bookshelf);
-
     }
 
     @Override
     public void onBookshelfChanged(final long bookshelfId,
                                    final int booksMoved) {
-        populateList();
+        mList = mDb.getBookshelves();
+        mAdapter.notifyDataSetChanged();
         Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
         setResult(Activity.RESULT_OK, data);
     }

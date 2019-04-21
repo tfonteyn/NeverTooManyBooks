@@ -119,7 +119,7 @@ public class PreferredStylesActivity
         }
 
         // display the menu
-        String menuTitle = style.getDisplayName(this);
+        String menuTitle = style.getLabel(this);
         PopupMenuDialog.onCreateListViewContextMenu(this, position, menuTitle, menu,
                                                     this::onListViewContextItemSelected);
         return true;
@@ -333,7 +333,7 @@ public class PreferredStylesActivity
 
             // Setup the variant fields in the holder
             holder.style = item;
-            holder.nameView.setText(item.getDisplayName(getContext()));
+            holder.nameView.setText(item.getLabel(getContext()));
             holder.checkableView.setChecked(item.isPreferred());
 
             holder.groupsView.setText(item.getGroupListDisplayNames(getContext()));

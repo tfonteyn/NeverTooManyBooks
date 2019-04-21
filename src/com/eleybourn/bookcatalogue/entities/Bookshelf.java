@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -26,7 +27,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID
  * Represents a Bookshelf.
  */
 public class Bookshelf
-        implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, Utils.ItemWithIdFixup, Entity {
 
     /**
      * how to concat bookshelf names. This should be using '|' as {@link StringList}
@@ -146,11 +147,10 @@ public class Bookshelf
                 } catch (NumberFormatException ignore) {
                 }
             } else {
-                // it's a user defined style. TOMF: ENHANCE... implement later....
-                //problem: importing an archive where the bookshelf data comes BEFORE the styles
+                //TOMF: ENHANCE... implement later it's a user defined style,
+                // Problem: importing an archive where the bookshelf data comes BEFORE the styles
                 // see if we can find the uuid in the db
-                // if found, we have the id:
-                //..... return new Bookshelf(name, styleId);
+                // if found, we have the id: return new Bookshelf(name, styleId);
                 // if not found?
             }
         }
@@ -224,6 +224,7 @@ public class Bookshelf
         App.getPrefs().edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
+    @Override
     public long getId() {
         return mId;
     }
@@ -234,6 +235,11 @@ public class Bookshelf
 
     @NonNull
     public String getName() {
+        return mName;
+    }
+
+    @Override
+    public String getLabel(@NonNull final Context context) {
         return mName;
     }
 

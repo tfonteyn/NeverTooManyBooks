@@ -7,17 +7,17 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Defines the context of a specific element (xml t).
+ * Defines the context of a specific element (xml tag).
  * <p>
- * The 'mBody' element will only be set when the t end is handled.
+ * The 'mBody' element will only be set when the tag end is handled.
  *
  * @author Philip Warner
  */
 public class ElementContext {
 
-    /** the short name of the t. */
+    /** the short name of the tag. */
     private final String mLocalName;
-    /** Attributes on this t. */
+    /** Attributes on this tag. */
     @NonNull
     private final Attributes mAttributes;
 
@@ -35,10 +35,10 @@ public class ElementContext {
     @NonNull
     private final String mText;
 
-    /** the mBody/text between start and end of the t. */
+    /** the mBody/text between start and end of the tag. */
     private String mBody;
 
-    /** filter on this t. */
+    /** filter on this tag. */
     @Nullable
     private XmlFilter mFilter;
 
@@ -49,7 +49,7 @@ public class ElementContext {
     private Object mUserArg;
 
     /**
-     * @param filter to use for this t.
+     * @param filter to use for this tag.
      */
     public ElementContext(@NonNull final XmlFilter filter) {
         mFilter = filter;
@@ -118,7 +118,7 @@ public class ElementContext {
     }
 
     /**
-     * @param body of the t.
+     * @param body of the tag.
      */
     public void setBody(final String body) {
         mBody = body.trim();

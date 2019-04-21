@@ -67,7 +67,7 @@ public class PartialDatePickerDialogFragment
         extends
         EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = PartialDatePickerDialogFragment.class.getSimpleName();
 
     /** a standard sql style date string, must be correct. */
@@ -104,7 +104,7 @@ public class PartialDatePickerDialogFragment
     /**
      * Constructor.
      *
-     * @param callerTag     t of the calling fragment to send results back to.
+     * @param callerTag     tag of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param todayIfNone   <tt>true</tt> if we should use 'today' if the field was empty.

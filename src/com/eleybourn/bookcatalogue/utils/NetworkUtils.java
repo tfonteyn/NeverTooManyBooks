@@ -105,14 +105,12 @@ public final class NetworkUtils {
         return isAlive("8.8.8.8", 53);
     }
 
-    @SuppressWarnings("WeakerAccess")
     @WorkerThread
     public static boolean isAlive(@NonNull final String host,
                                   final int port) {
         try {
             long t;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                //noinspection UnusedAssignment
                 t = System.nanoTime();
             }
             Socket sock = new Socket();

@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
  * <p>
  * FIXME: ... re-test and see why the progress stops.
- * Seems we hit some limit in number of HTTP connections (server imposed ?)
+ *  Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
 public class UpdateFieldsFromInternetActivity
         extends BaseActivityWithTasks {
@@ -333,7 +333,7 @@ public class UpdateFieldsFromInternetActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -341,6 +341,7 @@ public class UpdateFieldsFromInternetActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this, SearchAdminActivity.class)

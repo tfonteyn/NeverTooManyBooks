@@ -99,11 +99,15 @@
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <TextView
             android:id="@+id/lbl_publication_dates_baseline"
-            style="@style/baseline_lbl_textField_small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/publisher"
+            tools:ignore="SelectableText"
             />
 
         <TextView
@@ -111,7 +115,7 @@
             style="@style/lbl_editField"
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_publication_dates_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
             app:layout_constraintStart_toStartOf="@id/first_publication"
             />
 
@@ -120,14 +124,16 @@
             style="@style/lbl_editField"
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_publication_dates_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
             app:layout_constraintStart_toStartOf="@id/date_published"
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <Button
             android:id="@+id/publication_dates_baseline"
-            style="@style/baseline_buttons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publication_dates_baseline"
             />
@@ -135,7 +141,7 @@
         <Button
             android:id="@+id/first_publication"
             style="@style/buttonDataEntry"
-            app:layout_constraintBottom_toBottomOf="@id/publication_dates_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toStartOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
             />
@@ -143,7 +149,7 @@
         <Button
             android:id="@+id/date_published"
             style="@style/buttonDataEntry"
-            app:layout_constraintBottom_toBottomOf="@id/publication_dates_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/first_publication"
             />
@@ -179,20 +185,12 @@
             app:layout_constraintTop_toBottomOf="@id/pages"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
-            android:id="@+id/lbl_price_listed_baseline"
-            style="@style/baseline_EditText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
-            />
-
         <EditText
             android:id="@+id/price_listed"
             style="@style/priceTextEntry"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_listed_baseline"
             app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             tools:ignore="Autofill"
             tools:text="14.99"
             />
@@ -200,7 +198,7 @@
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
             style="@style/currencyTextEntry"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_listed_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"
             tools:ignore="Autofill,LabelFor"
@@ -209,7 +207,7 @@
         <ImageButton
             android:id="@+id/btn_price_listed_currency"
             style="@style/dropDownMenuButton"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_price_listed_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"
             app:layout_constraintTop_toTopOf="@id/price_listed_currency"

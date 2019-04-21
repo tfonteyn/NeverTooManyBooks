@@ -50,7 +50,7 @@ public class CheckListEditorDialogFragment<T>
         extends
         EditorDialogFragment<CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>> {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = CheckListEditorDialogFragment.class.getSimpleName();
 
     /** Argument. */
@@ -62,7 +62,7 @@ public class CheckListEditorDialogFragment<T>
     /**
      * Constructor.
      *
-     * @param callerTag     t of the calling fragment to send results back to.
+     * @param callerTag     tag of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param listGetter    callback interface for getting the list to use.

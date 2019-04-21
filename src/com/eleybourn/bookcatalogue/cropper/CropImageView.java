@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.cropper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -123,6 +124,7 @@ class CropImageView
         invalidate();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(@NonNull final MotionEvent event) {
         CropImageActivity cropImage = (CropImageActivity) mContext;

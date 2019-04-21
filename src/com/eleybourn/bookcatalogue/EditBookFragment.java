@@ -64,7 +64,7 @@ public class EditBookFragment
         extends EditBookBaseFragment
         implements BookManager, DataEditor {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = EditBookFragment.class.getSimpleName();
 
     /**
@@ -90,12 +90,10 @@ public class EditBookFragment
     private boolean mIsDirty;
 
     /** cache our activity to avoid multiple requireActivity and casting. */
-    private EditBookActivity mActivity;
+    private BaseActivity mActivity;
 
     private ViewPager mViewPager;
     private ViewPagerAdapter mPagerAdapter;
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="BookManager interface">
 
@@ -132,8 +130,6 @@ public class EditBookFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment startup">
 
     @Override
@@ -147,7 +143,7 @@ public class EditBookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mActivity = (EditBookActivity) requireActivity();
+        mActivity = (BaseActivity) requireActivity();
         super.onActivityCreated(savedInstanceState);
 
         // any specific tab desired as 'selected' ?
@@ -218,8 +214,6 @@ public class EditBookFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment shutdown">
 
     /**
@@ -233,8 +227,6 @@ public class EditBookFragment
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,

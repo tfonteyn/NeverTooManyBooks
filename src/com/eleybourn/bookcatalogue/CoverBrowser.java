@@ -59,8 +59,8 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.EditorDialogFragment;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager.ImageSizes;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.AlternativeExecutor;
@@ -86,7 +86,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class CoverBrowser
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = CoverBrowser.class.getSimpleName();
 
     /** ArrayList<String> with edition isbn's. */
@@ -171,6 +171,7 @@ public class CoverBrowser
         mActivity = (BaseActivity) requireActivity();
 
         Bundle args = requireArguments();
+
         mIsbn = args.getString(DBDefinitions.KEY_ISBN);
         // Create an object to manage the downloaded files
         mFileManager = new FileManager(args.getInt(UniqueId.BKEY_SEARCH_SITES), savedInstanceState);
@@ -204,7 +205,7 @@ public class CoverBrowser
         });
         // When the switcher image is clicked, send the fileSpec back to the caller and terminate.
         mImageSwitcherView.setOnClickListener(v -> {
-            // When the image was loaded, the filename was stored in the t.
+            // When the image was loaded, the filename was stored in the tag.
             String fileSpec = (String) mImageSwitcherView.getTag();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(CoverBrowser.this, "mImageSwitcherView.onClick",
@@ -708,7 +709,9 @@ public class CoverBrowser
         protected String doInBackground(final Void... params) {
             try {
                 return mFileManager.download(mGalleryViewHolder.isbn,
-                                             SearchSiteManager.ImageSizes.SMALL, SearchSiteManager.ImageSizes.MEDIUM, SearchSiteManager.ImageSizes.LARGE);
+                                             SearchSiteManager.ImageSizes.SMALL,
+                                             SearchSiteManager.ImageSizes.MEDIUM,
+                                             SearchSiteManager.ImageSizes.LARGE);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
@@ -766,7 +769,8 @@ public class CoverBrowser
         @WorkerThread
         protected String doInBackground(final Void... params) {
             try {
-                return mFileManager.download(mIsbn, SearchSiteManager.ImageSizes.LARGE, SearchSiteManager.ImageSizes.MEDIUM,
+                return mFileManager.download(mIsbn, SearchSiteManager.ImageSizes.LARGE,
+                                             SearchSiteManager.ImageSizes.MEDIUM,
                                              SearchSiteManager.ImageSizes.SMALL);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {

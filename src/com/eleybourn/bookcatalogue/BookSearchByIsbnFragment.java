@@ -67,7 +67,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = BookSearchByIsbnFragment.class.getSimpleName();
     /** option to start in scan mode (versus manual entry). */
     public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
@@ -112,9 +112,12 @@ public class BookSearchByIsbnFragment
                              @Nullable final Bundle savedInstanceState) {
 
         // we need to know if we're in scan mode. If so, we don't have a UI.
-        mScanMode = requireArguments().getBoolean(BKEY_IS_SCAN_MODE);
-        if (mScanMode) {
-            return null;
+        Bundle args = getArguments();
+        if (args != null) {
+            mScanMode = args.getBoolean(BKEY_IS_SCAN_MODE);
+            if (mScanMode) {
+                return null;
+            }
         }
         return inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
     }

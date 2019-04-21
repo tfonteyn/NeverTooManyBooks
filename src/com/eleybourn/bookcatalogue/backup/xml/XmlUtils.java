@@ -46,7 +46,7 @@ public final class XmlUtils {
 
     /**
      * root element, used to recognise 'our' files during import.
-     * FIXME: not used in all places yet due to backward compat
+     * FIXME: XML_ROOT not used in all places yet due to backward compat
      */
     static final String XML_ROOT = "bc";
 
@@ -262,7 +262,7 @@ public final class XmlUtils {
     /**
      * String values are automatically encoded.
      *
-     * @return t with (optional) name and value attribute, empty body
+     * @return tag with (optional) name and value attribute, empty body
      */
     static String tag(@NonNull final String tag,
                       @Nullable final String name,
@@ -281,7 +281,7 @@ public final class XmlUtils {
     /**
      * No encoding of the value is done here.
      *
-     * @return t with (optional) name attribute and content body
+     * @return tag with (optional) name attribute and content body
      */
     private static String tagWithBody(@NonNull final String tag,
                                       @Nullable final String name,
@@ -293,7 +293,7 @@ public final class XmlUtils {
     }
 
     /**
-     * @return t with (optional) name attribute and CDATA content body
+     * @return tag with (optional) name attribute and CDATA content body
      */
     static String tagWithCData(@NonNull final String tag,
                                @Nullable final String name,
@@ -320,13 +320,13 @@ public final class XmlUtils {
     }
 
     /**
-     * Encodes a single value with a t equal to the value's type.
+     * Encodes a single value with a tag equal to the value's type.
      * Strings are CDATA encoded; others use the 'value' attribute.
      *
      * @param name  (optional) attribute for the t
      * @param value to encode
      *
-     * @return xml t
+     * @return xml tag
      */
     static String typedTag(@Nullable final String name,
                            @NonNull final Object value)

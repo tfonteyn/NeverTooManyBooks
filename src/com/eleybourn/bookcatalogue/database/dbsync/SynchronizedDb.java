@@ -606,8 +606,8 @@ public class SynchronizedDb {
 
     /**
      * Method to detect if collation implementations are case sensitive.
-     * This was built because ICS broke the UNICODE collation (making it CS) and we needed
-     * to check for collation case-sensitivity.
+     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
+     * and we needed to check for collation case-sensitivity.
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      * <p>

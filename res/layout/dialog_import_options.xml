@@ -5,14 +5,22 @@
     style="@style/dialogFrame"
     >
 
+    <TextView
+        android:id="@+id/dialog_title"
+        style="@style/dialogTitle"
+        android:text="@string/import_options_dialog_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <include
         android:id="@+id/import_export_options"
         layout="@layout/inc_import_export_options"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_title"
         />
 
     <RadioGroup

@@ -197,7 +197,7 @@ public class SimpleXmlFilter {
     }
 
     /**
-     * Closing t. Call this when done.
+     * Closing tag. Call this when done.
      */
     public void done() {
         mTags.clear();
@@ -237,7 +237,7 @@ public class SimpleXmlFilter {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
             if (last == 0) {
-                throw new RuntimeException("Unable to find parent t :" + tag);
+                throw new RuntimeException("Unable to find parent tag :" + tag);
             }
             mContexts.remove(last);
             mTags.remove(last);

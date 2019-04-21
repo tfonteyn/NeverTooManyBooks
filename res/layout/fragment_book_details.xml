@@ -106,18 +106,22 @@
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <TextView
             android:id="@+id/lbl_pages_baseline"
-            style="@style/baseline_lbl_textField_small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/pages"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_pages_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
             app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
@@ -128,7 +132,7 @@
             android:id="@+id/format"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_pages_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
             app:layout_constraintStart_toEndOf="@id/pages"
             tools:ignore="SelectableText"
             tools:text="Hardcover"
@@ -185,8 +189,7 @@
 
         <!-- don't set padding on the toc. The toc height is calculated as needed.
         There will be no (nested) scrolling, as the calculated height wil make the full list
-        visible. User can flick the button to 'open'close' the list.
-        Note the id is not "android:id/list".
+        visible. User can flick the button to 'open/close' the list.
         -->
         <ListView
             android:id="@+id/toc"
@@ -198,8 +201,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
             tools:ignore="NestedScrolling"
-            tools:visibility="visible"
             tools:listitem="@layout/row_toc_entry_with_author"
+            tools:visibility="visible"
             />
 
         <!-- Publishing -->
@@ -216,32 +219,35 @@
         <!-- Publishing - Publisher + date published -->
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <View
+        <TextView
             android:id="@+id/lbl_publisher_baseline"
-            style="@style/baseline_lbl_textField_medium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/publisher"
             style="@style/txt_detail_medium"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_publisher_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
-            tools:text="Publisher name"
+            tools:text="The publisher name"
             />
 
         <TextView
             android:id="@+id/date_published"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/publisher"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_publisher_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toEndOf="@id/publisher"
             tools:ignore="SelectableText"
-            tools:text="25 Jan 2012"
+            tools:text="25 Aug 2018"
             />
 
         <!-- Publishing - List price -->

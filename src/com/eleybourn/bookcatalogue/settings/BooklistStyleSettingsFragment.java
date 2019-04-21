@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 public class BooklistStyleSettingsFragment
         extends BaseSettingsFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     public static final String TAG = BooklistStyleSettingsFragment.class.getSimpleName();
 
     /** Parameter used to pass data to this activity. */
@@ -47,7 +47,9 @@ public class BooklistStyleSettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
-        mStyle = requireArguments().getParcelable(REQUEST_BKEY_STYLE);
+        Bundle args = requireArguments();
+
+        mStyle = args.getParcelable(REQUEST_BKEY_STYLE);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             //noinspection ConstantConditions
             Logger.debugEnter(this, "onCreatePreferences", mStyle.toString());
@@ -79,11 +81,11 @@ public class BooklistStyleSettingsFragment
         if (mStyle.getId() == 0) {
             activity.setTitle(
                     getString(R.string.title_clone_style_colon_name,
-                              mStyle.getDisplayName(activity)));
+                              mStyle.getLabel(activity)));
         } else {
             activity.setTitle(
                     getString(R.string.title_edit_style_colon_name,
-                              mStyle.getDisplayName(activity)));
+                              mStyle.getLabel(activity)));
         }
         // Display hint if required
         if (savedInstanceState == null) {

@@ -2,6 +2,9 @@ package com.eleybourn.bookcatalogue;
 
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -12,6 +15,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Base class for all fragments that appear in {@link EditBookActivity}.
@@ -33,10 +37,10 @@ public abstract class EditBookBaseFragment
                                         final boolean setAllFrom) {
         super.onLoadFieldsFromBook(book, setAllFrom);
 
-        // new book ? load data fields from Extras
+        // new book ?
         if (book.getId() == 0) {
-            Bundle extras = requireActivity().getIntent().getExtras();
-            populateNewBookFieldsFromBundle(book, extras);
+            Bundle args = requireArguments();
+            populateNewBookFieldsFromBundle(book, args);
         }
     }
 
@@ -58,6 +62,27 @@ public abstract class EditBookBaseFragment
                 mFields.setAllFrom(values, false);
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 0, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_HIDE_KEYBOARD) {
+            //noinspection ConstantConditions
+            Utils.hideKeyboard(getView());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

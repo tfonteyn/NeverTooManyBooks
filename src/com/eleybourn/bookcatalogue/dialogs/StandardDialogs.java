@@ -121,13 +121,13 @@ public final class StandardDialogs {
         if (authorList.isEmpty()) {
             authors.append(UNKNOWN);
         } else {
-            authors.append(authorList.get(0).getDisplayName());
+            authors.append(authorList.get(0).getLabel());
             for (int i = 1; i < authorList.size() - 1; i++) {
-                authors.append(", ").append(authorList.get(i).getDisplayName());
+                authors.append(", ").append(authorList.get(i).getLabel());
             }
             if (authorList.size() > 1) {
                 authors.append(' ').append(context.getString(R.string.list_and)).append(' ').append(
-                        authorList.get(authorList.size() - 1).getDisplayName());
+                        authorList.get(authorList.size() - 1).getLabel());
             }
         }
 

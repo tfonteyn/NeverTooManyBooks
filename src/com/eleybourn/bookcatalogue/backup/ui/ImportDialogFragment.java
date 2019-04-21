@@ -3,16 +3,16 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.IOException;
@@ -30,12 +30,12 @@ import com.eleybourn.bookcatalogue.debug.MustImplementException;
 public class ImportDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager t. */
+    /** Fragment manager tag. */
     private static final String TAG = ImportDialogFragment.class.getSimpleName();
 
     private ImportSettings mImportSettings;
 
-    private FragmentActivity mActivity;
+    private OnImportTypeSelectionDialogResultsListener mActivity;
 
     /**
      * (syntax sugar for newInstance)
@@ -76,41 +76,35 @@ public class ImportDialogFragment
         }
     }
 
-    /**
-     * Create the underlying dialog.
-     */
-    @NonNull
+    @Nullable
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        mActivity = requireActivity();
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_import_options, container);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        mActivity = (OnImportTypeSelectionDialogResultsListener) requireActivity();
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mImportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_import_options, null);
-
-        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+        view.findViewById(R.id.confirm).setOnClickListener(v -> {
             updateOptions();
-            OnImportTypeSelectionDialogResultsListener listener =
-                    (OnImportTypeSelectionDialogResultsListener) mActivity;
-            listener.onImportTypeSelectionDialogResult(mImportSettings);
+            mActivity.onImportTypeSelectionDialogResult(mImportSettings);
             dismiss();
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
+        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         if (!archiveHasValidDates()) {
-            View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
+            View radioNewAndUpdatedBooks = view.findViewById(R.id.radioNewAndUpdatedBooks);
             radioNewAndUpdatedBooks.setEnabled(false);
-            TextView blurb = root.findViewById(R.id.radioNewAndUpdatedBooksInfo);
+            TextView blurb = view.findViewById(R.id.radioNewAndUpdatedBooksInfo);
             blurb.setText(R.string.import_warning_old_archive);
         }
-
-        AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setView(root)
-                .setTitle(R.string.import_options_dialog_title)
-                .create();
-        dialog.setCanceledOnTouchOutside(false);
-        return dialog;
     }
 
     private void updateOptions() {

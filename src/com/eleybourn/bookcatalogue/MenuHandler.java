@@ -34,8 +34,14 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
 
 /**
  * Handles re-usable menu items; both to create and to handle.
+ *
+ * Defines some menu 'order' variables, to ensure certain menu's have a fixed spot.
  */
 final class MenuHandler {
+
+    public static final int MENU_ORDER_LENDING = 90;
+    public static final int MENU_ORDER_SHARE = 95;
+    private static final int MENU_ORDER_AMAZON = 99;
 
     private MenuHandler() {
     }
@@ -120,7 +126,7 @@ final class MenuHandler {
      */
     static SubMenu addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                                          0, R.string.amazon_ellipsis)
+                                          MENU_ORDER_AMAZON, R.string.amazon_ellipsis)
                               .setIcon(R.drawable.ic_search)
                               .setHeaderIcon(R.drawable.ic_search);
 

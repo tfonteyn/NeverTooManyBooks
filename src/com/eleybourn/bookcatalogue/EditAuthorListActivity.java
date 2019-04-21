@@ -267,7 +267,7 @@ public class EditAuthorListActivity
     public static class EditBookAuthorDialogFragment
             extends EditAuthorBaseDialogFragment {
 
-        /** Fragment manager t. */
+        /** Fragment manager tag. */
         public static final String TAG = EditBookAuthorDialogFragment.class.getSimpleName();
 
         /**
@@ -332,9 +332,9 @@ public class EditAuthorListActivity
             }
 
             // Setup the variant fields in the holder.
-            holder.rowAuthorView.setText(item.getDisplayName());
+            holder.rowAuthorView.setText(item.getLabel());
 
-            if (item.getDisplayName().equals(item.getSortName())) {
+            if (item.getLabel().equals(item.getSortName())) {
                 holder.rowAuthorSortView.setVisibility(View.GONE);
             } else {
                 holder.rowAuthorSortView.setVisibility(View.VISIBLE);

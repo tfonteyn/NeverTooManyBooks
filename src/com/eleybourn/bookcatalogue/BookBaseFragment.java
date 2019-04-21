@@ -58,7 +58,6 @@ import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
@@ -79,7 +78,7 @@ public abstract class BookBaseFragment
 
     /** Database instance. */
     protected DBA mDb;
-    /** */
+    /** The fields collection. */
     Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place. */
     private BaseActivity mActivity;
@@ -99,14 +98,10 @@ public abstract class BookBaseFragment
         }
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * @return the BookManager which is (should be) the only way to get/set Book properties.
      */
     protected abstract BookManager getBookManager();
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
@@ -133,18 +128,21 @@ public abstract class BookBaseFragment
         mDb = new DBA(mActivity);
 
         if (this instanceof BookManager) {
-            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-            Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
-            Book book;
-            if (bookData != null) {
-                // if we have a populated bundle, use that.
-                book = new Book(bookData);
-            } else {
-                // otherwise, try to load from the database. If that fails, it's a new book.
-                long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
-                book = new Book(bookId, mDb);
+            Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+            if (args != null) {
+                Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+                Book book;
+                if (bookData != null) {
+                    // if we have a populated bundle, use that.
+                    book = new Book(bookData);
+                } else {
+                    // otherwise, check if we have an id.
+                    long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
+                    // with a valid id, load from database. With id==0, it's a new Book.
+                    book = new Book(bookId, mDb);
+                }
+                getBookManager().setBook(book);
             }
-            getBookManager().setBook(book);
         }
 
         initFields();
@@ -231,8 +229,6 @@ public abstract class BookBaseFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Fragment shutdown">
 
     @Override
@@ -255,34 +251,15 @@ public abstract class BookBaseFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     //<editor-fold desc="Menu handlers">
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        /*
-         * MENU_GROUP_BOOK is shown only when the book is persisted in the database.
-         */
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
-        menu.add(R.id.MENU_GROUP_BOOK,
+        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
                  R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
-            .setIcon(R.drawable.ic_share);
-
-        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
-            menu.add(R.id.MENU_BOOK_EDIT_LOAN,
-                     R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book);
-            menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
-                     R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.menu_loan_return_book);
-        }
-        MenuHandler.addAmazonSearchSubMenu(menu);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -295,18 +272,9 @@ public abstract class BookBaseFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        Book book = getBookManager().getBook();
 
-        boolean bookExists = book.getId() != 0;
-        menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
-
-        if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
-            boolean isAvailable = mDb.getLoaneeByBookId(book.getId()) == null;
-            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
-        }
-
-        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
+        boolean bookExists = getBookManager().getBook().getId() != 0;
+        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, bookExists);
     }
 
     @Override
@@ -314,20 +282,8 @@ public abstract class BookBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final Book book = getBookManager().getBook();
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_BOOK_DELETE:
-                StandardDialogs.deleteBookAlert(mActivity, mDb, book.getId(), () -> {
-                    mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                    mActivity.finish();
-                });
-                return true;
-
-            case R.id.MENU_BOOK_DUPLICATE:
-                Intent intent = new Intent(mActivity, EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(intent, UniqueId.REQ_BOOK_DUPLICATE);
-                return true;
-
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
                 Intent intentUpdateFields =
                         new Intent(mActivity, UpdateFieldsFromInternetActivity.class)
@@ -340,22 +296,12 @@ public abstract class BookBaseFragment
                                        UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
 
-            case R.id.MENU_SHARE:
-                startActivity(Intent.createChooser(book.getShareBookIntent(mActivity),
-                                                   getString(R.string.menu_share_this)));
-                return true;
-
             default:
-                if (MenuHandler.handleAmazonSearchSubMenu(mActivity, item, book)) {
-                    return true;
-                }
                 return super.onOptionsItemSelected(item);
         }
     }
 
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Field editors">
 
@@ -400,7 +346,7 @@ public abstract class BookBaseFragment
      * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
      * @param multiLine     <tt>true</tt> if the dialog box should offer a multi-line input.
      */
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "unused"})
     void initTextFieldEditor(@NonNull final String callerTag,
                              @NonNull final Field field,
                              @StringRes final int dialogTitleId,
@@ -474,14 +420,13 @@ public abstract class BookBaseFragment
 
     //</editor-fold>
 
-    /* ------------------------------------------------------------------------------------------ */
-
     @Override
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
@@ -512,7 +457,6 @@ public abstract class BookBaseFragment
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
-
         }
 
         Tracker.exitOnActivityResult(this);
@@ -525,8 +469,8 @@ public abstract class BookBaseFragment
      * Authors & Title are always visible as they are required fields.
      * <p>
      * Series is done in:
-     * {@link EditBookFieldsFragment#populateSeriesListField}
-     * {@link BookFragment#populateSeriesListField}
+     * {@link EditBookFieldsFragment} #populateSeriesListField}
+     * {@link BookFragment}  #populateSeriesListField}
      * <p>
      * Special fields not checked here:
      * - toc
@@ -565,8 +509,6 @@ public abstract class BookBaseFragment
                             R.id.price_listed, R.id.first_publication);
 
         showHide(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
-        // Hide the baseline if price listed fields are gone.
-        setVisibilityGoneOr(R.id.lbl_price_listed_baseline, View.INVISIBLE, R.id.price_listed);
 
         // personal fields
         showHide(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
@@ -579,8 +521,6 @@ public abstract class BookBaseFragment
         showHide(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
 
         showHide(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
-        // Hide the baseline if both price paid fields are gone.
-        setVisibilityGoneOr(R.id.lbl_price_paid_baseline, View.INVISIBLE, R.id.price_paid);
 
         showHide(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
         showHide(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
@@ -624,7 +564,7 @@ public abstract class BookBaseFragment
                         // don't act on ImageView, but all other fields can be string tested.
 
                         final String value = mFields.getField(fieldId).getValue().toString().trim();
-                        visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
+                        visibility = value.isEmpty() ? View.GONE : View.VISIBLE;
                         view.setVisibility(visibility);
                     }
                 }
