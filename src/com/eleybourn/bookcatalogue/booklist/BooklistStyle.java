@@ -368,7 +368,7 @@ public class BooklistStyle
     }
 
     /**
-     * @return the UUID, will be empty (but not null) for builtin styles.
+     * @return the UUID, will be empty for builtin styles, but never {@code null} .
      */
     @NonNull
     public String getUuid() {
@@ -492,21 +492,21 @@ public class BooklistStyle
     }
 
     /**
-     * @return <tt>true</tt> if this style is user-defined.
+     * @return {@code true} if this style is user-defined.
      */
     public boolean isUserDefined() {
         return (mNameResId == 0);
     }
 
     /**
-     * @return <tt>true</tt> if the style is among preferred styles.
+     * @return {@code true} if the style is among preferred styles.
      */
     public boolean isPreferred() {
         return mIsPreferred.isTrue();
     }
 
     /**
-     * @param isPreferred set to <tt>true</tt> if the style is among preferred styles.
+     * @param isPreferred set to {@code true} if the style is among preferred styles.
      */
     public void setPreferred(final boolean isPreferred) {
         mIsPreferred.set(isPreferred);
@@ -597,7 +597,7 @@ public class BooklistStyle
      *
      * @param level to check, 1-based.
      *
-     * @return <tt>true</tt> if this style can show the desired level
+     * @return {@code true} if this style can show the desired level
      */
     public boolean hasSummaryForLevel(@IntRange(from = 1, to = 3) final int level) {
         switch (level) {
@@ -790,7 +790,7 @@ public class BooklistStyle
     }
 
     /**
-     * @return <tt>true</tt> if this style has the specified group.
+     * @return {@code true} if this style has the specified group.
      */
     boolean hasGroupKind(@IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) final int kind) {
         return mStyleGroups.getGroupKinds().contains(kind);

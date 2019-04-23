@@ -36,8 +36,10 @@ public abstract class FileListerAsyncTask
 
     @NonNull
     protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
+
     @NonNull
     private final File mRoot;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -58,11 +60,15 @@ public abstract class FileListerAsyncTask
         mRoot = root;
     }
 
-    /** @return a FileFilter appropriate to the types of files being listed. */
+    /**
+     * @return a FileFilter appropriate to the types of files being listed.
+     */
     @NonNull
     protected abstract FileFilter getFilter();
 
-    /** Turn an array of Files into an ArrayList of FileDetails. */
+    /**
+     * Turn an array of Files into an ArrayList of FileDetails.
+     */
     @NonNull
     protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
@@ -78,12 +84,6 @@ public abstract class FileListerAsyncTask
         return dirs;
     }
 
-    /**
-     * If the task was cancelled (by the user cancelling the progress dialog) then
-     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-     *
-     * @param result of the task
-     */
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final ArrayList<FileDetails> result) {

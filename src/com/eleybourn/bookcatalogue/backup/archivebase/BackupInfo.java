@@ -207,6 +207,7 @@ public class BackupInfo
      */
     @SuppressWarnings("unused")
     public int getDatabaseVersionCode() {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (getAppVersionCode()) {
             case 179:
                 // 5.2.2
@@ -232,7 +233,7 @@ public class BackupInfo
      * We *should* have Preferences in the archive.
      * At least that was the intention when it was created.
      *
-     * @return <tt>true</tt> if present
+     * @return {@code true} if present
      */
     public boolean hasPreferences() {
         return mBundle.getBoolean(INFO_HAS_PREFERENCES);
@@ -242,7 +243,7 @@ public class BackupInfo
      * We *should* have Styles in the archive.
      * At least that was the intention when it was created.
      *
-     * @return <tt>true</tt> if present
+     * @return {@code true} if present
      */
     public boolean hasBooklistStyles() {
         return mBundle.getBoolean(INFO_HAS_BOOKLIST_STYLES);
@@ -251,7 +252,7 @@ public class BackupInfo
     /**
      * Check if the archive has books (with or without an exact number).
      *
-     * @return <tt>true</tt> if books are present
+     * @return {@code true} if books are present
      */
     public boolean hasBooks() {
         return mBundle.getBoolean(INFO_HAS_BOOKS) || hasBookCount();
@@ -259,10 +260,10 @@ public class BackupInfo
 
     /**
      * Check if the archive has a known number of books.
-     * Will return <tt>false</tt> if there is no number (or if the number is 0); this does not
+     * Will return {@code false} if there is no number (or if the number is 0); this does not
      * mean there might not be any books though. Use {@link #hasBooks()} to be sure.
      *
-     * @return <tt>true</tt> if the number of books are known
+     * @return {@code true} if the number of books are known
      */
     public boolean hasBookCount() {
         return mBundle.containsKey(INFO_NUMBER_OF_BOOKS) && mBundle.getInt(
@@ -276,7 +277,7 @@ public class BackupInfo
     /**
      * Check if the archive has covers (with or without an exact number).
      *
-     * @return <tt>true</tt> if covers are present
+     * @return {@code true} if covers are present
      */
     public boolean hasCovers() {
         return mBundle.getBoolean(INFO_HAS_COVERS) || hasCoverCount();
@@ -284,10 +285,10 @@ public class BackupInfo
 
     /**
      * Check if the archive has a known number of covers.
-     * Will return <tt>false</tt> if there is no number (or if the number is 0); this does not
+     * Will return {@code false} if there is no number (or if the number is 0); this does not
      * mean there might not be any covers though. Use {@link #hasCovers()}} to be sure.
      *
-     * @return <tt>true</tt> if the number of books are known
+     * @return {@code true} if the number of books are known
      */
     public boolean hasCoverCount() {
         return mBundle.containsKey(INFO_NUMBER_OF_COVERS) && mBundle.getInt(
@@ -302,7 +303,7 @@ public class BackupInfo
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
      *
-     * @return <tt>true</tt> if valid
+     * @return {@code true} if valid
      */
     public boolean isValid() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {

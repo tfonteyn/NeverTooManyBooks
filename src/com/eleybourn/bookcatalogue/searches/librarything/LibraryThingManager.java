@@ -174,9 +174,9 @@ public class LibraryThingManager
     /**
      * Check if we have a key; if not alert the user.
      *
-     * @param context    the caller context
-     * @param required   <tt>true</tt> if we must have access to LT.
-     *                   <tt>false</tt> it it would be beneficial.
+     * @param context    caller context
+     * @param required   {@code true} if we must have access to LT.
+     *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
      */
@@ -191,9 +191,9 @@ public class LibraryThingManager
     /**
      * Alert the user if not shown before that we require or would benefit from LT access.
      *
-     * @param context    the caller context
-     * @param required   <tt>true</tt> if we must have access to LT.
-     *                   <tt>false</tt> it it would be beneficial.
+     * @param context    caller context
+     * @param required   {@code true} if we must have access to LT.
+     *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
      *                   that caller already or not yet.
      */
@@ -306,7 +306,7 @@ public class LibraryThingManager
     /**
      * external users (to this class) should call this before doing any searches.
      *
-     * @return <tt>true</tt> if there is no dev key configured.
+     * @return {@code true} if there is no dev key configured.
      */
     public static boolean noKey() {
         boolean noKey = getDevKey().isEmpty();
@@ -346,7 +346,7 @@ public class LibraryThingManager
      * @param isbn to search for
      * @param size of image to get.
      *
-     * @return found/saved File, or null when none found (or any other failure)
+     * @return found/saved File, or {@code null} if none found (or any other failure)
      */
     @Nullable
     @WorkerThread
@@ -400,7 +400,7 @@ public class LibraryThingManager
      * @param isbn           to lookup. Must be a valid ISBN
      * @param author         unused
      * @param title          unused
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @throws IOException on failure
      */

@@ -53,11 +53,11 @@ public final class BackupManager {
      * @param context caller context
      * @param file    to read from
      *
-     * @return a new reader or null when not a valid archive
+     * @return a new reader
      *
      * @throws IOException on failure
      */
-    @Nullable
+    @NonNull
     public static BackupReader readFrom(@NonNull final Context context,
                                         @NonNull final File file)
             throws IOException {
@@ -70,7 +70,7 @@ public final class BackupManager {
         BackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
         if (!bkp.isValid(context)) {
-            return null;
+            throw new IOException("not a valid archive");
         }
 
         return bkp.newReader(context);

@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Intention from the start was to use the Material themes.
+    Due to snags postponed till better understood.
+    So... April 2019: re-tested with Material and ouch..
+    Issues seen:
+
+    - tabs: the selected tab title seems to use the same colour as the backgroung
+    making it invisible.
+
+    - buttons: have a larger background. As we had no margins up to now, they hug each other
+    way to close. Often also simply to big to fit where they are.
+
+    - check-mark for 'read' in the BoB list is much larger
+
+
+    -->
     <!-- ============================================================ -->
     <!-- Exclusive use by the startup activity, hiding it completely. -->
+    <!-- Parent should become: Theme.MaterialComponents.NoActionBar -->
     <!-- ============================================================ -->
     <style name="StartupActivity" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowIsFloating">true</item>
@@ -11,6 +27,7 @@
 
     <!-- =========== -->
     <!-- Dark theme. -->
+    <!-- Parent should become: Theme.MaterialComponents.NoActionBar -->
     <!-- =========== -->
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 
@@ -65,6 +82,7 @@
 
     <!-- =================== -->
     <!-- Light theme - Blue. -->
+    <!-- Parent should become: Theme.MaterialComponents.Light.NoActionBar -->
     <!-- =================== -->
     <style name="AppTheme.Light.Blue" parent="Theme.AppCompat.Light.NoActionBar">
 
@@ -119,6 +137,7 @@
 
     <!-- ================== -->
     <!-- Light theme - Red. -->
+    <!-- Parent should become: Theme.MaterialComponents.Light.NoActionBar -->
     <!-- ================== -->
     <style name="AppTheme.Light.Red" parent="Theme.AppCompat.Light.NoActionBar">
 

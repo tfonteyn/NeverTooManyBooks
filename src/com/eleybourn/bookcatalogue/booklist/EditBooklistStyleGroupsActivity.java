@@ -126,7 +126,7 @@ public class EditBooklistStyleGroupsActivity
      * @param data A newly created Intent to store output if necessary.
      *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
-     * @return <tt>true</tt>if activity should exit, <tt>false</tt> to abort exit.
+     * @return {@code true}if activity should exit, {@code false} to abort exit.
      */
     @Override
     protected boolean onSave(@NonNull final Intent data) {

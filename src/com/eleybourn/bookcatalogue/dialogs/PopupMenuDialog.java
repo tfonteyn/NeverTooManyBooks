@@ -36,15 +36,16 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * <p>
  * TODO: this is deliberately not extending AlertDialog, nor integrating the constructor in the
  * static methods. Postponed to a rethink of this approach for now.
+ * One of the issues is the passing around of an untyped user Object.
  */
 public class PopupMenuDialog {
 
     private final RecyclerView mListView;
     private final AlertDialog dialog;
 
-    public PopupMenuDialog(@NonNull final Context context,
-                           @Nullable final String title,
-                           @Nullable final String message) {
+    private PopupMenuDialog(@NonNull final Context context,
+                            @Nullable final String title,
+                            @Nullable final String message) {
         // Build the base dialog
         final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
         dialog = new AlertDialog.Builder(context)
@@ -69,38 +70,6 @@ public class PopupMenuDialog {
     }
 
     /**
-     * A context menu on a row in a list.
-     *
-     * @param context caller context
-     */
-    public static void onCreateListViewContextMenu(@NonNull final Context context,
-                                                   final int position,
-                                                   @Nullable final String title,
-                                                   @NonNull final Menu menu,
-                                                   @NonNull final ListViewOnContextItemSelected handler) {
-        if (menu.size() > 0) {
-            final PopupMenuDialog dialog = new PopupMenuDialog(context, title, null);
-
-            final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu, (item) -> {
-                dialog.dismiss();
-                if (item.hasSubMenu()) {
-                    // recursive call for sub-menu
-                    onCreateListViewContextMenu(context,
-                                                position,
-                                                item.getTitle().toString(),
-                                                item.getSubMenu(),
-                                                handler);
-                } else {
-                    handler.onContextItemSelected(item, position);
-                }
-            });
-
-            dialog.setAdapter(adapter, 0);
-            dialog.show();
-        }
-    }
-
-    /**
      * A context menu on a view.
      * <p>
      * The caller can create a menu with:
@@ -109,35 +78,40 @@ public class PopupMenuDialog {
      *      Menu menu = new PopupMenu(context, null).getMenu();
      * }
      * </pre>
+     * and then populate it and pass it into this method.
      *
-     * @param context     caller context
-     * @param contextView the view on which the user opened the context menu
-     * @param title       for the dialog/menu
-     * @param menu        the menu options to show
-     * @param handler     the listener for the result
+     * @param context    caller context
+     * @param title      for the dialog/menu
+     * @param menu       the menu options to show
+     * @param userObject a reference free to set/use by the caller
+     * @param handler    callback handler with the MenuItem the user chooses + the position
      */
-    public static void onCreateViewContextMenu(@NonNull final Context context,
-                                               @NonNull final View contextView,
-                                               @Nullable final String title,
-                                               @NonNull final Menu menu,
-                                               @NonNull final OnContextItemSelected handler) {
-
+    public static <T> void showContextMenu(@NonNull final Context context,
+                                           @Nullable final String title,
+                                           @NonNull final Menu menu,
+                                           @NonNull final T userObject,
+                                           @NonNull final OnContextItemSelected<T> handler) {
+        // sanity check
         if (menu.size() > 0) {
             final PopupMenuDialog dialog = new PopupMenuDialog(context, title, null);
 
-            final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu, (item) -> {
-                dialog.dismiss();
-                if (item.hasSubMenu()) {
-                    // recursive call for sub-menu
-                    onCreateViewContextMenu(context,
-                                            contextView,
-                                            item.getTitle().toString(),
-                                            item.getSubMenu(),
-                                            handler);
-                } else {
-                    handler.onContextItemSelected(item, contextView);
-                }
-            });
+            final MenuItemListAdapter adapter =
+                    new MenuItemListAdapter(context, menu,
+                                            (menuItem) -> {
+                                                dialog.dismiss();
+                                                if (menuItem.hasSubMenu()) {
+                                                    // recursive call for sub-menu
+                                                    showContextMenu(
+                                                            context,
+                                                            menuItem.getTitle().toString(),
+                                                            menuItem.getSubMenu(),
+                                                            userObject,
+                                                            handler);
+                                                } else {
+                                                    handler.onContextItemSelected(menuItem,
+                                                                                  userObject);
+                                                }
+                                            });
 
             dialog.setAdapter(adapter, 0);
             dialog.show();
@@ -217,31 +191,18 @@ public class PopupMenuDialog {
         void onClick(@NonNull T item);
     }
 
-    public interface ListViewOnContextItemSelected {
+
+    public interface OnContextItemSelected<CT> {
 
         /**
-         * @param menuItem that was selected
-         * @param position of the item in the list/cursor
+         * @param menuItem   that was selected
+         * @param userObject that the caller passed in when creating the context menu
          *
-         * @return <tt>true</tt> if the selection was handled.
+         * @return {@code true} if the selection was handled.
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onContextItemSelected(@NonNull MenuItem menuItem,
-                                      int position);
-    }
-
-    public interface OnContextItemSelected {
-
-        /**
-         * @param menuItem that was selected
-         * @param view     on which the context menu is triggered. Passed here so we can
-         *                 have multiple views with different context menus.
-         *
-         * @return <tt>true</tt> if the selection was handled.
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        boolean onContextItemSelected(@NonNull MenuItem menuItem,
-                                      @NonNull View view);
+                                      @NonNull CT userObject);
     }
 
     private static class FieldListAdapter<T>
@@ -466,10 +427,10 @@ public class PopupMenuDialog {
         /** currently bound item. */
         T item;
 
-        ItemHolderBase(@NonNull final View root,
+        ItemHolderBase(@NonNull final View itemView,
                        @NonNull final OnClickListener<T> listener) {
-            super(root);
-            root.setOnClickListener(this);
+            super(itemView);
+            itemView.setOnClickListener(this);
             mListener = listener;
         }
 

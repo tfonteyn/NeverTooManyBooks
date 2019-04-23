@@ -91,7 +91,7 @@ public class Editions
     }
 
     /**
-     * A data class for holding the ISFDB native book id and it's doc (web page).
+     * A data class for holding the ISFDB native book id and its doc (web page).
      */
     public static class Edition {
 

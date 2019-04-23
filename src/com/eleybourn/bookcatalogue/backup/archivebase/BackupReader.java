@@ -54,7 +54,7 @@ public interface BackupReader
      * <p>
      * Currently, backup files are read sequentially.
      *
-     * @return The next entity, or null if at end
+     * @return The next entity, or {@code null} if at end
      *
      * @throws IOException on failure
      */
@@ -96,7 +96,7 @@ public interface BackupReader
                             int delta);
 
         /**
-         * @return <tt>true</tt> if operation is cancelled.
+         * @return {@code true} if operation is cancelled.
          */
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();

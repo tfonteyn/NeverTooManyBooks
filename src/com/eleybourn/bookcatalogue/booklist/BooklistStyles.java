@@ -317,7 +317,7 @@ public final class BooklistStyles {
 
     /**
      * @param db     the database
-     * @param getAll if <tt>true</tt> then also return the non-preferred styles
+     * @param getAll if {@code true} then also return the non-preferred styles
      *
      * @return all styles, with the preferred styles at the front of the list.
      */

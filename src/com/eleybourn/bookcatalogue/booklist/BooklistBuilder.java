@@ -280,7 +280,7 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param context the caller context
+     * @param context caller context
      * @param style   Book list style to use
      */
     public BooklistBuilder(@NonNull final Context context,
@@ -656,7 +656,6 @@ public class BooklistBuilder
         }
 
         try {
-            @SuppressWarnings("UnusedAssignment")
             final long t0 = System.nanoTime();
 
             // create the mListTable/mNavTable fresh.
@@ -693,7 +692,6 @@ public class BooklistBuilder
             final int sortDescendingMask = listMode.useTriggers
                                            ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
 
-            @SuppressWarnings("UnusedAssignment")
             final long t1_basic_setup_done = System.nanoTime();
 
             final BuildInfoHolder buildInfoHolder = new BuildInfoHolder();
@@ -708,7 +706,6 @@ public class BooklistBuilder
                 group.setDomains(summary.cloneGroups());
             }
 
-            @SuppressWarnings("UnusedAssignment")
             final long t2_groups_processed = System.nanoTime();
 
             // Now we know if we have a Bookshelf group, add the Filter on it if we want one.
@@ -750,7 +747,6 @@ public class BooklistBuilder
                 summary.addDomain(info.domain, info.sourceExpression, flags);
             }
 
-            @SuppressWarnings("UnusedAssignment")
             final long t3 = System.nanoTime();
 
             ////////////////////////////////////////////////////////////////////////////////////////
@@ -770,18 +766,15 @@ public class BooklistBuilder
             SqlComponents sqlCmp = summary.buildSqlComponents(mStyle.getGroupAt(0)
                                                                     .getCompoundKey());
 
-            @SuppressWarnings("UnusedAssignment")
             final long t4_buildSqlComponents = System.nanoTime();
             // Build the join tables
             sqlCmp.join = buildJoin(buildInfoHolder);
 
-            @SuppressWarnings("UnusedAssignment")
             final long t5_build_join = System.nanoTime();
 
             // Build the 'where' clause
             sqlCmp.where = buildWhereClause();
 
-            @SuppressWarnings("UnusedAssignment")
             final long t6_build_where = System.nanoTime();
 
             // Check if the collation we use is case sensitive.
@@ -802,7 +795,6 @@ public class BooklistBuilder
 //                //mGroupColumnList = groupCols.toString();
 //            }
 
-            @SuppressWarnings("UnusedAssignment")
             final long t7_sortColumns_processed = System.nanoTime();
 
             // We are good to go.
@@ -838,18 +830,15 @@ public class BooklistBuilder
                     baseBuildWithoutTriggers(sqlCmp, collationIsCs);
                 }
 
-                @SuppressWarnings("UnusedAssignment")
                 final long t8_BaseBuild_executed = System.nanoTime();
 
                 mSyncedDb.analyze(mListTable);
 
-                @SuppressWarnings("UnusedAssignment")
                 final long t9_table_optimized = System.nanoTime();
 
                 // build the lookup aka navigation table
                 populateNavigationTable(sqlCmp, preferredState, listMode);
 
-                @SuppressWarnings("UnusedAssignment")
                 final long t10_nav_table_build = System.nanoTime();
 
                 // Create index on nav table
@@ -869,7 +858,6 @@ public class BooklistBuilder
                 mLevelBuildStmts.add(ixStmt1);
                 ixStmt1.execute();
 
-                @SuppressWarnings("UnusedAssignment")
                 final long t11_nav_table_index_IX1_created = System.nanoTime();
 
                 // Essential for main query! If not present, will make getCount() take
@@ -889,7 +877,6 @@ public class BooklistBuilder
                 ixStmt2.execute();
 
 
-                @SuppressWarnings("UnusedAssignment")
                 final long t12_nav_table_index_IX2_created = System.nanoTime();
                 mSyncedDb.analyze(mNavTable);
 
@@ -1043,7 +1030,7 @@ public class BooklistBuilder
      * Process the 'sort-by' columns into a list suitable for a sort-by statement, or index.
      *
      * @param sortedColumns the list of sorted domains from the builder
-     * @param collationIsCs if <tt>true</tt> then we'll adjust the case ourselves
+     * @param collationIsCs if {@code true} then we'll adjust the case ourselves
      * @param sqlCmp        will be updated with the sorting information
      */
     private void processSortColumns(@NonNull final List<SortedDomainInfo> sortedColumns,
@@ -1183,9 +1170,7 @@ public class BooklistBuilder
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             for (
-                //noinspection UnusedAssignment
                     int i = 0; i < mStyle.groupCount();
-                //noinspection UnusedAssignment
                     i++) {
                 Logger.debug(this,
                              "baseBuildWithoutTriggers",
@@ -2133,7 +2118,6 @@ public class BooklistBuilder
      */
     private int pseudoCount(@NonNull final String name,
                             @NonNull final String countSql) {
-        @SuppressWarnings("UnusedAssignment")
         final long t0 = System.nanoTime();
         int count;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
@@ -2243,7 +2227,6 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            @SuppressWarnings("UnusedAssignment")
             final long t0 = System.nanoTime();
             if (expand) {
                 String sql = "UPDATE " + mNavTable + " SET "
@@ -2591,9 +2574,9 @@ public class BooklistBuilder
         BooklistGroup.BooklistSeriesGroup seriesGroup;
         /** Will be set to appropriate Group if an Author group exists in style. */
         BooklistGroup.BooklistAuthorGroup authorGroup;
-        /** Will be set to <tt>true</tt> if a LOANED group exists in style. */
+        /** Will be set to {@code true} if a LOANED group exists in style. */
         boolean hasGroupLOANED;
-        /** Will be set to <tt>true</tt> if a BOOKSHELF group exists in style. */
+        /** Will be set to {@code true} if a BOOKSHELF group exists in style. */
         boolean hasGroupBOOKSHELF;
     }
 
@@ -2714,7 +2697,7 @@ public class BooklistBuilder
         @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
             //TOMF TODO: shallow copy, is that enough or a bug ? check calling code
-            //      Returns a shallow copy of this <tt>ArrayList</tt> instance.
+            //      Returns a shallow copy of this ArrayList instance.
             //     (The elements themselves are not copied.)
             return (ArrayList<DomainDefinition>) mGroupedDomains.clone();
         }
@@ -2731,10 +2714,8 @@ public class BooklistBuilder
          * Drop and recreate the underlying temp table.
          */
         void recreateTable() {
-            @SuppressWarnings("UnusedAssignment")
             final long t0 = System.nanoTime();
             mListTable.drop(mSyncedDb);
-            @SuppressWarnings("UnusedAssignment")
             final long t1 = System.nanoTime();
             //has to be withConstraints==false
             mListTable.create(mSyncedDb, false);

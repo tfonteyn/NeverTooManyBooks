@@ -115,7 +115,6 @@ public class BookshelfListApiHandler
             throws AuthorizationException,
                    BookNotFoundException,
                    IOException {
-        @SuppressWarnings("UnusedAssignment")
         long t0 = System.nanoTime();
 
         // Sort by update_dte (descending) so sync is faster.
@@ -204,7 +203,7 @@ public class BookshelfListApiHandler
 
 //	/**
 //	 * Listener to handle the contents of the date_updated field. We only
-//	 * keep it if it is a valid date, and we store it in SQL format using 
+//	 * keep it if it is a valid date, and we store it in SQL format using
 //	 * UTC TZ so comparisons work.
 //	 */
 //	XmlListener mUpdatedListener = new XmlListener() {
@@ -220,7 +219,7 @@ public class BookshelfListApiHandler
 //
 //	/**
 //	 * Listener to handle the contents of the date_added field. We only
-//	 * keep it if it is a valid date, and we store it in SQL format using 
+//	 * keep it if it is a valid date, and we store it in SQL format using
 //	 * UTC TZ so comparisons work.
 //	 */
 //	XmlListener mAddedListener = new XmlListener() {

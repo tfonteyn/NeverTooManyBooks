@@ -96,6 +96,7 @@
     <item name="MENU_DEBUG_DUMP_STYLE" type="id"/>
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
     <item name="MENU_DEBUG_EXPORT_DATABASE" type="id"/>
+    <item name="MENU_DEBUG_RUN_TEST" type="id"/>
 
     <!-- Amazon search options submenu -->
     <item name="SUBMENU_AMAZON_SEARCH" type="id"/>
@@ -139,7 +140,7 @@
     <item name="TLV_ROW_DELETE" type="id"/>
     <!-- the optional checkable button -->
     <item name="TLV_ROW_CHECKABLE" type="id"/>
-    <!-- used by {@link SimpleListAdapter} for storing its private t; stored on the 'root'
+    <!-- used by {@link SimpleListAdapter} for storing its private tag; stored on the 'root'
      of the row -->
     <item name="TLV_ROW_TAG" type="id"/>
     <!-- the grabber handle -->

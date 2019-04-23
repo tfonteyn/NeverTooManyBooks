@@ -191,7 +191,6 @@ public class FastScrollListView
         a.recycle();
     }
 
-    /** {@inheritDoc}. */
     @Override
     public void setFastScrollEnabled(final boolean enabled) {
         if (!enabled) {
@@ -209,7 +208,6 @@ public class FastScrollListView
         }
     }
 
-    /** {@inheritDoc}. */
     @Override
     public void setOnScrollListener(@NonNull final OnScrollListener l) {
         mUserOnScrollListener = l;
@@ -218,8 +216,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -236,8 +233,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -251,8 +247,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -264,8 +259,7 @@ public class FastScrollListView
     /**
      * Send draw() to the scroller as well.
      * <p>
-     * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper

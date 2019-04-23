@@ -69,7 +69,7 @@ public class SqlStatementManager
      *
      * @param name of the statement
      *
-     * @return the statement, or null if it did not exist.
+     * @return the statement, or {@code null} if it did not exist.
      */
     @Nullable
     public SynchronizedStatement get(@NonNull final String name) {

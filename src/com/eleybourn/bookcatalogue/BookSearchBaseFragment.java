@@ -123,7 +123,7 @@ public abstract class BookSearchBaseFragment
     /**
      * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -141,7 +141,7 @@ public abstract class BookSearchBaseFragment
      * The results will arrive in
      * {@link SearchCoordinator.SearchCoordinatorListener#onSearchFinished(boolean, Bundle)}
      *
-     * @return <tt>true</tt> if search was started.
+     * @return {@code true} if search was started.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean startSearch(@NonNull final String authorSearchText,
@@ -180,7 +180,7 @@ public abstract class BookSearchBaseFragment
     /**
      * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper

@@ -33,7 +33,6 @@ import android.text.Html;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -112,7 +111,7 @@ public class StartupActivity
     /**
      * Kludge to get a reference to the currently running StartupActivity, if defined.
      *
-     * @return Reference or null.
+     * @return Reference or {@code null}.
      */
     @Nullable
     public static StartupActivity getActiveActivity() {
@@ -322,7 +321,7 @@ public class StartupActivity
         // See http://code.google.com/p/android/issues/detail?id=3953
         if (!isFinishing() && !isDestroyed() && (mProgressDialog != null)) {
             try {
-                mProgressDialog.setMessage(message);
+                mProgressDialog.onProgress(message);
             } catch (RuntimeException e) {
                 Logger.error(this, e);
             }
@@ -346,7 +345,7 @@ public class StartupActivity
      * Decrease and store the number of times the app was opened.
      * Used for proposing Backup/Amazon
      *
-     * @return <tt>true</tt> when counter reached 0
+     * @return {@code true} when counter reached 0
      */
     private boolean decreaseStartupCounters() {
         int opened = App.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
@@ -369,7 +368,7 @@ public class StartupActivity
      * Checks if we have the needed permissions.
      * If we do, initialises storage.
      *
-     * @return <tt>true</tt> if we had permission and storage is initialized.
+     * @return {@code true} if we had permission and storage is initialized.
      */
     private boolean initStorage() {
         int p = ContextCompat.checkSelfPermission(this,
@@ -414,6 +413,7 @@ public class StartupActivity
                                            @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
         // must be checked in parallel
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
@@ -442,7 +442,7 @@ public class StartupActivity
         if (sStartupTasksShouldBeStarted) {
             sStartupActivity = new WeakReference<>(this);
             //noinspection ConstantConditions
-            mProgressDialog.setMessage(getString(R.string.progress_msg_starting_up));
+            mProgressDialog.onProgress(getString(R.string.progress_msg_starting_up));
 
             int taskId = 0;
             new BuildLanguageMappingsTask(++taskId).execute();
@@ -554,7 +554,7 @@ public class StartupActivity
     }
 
     /**
-     * Data cleaning. This is done each startup.
+     * Data cleaning. Done on each startup.
      */
     static class DBCleanerTask
             extends StartupTask {

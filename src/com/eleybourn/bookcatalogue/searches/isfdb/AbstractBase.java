@@ -48,11 +48,10 @@ abstract class AbstractBase {
      * The content encoding by default is: "Accept-Encoding", "gzip"
      *
      * @param url      to fetch
-     * @param redirect <tt>true</tt> to follow redirects. This should normally be the default.
+     * @param redirect {@code true} to follow redirects. This should normally be the default.
      *
-     * @return <tt>true</tt> when fetched and parsed ok.
+     * @return {@code true} when fetched and parsed ok.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean loadPage(final String url,
                      final boolean redirect)
             throws SocketTimeoutException {
@@ -89,46 +88,48 @@ abstract class AbstractBase {
 
                 if (!redirect && con.response().statusCode() == 303 && afterBrokenRedirectTryAgain) {
                     afterBrokenRedirectTryAgain = false;
-                    // This is nasty... getting editions from ISFDB for a book where there is only
-                    // one edition results in a redirect 303 with header:
-                    //    Location: http:/cgi-bin/pl.cgi?367574
-                    // Note the single '/' after the protocol.
-                    // The source code of Jsoup recognises this issue and tries to deal with it,
-                    // org\jsoup\helper\HttpConnection.java
-                    // line 725:
-                    //      static Response execute(Connection.Request req, Response previousResponse) throws IOException {
-                    // lines 764:
-                    //      String location = res.header(LOCATION);
-                    //      if (location != null && location.startsWith("http:/") && location.charAt(6) != '/') // fix broken Location: http:/temp/AAG_New/en/index.php
-                    //      location = location.substring(6);
-                    //      URL redir = StringUtil.resolve(req.url(), location);
-                    //      req.url(encodeUrl(redir));
-                    // however, in this case.. it fails to handle it correctly.
-                    // The single '/' is part of the location.
-                    //
-                    // So we manually re-construct the edition url here.
+
                     Connection.Response response = con.response();
                     String location = response.header("Location");
+
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+                        Logger.debug(this, "loadPage", "303",
+                                     "Location=" + location);
+                    }
+
+                    // 2019-04-20: it seems the website was updated/fixed.
                     if (location != null) {
+
+                        // This is nasty... getting editions from ISFDB for a book where there is only
+                        // one edition results in a redirect 303 with header:
+                        //    Location: http:/cgi-bin/pl.cgi?367574
+                        // Note the single '/' after the protocol.
+                        // The source code of Jsoup recognises this issue and tries to deal with it,
+                        // org\jsoup\helper\HttpConnection.java
+                        // line 725:
+                        //      static Response execute(Connection.Request req, Response previousResponse) throws IOException {
+                        // lines 764:
+                        //      String location = res.header(LOCATION);
+                        //      if (location != null && location.startsWith("http:/") && location.charAt(6) != '/') // fix broken Location: http:/temp/AAG_New/en/index.php
+                        //      location = location.substring(6);
+                        //      URL redir = StringUtil.resolve(req.url(), location);
+                        //      req.url(encodeUrl(redir));
+                        // however, in this case.. it fails to handle it correctly.
+                        // The single '/' is part of the location.
+                        //
+                        // So we manually re-construct the edition url here.
                         if (location.startsWith("http:/") && location.charAt(6) != '/') {
                             // The single '/' is part of the location.
-                            location = location.substring(5);
+                            location = ISFDBManager.getBaseURL() + location.substring(5);
 
                         } else if (location.startsWith("https:/") && location.charAt(7) != '/') {
                             // The single '/' is part of the location.
-                            location = location.substring(6);
-                        }
+                            location = ISFDBManager.getBaseURL() + location.substring(6);
 
-                        String redirectedUrl = ISFDBManager.getBaseURL() + location;
-
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                            Logger.debug(this, "loadPage", "redirecting",
-                                         "Location=" + response.header("Location"),
-                                         "path=" + redirectedUrl);
                         }
 
                         mDoc = null;
-                        return loadPage(redirectedUrl, false);
+                        return loadPage(location, false);
                     }
                     return false;
                 }
@@ -156,7 +157,8 @@ abstract class AbstractBase {
                 Logger.error(this, e, url);
                 return false;
             }
-            // reset the flag.
+            // reset the flags.
+            afterBrokenRedirectTryAgain = true;
             afterEofTryAgain = true;
         }
         return true;

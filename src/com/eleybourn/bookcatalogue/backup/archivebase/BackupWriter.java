@@ -136,7 +136,7 @@ public interface BackupWriter
                             int delta);
 
         /**
-         * @return <tt>true</tt> if operation is cancelled.
+         * @return {@code true} if operation is cancelled.
          */
         boolean isCancelled();
     }

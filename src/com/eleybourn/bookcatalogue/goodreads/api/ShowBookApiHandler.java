@@ -357,7 +357,7 @@ public abstract class ShowBookApiHandler
      * Constructor.
      *
      * @param manager              Goodreads manager
-     * @param requireSignedRequest set <tt>true</tt> if a request should be signed.
+     * @param requireSignedRequest set {@code true} if a request should be signed.
      */
     ShowBookApiHandler(@NonNull final GoodreadsManager manager,
                        @SuppressWarnings("SameParameterValue") final boolean requireSignedRequest) {

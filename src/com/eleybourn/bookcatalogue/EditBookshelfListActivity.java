@@ -21,21 +21,26 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.eleybourn.bookcatalogue.adapters.BookshelfAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -61,7 +66,7 @@ public class EditBookshelfListActivity
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
     /** The adapter for the list. */
-    private ArrayAdapter<Bookshelf> mAdapter;
+    private BookshelfAdapter mAdapter;
 
 
     @Override
@@ -76,53 +81,30 @@ public class EditBookshelfListActivity
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DBA(this);
 
-        ListView listView = findViewById(android.R.id.list);
+        RecyclerView listView = findViewById(android.R.id.list);
+        listView.setLayoutManager(new LinearLayoutManager(this));
 
         mList = mDb.getBookshelves();
-        mAdapter = new BookshelfAdapter(this, R.layout.row_bookshelf, mList);
+        mAdapter = new BookshelfAdapter(this, mList);
         listView.setAdapter(mAdapter);
-
-        // click -> edit
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Bookshelf bookshelf = mAdapter.getItem(position);
-            //noinspection ConstantConditions
-            doEditDialog(bookshelf);
-        });
-        // long-click -> menu
-        listView.setOnItemLongClickListener((parent, view, position, id) -> {
-            // legal trick to get an instance of Menu.
-            Menu menu = new PopupMenu(view.getContext(), null).getMenu();
-            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
-            // display
-            //noinspection ConstantConditions
-            String menuTitle = mAdapter.getItem(position).getName();
-            PopupMenuDialog.onCreateListViewContextMenu(this, position, menuTitle, menu,
-                                                        this::onListViewContextItemSelected);
-            return true;
-        });
     }
 
     /**
      * Using {@link PopupMenuDialog} for context menus.
      */
-    private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                  final int position) {
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final Bookshelf bookshelf) {
 
-        Bookshelf bookshelf = mAdapter.getItem(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
-                //noinspection ConstantConditions
-                doEditDialog(bookshelf);
+                editItem(bookshelf);
                 return true;
 
             case R.id.MENU_DELETE:
-                //noinspection ConstantConditions
                 if (!bookshelf.isDefault()) {
                     mDb.deleteBookshelf(bookshelf.getId());
-                    mAdapter.remove(bookshelf);
+                    mList.remove(bookshelf);
+                    mAdapter.notifyDataSetChanged();
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
@@ -148,9 +130,10 @@ public class EditBookshelfListActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_INSERT:
-                doEditDialog(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId()));
+                editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId()));
                 return true;
 
             default:
@@ -161,7 +144,7 @@ public class EditBookshelfListActivity
     /**
      * @param bookshelf to edit
      */
-    private void doEditDialog(@NonNull final Bookshelf bookshelf) {
+    private void editItem(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment.show(getSupportFragmentManager(), bookshelf);
     }
 
@@ -181,5 +164,92 @@ public class EditBookshelfListActivity
             mDb.close();
         }
         super.onDestroy();
+    }
+
+    /**
+     * Adapter and row Holder for a {@link Bookshelf}.
+     * <p>
+     * Displays the name in a TextView.
+     */
+    public class BookshelfAdapter
+            extends RecyclerView.Adapter<Holder> {
+
+        @NonNull
+        private final LayoutInflater mInflater;
+
+        @NonNull
+        private final List<Bookshelf> mList;
+
+        /**
+         * Constructor.
+         *
+         * @param context caller context
+         * @param objects the list
+         */
+        BookshelfAdapter(@NonNull final Context context,
+                         @NonNull final List<Bookshelf> objects) {
+
+            mInflater = LayoutInflater.from(context);
+            mList = objects;
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+
+            View view = mInflater.inflate(R.layout.row_bookshelf, parent, false);
+            return new Holder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+
+            holder.bookshelf = mList.get(position);
+            holder.nameView.setText(holder.bookshelf.getName());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mList.size();
+        }
+    }
+
+    /**
+     * Holder pattern for each row.
+     */
+    public class Holder
+            extends RecyclerView.ViewHolder {
+
+        @NonNull
+        final TextView nameView;
+
+        Bookshelf bookshelf;
+
+        public Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            nameView = itemView.findViewById(R.id.name);
+
+            // click -> edit
+            nameView.setOnClickListener((view) -> editItem(bookshelf));
+
+            // long-click -> menu
+            nameView.setOnLongClickListener((view) -> {
+                // legal trick to get an instance of Menu.
+                Menu menu = new PopupMenu(itemView.getContext(), null).getMenu();
+                menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+                    .setIcon(R.drawable.ic_edit);
+                menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+                    .setIcon(R.drawable.ic_delete);
+                // display
+                String menuTitle = bookshelf.getName();
+                PopupMenuDialog.showContextMenu(
+                        itemView.getContext(), menuTitle, menu, bookshelf,
+                        EditBookshelfListActivity.this::onContextItemSelected);
+                return true;
+            });
+        }
     }
 }

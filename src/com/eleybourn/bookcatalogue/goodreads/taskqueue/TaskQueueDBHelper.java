@@ -118,7 +118,7 @@ class TaskQueueDBHelper
     /**
      * Constructor. Call superclass using locally defined name & version.
      *
-     * @param context the caller context
+     * @param context caller context
      */
     TaskQueueDBHelper(@NonNull final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

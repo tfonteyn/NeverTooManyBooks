@@ -89,16 +89,13 @@ public final class ImageCacheWriterTask
     }
 
     /**
-     * @return <tt>true</tt> if there is an active task in the queue.
+     * @return {@code true} if there is an active task in the queue.
      */
     @UiThread
     public static boolean hasActiveTasks() {
         return runningTasks.get() != 0;
     }
 
-    /**
-     * Do the main work in the background thread.
-     */
     @Override
     @WorkerThread
     protected Void doInBackground(final Void... params) {

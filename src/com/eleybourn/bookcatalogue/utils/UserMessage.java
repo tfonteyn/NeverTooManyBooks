@@ -12,6 +12,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 /**
  * Shielding the actual implementation of Toast/Snackbar or whatever is next.
+ *
+ * TODO: 2019... it's probably time to remove Toast. But consider each usage individually!
  */
 public final class UserMessage {
 

@@ -47,7 +47,7 @@ public abstract class CropImageViewTouchBase
     /**
      * This is the base transformation which is used to show the image
      * initially. The current computation for this shows the image in
-     * it's entirety, letter boxing as needed. One could choose to
+     * its entirety, letter boxing as needed. One could choose to
      * show the image as cropped instead.
      * <p>
      * This matrix is recomputed when we go from the thumbnail image to

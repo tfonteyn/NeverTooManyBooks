@@ -112,12 +112,12 @@ public class BackupAndRestoreActivity
 
         FragmentManager fm = context.getSupportFragmentManager();
         if (fm.findFragmentByTag(BackupListerTask.TAG) == null) {
-            ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag =
+            ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_reading_directory,
                                                        true, 0);
-            BackupListerTask task = new BackupListerTask(frag, root);
-            frag.setTask(R.id.TASK_ID_FILE_LISTER, task);
-            frag.show(fm, BackupListerTask.TAG);
+            BackupListerTask task = new BackupListerTask(progressDialog, root);
+            progressDialog.setTask(R.id.TASK_ID_FILE_LISTER, task);
+            progressDialog.show(fm, BackupListerTask.TAG);
             task.execute();
         }
     }
@@ -142,7 +142,7 @@ public class BackupAndRestoreActivity
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     // User wants to import all.
                     settings.what = ImportSettings.ALL;
-                    RestoreTask.start(getSupportFragmentManager(), settings);
+                    RestoreTask.start(this, getSupportFragmentManager(), settings);
                 })
                 .create();
         dialog.show();
@@ -157,7 +157,7 @@ public class BackupAndRestoreActivity
         if (settings.what == ImportSettings.NOTHING) {
             return;
         }
-        RestoreTask.start(getSupportFragmentManager(), settings);
+        RestoreTask.start(this, getSupportFragmentManager(), settings);
     }
 
     /**
@@ -177,7 +177,7 @@ public class BackupAndRestoreActivity
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     // User wants to backup all.
                     settings.what = ExportSettings.ALL;
-                    BackupTask.start(getSupportFragmentManager(), settings);
+                    BackupTask.start(this, getSupportFragmentManager(), settings);
                 })
                 .create();
         dialog.show();
@@ -209,14 +209,14 @@ public class BackupAndRestoreActivity
             settings.dateFrom = null;
         }
 
-        BackupTask.start(getSupportFragmentManager(), settings);
+        BackupTask.start(this, getSupportFragmentManager(), settings);
     }
 
     /**
      * Listener for tasks.
      *
      * @param taskId  a task identifier
-     * @param success <tt>true</tt> for success.
+     * @param success {@code true} for success.
      * @param result  - archive backup : {@link ExportSettings}
      *                - archive restore: {@link ImportSettings}
      *                - file lister: not used

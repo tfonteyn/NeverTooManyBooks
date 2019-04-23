@@ -31,7 +31,7 @@ public class ElementContext {
     @NonNull
     private final String mQName;
 
-    /** the inner-t text. */
+    /** the inner-tag text. */
     @NonNull
     private final String mText;
 
@@ -51,7 +51,7 @@ public class ElementContext {
     /**
      * @param filter to use for this tag.
      */
-    public ElementContext(@NonNull final XmlFilter filter) {
+    ElementContext(@NonNull final XmlFilter filter) {
         mFilter = filter;
         // the others as per SAX promises, see full constructor java doc.
         mUri = "";
@@ -62,7 +62,7 @@ public class ElementContext {
     }
 
     /**
-     * Same arguments coming from the SAX Handler + the current inter-t text.
+     * Same arguments coming from the SAX Handler + the current inter-tag text.
      *
      * @param uri        The Namespace URI, or the empty string if the
      *                   element has no Namespace URI or if Namespace
@@ -75,13 +75,13 @@ public class ElementContext {
      * @param attributes The mAttributes attached to the element.  If
      *                   there are no mAttributes, it shall be an empty
      *                   Attributes object.
-     * @param text       current inter-t text
+     * @param text       current inter-tag text
      */
-    public ElementContext(@NonNull final String uri,
-                          @NonNull final String localName,
-                          @NonNull final String qName,
-                          @NonNull final Attributes attributes,
-                          @NonNull final String text) {
+    ElementContext(@NonNull final String uri,
+                   @NonNull final String localName,
+                   @NonNull final String qName,
+                   @NonNull final Attributes attributes,
+                   @NonNull final String text) {
         mUri = uri;
         mLocalName = localName;
         mQName = qName;
@@ -110,7 +110,7 @@ public class ElementContext {
     }
 
     /**
-     * @return the body of the t, trimmed.
+     * @return the body of the tag, trimmed.
      */
     @NonNull
     public String getBody() {
@@ -135,7 +135,7 @@ public class ElementContext {
     }
 
     /**
-     * @return the text element of a t
+     * @return the text element of a tag
      */
     @NonNull
     public String getText() {

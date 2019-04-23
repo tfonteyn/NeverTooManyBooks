@@ -44,7 +44,7 @@ public class ISFDBManager
     /**
      * {@link #search(String, String, String, boolean)} only implements isbn searches for now.
      *
-     * @return <tt>true</tt>
+     * @return {@code true}
      */
     @Override
     public boolean isIsbnOnly() {
@@ -64,7 +64,7 @@ public class ISFDBManager
     }
 
     /**
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data
      *

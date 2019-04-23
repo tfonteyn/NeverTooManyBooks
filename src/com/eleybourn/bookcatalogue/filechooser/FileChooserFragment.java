@@ -27,19 +27,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
@@ -63,19 +64,18 @@ public class FileChooserFragment
     private static final String BKEY_LIST = TAG + ":list";
 
     private File mRootPath;
-    private final OnClickListener onPathUpClickListener = new OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            String parent = mRootPath.getParent();
-            if (parent == null) {
-                UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
-                return;
-            }
-            mRootPath = new File(parent);
 
-            tellActivityPathChanged();
+    /** User clicks on the 'up' button. */
+    private final OnClickListener onPathUpClickListener = (v) -> {
+        String parent = mRootPath.getParent();
+        if (parent == null) {
+            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
+            return;
         }
+        mRootPath = new File(parent);
+        tellActivityPathChanged();
     };
+
     private EditText mFilenameView;
     private TextView mCurrentFolderView;
 
@@ -207,9 +207,10 @@ public class FileChooserFragment
         mCurrentFolderView.setText(mRootPath.getAbsolutePath());
 
         // Setup and display the list
-        ListAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
-        ListView lv = requireView().findViewById(android.R.id.list);
-        lv.setAdapter(adapter);
+        FileDetailsAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
+        RecyclerView listView = requireView().findViewById(android.R.id.list);
+        listView.setLayoutManager(new LinearLayoutManager(getContext()));
+        listView.setAdapter(adapter);
     }
 
 
@@ -231,41 +232,71 @@ public class FileChooserFragment
         @NonNull
         File getFile();
 
-        void onGetView(@NonNull View convertView,
-                       @NonNull Context context);
+        void onBindViewHolder(@NonNull final FileDetailsHolder holder,
+                              @NonNull Context context);
+    }
+
+    public static class FileDetailsHolder
+            extends RecyclerView.ViewHolder {
+
+        public final TextView filenameView;
+        public final ImageView imageView;
+
+        public final androidx.constraintlayout.widget.Group fileDetails;
+        public final TextView fileContentView;
+        public final TextView dateView;
+        public final TextView sizeView;
+
+        FileDetailsHolder(@NonNull final View convertView) {
+            super(convertView);
+
+            filenameView = convertView.findViewById(R.id.filename);
+            imageView = convertView.findViewById(R.id.icon);
+
+            fileDetails = convertView.findViewById(R.id.file_details);
+            fileContentView = convertView.findViewById(R.id.file_content);
+            dateView = convertView.findViewById(R.id.date);
+            sizeView = convertView.findViewById(R.id.size);
+        }
     }
 
     /**
      * List Adapter for FileDetails objects.
      */
     protected class FileDetailsAdapter
-            extends ArrayAdapter<FileDetails> {
+            extends RecyclerView.Adapter<FileDetailsHolder> {
 
         @NonNull
         private final LayoutInflater mInflater;
 
+        @NonNull
+        private final List<FileDetails> mList;
+
         FileDetailsAdapter(@NonNull final Context context,
-                           @NonNull final ArrayList<FileDetails> items) {
-            super(context, 0, items);
+                           @NonNull final List<FileDetails> items) {
 
             mInflater = LayoutInflater.from(context);
+            mList = items;
         }
 
         @NonNull
         @Override
-        public View getView(final int position,
-                            @Nullable View convertView,
-                            @NonNull final ViewGroup parent) {
+        public FileDetailsHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                    final int viewType) {
+            View view = mInflater.inflate(R.layout.row_file_chooser, parent, false);
+            return new FileDetailsHolder(view);
+        }
 
-            final FileDetails item = getItem(position);
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.row_filechooser, parent, false);
-            }
+        @Override
+        public void onBindViewHolder(@NonNull final FileDetailsHolder holder,
+                                     final int position) {
+
+            final FileDetails item = mList.get(position);
 
             //noinspection ConstantConditions
-            item.onGetView(convertView, getContext());
+            item.onBindViewHolder(holder, getContext());
 
-            convertView.setOnClickListener(v -> {
+            holder.itemView.setOnClickListener(v -> {
                 if (item.getFile().isDirectory()) {
                     // go into the directory selected
                     mRootPath = item.getFile();
@@ -275,7 +306,11 @@ public class FileChooserFragment
                     mFilenameView.setText(item.getFile().getName());
                 }
             });
-            return convertView;
+        }
+
+        @Override
+        public int getItemCount() {
+            return mList.size();
         }
     }
 }

@@ -70,7 +70,7 @@ public interface DataAccessor {
      * @param rawData     the bundle into which the value should be stored
      * @param datum       info about the data we're handling
      *
-     * @return the raw value, or null if not present
+     * @return the raw value, or {@code null} if not present
      */
     @Nullable
     Object get(@NonNull DataManager dataManager,

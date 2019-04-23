@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.CoverBrowser;
  * shared one in AsyncTask.
  * <p>
  * Example: {@link CoverBrowser} uses the default one to get thumbnails, but uses this
- * alternative one to get the larger preview image semi-immediately.
+ * alternative one to get the larger preview image without waiting in the shared queue.
  */
 public final class AlternativeExecutor {
 

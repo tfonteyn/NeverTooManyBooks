@@ -185,12 +185,18 @@ public class App
         return 0;
     }
 
-    /** @return the name of this application's package. */
+    /**
+     * @return the name of this application's package.
+     */
     public static String getAppPackageName() {
         return sInstance.getApplicationContext().getPackageName();
     }
 
-    /** @return A PackageInfo object containing information about the package. */
+    /**
+     * @param flags option flags for {@link PackageManager#getPackageInfo(String, int)}
+     *
+     * @return A PackageInfo object containing information about the package.
+     */
     @Nullable
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
@@ -207,6 +213,10 @@ public class App
 
     /**
      * Show a notification while this app is running.
+     *
+     * @param context caller context
+     * @param titleId string resource for the title
+     * @param message the message to display
      */
     public static void showNotification(@NonNull final Context context,
                                         @StringRes final int titleId,
@@ -235,7 +245,7 @@ public class App
      * Get the textSize attribute of the standard "TextAppearance_Small" style.
      * API 23 required to use it directly: {@link TextView#setTextAppearance(int)}
      *
-     * @param context of caller
+     * @param context caller context
      *
      * @return the size
      */
@@ -321,7 +331,7 @@ public class App
     /**
      * Get a global preference String.
      *
-     * @return the string, can be empty but never null
+     * @return the preference value string, can be empty, but never {@code null}
      */
     @NonNull
     public static String getPrefString(@NonNull final String key) {
@@ -370,7 +380,7 @@ public class App
     /**
      * Apply the user's preferred Theme (if it has changed).
      *
-     * @return <tt>true</tt> if the theme was changed
+     * @return {@code true} if the theme was changed
      */
     public static boolean applyTheme(@NonNull final Activity activity) {
         int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
@@ -405,8 +415,8 @@ public class App
 
     /**
      * Initialize ACRA for a given Application.
-     *
-     * @param base The new base context for this wrapper.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -418,10 +428,6 @@ public class App
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
     }
 
-    /**
-     * Most real initialization should go here, since before this point, the App is still
-     * 'Under Construction'.
-     */
     @Override
     @CallSuper
     public void onCreate() {
@@ -465,9 +471,7 @@ public class App
 
         if (BuildConfig.DEBUG /* always */) {
             //API 24: newConfig.getLocales().get(0)
-            Logger.debug(this,
-                         "onConfigurationChanged",
-                         "" + newConfig.locale);
+            Logger.debug(this, "onConfigurationChanged", "" + newConfig.locale);
         }
 
     }

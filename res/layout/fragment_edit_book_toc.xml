@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tlv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -40,21 +39,21 @@
         />
 
     <View
-        android:id="@+id/div1"
+        android:id="@+id/header_divider"
         style="@style/div_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/multiple_authors"
         />
 
-    <com.eleybourn.bookcatalogue.widgets.TouchListView
+    <com.eleybourn.bookcatalogue.widgets.TouchRecyclerViewCFS
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/div1"
-        tlv:grabber="@id/TLV_ROW_GRABBER"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:trv_grabber="@id/TLV_ROW_GRABBER"
         tools:listitem="@layout/row_edit_toc_entry"
         />
 

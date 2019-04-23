@@ -128,7 +128,7 @@ public class TrackedCursor
      * <p>
      * Note: This is not a *cheap* operation.
      */
-    @SuppressWarnings({"unused", "UnusedAssignment"})
+    @SuppressWarnings({"unused"})
     public static long getCursorCount() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             long count = 0;
@@ -156,7 +156,6 @@ public class TrackedCursor
      */
     public static void dumpCursors() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
                 Logger.debug(TrackedCursor.class, "dumpCursors", "No cursors");
@@ -181,7 +180,6 @@ public class TrackedCursor
      * <p>
      * Get a collection of open cursors at the current time.
      */
-    @SuppressWarnings("UnusedAssignment")
     @Nullable
     private static List<TrackedCursor> getCursors() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {

@@ -27,9 +27,8 @@
         />
 
     <View
-        android:id="@+id/div1"
+        android:id="@+id/header_divider"
         style="@style/div_horizontal"
-        android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -42,7 +41,7 @@
         android:hint="@string/menu_loan_lend_book"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/div1"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
         tools:text="Alvin"
         />
 

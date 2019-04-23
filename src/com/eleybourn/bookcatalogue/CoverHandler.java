@@ -12,7 +12,6 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
 import android.widget.PopupMenu;
 
 import androidx.annotation.CallSuper;
@@ -47,7 +46,7 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.utils.ZoomedImageDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -117,7 +116,7 @@ public class CoverHandler {
 
         // add context menu to the cover image
         mCoverField.getView().setOnLongClickListener(v -> {
-            prepareCoverImageViewContextMenu();
+            prepareCoverContextMenu();
             return true;
         });
 
@@ -149,9 +148,9 @@ public class CoverHandler {
     }
 
     /**
-     * Dual usage: context menu for the image and from {@link Fragment#onOptionsItemSelected}.
+     * Context menu for the image.
      */
-    void prepareCoverImageViewContextMenu() {
+    private void prepareCoverContextMenu() {
 
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(mActivity, null).getMenu();
@@ -191,24 +190,24 @@ public class CoverHandler {
 
         // display
         String menuTitle = mActivity.getString(R.string.title_cover);
-        PopupMenuDialog.onCreateViewContextMenu(mActivity,
-                                                mCoverField.getView(), menuTitle, menu,
-                                                this::onViewContextItemSelected);
+        PopupMenuDialog.showContextMenu(mActivity, menuTitle, menu, R.id.coverImage,
+                                        this::onViewContextItemSelected);
     }
 
     /**
      * Using {@link PopupMenuDialog} for context menus.
+     * Reminder: the 'menuItem' here *is* the 'item'.
      *
      * @param menuItem that the user selected
-     * @param view     the view the menu belongs to
+     * @param fieldId  the field the menu belongs to
      *
-     * @return <tt>true</tt> if handled here.
+     * @return {@code true} if handled here.
      */
     private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              @NonNull final View view) {
+                                              @NonNull final Integer fieldId) {
 
         // should not happen for now, but nice to remind ourselves we *could* have multiple views.
-        if (view.getId() != R.id.coverImage) {
+        if (!fieldId.equals(R.id.coverImage)) {
             return false;
         }
 
@@ -285,7 +284,7 @@ public class CoverHandler {
      * We *should* have the uuid on a tag on the over field view,
      * but if not, we'll get it from the database.
      *
-     * @return the uuid, or null when the book has no uuid.
+     * @return the uuid, or {@code null} if the book has no uuid.
      */
     @NonNull
     private String getUuid() {
@@ -553,8 +552,8 @@ public class CoverHandler {
                 .setDataAndType(inputURI, "image/*")
                 // not interested in faces
                 .putExtra("noFaceDetection", true)
-                // <tt>true</tt> to return a Bitmap,
-                // <tt>false</tt> to directly save the cropped image
+                // {@code true} to return a Bitmap,
+                // {@code false} to directly save the cropped image
                 .putExtra("return-data", false)
                 //indicate we want to crop
                 .putExtra("crop", true)
@@ -643,9 +642,8 @@ public class CoverHandler {
      * <p>
      * Note: rotating is done locally in {@link #rotateImage(long)}.
      *
-     * @return <tt>true</tt> when handled, <tt>false</tt> if unknown requestCode
+     * @return {@code true} when handled, {@code false} if unknown requestCode
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {

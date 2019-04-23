@@ -107,6 +107,9 @@ public class BooklistStyleSettingsFragment
 
     /**
      * Update the summaries after a change.
+     *
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
@@ -139,6 +142,7 @@ public class BooklistStyleSettingsFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case REQ_EDIT_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {

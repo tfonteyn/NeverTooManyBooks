@@ -3,7 +3,7 @@
 #
 # @copyright 2010 Evan Leybourn
 # @license GNU General Public License
-# 
+#
 # This file is part of Book Catalogue.
 #
 # Book Catalogue is free software: you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 # along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-This is an open source Android application. Please feel free to fork, bug fix 
-and commit back. 
+This is an open source Android application. Please feel free to fork, bug fix
+and commit back.
 
-This is a simple book catalogue application, to store a list of your books. 
-Books can be added either manually, by ISBN, or by barcode. 
+This is a simple book catalogue application, to store a list of your books.
+Books can be added either manually, by ISBN, or by barcode.
 
 Features include;
 * The obvious; you can add, edit, and display a list of books
-* Books can be sorted by Author or Title. 
-* Books can be automatically added by typing in the ISBN or scanning the 
-  barcode. It will search Google Books for details (and download a thumbnail). 
-  It will search more sites as I add them. 
+* Books can be sorted by Author or Title.
+* Books can be automatically added by typing in the ISBN or scanning the
+  barcode. It will search Google Books for details (and download a thumbnail).
+  It will search more sites as I add them.
 * Multiple Books lists (or bookshelves). For example I like to keep my Doctor Who
-  books separate from my normal fiction books. 
+  books separate from my normal fiction books.
 * You can search for a book by title, author or series.
-* When adding or editing books author, series and publisher should display a 
+* When adding or editing books author, series and publisher should display a
   suggestion list
 * When downloading book information, authors and titles are converted to proper
   case. e.g. "The murder on the links" becomes "Murder on the Links, The"
@@ -186,7 +186,7 @@ new in 4.0.4
 new in 4.0.3
 * ISBNs are now validated when searching or scanning (new beep sound and related preference)
 * Loaned & Not Loaned list now includes all books
-* Added preference to hide list headers (for small phones) 
+* Added preference to hide list headers (for small phones)
 * Restored functionality to use current bookshelf when adding book
 * FastScroller sizing improved
 * Fixed various bugs
@@ -227,7 +227,7 @@ new in 4.0
 * Smoother scrolling of lists with thumbnails
 * More bug fixes
 * More bugs introduced
-* email bug reports after application crashes 
+* email bug reports after application crashes
 
 TODO: Goodreads IMPORT
 TODO: Disable thumbnail cache if no external media?
@@ -260,7 +260,7 @@ New in v3.6 / v3.6.1
 * When entering ISBN's manually, each button with vibrate the phone slightly
 * When automatically updating fields click on each checkbox twice will give you the option to override existing fields (rather than populate only blank fields)
 * Fixed a crash when exporting over 2000 books
-* Orphan loan records will now be correctly managed 
+* Orphan loan records will now be correctly managed
 * The Amazon search will now look for English, French, German, Italian and Japanese versions
 * Fixed several reports defects
 * Fixed bug in moving to SD Card
@@ -270,7 +270,7 @@ New in v3.5.6
 * Fixed defect in the "All Books" bookshelf (French version only)
 
 New in v3.5.5
-* Add by ISBN also works to Amazon ASIN (use the android keyboard not the onscreen buttons) 
+* Add by ISBN also works to Amazon ASIN (use the android keyboard not the onscreen buttons)
 
 New in v3.5.4
 * French translation available
@@ -316,7 +316,7 @@ New in v3.3 - Updates courtesy of Grunthos
 * The thumbnail can be rotated in both directions now
 * You can zoom in the thumbnail to see full detail
 * The help page will redirect to the, more frequently updated, online wiki
-* Dollar signs in the text fields will no longer FC on import/export  
+* Dollar signs in the text fields will no longer FC on import/export
 
 New in v3.2
 * Books can now be automatically added by searching for the author name and book title
@@ -346,7 +346,7 @@ New in v3.0
 * A .nomedia file will be automatically created which will stop the thumbnails showing up in the gallery (thanks Brandon)
 * The "Add Book by ISBN" page has been redesigned to be simpler and more stable (thanks Vinikia)
 * The export file is now formatted correctly (.csv) (thanks glohr)
-* You will be prompted to backup your books on a regular basis 
+* You will be prompted to backup your books on a regular basis
 
 New in v2.9
 Tip: If you long click on a book title on the main list you can delete it
@@ -357,7 +357,7 @@ Tip: You can find the correct barcode for many modern paperbacks on the inside c
 * Bookshelves, loaned books and anthology titles will now import correctly
 
 New in v2.8
-Don't forget you can hide any of the new fields that you do not want to see. 
+Don't forget you can hide any of the new fields that you do not want to see.
 * Fixed several crashing defects when adding books
 * Added AutoCompleting Location Field (For Cam)
 * Added Read Start & Read End Fields (For Robert)
@@ -365,8 +365,8 @@ Don't forget you can hide any of the new fields that you do not want to see.
 * Added a Book Signed Checkbox Field (For me)
 * Series Number now support decimal figures (Requested by Beth)
 * List price now support decimal figures (Requested by eleavings)
-* Fixed Import Crashes (Thanks Roydalg) 
-* Fixed several defects for Android 1.6 users - I do not have a 1.6 device to 
+* Fixed Import Crashes (Thanks Roydalg)
+* Fixed several defects for Android 1.6 users - I do not have a 1.6 device to
   test on so please let me know if you discover any errors
 
 New in v2.7
@@ -377,57 +377,57 @@ New in v2.7
 * Bookshelves will appear in the menu immediately (Thanks Martin/Julia)
 
 New in v2.6
-* There is now support to record books as anthologies and it's titles.
+* There is now support to record books as anthologies and its titles.
 * There is experimental support to automatically populate the anthology titles
 * You can now take photos for the book cover (long click on the thumbnail in edit)
 
 New in v2.5
 * There is a new Admin option (Field Visibility) to hide unused fields
 * "All Books" should now be saved as a bookshelf preference correctly
-* When adding books the bookshelf will default to your currently selected 
+* When adding books the bookshelf will default to your currently selected
   bookshelf (Thanks Martin)
 
 New in v2.4.2
-* You can now delete individual thumbnails by holding on the image and 
+* You can now delete individual thumbnails by holding on the image and
   selecting delete.
 
 New in v2.4
 * Adding books will now (finally) search Amazon
 * A field for list price has been included (Requested by Brenda)
-* You can bulk update the thumbnails for all books with ISBN's from the Admin 
+* You can bulk update the thumbnails for all books with ISBN's from the Admin
   page
 
 New in v2.3
 * The book thumbnail now appears in the list view
 * Emailing the developer now works from the admin page
 * The Change Bookshelf option is now more obvious (Thanks Mike)
-* The exports have been renamed to csv, use the correct published date and are 
+* The exports have been renamed to csv, use the correct published date and are
   now unicode safe (Thanks Mike)
 
 New in v2.2.
 * There are two additional sort functions, by series and by loaned (Request from N4ppy)
 * Your bookshelf and current location will be saved when you exit (Feedback from Martin)
-* Minor interface improvements when sorting by title 
+* Minor interface improvements when sorting by title
 
 New in v2.1
-* Your sort order will be automatically saved when to close the 
+* Your sort order will be automatically saved when to close the
   application (Requested by Martin)
-* There is a new "about this app" view available from the administration 
+* There is a new "about this app" view available from the administration
   tabs (Also from Martin)
 
 New in v2.0
-* There is a new tabbed "edit" interface to simplify editing books. 
-* The new comments tab also includes a notes field where you can add personal 
+* There is a new tabbed "edit" interface to simplify editing books.
+* The new comments tab also includes a notes field where you can add personal
   notes for any book (Requested by Luke).
-* The new loaned books tab allows you to record books loaned to friends. This 
+* The new loaned books tab allows you to record books loaned to friends. This
   will lookup your phone contacts to pre-populate the list (Requested by Luke)
-* Scanned books that already exist in the database (based on ISBN) will no 
+* Scanned books that already exist in the database (based on ISBN) will no
   longer be added (Identified by Colin)
-* After adding a book, the main view will now scroll to a appropriate location. 
+* After adding a book, the main view will now scroll to a appropriate location.
 * Searching has been made significantly faster.
 
 New in v1.10
-* Fixed a crash on the phone (SQL Exception) 
+* Fixed a crash on the phone (SQL Exception)
 
 New in v1.09
 * Amazon unfortunately does not allow using their web services (search) on any
@@ -435,7 +435,7 @@ New in v1.09
 
 New in v1.08
 * Add by ISBN will now search Amazon as well as Google Books (thanks Sue)
-* The series field will attempt to guess the value based on Amazon data 
+* The series field will attempt to guess the value based on Amazon data
 * Fixed an issue for books where the date of publication is just a year
 
 New in v1.07
@@ -449,16 +449,16 @@ New in v1.06
 * The options menu has been enhanced
 
 New in v1.04
-* There is now an option in the main menu to export all data to the SDCard. 
+* There is now an option in the main menu to export all data to the SDCard.
   This will be saved as a tab separated file in the bookCatalogue directory.
-* There is now an option in the main menu to import data from the SDCard. 
+* There is now an option in the main menu to import data from the SDCard.
   The import function, expects a file in the same format, location and name
-  as the export function created. 
-* Improvements have been made to the search results screen to make it more 
+  as the export function created.
+* Improvements have been made to the search results screen to make it more
   obvious
 
 New in v1.03
-* Authors like "Marianne De Pierres" and "Ursula Le Guin" are now listed 
+* Authors like "Marianne De Pierres" and "Ursula Le Guin" are now listed
   correctly. They will list as;
     De Pierres, Marianne
     Le Guin, Ursula

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
@@ -132,7 +133,7 @@ public class TocEntry
     /**
      * Helper to check if all titles in a list have the same author.
      *
-     * @return <tt>true</tt> if there is more then 1 author in the TOC
+     * @return {@code true} if there is more then 1 author in the TOC
      */
     public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
         if (list.size() > 1) {
@@ -173,15 +174,33 @@ public class TocEntry
     }
 
     /**
-     *
      * @return 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
      */
-    public char getType() {
+    public char getTocType() {
         return mType;
     }
 
-    public void setType(final char type) {
+    /**
+     * @param type 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
+     */
+    public void setTocType(final char type) {
+        if (BuildConfig.DEBUG) {
+            if (type != 'B' && type != 'T') {
+                throw new IllegalTypeException("type=`" + type + '`');
+            }
+        }
         mType = type;
+    }
+
+    /**
+     * Replace local details from another TocEntry.
+     *
+     * @param source TocEntry to copy from
+     */
+    public void copyFrom(@NonNull final TocEntry source) {
+        mAuthor = source.mAuthor;
+        mTitle = source.mTitle;
+        mFirstPublicationDate = source.mFirstPublicationDate;
     }
 
     @Override
@@ -318,7 +337,6 @@ public class TocEntry
         return Objects.hash(mId, mAuthor, mTitle);
     }
 
-
     /**
      * The original code was IMHO a bit vague on the exact meaning of the 'anthology mask'.
      * So this information was mainly written for myself.
@@ -355,8 +373,8 @@ public class TocEntry
      * <p>
      * ENHANCE: currently we use the bit definitions directly. Should use the enum as an enum.
      */
-    public enum Type {
-        no, singleAuthor, multipleAuthors;
+    public enum Authors {
+        singleAuthorSingleWork, singleAuthorCollection, multipleAuthorsCollection;
 
         /** Bit definitions. */
         public static final int SINGLE_AUTHOR_SINGLE_WORK = 0;
@@ -368,13 +386,13 @@ public class TocEntry
          */
         public int getBitmask() {
             switch (this) {
-                case no:
+                case singleAuthorSingleWork:
                     return SINGLE_AUTHOR_SINGLE_WORK;
 
-                case singleAuthor:
+                case singleAuthorCollection:
                     return MULTIPLE_WORKS;
 
-                case multipleAuthors:
+                case multipleAuthorsCollection:
                     return MULTIPLE_WORKS | MULTIPLE_AUTHORS;
 
                 //noinspection UnnecessaryDefault
@@ -388,18 +406,18 @@ public class TocEntry
          *
          * @return the enum representation
          */
-        public Type get(final int bitmask) {
+        public Authors get(final int bitmask) {
             switch (bitmask) {
                 case SINGLE_AUTHOR_SINGLE_WORK:
-                    return no;
+                    return singleAuthorSingleWork;
 
                 case MULTIPLE_WORKS:
-                    return singleAuthor;
+                    return singleAuthorCollection;
 
                 // cover legacy bad data.
                 case 0x10:
                 case MULTIPLE_WORKS | MULTIPLE_AUTHORS:
-                    return multipleAuthors;
+                    return multipleAuthorsCollection;
 
                 default:
                     throw new IllegalTypeException("" + bitmask);

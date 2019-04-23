@@ -32,13 +32,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -51,14 +49,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -72,11 +70,8 @@ import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.widgets.TouchListView;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_DATE_FIRST_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_TITLE;
+import com.eleybourn.bookcatalogue.widgets.TouchRecyclerViewCFS;
+import com.eleybourn.bookcatalogue.widgets.ViewHolderBase;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
@@ -96,23 +91,20 @@ public class EditBookTocFragment
     /** The book. */
     private String mIsbn;
     /** primary author of the book. */
-    private String mBookAuthor;
+    private Author mBookAuthor;
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultipleAuthorsView;
 
-    /** position of row we're currently editing. */
-    @Nullable
-    private Integer mEditPosition;
-
     private ArrayList<TocEntry> mList;
-    private ArrayAdapter<TocEntry> mListAdapter;
-    private ListView mListView;
+    private TocListAdapterForEditing mListAdapter;
+    private TouchRecyclerViewCFS mListView;
 
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     private ArrayList<Editions.Edition> mISFDBEditions;
+    private Integer mEditPosition;
 
     @Override
     @NonNull
@@ -133,94 +125,29 @@ public class EditBookTocFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * {@link BookManager#getBook()} on the hosting Activity
-     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link BookManager#getBook()} on the hosting Activity
+     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Book book = getBookManager().getBook();
+
         // Author to use if mMultipleAuthorsView is set to false
-        mBookAuthor = getBookManager().getBook().getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+        List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        mBookAuthor = authorList.get(0);
 
         // used to call Search sites to populate the TOC
-        mIsbn = getBookManager().getBook().getString(DBDefinitions.KEY_ISBN);
+        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
 
-        View view = requireView();
-        // adding a new TOC entry
-        view.findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
-
-        mListView = view.findViewById(android.R.id.list);
-
-        // We want context menus on the ListView
-        //mListView.setOnCreateContextMenuListener(this);
-        // no, we don't, as we'll use long click to bring up custom context menus WITH icons
-        mListView.setOnItemLongClickListener(this::onItemLongClick);
-
-        // Handle drop events; also preserves current position.
-        ((TouchListView) mListView).setOnDropListener(this::onDrop);
+        ViewUtils.fixFocusSettings(requireView());
     }
 
-    /**
-     * TOMF: code nearly identical with {@link EditObjectListActivity} #onDrop
-     *
-     * @param fromPosition original position of the row
-     * @param toPosition   where the row was dropped
-     */
-    private void onDrop(final int fromPosition,
-                        final int toPosition) {
-        // Check if nothing to do; also avoids the nasty case where list size == 1
-        if (fromPosition == toPosition) {
-            return;
-        }
-
-        // update the list
-        TocEntry item = mListAdapter.getItem(fromPosition);
-        mListAdapter.remove(item);
-        mListAdapter.insert(item, toPosition);
-        onListChanged();
-
-        final ListView listView = getListView();
-        final int firstVisiblePosition = listView.getFirstVisiblePosition();
-        final int newFirst;
-        if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
-            newFirst = firstVisiblePosition - 1;
-        } else {
-            newFirst = firstVisiblePosition;
-        }
-
-        View firstView = listView.getChildAt(0);
-        final int offset = firstView.getTop();
-
-        // re-position the list
-        listView.post(() -> {
-            listView.requestFocusFromTouch();
-            listView.setSelectionFromTop(newFirst, offset);
-            listView.post(() -> {
-                for (int i = 0; ; i++) {
-                    View c = listView.getChildAt(i);
-                    if (c == null) {
-                        break;
-                    }
-                    if (listView.getPositionForView(c) == toPosition) {
-                        listView.setSelectionFromTop(toPosition, c.getTop());
-                        //c.requestFocusFromTouch();
-                        break;
-                    }
-                }
-            });
-        });
-    }
-
-    private void onListChanged() {
-        //after a drop, don't care for now.
-    }
-
-    private ListView getListView() {
-        return mListView;
-    }
     //</editor-fold>
 
     //<editor-fold desc="Populate">
@@ -239,6 +166,26 @@ public class EditBookTocFragment
 
         field = mFields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
+
+        View view = requireView();
+        // adding a new TOC entry
+        view.findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
+
+        mListView = view.findViewById(android.R.id.list);
+        mListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // TouchList; allow re-ordering entries.
+        mListView.setOnDropListener(((fromPosition, toPosition) -> {
+            // Check if nothing to do
+            if (fromPosition == toPosition) {
+                return;
+            }
+
+            // update the list
+            TocEntry item = mList.get(fromPosition);
+            mList.remove(item);
+            mList.add(toPosition, item);
+            onListChanged();
+        }));
     }
 
     @Override
@@ -250,29 +197,25 @@ public class EditBookTocFragment
         mMultipleAuthorsView.setEnabled(getBookManager().getBook()
                                                         .getBoolean(Book.HAS_MULTIPLE_WORKS));
 
-        // populateFields
-        populateContentList();
+        // Populate the list view with the book content table.
+        mList = getBookManager().getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+
+        mListAdapter = new TocListAdapterForEditing(requireContext(), mList);
+        mListView.setAdapter(mListAdapter);
 
         // Restore default visibility
         showHideFields(false);
-    }
-
-    /**
-     * Populate the list view with the book content table.
-     */
-    private void populateContentList() {
-        // Get all of the rows and create the item list
-        mList = getBookManager().getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
-
-        // Create a simple array adapter and set it to display
-        mListAdapter = new TocListAdapterForEditing(requireContext(), mList);
-        mListView.setAdapter(mListAdapter);
     }
 
     //</editor-fold>
 
     //<editor-fold desc="Fragment shutdown">
 
+    /**
+     * The toc list is not a 'real' field. Hence the need to store it manually here.
+     *
+     * @param book field content (toc list) will be copied to this object
+     */
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         super.onSaveFieldsToBook(book);
@@ -309,16 +252,9 @@ public class EditBookTocFragment
         }
     }
 
-    /**
-     * Reminder: the item row itself has to have:  android:longClickable="true".
-     * Otherwise the click will only work on the 'blank' bits of the row.
-     */
-    private boolean onItemLongClick(@NonNull final AdapterView<?> parent,
-                                    @NonNull final View view,
-                                    final int position,
-                                    final long id) {
-        TocEntry tocEntry = mListAdapter.getItem(position);
+    private boolean onCreateContextMenu(final int position) {
 
+        TocEntry item = mList.get(position);
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(getContext(), null).getMenu();
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
@@ -327,33 +263,33 @@ public class EditBookTocFragment
             .setIcon(R.drawable.ic_delete);
 
         // display the menu
+        String menuTitle = item.getTitle();
         //noinspection ConstantConditions
-        String menuTitle = tocEntry.getTitle();
-        //noinspection ConstantConditions
-        PopupMenuDialog.onCreateListViewContextMenu(getContext(), position, menuTitle, menu,
-                                                    this::onListViewContextItemSelected);
+        PopupMenuDialog.showContextMenu(getContext(), menuTitle, menu, position,
+                                        this::onContextItemSelected);
+
         return true;
     }
 
     /**
      * Using {@link PopupMenuDialog} for context menus.
      */
-    private boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                  final int position) {
-        TocEntry tocEntry1 = mList.get(position);
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final Integer position) {
+        TocEntry tocEntry = mList.get(position);
+
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
-                editEntry(position, tocEntry1);
+                editItem(position);
                 return true;
 
             case R.id.MENU_DELETE:
-                mListAdapter.remove(tocEntry1);
-                getBookManager().setDirty(true);
+                mList.remove(tocEntry);
+                onListChanged();
                 return true;
 
             default:
                 return false;
-
         }
     }
 
@@ -432,7 +368,7 @@ public class EditBookTocFragment
         }
 
         mList.addAll(tocEntries);
-        mListAdapter.notifyDataSetChanged();
+        onListChanged();
     }
 
     /**
@@ -449,60 +385,42 @@ public class EditBookTocFragment
     /**
      * Create a new entry.
      */
-    private void newEntry() {
+    private void newItem() {
         mEditPosition = null;
 
-        EditTocEntry.show(this,
-                          mMultipleAuthorsView.isChecked());
+        EditTocEntry.show(this, mMultipleAuthorsView.isChecked(),
+                          new TocEntry(mBookAuthor, "", ""));
     }
 
     /**
      * copy the selected entry into the edit fields,
      * and set the confirm button to reflect a save (versus add).
-     *
-     * @param position of the entry in the list
-     * @param item     the entry to edit
      */
-    private void editEntry(final int position,
-                           @NonNull final TocEntry item) {
+    private void editItem(final int position) {
         mEditPosition = position;
 
-        EditTocEntry.show(this,
-                          mMultipleAuthorsView.isChecked(),
-                          item.getAuthor().getLabel(),
-                          item.getTitle(),
-                          item.getFirstPublication());
+        EditTocEntry.show(this, mMultipleAuthorsView.isChecked(), mList.get(position));
     }
 
     /**
      * Add the author/title from the edit fields as a new row in the TOC list.
      */
-    private void addOrUpdateEntry(@NonNull final String author,
-                                  @NonNull final String title,
-                                  @NonNull final String pubDate) {
-
-        Author tocAuthor;
-        if (!mMultipleAuthorsView.isChecked()) {
-            // ignore the incoming dummy, and use the primary book author.
-            tocAuthor = Author.fromString(mBookAuthor);
-        } else {
-            tocAuthor = Author.fromString(author);
-        }
+    private void addOrUpdateEntry(@NonNull final TocEntry tocEntry) {
 
         if (mEditPosition == null) {
             // add the new entry
-            mListAdapter.add(new TocEntry(tocAuthor, title, pubDate));
+            mList.add(tocEntry);
         } else {
-            // update the existing entry
-            TocEntry tocEntry = mListAdapter.getItem(mEditPosition);
-            //noinspection ConstantConditions
-            tocEntry.setAuthor(tocAuthor);
-            tocEntry.setTitle(title);
-            tocEntry.setFirstPublication(pubDate);
-
-            mListAdapter.notifyDataSetChanged();
+            // find and update
+            TocEntry original = mList.get(mEditPosition);
+            original.copyFrom(tocEntry);
         }
 
+        onListChanged();
+    }
+
+    private void onListChanged() {
+        mListAdapter.notifyDataSetChanged();
         getBookManager().setDirty(true);
     }
 
@@ -552,8 +470,7 @@ public class EditBookTocFragment
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
 
-            Bundle args = getArguments();
-            Objects.requireNonNull(args,"getArguments() must not be null!");
+            Bundle args = requireArguments();
 
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
             final long tocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
@@ -616,24 +533,14 @@ public class EditBookTocFragment
         private static final String TAG = EditTocEntry.class.getSimpleName();
 
         private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
+        private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
 
         private AutoCompleteTextView mAuthorTextView;
         private EditText mTitleTextView;
         private EditText mPubDateTextView;
 
-        /**
-         * (syntax sugar for newInstance)
-         * <p>
-         * Show dialog for a new entry.
-         */
-        public static void show(@NonNull final Fragment target,
-                                final boolean hasMultipleAuthors) {
-            FragmentManager fm = target.requireFragmentManager();
-            if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, hasMultipleAuthors, "", "", "")
-                        .show(fm, TAG);
-            }
-        }
+        private boolean mHasMultipleAuthors;
+        private TocEntry mTocEntry;
 
         /**
          * (syntax sugar for newInstance)
@@ -642,12 +549,10 @@ public class EditBookTocFragment
          */
         public static void show(@NonNull final Fragment target,
                                 final boolean hasMultipleAuthors,
-                                @NonNull final String author,
-                                @NonNull final String title,
-                                @NonNull final String firstPublication) {
+                                @NonNull final TocEntry tocEntry) {
             FragmentManager fm = target.requireFragmentManager();
             if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, hasMultipleAuthors, author, title, firstPublication)
+                newInstance(target, hasMultipleAuthors, tocEntry)
                         .show(fm, TAG);
             }
         }
@@ -659,16 +564,12 @@ public class EditBookTocFragment
          */
         public static EditTocEntry newInstance(@NonNull final Fragment target,
                                                final boolean hasMultipleAuthors,
-                                               @NonNull final String author,
-                                               @NonNull final String title,
-                                               @NonNull final String firstPublication) {
+                                               TocEntry tocEntry) {
             EditTocEntry frag = new EditTocEntry();
             frag.setTargetFragment(target, 0);
             Bundle args = new Bundle();
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
-            args.putString(KEY_AUTHOR, author);
-            args.putString(KEY_TITLE, title);
-            args.putString(KEY_DATE_FIRST_PUBLISHED, firstPublication);
+            args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
             frag.setArguments(args);
             return frag;
         }
@@ -679,52 +580,68 @@ public class EditBookTocFragment
 
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
-            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
 
             @SuppressLint("InflateParams")
             final View root = requireActivity().getLayoutInflater()
                                                .inflate(R.layout.dialog_edit_book_toc, null);
 
-            // Author AutoCompleteTextView
             mAuthorTextView = root.findViewById(R.id.author);
-            if (args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false)) {
+            mTitleTextView = root.findViewById(R.id.title);
+            mPubDateTextView = root.findViewById(R.id.first_publication);
+
+
+            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+
+            mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
+            mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+
+            if (mHasMultipleAuthors) {
                 ArrayAdapter<String> authorAdapter =
                         new ArrayAdapter<>(requireContext(),
                                            android.R.layout.simple_dropdown_item_1line,
                                            targetFragment.mDb.getAuthorsFormattedName());
                 mAuthorTextView.setAdapter(authorAdapter);
 
-                mAuthorTextView.setText(args.getString(KEY_AUTHOR));
+                mAuthorTextView.setText(mTocEntry.getAuthor().getLabel());
                 mAuthorTextView.setVisibility(View.VISIBLE);
             } else {
                 mAuthorTextView.setVisibility(View.GONE);
             }
 
-            mTitleTextView = root.findViewById(R.id.title);
-            mTitleTextView.setText(args.getString(KEY_TITLE));
-
-            mPubDateTextView = root.findViewById(R.id.first_publication);
-            mPubDateTextView.setText(args.getString(KEY_DATE_FIRST_PUBLISHED));
+            mTitleTextView.setText(mTocEntry.getTitle());
+            mPubDateTextView.setText(mTocEntry.getFirstPublication());
 
             return new AlertDialog.Builder(requireContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok,
-                                       (d, which) -> targetFragment.addOrUpdateEntry(
-                                               mAuthorTextView.getText().toString().trim(),
-                                               mTitleTextView.getText().toString().trim(),
-                                               mPubDateTextView.getText().toString().trim()))
+                                       (dialog, which) -> {
+                                           getFields();
+                                           targetFragment.addOrUpdateEntry(mTocEntry);
+                                       })
                     .create();
+        }
+
+        @Override
+        public void onPause() {
+            getFields();
+            super.onPause();
+        }
+
+        private void getFields() {
+            mTocEntry.setTitle(mTitleTextView.getText().toString().trim());
+            mTocEntry.setFirstPublication(mPubDateTextView.getText().toString().trim());
+            if (mHasMultipleAuthors) {
+                mTocEntry.setAuthor(Author.fromString(mAuthorTextView.getText().toString().trim()));
+            }
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(KEY_AUTHOR, mAuthorTextView.getText().toString().trim());
-            outState.putString(KEY_TITLE, mTitleTextView.getText().toString().trim());
-            outState.putString(KEY_DATE_FIRST_PUBLISHED,
-                               mPubDateTextView.getText().toString().trim());
+            outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
+            outState.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
         }
     }
 
@@ -785,7 +702,7 @@ public class EditBookTocFragment
          * Constructor.
          *
          * @param editions       List of ISFDB native ids
-         * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
          * @param callback       where to send the results to
          */
         @UiThread
@@ -820,37 +737,45 @@ public class EditBookTocFragment
     }
 
     private class TocListAdapterForEditing
-            extends SimpleListAdapter<TocEntry> {
+            extends RecyclerView.Adapter<Holder> {
+
+        @NonNull
+        private final LayoutInflater mInflater;
+
+        @NonNull
+        private final List<TocEntry> mList;
 
         /**
          * Constructor.
+         *
+         * @param context caller context
+         * @param objects the list
          */
         TocListAdapterForEditing(@NonNull final Context context,
-                                 @NonNull final ArrayList<TocEntry> items) {
-            super(context, R.layout.row_edit_toc_entry, items);
+                                 @NonNull final List<TocEntry> objects) {
+
+            mInflater = LayoutInflater.from(context);
+            mList = objects;
         }
 
-        /**
-         * We're dirty...
-         */
+        @NonNull
         @Override
-        public void onListChanged() {
-            getBookManager().setDirty(true);
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = mInflater.inflate(R.layout.row_edit_toc_entry, parent, false);
+            return new Holder(view);
         }
 
         @Override
-        public void onGetView(@NonNull final View convertView,
-                              @NonNull final TocEntry item) {
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
 
-            Holder holder = (Holder) convertView.getTag();
-            if (holder == null) {
-                holder = new Holder(convertView);
-            }
+            holder.setItem(mList.get(position));
 
-            holder.titleView.setText(item.getTitle());
-            holder.authorView.setText(item.getAuthor().getLabel());
+            holder.titleView.setText(holder.getItem().getTitle());
+            holder.authorView.setText(holder.getItem().getAuthor().getLabel());
 
-            String year = item.getFirstPublication();
+            String year = holder.getItem().getFirstPublication();
             if (year.isEmpty()) {
                 holder.firstPublicationView.setVisibility(View.GONE);
             } else {
@@ -859,25 +784,45 @@ public class EditBookTocFragment
             }
         }
 
-        /**
-         * Holder pattern for each row.
-         */
-        private class Holder {
+        @Override
+        public int getItemCount() {
+            return mList.size();
+        }
+    }
 
-            @NonNull
-            final TextView titleView;
-            @NonNull
-            final TextView authorView;
-            @NonNull
-            final TextView firstPublicationView;
+    /**
+     * Holder pattern for each row.
+     */
+    private class Holder
+            extends ViewHolderBase<TocEntry> {
 
-            Holder(@NonNull final View rowView) {
-                titleView = rowView.findViewById(R.id.title);
-                authorView = rowView.findViewById(R.id.author);
-                firstPublicationView = rowView.findViewById(R.id.year);
+        @NonNull
+        final TextView titleView;
+        @NonNull
+        final TextView authorView;
+        @NonNull
+        final TextView firstPublicationView;
 
-                rowView.setTag(this);
+        Holder(@NonNull final View rowView) {
+            super(rowView);
+
+            if (mDeleteButton != null) {
+                mDeleteButton.setOnClickListener(v -> {
+                    mList.remove(item);
+                    onListChanged();
+                });
             }
+
+            titleView = rowDetailsView.findViewById(R.id.title);
+            authorView = rowDetailsView.findViewById(R.id.author);
+            firstPublicationView = rowDetailsView.findViewById(R.id.year);
+
+            // click -> edit
+            rowDetailsView.setOnClickListener((v) -> editItem(getAdapterPosition()));
+
+            // This is overkill.... user already has a delete button and can click-to-edit.
+            // long-click -> menu
+            rowDetailsView.setOnLongClickListener((v) -> onCreateContextMenu(getAdapterPosition()));
         }
     }
 }

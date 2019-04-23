@@ -49,9 +49,9 @@ public abstract class CheckListItemBase<T>
     }
 
     /**
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      * <p>
-     * Subclass must handle the {@link #item}.
+     * <p>Subclass must handle the {@link #item}.
      */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,

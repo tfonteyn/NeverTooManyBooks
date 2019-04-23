@@ -191,9 +191,6 @@ public class GetImageTask
         RUNNING_TASKS.decrementAndGet();
     }
 
-    /**
-     * Handle the results of the task.
-     */
     @Override
     @UiThread
     protected void onPostExecute(final Void result) {
@@ -209,7 +206,7 @@ public class GetImageTask
         final boolean viewIsValid = imageView != null
                 && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
 
-        // Clear the view t
+        // Clear the view tag
         if (viewIsValid) {
             imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
         }

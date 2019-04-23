@@ -480,8 +480,8 @@ public class CsvImporter
      * and import to allow for escape('\') chars so that cr/lf can be preserved.
      *
      * @param row          with CSV
-     * @param fullEscaping if <tt>true</tt> handle the import as a version 3.4+;
-     *                     if <tt>false</tt> handle as an earlier version.
+     * @param fullEscaping if {@code true} handle the import as a version 3.4+;
+     *                     if {@code false} handle as an earlier version.
      *
      * @return an array representing the row
      */
@@ -499,7 +499,7 @@ public class CsvImporter
         // 'Current' char
         char c;
         // 'Next' char
-        char next = (!row.isEmpty()) ? row.charAt(0) : '\0';
+        char next = (row.isEmpty()) ? '\0' : row.charAt(0);
         // Last position in row
         int endPos = row.length() - 1;
         // Array of fields found in row

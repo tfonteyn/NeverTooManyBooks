@@ -257,8 +257,8 @@ public class CoverBrowser
 
     /**
      * Cancel any running tasks, but keep the downloaded files until {@link #onDestroy()}.
-     *
-     * @param dialog of this fragment.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     public void onDismiss(@NonNull final DialogInterface dialog) {
@@ -271,6 +271,8 @@ public class CoverBrowser
 
     /**
      * Purge the downloaded files the last possible moment.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     public void onDestroy() {
@@ -469,7 +471,7 @@ public class CoverBrowser
          *
          * @param file to check
          *
-         * @return <tt>true</tt> if file is acceptable.
+         * @return {@code true} if file is acceptable.
          */
         private boolean isGood(@NonNull final File file) {
             boolean ok = false;
@@ -511,7 +513,7 @@ public class CoverBrowser
          * @param isbn       ISBN of file
          * @param imageSizes a list of images sizes in order of preference
          *
-         * @return the fileSpec, or null when not found
+         * @return the fileSpec, or {@code null} if not found
          */
         @Nullable
         @WorkerThread
@@ -589,7 +591,7 @@ public class CoverBrowser
          * @param isbn  to search
          * @param sizes required sizes in order to look for. First found is used.
          *
-         * @return the file, or null if not found
+         * @return the file, or {@code null} if not found
          */
         @Nullable
         File getFile(@NonNull final String isbn,
@@ -882,9 +884,6 @@ public class CoverBrowser
             holder.imageView.setOnClickListener(v -> updateSwitcher(holder.isbn));
         }
 
-        /**
-         * @return total number of rows.
-         */
         @Override
         public int getItemCount() {
             return mAlternativeEditions.size();

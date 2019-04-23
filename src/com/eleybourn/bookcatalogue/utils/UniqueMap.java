@@ -21,6 +21,8 @@ public class UniqueMap<K, V>
     /**
      * @param key   Key for new value
      * @param value Data for new value
+     *
+     * @throws IllegalArgumentException when an insert is attempted for a duplicate value.
      */
     @Override
     @NonNull
@@ -31,8 +33,8 @@ public class UniqueMap<K, V>
             throw new IllegalArgumentException("Map already contains key value" + key);
         }
         /*
-         * collection contract says to return the previous value associated with <tt>key</tt>,
-         * or <tt>null</tt> if there was no mapping for <tt>key</tt>.
+         * collection contract says to return the previous value associated with the key,
+         * or {@code null} if there was no mapping for that key.
          */
         return value;
     }

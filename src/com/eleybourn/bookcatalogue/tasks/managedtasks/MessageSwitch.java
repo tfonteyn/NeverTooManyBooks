@@ -203,7 +203,7 @@ public class MessageSwitch<T, U> {
     }
 
     /**
-     * Remove a sender and it's queue.
+     * Remove a sender and its queue.
      */
     private void removeSender(@NonNull final MessageSender<U> sender) {
         synchronized (mSenders) {
@@ -250,8 +250,8 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to who message must be delivered
          *
-         * @return <tt>true</tt> if message should not be delivered to any other listeners or
-         * stored for delivery as 'last message'. Should only return <tt>false</tt> if
+         * @return {@code true} if message should not be delivered to any other listeners or
+         * stored for delivery as 'last message'. Should only return {@code false} if
          * the message has been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull T listener);

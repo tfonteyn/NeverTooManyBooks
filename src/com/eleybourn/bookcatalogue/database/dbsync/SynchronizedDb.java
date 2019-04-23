@@ -100,7 +100,7 @@ public class SynchronizedDb {
      * @param msg Message to display (relating to context)
      * @param db  Database object
      **/
-    @SuppressWarnings({"JavaReflectionMemberAccess", "UnusedAssignment"})
+    @SuppressWarnings({"JavaReflectionMemberAccess"})
     public static void printRefCount(@Nullable final String msg,
                                      @NonNull final SQLiteDatabase db) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
@@ -498,7 +498,7 @@ public class SynchronizedDb {
     /**
      * Wrapper
      *
-     * @return <tt>true</tt> if the current thread is in a transaction.
+     * @return {@code true} if the current thread is in a transaction.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
@@ -582,7 +582,7 @@ public class SynchronizedDb {
      * Due to bugs in other language sorting, we are now forced to use a different
      * collation anyway, but we still check if it is CI.
      *
-     * @return <tt>true</tt> if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
     public boolean isCollationCaseSensitive() {
         if (sIsCollationCaseSensitive == null) {

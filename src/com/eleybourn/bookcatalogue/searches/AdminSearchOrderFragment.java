@@ -101,7 +101,7 @@ public class AdminSearchOrderFragment
         /**
          * Constructor.
          *
-         * @param context the caller context
+         * @param context caller context
          * @param list    of sites
          */
         SearchSiteListAdapter(@NonNull final Context context,

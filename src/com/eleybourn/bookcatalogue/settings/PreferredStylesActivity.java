@@ -120,16 +120,16 @@ public class PreferredStylesActivity
 
         // display the menu
         String menuTitle = style.getLabel(this);
-        PopupMenuDialog.onCreateListViewContextMenu(this, position, menuTitle, menu,
-                                                    this::onListViewContextItemSelected);
+        PopupMenuDialog.showContextMenu(this, menuTitle, menu, position,
+                                        this::onContextItemSelected);
         return true;
     }
 
     /**
      * Using {@link PopupMenuDialog} for context menus.
      */
-    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int position) {
+    public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                         @NonNull final Integer position) {
 
         // Save the current row
         mEditedRow = position;
@@ -197,8 +197,10 @@ public class PreferredStylesActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE: {
                         //noinspection ConstantConditions
@@ -232,10 +234,12 @@ public class PreferredStylesActivity
                 mList = getList();
 
             } else if (mEditedRow < 0) {
-                // Was added. So put at top and set as preferred
+                // New Style added. So put at top and set as preferred
                 mList.add(0, style);
                 style.setPreferred(true);
+
             } else {
+                // Existing Style edited.
                 BooklistStyle origStyle = mList.get(mEditedRow);
                 if (origStyle.getId() != style.getId()) {
                     if (!origStyle.isUserDefined()) {
@@ -296,7 +300,7 @@ public class PreferredStylesActivity
         final TextView kindView;
         BooklistStyle style;
 
-        public Holder(@NonNull final View rowView) {
+        Holder(@NonNull final View rowView) {
             nameView = rowView.findViewById(R.id.name);
             checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
             groupsView = rowView.findViewById(R.id.groups);

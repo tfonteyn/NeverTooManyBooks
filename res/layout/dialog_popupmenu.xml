@@ -23,5 +23,6 @@
         android:layout_margin="@dimen/border"
         android:divider="@null"
         tools:itemCount="10"
+        tools:listitem="@layout/row_simple_dialog_list_item"
         />
 </LinearLayout>

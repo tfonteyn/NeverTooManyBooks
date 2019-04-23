@@ -192,6 +192,7 @@ public class FTSSearchActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_REBUILD_FTS:
                 mDb.rebuildFts();
@@ -215,7 +216,6 @@ public class FTSSearchActivity
         // Save time to log how long query takes.
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            //noinspection UnusedAssignment
             t0 = System.nanoTime();
         }
 
@@ -229,7 +229,6 @@ public class FTSSearchActivity
                 tmpMsg = getString(R.string.books_found, cursor.getCount());
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    //noinspection UnusedAssignment
                     tmpMsg += "\n in " + (System.nanoTime() - t0) + "nano)";
                 }
                 mBookIdsFound = new ArrayList<>();

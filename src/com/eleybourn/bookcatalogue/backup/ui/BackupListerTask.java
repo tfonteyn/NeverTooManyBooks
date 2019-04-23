@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -9,6 +11,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -72,11 +75,13 @@ public class BackupListerTask
             BackupFileDetails fd = new BackupFileDetails(file);
             dirs.add(fd);
             if (BackupFileDetails.isArchive(file)) {
-                //noinspection ConstantConditions
-                try (BackupReader reader = BackupManager.readFrom(mFragment.getContext(), file)) {
-                    if (reader != null) {
-                        fd.setInfo(reader.getInfo());
-                    }
+                Context context = mFragment.getContext();
+                if (context == null) {
+                    Logger.warnWithStackTrace(this, "getContext() was NULL, using AppContext");
+                    context = App.getAppContext();
+                }
+                try (BackupReader reader = BackupManager.readFrom(context, file)) {
+                    fd.setInfo(reader.getInfo());
                 } catch (IOException e) {
                     Logger.error(this, e);
                 }

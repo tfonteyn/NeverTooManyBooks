@@ -50,13 +50,20 @@
         app:layout_constraintTop_toBottomOf="@id/title"
         />
 
+    <View
+        android:id="@+id/header_divider"
+        style="@style/div_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
         tlv:grabber="@id/TLV_ROW_GRABBER"
         tools:listitem="@layout/row_edit_author_list"
         />

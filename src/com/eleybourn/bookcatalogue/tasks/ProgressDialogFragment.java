@@ -1,12 +1,11 @@
 package com.eleybourn.bookcatalogue.tasks;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,15 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Progress support for {@link AsyncTask}.
@@ -45,9 +40,11 @@ public class ProgressDialogFragment<Results>
     private static final String BKEY_WAS_CANCELLED = TAG + ":mWasCancelled";
 
     @Nullable
-    private ProgressBar mProgressBar;
-    @Nullable
     private TextView mMessageView;
+    @Nullable
+    private ProgressBar mProgressBar;
+
+    private boolean mIsIndeterminate;
 
     private boolean mWasCancelled;
 
@@ -110,6 +107,76 @@ public class ProgressDialogFragment<Results>
         return frag;
     }
 
+    @Override
+    @CallSuper
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Control whether a fragment instance is retained across Activity
+        // re-creation (such as from a configuration change).
+        // VERY IMPORTANT. We do not want this destroyed as our task would get killed!
+        setRetainInstance(true);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_task_progress, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+
+
+        mMessageView = view.findViewById(R.id.message);
+        mProgressBar = view.findViewById(R.id.progressBar);
+
+        Bundle args = requireArguments();
+
+        // these are fixed
+        @StringRes
+        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+        if (titleId == 0) {
+            titleId = R.string.progress_msg_please_wait;
+        }
+        TextView titleView = view.findViewById(R.id.dialog_title);
+        titleView.setText(titleId);
+
+        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+        //noinspection ConstantConditions
+        mProgressBar.setIndeterminate(mIsIndeterminate);
+
+
+        // the other settings can live in the savedInstance
+        args = savedInstanceState == null ? args : savedInstanceState;
+
+        // initial/current message.
+        mMessage = args.getString(BKEY_CURRENT_MESSAGE);
+        if (mMessage != null) {
+            //noinspection ConstantConditions
+            mMessageView.setText(mMessage);
+        }
+
+        // current and max values for a 'determinate' progress bar.
+        if (!mIsIndeterminate) {
+            mProgressBar.setProgress(args.getInt(BKEY_CURRENT_VALUE));
+            mMax = args.getInt(BKEY_MAX);
+            if (mMax > 0) {
+                mProgressBar.setMax(mMax);
+            }
+        }
+        mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
+
+
+        //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
+        //noinspection ConstantConditions
+        getDialog().setCanceledOnTouchOutside(false);
+
+    }
+
     /**
      * Can optionally (but usually is) be linked with a task.
      *
@@ -120,179 +187,6 @@ public class ProgressDialogFragment<Results>
                         @Nullable final AsyncTask<Void, Object, Results> task) {
         mTaskId = taskId;
         mTask = task;
-    }
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        Tracker.enterOnAttach(this);
-        super.onAttach(context);
-        Tracker.exitOnAttach(this);
-    }
-
-    @Override
-    @CallSuper
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
-        super.onCreate(savedInstanceState);
-
-        // Control whether a fragment instance is retained across Activity
-        // re-creation (such as from a configuration change).
-        // VERY IMPORTANT. We do not want this destroyed as our task would get killed!
-        setRetainInstance(true);
-
-        Tracker.exitOnCreate(this);
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreateDialog(this, savedInstanceState);
-
-        Bundle args = requireArguments();
-
-        @SuppressLint("InflateParams")
-        View root = requireActivity().getLayoutInflater()
-                                     .inflate(R.layout.dialog_task_progress, null);
-        mProgressBar = root.findViewById(R.id.progressBar);
-        mMessageView = root.findViewById(R.id.message);
-
-        // these are fixed
-        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
-        boolean isIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
-        //noinspection ConstantConditions
-        mProgressBar.setIndeterminate(isIndeterminate);
-
-        args = savedInstanceState == null ? args : savedInstanceState;
-        // initial/current message.
-        mMessage = args.getString(BKEY_CURRENT_MESSAGE);
-        if (mMessage != null) {
-            //noinspection ConstantConditions
-            mMessageView.setText(mMessage);
-        }
-        // current and max values for a 'determinate' progress bar.
-        if (!isIndeterminate) {
-            mProgressBar.setProgress(args.getInt(BKEY_CURRENT_VALUE));
-            mMax = args.getInt(BKEY_MAX);
-            if (mMax > 0) {
-                mProgressBar.setMax(mMax);
-            }
-        }
-        mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
-
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setView(root)
-                .create();
-        if (titleId != 0) {
-            dialog.setTitle(titleId);
-        }
-        //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
-        dialog.setCanceledOnTouchOutside(false);
-
-        Tracker.exitOnCreateDialog(this);
-        return dialog;
-    }
-
-    /**
-     * FIXME: horrible clutch....
-     *  Accessing the Fragment.getContext() "to early" will return a null.
-     *  I've seen (2019-03-26) using identical code, in the same identical place
-     *  succeed and fail. I presume due to internal timing.
-     *  But it's 'good enough' for now.
-     *  The alternative is to go back to using the AppContext as before, but needs
-     *  more investigating first.
-     *
-     * @return the context of the fragment, or if that was null, the App context.
-     */
-    @Nullable
-    public Context getContextWithHorribleClutch() {
-        Context context = getContext();
-        return context != null ? context : App.getAppContext();
-    }
-
-    /**
-     * DEBUG wrapper
-     *
-     * @return context, can be null
-     */
-    @Nullable
-    @Override
-    public Context getContext() {
-        Context context = super.getContext();
-        if (BuildConfig.DEBUG) {
-            if (context == null) {
-                Logger.warnWithStackTrace(this, "getContext() was NULL");
-            } else {
-                Logger.debug(this, "getContext()", context.toString());
-            }
-        }
-        return context;
-    }
-
-    /**
-     * Direct update of message and progress value.
-     *
-     * @param message     to display
-     * @param absPosition absolute position
-     */
-    @UiThread
-    public void onProgress(@Nullable final String message,
-                           @Nullable final Integer absPosition) {
-        synchronized (this) {
-            if (mUpdateMax) {
-                //noinspection ConstantConditions
-                mProgressBar.setMax(mMax);
-                mUpdateMax = false;
-            }
-
-            // only update when changed
-            if (message != null && !message.equals(mMessage)) {
-                mMessage = message;
-                if (mMessageView != null) {
-                    mMessageView.setText(mMessage);
-                } else {
-                    Logger.warnWithStackTrace(this, "mMessageView was NULL");
-                }
-            }
-
-            if (absPosition != null) {
-                if (mProgressBar != null) {
-                    mProgressBar.setProgress(absPosition);
-                } else {
-                    Logger.warnWithStackTrace(this, "mProgressBar was NULL");
-                }
-            }
-        }
-    }
-
-    /**
-     * Update the counter (bar) on the progress dialog.
-     *
-     * @param absPosition absolute position
-     */
-    @UiThread
-    public void onProgress(final int absPosition) {
-        //noinspection ConstantConditions
-        mProgressBar.setProgress(absPosition);
-    }
-
-    /**
-     * Update the message on the progress dialog.
-     *
-     * @param message to display
-     */
-    @UiThread
-    public void setMessage(@Nullable final String message) {
-        synchronized (this) {
-            // only update when changed
-            if (message != null && !message.equals(mMessage)) {
-                mMessage = message;
-                if (mMessageView != null) {
-                    mMessageView.setText(mMessage);
-                } else {
-                    Logger.warnWithStackTrace(this, "mMessageView was NULL");
-                }
-            }
-        }
     }
 
     /**
@@ -307,20 +201,90 @@ public class ProgressDialogFragment<Results>
         mUpdateMax = true;
     }
 
+    /**
+     * Update the message and progress value.
+     * <p>
+     * Typically called from {@link AsyncTask} #onProgressUpdate
+     *
+     * @param message     to display
+     * @param absPosition absolute position
+     */
+    @UiThread
+    public void onProgress(@Nullable final String message,
+                           @Nullable final Integer absPosition) {
+        synchronized (this) {
+
+            setMessage(message);
+
+            setAbsPosition(absPosition);
+        }
+    }
+
+    /**
+     * Update the message on the progress dialog.
+     *
+     * @param message to display
+     */
+    @UiThread
+    public void onProgress(@Nullable final String message) {
+        synchronized (this) {
+            setMessage(message);
+        }
+    }
+
+    /**
+     * Update the counter (bar) on the progress dialog.
+     *
+     * @param absPosition absolute position
+     */
+    @UiThread
+    public void onProgress(final Integer absPosition) {
+        synchronized (this) {
+            setAbsPosition(absPosition);
+        }
+    }
+
+    private void setMessage(@Nullable final String message) {
+        if (message != null && !message.equals(mMessage)) {
+            mMessage = message;
+            if (mMessageView != null) {
+                mMessageView.setText(mMessage);
+            } else {
+                Logger.warnWithStackTrace(this, "mMessageView was NULL");
+            }
+        }
+    }
+
+    private void setAbsPosition(final Integer absPosition) {
+        if (mProgressBar != null) {
+            if (mUpdateMax && (mMax != mProgressBar.getMax())) {
+                mProgressBar.setMax(mMax);
+                mUpdateMax = false;
+            }
+
+            if (absPosition != null && (absPosition != mProgressBar.getProgress())) {
+                mProgressBar.setProgress(absPosition);
+            }
+        } else {
+            Logger.warnWithStackTrace(this, "mProgressBar was NULL");
+        }
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(BKEY_WAS_CANCELLED, mWasCancelled);
-        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
-        //noinspection ConstantConditions
-        outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
+
         outState.putInt(BKEY_MAX, mMax);
+        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
+        if (mProgressBar != null) {
+            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
+        }
     }
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
         // Tell the caller we're done. mTaskId will be null if there is no task.
-        //noinspection InstanceofIncompatibleInterface
         if (getTargetFragment() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
             ((OnProgressCancelledListener) getTargetFragment()).onProgressCancelled(mTaskId);
         } else if (getActivity() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
@@ -350,7 +314,7 @@ public class ProgressDialogFragment<Results>
     /**
      * Called when the task finishes.
      *
-     * @param success <tt>true</tt> if the task finished successfully
+     * @param success {@code true} if the task finished successfully
      * @param result  task result object
      */
     @UiThread
@@ -368,7 +332,6 @@ public class ProgressDialogFragment<Results>
         }
 
         // Tell the caller we're done.
-        //noinspection InstanceofIncompatibleInterface
         if (getTargetFragment() instanceof OnTaskFinishedListener) {
             ((OnTaskFinishedListener) getTargetFragment()).onTaskFinished(mTaskId, success, result);
         } else if (getActivity() instanceof OnTaskFinishedListener) {
@@ -385,7 +348,10 @@ public class ProgressDialogFragment<Results>
      * <p>
      * https://issuetracker.google.com/issues/36929400
      * <p>
-     * Still not fixed in January 2019
+     * Still not fixed in April 2019
+     *
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -397,19 +363,18 @@ public class ProgressDialogFragment<Results>
     }
 
     public boolean isIndeterminate() {
-        //noinspection ConstantConditions
-        return mProgressBar.isIndeterminate();
+        //don't get it from the actual progressbar as that might be null.
+        return mIsIndeterminate;
     }
 
-    /**
-     * Listener.
-     */
     public interface OnTaskFinishedListener {
 
         /**
+         * Called when a task finishes.
+         *
          * @param taskId  id for the task which was provided at construction time.
-         * @param success <tt>true</tt> if the task finished successfully
-         * @param result  the return object from the {@link AsyncTask#doInBackground} call
+         * @param success {@code true} if the task finished successfully
+         * @param result  the result object from the {@link AsyncTask}.
          *                Nullable/NonNull is up to the implementation.
          */
         void onTaskFinished(int taskId,
@@ -418,7 +383,7 @@ public class ProgressDialogFragment<Results>
     }
 
     /**
-     * Listener.
+     * Used when the user cancels.
      */
     public interface OnProgressCancelledListener {
 

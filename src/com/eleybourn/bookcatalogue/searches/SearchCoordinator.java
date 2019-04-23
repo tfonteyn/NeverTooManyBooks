@@ -250,7 +250,7 @@ public class SearchCoordinator {
      * @param author         to search for (can be empty)
      * @param title          to search for (can be empty)
      * @param isbn           to search for (can be empty)
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     public void search(final int searchFlags,
                        @NonNull final String author,
@@ -621,7 +621,7 @@ public class SearchCoordinator {
      * While Google is reputedly most likely to succeed, it also produces garbage a lot of the time.
      * So we search Amazon, Goodreads, Google and LT last as it REQUIRES an ISBN.
      *
-     * @return <tt>true</tt> if a search was started, <tt>false</tt> if not
+     * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNext() {
         // Loop though in 'search-priority' order
@@ -642,7 +642,7 @@ public class SearchCoordinator {
      *
      * @param sources bitmask with sites to search
      *
-     * @return <tt>true</tt> if at least one search was started, <tt>false</tt> if none
+     * @return {@code true} if at least one search was started, {@code false} if none
      */
     private boolean startSearches(final int sources) {
         boolean atLeastOneStarted = false;
@@ -667,7 +667,7 @@ public class SearchCoordinator {
      *
      * @param site to search
      *
-     * @return <tt>true</tt> if the search was started.
+     * @return {@code true} if the search was started.
      */
     private boolean startOneSearch(@NonNull final Site site) {
         if (mCancelledFlg) {

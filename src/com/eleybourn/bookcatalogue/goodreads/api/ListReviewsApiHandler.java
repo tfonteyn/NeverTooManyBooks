@@ -303,7 +303,6 @@ public class ListReviewsApiHandler
                    BookNotFoundException,
                    IOException {
 
-        @SuppressWarnings("UnusedAssignment")
         long t0 = System.nanoTime();
 
         // Sort by update_date (descending) so sync is faster.

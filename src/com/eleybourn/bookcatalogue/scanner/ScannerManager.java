@@ -90,7 +90,7 @@ public final class ScannerManager {
     /**
      * Return a Scanner object based on the current environment and user preferences.
      *
-     * @return A Scanner, or null when none found
+     * @return A Scanner, or {@code null} if none found
      */
     @Nullable
     public static Scanner getScanner(@NonNull final Activity activity) {
@@ -176,7 +176,7 @@ public final class ScannerManager {
         @NonNull
         Scanner newInstance();
 
-        /** @return <tt>true</tt> if this scanner is available. */
+        /** @return {@code true} if this scanner is available. */
         boolean isIntentAvailable(@NonNull Context context);
     }
 

@@ -132,7 +132,7 @@ public class TarBackupContainer
     }
 
     /**
-     * @return <tt>true</tt> if valid
+     * @return {@code true} if valid
      */
     @Override
     public boolean isValid(@NonNull final Context context) {

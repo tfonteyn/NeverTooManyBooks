@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -48,11 +49,11 @@ public class ExportCSVTask
      * @param settings the export settings
      */
     @UiThread
-    private ExportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
+    private ExportCSVTask(@NonNull final Context context,
+                          @NonNull final ProgressDialogFragment<Void> fragment,
                           @NonNull final ExportSettings settings) {
         mFragment = fragment;
-        //noinspection ConstantConditions
-        mExporter = new CsvExporter(mFragment.getContextWithHorribleClutch(), settings);
+        mExporter = new CsvExporter(context, settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
 
@@ -61,15 +62,16 @@ public class ExportCSVTask
      * @param settings the export settings
      */
     @UiThread
-    public static void start(@NonNull final FragmentManager fm,
+    public static void start(@NonNull final Context context,
+                             @NonNull final FragmentManager fm,
                              @NonNull final ExportSettings settings) {
         if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<Void> frag =
+            ProgressDialogFragment<Void> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
                                                        false, 0);
-            ExportCSVTask task = new ExportCSVTask(frag, settings);
-            frag.setTask(M_TASK_ID, task);
-            frag.show(fm, TAG);
+            ExportCSVTask task = new ExportCSVTask(context, progressDialog, settings);
+            progressDialog.setTask(M_TASK_ID, task);
+            progressDialog.show(fm, TAG);
             task.execute();
         }
     }

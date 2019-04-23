@@ -82,9 +82,11 @@ public class EditBookPublicationFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * {@link BookManager#getBook()} on the hosting Activity
-     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link BookManager#getBook()} on the hosting Activity
+     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <p>
+     * <p>{@inheritDoc}
      */
     @CallSuper
     @Override
@@ -95,6 +97,8 @@ public class EditBookPublicationFragment
 
     /**
      * Some fields are only present (or need specific handling) on {@link BookFragment}.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper

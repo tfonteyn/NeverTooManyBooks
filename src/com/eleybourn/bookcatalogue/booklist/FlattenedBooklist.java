@@ -94,7 +94,7 @@ public class FlattenedBooklist
     /**
      * Passed a statement update the 'current' row details based on the columns returned.
      *
-     * @return <tt>true</tt> if we have set position and bookId successfully.
+     * @return {@code true} if we have set position and bookId successfully.
      */
     private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
         try {
@@ -113,7 +113,7 @@ public class FlattenedBooklist
      * where the underlying database connection may have closed and the table been deleted
      * as a result.
      *
-     * @return <tt>true</tt> if the table exists.
+     * @return {@code true} if the table exists.
      */
     public boolean exists() {
         return mTable.exists(mSyncedDb);
@@ -122,7 +122,7 @@ public class FlattenedBooklist
     /**
      * Move to the next book row.
      *
-     * @return <tt>true</tt>if successful
+     * @return {@code true}if successful
      */
     public boolean moveNext() {
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
@@ -149,7 +149,7 @@ public class FlattenedBooklist
     /**
      * Move to the previous book row.
      *
-     * @return <tt>true</tt>if successful
+     * @return {@code true}if successful
      */
     public boolean movePrev() {
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
@@ -177,7 +177,7 @@ public class FlattenedBooklist
      * Move to the specified book row, based on the row ID, not the book ID or row number.
      * The row ID should be the row number in the table, including header-related rows.
      *
-     * @return <tt>true</tt>if successful
+     * @return {@code true}if successful
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean moveTo(final int position) {
@@ -209,7 +209,7 @@ public class FlattenedBooklist
     /**
      * Move to the first row.
      *
-     * @return <tt>true</tt>if successful
+     * @return {@code true}if successful
      */
     @SuppressWarnings("unused")
     public boolean moveFirst() {
@@ -221,7 +221,7 @@ public class FlattenedBooklist
     /**
      * Move to the last row.
      *
-     * @return <tt>true</tt>if successful
+     * @return {@code true}if successful
      */
     @SuppressWarnings("unused")
     public boolean moveLast() {

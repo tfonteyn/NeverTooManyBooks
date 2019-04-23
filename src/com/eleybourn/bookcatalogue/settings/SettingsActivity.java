@@ -81,10 +81,8 @@ public class SettingsActivity
      * If any of the child preference fragments have an xml configuration with nested
      * PreferenceScreen elements, then a click on those will trigger this method.
      *
-     * @param caller the fragment
-     * @param pref   the desired screen
-     *
-     * @return <tt>true</tt> if handled.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     public boolean onPreferenceStartScreen(@NonNull final PreferenceFragmentCompat caller,

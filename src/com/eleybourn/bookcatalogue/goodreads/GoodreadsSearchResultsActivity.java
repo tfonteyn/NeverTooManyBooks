@@ -193,7 +193,7 @@ public class GoodreadsSearchResultsActivity
         /**
          * Constructor.
          *
-         * @param context the caller context
+         * @param context caller context
          * @param objects the list
          */
         ResultsAdapter(@NonNull final Context context,

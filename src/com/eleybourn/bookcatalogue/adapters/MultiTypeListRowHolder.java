@@ -20,39 +20,52 @@
 
 package com.eleybourn.bookcatalogue.adapters;
 
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
+
 /**
  * Holder for rows in a {@link MultiTypeListHandler}.
  *
- * @author Philip Warner
+ * Method names now mimic {@link androidx.recyclerview.widget.RecyclerView.ViewHolder}
+ * but with creating View and Holder split. This is done to allow for example scaling
+ * the view components before using them.
+ * Example see: {@link BooksMultiTypeListHandler#getView(Cursor, LayoutInflater, View, ViewGroup)}
+ * <p>
+ * Intention is to use a Recycler ViewHolder eventually.
  */
 public interface MultiTypeListRowHolder<T> {
 
     /**
-     * Use the passed T to determine the kind of View that is required.
+     * Uses the passed type of the rowData to determine the kind of View that is required.
      *
      * @return a new view.
      */
-    View createView(@NonNull T row,
-                    @NonNull LayoutInflater inflater,
-                    @NonNull ViewGroup parent);
+    View onCreateView(@NonNull T rowData,
+                      @NonNull LayoutInflater inflater,
+                      @NonNull ViewGroup parent);
 
     /**
-     * Setup a new holder for row type based on the passed T. This holder will be
-     * associated with a reusable view that will always be used for rows of the current
-     * kind. We avoid having to call findViewById() by doing it once at creation time.
+     * Setup a new holder. This holder will be associated with a reusable view that will
+     * always be used for rows of the current kind.
+     * We avoid having to call findViewById() by doing it once at creation time.
+     *
+     * @param rowData to read global info from in order to setup the holder.
+     *                Do NOT use specific row date here.
+     * @param rowView the view as created in {@link #onCreateView} for this row.
      */
-    void map(@NonNull T row,
-             @NonNull View convertView);
+    void onCreateViewHolder(@NonNull T rowData,
+                            @NonNull View rowView);
 
     /**
-     * Use the passed T to fill in the actual details for the current row.
+     * @param rowData to fill in the actual data details for the current row.
+     * @param rowView the view as created in {@link #onCreateView} for this row.
      */
-    void set(@NonNull T row,
-             @NonNull View view);
+    void onBindViewHolder(@NonNull T rowData,
+                          @NonNull View rowView);
 }

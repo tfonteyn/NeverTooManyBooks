@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
@@ -40,6 +41,9 @@ public class BackupTask
     private final File mTmpFile;
     @NonNull
     private final ProgressDialogFragment<ExportSettings> mFragment;
+
+    private final BackupWriter mBackupWriter;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -54,8 +58,10 @@ public class BackupTask
      * @param settings the export settings
      */
     @UiThread
-    private BackupTask(@NonNull final ProgressDialogFragment<ExportSettings> fragment,
-                       @NonNull final ExportSettings settings) {
+    private BackupTask(@NonNull final Context context,
+                       @NonNull final ProgressDialogFragment<ExportSettings> fragment,
+                       @NonNull final ExportSettings settings)
+            throws IOException {
 
         mFragment = fragment;
         mSettings = settings;
@@ -72,6 +78,9 @@ public class BackupTask
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
         mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
+
+        BackupContainer bkp = new TarBackupContainer(mTmpFile);
+        mBackupWriter = bkp.newWriter(context);
     }
 
     /**
@@ -79,16 +88,22 @@ public class BackupTask
      * @param settings the export settings
      */
     @UiThread
-    public static void start(@NonNull final FragmentManager fm,
+    public static void start(@NonNull final Context context,
+                             @NonNull final FragmentManager fm,
                              @NonNull final ExportSettings settings) {
         if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<ExportSettings> frag =
+            ProgressDialogFragment<ExportSettings> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
                                                        false, 0);
-            BackupTask task = new BackupTask(frag, settings);
-            frag.setTask(M_TASK_ID, task);
-            frag.show(fm, TAG);
-            task.execute();
+            BackupTask task;
+            try {
+                task = new BackupTask(context, progressDialog, settings);
+                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.show(fm, TAG);
+                task.execute();
+            } catch (IOException e) {
+                progressDialog.onTaskFinished(false, settings);
+            }
         }
     }
 
@@ -107,11 +122,10 @@ public class BackupTask
     @NonNull
     @WorkerThread
     protected ExportSettings doInBackground(final Void... params) {
-        BackupContainer bkp = new TarBackupContainer(mTmpFile);
-        //noinspection ConstantConditions
-        try (BackupWriter wrt = bkp.newWriter(mFragment.getContextWithHorribleClutch())) {
+
+        try {
             // go go go...
-            wrt.backup(mSettings, new BackupWriter.BackupWriterListener() {
+            mBackupWriter.backup(mSettings, new BackupWriter.BackupWriterListener() {
 
                 private int mProgress;
 
@@ -154,6 +168,11 @@ public class BackupTask
             Logger.error(this, e);
             mException = e;
             cleanup();
+        } finally {
+            try {
+                mBackupWriter.close();
+            } catch (IOException ignore) {
+            }
         }
 
         return mSettings;

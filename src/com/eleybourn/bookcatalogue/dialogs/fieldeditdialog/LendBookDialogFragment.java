@@ -45,7 +45,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
@@ -285,6 +284,7 @@ public class LendBookDialogFragment
                                            @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
         // must be checked in parallel
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0

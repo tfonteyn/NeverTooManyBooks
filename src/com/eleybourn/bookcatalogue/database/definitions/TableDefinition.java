@@ -668,7 +668,7 @@ public class TableDefinition
      * Keep in mind that not all tables are fully registered in {@link DBDefinitions}
      * Add domains there when needed. Eventually the lists will get complete.
      *
-     * @param withAS set to <tt>true</tt> if you need 'AS domain-x' added.
+     * @param withAS set to {@code true} if you need 'AS domain-x' added.
      *
      * @return SQL fragment
      *
@@ -690,7 +690,7 @@ public class TableDefinition
      * <p>
      * format: [alias].[domain-1] AS [domain-1], ..., [alias].[domain-n] AS [domain-n]
      *
-     * @param withAS  set to <tt>true</tt> if you need 'AS domain-x' added.
+     * @param withAS  set to {@code true} if you need 'AS domain-x' added.
      * @param domains List of domains to use
      *
      * @return SQL fragment
@@ -717,7 +717,7 @@ public class TableDefinition
      * or
      * format: INSERT into [table-name] ( [domain-list] ) VALUES(?,...?)
      *
-     * @param withValues set to <tt>true</tt> to add the VALUES part
+     * @param withValues set to {@code true} to add the VALUES part
      * @param domains    List of domains to use
      *
      * @return SQL fragment
@@ -875,7 +875,7 @@ public class TableDefinition
     }
 
     /**
-     * @return <tt>true</tt> if the table exists
+     * @return {@code true} if the table exists
      */
     public boolean exists(@NonNull final SynchronizedDb db) {
         try (SynchronizedStatement stmt = db.compileStatement(EXISTS_SQL)) {

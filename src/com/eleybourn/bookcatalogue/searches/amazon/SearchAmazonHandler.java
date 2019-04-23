@@ -279,7 +279,7 @@ public class SearchAmazonHandler
      * Constructor.
      *
      * @param bookData       Bundle to save results in
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     SearchAmazonHandler(@NonNull final Bundle bookData,
                         final boolean fetchThumbnail) {
@@ -496,4 +496,4 @@ public class SearchAmazonHandler
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
     }
 }
- 
+

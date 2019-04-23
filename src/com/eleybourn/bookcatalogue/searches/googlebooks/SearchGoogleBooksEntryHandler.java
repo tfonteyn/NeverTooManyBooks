@@ -167,7 +167,7 @@ class SearchGoogleBooksEntryHandler
      * Constructor.
      *
      * @param bookData       Bundle to save results in
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
                                   final boolean fetchThumbnail) {

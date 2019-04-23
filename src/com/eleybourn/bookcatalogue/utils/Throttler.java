@@ -59,12 +59,12 @@ public class Throttler {
                 wait = 0;
             }
             mLastRequestTime = now + wait;
-            Log.d("THROT", "" + mLastRequestTime);
+            Log.d("Throttler", "mLastRequestTime=" + mLastRequestTime);
         }
 
         if (wait > 0) {
             try {
-                Log.d("sleep", "" + wait);
+                Log.d("Throttler", "wait=" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException ignored) {
             }

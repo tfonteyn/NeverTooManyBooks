@@ -34,7 +34,9 @@ public class BookSearchByTextFragment
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
-    /** */
+    /**
+     *
+     */
     private ArrayAdapter<String> mAuthorAdapter;
 
     private EditText mTitleView;
@@ -135,6 +137,8 @@ public class BookSearchByTextFragment
      * results of search started by {@link #startSearch}.
      * <p>
      * The details will get sent to {@link EditBookActivity}
+     * <p>
+     * <p>{@inheritDoc}
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {

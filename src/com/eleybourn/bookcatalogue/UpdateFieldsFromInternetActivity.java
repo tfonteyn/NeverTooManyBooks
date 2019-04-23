@@ -361,6 +361,7 @@ public class UpdateFieldsFromInternetActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
             case REQ_PREFERRED_SEARCH_SITES:
@@ -382,7 +383,7 @@ public class UpdateFieldsFromInternetActivity
     /**
      * Count the checked fields, we need at least one selected to make sense.
      *
-     * @return <tt>true</tt> if at least one field is selected
+     * @return {@code true} if at least one field is selected
      */
     private boolean hasSelections() {
         int nChildren = mListContainer.getChildCount();

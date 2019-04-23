@@ -78,7 +78,7 @@ public class DomainDefinition
      *
      * @param name    column name
      * @param type    column type (text, int, float, ...)
-     * @param notNull <tt>true</tt> if this column should never be null
+     * @param notNull {@code true} if this column should never be null
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
@@ -93,7 +93,7 @@ public class DomainDefinition
     /**
      * @param name        column name
      * @param type        column type (text, int, float, ...)
-     * @param notNull     <tt>true</tt> if this column should never be null
+     * @param notNull     {@code true} if this column should never be null
      * @param constraints (optional) a list of generic constraints
      */
     public DomainDefinition(@NonNull final String name,
@@ -203,7 +203,7 @@ public class DomainDefinition
     }
 
     /**
-     * @return <tt>true</tt> if this domain is a 'text' type.
+     * @return {@code true} if this domain is a 'text' type.
      */
     public boolean isText() {
         return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);

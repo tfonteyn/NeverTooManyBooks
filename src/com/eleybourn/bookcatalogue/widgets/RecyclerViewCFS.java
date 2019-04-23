@@ -45,24 +45,47 @@ public class RecyclerViewCFS
     @Nullable
     private Drawable mOverlayDrawable;
 
+    /**
+     * Constructor used when instantiating Views programmatically.
+     *
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
+     */
     public RecyclerViewCFS(@NonNull Context context) {
         this(context, null);
     }
 
+    /**
+     * Constructor used by the LayoutInflater.
+     *
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
+     * @param attrs   The attributes of the XML tag that is inflating the view.
+     */
     public RecyclerViewCFS(@NonNull Context context,
                            @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    /**
+     * Constructor used by the LayoutInflater if there was a 'style' attribute.
+     *
+     * @param context      The Context the view is running in, through which it can
+     *                     access the current theme, resources, etc.
+     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *                     reference to a style resource that supplies default values for
+     *                     the view. Can be 0 to not look for defaults.
+     */
     public RecyclerViewCFS(@NonNull final Context context,
                            @Nullable final AttributeSet attrs,
-                           final int defStyle) {
-        super(context, attrs, defStyle);
+                           final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
         if (attrs != null) {
             int defStyleRes = 0;
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RecyclerViewCFS,
-                                                          defStyle, defStyleRes);
+                                                          defStyleAttr, defStyleRes);
 
             boolean enableFastScroller = a
                     .getBoolean(R.styleable.RecyclerViewCFS_cfsEnabled, false);

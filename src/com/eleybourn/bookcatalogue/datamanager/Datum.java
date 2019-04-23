@@ -47,7 +47,7 @@ public class Datum {
 
     @NonNull
     private final String mKey;
-    /** <tt>true</tt> if data should be visible. */
+    /** {@code true} if data should be visible. */
     private final boolean mIsVisible;
     /** Validator for this Datum. */
     @Nullable
@@ -62,7 +62,7 @@ public class Datum {
      * Constructor.
      *
      * @param datumKey Key of this datum
-     * @param visible  <tt>true</tt> if data should be visible
+     * @param visible  {@code true} if data should be visible
      */
     public Datum(@NonNull final String datumKey,
                  final boolean visible) {
@@ -283,7 +283,7 @@ public class Datum {
      * @param data    Parent DataManager
      * @param rawData Raw data bundle
      *
-     * @return The object data, or null when not present
+     * @return The object data, or {@code null} if not found
      */
     @Nullable
     public Object get(@NonNull final DataManager data,
@@ -482,7 +482,7 @@ public class Datum {
      * @param data    Parent collection
      * @param rawData Raw data
      *
-     * @return Value of the data, can be empty, but never null
+     * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
     public String getString(@NonNull final DataManager data,
@@ -559,7 +559,7 @@ public class Datum {
      * @param data    Parent DataManager
      * @param rawData Raw data Bundle
      *
-     * @return The list, can be empty but never null
+     * @return The list, can be empty but never {@code null}
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final DataManager data,
@@ -600,7 +600,7 @@ public class Datum {
      * @param data    Parent DataManager
      * @param rawData Raw data Bundle
      *
-     * @return The list, can be empty but never null
+     * @return The list, can be empty but never {@code null}
      */
     @NonNull
     public ArrayList<String> getStringArrayList(@NonNull final DataManager data,

@@ -80,18 +80,18 @@ public class ISFDBBook
      */
     static {
         // multiple works, one author
-        TYPE_MAP.put("coll", TocEntry.Type.MULTIPLE_WORKS);
-        TYPE_MAP.put("COLLECTION", TocEntry.Type.MULTIPLE_WORKS);
+        TYPE_MAP.put("coll", TocEntry.Authors.MULTIPLE_WORKS);
+        TYPE_MAP.put("COLLECTION", TocEntry.Authors.MULTIPLE_WORKS);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
-        TYPE_MAP.put("ANTHOLOGY", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("anth", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("ANTHOLOGY", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
-        TYPE_MAP.put("OMNIBUS", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("omni", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("OMNIBUS", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
-        TYPE_MAP.put("MAGAZINE", TocEntry.Type.MULTIPLE_WORKS);
+        TYPE_MAP.put("MAGAZINE", TocEntry.Authors.MULTIPLE_WORKS);
 
         // others, treated as a standard book.
 //        TYPE_MAP.put("novel", 0);
@@ -393,9 +393,9 @@ public class ISFDBBook
 
         // set Anthology type
         if (!toc.isEmpty()) {
-            int type = TocEntry.Type.MULTIPLE_WORKS;
+            int type = TocEntry.Authors.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(toc)) {
-                type |= TocEntry.Type.MULTIPLE_AUTHORS;
+                type |= TocEntry.Authors.MULTIPLE_AUTHORS;
             }
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }

@@ -186,7 +186,7 @@ public class AdminActivity
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
 
-        ExportCSVTask.start(getSupportFragmentManager(), settings);
+        ExportCSVTask.start(this, getSupportFragmentManager(), settings);
     }
 
     /**
@@ -235,7 +235,7 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        ImportCSVTask.start(getSupportFragmentManager(), settings);
+        ImportCSVTask.start(this, getSupportFragmentManager(), settings);
     }
 
     @Override
@@ -266,11 +266,9 @@ public class AdminActivity
     }
 
     /**
-     * Called when a task finishes.
-     *
-     * @param taskId  a task identifier
-     * @param success <tt>true</tt> for success
-     * @param result  not used
+     * The result Objectof the task is not used here.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     public void onTaskFinished(final int taskId,

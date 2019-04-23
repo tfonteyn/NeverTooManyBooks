@@ -47,7 +47,7 @@ public class ShowBookByIdApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the array of GoodreadsWork objects.
      */

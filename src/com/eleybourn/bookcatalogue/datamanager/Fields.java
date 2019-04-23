@@ -76,6 +76,7 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.google.android.material.button.MaterialButton;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -230,9 +231,8 @@ public class Fields {
      *
      * @param fieldName to lookup
      *
-     * @return <tt>true</tt> if the user wants to use this field.
+     * @return {@code true} if the user wants to use this field.
      */
-    @SuppressWarnings("WeakerAccess")
     public static boolean isUsed(@NonNull final String fieldName) {
         return App.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
@@ -240,7 +240,6 @@ public class Fields {
     /**
      * @param listener the listener for field changes
      */
-    @SuppressWarnings("WeakerAccess")
     public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
         mAfterFieldChangeListener = listener;
     }
@@ -293,7 +292,6 @@ public class Fields {
      *
      * @return Associated Field.
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public Field getField(@IdRes final int fieldId) {
         for (Field f : mAllFields) {
@@ -349,8 +347,8 @@ public class Fields {
      * Load fields from the passed bundle.
      *
      * @param values        with data to load.
-     * @param withOverwrite if <tt>true</tt>, all fields are copied.
-     *                      If <tt>false</tt>, only non-existent fields are copied.
+     * @param withOverwrite if {@code true}, all fields are copied.
+     *                      If {@code false}, only non-existent fields are copied.
      */
     public void setAllFrom(@NonNull final Bundle values,
                            final boolean withOverwrite) {
@@ -395,7 +393,6 @@ public class Fields {
     /**
      * Reset all field visibility based on user preferences.
      */
-    @SuppressWarnings("WeakerAccess")
     public void resetVisibility() {
         for (Field field : mAllFields) {
             field.resetVisibility();
@@ -413,7 +410,7 @@ public class Fields {
      *
      * @param values The Bundle collection to fill
      *
-     * @return <tt>true</tt> if all validation passed.
+     * @return {@code true} if all validation passed.
      */
     @SuppressWarnings("unused")
     private boolean validateAllFields(@NonNull final Bundle values) {
@@ -511,7 +508,6 @@ public class Fields {
      *
      * @param validator An instance of FieldCrossValidator to append
      */
-    @SuppressWarnings("WeakerAccess")
     public void addCrossValidator(@NonNull final FieldCrossValidator validator) {
         mCrossValidators.add(validator);
     }
@@ -676,7 +672,7 @@ public class Fields {
          *
          * @param source Input value
          *
-         * @return The formatted value. If the source is null, should return "" (and log an error)
+         * @return The formatted value. If the source is {@code null}, should return "" (and log an error)
          */
         @NonNull
         String format(@NonNull Field field,
@@ -819,7 +815,7 @@ public class Fields {
         /**
          * Set the TextViewAccessor to support HTML.
          *
-         * @param showHtml if <tt>true</tt> this view will display HTML
+         * @param showHtml if {@code true} this view will display HTML
          */
         @SuppressWarnings("WeakerAccess")
         public void setShowHtml(final boolean showHtml) {
@@ -947,7 +943,7 @@ public class Fields {
          * A default maximum size gets calculated. Override by calling {@link #setMaxSize}
          * BEFORE the displaying is done.
          *
-         * @param context needed for getDisplayMetrics
+         * @param context caller context
          */
         ImageViewAccessor(@NonNull final Context context) {
             //FIXME: arbitrary default; it was the hardcoded value for Booklist cover images.
@@ -1174,9 +1170,8 @@ public class Fields {
         private final Context mContext;
 
         /**
-         * @param context the caller context for resource
+         * @param context caller context for resource access
          */
-        @SuppressWarnings("WeakerAccess")
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mContext = context;
         }
@@ -1291,7 +1286,7 @@ public class Fields {
         @NonNull
         public String extract(@NonNull final Field field,
                               @NonNull final String source) {
-            // we need to transform a localised language name to it's ISO equivalent.
+            // we need to transform a localised language name to its ISO equivalent.
             return LocaleUtils.getISO3Language(source);
         }
     }
@@ -1488,17 +1483,13 @@ public class Fields {
          */
         @NonNull
         private final String mColumn;
-
         /** FieldFormatter to use (can be null). */
         @Nullable
         FieldFormatter formatter;
-
         /** The view for this field; looked up on first use, then cached. */
         private View mFieldView;
-
         /** Is the field in use; i.e. is it enabled in the user-preferences. **/
         private boolean mIsUsed;
-
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
          * from a {@link DataManager} (or Bundle/Cursor).
@@ -1506,15 +1497,12 @@ public class Fields {
          * into the {@link DataManager} (or Bundle).
          */
         private boolean mDoNoFetch;
-
         /** FieldValidator to use (can be null). */
         @Nullable
         private FieldValidator mFieldValidator;
-
         /** Accessor to use (automatically defined). */
         @NonNull
         private FieldDataAccessor mFieldDataAccessor;
-
         /** TextWatcher, used for EditText fields only. */
         private TextWatcher mTextWatcher;
 
@@ -1542,6 +1530,13 @@ public class Fields {
             // Set the appropriate accessor
             if (view instanceof Spinner) {
                 mFieldDataAccessor = new SpinnerAccessor();
+
+            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+                // this was nasty... a MaterialButton implements Checkable,
+                // but you have to double check (pardon the pun) whether it IS checkable.
+                //TOMF: this actually emphasizes the need for having an actual type for the field.
+                mFieldDataAccessor = new CheckableAccessor();
+                addTouchSignalsDirty(view);
 
             } else if (view instanceof Checkable) {
                 mFieldDataAccessor = new CheckableAccessor();
@@ -1571,6 +1566,12 @@ public class Fields {
                         // to disable/enable the text watcher like the Edit accessor set()
                         // does.
                         // so.. the extract() had to be added here.
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this,"afterTextChanged",
+                                         "s=`" + s.toString() + '`',
+                                         "extract=`" + extract(s.toString()) + '`'
+                                         );
+                        }
                         setValue(extract(s.toString()));
                     }
                 };
@@ -1602,6 +1603,24 @@ public class Fields {
             if (!mIsUsed) {
                 view.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Field{" +
+                    "id=" + id +
+//                    ", mFields=" + mFields +
+                    ", group='" + group + '\'' +
+                    ", mColumn='" + mColumn + '\'' +
+                    ", formatter=" + formatter +
+                    ", mFieldView=" + mFieldView +
+                    ", mIsUsed=" + mIsUsed +
+                    ", mDoNoFetch=" + mDoNoFetch +
+                    ", mFieldValidator=" + mFieldValidator +
+                    ", mFieldDataAccessor=" + mFieldDataAccessor +
+                    ", mTextWatcher=" + mTextWatcher +
+                    '}';
         }
 
         /**
@@ -1661,7 +1680,7 @@ public class Fields {
          *
          * @return field (for chaining)
          */
-        @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
+        @SuppressWarnings("UnusedReturnValue")
         @NonNull
         public Field setShowHtml(final boolean showHtml) {
             if (mFieldDataAccessor instanceof TextViewAccessor) {
@@ -1671,7 +1690,7 @@ public class Fields {
         }
 
         /**
-         * @param doNoFetch <tt>true</tt> to stop the field being fetched from the database
+         * @param doNoFetch {@code true} to stop the field being fetched from the database
          *
          * @return field (for chaining)
          */
@@ -1684,7 +1703,7 @@ public class Fields {
         /**
          * Is the field in use; i.e. is it enabled in the user-preferences.
          *
-         * @return <tt>true</tt> if the field *can* be visible
+         * @return {@code true} if the field *can* be visible
          */
         public boolean isUsed() {
             return mIsUsed;
@@ -1838,7 +1857,7 @@ public class Fields {
          *
          * @param s String to format
          *
-         * @return The formatted value. If the source is null, should return "" (and log an error)
+         * @return The formatted value. If the source is {@code null}, should return "" (and log an error)
          */
         @NonNull
         public String format(@Nullable final String s) {

@@ -62,7 +62,7 @@ public class EditBookActivity
     /**
      * When the user clicks 'back/up', check if we're clean to leave.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper

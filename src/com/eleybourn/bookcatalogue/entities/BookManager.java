@@ -14,10 +14,16 @@ public interface BookManager {
 
     void setBook(@NonNull Book book);
 
+    /**
+     * @return {@code true} if our data was changed.
+     */
     default boolean isDirty() {
         return false;
     }
 
+    /**
+     * @param isDirty set to {@code true} if our data was changed.
+     */
     default void setDirty(boolean isDirty) {
     }
 }

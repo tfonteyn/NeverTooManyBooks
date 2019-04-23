@@ -63,7 +63,7 @@ public class GoodreadsAuthorizationResultCheckTask
     }
 
     /**
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager,

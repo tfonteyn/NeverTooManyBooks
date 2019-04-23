@@ -68,7 +68,7 @@ public abstract class SendBooksTask
     /**
      * Run the task, log exceptions.
      *
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager,
@@ -96,7 +96,7 @@ public abstract class SendBooksTask
     }
 
     /**
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     protected abstract boolean send(@NonNull final QueueManager queueManager,
                                     @NonNull final Context context,
@@ -105,7 +105,7 @@ public abstract class SendBooksTask
     /**
      * Try to export one book.
      *
-     * @return <tt>false</tt> on failure, <tt>true</tt> on success
+     * @return {@code false} on failure, {@code true} on success
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean sendOneBook(@NonNull final QueueManager queueManager,

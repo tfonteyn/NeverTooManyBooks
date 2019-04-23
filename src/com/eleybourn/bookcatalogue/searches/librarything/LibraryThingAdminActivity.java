@@ -139,13 +139,12 @@ public class LibraryThingAdminActivity
         @UiThread
         public static void start(@NonNull final FragmentManager fm) {
             if (fm.findFragmentByTag(TAG) == null) {
-                ProgressDialogFragment<Integer> frag =
+                ProgressDialogFragment<Integer> progressDialog =
                         ProgressDialogFragment.newInstance(
-                                R.string.progress_msg_connecting_to_web_site,
-                                true, 0);
-                ValidateKey task = new ValidateKey(frag);
-                frag.setTask(M_TASK_ID, task);
-                frag.show(fm, TAG);
+                                R.string.progress_msg_connecting_to_web_site,true, 0);
+                ValidateKey task = new ValidateKey(progressDialog);
+                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.show(fm, TAG);
                 task.execute();
             }
         }

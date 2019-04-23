@@ -138,7 +138,7 @@ public class GoodreadsManager
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
 
-    /** Set to <tt>true</tt> when the credentials have been successfully verified. */
+    /** Set to {@code true} when the credentials have been successfully verified. */
     private static boolean sHasValidCredentials;
     /** Cached when credentials have been verified. */
     @Nullable
@@ -816,7 +816,7 @@ public class GoodreadsManager
     }
 
     /**
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data
      *
@@ -855,7 +855,7 @@ public class GoodreadsManager
      * @param isbn to search for
      * @param size of image to get.
      *
-     * @return found/saved File, or null when none found (or any other failure)
+     * @return found/saved File, or {@code null} if none found (or any other failure)
      */
     @Nullable
     @Override
@@ -1023,7 +1023,7 @@ public class GoodreadsManager
      *
      * @author Philip Warner
      */
-    public void requestAuthorization(@NonNull final Context context)
+    public void requestAuthorization()
             throws IOException,
                    AuthorizationException {
 
@@ -1060,7 +1060,7 @@ public class GoodreadsManager
            .apply();
 
         // Open the web page
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+        App.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 
     /**

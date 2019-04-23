@@ -52,6 +52,9 @@ import com.eleybourn.bookcatalogue.utils.Throttler;
  * <p>
  * So... adding throttling. But obviously if the issue is on the actual 'theagiledirector'
  * site, this will not help. But with throttling I will at least not cause extra trouble.
+ *
+ * 2019-04-20: it's the actual 'theagiledirector'.
+ * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
  */
 public final class AmazonManager
         implements SearchSiteManager {
@@ -99,7 +102,7 @@ public final class AmazonManager
      * This searches the amazon REST site based on a specific isbn.
      * FIXME: Search proxies through theagiledirector.com - amazon not supporting mobile devices?
      *
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data
      *

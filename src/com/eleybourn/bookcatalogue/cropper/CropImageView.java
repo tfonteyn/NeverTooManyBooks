@@ -199,7 +199,7 @@ class CropImageView
                 }
                 // if we're not large then there's no point in even allowing
                 // the user to move the image around. This call to center puts
-                // it back to the normalized location (with <tt>false</tt> meaning don't
+                // it back to the normalized location (with {@code false} meaning don't
                 // animate).
                 if (getScale() == 1F) {
                     center(true, true);

@@ -48,7 +48,7 @@ public final class GoodreadsUtils {
     /**
      * @param imageName to check
      *
-     * @return <tt>true</tt> if the name does NOT contain the string 'nocover'
+     * @return {@code true} if the name does NOT contain the string 'nocover'
      */
     @SuppressWarnings("WeakerAccess")
     @AnyThread
@@ -60,7 +60,7 @@ public final class GoodreadsUtils {
     /**
      * @param imageName to check
      *
-     * @return <tt>true</tt> if the name DOES contain the string 'nocover'
+     * @return {@code true} if the name DOES contain the string 'nocover'
      */
     @AnyThread
     public static boolean hasNoCover(final String imageName) {
@@ -213,8 +213,8 @@ public final class GoodreadsUtils {
      * Start a background task that exports all books to goodreads.
      *
      * @param activity    the caller context
-     * @param updatesOnly <tt>true</tt> if you only want to send updated book,
-     *                    <tt>false</tt> to send ALL books.
+     * @param updatesOnly {@code true} if you only want to send updated book,
+     *                    {@code false} to send ALL books.
      */
     private static void sendAllBooks(@NonNull final FragmentActivity activity,
                                      final boolean updatesOnly) {
@@ -253,10 +253,8 @@ public final class GoodreadsUtils {
                         if (isCancelled()) {
                             return R.string.progress_end_cancelled;
                         }
-                        //noinspection ConstantConditions
                         QueueManager.getQueueManager().enqueueTask(
-                                new SendAllBooksTask(mFragment.getContextWithHorribleClutch(),
-                                                     updatesOnly),
+                                new SendAllBooksTask(activity, updatesOnly),
                                 QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -324,10 +322,8 @@ public final class GoodreadsUtils {
                         return R.string.progress_end_cancelled;
                     }
                     if (msg == 0) {
-                        //noinspection ConstantConditions
                         QueueManager.getQueueManager()
-                                    .enqueueTask(new SendOneBookTask(
-                                                         mFragment.getContextWithHorribleClutch(), bookId),
+                                    .enqueueTask(new SendOneBookTask(activity, bookId),
                                                  QueueManager.Q_SMALL_JOBS);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -394,10 +390,8 @@ public final class GoodreadsUtils {
                             return R.string.progress_end_cancelled;
                         }
 
-                        //noinspection ConstantConditions
                         QueueManager.getQueueManager()
-                                    .enqueueTask(new ImportAllTask(
-                                                         mFragment.getContextWithHorribleClutch(), isSync),
+                                    .enqueueTask(new ImportAllTask(activity, isSync),
                                                  QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -414,6 +408,7 @@ public final class GoodreadsUtils {
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
                 mFragment.onTaskFinished(mException == null, result);
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (result) {
                     case -1:
                         // ask to register

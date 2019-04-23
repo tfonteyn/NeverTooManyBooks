@@ -63,7 +63,7 @@ public class BindableItemCursorAdapter
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.
      *
-     * @param context the caller context
+     * @param context caller context
      * @param cursor  Cursor to use as source
      */
     BindableItemCursorAdapter(@NonNull final BindableItemBinder binder,
@@ -206,7 +206,7 @@ public class BindableItemCursorAdapter
          * so that any application-specific context can be added, or it can just be passed off
          * to the Event object itself.
          *
-         * @param context     the caller context
+         * @param context     caller context
          * @param cursor      Cursor, positions at the relevant row
          * @param convertView View to populate
          */

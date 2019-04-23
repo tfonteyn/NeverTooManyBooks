@@ -65,7 +65,7 @@ public abstract class GoodreadsTask
     }
 
     /**
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     public abstract boolean run(@NonNull final QueueManager queueManager,
                                 @NonNull final Context context);

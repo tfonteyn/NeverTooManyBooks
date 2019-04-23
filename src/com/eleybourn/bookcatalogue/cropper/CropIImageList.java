@@ -63,7 +63,7 @@ interface CropIImageList
     int getCount();
 
     /**
-     * @return <tt>true</tt> if the count of image objects is zero.
+     * @return {@code true} if the count of image objects is zero.
      */
     boolean isEmpty();
 
@@ -80,13 +80,13 @@ interface CropIImageList
     /**
      * Returns the image with a particular Uri.
      *
-     * @return the image with a particular Uri. null if not found.
+     * @return the image, or {@code null} if not found.
      */
     @NonNull
     CropIImage getImageForUri(@NonNull Uri uri);
 
     /**
-     * @return <tt>true</tt> if the image was removed.
+     * @return {@code true} if the image was removed.
      */
     boolean removeImage(@NonNull CropIImage image);
 

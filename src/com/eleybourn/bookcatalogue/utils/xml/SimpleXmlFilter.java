@@ -172,7 +172,7 @@ public class SimpleXmlFilter {
     }
 
     /**
-     * Start t
+     * Start tag
      *
      * @param tag that starts
      *

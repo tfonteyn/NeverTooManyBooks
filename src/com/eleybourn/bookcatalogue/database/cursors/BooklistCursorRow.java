@@ -135,7 +135,7 @@ public class BooklistCursorRow
     }
 
     /**
-     * @return <tt>true</tt> if the list can display a series number.
+     * @return {@code true} if the list can display a series number.
      */
     public boolean hasSeriesNumber() {
         return mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name) >= 0;
@@ -175,7 +175,7 @@ public class BooklistCursorRow
      *
      * @param level to get
      *
-     * @return the text for that level, or null if there was none.
+     * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
     public String getLevelText(@IntRange(from = 1) final int level) {

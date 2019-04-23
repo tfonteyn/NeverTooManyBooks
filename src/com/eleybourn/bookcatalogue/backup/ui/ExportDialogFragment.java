@@ -12,9 +12,7 @@ import android.widget.EditText;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
@@ -86,16 +84,13 @@ public class ExportDialogFragment
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
+        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
+
         view.findViewById(R.id.confirm).setOnClickListener(v -> {
             updateOptions();
             mActivity.onExportTypeSelectionDialogResult(mExportSettings);
             dismiss();
         });
-
-        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
-
-        view.findViewById(R.id.cbx_xml_tables).setVisibility(View.VISIBLE);
-        view.findViewById(R.id.cbx_xml_tables_info).setVisibility(View.VISIBLE);
     }
 
     private void updateOptions() {

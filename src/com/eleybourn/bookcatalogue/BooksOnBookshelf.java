@@ -58,7 +58,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.RadioGroupRecyclerAdapter;
@@ -297,7 +296,7 @@ public class BooksOnBookshelf
     /**
      * Save position when paused.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -403,6 +402,8 @@ public class BooksOnBookshelf
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
                                               0, R.string.debug);
 
+
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_RUN_TEST, 0, R.string.debug_test);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_settings);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
@@ -439,6 +440,12 @@ public class BooksOnBookshelf
             default:
                 if (BuildConfig.DEBUG  /* always */) {
                     switch (item.getItemId()) {
+                        case R.id.MENU_DEBUG_RUN_TEST:
+                            // manually swapped for whatever test I want to run...
+                            // crude? yup! nasty? absolutely!
+                            DEBUG_SWITCHES.debugPerformanceFetchExtras(this);
+                            return true;
+
                         case R.id.MENU_DEBUG_DUMP_PREFS:
                             Prefs.dumpPreferences(null);
                             return true;
@@ -468,7 +475,7 @@ public class BooksOnBookshelf
     /**
      * Expand/Collapse the current position in the list.
      *
-     * @param expand <tt>true</tt> to expand, <tt>false</tt> to collapse
+     * @param expand {@code true} to expand, {@code false} to collapse
      */
     private void expandNode(final boolean expand) {
         // It is possible that the list will be empty, if so, ignore
@@ -494,6 +501,7 @@ public class BooksOnBookshelf
                             final long id) {
         mListCursor.moveToPosition(position);
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (mListCursor.getCursorRow().getRowKind()) {
             // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
@@ -566,12 +574,12 @@ public class BooksOnBookshelf
                 menuTitle = cursorRow.getLevelText(level);
             }
             // bring up the context menu
-            PopupMenuDialog.onCreateListViewContextMenu(
-                    view.getContext(), position, menuTitle, menu,
-                    (menuItem, pos) -> {
-                        mListCursor.moveToPosition(pos);
-                        return mListHandler.onContextItemSelected(menuItem,
-                                                                  mDb, mListCursor.getCursorRow(),
+            PopupMenuDialog.showContextMenu(
+                    view.getContext(), menuTitle, menu, position,
+                    (menuItem, position1) -> {
+                        mListCursor.moveToPosition(position1);
+                        return mListHandler.onContextItemSelected(menuItem, mDb,
+                                                                  mListCursor.getCursorRow(),
                                                                   BooksOnBookshelf.this);
                     });
         }
@@ -579,32 +587,11 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called when an activity launched exits, giving you the requestCode you started it with,
-     * the resultCode it returned, and any additional data from it.
-     * <p>
      * Reminder: don't do any commits on the fragment manager.
      * This includes showing fragments, or starting tasks that show fragments.
      * Do this in {@link #onResume} which will be called after onActivityResult.
      * <p>
-     * Note: not tested to destruction, but it certainly was correct for starting a task
-     * with a fragment (for showing progress).
-     * <p>
-     * See:
-     * https://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
-     * https://stackoverflow.com/questions/16265733/failure-delivering-result-onactivityforresult
-     * Quoting:
-     * Calling commitAllowingStateLoss() is more of a hack than a fix. State loss is bad and
-     * should be avoided at all costs. At the time that onActivityResult() is called, the
-     * activity/fragment's state may not yet have been restored, and therefore any transactions
-     * that happen during this time will be lost as a result. This is a very important bug which
-     * must be addressed! (Note that the bug only happens when your Activity is coming back after
-     * having been killed by the system... which, depending on how much memory the device has,
-     * can sometimes be rare... so this sort of bug is not something that is very easy to catch
-     * while testing).
-     * <p>
-     * Try moving your transactions into onPostResume() instead (note that onPostResume() is
-     * always called after onResume() and onResume() is always called after onActivityResult()):
-     * => onResume works equally well.
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -1106,7 +1093,7 @@ public class BooksOnBookshelf
      * Setup the sort options. This function will also call fillData when
      * complete having loaded the appropriate view.
      *
-     * @param showAll if <tt>true</tt> show all styles, otherwise only the preferred ones.
+     * @param showAll if {@code true} show all styles, otherwise only the preferred ones.
      */
     private void doSortMenu(final boolean showAll) {
         // always create a new fragment. We only 'leave' it with a dismiss.
@@ -1207,11 +1194,9 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Called when a task finishes.
-     *
-     * @param taskId  a task identifier
-     * @param success <tt>true</tt> for success
-     * @param result  BuilderHolder
+     * @param result BuilderHolder
+     *               <p>
+     *               <p>{@inheritDoc}
      */
     @Override
     public void onTaskFinished(final int taskId,
@@ -1242,8 +1227,8 @@ public class BooksOnBookshelf
 
     /**
      * FIXME: using onCreateView we need to set to dialog layout in onResume or the list is height=0
-     *  But... match_parent with a small amount of list items, makes the dialog to large.
-     *  Solution: blast the dialog, and do this as a actual Fragment swapped in and out.
+     * But... match_parent with a small amount of list items, makes the dialog to large.
+     * Solution: blast the dialog, and do this as a actual Fragment swapped in and out.
      */
     public static class SortMenuFragment
             extends DialogFragment {
@@ -1284,8 +1269,7 @@ public class BooksOnBookshelf
                                   @Nullable final Bundle savedInstanceState) {
 
             mActivity = (BooksOnBookshelf) requireActivity();
-            Bundle args = getArguments();
-            Objects.requireNonNull(args,"getArguments() must not be null!");
+            Bundle args = requireArguments();
             mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
             mCurrentStyle = args.getParcelable(BKEY_CURRENT_STYLE);
 
@@ -1415,7 +1399,7 @@ public class BooksOnBookshelf
                                  final long bookshelfId,
                                  @NonNull final SearchCriteria searchCriteria) {
             if (fm.findFragmentByTag(TAG) == null) {
-                ProgressDialogFragment<BuilderHolder> frag =
+                ProgressDialogFragment<BuilderHolder> progressDialog =
                         ProgressDialogFragment.newInstance(R.string.progress_msg_getting_books,
                                                            true, 0);
 
@@ -1432,9 +1416,9 @@ public class BooksOnBookshelf
                 bookListBuilder.setFilterOnBookIdList(searchCriteria.bookList);
 
                 GetBookListTask task =
-                        new GetBookListTask(frag, builderHolder, isFullRebuild, bookListBuilder);
-                frag.setTask(M_TASK_ID, task);
-                frag.show(fm, TAG);
+                        new GetBookListTask(progressDialog, builderHolder, isFullRebuild, bookListBuilder);
+                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.show(fm, TAG);
                 task.execute();
             }
         }
@@ -1793,7 +1777,7 @@ public class BooksOnBookshelf
          * Set the visibility of the passed level.
          *
          * @param level     to use; range is 1..
-         * @param isVisible set to <tt>true</tt> to make this level visible.
+         * @param isVisible set to {@code true} to make this level visible.
          */
         void setVisible(@IntRange(from = 1, to = MAX) final int level,
                         final boolean isVisible) {

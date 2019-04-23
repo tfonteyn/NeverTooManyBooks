@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.adapters;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +72,7 @@ public interface MultiTypeListHandler {
      *
      * @param cursor Cursor, correctly positioned.
      *
-     * @return text to display
+     * @return the section text as an array.
      */
     String[] getSectionText(@NonNull Cursor cursor);
 }

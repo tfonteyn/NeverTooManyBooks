@@ -36,7 +36,7 @@ public interface SearchSiteManager {
      *
      * @param isbn to search for
      *
-     * @return found/saved File, or null when none found (or any other failure)
+     * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @WorkerThread
@@ -68,9 +68,9 @@ public interface SearchSiteManager {
     /**
      * Start a search using the passed criteria.
      *
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
-     * @return bundle with book data. Can be empty, but never null.
+     * @return bundle with book data. Can be empty, but never {@code null}.
      *
      * @throws IOException            on failure
      * @throws AuthorizationException if the site rejects our credentials (if any)
@@ -89,7 +89,7 @@ public interface SearchSiteManager {
      * @param isbn to search for
      * @param size of image to get.
      *
-     * @return found/saved File, or null when none found (or any other failure)
+     * @return found/saved File, or {@code null} when none found (or any other failure)
      * <p>
      * If a {@link SearchSiteManager} does not support a specific (and faster) way/api
      * to fetch a cover image, then this default method is used, delegating to the
@@ -113,13 +113,13 @@ public interface SearchSiteManager {
      * <p>
      * Runs in a background task, so can run network code.
      *
-     * @return <tt>true</tt> if we can use this site for searching.
+     * @return {@code true} if we can use this site for searching.
      */
     @WorkerThread
     boolean isAvailable();
 
     /**
-     * @return <tt>true</tt> if the site can only be searched with a valid ISBN
+     * @return {@code true} if the site can only be searched with a valid ISBN
      */
     @AnyThread
     default boolean isIsbnOnly() {
@@ -142,7 +142,7 @@ public interface SearchSiteManager {
      *
      * @param size the image size we want to check support on.
      *
-     * @return <tt>true</tt> if the site supports the passed image size
+     * @return {@code true} if the site supports the passed image size
      */
     @AnyThread
     boolean supportsImageSize(@NonNull final ImageSizes size);

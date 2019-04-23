@@ -44,7 +44,7 @@ public class TableInfo {
      *
      * @param name of column
      *
-     * @return the info, or null if the column is not present
+     * @return the info, or {@code null} if not found
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {

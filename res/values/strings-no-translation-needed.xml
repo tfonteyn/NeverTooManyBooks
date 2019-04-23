@@ -50,4 +50,6 @@
     <!-- debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug" translatable="false">Debug</string>
     <string name="debug_history" translatable="false">History</string>
+    <string name="debug_test" translatable="false">Test something</string>
+
 </resources>

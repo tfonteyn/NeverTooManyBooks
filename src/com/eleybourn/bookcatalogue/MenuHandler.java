@@ -80,7 +80,7 @@ final class MenuHandler {
      * @param activity Calling activity
      * @param menuItem The item selected
      *
-     * @return <tt>true</tt> if handled
+     * @return {@code true} if handled
      */
     static boolean handleBookSubMenu(@NonNull final Activity activity,
                                      @NonNull final MenuItem menuItem) {
@@ -167,7 +167,7 @@ final class MenuHandler {
      * @param menuItem The item selected
      * @param book     the book upon to act
      *
-     * @return <tt>true</tt> if handled
+     * @return {@code true} if handled
      */
     static boolean handleAmazonSearchSubMenu(@NonNull final Activity activity,
                                              @NonNull final MenuItem menuItem,

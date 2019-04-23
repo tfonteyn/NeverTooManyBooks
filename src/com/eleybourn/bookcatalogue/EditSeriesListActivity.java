@@ -40,7 +40,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
@@ -128,14 +127,6 @@ public class EditSeriesListActivity
         mSeriesNumberView.setText("");
     }
 
-    /**
-     * Called when user clicks the 'Save' button.
-     *
-     * @param data A newly created Intent to store output if necessary.
-     *             Comes pre-populated with data.putExtra(mBKey, mList);
-     *
-     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
-     */
     @Override
     protected boolean onSave(@NonNull final Intent data) {
         String name = mSeriesNameView.getText().toString().trim();
@@ -413,6 +404,8 @@ public class EditSeriesListActivity
 
         /**
          * edit the item we clicked on.
+         * <p>
+         * <p>{@inheritDoc}
          */
         @Override
         public void onRowClick(@NonNull final Series item,
@@ -423,6 +416,8 @@ public class EditSeriesListActivity
 
         /**
          * delegate to the ListView host.
+         * <p>
+         * <p>{@inheritDoc}
          */
         @Override
         public void onListChanged() {

@@ -131,7 +131,7 @@ public class ImportAllTask
     /**
      * Do the actual work.
      *
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager,
@@ -173,7 +173,7 @@ public class ImportAllTask
 
             Bundle books;
 
-            // Call the API, return <tt>false</tt> if failed.
+            // Call the API, return {@code false} if failed.
             try {
                 // If we have not started successfully yet, record the date at which
                 // the run() was called. This date is used if the job is a sync job.
@@ -588,7 +588,7 @@ public class ImportAllTask
      * attempt to translate as appropriate and will not add the date if it cannot
      * be parsed.
      *
-     * @return reformatted sql date, or null if not able to parse
+     * @return reformatted sql date, or {@code null} if not able to parse
      */
     @Nullable
     private String addDateIfValid(@NonNull final Bundle source,

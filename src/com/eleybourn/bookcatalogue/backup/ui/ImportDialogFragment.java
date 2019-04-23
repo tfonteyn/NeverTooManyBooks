@@ -91,13 +91,13 @@ public class ImportDialogFragment
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mImportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
+        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
+
         view.findViewById(R.id.confirm).setOnClickListener(v -> {
             updateOptions();
             mActivity.onImportTypeSelectionDialogResult(mImportSettings);
             dismiss();
         });
-
-        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         if (!archiveHasValidDates()) {
             View radioNewAndUpdatedBooks = view.findViewById(R.id.radioNewAndUpdatedBooks);
@@ -134,7 +134,6 @@ public class ImportDialogFragment
         boolean mArchiveHasValidDates;
         //noinspection ConstantConditions
         try (BackupReader reader = BackupManager.readFrom(getContext(), mImportSettings.file)) {
-            Objects.requireNonNull(reader);
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;

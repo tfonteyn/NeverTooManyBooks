@@ -444,7 +444,7 @@ public class CropImageActivity
                  * extra space filled.
                  */
 
-                // Don't SCALE the image but instead fill it so it's the required dimension
+                // Don't SCALE the image but instead fill it, so it's the required dimension
                 Bitmap bitmap = Bitmap.createBitmap(mOptionOutputX, mOptionOutputY,
                                                     Bitmap.Config.RGB_565);
                 Canvas canvas = new Canvas(bitmap);

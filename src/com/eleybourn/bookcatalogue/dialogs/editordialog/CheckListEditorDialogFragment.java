@@ -148,7 +148,7 @@ public class CheckListEditorDialogFragment<T>
         /**
          * Constructor.
          *
-         * @param context the caller context
+         * @param context caller context
          */
         CheckListEditorDialog(@NonNull final Context context) {
             super(context);

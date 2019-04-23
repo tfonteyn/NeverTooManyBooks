@@ -292,7 +292,7 @@ public class DBA
      * Note: don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dba which is).
      *
-     * @param context the caller context
+     * @param context caller context
      */
     public DBA(@NonNull final Context context) {
         mContext = context;
@@ -671,7 +671,7 @@ public class DBA
                                               author,
                                               mapper.getString(DOM_TITLE),
                                               mapper.getString(DOM_FIRST_PUBLICATION));
-                title.setType(mapper.getString("type").charAt(0));
+                title.setTocType(mapper.getString("type").charAt(0));
                 list.add(title);
             }
         }
@@ -726,7 +726,7 @@ public class DBA
      *
      * @param author object to insert or update. Will be updated with the id.
      *
-     * @return <tt>true</tt> for success.
+     * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertAuthor(@NonNull final /* in/out */ Author author) {
@@ -755,7 +755,7 @@ public class DBA
     /**
      * Get the {@link Author} based on the ID.
      *
-     * @return the author, or null if not found
+     * @return the author, or {@code null} if not found
      */
     @Nullable
     public Author getAuthor(final long id) {
@@ -814,7 +814,7 @@ public class DBA
     }
 
     /**
-     * @return <tt>true</tt> for success.
+     * @return {@code true} for success.
      */
     public boolean globalReplaceAuthor(@NonNull final Author from,
                                        @NonNull final Author to) {
@@ -1028,9 +1028,9 @@ public class DBA
         ArrayList<TocEntry> tocEntries = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
             // definitively an anthology, overrule whatever the KEY_TOC_BITMASK was.
-            int type = TocEntry.Type.MULTIPLE_WORKS;
+            int type = TocEntry.Authors.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
-                type |= TocEntry.Type.MULTIPLE_AUTHORS;
+                type |= TocEntry.Authors.MULTIPLE_AUTHORS;
             }
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
@@ -1264,7 +1264,7 @@ public class DBA
     /**
      * @param bookId of the book
      *
-     * @return the title, or null when not found
+     * @return the title, or {@code null} if not found
      */
     @Nullable
     public String getBookTitle(final long bookId) {
@@ -1283,7 +1283,7 @@ public class DBA
     /**
      * @param bookId of the book
      *
-     * @return the ISBN, or null when not found
+     * @return the ISBN, or {@code null} if not found
      */
     @Nullable
     public String getBookIsbn(final long bookId) {
@@ -1569,7 +1569,7 @@ public class DBA
 
     /**
      * @param isbn to search for (10 or 13)
-     * @param both set to <tt>true</tt> to search for both isbn 10 and 13.
+     * @param both set to {@code true} to search for both isbn 10 and 13.
      *
      * @return book id, or 0 if not found
      */
@@ -1604,7 +1604,7 @@ public class DBA
      *
      * @param bookId of the book
      *
-     * @return <tt>true</tt> if exists
+     * @return {@code true} if exists
      */
     public boolean bookExists(final long bookId) {
         SynchronizedStatement stmt = mStatements.get(STMT_CHECK_BOOK_EXISTS);
@@ -1785,6 +1785,7 @@ public class DBA
                 // We cannot update the author (we never even get here if the author was changed)
                 // We *do* update the title to allow corrections of case,
                 // as the find was done on the TITLE_LC field.
+                // and we update the TITLE_LC as well obviously.
                 String title = tocEntry.getTitle();
                 ContentValues cv = new ContentValues();
                 cv.put(DOM_TITLE.name, title);
@@ -2269,7 +2270,7 @@ public class DBA
      *
      * @param bookId of the book
      *
-     * @return the fully populated Book, or null if not found
+     * @return the fully populated Book, or {@code null} if not found
      *
      * @see #fetchBookById(long) which allows a partial retrieval
      */
@@ -2334,7 +2335,7 @@ public class DBA
                 // all books (with WHERE clause passed in).
                 + " ("
                 + "SELECT DISTINCT " + SqlColumns.BOOK + " FROM " + TBL_BOOKS.ref()
-                + (whereClause.isEmpty() ? "" : " WHERE " + " (" + whereClause + ')')
+                + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
 //                + " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
                 + " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_LC) + ' ' + COLLATION + " ASC"
                 + ") b"
@@ -2376,7 +2377,7 @@ public class DBA
      *
      * @param bookId to retrieve
      *
-     * @return @return {@link Cursor} containing all records, if any
+     * @return {@link Cursor} containing all records, if any
      */
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
@@ -2467,22 +2468,28 @@ public class DBA
      * Return a {@link Cursor} for the given {@link Book} id.
      * <p>
      * The columns fetched are limited to what is needed for the
-     * {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} so called "extras" fields.
+     * {@link com.eleybourn.bookcatalogue.BooksOnBookshelf} so called "extras" fields.
      *
-     * @param bookId to retrieve
+     * @param bookId      to retrieve
+     * @param extrasToGet which extra fields need fetching. (Allows optimizing the fetch)
      *
-     * @return @return {@link Cursor} containing all records, if any
+     * @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public Cursor fetchBookExtrasById(final long bookId) {
+    public Cursor fetchBookExtrasById(final long bookId,
+                                      final int extrasToGet) {
 
-        String sql = "SELECT "
-                + SqlColumns.AUTHOR_FORMATTED
-                + ',' + DOM_BOOK_LOCATION
-                + ',' + DOM_BOOK_FORMAT
-                + ',' + DOM_BOOK_PUBLISHER
-                + " FROM " + TBL_BOOKS + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?";
-        return sSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)});
+        // for now, we only optimize on fetching bookshelves or not.
+        // and honestly, it's almost not worth bothering.
+        boolean withBookshelves = ((extrasToGet & BooklistStyle.EXTRAS_BOOKSHELVES) != 0);
+
+        if (withBookshelves) {
+            return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITH_BOOKSHELVES,
+                                      new String[]{String.valueOf(bookId)});
+        } else {
+            return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITHOUT_BOOKSHELVES,
+                                      new String[]{String.valueOf(bookId)});
+        }
     }
 
     /**
@@ -2575,7 +2582,7 @@ public class DBA
     /**
      * @param name of bookshelf to find
      *
-     * @return the Bookshelf, or null if not found
+     * @return the Bookshelf, or {@code null} if not found
      */
     @Nullable
     public Bookshelf getBookshelfByName(@NonNull final String name) {
@@ -2593,7 +2600,7 @@ public class DBA
     /**
      * @param id of bookshelf to find
      *
-     * @return the Bookshelf, or null if not found
+     * @return the Bookshelf, or {@code null} if not found
      */
     @Nullable
     public Bookshelf getBookshelf(final long id) {
@@ -2631,7 +2638,7 @@ public class DBA
      *
      * @param bookshelf object to insert or update. Will be updated with the id.
      *
-     * @return <tt>true</tt> for success
+     * @return {@code true} for success
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertBookshelf(@NonNull final /* in/out */ Bookshelf bookshelf) {
@@ -2896,7 +2903,7 @@ public class DBA
      *
      * @param bookId book to search for
      *
-     * @return Who the book is lend to, null when not lend to someone
+     * @return Who the book is lend to, or {@code null} when not lend out
      */
     @Nullable
     public String getLoaneeByBookId(final long bookId) {
@@ -2916,7 +2923,7 @@ public class DBA
      * @param bookId book to lend
      * @param loanee person to lend to
      *
-     * @return <tt>true</tt> for success.
+     * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertLoan(final long bookId,
@@ -3072,7 +3079,7 @@ public class DBA
      *
      * @param series object to insert or update. Will be updated with the id.
      *
-     * @return <tt>true</tt> for success.
+     * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertSeries(@NonNull final /* in/out */ Series series) {
@@ -3121,7 +3128,7 @@ public class DBA
     /**
      * Return the series based on the ID.
      *
-     * @return series, or null when not found
+     * @return series, or {@code null} if not found
      */
     @Nullable
     public Series getSeries(final long id) {
@@ -3180,7 +3187,7 @@ public class DBA
     }
 
     /**
-     * @return <tt>true</tt> for success.
+     * @return {@code true} for success.
      */
     public boolean globalReplaceSeries(@NonNull final Series from,
                                        @NonNull final Series to) {
@@ -3748,7 +3755,7 @@ public class DBA
      * @param title    Title-related keywords to find
      * @param keywords Keywords to find anywhere in book
      *
-     * @return a cursor, or null if all input was empty
+     * @return a cursor, or {@code null} if all input was empty
      */
     @Nullable
     public Cursor searchFts(@NonNull String author,
@@ -4155,9 +4162,9 @@ public class DBA
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION)
                         + " FROM " + TBL_TOC_ENTRIES.ref()
                         + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?"
-                        // no table prefix to we can use it with GET_WORKS_BY_AUTHOR_ID
+                        // no table prefix so we can use it with GET_WORKS_BY_AUTHOR_ID
 //                        + " ORDER BY lower(" + DOM_TITLE + ')' + COLLATION;
-                        + " ORDER BY " + DOM_TITLE_LC;
+                        + " ORDER BY " + DOM_TITLE_LC + COLLATION;
 
         /**
          * All Book titles and their first pub. date, for an Author; ordered by title.
@@ -4233,12 +4240,12 @@ public class DBA
                         + " WHERE " + DOM_BOOK_UUID + "=?";
 
         /**
-         * Get the ISBN of a {@link Book} by it's id.
+         * Get the ISBN of a {@link Book} by its id.
          */
         static final String GET_BOOK_ISBN_BY_BOOK_ID =
                 "SELECT " + DOM_BOOK_ISBN + " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
         /**
-         * Get the title of a {@link Book} by it's id.
+         * Get the title of a {@link Book} by its id.
          */
         static final String GET_BOOK_TITLE_BY_BOOK_ID =
                 "SELECT " + DOM_TITLE + " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
@@ -4262,20 +4269,20 @@ public class DBA
                 "SELECT COUNT(*) " + " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Get a {@link Book} by it's id.
+         * Get a {@link Book} by its id.
          */
         static final String BOOK_BY_ID =
                 "SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Get a {@link Bookshelf} by it's id.
+         * Get a {@link Bookshelf} by its id.
          */
         static final String BOOKSHELF_BY_ID =
                 "SELECT " + DOM_PK_ID + ',' + DOM_BOOKSHELF + ',' + DOM_FK_STYLE_ID
                         + " FROM " + TBL_BOOKSHELF + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Get a {@link Bookshelf} by it's name.
+         * Get a {@link Bookshelf} by its name.
          */
         static final String BOOKSHELF_BY_NAME =
                 "SELECT " + DOM_PK_ID + ',' + DOM_BOOKSHELF + ',' + DOM_FK_STYLE_ID
@@ -4283,7 +4290,7 @@ public class DBA
                         + " WHERE lower(" + DOM_BOOKSHELF + ")=lower(?)" + COLLATION;
 
         /**
-         * Get an {@link Author} by it's id.
+         * Get an {@link Author} by its id.
          */
         static final String AUTHOR_BY_ID =
                 "SELECT " + DOM_AUTHOR_FAMILY_NAME
@@ -4292,18 +4299,57 @@ public class DBA
                         + " FROM " + TBL_AUTHORS + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Get a {@link Series} by it's id.
+         * Get a {@link Series} by its id.
          */
         static final String SERIES_BY_ID =
                 "SELECT " + DOM_SERIES_TITLE + ',' + DOM_SERIES_IS_COMPLETE
                         + " FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
-         * Get the last-update-date for a {@link Book} by it's id.
+         * Get the last-update-date for a {@link Book} by its id.
          */
         static final String GET_LAST_UPDATE_DATE_BY_BOOK_ID =
                 "SELECT " + DOM_LAST_UPDATE_DATE + " FROM " + TBL_BOOKS
                         + " WHERE " + DOM_PK_ID + "=?";
+
+        /**
+         * Get the booklist extra fields including the bookshelves as a single csv string.
+         */
+        static final String BOOK_EXTRAS_WITHOUT_BOOKSHELVES = "SELECT "
+                + SqlColumns.AUTHOR_FORMATTED
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
+                + " FROM " + TBL_BOOKS.ref()
+                + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?"
+                // primary author only.
+                + " GROUP BY " + DOM_AUTHOR_FORMATTED
+                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+                + " LIMIT 1";
+
+        /**
+         * Get the booklist extra fields including the bookshelves as a single csv string.
+         * <p>
+         * GROUP_CONCAT: The order of the concatenated elements is arbitrary.
+         */
+        static final String BOOK_EXTRAS_WITH_BOOKSHELVES = "SELECT "
+                + SqlColumns.AUTHOR_FORMATTED
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
+                + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(
+                DOM_BOOKSHELF) + ",', ') AS " + DOM_BOOKSHELF
+                + " FROM " + TBL_BOOKS.ref()
+                + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
+                + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?"
+                // primary author only.
+                + " GROUP BY " + DOM_AUTHOR_FORMATTED
+                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+                + " LIMIT 1";
 
         /**
          * Count the number of {@link Book}'s in a {@link Series}.
@@ -4311,7 +4357,6 @@ public class DBA
         static final String COUNT_BOOKS_IN_SERIES =
                 "SELECT COUNT(" + DOM_FK_BOOK_ID + ") FROM " + TBL_BOOK_SERIES
                         + " WHERE " + DOM_FK_SERIES_ID + "=?";
-
 
         /**
          * Count the number of {@link Book}'s by an {@link Author}.

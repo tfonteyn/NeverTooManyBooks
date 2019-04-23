@@ -40,7 +40,8 @@ ENHANCE: XML Exporter / Importer
         not easy to get 'others' to create import files
         importing id's is dangerous
 
-
+TODO: decide and implement ONE way of binding a holder in a RecyclerView.
+ i.e. bind in the adapter or bind in the holder.
 
 TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android

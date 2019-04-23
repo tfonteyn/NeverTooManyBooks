@@ -295,7 +295,7 @@ public final class QueueManager {
      *
      * @param task Task to run
      *
-     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
+     * @return {@code false} to requeue, {@code true} for success
      */
     boolean runTask(@NonNull final Task task) {
         if (task instanceof GoodreadsTask) {

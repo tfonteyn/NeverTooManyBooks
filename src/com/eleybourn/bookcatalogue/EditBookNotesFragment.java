@@ -85,9 +85,11 @@ public class EditBookNotesFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * {@link BookManager#getBook()} on the hosting Activity
-     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link BookManager#getBook()} on the hosting Activity
+     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper

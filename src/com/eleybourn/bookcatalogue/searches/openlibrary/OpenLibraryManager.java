@@ -100,7 +100,7 @@ public class OpenLibraryManager
      * @param isbn to search for
      * @param size of image to get.
      *
-     * @return found/saved File, or null when none found (or any other failure)
+     * @return found/saved File, or {@code null} when none found (or any other failure)
      */
     @Nullable
     @Override
@@ -150,7 +150,7 @@ public class OpenLibraryManager
     /**
      * {@link #search(String, String, String, boolean)} only implements isbn searches for now.
      *
-     * @return <tt>true</tt>
+     * @return {@code true}
      */
     @Override
     public boolean isIsbnOnly() {
@@ -172,7 +172,7 @@ public class OpenLibraryManager
     /**
      * https://openlibrary.org/dev/docs/api/books
      *
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data
      *

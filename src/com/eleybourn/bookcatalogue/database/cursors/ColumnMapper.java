@@ -94,7 +94,7 @@ public class ColumnMapper {
     /**
      * @param domain the name of the domain to get
      *
-     * @return <tt>true</tt> if this mapper contains the specified domain.
+     * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final DomainDefinition domain) {
         //noinspection ConstantConditions
@@ -104,7 +104,7 @@ public class ColumnMapper {
     /**
      * @param domain the name of the domain to get
      *
-     * @return the string value of the column. A null value will be returned as an empty String.
+     * @return the string value of the column. A {@code null} value will be returned as an empty String.
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -126,7 +126,7 @@ public class ColumnMapper {
     /**
      * @param domain to get
      *
-     * @return the string value of the column. A null value will be returned as an empty String.
+     * @return the string value of the column. A {@code null} value will be returned as an empty String.
      *
      * @throws ColumnNotPresentException if the column was not present.
      */

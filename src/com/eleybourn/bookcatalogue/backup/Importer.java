@@ -87,7 +87,7 @@ public interface Importer
                         int position);
 
         /**
-         * @return <tt>true</tt> if we are cancelled.
+         * @return {@code true} if we are cancelled.
          */
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();

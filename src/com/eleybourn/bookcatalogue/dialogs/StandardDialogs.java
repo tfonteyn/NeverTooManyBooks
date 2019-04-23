@@ -53,7 +53,7 @@ public final class StandardDialogs {
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setCancelable(false) //TEST: might be better to allow canceling
+                .setCancelable(false)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,

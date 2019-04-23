@@ -114,16 +114,12 @@ public class EditBookFragment
         mBook = book;
     }
 
-    /**
-     * @return <tt>true</tt> if our data was changed.
-     */
+    @Override
     public boolean isDirty() {
         return mIsDirty;
     }
 
-    /**
-     * @param isDirty set to <tt>true</tt> if our data was changed.
-     */
+    @Override
     public void setDirty(final boolean isDirty) {
         mIsDirty = isDirty;
     }
@@ -218,6 +214,8 @@ public class EditBookFragment
 
     /**
      * the only thing on this level is the TAB we're on.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -251,11 +249,11 @@ public class EditBookFragment
     private void doSave(@NonNull final AlertDialogListener nextStep) {
         Book book = getBook();
 
-        // ask any page that has not gone into 'onPause' to add it's fields.
+        // ask any page that has not gone into 'onPause' to add its fields.
         for (int p = 0; p < mPagerAdapter.getCount(); p++) {
             Fragment frag = mPagerAdapter.getItem(p);
             if (frag.isResumed()) {
-                ((DataEditor) frag).saveFieldsTo(book);
+                ((DataEditor) frag).saveTo(book);
             }
         }
 

@@ -25,21 +25,19 @@ public class Pic2ShopScanner
 
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in
-     * {@link Activity#onActivityResult}) of the activity which requested the scan using
+     * {@link Activity}#onActivityResult of the activity which requested the scan using
      * {@link #startActivityForResult}.
      * The barcode can be retrieved with intent.getStringExtra("BARCODE").
      * <p>
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
      */
-
-    // response Intent
     private static final String BARCODE = "BARCODE";
 
     /**
      * Check if we have a valid intent available.
      *
-     * @return <tt>true</tt> if present
+     * @return {@code true} if present
      */
     static boolean isIntentAvailable(@NonNull final Context context) {
         return isFreeScannerAppInstalled(context) || isProScannerAppInstalled(context);
@@ -60,9 +58,9 @@ public class Pic2ShopScanner
     }
 
     /**
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      * <p>
-     * Note that we always send an intent; the caller should have checked that
+     * <p>Note that we always send an intent; the caller should have checked that
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override

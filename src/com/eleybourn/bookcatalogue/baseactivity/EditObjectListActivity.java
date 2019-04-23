@@ -253,7 +253,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     /**
      * Called to get the list if it was not in the intent.
-     * Override to make it do something
+     * Override to make it do something.
      */
     @NonNull
     protected ArrayList<T> getList() {
@@ -302,7 +302,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @param data A newly created Intent to store output if necessary.
      *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
-     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
+     * @return {@code true} if activity should exit, {@code false} to abort exit.
      */
     protected boolean onSave(@NonNull final Intent data) {
         setResult(Activity.RESULT_OK, data);
@@ -315,7 +315,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * <p>
      * Can be overridden to perform other checks.
      *
-     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
+     * @return {@code true} if activity should exit, {@code false} to abort exit.
      */
     @SuppressWarnings("SameReturnValue")
     protected boolean onCancel() {

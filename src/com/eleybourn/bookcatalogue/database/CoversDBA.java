@@ -253,7 +253,7 @@ public final class CoversDBA
      * @param maxWidth  used to construct the cacheId
      * @param maxHeight used to construct the cacheId
      *
-     * @return Bitmap (if cached) or null (if not cached)
+     * @return Bitmap (if cached) or {@code null} (if not cached)
      */
     @Nullable
     @AnyThread

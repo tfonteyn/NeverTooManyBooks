@@ -83,7 +83,7 @@ public class AuthorWorksFragment
      */
     private void gotoBook(@NonNull final TocEntry item) {
         Intent intent;
-        switch (item.getType()) {
+        switch (item.getTocType()) {
             case 'T':
                 // see note on dba method about Integer vs. Long
                 final ArrayList<Integer> books = mDb.getBookIdsByTocEntry(item.getId());
@@ -102,7 +102,7 @@ public class AuthorWorksFragment
                 break;
 
             default:
-                throw new IllegalArgumentException("type=" + item.getType());
+                throw new IllegalArgumentException("type=" + item.getTocType());
         }
 
         //noinspection ConstantConditions
@@ -143,7 +143,7 @@ public class AuthorWorksFragment
 
         void bind(@NonNull final TocEntry item) {
             // decorate the row depending on toc entry or actual book
-            switch (item.getType()) {
+            switch (item.getTocType()) {
                 case 'T':
                     titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             sStoryIndicator, null, null, null);
@@ -155,7 +155,7 @@ public class AuthorWorksFragment
                     break;
 
                 default:
-                    throw new IllegalArgumentException("type=" + item.getType());
+                    throw new IllegalArgumentException("type=" + item.getTocType());
             }
 
             titleView.setText(item.getTitle());

@@ -264,7 +264,7 @@ public final class StorageUtils {
     /**
      * Count size + (optional) Cleanup any purgeable files.
      *
-     * @param reallyDelete if <tt>true</tt>, delete files, if <tt>false</tt> only count bytes
+     * @param reallyDelete if {@code true}, delete files, if {@code false} only count bytes
      *
      * @return the total size in bytes of purgeable/purged files.
      */
@@ -493,7 +493,7 @@ public final class StorageUtils {
      * @param in  InputStream to read
      * @param out File to save
      *
-     * @return <tt>true</tt> if successful
+     * @return {@code true} if successful
      */
     public static boolean saveInputStreamToFile(@Nullable final InputStream in,
                                                 @NonNull final File out) {
@@ -547,7 +547,7 @@ public final class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return <tt>true</tt> if the rename worked, this is really a ".exists()" call.
+     * @return {@code true} if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
      */
     public static boolean renameFile(@NonNull final File src,

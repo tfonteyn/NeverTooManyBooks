@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.widgets;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
@@ -23,6 +24,8 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * Code taken from  "recyclerview-1.1.0-alpha01-sources.jar"
  * ==> check regularly for modifications, and port them here.
+ * Should really be done as a source patch to apply automatically.
+ *
  * <p>
  * Minimal changes made to enhance this with ability to display an overlay.
  * see:
@@ -30,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * {@link #onDrawOver} where the {@link RecyclerViewCFS} is requested to draw the overlay.
  */
+@SuppressWarnings("ALL")
 class RecyclerCFS
         extends RecyclerView.ItemDecoration
         implements RecyclerView.OnItemTouchListener {
@@ -215,6 +219,7 @@ class RecyclerCFS
         return mState == STATE_VISIBLE;
     }
 
+    @SuppressLint("SwitchIntDef")
     public void show() {
         switch (mAnimationState) {
             case ANIMATION_STATE_FADING_OUT:
@@ -230,6 +235,7 @@ class RecyclerCFS
         }
     }
 
+    @SuppressLint("SwitchIntDef")
     @VisibleForTesting
     void hide(int duration) {
         switch (mAnimationState) {

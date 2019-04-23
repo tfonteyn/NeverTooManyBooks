@@ -105,7 +105,7 @@ public class XmlImporter
     /**
      * Not supported here for now.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     public int doBooks(@NonNull final InputStream importStream,
@@ -129,6 +129,7 @@ public class XmlImporter
                 new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
                 XmlUtils.BUFFER_SIZE);
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (entity.getType()) {
             case BooklistStyles:
                 if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
@@ -206,7 +207,7 @@ public class XmlImporter
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
                  .setStartAction(context -> {
-                     // use as top-t
+                     // use as top-tag
                      mTag = new TagInfo(context);
                      // we only have a version on the top tag, not on every tag.
                      String version = context.getAttributes().getValue(XmlUtils.ATTR_VERSION);
@@ -302,7 +303,7 @@ public class XmlImporter
             }
         };
 
-        // typed tags that only use a value attribute only need action on the start of a t
+        // typed tags that only use a value attribute only need action on the start of a tag
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_BOOLEAN)
                  .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_INT)
@@ -533,7 +534,7 @@ public class XmlImporter
          * Callback at the start of each element in the list.
          *
          * @param version of the XML schema for this element, or 0 if not present
-         * @param tag     the info about the top t
+         * @param tag     the info about the top tag
          */
         void startElement(int version,
                           @NonNull TagInfo tag);
@@ -599,13 +600,13 @@ public class XmlImporter
         /**
          * Constructor.
          *
-         * @param context of the XML t
+         * @param elementContext of the XML tag
          */
-        TagInfo(@NonNull final ElementContext context) {
-            Attributes attrs = context.getAttributes();
+        TagInfo(@NonNull final ElementContext elementContext) {
+            Attributes attrs = elementContext.getAttributes();
 
-            type = context.getLocalName();
-            // Legacy pre-v200 used a fixed t, with the type as an attribute
+            type = elementContext.getLocalName();
+            // Legacy pre-v200 used a fixed tag, with the type as an attribute
             if ("item".equals(type)) {
                 type = attrs.getValue("style");
             }
@@ -816,7 +817,7 @@ public class XmlImporter
      * <p>
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
-     * * - each filter has a t
+     * * - each filter has a tag
      * * - actual groups are written as a set of id's (kinds)
      * * - each preference in a group has a tag.
      */
@@ -856,7 +857,7 @@ public class XmlImporter
          * <p>
          * Creates a new BooklistStyle, and sets it as the 'current' one ready for writes.
          * <p>
-         * {@inheritDoc}
+         * <p>{@inheritDoc}
          */
         @Override
         public void startElement(final int version,

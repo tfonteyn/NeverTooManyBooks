@@ -223,7 +223,7 @@ public final class ImageUtils {
      * @param maxHeight Maximum desired height of the image
      * @param exact     if true, the image will be proportionally scaled to fit box.
      *
-     * @return The bitmap, or null
+     * @return The bitmap, or {@code null} on failure
      */
     @Nullable
     @AnyThread
@@ -332,7 +332,7 @@ public final class ImageUtils {
      * @param url  Image file URL
      * @param name for the file.
      *
-     * @return Downloaded fileSpec, or null on failure
+     * @return Downloaded fileSpec, or {@code null} on failure
      */
     @Nullable
     @WorkerThread
@@ -356,7 +356,7 @@ public final class ImageUtils {
      *
      * @param url Image file URL
      *
-     * @return Downloaded byte[] or null upon failure
+     * @return Downloaded byte[] or {@code null} upon failure
      */
     @Nullable
     @WorkerThread

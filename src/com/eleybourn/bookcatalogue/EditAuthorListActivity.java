@@ -227,14 +227,6 @@ public class EditAuthorListActivity
         dialog.show();
     }
 
-    /**
-     * Called when user clicks the 'Save' button.
-     *
-     * @param data A newly created Intent to store output if necessary.
-     *             Comes pre-populated with data.putExtra(mBKey, mList);
-     *
-     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
-     */
     @Override
     protected boolean onSave(@NonNull final Intent data) {
         final AutoCompleteTextView view = findViewById(R.id.author);

@@ -24,9 +24,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -95,9 +92,11 @@ public class EditBookFieldsFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * {@link BookManager#getBook()} on the hosting Activity
-     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link BookManager#getBook()} on the hosting Activity
+     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <p>
+     * <p>{@inheritDoc}
      */
     @CallSuper
     @Override
@@ -108,6 +107,8 @@ public class EditBookFieldsFragment
 
     /**
      * Some fields are only present (or need specific handling) on {@link BookFragment}.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -207,7 +208,7 @@ public class EditBookFieldsFragment
     /**
      * Handle the Bookshelf default.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     protected void populateNewBookFieldsFromBundle(@NonNull final Book book,

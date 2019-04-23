@@ -6,8 +6,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +18,7 @@ import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
+import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -82,7 +81,7 @@ public class BackupFileDetails
      *
      * @param file to check
      *
-     * @return <tt>true</tt> if it's an archive
+     * @return {@code true} if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
         return file.getName().toLowerCase(LocaleUtils.getSystemLocale()).endsWith(
@@ -103,30 +102,21 @@ public class BackupFileDetails
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onGetView(@NonNull final View convertView,
-                          @NonNull final Context context) {
+    public void onBindViewHolder(@NonNull final FileChooserFragment.FileDetailsHolder holder,
+                                 @NonNull final Context context) {
 
-        // Set the basic data
-        TextView filenameView = convertView.findViewById(R.id.filename);
-        filenameView.setText(mFile.getName());
-
-        ImageView imageView = convertView.findViewById(R.id.icon);
-        View fileDetails = convertView.findViewById(R.id.file_details);
+        holder.filenameView.setText(mFile.getName());
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
-            imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
-            fileDetails.setVisibility(View.GONE);
+            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
+            holder.fileDetails.setVisibility(View.GONE);
         } else {
             // Display details
-            imageView.setImageDrawable(context.getDrawable(R.drawable.ic_business_center));
-            fileDetails.setVisibility(View.VISIBLE);
+            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_business_center));
+            holder.fileDetails.setVisibility(View.VISIBLE);
 
-            TextView fileContentView = convertView.findViewById(R.id.file_content);
-            TextView dateView = convertView.findViewById(R.id.date);
-
-            TextView sizeView = convertView.findViewById(R.id.size);
-            sizeView.setText(Utils.formatFileSize(context, mFile.length()));
+            holder.sizeView.setText(Utils.formatFileSize(context, mFile.length()));
 
             Resources res = context.getResources();
             Locale locale = LocaleUtils.from(context);
@@ -153,17 +143,17 @@ public class BackupFileDetails
                 }
 
                 // needs RTL
-                fileContentView.setText(TextUtils.join(", ", args));
+                holder.fileContentView.setText(TextUtils.join(", ", args));
 
                 Date creationDate = mInfo.getCreationDate();
                 if (creationDate != null) {
-                    dateView.setText(DateUtils.toPrettyDateTime(locale, creationDate));
+                    holder.dateView.setText(DateUtils.toPrettyDateTime(locale, creationDate));
                 }
-                fileContentView.setVisibility(View.VISIBLE);
+                holder.fileContentView.setVisibility(View.VISIBLE);
             } else {
-                dateView.setText(
+                holder.dateView.setText(
                         DateUtils.toPrettyDateTime(locale, new Date(mFile.lastModified())));
-                fileContentView.setVisibility(View.GONE);
+                holder.fileContentView.setVisibility(View.GONE);
             }
         }
     }

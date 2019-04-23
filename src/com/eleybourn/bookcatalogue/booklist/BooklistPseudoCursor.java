@@ -267,7 +267,7 @@ public class BooklistPseudoCursor
      *
      * @param id of cursor to check
      *
-     * @return <tt>true</tt> if cursor is in list
+     * @return {@code true} if cursor is in list
      */
     private boolean checkMru(@NonNull final Integer id) {
         for (int i : mMruList) {

@@ -76,7 +76,7 @@ public interface BackupContainer {
      *
      * @param context caller context
      *
-     * @return <tt>true</tt> if valid
+     * @return {@code true} if valid
      */
     boolean isValid(@NonNull final Context context);
 }

@@ -135,7 +135,7 @@
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
             app:layout_constraintStart_toEndOf="@id/pages"
             tools:ignore="SelectableText"
-            tools:text="Hardcover"
+            tools:text="@string/book_format_hardcover"
             />
 
         <!-- Series -->
@@ -187,11 +187,10 @@
             tools:visibility="visible"
             />
 
-        <!-- don't set padding on the toc. The toc height is calculated as needed.
-        There will be no (nested) scrolling, as the calculated height wil make the full list
-        visible. User can flick the button to 'open/close' the list.
+        <!-- Don't set padding on the toc. The toc height is calculated as needed.
+             User can flick the button to 'open/close' the list.
         -->
-        <ListView
+        <LinearLayout
             android:id="@+id/toc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -200,8 +199,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
-            tools:ignore="NestedScrolling"
-            tools:listitem="@layout/row_toc_entry_with_author"
             tools:visibility="visible"
             />
 
@@ -230,14 +227,16 @@
             tools:ignore="SelectableText"
             />
 
+        <!--FIXME: when the publisher name is very long, the date_published will be pushed off-screen -->
         <TextView
             android:id="@+id/publisher"
             style="@style/txt_detail_medium"
             android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
+            app:layout_constraintEnd_toStartOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
-            tools:text="The publisher name"
+            tools:text="Printed Paper Press Inc."
             />
 
         <TextView
@@ -250,6 +249,13 @@
             tools:text="25 Aug 2018"
             />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_publisher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lbl_publisher_baseline,publisher,date_published"
+            />
         <!-- Publishing - List price -->
 
         <TextView
@@ -257,7 +263,7 @@
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_price_listed"
             app:layout_constraintStart_toStartOf="@id/lbl_publishing"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publisher_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_publisher"
             />
 
         <TextView
@@ -543,6 +549,7 @@
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

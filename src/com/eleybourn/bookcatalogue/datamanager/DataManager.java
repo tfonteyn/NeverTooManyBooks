@@ -130,7 +130,7 @@ public class DataManager {
      *
      * @param key Key of data object
      *
-     * @return Data object, or null when not present
+     * @return Data object, or {@code null} when not present
      */
     @Nullable
     public Object get(@NonNull final String key) {
@@ -140,7 +140,7 @@ public class DataManager {
     /**
      * Get the data object specified by the passed {@link Datum}.
      *
-     * @return Data object, or null when not present
+     * @return Data object, or {@code null} when not present
      */
     @Nullable
     public Object get(@NonNull final Datum datum) {
@@ -225,7 +225,7 @@ public class DataManager {
      *
      * @param bitmask one or more bits to test for being set
      *
-     * @return <tt>true</tt> if the bit(s) was set.
+     * @return {@code true} if the bit(s) was set.
      */
     public boolean isBitSet(@NonNull final String key,
                             final int bitmask) {
@@ -302,7 +302,7 @@ public class DataManager {
     /**
      * Get a String value.
      *
-     * @return Value of the data, can be empty, but never null
+     * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
     public String getString(@NonNull final String key) {
@@ -312,7 +312,7 @@ public class DataManager {
     /**
      * Get a String value.
      *
-     * @return Value of the data, can be empty, but never null
+     * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
     public String getString(@NonNull final Datum datum) {
@@ -466,7 +466,7 @@ public class DataManager {
      *
      * @param key Key of object
      *
-     * @return The list, can be empty but never null
+     * @return The list, can be empty, but never {@code null}
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
@@ -516,7 +516,7 @@ public class DataManager {
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
-     * @return <tt>true</tt> if all validation passed.
+     * @return {@code true} if all validation passed.
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean validate() {
@@ -553,7 +553,7 @@ public class DataManager {
      *
      * @param crossValidating Options indicating if this is a cross validation pass.
      *
-     * @return <tt>true</tt> if all validations passed.
+     * @return {@code true} if all validations passed.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validate(final boolean crossValidating) {
@@ -577,7 +577,7 @@ public class DataManager {
     /**
      * @param key Key of object
      *
-     * @return <tt>true</tt> if the underlying data contains the specified key.
+     * @return {@code true} if the underlying data contains the specified key.
      */
     public boolean containsKey(@NonNull final String key) {
         Datum datum = mDatumMap.get(key);
@@ -615,7 +615,7 @@ public class DataManager {
      *
      * @param res The resource manager to use when looking up strings.
      *
-     * @return a user displayable list of error messages, or null if none
+     * @return a user displayable list of error messages, or {@code null} if none present
      */
     @SuppressWarnings("unused")
     @Nullable

@@ -49,6 +49,8 @@ public final class Prefs {
     public static final String pk_bob_thumbnails_generating_mode = "BookList.ThumbnailsInBackground";
     public static final String pk_bob_thumbnails_cache_resized = "BookList.ThumbnailsCached";
 
+
+
     public static final String pk_bob_thumbnails_show_large = "BookList.Style.Show.LargeThumbnails";
     public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
 
@@ -354,6 +356,7 @@ public final class Prefs {
                                          (String) oldValue);
 
                         } else if (key.startsWith("field_visibility_")) {
+                            //noinspection SwitchStatementWithTooFewBranches
                             switch (key) {
                                 // remove these as obsolete
                                 case "field_visibility_series_num":

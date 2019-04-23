@@ -4,12 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
  * A read-only adapter for viewing TocEntry's.
  */
 public class TocAdapter
-        extends ArrayAdapter<TocEntry> {
+        extends RecyclerView.Adapter<TocAdapter.Holder> {
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -28,10 +28,13 @@ public class TocAdapter
     @LayoutRes
     private final int mRowLayoutId;
 
+    @NonNull
+    private final List<TocEntry> mList;
+
     /**
      * Constructor.
      *
-     * @param context     the caller context
+     * @param context caller context
      * @param rowLayoutId The resource ID for a layout file containing a TextView to use when
      *                    instantiating views.
      * @param objects     The objects to represent in the ListView.
@@ -39,36 +42,35 @@ public class TocAdapter
     public TocAdapter(@NonNull final Context context,
                       @LayoutRes final int rowLayoutId,
                       @NonNull final List<TocEntry> objects) {
-        super(context, rowLayoutId, objects);
         mInflater = LayoutInflater.from(context);
         mRowLayoutId = rowLayoutId;
+        mList = objects;
     }
 
     @NonNull
     @Override
-    public View getView(final int position,
-                        @Nullable View convertView,
-                        @NonNull final ViewGroup parent) {
-        Holder holder;
-        if (convertView != null) {
-            // Recycling: just get the holder
-            holder = (Holder) convertView.getTag();
-        } else {
-            // Not recycling, get a new View and make the holder for it.
-            convertView = mInflater.inflate(mRowLayoutId, parent, false);
-            holder = new Holder(convertView);
-        }
+    public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                     final int viewType) {
+        View view = mInflater.inflate(mRowLayoutId, parent, false);
+        return new Holder(view);
+    }
 
-        //noinspection ConstantConditions
-        holder.bind(getItem(position));
+    @Override
+    public void onBindViewHolder(@NonNull final Holder holder,
+                                 final int position) {
+        holder.bind(mList.get(position));
+    }
 
-        return convertView;
+    @Override
+    public int getItemCount() {
+        return mList.size();
     }
 
     /**
      * Holder pattern for each row.
      */
-    private static class Holder {
+    public static class Holder
+            extends RecyclerView.ViewHolder {
 
         @NonNull
         private final TextView titleView;
@@ -78,14 +80,13 @@ public class TocAdapter
         private final TextView firstPublicationView;
 
         public Holder(@NonNull final View rowView) {
+            super(rowView);
+
             titleView = rowView.findViewById(R.id.title);
             // optional
             authorView = rowView.findViewById(R.id.author);
             // optional
             firstPublicationView = rowView.findViewById(R.id.year);
-
-            // hook us up.
-            rowView.setTag(this);
         }
 
         void bind(@NonNull final TocEntry item) {

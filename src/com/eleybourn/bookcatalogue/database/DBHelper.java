@@ -545,7 +545,7 @@ public class DBHelper
      * followed by the {@link #DATABASE_CREATE_INDICES} set of indexes.
      *
      * @param syncedDb the database
-     * @param recreate if <tt>true</tt> will delete all indexes first, and recreate them.
+     * @param recreate if {@code true} will delete all indexes first, and recreate them.
      */
     private void createIndices(@NonNull final SynchronizedDb syncedDb,
                                final boolean recreate) {
@@ -638,9 +638,9 @@ public class DBHelper
             // this trigger was replaced.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
 
-            //TEST a proper upgrade from 82 to 100 with non-clean data
-            // Due to a number of code remarks, and some observation... do a clean of some columns.
+            // TEST: a proper upgrade from 82 to 100 with non-clean data
 
+            // Due to a number of code remarks, and some observation... do a clean of some columns.
             // these two are due to a remark in the CSV exporter that (at one time?)
             // the author name and title could be bad
             final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
@@ -693,7 +693,7 @@ public class DBHelper
             db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
                                + " WHERE " + DOM_BOOKSHELF + " IS NULL");
 
-            // this better work....
+            // recreate to get column types & constraints properly updated.
             recreateAndReloadTable(syncedDb, TBL_BOOKS);
 
             // anthology-titles are now cross-book;
@@ -730,14 +730,14 @@ public class DBHelper
             // Note this is a lazy approach as compared to the DBA code where we take the book's
             // language/locale into account! The overhead here would be huge.
             // If the user has any specific book issue, a simple update of the book will fix it.
-            db.execSQL(
-                    "ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_TITLE_LC + " text not null default ''");
-            db.execSQL(
-                    "UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
-            db.execSQL(
-                    "ALTER TABLE " + TBL_TOC_ENTRIES + " ADD " + DOM_TITLE_LC + " text not null default ''");
-            db.execSQL(
-                    "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+            db.execSQL("ALTER TABLE " + TBL_BOOKS
+                               + " ADD " + DOM_TITLE_LC + " text not null default ''");
+            db.execSQL("UPDATE " + TBL_BOOKS
+                               + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+            db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
+                               + " ADD " + DOM_TITLE_LC + " text not null default ''");
+            db.execSQL("UPDATE " + TBL_TOC_ENTRIES
+                               + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
 
 
             // add the UUID field for the move of styles to SharedPreferences

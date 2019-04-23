@@ -38,7 +38,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -76,7 +75,7 @@ public class TextFieldEditorDialogFragment
      * @param callerTag     tag of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
-     * @param multiLine     <tt>true</tt> if the text box should allow multi-line
+     * @param multiLine     {@code true} if the text box should allow multi-line
      *
      * @return the new instance
      */
@@ -172,8 +171,8 @@ public class TextFieldEditorDialogFragment
         /**
          * Constructor.
          *
-         * @param context   the caller context
-         * @param multiLine <tt>true</tt> to allow multi-line text.
+         * @param context   caller context
+         * @param multiLine {@code true} to allow multi-line text.
          */
         TextFieldEditorDialog(@NonNull final Context context,
                               @LayoutRes final int dialogLayoutId,

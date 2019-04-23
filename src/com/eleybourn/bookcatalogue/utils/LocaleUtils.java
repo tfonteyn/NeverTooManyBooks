@@ -93,9 +93,9 @@ public final class LocaleUtils {
     /**
      * Check if the user-preferred Locale is different from the currently in use Locale (context).
      *
-     * @param context to check the configuration Locale
+     * @param context caller context
      *
-     * @return <tt>true</tt> if there is a change (difference)
+     * @return {@code true} if there is a change (difference)
      */
     public static boolean isChanged(@NonNull final Context context) {
         boolean changed = !from(context).equals(getPreferredLocal());
@@ -260,7 +260,7 @@ public final class LocaleUtils {
     /**
      * Translate the Language ISO3 code to the display name.
      *
-     * @param context from which to get the Locale to use for the output language
+     * @param context caller context
      * @param iso     the iso3 code
      *
      * @return the display name for the language,

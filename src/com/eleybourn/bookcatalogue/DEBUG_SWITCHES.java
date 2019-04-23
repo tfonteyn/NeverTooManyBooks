@@ -1,9 +1,26 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+
+import java.util.Locale;
+
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
+
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -116,6 +133,8 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
     public static final boolean DB_SYNC = false;
+    public static final boolean DB_SYNC_LOCKING = false;
+
 
     /* ****************************************************************************************** */
 
@@ -194,5 +213,83 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_HTTP_RESPONSE = false;
 
     private DEBUG_SWITCHES() {
+    }
+
+    /**
+     * complex sql + fetch
+     * t=806.311.600|count=983|.
+     * simple + NO fetch
+     * t=799.380.500|count=983
+     * simple + extra fetch
+     * t=1.254.915.700|count=983
+     *
+     */
+    static void debugPerformanceFetchExtras(@NonNull final Context context) {
+        DBA mDb = new DBA(context);
+
+
+        /* Bitmask indicating which extras to get. */
+        int mExtras = BooklistStyle.EXTRAS_AUTHOR
+                & BooklistStyle.EXTRAS_FORMAT
+                & BooklistStyle.EXTRAS_LOCATION
+                & BooklistStyle.EXTRAS_PUBLISHER;
+//                & BooklistStyle.EXTRAS_BOOKSHELVES;
+
+        /* Locale to use for formatting. */
+        Locale mLocale;
+        /* Resulting location data. */
+        String mLocation;
+        /* Resulting publisher data. */
+        String mPublisher;
+        /* Resulting Format data. */
+        String mFormat;
+        /* Resulting author data. */
+        String mAuthor;
+        /* Resulting shelves data. */
+        String mShelves;
+        int count =0;
+        long t = System.nanoTime();
+        for (long mBookId = 1; mBookId < 1000; mBookId++) {
+            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mExtras)) {
+                // Bail out if we don't have a book.
+                if (!cursor.moveToFirst()) {
+                    continue;
+                }
+                count++;
+                ColumnMapper mapper = new ColumnMapper(cursor, null,
+                                                       DOM_AUTHOR_FORMATTED,
+                                                       DOM_BOOK_LOCATION,
+                                                       DOM_BOOK_FORMAT,
+                                                       DOM_BOOK_PUBLISHER,
+                                                       DOM_BOOK_DATE_PUBLISHED,
+                                                       DOM_BOOKSHELF);
+
+                if ((mExtras & BooklistStyle.EXTRAS_AUTHOR) != 0) {
+                    mAuthor = mapper.getString(DOM_AUTHOR_FORMATTED);
+                }
+
+                if ((mExtras & BooklistStyle.EXTRAS_LOCATION) != 0) {
+                    mLocation = mapper.getString(DOM_BOOK_LOCATION);
+                }
+
+                if ((mExtras & BooklistStyle.EXTRAS_FORMAT) != 0) {
+                    mFormat = mapper.getString(DOM_BOOK_FORMAT);
+                }
+
+//                if (((mExtras & BooklistStyle.EXTRAS_BOOKSHELVES) != 0)) {
+                    //TEST performance:
+                    mShelves = Bookshelf.toDisplayString(mDb.getBookshelvesByBookId(mBookId));
+//                    mShelves = mapper.getString(DOM_BOOKSHELF);
+//                }
+
+                if ((mExtras & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+                    mPublisher = mapper.getString(DOM_BOOK_PUBLISHER);
+//                    String tmpPubDate = mapper.getString(DOM_BOOK_DATE_PUBLISHED);
+                }
+            } catch (NumberFormatException e) {
+//                Logger.error(this, e);
+            }
+        }
+        Logger.debug(BooksMultiTypeListHandler.class, "", "t=" + (System.nanoTime() - t), "count=" + count);
     }
 }

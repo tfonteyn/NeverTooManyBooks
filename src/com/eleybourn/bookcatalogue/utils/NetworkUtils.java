@@ -32,7 +32,7 @@ public final class NetworkUtils {
     /**
      * Check if we have *any* network open. We're not picky, first network that says ok is fine.
      *
-     * @return <tt>true</tt> if the application can access the internet
+     * @return {@code true} if the application can access the internet
      */
     @AnyThread
     public static boolean isNetworkAvailable(@NonNull final Context context) {
@@ -83,7 +83,7 @@ public final class NetworkUtils {
      *
      * @param site url to check,
      *
-     * @return <tt>true</tt> on success.
+     * @return {@code true} on success.
      */
     @WorkerThread
     public static boolean isAlive(@NonNull final String site) {

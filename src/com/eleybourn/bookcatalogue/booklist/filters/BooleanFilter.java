@@ -42,14 +42,14 @@ public class BooleanFilter
     /**
      * syntax sugar.
      *
-     * @return <tt>true</tt> if this filter is active
+     * @return {@code true} if this filter is active
      */
     public boolean isActive() {
         return P_NOT_USED.equals(get());
     }
 
     /**
-     * @return Filter expression, or null if not active
+     * @return Filter expression, or {@code null} if not active
      */
     @Override
     @Nullable

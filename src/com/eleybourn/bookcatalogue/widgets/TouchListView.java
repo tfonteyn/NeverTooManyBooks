@@ -56,7 +56,6 @@ import com.eleybourn.bookcatalogue.R;
  *      {@code
  *      <declare-styleable name="TouchListView">
  *          <attr name="normal_height" format="dimension" />
- *          <attr name="expanded_height" format="dimension" />
  *          <attr name="grabber" format="reference" />
  *          <attr name="dnd_background" format="color" />
  *          <attr name="remove_mode">
@@ -72,10 +71,6 @@ import com.eleybourn.bookcatalogue.R;
  * normal_height:
  * The height of one of your regular rows.
  * Default: calculated assuming all rows are equal height.
- * <p>
- * expanded_height:
- * The largest possible height of one of your rows.
- * Default: the value of normal_height.
  * <p>
  * grabber:
  * The android:id value of an icon in your rows that should be used as the "grab handle"
@@ -101,7 +96,6 @@ public class TouchListView
     private static final int SLIDE_RIGHT = 1;
     private static final int SLIDE_LEFT = 2;
 
-    private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
 
     @IdRes
@@ -115,7 +109,6 @@ public class TouchListView
 
     /** Height of a row in pixels. */
     private int mItemHeight;
-    //private int mItemHeightExpanded=-1;
 
     /** Don't use directly; always use {@link #getWindowManager()} to access. */
     private WindowManager mWindowManager;
@@ -150,12 +143,17 @@ public class TouchListView
     private int mUpperBound;
     private int mLowerBound;
 
-    /** The height of the ListView. */
-    private int mHeight;
+    /**
+     * The height of the ListView. It's set in {@link #onInterceptTouchEvent(MotionEvent)}
+     * and the {@link #onTouchEvent} will then use the cached copy.
+     * This prevents any issues with a changing height.
+     */
+    private int mTotalHeight;
+
     @Nullable
     private GestureDetector mGestureDetector;
 
-    /** Set to <tt>true</tt> at start of a new drag operation. */
+    /** Set to {@code true} at start of a new drag operation. */
     private boolean mWasFirstExpansion;
     @Nullable
     private Integer mSavedHeight;
@@ -226,15 +224,12 @@ public class TouchListView
         mGrabberId = a.getResourceId(R.styleable.TouchListView_grabber, -1);
         mRemoveMode = a.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
         mItemHeight = a.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
-        //mItemHeightExpanded = typedArray
-        //     .getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeight);
         mDndBackgroundColor = a.getColor(R.styleable.TouchListView_dnd_background,
                                          Color.TRANSPARENT);
 
         a.recycle();
     }
 
-    /** {@inheritDoc}. */
     @Override
     public final void addHeaderView(@NonNull final View v,
                                     @NonNull final Object data,
@@ -242,13 +237,11 @@ public class TouchListView
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc}. */
     @Override
     public final void addHeaderView(@NonNull final View v) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc}. */
     @Override
     public final void addFooterView(@NonNull final View v,
                                     @NonNull final Object data,
@@ -258,7 +251,6 @@ public class TouchListView
         }
     }
 
-    /** {@inheritDoc}. */
     @Override
     public final void addFooterView(@NonNull final View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
@@ -266,12 +258,6 @@ public class TouchListView
         }
     }
 
-    /**
-     * React to touch events.
-     * <p>
-     * <p>
-     * {@inheritDoc}.
-     */
     @Override
     @CallSuper
     public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
@@ -287,7 +273,7 @@ public class TouchListView
                                                    final float velocityY) {
                                 if (mDragView != null) {
                                     if (velocityX > 1000) {
-                                        Rect r = mTempRect;
+                                        Rect r = new Rect();
                                         mDragView.getDrawingRect(r);
                                         if (e2.getX() > r.right * 2 / 3) {
                                             // fast fling right with release near the right
@@ -307,60 +293,52 @@ public class TouchListView
         }
 
         if (mOnDragListener != null || mOnDropListener != null) {
-            switch (ev.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    int x = (int) ev.getX();
-                    int y = (int) ev.getY();
-                    int itemNumber = pointToPosition(x, y);
-                    if (itemNumber == AdapterView.INVALID_POSITION) {
-                        break;
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                int x = (int) ev.getX();
+                int y = (int) ev.getY();
+                int itemNumber = pointToPosition(x, y);
+                if (itemNumber == AdapterView.INVALID_POSITION) {
+                    return super.onInterceptTouchEvent(ev);
+                }
+
+                View rowView = getChildAt(itemNumber - getFirstVisiblePosition());
+
+                // is it a draggable row ?
+                View dragHandle = rowView.findViewById(mGrabberId);
+                if (dragHandle != null) {
+
+                    mDragPoint = y - rowView.getTop();
+                    mCoordinatesOffset = ((int) ev.getRawY()) - y;
+
+                    if ((dragHandle.getLeft() < x) && (x < dragHandle.getRight())) {
+                        rowView.setDrawingCacheEnabled(true);
+                        // Create a copy of the drawing cache so that it does not get recycled
+                        // by the framework when the list tries to clean up memory
+                        Bitmap bitmap = Bitmap.createBitmap(rowView.getDrawingCache());
+                        rowView.setDrawingCacheEnabled(false);
+
+                        Rect listBounds = new Rect();
+                        getGlobalVisibleRect(listBounds, null);
+
+                        startDragging(bitmap, listBounds.left, y);
+                        mDragPos = itemNumber;
+                        mFirstDragPos = mDragPos;
+                        mWasFirstExpansion = true;
+                        // init the current height.
+                        mTotalHeight = getHeight();
+                        int touchSlop = mTouchSlop;
+                        mUpperBound = Math.min(y - touchSlop, mTotalHeight / 3);
+                        mLowerBound = Math.max(y + touchSlop, mTotalHeight * 2 / 3);
+                        return false;
                     }
 
-                    View rowView = getChildAt(itemNumber - getFirstVisiblePosition());
-
-                    if (isDraggableRow(rowView)) {
-                        mDragPoint = y - rowView.getTop();
-                        mCoordinatesOffset = ((int) ev.getRawY()) - y;
-                        View dragHandle = rowView.findViewById(mGrabberId);
-                        Rect r = mTempRect;
-                        //dragHandle.getDrawingRect(r);
-
-                        r.left = dragHandle.getLeft();
-                        r.right = dragHandle.getRight();
-                        r.top = dragHandle.getTop();
-                        r.bottom = dragHandle.getBottom();
-
-                        if ((r.left < x) && (x < r.right)) {
-                            rowView.setDrawingCacheEnabled(true);
-                            // Create a copy of the drawing cache so that it does not get recycled
-                            // by the framework when the list tries to clean up memory
-                            Bitmap bitmap = Bitmap.createBitmap(rowView.getDrawingCache());
-                            rowView.setDrawingCacheEnabled(false);
-
-                            Rect listBounds = new Rect();
-
-                            getGlobalVisibleRect(listBounds, null);
-
-                            startDragging(bitmap, listBounds.left, y);
-                            mDragPos = itemNumber;
-                            mFirstDragPos = mDragPos;
-                            mWasFirstExpansion = true;
-                            mHeight = getHeight();
-                            int touchSlop = mTouchSlop;
-                            mUpperBound = Math.min(y - touchSlop, mHeight / 3);
-                            mLowerBound = Math.max(y + touchSlop, mHeight * 2 / 3);
-                            return false;
-                        }
-
-                        mDragView = null;
-                    }
-                    break;
+                    mDragView = null;
+                }
             }
         }
         return super.onInterceptTouchEvent(ev);
     }
 
-    /** {@inheritDoc}. */
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
@@ -371,12 +349,14 @@ public class TouchListView
         if ((mOnDragListener != null || mOnDropListener != null) && mDragView != null) {
             int action = ev.getAction();
             switch (action) {
+                // end of a drag; either a drop, or a removal action
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
-                    Rect r = mTempRect;
+                    Rect r = new Rect();
                     mDragView.getDrawingRect(r);
                     stopDragging();
 
+                    // handle removal listeners
                     if (mRemoveMode == SLIDE_RIGHT && ev.getX() > r.left + (r.width() * 3 / 4)) {
                         if (mOnRemoveListener != null) {
                             mOnRemoveListener.onRemove(mFirstDragPos);
@@ -388,6 +368,7 @@ public class TouchListView
                         }
                         unExpandViews(true);
                     } else {
+                        // handle drop listener
                         if (mOnDropListener != null && mDragPos >= 0 && mDragPos < getCount()) {
                             mOnDropListener.onDrop(mFirstDragPos, mDragPos);
                         }
@@ -395,42 +376,52 @@ public class TouchListView
                     }
                     break;
 
+                // keep on dragging
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_MOVE:
                     int x = (int) ev.getX();
                     int y = (int) ev.getY();
                     dragView(x, y);
-                    int item = getItemForPosition(x, y);
-                    if (item >= 0) {
-                        if (action == MotionEvent.ACTION_DOWN || item != mDragPos) {
+                    int itemIndex = pointToItemIndex(x, y);
+                    if (itemIndex >= 0) {
+                        if (action == MotionEvent.ACTION_DOWN || itemIndex != mDragPos) {
                             if (mOnDragListener != null) {
-                                mOnDragListener.onDrag(mDragPos, item);
+                                mOnDragListener.onDrag(mDragPos, itemIndex);
                             }
-                            mDragPos = item;
-                            doExpansion(mWasFirstExpansion);
+                            mDragPos = itemIndex;
+                            expandViews(mWasFirstExpansion);
                             if (mWasFirstExpansion) {
                                 mWasFirstExpansion = false;
                             }
                         }
+
+                        // speed == the number of pixels (4 or 16) that a scroll will be done.
+                        // i.e., slower (4) or faster (16)
                         int speed = 0;
-                        adjustScrollBounds(y);
+                        // adjustScrollBounds
+                        if (y >= mTotalHeight / 3) {
+                            mUpperBound = mTotalHeight / 3;
+                        }
+                        if (y <= mTotalHeight * 2 / 3) {
+                            mLowerBound = mTotalHeight * 2 / 3;
+                        }
                         if (y > mLowerBound) {
                             // scroll the list up a bit
-                            speed = y > (mHeight + mLowerBound) / 2 ? 16 : 4;
+                            speed = y > (mTotalHeight + mLowerBound) / 2 ? 16 : 4;
                         } else if (y < mUpperBound) {
                             // scroll the list down a bit
                             speed = y < mUpperBound / 2 ? -16 : -4;
                         }
                         if (speed != 0) {
-                            int ref = pointToPosition(0, mHeight / 2);
-                            if (ref == AdapterView.INVALID_POSITION) {
+                            int position = pointToPosition(x, mTotalHeight / 2);
+                            if (position == AdapterView.INVALID_POSITION) {
                                 //we hit a divider or an invisible view, check somewhere else
-                                ref = pointToPosition(0, mHeight / 2 + getDividerHeight() + 64);
+                                position = pointToPosition(x, mTotalHeight / 2 + getDividerHeight() + 64);
                             }
-                            View rowView = getChildAt(ref - getFirstVisiblePosition());
+                            View rowView = getChildAt(position - getFirstVisiblePosition());
                             if (rowView != null) {
-                                int pos = rowView.getTop();
-                                setSelectionFromTop(ref, pos - speed);
+                                int offset = rowView.getTop() - speed;
+                                setSelectionFromTop(position, offset);
                             }
                         }
                     }
@@ -456,12 +447,12 @@ public class TouchListView
      */
     private int myPointToPosition(final int x,
                                   final int y) {
-        Rect frame = mTempRect;
+        Rect r = new Rect();
         final int count = getChildCount();
         for (int i = count - 1; i >= 0; i--) {
             final View child = getChildAt(i);
-            child.getHitRect(frame);
-            if (frame.contains(x, y)) {
+            child.getHitRect(r);
+            if (r.contains(x, y)) {
                 return getFirstVisiblePosition() + i;
             }
         }
@@ -479,10 +470,10 @@ public class TouchListView
      *
      * @return the index
      */
-    private int getItemForPosition(final int x,
-                                   final int y) {
-        //TODO: do we need mItemHeight at all ? how about mSavedHeight ?
+    private int pointToItemIndex(final int x,
+                                 final int y) {
         if (mItemHeight == 0) {
+            // uses the height of the FIRST item, assuming all others are equal height.
             mItemHeight = getChildAt(0).getHeight();
         }
         int adjusted_y = y - mDragPoint - (mItemHeight / 2);
@@ -498,15 +489,6 @@ public class TouchListView
         return pos;
     }
 
-    private void adjustScrollBounds(final int y) {
-        if (y >= mHeight / 3) {
-            mUpperBound = mHeight / 3;
-        }
-        if (y <= mHeight * 2 / 3) {
-            mLowerBound = mHeight * 2 / 3;
-        }
-    }
-
     /**
      * Restore size and visibility for all list items.
      */
@@ -517,13 +499,14 @@ public class TouchListView
                 if (deletion) {
                     // HACK force update of mItemCount
                     int position = getFirstVisiblePosition();
-                    int y = getChildAt(0).getTop();
+                    int offset = getChildAt(0).getTop();
                     setAdapter(getAdapter());
-                    setSelectionFromTop(position, y);
+                    setSelectionFromTop(position, offset);
                     // end hack
                 }
                 // force children to be recreated where needed
                 layoutChildren();
+
                 rowView = getChildAt(i);
                 if (rowView == null) {
                     break;
@@ -531,16 +514,14 @@ public class TouchListView
             }
 
             if (isDraggableRow(rowView)) {
-                ViewGroup.LayoutParams params = rowView.getLayoutParams();
+                ViewGroup.LayoutParams layoutParams = rowView.getLayoutParams();
                 if (mSavedHeight != null) {
-                    params.height = mSavedHeight;
+                    layoutParams.height = mSavedHeight;
                 } else {
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 }
-                //params.height = mItemHeight;
-                rowView.setLayoutParams(params);
+                rowView.setLayoutParams(layoutParams);
                 rowView.setVisibility(View.VISIBLE);
-                //v.setBackgroundColor(Color.TRANSPARENT);
                 rowView.setPadding(rowView.getPaddingLeft(), 0, rowView.getPaddingRight(), 0);
             }
         }
@@ -558,17 +539,19 @@ public class TouchListView
      * <p>
      * If the dragged item is not on screen, only expand the item below the current insert point.
      */
-    private void doExpansion(final boolean firstTime) {
+    private void expandViews(final boolean firstTime) {
+
+        int firstVisPos = getFirstVisiblePosition();
 
         // Find the effective child number that we are hovering over
-        int child = mDragPos - getFirstVisiblePosition() - 1;
+        int child = mDragPos - firstVisPos - 1;
         if (mDragPos > mFirstDragPos) {
             // If the current drag position is past the 'invisible' dragged position, add 1
             child++;
         }
 
         // Get the view that corresponds to the row being dragged, if present in current set of rows
-        View first = getChildAt(mFirstDragPos - getFirstVisiblePosition());
+        View first = getChildAt(mFirstDragPos - firstVisPos);
 
         // Loop through all visible views, adjusting them
         for (int i = 0; ; i++) {

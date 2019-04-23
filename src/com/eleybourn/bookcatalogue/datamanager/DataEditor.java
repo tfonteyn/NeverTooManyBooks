@@ -34,5 +34,5 @@ public interface DataEditor
      *
      * @param dataManager the parent collection
      */
-    <T extends DataManager> void saveFieldsTo(@NonNull T /* in/out */ dataManager);
+    <T extends DataManager> void saveTo(@NonNull T /* in/out */ dataManager);
 }

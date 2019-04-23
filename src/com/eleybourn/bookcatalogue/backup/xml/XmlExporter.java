@@ -161,7 +161,7 @@ public class XmlExporter
      * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ExportListener)}.
      * Not in direct use yet.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @WorkerThread
@@ -848,7 +848,7 @@ public class XmlExporter
      * - 'flat' preferences for the style.
      * --- This includes the actual groups of the style: a CSV String of id's (kinds)
      * - Filters and Groups are flattened.
-     * - each filter/group has a typed t
+     * - each filter/group has a typed tag
      * - each preference in a group has a typed tag.
      */
     static class StylesWriter

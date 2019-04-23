@@ -73,8 +73,7 @@ public abstract class BackupReaderAbstract
         mContext = context;
         mDb = new DBA(mContext);
 
-        processPreferences = mContext.getResources().getString(
-                R.string.progress_msg_process_preferences);
+        processPreferences = mContext.getString(R.string.progress_msg_process_preferences);
         processCover = mContext.getString(R.string.progress_msg_process_cover);
         processBooklistStyles = mContext.getString(R.string.progress_msg_process_booklist_style);
     }

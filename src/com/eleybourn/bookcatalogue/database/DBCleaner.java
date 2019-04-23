@@ -137,7 +137,7 @@ public class DBCleaner {
      * <p>
      * 2 should become 0
      *
-     * @param dryRun <tt>true</tt> to run the update.
+     * @param dryRun {@code true} to run the update.
      */
     public void bookAnthologyBitmask(final boolean dryRun) {
         String select = "SELECT DISTINCT " + DOM_BOOK_TOC_BITMASK + " FROM " + TBL_BOOKS
@@ -156,7 +156,7 @@ public class DBCleaner {
     /**
      * Remove rows where books are sitting on a 'null' bookshelf.
      *
-     * @param dryRun <tt>true</tt> to run the update.
+     * @param dryRun {@code true} to run the update.
      */
     public void bookBookshelf(final boolean dryRun) {
         String select = "SELECT DISTINCT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
@@ -180,7 +180,7 @@ public class DBCleaner {
      *
      * @param table  to check
      * @param column to check
-     * @param dryRun <tt>true</tt> to run the update.
+     * @param dryRun {@code true} to run the update.
      */
     public void booleanCleanup(@NonNull final TableDefinition table,
                                @NonNull final DomainDefinition column,
@@ -211,7 +211,7 @@ public class DBCleaner {
      *
      * @param table  to check
      * @param column to check
-     * @param dryRun <tt>true</tt> to run the update.
+     * @param dryRun {@code true} to run the update.
      */
     public void nullString2empty(@NonNull final TableDefinition table,
                                  @NonNull final DomainDefinition column,

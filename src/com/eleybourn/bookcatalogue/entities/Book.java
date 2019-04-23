@@ -335,7 +335,7 @@ public class Book
      *
      * @param db database
      *
-     * @return <tt>true</tt> if the update was successful, <tt>false</tt> on failure
+     * @return {@code true} if the update was successful, {@code false} on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean setRead(@NonNull final DBA db,
@@ -380,8 +380,8 @@ public class Book
      *
      * @param db the database
      */
-    public void reload(@NonNull final DBA db) {
-        reload(db, getId());
+    public Book reload(@NonNull final DBA db) {
+        return reload(db, getId());
     }
 
     /**
@@ -389,11 +389,11 @@ public class Book
      *
      * @param bookId of book (may be 0 for new, in which case we do nothing)
      */
-    public void reload(@NonNull final DBA db,
+    public Book reload(@NonNull final DBA db,
                        final long bookId) {
         // If ID = 0, no details in DB
         if (bookId == 0) {
-            return;
+            return this;
         }
 
         try (BookCursor book = db.fetchBookById(bookId)) {
@@ -401,6 +401,10 @@ public class Book
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
+                //TOMF ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
+                //pro: one call for book and sublist(s)
+                //con: the sublist comes in as one column. Will need json format to keep it flexible
+                // and then decode here (or StringList custom (de)coding? hum...)
                 putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
                                        db.getBookshelvesByBookId(bookId));
                 putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
@@ -408,6 +412,7 @@ public class Book
                 putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
             }
         }
+        return this;
     }
 
     /**
@@ -455,7 +460,7 @@ public class Book
     }
 
     /**
-     * @return name of the first author in the list of authors for this book, or null if none
+     * @return name of the first author in the list of authors for this book, or {@code null} if none
      */
     @Nullable
     public String getPrimaryAuthor() {
@@ -497,7 +502,7 @@ public class Book
     }
 
     /**
-     * @return name of the first series in the list of series for this book, or null if none
+     * @return name of the first series in the list of series for this book, or {@code null} if none
      */
     @Nullable
     public String getPrimarySeries() {
@@ -528,8 +533,8 @@ public class Book
     /**
      * Use the book's language setting to determine the Locale.
      *
-     * @param updateLanguage <tt>true</tt> to update the language field with the iso3 code
-     *                       if needed. <tt>false</tt> to leave it unchanged.
+     * @param updateLanguage {@code true} to update the language field with the iso3 code
+     *                       if needed. {@code false} to leave it unchanged.
      *
      * @return the locale, or the users preferred locale if no language was set.
      */
@@ -592,11 +597,11 @@ public class Book
         /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
         addAccessor(HAS_MULTIPLE_WORKS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Type.MULTIPLE_WORKS));
+                                            TocEntry.Authors.MULTIPLE_WORKS));
         /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
         addAccessor(HAS_MULTIPLE_AUTHORS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                                            TocEntry.Type.MULTIPLE_AUTHORS));
+                                            TocEntry.Authors.MULTIPLE_AUTHORS));
     }
 
     /**

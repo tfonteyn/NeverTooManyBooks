@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.utils;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -17,6 +17,7 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 /**
  * Wrapper for the zoomed image dialog.

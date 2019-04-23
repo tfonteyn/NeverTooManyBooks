@@ -30,7 +30,7 @@
 
     <!-- basic horizontal divider line -->
     <style name="div_horizontal">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">@dimen/margin_div</item>
@@ -372,8 +372,6 @@
     <style name="nav_view">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <!--TEST: this attribute reference throws an RTE when run on API 22. -->
-        <!--<item name="android:background">?android:attr/colorBackgroundFloating</item>-->
         <item name="android:layout_gravity">start</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>

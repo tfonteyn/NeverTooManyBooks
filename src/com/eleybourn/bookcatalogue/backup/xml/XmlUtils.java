@@ -323,7 +323,7 @@ public final class XmlUtils {
      * Encodes a single value with a tag equal to the value's type.
      * Strings are CDATA encoded; others use the 'value' attribute.
      *
-     * @param name  (optional) attribute for the t
+     * @param name  (optional) attribute for the tag
      * @param value to encode
      *
      * @return xml tag

@@ -86,27 +86,26 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Trigger the Fragment to save it's Fields to the Book.
+     * Trigger the Fragment to save its Fields to the Book.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
     public void onPause() {
         Tracker.enterOnPause(this);
-        saveFieldsTo(getBookManager().getBook());
+        saveTo(getBookManager().getBook());
         super.onPause();
         Tracker.exitOnPause(this);
     }
 
     /**
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      * <p>
-     * This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
-     * (for consistency with the load process).
+     * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
      */
     @Override
-    public final <T extends DataManager> void saveFieldsTo(@NonNull final T dataManager) {
+    public final <T extends DataManager> void saveTo(@NonNull final T dataManager) {
         onSaveFieldsToBook((Book) dataManager);
     }
 

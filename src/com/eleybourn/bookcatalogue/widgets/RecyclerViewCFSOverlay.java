@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.R;
  * -   R.dimen.cfs_text_size_large;     fallback: 22sp
  * -   R.dimen.cfs_text_size_medium;    fallback: 18sp
  */
-public class RecyclerViewCFSOverlay {
+class RecyclerViewCFSOverlay {
 
     /** Default value in SP as taken from the Android sources. */
     private static final int TEXT_SIZE_LARGE_IN_SP = 22;

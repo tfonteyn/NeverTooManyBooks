@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -38,33 +39,36 @@ public class ImportCSVTask
     /**
      * Constructor.
      *
+     * @param context  caller context
      * @param fragment ProgressDialogFragment
      * @param settings the import settings
      */
     @UiThread
-    private ImportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
+    private ImportCSVTask(@NonNull final Context context,
+                          @NonNull final ProgressDialogFragment<Void> fragment,
                           @NonNull final ImportSettings settings) {
 
         mFragment = fragment;
         mSettings = settings;
-        //noinspection ConstantConditions
-        mImporter = new CsvImporter(mFragment.getContextWithHorribleClutch(), settings);
+        mImporter = new CsvImporter(context, settings);
     }
 
     /**
+     * @param context  caller context
      * @param fm       FragmentManager
      * @param settings the import settings
      */
     @UiThread
-    public static void start(@NonNull final FragmentManager fm,
+    public static void start(@NonNull final Context context,
+                             @NonNull final FragmentManager fm,
                              @NonNull final ImportSettings settings) {
         if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<Void> frag =
+            ProgressDialogFragment<Void> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
                                                        false, 0);
-            ImportCSVTask task = new ImportCSVTask(frag, settings);
-            frag.setTask(M_TASK_ID, task);
-            frag.show(fm, TAG);
+            ImportCSVTask task = new ImportCSVTask(context, progressDialog, settings);
+            progressDialog.setTask(M_TASK_ID, task);
+            progressDialog.show(fm, TAG);
             task.execute();
         }
     }

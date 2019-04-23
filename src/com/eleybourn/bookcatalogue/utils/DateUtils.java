@@ -191,7 +191,7 @@ public final class DateUtils {
      * for caller to specify if the parsing should be strict or lenient.
      *
      * @param dateString String to parse
-     * @param lenient    <tt>true</tt> if parsing should be lenient
+     * @param lenient    {@code true} if parsing should be lenient
      *
      * @return Resulting date if successfully parsed, otherwise null
      */
@@ -328,7 +328,7 @@ public final class DateUtils {
     /**
      * @param locale    to use
      * @param month     1-12 based month number
-     * @param shortName <tt>true</tt> to get the abbreviated name instead of the full name.
+     * @param shortName {@code true} to get the abbreviated name instead of the full name.
      *
      * @return localised name of Month
      */

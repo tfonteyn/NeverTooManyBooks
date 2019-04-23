@@ -397,6 +397,8 @@ public class BookSearchByIsbnFragment
      * results of search started by {@link #startSearch}.
      * <p>
      * The details will get sent to {@link EditBookActivity}
+     * <p>
+     * <p>{@inheritDoc}
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
@@ -464,9 +466,11 @@ public class BookSearchByIsbnFragment
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case REQ_IMAGE_FROM_SCANNER: {
                 mScannerStarted = false;
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Objects.requireNonNull(data);

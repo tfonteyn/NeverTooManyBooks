@@ -90,6 +90,9 @@ public abstract class BaseSettingsFragment
 
     /**
      * Update the summary after a change.
+     *
+     * <p>
+     * <p>{@inheritDoc}
      */
     @CallSuper
     @Override
@@ -115,6 +118,7 @@ public abstract class BaseSettingsFragment
     /**
      * Copy all preferences from source to destination.
      */
+    @SuppressWarnings("unused")
     protected void copyPrefs(@NonNull final String source,
                              @NonNull final String destination,
                              final boolean clearSource) {

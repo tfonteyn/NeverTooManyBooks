@@ -40,30 +40,35 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Replacement for {@link TouchListView}. Work-in-progress.
  *
- * Note: ONLY supports the {@link LinearLayoutManager).
+ * and then I learned about {@link ItemTouchHelper} ....
  *
  *
- * TouchListView from CommonsWare which is based on Android code
- * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  * <p>
- * https://github.com/timsu/cwac-touchlist
+ * Note: ONLY supports the {@link LinearLayoutManager}.
+ * <p>
+ * Adapted from TouchListView from CommonsWare which is based on Android code
+ * for TouchInterceptor which was (reputedly) removed in Android 2.2. See
+ * <a href="https://github.com/timsu/cwac-touchlist">https://github.com/timsu/cwac-touchlist</a>
  * <p>
  * Customizable attributes:
  * <pre>
  *      {@code
  *      <declare-styleable name="TouchListView">
- *          <attr name="normal_height" format="dimension" />
- *          <attr name="expanded_height" format="dimension" />
- *          <attr name="grabber" format="reference" />
- *          <attr name="dnd_background" format="color" />
- *          <attr name="remove_mode">
+ *          <!-- MANDATORY! -->
+ *          <attr name="trv_grabber" format="reference" />
+ *          <!-- optional -->
+ *          <attr name="trv_normal_height" format="dimension" />
+ *          <attr name="trv_dnd_background" format="color" />
+ *          <attr name="trv_remove_mode">
  *              <enum name="none" value="-1" />
  *              <enum name="fling" value="0" />
  *              <enum name="slideRight" value="1" />
@@ -72,29 +77,21 @@ import com.eleybourn.bookcatalogue.R;
  *      </declare-styleable>
  *      }
  * </pre>
- * <p>
- * normal_height:
- * The height of one of your regular rows.
- * Default: calculated assuming all rows are equal height.
- * <p>
- * expanded_height:
- * The largest possible height of one of your rows.
- * Default: the value of normal_height.
- * <p>
- * grabber:
+ * <li>trv_grabber:
  * The android:id value of an icon in your rows that should be used as the "grab handle"
  * for the drag-and-drop operation (required)
- * <p>
- * dnd_background:
+ * <li>trv_normal_height:
+ * The height of one of your regular rows.
+ * Default: the height of the first row, assuming all rows are equal height.
+ * <li>trv_dnd_background:
  * A colour to use as the background of your row when it is being dragged
  * Default: fully transparent.
- * <p>
- * remove_mode:
- * ="none"         (default) user cannot remove entries
- * ="slideRight"   user can remove entries by dragging to the right quarter of the list
- * ="slideLeft"    user can remove entries by dragging to the left quarter of the list)
- * ="fling"        ...not quite sure what this does
- * <p>
+ * <li>trv_remove_mode:<ul>
+ * <li>none:         (default) user cannot remove entries
+ * <li>slideRight:   user can remove entries by dragging to the right quarter of the list
+ * <li>slideLeft:    user can remove entries by dragging to the left quarter of the list)
+ * <li>fling:        ...not quite sure what this does
+ * </ul>
  */
 public class TouchRecyclerViewCFS
         extends RecyclerViewCFS {
@@ -105,7 +102,6 @@ public class TouchRecyclerViewCFS
     private static final int SLIDE_RIGHT = 1;
     private static final int SLIDE_LEFT = 2;
 
-    private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
 
     @IdRes
@@ -117,9 +113,8 @@ public class TouchRecyclerViewCFS
 
     private final int mRemoveMode;
 
-    /** Height of a row in pixels. */
+    /** Height of a row. Uses the height of the FIRST item, assuming all others are equal height. */
     private int mItemHeight;
-    //private int mItemHeightExpanded=-1;
 
     /** Don't use directly; always use {@link #getWindowManager()} to access. */
     private WindowManager mWindowManager;
@@ -154,16 +149,21 @@ public class TouchRecyclerViewCFS
     private int mUpperBound;
     private int mLowerBound;
 
-    /** The height of the ListView. */
-    private int mHeight;
+    /**
+     * The height of the ListView. It's set in {@link #onInterceptTouchEvent(MotionEvent)}
+     * and the {@link #onTouchEvent} will then use the cached copy.
+     * This prevents any issues with a changing height.
+     */
+    private int mTotalHeight;
+
     @Nullable
     private GestureDetector mGestureDetector;
 
-    /** Set to <tt>true</tt> at start of a new drag operation. */
+    /** Set to {@code true} at start of a new drag operation. */
     private boolean mWasFirstExpansion;
     @Nullable
     private Integer mSavedHeight;
-    private LinearLayoutManager mLinearLayoutManager;
+    private LinearLayoutManager mLayoutManager;
 
     /**
      * Constructor used when instantiating Views programmatically.
@@ -209,34 +209,30 @@ public class TouchRecyclerViewCFS
 
         mGrabberId = a.getResourceId(R.styleable.TouchRecyclerViewCFS_trv_grabber, -1);
         mRemoveMode = a.getInt(R.styleable.TouchRecyclerViewCFS_trv_remove_mode, MODE_NOT_SET);
-        mItemHeight = a.getDimensionPixelSize(R.styleable.TouchRecyclerViewCFS_trv_normal_height, 0);
-        //mItemHeightExpanded = typedArray
-        //     .getDimensionPixelSize(R.styleable.TouchRecyclerView_trv_expanded_height, mItemHeight);
+        mItemHeight = a.getDimensionPixelSize(R.styleable.TouchRecyclerViewCFS_trv_normal_height,
+                                              0);
         mDndBackgroundColor = a.getColor(R.styleable.TouchRecyclerViewCFS_trv_background,
                                          Color.TRANSPARENT);
-
         a.recycle();
     }
 
-    /** Intercept, and take a local reference for the layout manager. */
+    /**
+     * Intercept, and take a local reference for the layout manager.
+     * <p>
+     * <p>{@inheritDoc}
+     */
     @Override
     public void setLayoutManager(@Nullable final LayoutManager layout) {
         super.setLayoutManager(layout);
         if (!(layout instanceof LinearLayoutManager)) {
             throw new IllegalStateException("The adapter MUST be a LinearLayoutManager");
         }
-        mLinearLayoutManager = (LinearLayoutManager) layout;
+        mLayoutManager = (LinearLayoutManager) layout;
     }
 
-    /**
-     * React to touch events.
-     * <p>
-     * <p>
-     * {@inheritDoc}.
-     */
     @Override
     @CallSuper
-    public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull final MotionEvent e) {
         if (mOnRemoveListener != null && mGestureDetector == null) {
             if (mRemoveMode == FLING) {
                 mGestureDetector = new GestureDetector(
@@ -249,7 +245,7 @@ public class TouchRecyclerViewCFS
                                                    final float velocityY) {
                                 if (mDragView != null) {
                                     if (velocityX > 1000) {
-                                        Rect r = mTempRect;
+                                        Rect r = new Rect();
                                         mDragView.getDrawingRect(r);
                                         if (e2.getX() > r.right * 2 / 3) {
                                             // fast fling right with release near the right
@@ -269,48 +265,41 @@ public class TouchRecyclerViewCFS
         }
 
         if (mOnDragListener != null || mOnDropListener != null) {
-            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-                int x = (int) ev.getX();
-                int y = (int) ev.getY();
-                int itemNumber = pointToPosition(x, y);
-                if (itemNumber == NO_POSITION) {
-                    return super.onInterceptTouchEvent(ev);
+            if (e.getAction() == MotionEvent.ACTION_DOWN) {
+                View rowView = findChildViewUnder(e.getX(), e.getY());
+                if (rowView == null) {
+                    return super.onInterceptTouchEvent(e);
                 }
 
-                View rowView = getChildAt(
-                        itemNumber - mLinearLayoutManager.findFirstVisibleItemPosition());
+                // is it a draggable row ?
+                View dragHandle = rowView.findViewById(mGrabberId);
+                if (dragHandle != null) {
 
-                if (isDraggableRow(rowView)) {
+                    int x = (int) e.getX();
+                    int y = (int) e.getY();
+
                     mDragPoint = y - rowView.getTop();
-                    mCoordinatesOffset = ((int) ev.getRawY()) - y;
-                    View dragHandle = rowView.findViewById(mGrabberId);
-                    Rect r = mTempRect;
-                    //dragHandle.getDrawingRect(r);
+                    mCoordinatesOffset = ((int) e.getRawY()) - y;
 
-                    r.left = dragHandle.getLeft();
-                    r.right = dragHandle.getRight();
-                    r.top = dragHandle.getTop();
-                    r.bottom = dragHandle.getBottom();
-
-                    if ((r.left < x) && (x < r.right)) {
+                    if ((dragHandle.getLeft() < x) && (x < dragHandle.getRight())) {
                         rowView.setDrawingCacheEnabled(true);
                         // Create a copy of the drawing cache so that it does not get recycled
                         // by the framework when the list tries to clean up memory
-                        Bitmap bitmap = Bitmap.createBitmap(rowView.getDrawingCache());
+                        Bitmap bitmap = Bitmap.createBitmap(rowView.getDrawingCache(false));
                         rowView.setDrawingCacheEnabled(false);
 
                         Rect listBounds = new Rect();
-
                         getGlobalVisibleRect(listBounds, null);
 
                         startDragging(bitmap, listBounds.left, y);
-                        mDragPos = itemNumber;
+                        mDragPos = getChildAdapterPosition(rowView);
                         mFirstDragPos = mDragPos;
                         mWasFirstExpansion = true;
-                        mHeight = getHeight();
+                        // init the current height.
+                        mTotalHeight = getHeight();
                         int touchSlop = mTouchSlop;
-                        mUpperBound = Math.min(y - touchSlop, mHeight / 3);
-                        mLowerBound = Math.max(y + touchSlop, mHeight * 2 / 3);
+                        mUpperBound = Math.min(y - touchSlop, mTotalHeight / 3);
+                        mLowerBound = Math.max(y + touchSlop, mTotalHeight * 2 / 3);
                         return false;
                     }
 
@@ -318,43 +307,41 @@ public class TouchRecyclerViewCFS
                 }
             }
         }
-        return super.onInterceptTouchEvent(ev);
+        return super.onInterceptTouchEvent(e);
     }
 
-    private int pointToPosition(final int x,
-                                final int y) {
-        View child = findChildViewUnder(x, y);
-        return child == null ? NO_POSITION : getChildAdapterPosition(child);
-    }
 
-    /** {@inheritDoc}. */
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
-    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent e) {
         if (mGestureDetector != null) {
-            mGestureDetector.onTouchEvent(ev);
+            mGestureDetector.onTouchEvent(e);
         }
         if ((mOnDragListener != null || mOnDropListener != null) && mDragView != null) {
-            int action = ev.getAction();
+            int action = e.getAction();
             switch (action) {
+                // end of a drag; either a drop, or a removal action
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
-                    Rect r = mTempRect;
+                    Rect r = new Rect();
                     mDragView.getDrawingRect(r);
                     stopDragging();
 
-                    if (mRemoveMode == SLIDE_RIGHT && ev.getX() > r.left + (r.width() * 3 / 4)) {
+                    // handle removal listeners
+                    if (mRemoveMode == SLIDE_RIGHT && e.getX() > r.left + (r.width() * 3 / 4)) {
                         if (mOnRemoveListener != null) {
                             mOnRemoveListener.onRemove(mFirstDragPos);
                         }
                         unExpandViews(true);
-                    } else if (mRemoveMode == SLIDE_LEFT && ev.getX() < r.left + (r.width() / 4)) {
+                    } else if (mRemoveMode == SLIDE_LEFT && e.getX() < r.left + (r.width() / 4)) {
                         if (mOnRemoveListener != null) {
                             mOnRemoveListener.onRemove(mFirstDragPos);
                         }
                         unExpandViews(true);
+
                     } else {
+                        // handle drop listener
                         //noinspection ConstantConditions
                         if (mOnDropListener != null && mDragPos >= 0
                                 && mDragPos < getAdapter().getItemCount()) {
@@ -364,43 +351,48 @@ public class TouchRecyclerViewCFS
                     }
                     break;
 
+                // keep on dragging
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_MOVE:
-                    int x = (int) ev.getX();
-                    int y = (int) ev.getY();
+                    int x = (int) e.getX();
+                    int y = (int) e.getY();
                     dragView(x, y);
-                    int item = getItemForPosition(x, y);
-                    if (item >= 0) {
-                        if (action == MotionEvent.ACTION_DOWN || item != mDragPos) {
+                    int itemIndex = pointToItemIndex(x, y);
+                    if (itemIndex >= 0) {
+                        if (action == MotionEvent.ACTION_DOWN || itemIndex != mDragPos) {
                             if (mOnDragListener != null) {
-                                mOnDragListener.onDrag(mDragPos, item);
+                                mOnDragListener.onDrag(mDragPos, itemIndex);
                             }
-                            mDragPos = item;
-                            doExpansion(mWasFirstExpansion);
+                            mDragPos = itemIndex;
+                            expandViews(mWasFirstExpansion);
                             if (mWasFirstExpansion) {
                                 mWasFirstExpansion = false;
                             }
                         }
+
+                        // speed == the number of pixels (4 or 16) that a scroll will be done.
+                        // i.e., slower (4) or faster (16)
                         int speed = 0;
-                        adjustScrollBounds(y);
+                        // adjustScrollBounds
+                        if (y >= mTotalHeight / 3) {
+                            mUpperBound = mTotalHeight / 3;
+                        }
+                        if (y <= mTotalHeight * 2 / 3) {
+                            mLowerBound = mTotalHeight * 2 / 3;
+                        }
                         if (y > mLowerBound) {
                             // scroll the list up a bit
-                            speed = y > (mHeight + mLowerBound) / 2 ? 16 : 4;
+                            speed = y > (mTotalHeight + mLowerBound) / 2 ? 16 : 4;
                         } else if (y < mUpperBound) {
                             // scroll the list down a bit
                             speed = y < mUpperBound / 2 ? -16 : -4;
                         }
                         if (speed != 0) {
-                            int position = pointToPosition(0, mHeight / 2);
-                            if (position == NO_POSITION) {
-                                //we hit a divider or an invisible view, check somewhere else
-                                position = pointToPosition(0, (mHeight / 2) + 64);
-                                // if position is still NO_POSITION, let getChildAt return null.
-                            }
-                            View rowView = getChildAt(
-                                    position - mLinearLayoutManager.findFirstVisibleItemPosition());
+                            View rowView = findChildViewUnder(x, y);
                             if (rowView != null) {
-                                mLinearLayoutManager.scrollToPosition(position);
+                                int position = getChildAdapterPosition(rowView);
+                                int offset = rowView.getTop() - speed;
+                                mLayoutManager.scrollToPositionWithOffset(position, offset);
                             }
                         }
                     }
@@ -408,34 +400,24 @@ public class TouchRecyclerViewCFS
             }
             return true;
         }
-        return super.onTouchEvent(ev);
+        return super.onTouchEvent(e);
     }
 
     /**
-     * {@link #pointToPosition} doesn't consider invisible views, but we
-     * need to, so implement a slightly different version.
-     * We still need access to the original method, so we don't override it.
-     * <p>
-     * Maps a point to a position in the list.
+     * Wrapper for {@link #findChildViewUnder}.
+     * /**
+     * Find the position of the topmost view under the given point.
      *
-     * @param x X in local coordinate
-     * @param y Y in local coordinate
+     * @param x Horizontal position in pixels to search
+     * @param y Vertical position in pixels to search
      *
-     * @return The position of the item which contains the specified point, or
-     * {@link #NO_POSITION} if the point does not intersect an item.
+     * @return The position of the child view under (x, y) or NO_POSITION if no matching
+     * child is found
      */
-    private int myPointToPosition(final int x,
-                                  final int y) {
-        Rect frame = mTempRect;
-        final int count = getChildCount();
-        for (int i = count - 1; i >= 0; i--) {
-            final View child = getChildAt(i);
-            child.getHitRect(frame);
-            if (frame.contains(x, y)) {
-                return mLinearLayoutManager.findFirstVisibleItemPosition() + i;
-            }
-        }
-        return NO_POSITION;
+    private int pointToPosition(final float x,
+                                final float y) {
+        View child = findChildViewUnder(x, y);
+        return child == null ? NO_POSITION : getChildAdapterPosition(child);
     }
 
     /**
@@ -449,14 +431,15 @@ public class TouchRecyclerViewCFS
      *
      * @return the index
      */
-    private int getItemForPosition(final int x,
-                                   final int y) {
-        //TODO: do we need mItemHeight at all ? how about mSavedHeight ?
+    private int pointToItemIndex(final int x,
+                                 final int y) {
         if (mItemHeight == 0) {
+            // uses the height of the FIRST item, assuming all others are equal height.
             mItemHeight = getChildAt(0).getHeight();
         }
+
         int adjusted_y = y - mDragPoint - (mItemHeight / 2);
-        int pos = myPointToPosition(x, adjusted_y);
+        int pos = pointToPosition(x, adjusted_y);
         if (pos >= 0) {
             if (pos <= mFirstDragPos) {
                 pos += 1;
@@ -465,20 +448,19 @@ public class TouchRecyclerViewCFS
             pos = 0;
         }
 
+        Logger.debug(this,"pointToItemIndex",
+                     "y=" + y, "adjusted_y=" + adjusted_y,
+                     "pos(x,y)=" + pointToPosition(x,y),
+                     "pos(x,adjusted_y)=" + pointToPosition(x, adjusted_y),
+                     "final pos=" + pos
+        );
         return pos;
-    }
-
-    private void adjustScrollBounds(final int y) {
-        if (y >= mHeight / 3) {
-            mUpperBound = mHeight / 3;
-        }
-        if (y <= mHeight * 2 / 3) {
-            mLowerBound = mHeight * 2 / 3;
-        }
     }
 
     /**
      * Restore size and visibility for all list items.
+     *
+     * @param deletion {@code true} if we just deleted a row; {@code false} if it was a drop.
      */
     private void unExpandViews(final boolean deletion) {
         for (int i = 0; ; i++) {
@@ -486,13 +468,15 @@ public class TouchRecyclerViewCFS
             if (rowView == null) {
                 if (deletion) {
                     // HACK force update of mItemCount
-                    int position = mLinearLayoutManager.findFirstVisibleItemPosition();
+                    int position = mLayoutManager.findFirstVisibleItemPosition();
+                    int offset = getChildAt(0).getTop();
                     setAdapter(getAdapter());
-                    mLinearLayoutManager.scrollToPosition(position);
+                    mLayoutManager.scrollToPositionWithOffset(position, offset);
                     // end hack
                 }
                 // force children to be recreated where needed
                 layoutChildren();
+
                 rowView = getChildAt(i);
                 if (rowView == null) {
                     break;
@@ -500,23 +484,17 @@ public class TouchRecyclerViewCFS
             }
 
             if (isDraggableRow(rowView)) {
-                ViewGroup.LayoutParams params = rowView.getLayoutParams();
+                ViewGroup.LayoutParams layoutParams = rowView.getLayoutParams();
                 if (mSavedHeight != null) {
-                    params.height = mSavedHeight;
+                    layoutParams.height = mSavedHeight;
                 } else {
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 }
-                //params.height = mItemHeight;
-                rowView.setLayoutParams(params);
+                rowView.setLayoutParams(layoutParams);
                 rowView.setVisibility(View.VISIBLE);
-                //v.setBackgroundColor(Color.TRANSPARENT);
                 rowView.setPadding(rowView.getPaddingLeft(), 0, rowView.getPaddingRight(), 0);
             }
         }
-    }
-
-    private void layoutChildren() {
-        // nop
     }
 
     /**
@@ -531,22 +509,23 @@ public class TouchRecyclerViewCFS
      * <p>
      * If the dragged item is not on screen, only expand the item below the current insert point.
      */
-    private void doExpansion(final boolean firstTime) {
+    private void expandViews(final boolean firstTime) {
+
+        int firstVisPos = mLayoutManager.findFirstVisibleItemPosition();
 
         // Find the effective child number that we are hovering over
-        int child = mDragPos - mLinearLayoutManager.findFirstVisibleItemPosition() - 1;
+        int child = mDragPos - firstVisPos - 1;
         if (mDragPos > mFirstDragPos) {
             // If the current drag position is past the 'invisible' dragged position, add 1
             child++;
         }
 
         // Get the view that corresponds to the row being dragged, if present in current set of rows
-        View first = getChildAt(
-                mFirstDragPos - mLinearLayoutManager.findFirstVisibleItemPosition());
+        View first = getChildAt(mFirstDragPos - firstVisPos);
 
         // Loop through all visible views, adjusting them
         for (int i = 0; ; i++) {
-            // Get next child, break if finished
+            // Get next row, break if finished
             View rowView = getChildAt(i);
             if (rowView == null) {
                 break;
@@ -554,19 +533,19 @@ public class TouchRecyclerViewCFS
 
             // If this is a 'draggable' row, process it
             if (isDraggableRow(rowView)) {
-                // Set the default padding at top/bot (we may have previously changed it)
+                // Set the default padding at top/bottom (we may have previously changed it)
                 rowView.setPadding(rowView.getPaddingLeft(), 0, rowView.getPaddingRight(), 0);
 
                 // Get the height of the current view, and save it if not saved already
-                ViewGroup.LayoutParams params = rowView.getLayoutParams();
+                ViewGroup.LayoutParams layoutParams = rowView.getLayoutParams();
                 if (mSavedHeight == null) {
                     // Save the height the first time we get it. We make the assumption that
                     // all rows will be the same height, whether that is a fixed value
                     // or 'wrap-contents'/'fill-parent'.
-                    mSavedHeight = params.height;
+                    mSavedHeight = layoutParams.height;
                 }
                 // Set the height to the previously saved height.
-                params.height = mSavedHeight;
+                layoutParams.height = mSavedHeight;
 
                 int visibility = View.VISIBLE;
 
@@ -579,7 +558,7 @@ public class TouchRecyclerViewCFS
                         visibility = View.INVISIBLE;
                     } else {
                         // hovering over the original location
-                        params.height = 1;
+                        layoutParams.height = 1;
                     }
                 }
 
@@ -601,7 +580,7 @@ public class TouchRecyclerViewCFS
                 }
 
                 // Now apply the height and visibility to the current view, invalidate it, and loop.
-                rowView.setLayoutParams(params);
+                rowView.setLayoutParams(layoutParams);
                 rowView.setVisibility(visibility);
                 rowView.invalidate();
             }
@@ -609,6 +588,11 @@ public class TouchRecyclerViewCFS
         // Request re-layout since we changed the items layout and not doing this
         // would cause bogus hit-box calculation in myPointToPosition
         layoutChildren();
+    }
+
+    /** mimic ListView method. */
+    private void layoutChildren() {
+        // nop; TEST: can probably be eliminated
     }
 
     @NonNull
@@ -717,4 +701,5 @@ public class TouchRecyclerViewCFS
 
         void onRemove(int position);
     }
+
 }

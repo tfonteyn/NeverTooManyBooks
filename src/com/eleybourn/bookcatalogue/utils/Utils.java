@@ -63,7 +63,7 @@ public final class Utils {
      * @param list List to clean up
      * @param <T>  ItemWithIdFixup object
      *
-     * @return <tt>true</tt> if the list was modified.
+     * @return {@code true} if the list was modified.
      */
     public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DBA db,
                                                                 @NonNull final List<T> list) {
@@ -228,7 +228,7 @@ public final class Utils {
     public interface ItemWithIdFixup {
 
         /**
-         * Tries to find the item in the database using all it's fields (except the id).
+         * Tries to find the item in the database using all its fields (except the id).
          * If found, sets the item's id with the id found in the database.
          * <p>
          * If the item has 'sub' items, then it should call fixup on those as well.
@@ -245,7 +245,7 @@ public final class Utils {
         String stringEncoded();
 
         /**
-         * @return <tt>true</tt> if comparing ONLY by id ensures uniqueness.
+         * @return {@code true} if comparing ONLY by id ensures uniqueness.
          */
         boolean isUniqueById();
 

@@ -53,7 +53,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -107,7 +106,7 @@ public class PartialDatePickerDialogFragment
      * @param callerTag     tag of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
-     * @param todayIfNone   <tt>true</tt> if we should use 'today' if the field was empty.
+     * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
      * @return the new instance
      */
@@ -273,7 +272,7 @@ public class PartialDatePickerDialogFragment
         /**
          * Constructor.
          *
-         * @param context Calling context
+         * @param context caller context
          */
         @SuppressLint("SetTextI18n")
         PartialDatePickerDialog(@NonNull final Context context) {

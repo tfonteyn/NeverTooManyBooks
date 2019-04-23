@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * 'Meta' Validator to evaluate a list of validators; any one being <tt>true</tt> is OK.
+ * 'Meta' Validator to evaluate a list of validators; any one being {@code true} is OK.
  *
  * @author Philip Warner
  */

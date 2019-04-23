@@ -167,7 +167,7 @@ public class XmlFilter {
      *
      * @param name XML tag name
      *
-     * @return Matching filter, or null if none present
+     * @return Matching filter, or {@code null} if none found
      */
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {

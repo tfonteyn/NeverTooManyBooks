@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="border">5dp</dimen>
-    <dimen name="border_double">10dp</dimen>
-    <dimen name="border_triple">15dp</dimen>
+    <dimen name="border">4dp</dimen>
+    <dimen name="border_double">8dp</dimen>
+    <dimen name="border_triple">16dp</dimen>
     <dimen name="border_quad">20dp</dimen>
 
     <!-- dividers -->

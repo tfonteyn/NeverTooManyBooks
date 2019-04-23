@@ -196,6 +196,7 @@ public abstract class BaseActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home:
@@ -230,6 +231,7 @@ public abstract class BaseActivity
                     Logger.debug(this, "onActivityResult",
                                  "REQ_NAV_PANEL_SETTINGS");
                 }
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED:
                         App.setNeedsRecreating();
@@ -280,7 +282,7 @@ public abstract class BaseActivity
      * Check if edits need saving.
      * If they don't, simply finish the activity, otherwise ask the user.
      *
-     * @param isDirty if <tt>true</tt> ask the user if it's ok to exit this activity.
+     * @param isDirty if {@code true} ask the user if it's ok to exit this activity.
      *                Otherwise, just finish.
      */
     public void finishIfClean(final boolean isDirty) {

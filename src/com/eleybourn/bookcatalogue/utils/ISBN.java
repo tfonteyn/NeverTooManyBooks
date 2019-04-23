@@ -189,7 +189,7 @@ public class ISBN {
      * Check if two ISBN codes are matching.
      * The two can be any combination of 10/13 digits, or the old UPC code.
      *
-     * @return <tt>true</tt> if the 2 codes match.
+     * @return {@code true} if the 2 codes match.
      */
     public static boolean matches(@Nullable final String isbn1,
                                   @Nullable final String isbn2) {

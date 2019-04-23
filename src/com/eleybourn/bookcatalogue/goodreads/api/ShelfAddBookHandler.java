@@ -132,7 +132,7 @@ public class ShelfAddBookHandler
      *
      * @param shelfName GoodReads shelf name
      * @param grBookId  GoodReads book id
-     * @param isRemove  <tt>true</tt> for 'remove', <tt>false</tt> for 'add'
+     * @param isRemove  {@code true} for 'remove', {@code false} for 'add'
      *
      * @return reviewId
      *

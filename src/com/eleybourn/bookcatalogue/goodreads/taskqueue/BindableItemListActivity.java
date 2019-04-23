@@ -67,7 +67,7 @@ abstract class BindableItemListActivity
         mDb = new DBA(this);
         super.onCreate(savedInstanceState);
 
-        /** The View for the list. */
+        // The View for the list.
         ListView listView = findViewById(android.R.id.list);
 
         mBindableItems = getBindableItemCursor();

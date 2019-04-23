@@ -59,7 +59,6 @@ public final class UniqueId {
 
 
     /** request code: system request to ask the user for permissions. */
-    @SuppressWarnings("WeakerAccess")
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
 
 

@@ -171,8 +171,8 @@ class Queue
      * Update the related database record to process the task correctly.
      *
      * @param task    Task object
-     * @param result  <tt>true</tt> on Save, <tt>false</tt> on cancel
-     * @param requeue <tt>true</tt> if requeue needed
+     * @param result  {@code true} on Save, {@code false} on cancel
+     * @param requeue {@code true} if requeue needed
      */
     private void handleTaskResult(@NonNull final Task task,
                                   final boolean result,

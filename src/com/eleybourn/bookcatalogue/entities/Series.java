@@ -273,7 +273,7 @@ public class Series
      *
      * @param list to check
      *
-     * @return <tt>true</tt> is the list was modified in any way.
+     * @return {@code true} is the list was modified in any way.
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean pruneSeriesList(@NonNull final List<Series> list) {
@@ -338,7 +338,7 @@ public class Series
      * @param id         series id
      * @param isComplete Flag indicating the user considers this series to be 'complete'
      *
-     * @return <tt>true</tt> for success
+     * @return {@code true} for success
      */
     public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
@@ -352,7 +352,7 @@ public class Series
     }
 
     /**
-     * @return <tt>true</tt> if the series is complete
+     * @return {@code true} if the series is complete
      */
     public boolean isComplete() {
         return mIsComplete;
@@ -533,7 +533,7 @@ public class Series
     }
 
     /**
-     * Data class giving resulting series info after parsing a series name.
+     * Value class giving resulting series info after parsing a series name.
      */
     public static class SeriesDetails {
 

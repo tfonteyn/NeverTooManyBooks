@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class XmlResponseParser
         extends DefaultHandler {
 
-    /** Temporary storage for inter-t text. */
+    /** Temporary storage for inter-tag text. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser. */
     private final ArrayList<ElementContext> mParents = new ArrayList<>();
@@ -63,7 +63,7 @@ public class XmlResponseParser
     }
 
     /**
-     * Gather inter-t text.
+     * Gather inter-tag text.
      */
     @Override
     @CallSuper
@@ -90,7 +90,7 @@ public class XmlResponseParser
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
             Logger.debug(this, "startElement", "localName=`" + localName + '`');
         }
-        // Create a new context for this new tag saving the current inter-t text for later
+        // Create a new context for this new tag saving the current inter-tag text for later
         ElementContext tag = new ElementContext(uri, localName, qName, attributes,
                                                 mBuilder.toString());
 
@@ -99,7 +99,7 @@ public class XmlResponseParser
 
         // If there is an active filter, then see if the new tag is of any interest
         if (enclosingTag.getFilter() != null) {
-            // Check for interest in new t
+            // Check for interest in new tag
             XmlFilter filter = enclosingTag.getFilter().getSubFilter(tag);
             // If new tag has a filter, store it in the new context object
             tag.setFilter(filter);
@@ -110,7 +110,7 @@ public class XmlResponseParser
         }
         // Add the new tag to the context hierarchy and reset
         mParents.add(tag);
-        // Reset the inter-t text storage.
+        // Reset the inter-tag text storage.
         mBuilder.setLength(0);
     }
 
@@ -143,7 +143,7 @@ public class XmlResponseParser
             tag.getFilter().processEnd(tag);
         }
 
-        // Reset the inter-t text and append the previously saved 'pre-text'.
+        // Reset the inter-tag text and append the previously saved 'pre-text'.
         mBuilder.setLength(0);
         mBuilder.append(tag.getText());
     }

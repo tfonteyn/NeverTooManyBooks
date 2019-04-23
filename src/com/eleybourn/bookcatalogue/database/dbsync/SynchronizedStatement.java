@@ -224,13 +224,13 @@ public class SynchronizedStatement
     }
 
     /**
-     * Syntax sugar. Converts an SQLiteDoneException into returning null.
+     * Syntax sugar. Converts an SQLiteDoneException into returning {@code null}.
      * <p>
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
      * <p>
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
-     * @return The result of the query, or null if not found.
+     * @return The result of the query, or {@code null} if not found.
      */
     @Nullable
     public String simpleQueryForStringOrNull() {

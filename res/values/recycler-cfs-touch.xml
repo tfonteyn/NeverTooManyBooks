@@ -2,10 +2,14 @@
 <resources>
     <!-- https://commonsware.com/ -->
     <declare-styleable name="TouchRecyclerViewCFS">
-        <attr name="trv_normal_height" format="dimension" />
-        <attr name="trv_expanded_height" format="dimension" />
+        <!-- MANDATORY! -->
         <attr name="trv_grabber" format="reference" />
+
+        <!-- default is the height of the FIRST row, and assuming all others are equal (unless pigs) -->
+        <attr name="trv_normal_height" format="dimension" />
+        <!-- default is transparent -->
         <attr name="trv_background" format="color" />
+        <!-- default is none -->
         <attr name="trv_remove_mode">
             <enum name="none" value="-1" />
             <enum name="fling" value="0" />

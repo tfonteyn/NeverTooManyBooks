@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
  * Static definitions of database objects.
  * This is a *mostly* complete representation of the application database.
  * <p>
- * TODO: Collated indexes need to be done manually. See {@link DBHelper#createIndices}
+ * TODO: Collated indexes need to be done manually. See {@link DBHelper} #createIndices
  *
  * @author Philip Warner
  */
@@ -309,7 +309,7 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
-    /** {@link #TBL_BOOKS}. See {@link TocEntry.Type}. */
+    /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
@@ -376,7 +376,7 @@ public final class DBDefinitions {
                         .setDefault(0);
         DOM_BOOK_TOC_BITMASK =
                 new DomainDefinition(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER, true)
-                        .setDefault(TocEntry.Type.SINGLE_AUTHOR_SINGLE_WORK);
+                        .setDefault(TocEntry.Authors.SINGLE_AUTHOR_SINGLE_WORK);
         DOM_BOOK_PRICE_LISTED =
                 new DomainDefinition(KEY_PRICE_LISTED, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();

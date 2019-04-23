@@ -29,9 +29,9 @@ import androidx.annotation.NonNull;
 public interface DataViewer {
 
     /**
-     * Load current data FROM passed DataManager.
+     * Load current data FROM the passed DataManager.
      *
      * @param dataManager the parent collection
      */
-    <T extends DataManager> void loadFieldsFrom(@NonNull T /* in/out */ dataManager);
+    <T extends DataManager> void loadFrom(@NonNull T /* in/out */ dataManager);
 }

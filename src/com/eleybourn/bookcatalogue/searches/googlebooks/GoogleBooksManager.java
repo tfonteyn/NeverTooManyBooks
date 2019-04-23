@@ -68,7 +68,7 @@ public final class GoogleBooksManager
     }
 
     /**
-     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data
      *

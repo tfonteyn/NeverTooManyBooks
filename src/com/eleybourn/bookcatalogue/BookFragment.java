@@ -13,20 +13,18 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.adapters.TocAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -108,8 +106,10 @@ public class BookFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * {@link BookManager#getBook()}
-     * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <li>{@link BookManager#getBook()} on the hosting Activity
+     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -152,6 +152,7 @@ public class BookFragment
         mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                .setFormatter(new Fields.LanguageFormatter());
+
         mFields.add(R.id.pages, DBDefinitions.KEY_PAGES)
                .setFormatter((field, source) -> {
                    if (source != null && !source.isEmpty() && !"0".equals(source)) {
@@ -167,21 +168,20 @@ public class BookFragment
                    return "";
                });
         mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
-        mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
-               .setFormatter(new Fields.PriceFormatter());
+
+        mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
+        mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
+               .setFormatter(dateFormatter);
         mFields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
                .setFormatter(dateFormatter);
+        mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
+               .setFormatter(new Fields.PriceFormatter());
 
         // defined, but handled manually
         mFields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR);
         // defined, but handled manually
         mFields.add(R.id.series, "", DBDefinitions.KEY_SERIES);
 
-        // populated, but manually re-populated.
-        mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
-        // not a field on the screen, but used in re-population of publisher.
-        mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-               .setFormatter(dateFormatter);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        Field field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
@@ -238,10 +238,8 @@ public class BookFragment
 
     /**
      * At this point we're told to load our local (to the fragment) fields from the Book.
-     *
-     * @param book       to load from
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)}
-     *                   has already been called or not
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -425,35 +423,59 @@ public class BookFragment
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean visible = Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)
-                && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
+        boolean hasToc = Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)
+                && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Authors.MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
-        // tocLabel, tocButton and tocView are View.GONE in the layout xml.
         View tocLabel = requireView().findViewById(R.id.lbl_toc);
         View tocButton = requireView().findViewById(R.id.toc_button);
+        LinearLayout tocView = requireView().findViewById(R.id.toc);
 
-        if (visible) {
-            ListView tocView = requireView().findViewById(R.id.toc);
-            tocView.setAdapter(new TocAdapter(mActivity,
-                                              R.layout.row_toc_entry_with_author, tocList));
+        if (hasToc) {
+            for (TocEntry item : tocList) {
+                View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
+                                                           tocView, false);
+
+                TextView titleView = rowView.findViewById(R.id.title);
+                TextView authorView = rowView.findViewById(R.id.author);
+                TextView firstPubView = rowView.findViewById(R.id.year);
+
+                titleView.setText(item.getTitle());
+                // optional
+                if (authorView != null) {
+                    authorView.setText(item.getAuthor().getLabel());
+                }
+                // optional
+                if (firstPubView != null) {
+                    String year = item.getFirstPublication();
+                    if (year.isEmpty()) {
+                        firstPubView.setVisibility(View.GONE);
+                    } else {
+                        firstPubView.setVisibility(View.VISIBLE);
+                        firstPubView.setText(
+                                firstPubView.getContext().getString(R.string.brackets, year));
+                    }
+                }
+                tocView.addView(rowView);
+            }
 
             tocButton.setOnClickListener(v -> {
                 if (tocView.getVisibility() == View.VISIBLE) {
                     tocView.setVisibility(View.GONE);
                 } else {
                     tocView.setVisibility(View.VISIBLE);
-                    ViewUtils.adjustListViewHeightBasedOnChildren(tocView);
                 }
             });
 
-            ViewUtils.adjustListViewHeightBasedOnChildren(tocView);
             tocLabel.setVisibility(View.VISIBLE);
             tocButton.setVisibility(View.VISIBLE);
+            // do not show by default, user has to click button first.
+            //tocView.setVisibility(View.VISIBLE);
 
         } else {
             tocLabel.setVisibility(View.GONE);
             tocButton.setVisibility(View.GONE);
+            tocView.setVisibility(View.GONE);
         }
     }
     //</editor-fold>
@@ -467,7 +489,7 @@ public class BookFragment
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -700,8 +722,8 @@ public class BookFragment
                     long bookId = mFlattenedBooklist.getBookId();
                     // only reload if it's a new book
                     if (bookId != getBook().getId()) {
-                        getBook().reload(mDb, bookId);
-                        populateFieldsFromBook();
+                        Book book = getBook().reload(mDb, bookId);
+                        loadFrom(book);
                     }
                 }
                 return true;

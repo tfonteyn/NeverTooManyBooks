@@ -106,17 +106,19 @@ public abstract class BaseActivityWithTasks
 
         /**
          * Display a progress message
+         *
+         * @param count     the new value to set
+         * @param max       the (potentially) new estimate maximum value
+         * @param message   to display. Set to "" to close the ProgressDialog
          */
         @Override
         public void onProgress(final int count,
                                final int max,
                                @NonNull final String message) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
                         + message.replace("\n", "\\n") + '`';
-                Logger.debugEnter(this, "onProgress",
-                                  "msg=" + dbgMsg);
+                Logger.debugEnter(this, "onProgress", "msg=" + dbgMsg);
             }
 
             // Save the details
@@ -135,7 +137,7 @@ public abstract class BaseActivityWithTasks
             if ((mProgressMessage.isEmpty()) || mProgressMax == mProgressCount) {
                 closeProgressDialog();
             } else {
-                initProgressDialog();
+                updateProgressDialog();
             }
         }
 
@@ -239,11 +241,14 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * Setup the dialog according to our needs.
+     * Update/init the ProgressDialog.
+     * <li>If already showing but wrong type -> force a recreation
+     * <li>If the task manager is cancelling, override any progress message with "Cancelling"
+     * <li>If not showing, create/show with the current message/values.
      */
-    private void initProgressDialog() {
+    private void updateProgressDialog() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debugEnter(this, "initProgressDialog");
+            Logger.debugEnter(this, "updateProgressDialog");
         }
 
         boolean wantInDeterminate = (mProgressMax == 0);
@@ -276,11 +281,14 @@ public abstract class BaseActivityWithTasks
             }
         } else {
             // otherwise just update it.
-            if (mProgressMax > 0) {
-                mProgressDialog.onProgress(mProgressCount);
-                mProgressDialog.setMax(mProgressMax);
-            }
-            mProgressDialog.setMessage(mProgressMessage);
+            getWindow().getDecorView().post(() -> {
+                if (mProgressMax > 0) {
+                    mProgressDialog.setMax(mProgressMax);
+                    mProgressDialog.onProgress(mProgressCount);
+
+                }
+                mProgressDialog.onProgress(mProgressMessage);
+            });
         }
     }
 
@@ -311,19 +319,19 @@ public abstract class BaseActivityWithTasks
      * Cancel all tasks, and if the progress is showing,
      * update it (it will check task manager status).
      *
-     * @param showProgress if <tt>true</tt> we'll force the progress dialog to show.
+     * @param forceShowProgress if {@code true} we'll force the progress dialog to show.
      */
-    private void cancelTasksAndUpdateProgress(final boolean showProgress) {
+    private void cancelTasksAndUpdateProgress(final boolean forceShowProgress) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debugEnter(this, "cancelTasksAndUpdateProgress");
+            Logger.debugEnter(this, "cancelTasksAndUpdateProgress",
+                              "showProgress=" + forceShowProgress);
         }
         if (mTaskManager != null) {
             mTaskManager.cancelAllTasks();
-            closeProgressDialog();
         }
 
-        if (mProgressDialog != null && mProgressDialog.isVisible() && showProgress) {
-            initProgressDialog();
+        if ((mProgressDialog != null && mProgressDialog.isVisible()) || forceShowProgress) {
+            updateProgressDialog();
         }
     }
 

@@ -27,6 +27,8 @@ public class RestoreTask
     private final ProgressDialogFragment<ImportSettings> mFragment;
     @NonNull
     private final ImportSettings mSettings;
+    @NonNull
+    private final BackupReader mBackupReader;
 
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -38,16 +40,22 @@ public class RestoreTask
     /**
      * @param fragment ProgressDialogFragment
      * @param settings the import settings
+     *
+     * @throws IOException if the file could not be opened.
      */
     @UiThread
-    private RestoreTask(@NonNull final ProgressDialogFragment<ImportSettings> fragment,
-                        @NonNull final ImportSettings /* in/out */settings) {
+    private RestoreTask(@NonNull final Context context,
+                        @NonNull final ProgressDialogFragment<ImportSettings> fragment,
+                        @NonNull final ImportSettings /* in/out */settings)
+            throws IOException {
 
         mFragment = fragment;
         mSettings = settings;
-        if ((mSettings.what & ImportSettings.MASK) == 0) {
+        if (((mSettings.what & ImportSettings.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
+
+        mBackupReader = BackupManager.readFrom(context, mSettings.file);
     }
 
     /**
@@ -55,16 +63,22 @@ public class RestoreTask
      * @param settings the import settings
      */
     @UiThread
-    public static void start(@NonNull final FragmentManager fm,
+    public static void start(@NonNull final Context context,
+                             @NonNull final FragmentManager fm,
                              @NonNull final ImportSettings settings) {
         if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<ImportSettings> frag =
+            ProgressDialogFragment<ImportSettings> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
                                                        false, 0);
-            RestoreTask task = new RestoreTask(frag, settings);
-            frag.setTask(M_TASK_ID, task);
-            frag.show(fm, TAG);
-            task.execute();
+            RestoreTask task;
+            try {
+                task = new RestoreTask(context, progressDialog, settings);
+                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.show(fm, TAG);
+                task.execute();
+            } catch (IOException e) {
+                progressDialog.onTaskFinished(false, settings);
+            }
         }
     }
 
@@ -73,12 +87,8 @@ public class RestoreTask
     @WorkerThread
     protected ImportSettings doInBackground(final Void... params) {
 
-        Context context = mFragment.getContextWithHorribleClutch();
-
-        //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(context, mSettings.file)) {
-            //noinspection ConstantConditions
-            reader.restore(mSettings, new BackupReader.BackupReaderListener() {
+        try {
+            mBackupReader.restore(mSettings, new BackupReader.BackupReaderListener() {
 
                 private int mProgress;
 
@@ -102,6 +112,11 @@ public class RestoreTask
         } catch (IOException e) {
             Logger.error(this, e);
             mException = e;
+        } finally {
+            try {
+                mBackupReader.close();
+            } catch (IOException ignore) {
+            }
         }
         return mSettings;
     }

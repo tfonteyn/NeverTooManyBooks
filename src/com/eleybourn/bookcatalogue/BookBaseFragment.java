@@ -68,7 +68,7 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 /**
  * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
  * <p>
- * This class supports the loading of a book. See {@link #loadFieldsFrom}.
+ * This class supports the loading of a book. See {@link #loadFrom}.
  *
  * @author pjw
  */
@@ -117,7 +117,7 @@ public abstract class BookBaseFragment
     /**
      * If the child class is a {@link BookManager} then load the {@link Book}.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -164,9 +164,9 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Trigger the Fragment to load it's Fields from the Book.
+     * Trigger the Fragment to load its Fields from the Book.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -174,46 +174,38 @@ public abstract class BookBaseFragment
         Tracker.enterOnResume(this);
         super.onResume();
 
-        populateFieldsFromBook();
+        loadFrom(getBookManager().getBook());
         Tracker.exitOnResume(this);
     }
 
     /**
      * Populate all Fields with the data from the Book.
+     * Loads the data while preserving the isDirty() status.
      * <p>
-     * Used as normal when the fragment loads, but also when the user flings left/right
-     * through the flattened book list. The latter does a load of the book followed by a call
-     * here to re-populate all fields on the fragment.
-     */
-    final void populateFieldsFromBook() {
-        // load the book, while disabling the AfterFieldChangeListener
-        mFields.setAfterFieldChangeListener(null);
-        Book book = getBookManager().getBook();
-        loadFieldsFrom(book);
-        mFields.setAfterFieldChangeListener((field, newValue) -> getBookManager().setDirty(true));
-    }
-
-    /**
      * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
      * <p>
-     * Load the data while preserving the isDirty() status.
+     * <p>{@inheritDoc}
      */
     @Override
-    public final <T extends DataManager> void loadFieldsFrom(@NonNull final T dataManager) {
+    public final <T extends DataManager> void loadFrom(@NonNull final T dataManager) {
+        // load the book, while disabling the AfterFieldChangeListener
+        mFields.setAfterFieldChangeListener(null);
+        // preserve the 'dirty' status.
         final boolean wasDirty = getBookManager().isDirty();
+        // make it so!
         onLoadFieldsFromBook((Book) dataManager, false);
-        getBookManager().setDirty(wasDirty);
 
+        getBookManager().setDirty(wasDirty);
+        mFields.setAfterFieldChangeListener((field, newValue) -> getBookManager().setDirty(true));
+
+        // this is a good place to do this, as we use data from the book for the title.
         setActivityTitle((Book) dataManager);
     }
 
     /**
-     * Default implementation of code to load the Book object.
-     * Override as needed, calling super as the first step.
-     * <p>
      * This is where you should populate all the fields with the values coming from the book.
-     * This base class manages all the actual fields, but 'special' fields can/should be handled
-     * in overrides.
+     * The base class (this one) manages all the actual fields, but 'special' fields can/should
+     * be handled in overrides, calling super as the first step.
      *
      * @param book       to load from
      * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)}
@@ -267,7 +259,7 @@ public abstract class BookBaseFragment
     /**
      * Set visibility of menu items as appropriate.
      * <p>
-     * {@inheritDoc}
+     * <p>{@inheritDoc}
      */
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
@@ -344,7 +336,7 @@ public abstract class BookBaseFragment
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
-     * @param multiLine     <tt>true</tt> if the dialog box should offer a multi-line input.
+     * @param multiLine     {@code true} if the dialog box should offer a multi-line input.
      */
     @SuppressWarnings({"SameParameterValue", "unused"})
     void initTextFieldEditor(@NonNull final String callerTag,
@@ -437,7 +429,6 @@ public abstract class BookBaseFragment
                         // ENHANCE: merge if in edit mode.
                         Book book = new Book(bookId, mDb);
                         getBookManager().setBook(book);
-                        populateFieldsFromBook();
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                             Logger.debug("onActivityResult",
@@ -476,7 +467,7 @@ public abstract class BookBaseFragment
      * - toc
      * - edition
      *
-     * @param hideIfEmpty set to <tt>true</tt> when displaying; <tt>false</tt> when editing.
+     * @param hideIfEmpty set to {@code true} when displaying; {@code false} when editing.
      */
     void showHideFields(final boolean hideIfEmpty) {
         // reset to user-preferences.
@@ -564,7 +555,7 @@ public abstract class BookBaseFragment
                         // don't act on ImageView, but all other fields can be string tested.
 
                         final String value = mFields.getField(fieldId).getValue().toString().trim();
-                        visibility = value.isEmpty() ? View.GONE : View.VISIBLE;
+                        visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }
@@ -594,7 +585,7 @@ public abstract class BookBaseFragment
     /**
      * @param fields to check
      *
-     * @return <tt>true</tt> if all fields have visibility == View.GONE
+     * @return {@code true} if all fields have visibility == View.GONE
      */
     private boolean isVisibilityGone(@IdRes @NonNull final int[] fields) {
         boolean isGone = true;
@@ -631,11 +622,12 @@ public abstract class BookBaseFragment
         }
 
         /**
-         * Gets the total number of rows from the adapter, then use that to set
+         * Gets the total number of rows from the ListAdapter, then use that to set
          * the ListView to the full height so all rows are visible (no scrolling).
          * <p>
-         * Does nothing if the adapter is null, or if the view is not visible.
+         * Does nothing if the ListAdapter is null, or if the ListView is not visible.
          */
+        @SuppressWarnings("unused")
         static void adjustListViewHeightBasedOnChildren(@NonNull final ListView listView) {
             ListAdapter adapter = listView.getAdapter();
             if (adapter == null || listView.getVisibility() != View.VISIBLE) {

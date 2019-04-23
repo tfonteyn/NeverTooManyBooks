@@ -122,6 +122,7 @@ public class ExportSettings
         }
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;

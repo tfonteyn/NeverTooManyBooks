@@ -28,13 +28,13 @@ public class ZxingScanner
 
     private static final String SCAN_RESULT = "SCAN_RESULT";
 
-    /** Set to <tt>true</tt> if the Zxing package is required. */
+    /** Set to {@code true} if the Zxing package is required. */
     private final boolean mMustBeZxing;
 
     /**
      * Constructor.
      *
-     * @param mustBeZxingPackage Set to <tt>true</tt> if the Zxing scanner app MUST be used
+     * @param mustBeZxingPackage Set to {@code true} if the Zxing scanner app MUST be used
      */
     ZxingScanner(final boolean mustBeZxingPackage) {
         mMustBeZxing = mustBeZxingPackage;
@@ -43,7 +43,7 @@ public class ZxingScanner
     /**
      * Check if we have a valid intent available.
      *
-     * @return <tt>true</tt> if present
+     * @return {@code true} if present
      */
     static boolean isIntentAvailable(@NonNull final Context context,
                                      final boolean mustBeZxing) {
@@ -53,7 +53,7 @@ public class ZxingScanner
     /**
      * Check if the passed intent action is available.
      *
-     * @return <tt>true</tt> if present
+     * @return {@code true} if present
      */
     private static boolean isIntentAvailable(@NonNull final Context context,
                                              @Nullable final String packageName) {

@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -49,12 +48,12 @@ class RequestAuthTask
     @UiThread
     public static void start(@NonNull final FragmentManager fm) {
         if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<Integer> frag =
+            ProgressDialogFragment<Integer> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_connecting_to_web_site,
                                                        true, 0);
-            RequestAuthTask task = new RequestAuthTask(frag);
-            frag.setTask(M_TASK_ID, task);
-            frag.show(fm, TAG);
+            RequestAuthTask task = new RequestAuthTask(progressDialog);
+            progressDialog.setTask(M_TASK_ID, task);
+            progressDialog.show(fm, TAG);
             task.execute();
         }
     }
@@ -63,8 +62,6 @@ class RequestAuthTask
     @NonNull
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
-        Context context = mFragment.getContextWithHorribleClutch();
-
         GoodreadsManager grMgr = new GoodreadsManager();
         // should only happen if the developer forgot to add the Goodreads keys.... (me)
         if (grMgr.noKey()) {
@@ -74,8 +71,7 @@ class RequestAuthTask
         // This next step can take several seconds....
         if (!grMgr.hasValidCredentials()) {
             try {
-                //noinspection ConstantConditions
-                grMgr.requestAuthorization(context);
+                grMgr.requestAuthorization();
             } catch (IOException e) {
                 Logger.error(this, e);
                 return R.string.gr_access_error;
