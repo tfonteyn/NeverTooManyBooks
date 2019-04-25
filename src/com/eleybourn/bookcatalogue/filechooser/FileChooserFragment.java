@@ -210,6 +210,7 @@ public class FileChooserFragment
         FileDetailsAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
         RecyclerView listView = requireView().findViewById(android.R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
+        listView.setHasFixedSize(true);
         listView.setAdapter(adapter);
     }
 

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Define entities that can be used inside of other string (not possible with standard Android
  resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>

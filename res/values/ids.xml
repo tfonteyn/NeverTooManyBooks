@@ -4,6 +4,7 @@
     <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
     <item name="BLB_ROW_DETAILS" type="id" />
 
+    <!-- BEGIN predefined View tags -->
     <item name="TAG_EVENT" type="id" />
     <item name="TAG_TASK" type="id" />
     <item name="TAG_TASK_HOLDER" type="id" />
@@ -17,8 +18,9 @@
     <item name="TAG_DIALOG_ITEM" type="id" />
     <!-- store the uuid of a cover into a tag on the view. -->
     <item name="TAG_UUID" type="id" />
+    <!-- END predefined View tags -->
 
-    <!-- BEGIN predefined task ids -->
+    <!-- BEGIN predefined AsyncTask ids -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
     <item name="TASK_ID_FILE_LISTER" type="id" />
@@ -35,7 +37,7 @@
     <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
     <item name="TASK_ID_GR_IMPORT_ALL" type="id" />
 
-    <!-- END predefined task ids -->
+    <!-- END predefined AsyncTask ids -->
 
     <!-- BEGIN predefined menu items -->
 
@@ -123,29 +125,17 @@
     <!-- options menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
 
-
     <!-- END predefined menu items -->
 
-    <!-- BEGIN used by {@link TouchListView} and classes interacting with the TLV -->
-    <!-- the 'root' view of the row -->
-    <item name="TLV_ROW" type="id" />
-    <!-- the part of the row that is not a button
-    // TLV row details need this!
-    android:focusable="false"
-    // if we want long clicks, then set:
-    android:longClickable="true"
-    -->
-    <item name="TLV_ROW_DETAILS" type="id" />
+    <!-- BEGIN used for rows in a {@link RecyclerView} -->
+    <!-- the part of the row that can be made (long)clickable. -->
+    <item name="ROW_DETAILS" type="id" />
     <!-- the optional delete button -->
-    <item name="TLV_ROW_DELETE" type="id"/>
+    <item name="ROW_DELETE_BTN" type="id"/>
     <!-- the optional checkable button -->
-    <item name="TLV_ROW_CHECKABLE" type="id"/>
-    <!-- used by {@link SimpleListAdapter} for storing its private tag; stored on the 'root'
-     of the row -->
-    <item name="TLV_ROW_TAG" type="id"/>
+    <item name="ROW_CHECKABLE_BTN" type="id"/>
     <!-- the grabber handle -->
-    <item name="TLV_ROW_GRABBER" type="id"/>
-
-    <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
+    <item name="ROW_GRABBER_ICON" type="id"/>
+    <!-- BEGIN used for rows in a {@link RecyclerView} -->
 
 </resources>

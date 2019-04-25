@@ -1,125 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- yes, I know this is not in use. Still converted to ConstraintLayout. -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top"
-    android:orientation="vertical"
     >
 
-    <LinearLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        >
-
-        <!--
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/author"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        />
-
-                    <EditText
-                        android:id="@+id/author"
-                        style="@style/personalNameTextEntry"
-                        android:layout_weight="1"
-                        android:hint="@string/author"
-                        android:inputType="textCapWords"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/title"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        />
-
-                    <EditText
-                        android:id="@+id/title"
-                        style="@style/titleTextEntry"
-                        android:layout_weight="1"
-                        android:hint="@string/title"
-                        android:inputType="textCapWords"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/isbn"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        />
-
-                    <EditText
-                        android:id="@+id/isbn"
-                        style="@style/simpleTextEntry"
-                        android:layout_weight="1"
-                        android:hint="@string/isbn"
-                        android:inputType="textCapWords"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        />
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:text="@+string/search"
-                    />
-        -->
-
-        <View style="@style/div_horizontal"
-            android:layout_width="match_parent" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        >
-
-        <View style="@style/div_horizontal"
-            android:layout_width="match_parent"/>
-
-        <TextView
-            android:id="@+id/works_found"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true"
-            />
-    </LinearLayout>
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/footer"
-        android:layout_below="@id/header"
+    <TextView
+        android:id="@+id/lbl_author"
+        style="@style/lbl_editField"
+        android:text="@string/lbl_author"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/author"
+        style="@style/personalNameTextEntry"
+        android:hint="@string/lbl_author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        tools:ignore="Autofill"
+        />
+
+    <TextView
+        android:id="@+id/lbl_title"
+        style="@style/lbl_editField"
+        android:text="@string/lbl_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        />
+
+    <EditText
+        android:id="@+id/title"
+        style="@style/titleTextEntry"
+        android:hint="@string/lbl_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        tools:ignore="Autofill"
+        />
+
+    <TextView
+        android:id="@+id/lbl_isbn"
+        style="@style/lbl_editField"
+        android:text="@string/lbl_isbn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        />
+
+    <EditText
+        android:id="@+id/isbn"
+        style="@style/isbnEntry"
+        android:hint="@string/lbl_isbn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+        tools:ignore="Autofill"
+        />
+
+    <Button
+        android:id="@+id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:text="@string/menu_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/isbn"
+        />
+
+    <View
+        android:id="@+id/header_divider"
+        style="@style/div_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@android:id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/footer_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:layout_constraintVertical_weight="1"
+        tools:listitem="@layout/goodreads_work_item"
+        />
+
+    <View
+        android:id="@+id/footer_divider"
+        style="@style/div_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/works_found"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/works_found"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

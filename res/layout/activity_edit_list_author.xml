@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tlv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -57,25 +56,14 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <com.eleybourn.bookcatalogue.widgets.TouchListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"
-        style="@style/tlv_TouchListView"
+        style="@style/rvr_ListView"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
-        tlv:grabber="@id/TLV_ROW_GRABBER"
         tools:listitem="@layout/row_edit_author_list"
-        />
-
-    <TextView
-        android:id="@android:id/empty"
-        style="@style/txt_blurb_medium"
-        android:text="@string/info_no_authors_yet"
-        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
         />
 
     <include

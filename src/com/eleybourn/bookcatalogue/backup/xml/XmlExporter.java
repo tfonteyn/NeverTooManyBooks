@@ -657,13 +657,13 @@ public class XmlExporter
          * When there is a list, then:
          * - the first element should be set to the 'current'
          * - a loop should be (is) implemented with:
-         * <code>
-         * do {
-         * current.get(...)
-         * } while (hasMore());
-         *
-         * </code>
-         * <p>
+         * <pre>
+         * {@code
+         *      do {
+         *          current.get(...)
+         *      } while (hasMore());
+         * }
+         * </pre>
          * See {@link XmlImporter.StylesReader} for an example
          */
         boolean hasMore();

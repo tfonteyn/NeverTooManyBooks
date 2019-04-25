@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- https://commonsware.com/ -->
-    <declare-styleable name="TouchListView">
-        <attr name="normal_height" format="dimension" />
-        <attr name="expanded_height" format="dimension" />
-        <attr name="grabber" format="reference" />
-        <attr name="dnd_background" format="color" />
-        <attr name="remove_mode">
-            <enum name="none" value="-1" />
-            <enum name="fling" value="0" />
-            <enum name="slideRight" value="1" />
-            <enum name="slideLeft" value="2" />
-        </attr>
-    </declare-styleable>
-
     <declare-styleable name="FastScrollListView">
         <attr name="scrollHandle" format="reference" />
         <attr name="overlay" format="reference" />

@@ -3,47 +3,46 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/TLV_ROW"
     style="@style/row_in_ListView"
     >
 
     <ImageButton
-        android:id="@id/TLV_ROW_DELETE"
-        style="@style/tlv_delete_button"
-        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        android:id="@id/ROW_DELETE_BTN"
+        style="@style/rvr_delete_button"
+        app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />
 
     <LinearLayout
-        android:id="@id/TLV_ROW_DETAILS"
-        style="@style/tlv_details_row"
-        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
-        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
+        android:id="@id/ROW_DETAILS"
+        style="@style/rvr_details_row"
+        app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
+        app:layout_constraintStart_toEndOf="@id/ROW_DELETE_BTN"
         app:layout_constraintTop_toTopOf="parent"
         >
 
         <TextView
             android:id="@+id/row_series"
-            style="@style/tlv_details_row_major"
+            style="@style/rvr_details_row_major"
             tools:ignore="SelectableText"
             tools:text="row_series"
             />
 
         <TextView
             android:id="@+id/row_series_sort"
-            style="@style/tlv_details_row_minor"
+            style="@style/rvr_details_row_minor"
             tools:ignore="SelectableText"
             tools:text="row_series_sort"
             />
     </LinearLayout>
 
     <ImageView
-        android:id="@id/TLV_ROW_GRABBER"
-        style="@style/tlv_dragHandle"
+        android:id="@id/ROW_GRABBER_ICON"
+        style="@style/rvr_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         />

@@ -80,7 +80,7 @@ import com.eleybourn.bookcatalogue.R;
 public class FastScrollListView
         extends ListView {
 
-    /** the thumb grabber icon for the scroller. */
+    /** the thumb icon for the scroller. */
     @DrawableRes
     private int mScrollHandleDrawableId;
     @DrawableRes
@@ -369,7 +369,7 @@ public class FastScrollListView
         private int mState;
         private boolean mChangedBounds;
         private Adapter mListAdapter;
-        /** The grabber for the user to scroll with. */
+        /** The thumb icon for the user to scroll with. */
         private Drawable mThumbDrawable;
         /** The overlay applied to the section line1/2 showing the 'current' row. */
         private Drawable mOverlayDrawable;
@@ -384,7 +384,7 @@ public class FastScrollListView
          * Constructor.
          *
          * @param listView          the list
-         * @param thumbDrawableId   grabber icon, can be 0
+         * @param thumbDrawableId   thumb icon, can be 0
          * @param overlayDrawableId overlay, can be 0
          */
         FastScroller(@NonNull final AbsListView listView,

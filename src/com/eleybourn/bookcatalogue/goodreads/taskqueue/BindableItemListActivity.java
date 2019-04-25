@@ -30,6 +30,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
@@ -60,6 +61,12 @@ abstract class BindableItemListActivity
      */
     @NonNull
     protected abstract BindableItemCursor getBindableItemCursor();
+
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_message_queue_list;
+    }
 
     @Override
     @CallSuper

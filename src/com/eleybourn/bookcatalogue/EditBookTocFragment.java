@@ -49,6 +49,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -70,8 +71,11 @@ import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.widgets.TouchRecyclerViewCFS;
-import com.eleybourn.bookcatalogue.widgets.ViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
@@ -95,9 +99,14 @@ public class EditBookTocFragment
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultipleAuthorsView;
 
+    /** the rows. */
     private ArrayList<TocEntry> mList;
+    /** The adapter for the list. */
     private TocListAdapterForEditing mListAdapter;
-    private TouchRecyclerViewCFS mListView;
+    /** The View for the list. */
+    private RecyclerView mListView;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
 
     /**
      * ISFDB editions of a book(isbn).
@@ -108,8 +117,8 @@ public class EditBookTocFragment
 
     @Override
     @NonNull
-    protected BookManager getBookManager() {
-        return ((EditBookFragment) requireParentFragment()).getBookManager();
+    public BookManager getBookManager() {
+        return ((BookManager) requireParentFragment()).getBookManager();
     }
 
     //<editor-fold desc="Fragment startup">
@@ -167,25 +176,14 @@ public class EditBookTocFragment
         field = mFields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
 
-        View view = requireView();
+        View view = getView();
         // adding a new TOC entry
+        //noinspection ConstantConditions
         view.findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
 
         mListView = view.findViewById(android.R.id.list);
         mListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        // TouchList; allow re-ordering entries.
-        mListView.setOnDropListener(((fromPosition, toPosition) -> {
-            // Check if nothing to do
-            if (fromPosition == toPosition) {
-                return;
-            }
-
-            // update the list
-            TocEntry item = mList.get(fromPosition);
-            mList.remove(item);
-            mList.add(toPosition, item);
-            onListChanged();
-        }));
+        mListView.setHasFixedSize(true);
     }
 
     @Override
@@ -200,8 +198,20 @@ public class EditBookTocFragment
         // Populate the list view with the book content table.
         mList = getBookManager().getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        mListAdapter = new TocListAdapterForEditing(requireContext(), mList);
+        mListAdapter = new TocListAdapterForEditing(
+                requireContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                getBookManager().setDirty(true);
+            }
+        });
         mListView.setAdapter(mListAdapter);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
 
         // Restore default visibility
         showHideFields(false);
@@ -252,7 +262,7 @@ public class EditBookTocFragment
         }
     }
 
-    private boolean onCreateContextMenu(final int position) {
+    private void onCreateContextMenu(final int position) {
 
         TocEntry item = mList.get(position);
         // legal trick to get an instance of Menu.
@@ -267,8 +277,6 @@ public class EditBookTocFragment
         //noinspection ConstantConditions
         PopupMenuDialog.showContextMenu(getContext(), menuTitle, menu, position,
                                         this::onContextItemSelected);
-
-        return true;
     }
 
     /**
@@ -285,7 +293,7 @@ public class EditBookTocFragment
 
             case R.id.MENU_DELETE:
                 mList.remove(tocEntry);
-                onListChanged();
+                mListAdapter.notifyItemRemoved(position);
                 return true;
 
             default:
@@ -368,7 +376,7 @@ public class EditBookTocFragment
         }
 
         mList.addAll(tocEntries);
-        onListChanged();
+        mListAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -416,12 +424,7 @@ public class EditBookTocFragment
             original.copyFrom(tocEntry);
         }
 
-        onListChanged();
-    }
-
-    private void onListChanged() {
         mListAdapter.notifyDataSetChanged();
-        getBookManager().setDirty(true);
     }
 
     /**
@@ -737,40 +740,33 @@ public class EditBookTocFragment
     }
 
     private class TocListAdapterForEditing
-            extends RecyclerView.Adapter<Holder> {
-
-        @NonNull
-        private final LayoutInflater mInflater;
-
-        @NonNull
-        private final List<TocEntry> mList;
+            extends RecyclerViewAdapterBase<TocEntry, Holder> {
 
         /**
          * Constructor.
          *
          * @param context caller context
-         * @param objects the list
+         * @param items   the list
          */
         TocListAdapterForEditing(@NonNull final Context context,
-                                 @NonNull final List<TocEntry> objects) {
-
-            mInflater = LayoutInflater.from(context);
-            mList = objects;
+                                 @NonNull final List<TocEntry> items,
+                                 @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View view = mInflater.inflate(R.layout.row_edit_toc_entry, parent, false);
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_toc_entry, parent, false);
             return new Holder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
-            holder.setItem(mList.get(position));
+            super.onBindViewHolder(holder, position);
 
             holder.titleView.setText(holder.getItem().getTitle());
             holder.authorView.setText(holder.getItem().getAuthor().getLabel());
@@ -783,18 +779,13 @@ public class EditBookTocFragment
                 holder.firstPublicationView.setText(getString(R.string.brackets, year));
             }
         }
-
-        @Override
-        public int getItemCount() {
-            return mList.size();
-        }
     }
 
     /**
      * Holder pattern for each row.
      */
     private class Holder
-            extends ViewHolderBase<TocEntry> {
+            extends RecyclerViewViewHolderBase<TocEntry> {
 
         @NonNull
         final TextView titleView;
@@ -809,7 +800,7 @@ public class EditBookTocFragment
             if (mDeleteButton != null) {
                 mDeleteButton.setOnClickListener(v -> {
                     mList.remove(item);
-                    onListChanged();
+                    mListAdapter.notifyDataSetChanged();
                 });
             }
 
@@ -822,7 +813,10 @@ public class EditBookTocFragment
 
             // This is overkill.... user already has a delete button and can click-to-edit.
             // long-click -> menu
-            rowDetailsView.setOnLongClickListener((v) -> onCreateContextMenu(getAdapterPosition()));
+            rowDetailsView.setOnLongClickListener((v) -> {
+                onCreateContextMenu(getAdapterPosition());
+                return true;
+            });
         }
     }
 }

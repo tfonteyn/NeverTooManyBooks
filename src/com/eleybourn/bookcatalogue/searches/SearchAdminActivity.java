@@ -39,6 +39,12 @@ public class SearchAdminActivity
 
     private ViewPagerAdapter mAdapter;
 
+    private boolean mIsDirty;
+
+    public void setDirty(final boolean dirty) {
+        mIsDirty = dirty;
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_search;
@@ -120,34 +126,29 @@ public class SearchAdminActivity
                                         getString(R.string.lbl_cover)));
 
         findViewById(R.id.confirm).setOnClickListener(v -> {
-            if (isDirty()) {
+
+            if (mIsDirty) {
                 //ENHANCE: compare this approach to what is used in EditBookFragment & children.
                 // Decide later...
 
                 ArrayList<Site> list;
-                list = ((AdminSearchOrderFragment)
-                        mAdapter.getItem(TAB_ORDER)).getList();
+                list = ((AdminSearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
                 if (list != null) {
                     SearchSites.setSearchOrder(list);
                 }
 
-                list = ((AdminSearchOrderFragment)
-                        mAdapter.getItem(TAB_COVER_ORDER)).getList();
+                list = ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
                 if (list != null) {
                     SearchSites.setCoverSearchOrder(list);
                 }
             }
+
             // no data to return
             setResult(Activity.RESULT_OK);
             finish();
         });
 
-        findViewById(R.id.cancel).setOnClickListener(v -> finishIfClean(isDirty()));
-    }
-
-    protected boolean isDirty() {
-        return ((AdminSearchOrderFragment) mAdapter.getItem(TAB_ORDER)).isDirty()
-                || ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).isDirty();
+        findViewById(R.id.cancel).setOnClickListener(v -> finishIfClean(mIsDirty));
     }
 
     private static class ViewPagerAdapter

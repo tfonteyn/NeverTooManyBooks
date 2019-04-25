@@ -52,11 +52,6 @@ public class EventQueueListActivity
     private long mTaskId;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_message_queue_list;
-    }
-
-    @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
 
@@ -73,8 +68,7 @@ public class EventQueueListActivity
         cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(),
-                                    R.string.hint_background_task_events,
+            HintManager.displayHint(getLayoutInflater(), R.string.hint_background_task_events,
                                     null);
         }
     }

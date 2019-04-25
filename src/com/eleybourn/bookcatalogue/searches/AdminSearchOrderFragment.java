@@ -5,22 +5,26 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.widgets.TouchListView;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted
@@ -32,10 +36,11 @@ public class AdminSearchOrderFragment
     /** Fragment manager tag. */
     public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
 
-    private ListView mListView;
     private ArrayList<Site> mList;
+    @SuppressWarnings("FieldCanBeLocal")
     private SearchSiteListAdapter mListAdapter;
-    private boolean mIsDirty;
+    private RecyclerView mListView;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     @Nullable
@@ -52,29 +57,36 @@ public class AdminSearchOrderFragment
         Bundle args = requireArguments();
 
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
-        mListAdapter = new SearchSiteListAdapter(requireContext(), mList);
-        mListView = requireView().findViewById(android.R.id.list);
+
+        //noinspection ConstantConditions
+        mListView = getView().findViewById(android.R.id.list);
+        mListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mListView.setHasFixedSize(true);
+
+        mListAdapter = new SearchSiteListAdapter(
+                requireContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+        // any change done in the adapter will set the book 'dirty'
+        // if changing the list externally, make sure to always notify the adapter.
+        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                //noinspection ConstantConditions
+                ((SearchAdminActivity)getActivity()).setDirty(true);
+            }
+        });
         mListView.setAdapter(mListAdapter);
 
-        // Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}.
-        // Lists here are less than 10 items.
-        ((TouchListView) mListView).setOnDropListener((fromPosition, toPosition) -> {
-            // Check if nothing to do; also avoids the nasty case where list size == 1
-            if (fromPosition == toPosition) {
-                return;
-            }
-
-            // update the list
-            Site item = mListAdapter.getItem(fromPosition);
-            mListAdapter.remove(item);
-            mListAdapter.insert(item, toPosition);
-            mListAdapter.notifyDataSetChanged();
-
-            mIsDirty = true;
-        });
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
     }
 
 
+    /**
+     * @return the list, or {@code null} if this fragment was not displayed,
+     * i.e. the list was not even loaded.
+     */
     @Nullable
     public ArrayList<Site> getList() {
         // have we been brought to the front ?
@@ -87,84 +99,62 @@ public class AdminSearchOrderFragment
         return mList;
     }
 
-    public boolean isDirty() {
-        // have we been brought to the front and are we dirty ?
-        return mListView != null && mIsDirty;
-    }
-
-    private class SearchSiteListAdapter
-            extends ArrayAdapter<Site> {
-
-        @NonNull
-        private final LayoutInflater mInflater;
+    private static class SearchSiteListAdapter
+            extends RecyclerViewAdapterBase<Site, Holder> {
 
         /**
          * Constructor.
          *
          * @param context caller context
-         * @param list    of sites
+         * @param items   list of sites
          */
         SearchSiteListAdapter(@NonNull final Context context,
-                              @NonNull final List<Site> list) {
-            super(context, 0, list);
-            mInflater = LayoutInflater.from(context);
+                              @NonNull final List<Site> items,
+                              @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
         }
 
         @NonNull
         @Override
-        public View getView(final int position,
-                            @Nullable View convertView,
-                            @NonNull final ViewGroup parent) {
-            Holder holder;
-            if (convertView != null) {
-                // Recycling: just get the holder
-                holder = (Holder) convertView.getTag();
-            } else {
-                // Not recycling, get a new View and make the holder for it.
-                convertView = mInflater.inflate(R.layout.row_edit_searchsite, parent, false);
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_searchsite, parent, false);
+            return new Holder(view);
+        }
 
-                holder = new Holder(convertView);
-                holder.checkableView.setTag(holder);
-            }
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-            // Setup the variant fields in the holder
-            holder.site = getItem(position);
+            holder.nameView.setText(holder.getItem().getName());
             //noinspection ConstantConditions
-            holder.nameView.setText(holder.site.getName());
-            holder.checkableView.setChecked(holder.site.isEnabled());
-
-            return convertView;
+            holder.mCheckableButton.setChecked(holder.getItem().isEnabled());
         }
     }
 
     /**
      * Holder pattern for each row.
      */
-    private class Holder {
+    private static class Holder
+            extends RecyclerViewViewHolderBase<Site> {
 
-        @NonNull
-        final CompoundButton checkableView;
-        @NonNull
-        final View rowDetailsView;
         @NonNull
         final TextView nameView;
-        Site site;
 
-        public Holder(@NonNull final View rowView) {
-            rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);
+        Holder(@NonNull final View rowView) {
+            super(rowView);
+
             nameView = rowView.findViewById(R.id.name);
-            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
             // Set the click listener for the 'enable' site checkable
-            checkableView.setOnClickListener(v -> {
-                Holder h = (Holder) v.getTag();
-                h.site.setEnabled(!h.site.isEnabled());
-                h.checkableView.setChecked(h.site.isEnabled());
-                // no need to update the list, item itself is updated
-                //onListChanged();
-                mIsDirty = true;
+            //noinspection ConstantConditions
+            mCheckableButton.setOnClickListener(v -> {
+                item.setEnabled(!item.isEnabled());
+                //noinspection ConstantConditions
+                mCheckableButton.setChecked(item.isEnabled());
             });
 
-            rowView.setTag(this);
         }
     }
 }

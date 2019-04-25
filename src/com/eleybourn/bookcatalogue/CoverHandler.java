@@ -644,6 +644,7 @@ public class CoverHandler {
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {

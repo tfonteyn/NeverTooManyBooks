@@ -240,7 +240,7 @@ public class Book
      *
      * @return bundle with book data
      * <p>
-     * Dev note: keep in sync with {@link DBA.SqlColumns#BOOK}.
+     * Dev note: keep in sync with {@link DBA} .SqlColumns#BOOK
      */
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();

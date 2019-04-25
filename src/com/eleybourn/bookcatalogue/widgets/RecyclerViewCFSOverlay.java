@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.eleybourn.bookcatalogue.R;
 
 /**
+ * The fast scroll overlay as used by {@link RecyclerViewCFS}.
+ *
  * Dimensions used for 1st and 2nd lines of text:
  * -   R.dimen.cfs_text_size_large;     fallback: 22sp
  * -   R.dimen.cfs_text_size_medium;    fallback: 18sp

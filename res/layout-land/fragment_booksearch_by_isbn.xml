@@ -17,6 +17,9 @@
         <EditText
             android:id="@+id/isbn"
             style="@style/isbnEntry"
+            android:layout_margin="@dimen/border_double"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:windowSoftInputMode="stateAlwaysHidden"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

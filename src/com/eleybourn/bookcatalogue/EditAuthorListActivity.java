@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -37,7 +38,6 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -45,6 +45,9 @@ import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorBaseDialogF
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
@@ -118,10 +121,44 @@ public class EditAuthorListActivity
         }
         // add the new one to the list. It is NOT saved at this point!
         mList.add(newAuthor);
-        onListChanged();
+        mListAdapter.notifyDataSetChanged();
 
-        // and clear for next entry.
+        // and clear the form for next entry.
         mAuthorNameView.setText("");
+    }
+
+    @Override
+    protected boolean onSave(@NonNull final Intent data) {
+        final AutoCompleteTextView view = findViewById(R.id.author);
+        String str = view.getText().toString().trim();
+        if (str.isEmpty()) {
+            // no current edit, so we're good to go. Add the global flag.
+            data.putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalChangeMade);
+            return super.onSave(data);
+        }
+
+        StandardDialogs.showConfirmUnsavedEditsDialog(
+                this,
+                /* run when user clicks 'exit' */
+                () -> {
+                    view.setText("");
+                    findViewById(R.id.confirm).performClick();
+                });
+        return false;
+    }
+
+
+    @Override
+    protected RecyclerViewAdapterBase
+    createListAdapter(@NonNull final ArrayList<Author> list,
+                      @NonNull final OnStartDragListener dragStartListener) {
+        // no need for an observer.
+//        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+//            @Override
+//            public void onChanged() {
+//            }
+//        });
+        return new AuthorListAdapter(this, list, dragStartListener);
     }
 
     /**
@@ -149,7 +186,7 @@ public class EditAuthorListActivity
              */
             author.copyFrom(newAuthorData);
             Utils.pruneList(mDb, mList);
-            onListChanged();
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -187,7 +224,7 @@ public class EditAuthorListActivity
 
                              author.copyFrom(newAuthorData);
                              Utils.pruneList(mDb, mList);
-                             onListChanged();
+                             mListAdapter.notifyDataSetChanged();
                          });
 
         /*
@@ -221,35 +258,10 @@ public class EditAuthorListActivity
 
                              author.copyFrom(newAuthorData);
                              Utils.pruneList(mDb, mList);
-                             onListChanged();
+                             mListAdapter.notifyDataSetChanged();
                          });
 
         dialog.show();
-    }
-
-    @Override
-    protected boolean onSave(@NonNull final Intent data) {
-        final AutoCompleteTextView view = findViewById(R.id.author);
-        String str = view.getText().toString().trim();
-        if (str.isEmpty()) {
-            // no current edit, so we're good to go. Add the global flag.
-            data.putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalChangeMade);
-            return super.onSave(data);
-        }
-
-        StandardDialogs.showConfirmUnsavedEditsDialog(
-                this,
-                /* run when user clicks 'exit' */
-                () -> {
-                    view.setText("");
-                    findViewById(R.id.confirm).performClick();
-                });
-        return false;
-    }
-
-    @Override
-    protected ArrayAdapter<Author> createListAdapter(@NonNull final ArrayList<Author> list) {
-        return new AuthorListAdapter(this, list);
     }
 
     /**
@@ -292,7 +304,8 @@ public class EditAuthorListActivity
     /**
      * Holder pattern for each row.
      */
-    private static class Holder {
+    private class Holder
+            extends RecyclerViewViewHolderBase<Author> {
 
         @NonNull
         final TextView rowAuthorView;
@@ -300,60 +313,55 @@ public class EditAuthorListActivity
         final TextView rowAuthorSortView;
 
         Holder(@NonNull final View rowView) {
+            super(rowView);
+
             rowAuthorView = rowView.findViewById(R.id.row_author);
             rowAuthorSortView = rowView.findViewById(R.id.row_author_sort);
 
-            rowView.setTag(this);
+            // click -> edit
+            rowDetailsView.setOnClickListener((v) -> {
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
+                    EditBookAuthorDialogFragment.newInstance(item)
+                                                .show(fm, EditBookAuthorDialogFragment.TAG);
+                }
+            });
         }
     }
 
     protected class AuthorListAdapter
-            extends SimpleListAdapter<Author> {
+            extends RecyclerViewAdapterBase<Author, Holder> {
 
         AuthorListAdapter(@NonNull final Context context,
-                          @NonNull final ArrayList<Author> items) {
-            super(context, R.layout.row_edit_author_list, items);
+                          @NonNull final ArrayList<Author> items,
+                          @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_author_list, parent, false);
+            return new Holder(view);
         }
 
         @Override
-        protected void onGetView(@NonNull final View convertView,
-                                 @NonNull final Author item) {
-            Holder holder = (Holder) convertView.getTag();
-            if (holder == null) {
-                holder = new Holder(convertView);
-            }
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-            // Setup the variant fields in the holder.
-            holder.rowAuthorView.setText(item.getLabel());
+            Author author = mList.get(position);
 
-            if (item.getLabel().equals(item.getSortName())) {
+            holder.rowAuthorView.setText(author.getLabel());
+
+            if (author.getLabel().equals(author.getSortName())) {
                 holder.rowAuthorSortView.setVisibility(View.GONE);
             } else {
                 holder.rowAuthorSortView.setVisibility(View.VISIBLE);
-                holder.rowAuthorSortView.setText(item.getSortName());
+                holder.rowAuthorSortView.setText(author.getSortName());
             }
-
-        }
-
-        /**
-         * edit the item we clicked on.
-         */
-        @Override
-        protected void onRowClick(@NonNull final Author item,
-                                  final int position) {
-            FragmentManager fm = getSupportFragmentManager();
-            if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
-                EditBookAuthorDialogFragment.newInstance(item)
-                                            .show(fm, EditBookAuthorDialogFragment.TAG);
-            }
-        }
-
-        /**
-         * delegate to the ListView host.
-         */
-        @Override
-        protected void onListChanged() {
-            EditAuthorListActivity.this.onListChanged();
         }
     }
 }

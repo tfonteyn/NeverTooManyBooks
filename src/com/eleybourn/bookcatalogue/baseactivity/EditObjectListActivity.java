@@ -26,44 +26,29 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.EditBookTocFragment;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.widgets.TouchListView;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
- * ENHANCE: Ultimately, this should become a Fragment.
+ * Base class for editing a list of objects.
  * <p>
- * Base class for editing a list of objects. The inheritor must specify a view id and a row view
- * id to the constructor of this class.
- * <p>
- * This Activity uses {@link TouchListView} from CommonsWare which is in turn based on Android code
- * for TouchInterceptor which was (reputedly) removed in Android 2.2.
- * <p>
- * Mandatory: {@link #createListAdapter}
- * needs to be implemented returning a suitable {@link ArrayAdapter}
- * <p>
- * <p>
- * For this code to work, the main view must contain a {@link TouchListView}
- * <pre>
- *     id:
- *        android:id="@android:id/list"
- *     attributes:
- *        tlv:grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@id/TLV_ROW_GRABBER")
- *  </pre>
+ * {@link #createListAdapter} needs to be implemented returning a suitable RecyclerView adapter.
  * <p>
  * Main View buttons:
  * - R.id.cancel         calls {@link #onSave(Intent)}
@@ -72,11 +57,6 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  * <p>
  * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
  * So if your list supports adding to the list, you must implement {@link #onAdd}.
- * <p>
- * Moving an item in the list calls {@link #onListChanged()}
- * <p>
- * Each row view must use id's as listed in {@link SimpleListAdapter} and in addition have
- * an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" matching the TLV one as above.
  *
  * @param <T> the object type as used in the List
  *
@@ -96,7 +76,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     private final String mBKey;
 
     protected DBA mDb;
-
     /** the rows. */
     protected ArrayList<T> mList;
     /**
@@ -114,13 +93,17 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         }
     };
     /** The adapter for the list. */
-    protected ArrayAdapter<T> mListAdapter;
+    protected RecyclerViewAdapterBase mListAdapter;
+    /** The View for the list. */
+    protected RecyclerView mListView;
+    protected LinearLayoutManager mLayoutManager;
     @Nullable
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
-    /** The View for the list. */
-    protected TouchListView mListView;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
+
 
     /**
      * Constructor.
@@ -149,14 +132,19 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mList = getList(savedInstanceState);
 
         mListView = findViewById(android.R.id.list);
-        View emptyView = findViewById(android.R.id.empty);
-        if (emptyView != null) {
-            mListView.setEmptyView(emptyView);
-        }
+        mLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(mLayoutManager);
+        mListView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = createListAdapter(mList);
+        mListAdapter = createListAdapter(mList,
+                                         (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         mListView.setAdapter(mListAdapter);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
 
         setTextOrHideView(R.id.title, mBookTitle);
 
@@ -167,79 +155,25 @@ public abstract class EditObjectListActivity<T extends Parcelable>
                 finish();
             }
         });
-        setOnClickListener(R.id.add, v -> {
-            onAdd(v);
-            onListChanged();
-        });
-
-        // Handle drop events; also preserves current position.
-        mListView.setOnDropListener(this::onDrop);
+        setOnClickListener(R.id.add, this::onAdd);
     }
 
-    /**
-     * TOMF: code nearly identical with {@link EditBookTocFragment} #onDrop
-     *
-     * @param fromPosition original position of the row
-     * @param toPosition   where the row was dropped
-     */
-    private void onDrop(final int fromPosition,
-                        final int toPosition) {
-        // Check if nothing to do; also avoids the nasty case where list size == 1
-        if (fromPosition == toPosition) {
-            return;
-        }
-
-        // update the list
-        T item = mListAdapter.getItem(fromPosition);
-        mListAdapter.remove(item);
-        mListAdapter.insert(item, toPosition);
-        onListChanged();
-
-        final int firstVisiblePosition = mListView.getFirstVisiblePosition();
-        final int newFirst;
-        if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
-            newFirst = firstVisiblePosition - 1;
-        } else {
-            newFirst = firstVisiblePosition;
-        }
-
-        View firstView = mListView.getChildAt(0);
-        final int offset = firstView.getTop();
-
-        // re-position the list
-        mListView.post(() -> {
-            mListView.requestFocusFromTouch();
-            mListView.setSelectionFromTop(newFirst, offset);
-            mListView.post(() -> {
-                for (int i = 0; ; i++) {
-                    View c = mListView.getChildAt(i);
-                    if (c == null) {
-                        break;
-                    }
-                    if (mListView.getPositionForView(c) == toPosition) {
-                        mListView.setSelectionFromTop(toPosition, c.getTop());
-                        //c.requestFocusFromTouch();
-                        break;
-                    }
-                }
-            });
-        });
-    }
 
     /**
-     * try to load the list from:
-     * 1. savedInstanceState using the key
-     * 2. intent extras using the key
+     * Load the list.
      *
-     * 3. getList() from child ?
-     *
-     * 4. throw FATAL error in the default {@link #getList()} method
+     * 1. use the key we got in the constructor, or if none, try the default one.
+     * 2. check in savedInstanceState using that key
+     * 3. check the intent extras using that key
+     * 4. call {@link #getList()} from subclass.
+     * 5. throw FATAL error in the default {@link #getList()} method. Blame the developer!
      */
     @NonNull
     private ArrayList<T> getList(@Nullable final Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
         String key = mBKey != null ? mBKey : BKEY_LIST;
+
         if (savedInstanceState != null) {
             list = savedInstanceState.getParcelableArrayList(key);
         }
@@ -266,19 +200,24 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void setList(@NonNull final ArrayList<T> newList) {
         View view = mListView.getChildAt(0);
         final int savedTop = view != null ? view.getTop() : 0;
-        final int savedRow = mListView.getFirstVisiblePosition();
+        final int savedRow = mLayoutManager.findFirstVisibleItemPosition();
 
         mList = newList;
-        mListAdapter = createListAdapter(mList);
+        // any observer needs to be set in the child class itself.
+        mListAdapter = createListAdapter(mList,
+                                         (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+
         mListView.setAdapter(mListAdapter);
 
-        mListView.post(() -> mListView.setSelectionFromTop(savedRow, savedTop));
+        mListView.post(() -> mLayoutManager.scrollToPositionWithOffset(savedRow, savedTop));
     }
 
     /**
      * get the specific list adapter from the child class.
      */
-    protected abstract ArrayAdapter<T> createListAdapter(@NonNull ArrayList<T> list);
+    protected abstract RecyclerViewAdapterBase
+    createListAdapter(@NonNull ArrayList<T> list,
+                      @NonNull final OnStartDragListener dragStartListener);
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -321,17 +260,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected boolean onCancel() {
         setResult(Activity.RESULT_CANCELED);
         return true;
-    }
-
-    /**
-     * Called when the list had been modified in some way.
-     * By default, tells the adapter that the list was changed
-     * <p>
-     * Child classes should override when needed and call super FIRST
-     */
-    @CallSuper
-    protected void onListChanged() {
-        mListAdapter.notifyDataSetChanged();
     }
 
     /**

@@ -30,7 +30,6 @@ public abstract class EditBookBaseFragment
         extends BookBaseFragment
         implements DataEditor {
 
-
     @Override
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,

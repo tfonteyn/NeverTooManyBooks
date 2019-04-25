@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -53,9 +52,6 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
- * <p>
- * refit with extends {@link EditObjectListActivity} ? => no point,
- * we don't want/need a TouchListView
  */
 public class EditBookshelfListActivity
         extends BaseActivity
@@ -80,12 +76,12 @@ public class EditBookshelfListActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
         mDb = new DBA(this);
+        mList = mDb.getBookshelves();
+        mAdapter = new BookshelfAdapter(this, mList);
 
         RecyclerView listView = findViewById(android.R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(this));
-
-        mList = mDb.getBookshelves();
-        mAdapter = new BookshelfAdapter(this, mList);
+        listView.setHasFixedSize(true);
         listView.setAdapter(mAdapter);
     }
 

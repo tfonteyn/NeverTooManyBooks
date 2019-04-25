@@ -73,6 +73,7 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         RecyclerView listView = getView().findViewById(android.R.id.list);
+        listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
         TocAdapter adapter = new TocAdapter();
         listView.setAdapter(adapter);

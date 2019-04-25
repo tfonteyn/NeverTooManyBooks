@@ -198,43 +198,33 @@
             a click leads to a screen/dialog to edit that data -->
     <style name="buttonDataEntry" parent="@style/base_editorField" />
 
-
     <style name="isbnEntry">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border_double</item>
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="android:digits">1234567890xX</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- TouchListView rows -->
+    <!-- RecyclerView rows -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_image_button">
+    <style name="rvr_base_image_button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/border_double</item>
     </style>
 
-    <style name="tlv_checkable_button" parent="@style/base_image_button">
-        <item name="android:checkMark">?android:attr/textCheckMark</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
     <!-- checkbox with custom 'check/invisible' icon -->
-    <style name="tlv_cbx" parent="@style/base_image_button">
+    <style name="rvr_checkable_button" parent="@style/rvr_base_image_button">
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:background">?android:attr/textCheckMark</item>
         <item name="android:button">@null</item>
     </style>
 
-    <style name="tlv_delete_button" parent="@style/base_image_button">
+    <style name="rvr_delete_button" parent="@style/rvr_base_image_button">
         <item name="android:src">@drawable/ic_delete</item>
         <item name="android:background">?android:selectableItemBackground</item>
         <item name="android:clickable">true</item>
@@ -242,28 +232,27 @@
         <item name="android:focusableInTouchMode">false</item>
     </style>
 
-    <style name="tlv_dragHandle" parent="@style/base_image_button">
-        <item name="android:src">@drawable/ic_drag_handle</item>
+    <style name="rvr_drag_handle" parent="@style/rvr_base_image_button">
+        <item name="android:src">@drawable/ic_reorder</item>
     </style>
 
     <!-- the actual list view -->
-    <style name="tlv_TouchListView">
+    <style name="rvr_ListView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:fadingEdge">none</item>
     </style>
 
-    <!-- the details part of the row in a TLV row. -->
-    <style name="tlv_details_row">
+    <!-- the details part of the row in a RecyclerView row. -->
+    <style name="rvr_details_row">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:focusable">false</item>
-        <!-- by default, we assume it's a LinearLayout with vertical orientation. -->
         <item name="android:orientation">vertical</item>
     </style>
 
-    <!-- the first/top row inside a TLV details row. -->
-    <style name="tlv_details_row_major">
+    <!-- the first/top row inside a RecyclerView details row. -->
+    <style name="rvr_details_row_major">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -271,8 +260,8 @@
         <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
-    <!-- the second/.. rows inside a TLV details row. -->
-    <style name="tlv_details_row_minor">
+    <!-- the second/.. rows inside a RecyclerView details row. -->
+    <style name="rvr_details_row_minor">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -286,7 +275,7 @@
     <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_iconButton" parent="@style/base_image_button">
+    <style name="base_iconButton" parent="@style/rvr_base_image_button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:background">?android:selectableItemBackground</item>
@@ -387,21 +376,6 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?android:attr/colorPrimary</item>
-    </style>
-
-    <!-- 2019-04-10: LEAVING THIS HERE AS A REMINDER.
-        Tried using: android:fastScrollStyle="@style/fastScrollStyle" on the ListView.
-
-        It seems androidx is overruling this. Tracing the original Android sources,
-        the easy workaround is to set fastScroll* attributes on the application theme.
-    -->
-    <style name="fastScrollStyle">
-        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
-        <item name="android:fastScrollTrackDrawable">@null</item>
-        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
-        <item name="android:fastScrollOverlayPosition">floating</item>
-        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
     </style>
 
     <!-- the outer frame (e.g. 'root') for a Dialog -->

@@ -5,14 +5,13 @@
     So... April 2019: re-tested with Material and ouch..
     Issues seen:
 
-    - tabs: the selected tab title seems to use the same colour as the backgroung
+    - tabs: the selected tab title seems to use the same colour as the background
     making it invisible.
 
     - buttons: have a larger background. As we had no margins up to now, they hug each other
     way to close. Often also simply to big to fit where they are.
 
     - check-mark for 'read' in the BoB list is much larger
-
 
     -->
     <!-- ============================================================ -->

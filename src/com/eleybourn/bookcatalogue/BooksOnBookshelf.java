@@ -210,19 +210,10 @@ public class BooksOnBookshelf
         mListView = findViewById(android.R.id.list);
         // use the custom fast scroller (the ListView in the XML is our custom version).
         mListView.setFastScrollEnabled(true);
-        mListView.setOnItemClickListener(this::onItemClick);
-        mListView.setOnItemLongClickListener(this::onItemLongClick);
-
-//            FloatingActionButton floatingAddButton = findViewById(R.id.floatingAddButton);
-//            floatingAddButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(@NonNull final View v) {
-//
-//                }
-//            });
-//            floatingAddButton.show();
 
         // Handle item click events
+        mListView.setOnItemClickListener(this::onItemClick);
+        mListView.setOnItemLongClickListener(this::onItemLongClick);
 
         // Debug; makes list structures vary across calls to ensure code is correct...
         mCurrentPositionedBookId = -1;
@@ -443,7 +434,7 @@ public class BooksOnBookshelf
                         case R.id.MENU_DEBUG_RUN_TEST:
                             // manually swapped for whatever test I want to run...
                             // crude? yup! nasty? absolutely!
-                            DEBUG_SWITCHES.debugPerformanceFetchExtras(this);
+                            // doSomething();
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_PREFS:
@@ -1287,6 +1278,7 @@ public class BooksOnBookshelf
                                                     });
 
             RecyclerView stylesView = view.findViewById(R.id.styles);
+            stylesView.setHasFixedSize(true);
             stylesView.setLayoutManager(new LinearLayoutManager(getContext()));
             stylesView.setAdapter(adapter);
 

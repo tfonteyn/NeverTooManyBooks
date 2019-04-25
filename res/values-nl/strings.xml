@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Define entities that can be used inside of other string (not possible with standard Android
  resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
@@ -235,13 +235,17 @@
     <string name="X_title_edit_series">Serie details bewerken</string>
     <string name="X_title_select_cover">Selecteer omslagafbeelding</string>
     <string name="X_warning_no_isbn_no_editions">
-        Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN</string>
+        Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN
+    </string>
+    <string name="warning_unsaved_edits">
+        U heeft niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.
+    </string>
     <string name="warning_unsaved_edits2">
         De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?
     </string>
     <string name="X_unsaved_edits_title">Niet opgeslagen veranderingen</string>
     <string name="confirm_apply_author_changed">
-        U heeft de auteursnaam veranderd van:\n ‘%1$s’ naar \n  ‘%2$s’\n
+        U heeft de auteursnaam veranderd van:\n ‘%1$s’ naar \n ‘%2$s’\n
         Hoe wilt u deze verandering toepassen?\nNB: De keuze ‘%3$s’ wordt onmiddelijk toegepast.
     </string>
     <string name="btn_this_book">Dit boek</string>
@@ -640,9 +644,6 @@
     <string name="lbl_read_day">Dag</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
-    <string name="warning_unsaved_edits">
-        U heeft niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.
-    </string>
     <string name="btn_confirm_exit">Afsluiten</string>
     <string name="btn_continue_editing">Doorgaan met bewerken</string>
     <string name="X_warning_title_already_exists">De titel bestaat al</string>

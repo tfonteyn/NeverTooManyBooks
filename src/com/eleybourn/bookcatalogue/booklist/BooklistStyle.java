@@ -90,7 +90,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * <p>
  * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
  * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}, otherwise add a new holder.
- * Need to at least modify {@link BooksMultiTypeListHandler#createHolder}
+ * Need to at least modify {@link BooksMultiTypeListHandler} #createHolder
  *
  * @author Philip Warner
  */

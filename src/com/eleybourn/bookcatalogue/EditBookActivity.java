@@ -76,7 +76,7 @@ public class EditBookActivity
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment) getSupportFragmentManager()
+        return ((BookManager) getSupportFragmentManager()
                 .findFragmentByTag(EditBookFragment.TAG)).getBookManager();
     }
 }

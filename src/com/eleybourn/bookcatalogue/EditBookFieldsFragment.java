@@ -76,7 +76,7 @@ public class EditBookFieldsFragment
     @Override
     @NonNull
     protected BookManager getBookManager() {
-        return ((EditBookFragment) requireParentFragment()).getBookManager();
+        return ((BookManager) requireParentFragment()).getBookManager();
     }
 
     //<editor-fold desc="Fragment startup">

@@ -99,7 +99,7 @@ public class RecyclerViewCFS
                         .getDrawable(R.styleable.RecyclerViewCFS_cfsHorizontalThumbDrawable);
                 Drawable horizontalTrackDrawable = a
                         .getDrawable(R.styleable.RecyclerViewCFS_cfsHorizontalTrackDrawable);
-
+                // optional
                 mOverlayDrawable = a
                         .getDrawable(R.styleable.RecyclerViewCFS_cfsOverlayDrawable);
 

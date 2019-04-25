@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
@@ -41,7 +42,6 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -49,6 +49,9 @@ import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialogFragm
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
@@ -94,6 +97,7 @@ public class EditSeriesListActivity
 
         mSeriesNameView = findViewById(R.id.series);
         mSeriesNameView.setAdapter(mSeriesAdapter);
+
         mSeriesNumberView = findViewById(R.id.series_num);
     }
 
@@ -120,9 +124,9 @@ public class EditSeriesListActivity
         }
         // add the new one to the list. It is NOT saved at this point!
         mList.add(newSeries);
-        onListChanged();
+        mListAdapter.notifyDataSetChanged();
 
-        // and clear for next entry.
+        // and clear the form for next entry.
         mSeriesNameView.setText("");
         mSeriesNumberView.setText("");
     }
@@ -147,9 +151,18 @@ public class EditSeriesListActivity
         return false;
     }
 
+
     @Override
-    protected ArrayAdapter<Series> createListAdapter(@NonNull final ArrayList<Series> list) {
-        return new SeriesListAdapter(this, list);
+    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<Series> list,
+                                                        @NonNull final OnStartDragListener dragStartListener) {
+
+        // no need for an observer.
+//        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+//            @Override
+//            public void onChanged() {
+//            }
+//        });
+        return new SeriesListAdapter(this, list, dragStartListener);
     }
 
     /**
@@ -169,7 +182,7 @@ public class EditSeriesListActivity
                 series.setNumber(newNumber);
                 Series.pruneSeriesList(mList);
                 Utils.pruneList(mDb, mList);
-                onListChanged();
+                mListAdapter.notifyDataSetChanged();
             }
             return;
         }
@@ -189,7 +202,7 @@ public class EditSeriesListActivity
             series.copyFrom(newSeries);
             Series.pruneSeriesList(mList);
             Utils.pruneList(mDb, mList);
-            onListChanged();
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -213,7 +226,7 @@ public class EditSeriesListActivity
                              series.copyFrom(newSeries);
                              Series.pruneSeriesList(mList);
                              Utils.pruneList(mDb, mList);
-                             onListChanged();
+                             mListAdapter.notifyDataSetChanged();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
@@ -224,7 +237,7 @@ public class EditSeriesListActivity
                              series.copyFrom(newSeries);
                              Series.pruneSeriesList(mList);
                              Utils.pruneList(mDb, mList);
-                             onListChanged();
+                             mListAdapter.notifyDataSetChanged();
                          });
 
         dialog.show();
@@ -359,7 +372,8 @@ public class EditSeriesListActivity
     /**
      * Holder pattern for each row.
      */
-    private static class Holder {
+    private class Holder
+            extends RecyclerViewViewHolderBase<Series> {
 
         @NonNull
         final TextView rowSeriesView;
@@ -367,61 +381,55 @@ public class EditSeriesListActivity
         final TextView rowSeriesSortView;
 
         Holder(@NonNull final View rowView) {
+            super(rowView);
+
             rowSeriesView = rowView.findViewById(R.id.row_series);
             rowSeriesSortView = rowView.findViewById(R.id.row_series_sort);
 
-            rowView.setTag(this);
+            // click -> edit
+            rowDetailsView.setOnClickListener((v) -> {
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
+                    EditBookSeriesDialogFragment.newInstance(item)
+                                                .show(fm, EditBookSeriesDialogFragment.TAG);
+                }
+            });
         }
     }
 
     protected class SeriesListAdapter
-            extends SimpleListAdapter<Series> {
+            extends RecyclerViewAdapterBase<Series, Holder> {
 
         SeriesListAdapter(@NonNull final Context context,
-                          @NonNull final ArrayList<Series> items) {
-            super(context, R.layout.row_edit_series_list, items);
+                          @NonNull final ArrayList<Series> items,
+                          @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_series_list, parent, false);
+            return new Holder(view);
         }
 
         @Override
-        public void onGetView(@NonNull final View convertView,
-                              @NonNull final Series item) {
-            Holder holder = (Holder) convertView.getTag();
-            if (holder == null) {
-                // New view, so build the Holder
-                holder = new Holder(convertView);
-            }
-            // Setup the variant fields in the holder
-            holder.rowSeriesView.setText(item.getLabel());
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-            if (item.getLabel().equals(item.getSortName())) {
+            Series series = mList.get(position);
+
+            holder.rowSeriesView.setText(series.getLabel());
+
+            if (series.getLabel().equals(series.getSortName())) {
                 holder.rowSeriesSortView.setVisibility(View.GONE);
             } else {
                 holder.rowSeriesSortView.setVisibility(View.VISIBLE);
-                holder.rowSeriesSortView.setText(item.getSortName());
+                holder.rowSeriesSortView.setText(series.getSortName());
             }
-
-        }
-
-        /**
-         * edit the item we clicked on.
-         * <p>
-         * <p>{@inheritDoc}
-         */
-        @Override
-        public void onRowClick(@NonNull final Series item,
-                               final int position) {
-
-            EditBookSeriesDialogFragment.show(getSupportFragmentManager(), item);
-        }
-
-        /**
-         * delegate to the ListView host.
-         * <p>
-         * <p>{@inheritDoc}
-         */
-        @Override
-        public void onListChanged() {
-            EditSeriesListActivity.this.onListChanged();
         }
     }
 }

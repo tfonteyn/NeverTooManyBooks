@@ -23,17 +23,16 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,6 +45,9 @@ import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -66,7 +68,7 @@ public class GoodreadsSearchResultsActivity
     private DBA mDb;
 
     /** The View for the list. */
-    private ListView mListView;
+    private RecyclerView mListView;
 
     @Override
     protected int getLayoutId() {
@@ -81,6 +83,7 @@ public class GoodreadsSearchResultsActivity
         mDb = new DBA(this);
 
         mListView = findViewById(android.R.id.list);
+        mListView.setLayoutManager(new LinearLayoutManager(this));
 
         // Look for search criteria
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
@@ -137,7 +140,7 @@ public class GoodreadsSearchResultsActivity
             return;
         }
 
-        ArrayAdapter<GoodreadsWork> adapter = new ResultsAdapter(this, works);
+        ResultsAdapter adapter = new ResultsAdapter(this, works, null);
         mListView.setAdapter(adapter);
     }
 
@@ -159,7 +162,8 @@ public class GoodreadsSearchResultsActivity
      *
      * @author Philip Warner
      */
-    private static class Holder {
+    private static class Holder
+            extends RecyclerViewViewHolderBase<GoodreadsWork> {
 
         @NonNull
         final ImageView coverView;
@@ -167,70 +171,60 @@ public class GoodreadsSearchResultsActivity
         final TextView titleView;
         @NonNull
         final TextView authorView;
-        GoodreadsWork work;
 
         Holder(@NonNull final View rowView) {
+            super(rowView);
+
             coverView = rowView.findViewById(R.id.coverImage);
             authorView = rowView.findViewById(R.id.author);
             titleView = rowView.findViewById(R.id.title);
-
-            rowView.setTag(this);
         }
     }
 
     /**
-     * ArrayAdapter that uses holder pattern to display goodreads books and
+     * Adapter that uses holder pattern to display goodreads books and
      * allows for background image retrieval.
      *
      * @author Philip Warner
      */
     private class ResultsAdapter
-            extends ArrayAdapter<GoodreadsWork> {
-
-        @NonNull
-        private final LayoutInflater mInflater;
+            extends RecyclerViewAdapterBase<GoodreadsWork, Holder> {
 
         /**
          * Constructor.
          *
          * @param context caller context
-         * @param objects the list
+         * @param items   the list
          */
         ResultsAdapter(@NonNull final Context context,
-                       @NonNull final List<GoodreadsWork> objects) {
-            super(context, 0, objects);
-            mInflater = LayoutInflater.from(context);
+                       @NonNull final List<GoodreadsWork> items,
+                       @Nullable final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
         }
 
         @NonNull
-        public View getView(final int position,
-                            @Nullable View convertView,
-                            @NonNull final ViewGroup parent) {
-            Holder holder;
-            if (convertView != null) {
-                // Recycling: just get the holder
-                holder = (Holder) convertView.getTag();
-            } else {
-                // Not recycling, get a new View and make the holder for it.
-                convertView = mInflater.inflate(R.layout.goodreads_work_item, parent, false);
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater().inflate(R.layout.goodreads_work_item, parent, false);
+            return new Holder(view);
+        }
 
-                holder = new Holder(convertView);
-                convertView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));
-            }
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-            synchronized (holder.coverView) {
-                // Save the work details
-                holder.work = getItem(position);
-                // get the cover (or put it in background task)
-                //noinspection ConstantConditions
-                holder.work.fillImageView(holder.coverView);
+            GoodreadsWork work = holder.getItem();
 
-                // Update the views based on the work
-                holder.authorView.setText(holder.work.authorName);
-                holder.titleView.setText(holder.work.title);
-            }
+            holder.itemView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));
 
-            return convertView;
+            // get the cover (or put it in background task)
+            work.fillImageView(holder.coverView);
+
+            // Update the views based on the work
+            holder.authorView.setText(work.authorName);
+            holder.titleView.setText(work.title);
         }
     }
 }

@@ -27,8 +27,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -43,12 +42,14 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Activity to edit the groups associated with a style (include/exclude and/or move up/down).
@@ -119,18 +120,13 @@ public class EditBooklistStyleGroupsActivity
     }
 
     /**
-     * Called when user clicks the 'Save' button.
-     * <p>
      * Adds the style to the resulting data
-     *
-     * @param data A newly created Intent to store output if necessary.
-     *             Comes pre-populated with data.putExtra(mBKey, mList);
-     *
-     * @return {@code true}if activity should exit, {@code false} to abort exit.
+     * <p>
+     * <p>{@inheritDoc}
      */
     @Override
     protected boolean onSave(@NonNull final Intent data) {
-        //Note: right now, we don't have any updated preferences (other then the groups)
+        //Note: right now, we don't have any updated preferences other then the groups.
         // Save the properties of this style
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
@@ -150,18 +146,27 @@ public class EditBooklistStyleGroupsActivity
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.debug(this, "onSave", mStyle);
         }
+
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         setResult(Activity.RESULT_OK, data);
         return true;
     }
 
-    protected ArrayAdapter<GroupWrapper> createListAdapter(@NonNull final ArrayList<GroupWrapper> list) {
-        return new GroupWrapperListAdapter(this, list);
+    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<GroupWrapper> list,
+                                                        @NonNull final OnStartDragListener dragStartListener) {
+        //        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+//            @Override
+//            public void onChanged() {
+//            }
+//        });
+        return new GroupWrapperListAdapter(this, list, dragStartListener);
     }
 
     /**
      * We build a list of GroupWrappers which is passed to the underlying class for editing.
      * The wrapper includes extra details needed by this activity.
+     * <p>
+     * TOMF: do we really need this ?? Can we just do this in the holder ?
      */
     public static class GroupWrapper
             implements Serializable, Parcelable {
@@ -179,7 +184,9 @@ public class EditBooklistStyleGroupsActivity
                         return new GroupWrapper[size];
                     }
                 };
+
         private static final long serialVersionUID = 3108094089675884238L;
+
         /** The actual group. */
         @NonNull
         final BooklistGroup group;
@@ -197,6 +204,7 @@ public class EditBooklistStyleGroupsActivity
             this.present = present;
         }
 
+        /** {@link Parcelable}. */
         GroupWrapper(@NonNull final Parcel in) {
             present = in.readByte() != 0;
             //noinspection ConstantConditions
@@ -223,59 +231,56 @@ public class EditBooklistStyleGroupsActivity
     /**
      * Holder pattern for each row.
      */
-    private static class Holder {
+    private static class Holder
+            extends RecyclerViewViewHolderBase<GroupWrapper> {
 
-        @NonNull
-        final CompoundButton checkableView;
         @NonNull
         final TextView nameView;
-        GroupWrapper groupWrapper;
 
-        public Holder(@NonNull final View rowView) {
+        Holder(@NonNull final View rowView) {
+            super(rowView);
+
             nameView = rowView.findViewById(R.id.name);
-            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
-
-            rowView.setTag(this);
         }
     }
 
     protected class GroupWrapperListAdapter
-            extends SimpleListAdapter<GroupWrapper> {
+            extends RecyclerViewAdapterBase<GroupWrapper, Holder> {
 
         GroupWrapperListAdapter(@NonNull final Context context,
-                                @NonNull final ArrayList<GroupWrapper> items) {
-            super(context, R.layout.row_edit_booklist_style, items);
+                                @NonNull final ArrayList<GroupWrapper> items,
+                                @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_booklist_style, parent, false);
+            return new Holder(view);
         }
 
         @Override
-        public void onGetView(@NonNull final View convertView,
-                              @NonNull final GroupWrapper item) {
-            Holder holder = (Holder) convertView.getTag();
-            if (holder == null) {
-                holder = new Holder(convertView);
-                holder.checkableView.setTag(holder);
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-                holder.checkableView.setOnClickListener(v -> {
-                    Holder h = (Holder) v.getTag();
-                    boolean newStatus = !h.groupWrapper.present;
-                    h.groupWrapper.present = newStatus;
-                    h.checkableView.setChecked(newStatus);
-                    // no need to update the list, item itself is updated
-                    //onListChanged();
-                });
-            }
-            // Setup the variant fields in the holder
-            holder.groupWrapper = item;
-            holder.nameView.setText(item.group.getName(getContext()));
-            holder.checkableView.setChecked(holder.groupWrapper.present);
-        }
+            GroupWrapper groupWrapper = holder.getItem();
 
-        /**
-         * delegate to ListView host
-         */
-        @Override
-        public void onListChanged() {
-            EditBooklistStyleGroupsActivity.this.onListChanged();
+            holder.nameView.setText(
+                    groupWrapper.group.getName(EditBooklistStyleGroupsActivity.this));
+
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setChecked(groupWrapper.present);
+
+            holder.mCheckableButton.setOnClickListener(v -> {
+                boolean newStatus = !groupWrapper.present;
+                groupWrapper.present = newStatus;
+                holder.mCheckableButton.setChecked(newStatus);
+                notifyItemChanged(position);
+            });
         }
     }
 }

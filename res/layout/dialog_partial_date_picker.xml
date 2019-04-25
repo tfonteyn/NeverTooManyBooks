@@ -6,6 +6,10 @@
     style="@style/dialogFrame"
     >
 
+    <!--
+    Keep this as a LinearLayout!
+    The order of the 3 columns will be changed dynamically depending on the Locale.
+     -->
     <LinearLayout
         android:id="@+id/dateSelector"
         android:layout_width="wrap_content"
@@ -16,7 +20,6 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
-        <!-- the order of the 3 columns will be changed dynamically depending on the Locale -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yearSelector"
             android:layout_width="wrap_content"

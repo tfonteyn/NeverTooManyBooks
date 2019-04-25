@@ -36,8 +36,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 
 /**
  * ENHANCE: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
- * TODO: Snackbar: needs styling
- * TODO: Snackbar: uses getDecorView for now so it's always at the bottom of the screen.
+ * TODO: Snackbar: when using the activity/getDecorView it's always at the bottom of the screen.
  */
 public final class StandardDialogs {
 

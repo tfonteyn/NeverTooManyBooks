@@ -27,9 +27,7 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -43,7 +41,6 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -51,6 +48,10 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Activity to edit the list of styles.
@@ -85,11 +86,6 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.lbl_preferred_styles);
 
-        // We want context menus on the ListView
-        //getListView().setOnCreateContextMenuListener(this);
-        // no, we don't, as we'll use long click to bring up custom context menus WITH icons
-        mListView.setOnItemLongClickListener(this::onItemLongClick);
-
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_styles_editor, null);
@@ -97,20 +93,29 @@ public class PreferredStylesActivity
     }
 
     /**
+     * Required by parent class since we do not pass a key for the intent to get the list.
+     */
+    @Override
+    @NonNull
+    protected ArrayList<BooklistStyle> getList() {
+        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
+    }
+
+    /**
+     * Bring up the context menu for a row (style).
+     * <p>
      * Reminder: the item row itself has to have:  android:longClickable="true".
      * Otherwise the click will only work on the 'blank' bits of the row.
      */
-    public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
-                                   @NonNull final View view,
-                                   final int position,
-                                   final long id) {
-        BooklistStyle style = mListAdapter.getItem(position);
+    private void onCreateContextMenu(final int position) {
+
+        BooklistStyle style = mList.get(position);
 
         // legal trick to get an instance of Menu.
-        Menu menu = new PopupMenu(view.getContext(), null).getMenu();
+        Menu menu = new PopupMenu(this, null).getMenu();
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
-        //noinspection ConstantConditions
+
         if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
@@ -122,7 +127,6 @@ public class PreferredStylesActivity
         String menuTitle = style.getLabel(this);
         PopupMenuDialog.showContextMenu(this, menuTitle, menu, position,
                                         this::onContextItemSelected);
-        return true;
     }
 
     /**
@@ -137,10 +141,13 @@ public class PreferredStylesActivity
         BooklistStyle style = mList.get(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:
-                editStyle(style.getClone(this, mDb));
+                // clone any style
+                style = style.getClone(this, mDb);
+                editStyle(style);
                 return true;
 
             case R.id.MENU_EDIT:
+                // editing a system style -> clone it first.
                 if (!style.isUserDefined()) {
                     style = style.getClone(this, mDb);
                 }
@@ -148,6 +155,7 @@ public class PreferredStylesActivity
                 return true;
 
             case R.id.MENU_DELETE:
+                // the delete menu is only brought up for user defined styles.
                 style.delete(mDb);
                 handleStyleChange(null);
                 setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
@@ -173,24 +181,6 @@ public class PreferredStylesActivity
         startActivityForResult(intent, REQ_EDIT_STYLE);
     }
 
-    /**
-     * Required by parent class since we do not pass a key for the intent to get the list.
-     */
-    @Override
-    @NonNull
-    protected ArrayList<BooklistStyle> getList() {
-        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
-    }
-
-    @Override
-    protected void onListChanged() {
-        super.onListChanged();
-        // we save the order after each change.
-        BooklistStyles.savePreferredStyleMenuOrder(mList);
-        // and make sure the results flags up we changed something.
-        setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
-    }
-
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
@@ -200,19 +190,13 @@ public class PreferredStylesActivity
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
-                //noinspection SwitchStatementWithTooFewBranches
-                switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE: {
-                        //noinspection ConstantConditions
-                        BooklistStyle style = data.getParcelableExtra(
-                                BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
-                        handleStyleChange(style);
-                        // need to send up the chain as-is
-                        setResult(resultCode, data);
-                        break;
-                    }
-                    default:
-                        break;
+                // need to send up the chain as-is
+                if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
+                    //noinspection ConstantConditions
+                    BooklistStyle style = data.getParcelableExtra(
+                            BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
+                    handleStyleChange(style);
+                    setResult(resultCode, data);
                 }
                 break;
             }
@@ -272,7 +256,7 @@ public class PreferredStylesActivity
             }
 
             setList(mList);
-            onListChanged();
+            mListAdapter.notifyDataSetChanged();
 
         } catch (RuntimeException e) {
             Logger.error(this, e);
@@ -281,80 +265,93 @@ public class PreferredStylesActivity
         }
     }
 
-    protected ArrayAdapter<BooklistStyle> createListAdapter(@NonNull final ArrayList<BooklistStyle> list) {
-        return new BooklistStyleListAdapter(this, list);
+    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<BooklistStyle> list,
+                                                        @NonNull final OnStartDragListener dragStartListener) {
+        BooklistStyleListAdapter adapter =
+                new BooklistStyleListAdapter(this, list, dragStartListener);
+        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                // we save the order after each change.
+                BooklistStyles.savePreferredStyleMenuOrder(mList);
+                // and make sure the results flags up we changed something.
+                setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
+            }
+        });
+        return adapter;
     }
 
     /**
      * Holder pattern object for list items.
      */
-    private static class Holder {
+    private class Holder
+            extends RecyclerViewViewHolderBase<BooklistStyle> {
 
-        @NonNull
-        final CompoundButton checkableView;
         @NonNull
         final TextView nameView;
         @NonNull
         final TextView groupsView;
         @NonNull
         final TextView kindView;
-        BooklistStyle style;
 
         Holder(@NonNull final View rowView) {
+            super(rowView);
+
             nameView = rowView.findViewById(R.id.name);
-            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
             groupsView = rowView.findViewById(R.id.groups);
             kindView = rowView.findViewById(R.id.kind);
 
-            rowView.setTag(this);
+            // long-click -> menu
+            rowDetailsView.setOnLongClickListener((v) -> {
+                onCreateContextMenu(getAdapterPosition());
+                return true;
+            });
         }
     }
 
     private class BooklistStyleListAdapter
-            extends SimpleListAdapter<BooklistStyle> {
+            extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
         BooklistStyleListAdapter(@NonNull final Context context,
-                                 @NonNull final ArrayList<BooklistStyle> items) {
-            super(context, R.layout.row_edit_booklist_style_groups, items);
+                                 @NonNull final ArrayList<BooklistStyle> items,
+                                 @NonNull final OnStartDragListener dragStartListener) {
+            super(context, items, dragStartListener);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_booklist_style_groups, parent, false);
+            return new Holder(view);
         }
 
         @Override
-        public void onGetView(@NonNull final View convertView,
-                              @NonNull final BooklistStyle item) {
-            Holder holder = (Holder) convertView.getTag();
-            if (holder == null) {
-                holder = new Holder(convertView);
-                holder.checkableView.setTag(holder);
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
 
-                holder.checkableView.setOnClickListener(v -> {
-                    Holder h = (Holder) v.getTag();
-                    boolean newStatus = !h.style.isPreferred();
-                    h.style.setPreferred(newStatus);
-                    h.checkableView.setChecked(newStatus);
-                    onListChanged();
-                });
-            }
+            BooklistStyle style = holder.getItem();
 
-            // Setup the variant fields in the holder
-            holder.style = item;
-            holder.nameView.setText(item.getLabel(getContext()));
-            holder.checkableView.setChecked(item.isPreferred());
+            holder.nameView.setText(style.getLabel(PreferredStylesActivity.this));
 
-            holder.groupsView.setText(item.getGroupListDisplayNames(getContext()));
-            if (item.isUserDefined()) {
+            //noinspection ConstantConditions
+            holder.mCheckableButton.setChecked(style.isPreferred());
+
+            holder.mCheckableButton.setOnClickListener(v -> {
+                boolean newStatus = !style.isPreferred();
+                style.setPreferred(newStatus);
+                holder.mCheckableButton.setChecked(newStatus);
+                notifyItemChanged(position);
+            });
+
+            holder.groupsView.setText(style.getGroupListDisplayNames(PreferredStylesActivity.this));
+            if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {
                 holder.kindView.setText(R.string.style_is_builtin);
             }
-        }
-
-        /**
-         * Delegate to ListView host.
-         */
-        @Override
-        protected void onListChanged() {
-            // will save the menu order + call setResult
-            PreferredStylesActivity.this.onListChanged();
         }
     }
 }

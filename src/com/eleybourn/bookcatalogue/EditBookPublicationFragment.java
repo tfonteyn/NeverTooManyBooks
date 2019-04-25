@@ -66,7 +66,7 @@ public class EditBookPublicationFragment
     @Override
     @NonNull
     protected BookManager getBookManager() {
-        return ((EditBookFragment) requireParentFragment()).getBookManager();
+        return ((BookManager) requireParentFragment()).getBookManager();
     }
 
     //<editor-fold desc="Fragment startup">

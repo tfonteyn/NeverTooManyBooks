@@ -127,6 +127,7 @@ public abstract class BookBaseFragment
 
         mDb = new DBA(mActivity);
 
+        // only the real BookManager loads the data, the other subclasses will call getBookManager()
         if (this instanceof BookManager) {
             Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
             if (args != null) {
@@ -226,6 +227,8 @@ public abstract class BookBaseFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        // only the real BookManager saves the data, the other subclasses will call getBookManager()
         if (this instanceof BookManager) {
             outState.putLong(DBDefinitions.KEY_ID, getBookManager().getBook().getId());
             outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBookManager().getBook().getRawData());

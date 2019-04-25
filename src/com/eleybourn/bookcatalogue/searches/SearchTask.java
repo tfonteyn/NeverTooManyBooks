@@ -71,7 +71,7 @@ public class SearchTask
      * Accumulated book info.
      * <p>
      * NEWKIND: if you add a new Search task/site that adds non-string based data,
-     * {@link SearchCoordinator#accumulateAllData(int)} must be able to handle it.
+     * {@link SearchCoordinator} #accumulateAllData(int) must be able to handle it.
      */
     @NonNull
     private Bundle mBookData = new Bundle();

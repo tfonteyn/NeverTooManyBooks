@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.backup;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;

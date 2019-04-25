@@ -46,14 +46,13 @@
         app:layout_constraintTop_toBottomOf="@id/multiple_authors"
         />
 
-    <com.eleybourn.bookcatalogue.widgets.TouchRecyclerViewCFS
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"
-        style="@style/tlv_TouchListView"
+        style="@style/rvr_ListView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
-        app:trv_grabber="@id/TLV_ROW_GRABBER"
         tools:listitem="@layout/row_edit_toc_entry"
         />
 

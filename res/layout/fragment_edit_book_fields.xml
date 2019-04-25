@@ -73,10 +73,9 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <!-- not using style isbnEntryField TODO: why not ? I forgot....-->
         <EditText
             android:id="@+id/isbn"
-            style="@style/simpleTextEntry"
+            style="@style/isbnEntry"
             android:inputType="textCapCharacters|textNoSuggestions"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

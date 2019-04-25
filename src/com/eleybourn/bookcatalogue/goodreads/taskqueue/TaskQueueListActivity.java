@@ -46,14 +46,10 @@ public class TaskQueueListActivity
         extends BindableItemListActivity {
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_message_queue_list;
-    }
-
-    @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setTitle(R.string.gr_tq_menu_background_tasks);
 
         //When any task is added/changed/deleted, update the list. Lazy, yes.

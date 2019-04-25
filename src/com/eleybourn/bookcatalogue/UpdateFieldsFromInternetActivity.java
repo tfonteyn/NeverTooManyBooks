@@ -267,16 +267,15 @@ public class UpdateFieldsFromInternetActivity
             CompoundButton cb = row.findViewById(R.id.usage);
             cb.setChecked(usage.isSelected());
             cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
+            cb.setTag(usage);
             cb.setOnClickListener(v -> {
                 // ENHANCE: The check is really a FOUR-state.
-                final CompoundButton cb1 = (CompoundButton) v;
-                final Fields.FieldUsage fieldUsage = (Fields.FieldUsage) cb1.getTag();
+                final Fields.FieldUsage fieldUsage = (Fields.FieldUsage) cb.getTag();
                 fieldUsage.nextState();
-                cb1.setChecked(fieldUsage.isSelected());
-                cb1.setText(fieldUsage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
+                cb.setChecked(fieldUsage.isSelected());
+                cb.setText(fieldUsage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
             });
 
-            cb.setTag(usage);
             mListContainer.addView(row);
         }
     }
