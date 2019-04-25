@@ -55,12 +55,13 @@
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
-            app:layout_constraintBottom_toTopOf="@id/toc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             app:layout_constraintVertical_bias="0.0"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_image"
+            tools:layout_width="500px"
+            tools:layout_height="500px"
             />
 
         <TextView
@@ -138,13 +139,31 @@
             tools:text="@string/book_format_hardcover"
             />
 
+        <TextView
+            android:id="@+id/language"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_pages_baseline"
+            tools:ignore="SelectableText"
+            tools:text="Quenya"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_series"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="language,coverImage"
+            />
+
         <!-- Series -->
         <TextView
             android:id="@+id/lbl_series"
             style="@style/lbl_textField"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_pages_baseline"
+            app:layout_constraintTop_toBottomOf="@id/barrier_series"
             />
 
         <TextView
@@ -152,7 +171,7 @@
             style="@style/txt_detail_medium"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
@@ -338,26 +357,6 @@
             tools:text="Science Fiction"
             />
 
-        <!-- Language -->
-
-        <TextView
-            android:id="@+id/lbl_language"
-            style="@style/lbl_textField"
-            android:text="@string/lbl_language"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/genre"
-            />
-
-        <TextView
-            android:id="@+id/language"
-            style="@style/txt_detail_medium"
-            android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_language"
-            tools:ignore="SelectableText"
-            tools:text="Quenya"
-            />
-
         <!-- Notes section starts here -->
 
         <TextView
@@ -365,7 +364,7 @@
             style="@style/majorSectionHeader"
             android:text="@string/lbl_notes"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/language"
+            app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
         <!-- Notes -->
