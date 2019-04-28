@@ -30,6 +30,9 @@ public abstract class EditStringBaseDialog {
     /** Adapter for the AutoCompleteTextView field. */
     private final ArrayAdapter<String> mAdapter;
 
+    private EditText mEditText;
+    private String mCurrentText;
+
     /**
      * EditText.
      *
@@ -71,37 +74,37 @@ public abstract class EditStringBaseDialog {
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(dialogLayoutId, null);
 
-        final EditText editView = root.findViewById(R.id.name);
-        editView.setText(currentText);
-        if (editView instanceof AutoCompleteTextView) {
-            ((AutoCompleteTextView) editView).setAdapter(mAdapter);
+        mCurrentText = currentText;
+        mEditText = root.findViewById(R.id.name);
+        mEditText.setText(mCurrentText);
+        if (mEditText instanceof AutoCompleteTextView) {
+            ((AutoCompleteTextView) mEditText).setAdapter(mAdapter);
         }
 
-        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
+        new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(title)
-                .create();
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> doSave())
+                .create()
+                .show();
+    }
 
-        root.findViewById(R.id.confirm).setOnClickListener(v -> {
-            String newText = editView.getText().toString().trim();
-            if (newText.isEmpty()) {
-                UserMessage.showUserMessage(editView, R.string.warning_required_name);
-                return;
-            }
-            dialog.dismiss();
-            // if there are no differences, just bail out.
-            if (newText.equals(currentText)) {
-                return;
-            }
-            // ask child class to save
-            saveChanges(currentText, newText);
-            if (mOnChanged != null) {
-                mOnChanged.run();
-            }
-        });
-
-        root.findViewById(R.id.cancel).setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
+    private void doSave() {
+        String newText = mEditText.getText().toString().trim();
+        if (newText.isEmpty()) {
+            UserMessage.showUserMessage(mEditText, R.string.warning_required_name);
+            return;
+        }
+        // if there are no differences, just bail out.
+        if (newText.equals(mCurrentText)) {
+            return;
+        }
+        // ask child class to save
+        saveChanges(mCurrentText, newText);
+        if (mOnChanged != null) {
+            mOnChanged.run();
+        }
     }
 
     protected abstract void saveChanges(@NonNull final String from,

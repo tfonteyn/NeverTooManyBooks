@@ -4,16 +4,13 @@
     android:installLocation="auto"
     android:versionCode="200"
     android:versionName="6.0.0">
-
     <!-- original package -->
     <!-- package="com.eleybourn.bookcatalogue" -->
     <!-- android:installLocation="auto" -->
     <!-- android:versionCode="179" -->
     <!-- android:versionName="5.2.2" -->
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -33,7 +30,6 @@
         <meta-data
             android:name="amazon.app_key"
             android:value="" />
-
         <meta-data
             android:name="goodreads.dev_key"
             android:value="" />
@@ -63,7 +59,6 @@
 
         <!-- .BookCatalogue is just a forwarder to .StartupActivity. -->
         <activity android:name=".BookCatalogue" />
-
         <!--
             This is the activity that will appear in the app launcher
 
@@ -87,7 +82,7 @@
             </intent-filter>
         </activity>
 
-        <!-- The 'real' main activity; it's also the one that accepts search requests-->
+        <!-- The 'real' main activity; it's also the one that accepts search requests -->
         <activity android:name=".BooksOnBookshelf">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -98,34 +93,25 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity>
-
-        <!-- Admin pages -->
+        </activity> <!-- Admin pages -->
         <activity android:name=".Help" />
         <activity android:name=".About" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".settings.SettingsActivity" />
-
         <!-- Manage Bookshelves -->
         <activity android:name=".EditBookshelfListActivity" />
-
         <!-- Edit the user preferred book list styles -->
         <activity android:name=".settings.PreferredStylesActivity" />
-        <activity
-            android:name=".booklist.EditBooklistStyleGroupsActivity">
+        <activity android:name=".booklist.EditBooklistStyleGroupsActivity">
             <intent-filter>
                 <action android:name="BooklistStyleGroups.EDIT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-
-        <!-- Data Import/Export -->
+        </activity> <!-- Data Import/Export -->
         <activity android:name=".backup.ui.BackupAndRestoreActivity" />
-
         <!-- Update book Fields from the internet -->
         <activity android:name=".UpdateFieldsFromInternetActivity" />
-
         <!-- Credentials Goodreads -->
         <activity android:name=".goodreads.GoodreadsRegisterActivity">
             <intent-filter>
@@ -134,7 +120,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <!-- Credentials LibraryThing -->
         <activity
             android:name=".searches.librarything.LibraryThingAdminActivity"
@@ -145,11 +130,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <!-- Goodreads background tasks & events -->
         <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
         <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
-
         <!-- Search Sites configuration -->
         <activity
             android:name=".searches.SearchAdminActivity"
@@ -160,20 +143,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <!-- Local Search -->
         <activity
             android:name=".searches.FTSSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
         <!-- View a book -->
         <activity android:name=".BookDetailsActivity" />
-
         <!-- Add a Book through an internet search. -->
         <activity
             android:name=".BookSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
         <!-- Edit a book + the related author/series -->
         <activity
             android:name=".EditBookActivity"
@@ -184,17 +163,13 @@
         <activity
             android:name=".EditSeriesListActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
         <!-- View an Author and all of his works. -->
         <activity android:name=".AuthorWorksActivity" />
-
         <!-- Cropping an image, either from the cover of a book, or direct from a new scan -->
         <activity android:name=".cropper.CropImageActivity" />
-
         <!-- These Goodreads activities are commented out (waiting on API access) -->
         <activity android:name=".goodreads.GoodreadsSearchCriteriaActivity" />
         <activity android:name=".goodreads.GoodreadsSearchResultsActivity" />
-
         <!--
              The callback-activity after we requested authorizing this application
              for the current user to Goodreads.
@@ -209,6 +184,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="goodreadsauth"
                     android:scheme="com.eleybourn.bookcatalogue" />

@@ -189,7 +189,7 @@ public final class XmlUtils {
      * decode the bare essentials only. To decode all possible entities we could add the Apache
      * 'lang' library I suppose.... maybe some day.
      */
-    public static String decodeString(@Nullable final String data) {
+    static String decodeString(@Nullable final String data) {
         if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
             return "";
         }

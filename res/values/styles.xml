@@ -191,7 +191,7 @@
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
     <style name="editCheckbox" parent="@style/base_editorField">
-        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:layout_height">@dimen/edit_text_height</item>
     </style>
 
     <!-- *not to be localised* button with 'data' displayed on it,
@@ -370,12 +370,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
         <item name="android:background">?android:attr/colorPrimary</item>
-    </style>
-
-    <style name="tab_bar">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?android:attr/colorPrimary</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <!-- the outer frame (e.g. 'root') for a Dialog -->
@@ -384,14 +379,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">@dimen/border_double</item>
-    </style>
-
-    <!-- the title TextView in a DialogFragment. Used as a normal field on the layout. -->
-    <style name="dialogTitle">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <!-- Style for keys on the isbn search keyboard -->
@@ -449,6 +436,8 @@
     <style name="priceTextEntry" parent="@style/base_localeTextEntry">
         <item name="android:inputType">numberDecimal</item>
     </style>
+
+
 
     <!-- *************************************************************************************** -->
 

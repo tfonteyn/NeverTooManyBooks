@@ -128,9 +128,18 @@ public class AdminSearchOrderFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            holder.nameView.setText(holder.getItem().getName());
+            Site site = getItem(position);
+
+            holder.nameView.setText(site.getName());
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(holder.getItem().isEnabled());
+            holder.mCheckableButton.setChecked(site.isEnabled());
+
+            // Set the click listener for the 'enable' site checkable
+            holder.mCheckableButton.setOnClickListener(v -> {
+                site.setEnabled(!site.isEnabled());
+                holder.mCheckableButton.setChecked(site.isEnabled());
+            });
+
         }
     }
 
@@ -138,23 +147,14 @@ public class AdminSearchOrderFragment
      * Holder pattern for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase<Site> {
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
         final TextView nameView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
-
-            nameView = rowView.findViewById(R.id.name);
-            // Set the click listener for the 'enable' site checkable
-            //noinspection ConstantConditions
-            mCheckableButton.setOnClickListener(v -> {
-                item.setEnabled(!item.isEnabled());
-                //noinspection ConstantConditions
-                mCheckableButton.setChecked(item.isEnabled());
-            });
-
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+            nameView = itemView.findViewById(R.id.name);
         }
     }
 }

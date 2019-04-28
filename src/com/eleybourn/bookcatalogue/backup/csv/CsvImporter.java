@@ -420,6 +420,7 @@ public class CsvImporter
                 }
             }
         }
+
         // Handle the series
         final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
@@ -505,7 +506,7 @@ public class CsvImporter
         // Array of fields found in row
         final List<String> fields = new ArrayList<>();
         // Temp. storage for current field
-        StringBuilder bld = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         while (next != '\0') {
             // Get current and next char
@@ -514,7 +515,7 @@ public class CsvImporter
 
             // If we are 'escaped', just append the char, handling special cases
             if (inEsc) {
-                bld.append(unescape(c));
+                sb.append(unescape(c));
                 inEsc = false;
             } else if (inQuote) {
                 switch (c) {
@@ -523,7 +524,7 @@ public class CsvImporter
                             // Double-quote: Advance one more and append a single quote
                             pos++;
                             next = (pos < endPos) ? row.charAt(pos + 1) : '\0';
-                            bld.append(c);
+                            sb.append(c);
                         } else {
                             // Leave the quote
                             inQuote = false;
@@ -533,20 +534,20 @@ public class CsvImporter
                         if (fullEscaping) {
                             inEsc = true;
                         } else {
-                            bld.append(c);
+                            sb.append(c);
                         }
                         break;
                     default:
-                        bld.append(c);
+                        sb.append(c);
                         break;
                 }
             } else {
                 // This is just a raw string; no escape or quote active.
                 // Ignore leading space.
-                if ((c != ' ' && c != '\t') || bld.length() != 0) {
+                if ((c != ' ' && c != '\t') || sb.length() != 0) {
                     switch (c) {
                         case QUOTE_CHAR:
-                            if (bld.length() > 0) {
+                            if (sb.length() > 0) {
                                 // Fields with quotes MUST be quoted...
                                 throw new IllegalArgumentException();
                             } else {
@@ -557,17 +558,17 @@ public class CsvImporter
                             if (fullEscaping) {
                                 inEsc = true;
                             } else {
-                                bld.append(c);
+                                sb.append(c);
                             }
                             break;
                         case SEPARATOR:
                             // Add this field and reset it.
-                            fields.add(bld.toString());
-                            bld = new StringBuilder();
+                            fields.add(sb.toString());
+                            sb = new StringBuilder();
                             break;
                         default:
                             // Just append the char
-                            bld.append(c);
+                            sb.append(c);
                             break;
                     }
                 }
@@ -576,7 +577,7 @@ public class CsvImporter
         }
 
         // Add the remaining chunk
-        fields.add(bld.toString());
+        fields.add(sb.toString());
 
         // Return the result as a String[].
         String[] imported = new String[fields.size()];

@@ -31,14 +31,16 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for showing a book.
+ *
+ * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * hosting/main activity, which swaps in fragments as needed.
  */
 public class BookDetailsActivity
-        extends BaseActivity
-        implements BookChangedListener {
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_nav;
     }
 
     @Override
@@ -52,18 +54,8 @@ public class BookDetailsActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.main_fragment, frag, BookFragment.TAG)
+                    .replace(R.id.main_fragment, frag, BookFragment.TAG)
                     .commit();
         }
-    }
-
-    @Override
-    public void onBookChanged(final long bookId,
-                              final int fieldsChanged,
-                              @Nullable final Bundle data) {
-        BookFragment frag = (BookFragment) getSupportFragmentManager()
-                .findFragmentByTag(BookFragment.TAG);
-        //noinspection ConstantConditions
-        frag.onBookChanged(bookId, fieldsChanged, data);
     }
 }

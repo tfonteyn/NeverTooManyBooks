@@ -29,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -45,7 +44,8 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
+import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -86,7 +86,7 @@ public class EditBookshelfListActivity
     }
 
     /**
-     * Using {@link PopupMenuDialog} for context menus.
+     * Using {@link ValuePicker} for context menus.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Bookshelf bookshelf) {
@@ -163,6 +163,22 @@ public class EditBookshelfListActivity
     }
 
     /**
+     * Holder pattern for each row.
+     */
+    public static class Holder
+            extends RecyclerView.ViewHolder {
+
+        @NonNull
+        final TextView nameView;
+
+        public Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            nameView = itemView.findViewById(R.id.name);
+        }
+    }
+
+    /**
      * Adapter and row Holder for a {@link Bookshelf}.
      * <p>
      * Displays the name in a TextView.
@@ -202,50 +218,34 @@ public class EditBookshelfListActivity
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            holder.bookshelf = mList.get(position);
-            holder.nameView.setText(holder.bookshelf.getName());
-        }
+            Bookshelf bookshelf = mList.get(position);
 
-        @Override
-        public int getItemCount() {
-            return mList.size();
-        }
-    }
-
-    /**
-     * Holder pattern for each row.
-     */
-    public class Holder
-            extends RecyclerView.ViewHolder {
-
-        @NonNull
-        final TextView nameView;
-
-        Bookshelf bookshelf;
-
-        public Holder(@NonNull final View itemView) {
-            super(itemView);
-
-            nameView = itemView.findViewById(R.id.name);
+            holder.nameView.setText(bookshelf.getName());
 
             // click -> edit
-            nameView.setOnClickListener((view) -> editItem(bookshelf));
+            holder.nameView.setOnClickListener((view) -> editItem(bookshelf));
 
             // long-click -> menu
-            nameView.setOnLongClickListener((view) -> {
-                // legal trick to get an instance of Menu.
-                Menu menu = new PopupMenu(itemView.getContext(), null).getMenu();
+            holder.nameView.setOnLongClickListener((view) -> {
+                Menu menu = MenuPicker.createMenu(holder.nameView.getContext());
                 menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
                 menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_delete);
                 // display
                 String menuTitle = bookshelf.getName();
-                PopupMenuDialog.showContextMenu(
-                        itemView.getContext(), menuTitle, menu, bookshelf,
-                        EditBookshelfListActivity.this::onContextItemSelected);
+                final MenuPicker<Bookshelf> picker =
+                        new MenuPicker<>(holder.nameView.getContext(), menuTitle, menu, bookshelf,
+                                         EditBookshelfListActivity.this::onContextItemSelected);
+                picker.show();
                 return true;
             });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mList.size();
         }
     }
 }

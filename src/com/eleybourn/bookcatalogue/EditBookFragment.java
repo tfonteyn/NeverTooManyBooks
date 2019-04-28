@@ -45,11 +45,8 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.google.android.material.tabs.TabLayout;
@@ -62,7 +59,7 @@ import com.google.android.material.tabs.TabLayout;
  */
 public class EditBookFragment
         extends EditBookBaseFragment
-        implements BookManager, DataEditor {
+        implements DataEditor {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookFragment.class.getSimpleName();
@@ -79,54 +76,11 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    /**
-     * The one and only book we're editing.
-     * Always use {@link #getBook()} and {@link #setBook(Book)} to access.
-     * We've had to move the book object before... this makes it easier if we do again.
-     */
-    private Book mBook;
-
-    /** flag used to indicate something was changed and not saved (yet). */
-    private boolean mIsDirty;
-
     /** cache our activity to avoid multiple requireActivity and casting. */
     private BaseActivity mActivity;
 
     private ViewPager mViewPager;
     private ViewPagerAdapter mPagerAdapter;
-
-    //<editor-fold desc="BookManager interface">
-
-    @Override
-    @NonNull
-    public BookManager getBookManager() {
-        return this;
-    }
-
-    @Override
-    @NonNull
-    public Book getBook() {
-        return mBook;
-    }
-
-    @Override
-    public void setBook(@NonNull final Book book) {
-        mBook = book;
-    }
-
-    @Override
-    public boolean isDirty() {
-        return mIsDirty;
-    }
-
-    @Override
-    public void setDirty(final boolean isDirty) {
-        mIsDirty = isDirty;
-    }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -143,8 +97,13 @@ public class EditBookFragment
         super.onActivityCreated(savedInstanceState);
 
         // any specific tab desired as 'selected' ?
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        int tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        int tabWanted;
+        if (args != null) {
+            tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+        } else {
+            tabWanted = TAB_EDIT;
+        }
 
         int showTab = TAB_EDIT;
         switch (tabWanted) {
@@ -155,7 +114,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+                if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -173,44 +132,31 @@ public class EditBookFragment
                                              getString(R.string.lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
-        if (Fields.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+        if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
             mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
                                                  getString(R.string.tab_lbl_content)));
         }
 
-        mViewPager = requireView().findViewById(R.id.tab_fragment);
+        //noinspection ConstantConditions
+        mViewPager = getView().findViewById(R.id.tab_fragment);
         mViewPager.setAdapter(mPagerAdapter);
 
-        TabLayout tabLayout = requireView().findViewById(R.id.tab_panel);
+        // note that the tab bar lives in the activity layout in the AppBarLayout!
+        //noinspection ConstantConditions
+        TabLayout tabLayout = getActivity().findViewById(R.id.tab_panel);
+
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(showTab);
 
-        boolean isExistingBook = getBook().getId() > 0;
-        Button confirmButton = requireView().findViewById(R.id.confirm);
+        boolean isExistingBook = mBookModel.getBook().getId() > 0;
+        Button confirmButton = getView().findViewById(R.id.confirm);
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
                                              : R.string.btn_confirm_add_book);
 
-        confirmButton.setOnClickListener(v -> doSave(new AlertDialogListener() {
-            @Override
-            public void onPositiveButton() {
-                saveBook();
-                Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
-                mActivity.setResult(Activity.RESULT_OK, data);
-                mActivity.finish();
-            }
+        confirmButton.setOnClickListener(v -> doSave());
 
-            @Override
-            public void onNegativeButton() {
-                doCancel();
-            }
-        }));
-
-        requireView().findViewById(R.id.cancel).setOnClickListener(v -> doCancel());
+        getView().findViewById(R.id.cancel).setOnClickListener(v -> doCancel());
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Fragment shutdown">
 
     /**
      * the only thing on this level is the TAB we're on.
@@ -223,8 +169,6 @@ public class EditBookFragment
         super.onSaveInstanceState(outState);
         outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
-
-    //</editor-fold>
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -243,41 +187,55 @@ public class EditBookFragment
      * In all cases, once the book is added/created, or not, the appropriate method of the
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
-     *
-     * @param nextStep The next step to be executed on confirm/cancel.
      */
-    private void doSave(@NonNull final AlertDialogListener nextStep) {
-        Book book = getBook();
+    private void doSave() {
 
         // ask any page that has not gone into 'onPause' to add its fields.
         for (int p = 0; p < mPagerAdapter.getCount(); p++) {
             Fragment frag = mPagerAdapter.getItem(p);
             if (frag.isResumed()) {
-                ((DataEditor) frag).saveTo(book);
+                ((DataEditor) frag).saveFields();
             }
         }
 
         // Ignore validation failures; but we still validate to get the current values updated.
-        book.validate();
+        mBookModel.getBook().validate();
         // if (!book.validate()) {
         //      StandardDialogs.sendTaskUserMessage(this,
         //      book.getValidationExceptionMessage(getResources()));
         // }
         // However, there is some data that we really do require...
-        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        if (mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
             return;
         }
-        if (!book.containsKey(DBDefinitions.KEY_TITLE) || book.getString(
+        if (!mBookModel.getBook().containsKey(
+                DBDefinitions.KEY_TITLE) || mBookModel.getBook().getString(
                 DBDefinitions.KEY_TITLE).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_title);
             return;
         }
 
-        if (book.getId() == 0) {
-            String isbn = book.getString(DBDefinitions.KEY_ISBN);
+        AlertDialogListener nextStep = new AlertDialogListener() {
+            @Override
+            public void onPositiveButton() {
+                saveBook();
+                Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
+                                                    mBookModel.getBook().getId());
+                mActivity.setResult(Activity.RESULT_OK, data);
+                mActivity.finish();
+            }
+
+            @Override
+            public void onNegativeButton() {
+                doCancel();
+            }
+        };
+
+        if (mBookModel.getBook().getId() == 0) {
+            String isbn = mBookModel.getBook().getString(DBDefinitions.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
@@ -298,22 +256,21 @@ public class EditBookFragment
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
-        mActivity.finishIfClean(isDirty());
+        mActivity.finishIfClean(mBookModel.isDirty());
     }
 
     /**
      * Save the collected book details.
      */
     private void saveBook() {
-        Book book = getBook();
-        if (book.getId() == 0) {
-            long id = mDb.insertBook(book);
+        if (mBookModel.getBook().getId() == 0) {
+            long id = mDb.insertBook(mBookModel.getBook());
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
-                if (book.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
+                if (mBookModel.getBook().getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();
@@ -323,7 +280,7 @@ public class EditBookFragment
                 }
             }
         } else {
-            mDb.updateBook(book.getId(), book, 0);
+            mDb.updateBook(mBookModel.getBook().getId(), mBookModel.getBook(), 0);
         }
     }
 

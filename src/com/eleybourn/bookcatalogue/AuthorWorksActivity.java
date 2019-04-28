@@ -11,13 +11,16 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for showing an author.
+ *
+ * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * hosting/main activity, which swaps in fragments as needed.
  */
 public class AuthorWorksActivity
         extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_nav;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class AuthorWorksActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
+                    .replace(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
                     .commit();
         }
     }

@@ -35,8 +35,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
@@ -63,12 +61,6 @@ public class EditBookPublicationFragment
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
 
-    @Override
-    @NonNull
-    protected BookManager getBookManager() {
-        return ((BookManager) requireParentFragment()).getBookManager();
-    }
-
     //<editor-fold desc="Fragment startup">
 
     @Override
@@ -82,9 +74,8 @@ public class EditBookPublicationFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link BookManager#getBook()} on the hosting Activity
-     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume
+     * <li>{@link #onSaveFieldsToBook} from base class onPause
      * <p>
      * <p>{@inheritDoc}
      */
@@ -92,7 +83,8 @@ public class EditBookPublicationFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewUtils.fixFocusSettings(requireView());
+        //noinspection ConstantConditions
+        ViewUtils.fixFocusSettings(getView());
     }
 
     /**
@@ -140,9 +132,8 @@ public class EditBookPublicationFragment
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(@NonNull final Book book,
-                                        final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(setAllFrom);
 
         // Restore default visibility
         showHideFields(false);

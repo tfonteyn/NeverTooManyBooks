@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<!-- top view must be scroller to work with AppBarLayout. -->
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:fillViewport="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <AutoCompleteTextView
-        android:id="@+id/author"
-        style="@style/personalNameTextEntry"
-        android:layout_margin="@dimen/border_double"
-        android:completionThreshold="2"
-        android:hint="@string/lbl_author"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="author here"
-        />
-
-    <EditText
-        android:id="@+id/title"
-        style="@style/titleTextEntry"
-        android:layout_margin="@dimen/border_double"
-        android:hint="@string/lbl_title"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        tools:ignore="Autofill"
-        tools:text="title here"
-        />
-
-    <Button
-        android:id="@+id/btn_search"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/menu_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        />
+        >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <AutoCompleteTextView
+            android:id="@+id/author"
+            style="@style/personalNameTextEntry"
+            android:layout_margin="@dimen/border_double"
+            android:completionThreshold="2"
+            android:hint="@string/lbl_author"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="author here"
+            />
+
+        <EditText
+            android:id="@+id/title"
+            style="@style/titleTextEntry"
+            android:layout_margin="@dimen/border_double"
+            android:hint="@string/lbl_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            tools:ignore="Autofill"
+            tools:text="title here"
+            />
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

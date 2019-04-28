@@ -16,7 +16,7 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperAdapter;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
-public abstract class RecyclerViewAdapterBase<IT, VHT extends RecyclerViewViewHolderBase<IT>>
+public abstract class RecyclerViewAdapterBase<IT, VHT extends RecyclerViewViewHolderBase>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
 
@@ -48,12 +48,23 @@ public abstract class RecyclerViewAdapterBase<IT, VHT extends RecyclerViewViewHo
         return mInflater;
     }
 
+    @NonNull
+    public Context getContext() {
+        return mInflater.getContext();
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
     public void onBindViewHolder(@NonNull final VHT holder,
                                  final int position) {
-        holder.setItem(mItems.get(position));
+
+        if (holder.mDeleteButton != null) {
+            holder.mDeleteButton.setOnClickListener(v -> {
+                mItems.remove(getItem(position));
+                notifyItemRemoved(position);
+            });
+        }
 
         // If we support drag drop re-ordering,
         if (mDragStartListener != null && holder.mDragHandleView != null) {
@@ -65,6 +76,10 @@ public abstract class RecyclerViewAdapterBase<IT, VHT extends RecyclerViewViewHo
                 return false;
             });
         }
+    }
+
+    public IT getItem(final int position) {
+        return mItems.get(position);
     }
 
     @Override

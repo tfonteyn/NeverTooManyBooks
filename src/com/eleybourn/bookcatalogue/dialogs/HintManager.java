@@ -223,34 +223,30 @@ public final class HintManager {
 
             // Setup the message
             final TextView messageView = root.findViewById(R.id.hint);
-            if (messageView != null) {
-                String hintText = inflater.getContext().getString(stringId, args);
-                // allow links
-                messageView.setText(Utils.linkifyHtml(hintText));
-                // clicking a link, start a browser (or whatever)
-                messageView.setMovementMethod(LinkMovementMethod.getInstance());
-            }
+            String hintText = inflater.getContext().getString(stringId, args);
+            // allow links
+            messageView.setText(Utils.linkifyHtml(hintText));
+            // clicking a link, start a browser (or whatever)
+            messageView.setMovementMethod(LinkMovementMethod.getInstance());
 
             final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                     .setView(root)
                     .setTitle(R.string.hint)
-                    .create();
-
-            root.findViewById(R.id.confirm).setOnClickListener(v -> {
-                dialog.dismiss();
-                if (postRun != null) {
-                    postRun.run();
-                }
-            });
-
-            root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(
-                    v -> {
-                        dialog.dismiss();
+                    .setNegativeButton(R.string.btn_disable_message, (d, which) -> {
+                        d.dismiss();
                         setVisibility(false);
                         if (postRun != null) {
                             postRun.run();
                         }
-                    });
+                    })
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        d.dismiss();
+                        if (postRun != null) {
+                            postRun.run();
+                        }
+                    })
+                    .create();
+
             dialog.show();
             mHasBeenDisplayed = true;
         }

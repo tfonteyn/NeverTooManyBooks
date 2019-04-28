@@ -485,6 +485,8 @@ public final class ImageUtils {
      * small:  Minimum of MAX_SIZE_SMALL and 1/3rd of largest screen dimension
      * standard: Minimum of MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
      * large:  Minimum of MAX_SIZE_LARGE and largest screen dimension.
+     *
+     * ENHANCE: should use density instead of pixels!
      */
     public static class DisplaySizes {
 
@@ -503,7 +505,6 @@ public final class ImageUtils {
         DisplaySizes(@NonNull final Context context) {
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
-            // ENHANCE: should use density
             int maxMetrics = Math.max(metrics.widthPixels, metrics.heightPixels);
 
             small = Math.min(MAX_SIZE_SMALL, maxMetrics / 3);

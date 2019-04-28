@@ -23,7 +23,7 @@ public class SettingsActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_nav;
     }
 
     @Override
@@ -43,6 +43,7 @@ public class SettingsActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    // add! not replace!
                     .add(R.id.main_fragment, frag, tag)
                     .commit();
         }
@@ -61,7 +62,7 @@ public class SettingsActivity
         } else if (BooklistStyleSettingsFragment.TAG.equals(tag)) {
             return new BooklistStyleSettingsFragment();
         } else {
-            throw new IllegalArgumentException("t=" + tag);
+            throw new IllegalArgumentException("tag=" + tag);
         }
     }
 

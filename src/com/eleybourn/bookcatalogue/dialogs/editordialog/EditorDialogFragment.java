@@ -9,15 +9,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 
 /**
- * You can only have one Listener implemented on your Fragment, but you can use
- * the {@link #mDestinationFieldId} to determine for which {@link Fields.Field}
- * the result is meant.
- * <p>
- * TODO: an alternative is not to use a listener, but to call {@link #onActivityResult}
- * on the calling fragment.
+ * Base class for a couple of specialized editors.
  *
  * @param <LT> listener type implemented by the Fragment that called the editor,
  *             e.g. the {@link UniqueId#BKEY_CALLER_TAG}

@@ -349,34 +349,34 @@ public class CsvExporter
                 return "\"\",";
             }
 
-            final StringBuilder bld = new StringBuilder("\"");
+            final StringBuilder sb = new StringBuilder("\"");
             int endPos = cell.length() - 1;
             int pos = 0;
             while (pos <= endPos) {
                 char c = cell.charAt(pos);
                 switch (c) {
                     case '\r':
-                        bld.append("\\r");
+                        sb.append("\\r");
                         break;
                     case '\n':
-                        bld.append("\\n");
+                        sb.append("\\n");
                         break;
                     case '\t':
-                        bld.append("\\t");
+                        sb.append("\\t");
                         break;
                     case '"':
-                        bld.append("\"\"");
+                        sb.append("\"\"");
                         break;
                     case '\\':
-                        bld.append("\\\\");
+                        sb.append("\\\\");
                         break;
                     default:
-                        bld.append(c);
+                        sb.append(c);
                 }
                 pos++;
 
             }
-            return bld.append("\",").toString();
+            return sb.append("\",").toString();
         } catch (NullPointerException e) {
             return "\"\",";
         }

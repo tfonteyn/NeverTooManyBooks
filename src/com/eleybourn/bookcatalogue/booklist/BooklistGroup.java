@@ -240,7 +240,7 @@ public class BooklistGroup
     /**
      * Only ever init the Preferences if you have a valid UUID.
      */
-    protected void initPrefs() {
+    void initPrefs() {
     }
 
     /**

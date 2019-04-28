@@ -183,7 +183,7 @@ public class DBHelper
         // Get the source info
         TableInfo sourceTable = new TableInfo(sdb, source);
         // Build the column list
-        StringBuilder cols = new StringBuilder();
+        StringBuilder columns = new StringBuilder();
         boolean first = true;
         for (ColumnInfo ci : sourceTable.getColumns()) {
             boolean isNeeded = true;
@@ -197,12 +197,12 @@ public class DBHelper
                 if (first) {
                     first = false;
                 } else {
-                    cols.append(',');
+                    columns.append(',');
                 }
-                cols.append(ci.name);
+                columns.append(ci.name);
             }
         }
-        String colList = cols.toString();
+        String colList = columns.toString();
         String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT " + colList + " FROM " + source;
         try (SynchronizedStatement stmt = sdb.compileStatement(sql)) {
             stmt.executeInsert();

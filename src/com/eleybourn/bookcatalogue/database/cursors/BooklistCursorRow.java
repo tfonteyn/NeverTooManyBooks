@@ -146,9 +146,11 @@ public class BooklistCursorRow
         return mMapper.getString(DOM_BOOK_SERIES_NUM);
     }
 
-
     /**
-     * @return the absolute position (index) of this row in the total list of rows.
+     * Get the absolute position (index) of this row in the total list of rows.
+     * Note this is not the same as the {@link Cursor#getPosition()}.
+     *
+     * @return the absolute position
      */
     public int getAbsolutePosition() {
         return mMapper.getInt(DOM_BL_ABSOLUTE_POSITION);
@@ -178,7 +180,8 @@ public class BooklistCursorRow
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(@IntRange(from = 1) final int level) {
+    public String getLevelText(@NonNull final Context context,
+                               @IntRange(from = 1) final int level) {
         // bail out if there is no data on level
         if (mBuilder.getStyle().groupCount() < level) {
             return null;
@@ -198,7 +201,8 @@ public class BooklistCursorRow
                 throw new ColumnNotPresentException(name);
             }
         }
-        return formatRowGroup(level, mCursor.getString(mLevelCol[index]));
+
+        return formatRowGroup(context, level, mCursor.getString(mLevelCol[index]));
     }
 
     /**
@@ -211,7 +215,8 @@ public class BooklistCursorRow
      * was needed or on any failure
      */
     @Nullable
-    private String formatRowGroup(@IntRange(from = 1) final int level,
+    private String formatRowGroup(@NonNull final Context context,
+                                  @IntRange(from = 1) final int level,
                                   @Nullable final String s) {
         if (s == null) {
             return null;
@@ -223,7 +228,6 @@ public class BooklistCursorRow
                     "groupCount=" + mBuilder.getStyle().groupCount() + " < level=" + level);
         }
 
-        Context context = mBuilder.getContext();
         Locale locale = LocaleUtils.from(context);
 
         int index = level - 1;

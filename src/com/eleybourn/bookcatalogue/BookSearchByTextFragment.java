@@ -13,6 +13,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,13 +62,15 @@ public class BookSearchByTextFragment
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
-        ActionBar actionBar = mActivity.getSupportActionBar();
+        //noinspection ConstantConditions
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.title_search_for);
             actionBar.setSubtitle(null);
         }
 
-        View view = requireView();
+        View view = getView();
+        //noinspection ConstantConditions
         mTitleView = view.findViewById(R.id.title);
         mAuthorView = view.findViewById(R.id.author);
 

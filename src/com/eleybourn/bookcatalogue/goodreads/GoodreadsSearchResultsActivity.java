@@ -154,7 +154,6 @@ public class GoodreadsSearchResultsActivity
         String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
         Logger.debugWithStackTrace(this, "doItemClick", msg);
         UserMessage.showUserMessage(this, msg);
-        //Intent i = new Intent(this, GoodreadsW)
     }
 
     /**
@@ -163,7 +162,7 @@ public class GoodreadsSearchResultsActivity
      * @author Philip Warner
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase<GoodreadsWork> {
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
         final ImageView coverView;
@@ -172,12 +171,12 @@ public class GoodreadsSearchResultsActivity
         @NonNull
         final TextView authorView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            coverView = rowView.findViewById(R.id.coverImage);
-            authorView = rowView.findViewById(R.id.author);
-            titleView = rowView.findViewById(R.id.title);
+            coverView = itemView.findViewById(R.id.coverImage);
+            authorView = itemView.findViewById(R.id.author);
+            titleView = itemView.findViewById(R.id.title);
         }
     }
 
@@ -215,7 +214,7 @@ public class GoodreadsSearchResultsActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            GoodreadsWork work = holder.getItem();
+            GoodreadsWork work = getItem(position);
 
             holder.itemView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));
 

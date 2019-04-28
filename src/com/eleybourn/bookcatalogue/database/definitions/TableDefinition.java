@@ -725,18 +725,18 @@ public class TableDefinition
     @NonNull
     public String getInsert(final boolean withValues,
                             @NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("INSERT INTO ")
+        StringBuilder sql = new StringBuilder("INSERT INTO ")
                 .append(mName)
                 .append(" (")
                 .append(Csv.join(",", Arrays.asList(domains)))
                 .append(')');
 
         if (withValues) {
-            s.append(" VALUES (")
+            sql.append(" VALUES (")
              .append(Csv.join(",", domains.length, "?"))
              .append(')');
         }
-        return s.toString();
+        return sql.toString();
     }
 
     /**

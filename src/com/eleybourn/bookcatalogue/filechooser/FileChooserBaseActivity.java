@@ -88,7 +88,7 @@ public abstract class FileChooserBaseActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.browser_fragment, frag, FileChooserFragment.TAG)
+                    .replace(R.id.browser_fragment, frag, FileChooserFragment.TAG)
                     .commit();
         }
 

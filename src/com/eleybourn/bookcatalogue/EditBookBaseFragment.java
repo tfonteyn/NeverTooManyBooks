@@ -32,14 +32,12 @@ public abstract class EditBookBaseFragment
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(@NonNull final Book book,
-                                        final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(setAllFrom);
 
         // new book ?
-        if (book.getId() == 0) {
-            Bundle args = requireArguments();
-            populateNewBookFieldsFromBundle(book, args);
+        if (mBookModel.getBook().getId() == 0) {
+            populateNewBookFieldsFromBundle(requireArguments());
         }
     }
 
@@ -48,11 +46,9 @@ public abstract class EditBookBaseFragment
      * <p>
      * Can/should be overwritten for handling specific field defaults, e.g. Bookshelf.
      *
-     * @param book   to populate
      * @param bundle to load values from
      */
-    protected void populateNewBookFieldsFromBundle(@NonNull final Book book,
-                                                   @Nullable final Bundle bundle) {
+    protected void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
         // Check if we have any data, for example from a Search
         if (bundle != null) {
             Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
@@ -93,7 +89,7 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onPause() {
         Tracker.enterOnPause(this);
-        saveTo(getBookManager().getBook());
+        saveFields();
         super.onPause();
         Tracker.exitOnPause(this);
     }
@@ -104,20 +100,18 @@ public abstract class EditBookBaseFragment
      * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
      */
     @Override
-    public final <T extends DataManager> void saveTo(@NonNull final T dataManager) {
-        onSaveFieldsToBook((Book) dataManager);
+    public final void saveFields() {
+        onSaveFieldsToBook();
     }
 
     /**
      * Default implementation of code to save existing data to the Book object.
      * We simply copy all {@link Fields.Field} into the {@link DataManager} e.g. the {@link Book}
      * <p>
-     * Override as needed, calling super if needed.
-     *
-     * @param book field content will be copied to this object
+     * Override as needed.
      */
     @CallSuper
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        mFields.putAllInto(book);
+    protected void onSaveFieldsToBook() {
+        mFields.putAllInto(mBookModel.getBook());
     }
 }

@@ -5,13 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border_double"
+    android:layout_margin="@dimen/border"
     >
 
     <CheckBox
         android:id="@+id/is_anthology"
         style="@style/editCheckbox"
         android:text="@string/lbl_is_anthology"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,6 +23,7 @@
         android:id="@+id/multiple_authors"
         style="@style/editCheckbox"
         android:text="@string/lbl_toc_multiple_authors"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/is_anthology"
@@ -54,6 +56,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
         tools:listitem="@layout/row_edit_toc_entry"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

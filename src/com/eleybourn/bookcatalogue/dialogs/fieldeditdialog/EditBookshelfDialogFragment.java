@@ -20,10 +20,8 @@
 
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -32,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
@@ -55,7 +54,6 @@ public class EditBookshelfDialogFragment
     private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";
-    private Activity mActivity;
     private DBA mDb;
     private Bookshelf mBookshelf;
 
@@ -74,6 +72,7 @@ public class EditBookshelfDialogFragment
     }
 
     /**
+     *
      */
     public static EditBookshelfDialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();
@@ -86,7 +85,7 @@ public class EditBookshelfDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        mActivity = requireActivity();
+        Context context = getContext();
 
         Bundle args = requireArguments();
 
@@ -98,65 +97,64 @@ public class EditBookshelfDialogFragment
             mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);
         }
 
-        mDb = new DBA(mActivity);
+        //noinspection ConstantConditions
+        mDb = new DBA(context);
 
-        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
+        View root = getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
 
-        root.findViewById(R.id.confirm).setOnClickListener(v -> {
-            mName = mNameView.getText().toString().trim();
-            if (mName.isEmpty()) {
-                UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
-                return;
-            }
-
-            // check if a shelf with this name already exists (null if not)
-            Bookshelf existingShelf = mDb.getBookshelfByName(mName);
-
-            // are we adding a new Bookshelf but trying to use an existing name?
-            if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
-                Context c = getContext();
-                //noinspection ConstantConditions
-                String msg = c.getString(R.string.warning_thing_already_exists,
-                                         c.getString(R.string.lbl_bookshelf));
-                UserMessage.showUserMessage(mNameView, msg);
-                return;
-            }
-
-            dismiss();
-
-            // check if there was something changed at all.
-            if (mBookshelf.getName().equals(mName)) {
-                return;
-            }
-
-            // At this point, we know changes were made.
-            // Create a new Bookshelf as a holder for the changes.
-            Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb).getId());
-            // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
-            // copy new values
-            mBookshelf.copyFrom(newBookshelf);
-
-            if (existingShelf != null) {
-                mergeShelves(mBookshelf, existingShelf);
-            } else {
-                if (mDb.updateOrInsertBookshelf(mBookshelf)) {
-                    if (mActivity instanceof OnBookshelfChangedListener) {
-                        ((OnBookshelfChangedListener) mActivity)
-                                .onBookshelfChanged(mBookshelf.getId(), 0);
-                    }
-                }
-            }
-        });
-
-        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
-
-        return new AlertDialog.Builder(mActivity)
+        return new AlertDialog.Builder(context)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_save, (d, which) -> doSave())
                 .create();
+    }
+
+    private void doSave() {
+        mName = mNameView.getText().toString().trim();
+        if (mName.isEmpty()) {
+            UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+            return;
+        }
+
+        // check if a shelf with this name already exists (null if not)
+        Bookshelf existingShelf = mDb.getBookshelfByName(mName);
+
+        // are we adding a new Bookshelf but trying to use an existing name?
+        if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
+            Context c = getContext();
+            //noinspection ConstantConditions
+            String msg = c.getString(R.string.warning_thing_already_exists,
+                                     c.getString(R.string.lbl_bookshelf));
+            UserMessage.showUserMessage(mNameView, msg);
+            return;
+        }
+
+        dismiss();
+
+        // check if there was something changed at all.
+        if (mBookshelf.getName().equals(mName)) {
+            return;
+        }
+
+        // At this point, we know changes were made.
+        // Create a new Bookshelf as a holder for the changes.
+        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb).getId());
+        // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
+        // copy new values
+        mBookshelf.copyFrom(newBookshelf);
+
+        if (existingShelf != null) {
+            mergeShelves(mBookshelf, existingShelf);
+        } else {
+            if (mDb.updateOrInsertBookshelf(mBookshelf)) {
+                OnBookshelfChangedListener
+                        .onBookshelfChanged(this, mBookshelf.getId(), 0);
+            }
+        }
     }
 
     @Override
@@ -177,28 +175,22 @@ public class EditBookshelfDialogFragment
     private void mergeShelves(@NonNull final Bookshelf source,
                               @NonNull final Bookshelf destination) {
 
-        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
                 .setTitle(R.string.menu_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
-                .create();
+                .setNegativeButton(android.R.string.cancel, ((d, which) -> d.dismiss()))
+                .setPositiveButton(R.string.btn_merge, (d, which) -> {
+                    d.dismiss();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mActivity.getString(R.string.btn_merge),
-                         (d, which) -> {
-                             d.dismiss();
+                    // move all books from bookshelf to existingShelf
+                    int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
+                    OnBookshelfChangedListener
+                            .onBookshelfChanged(this, destination.getId(), booksMoved);
 
-                             // move all books from bookshelf to existingShelf
-                             int booksMoved = mDb.mergeBookshelves(source.getId(),
-                                                                   destination.getId());
-                             if (mActivity instanceof OnBookshelfChangedListener) {
-                                 ((OnBookshelfChangedListener) mActivity)
-                                         .onBookshelfChanged(destination.getId(), booksMoved);
-                             }
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         mActivity.getString(android.R.string.cancel),
-                         (d, which) -> d.dismiss());
-        dialog.show();
+                })
+                .create()
+                .show();
     }
 
     @Override
@@ -210,6 +202,22 @@ public class EditBookshelfDialogFragment
     }
 
     public interface OnBookshelfChangedListener {
+
+        static void onBookshelfChanged(@NonNull final Fragment sourceFragment,
+                                       long bookshelfId,
+                                       int booksMoved) {
+
+            if (sourceFragment.getTargetFragment() instanceof OnBookshelfChangedListener) {
+                ((OnBookshelfChangedListener) sourceFragment.getTargetFragment())
+                        .onBookshelfChanged(bookshelfId, booksMoved);
+            } else if (sourceFragment.getParentFragment() instanceof OnBookshelfChangedListener) {
+                ((OnBookshelfChangedListener) sourceFragment.getParentFragment())
+                        .onBookshelfChanged(bookshelfId, booksMoved);
+            } else if (sourceFragment.getActivity() instanceof OnBookshelfChangedListener) {
+                ((OnBookshelfChangedListener) sourceFragment.requireActivity())
+                        .onBookshelfChanged(bookshelfId, booksMoved);
+            }
+        }
 
         /**
          * Called after the user confirms a change.

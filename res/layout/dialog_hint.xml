@@ -1,44 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame"
-    >
-
-    <TextView
-        android:id="@+id/hint"
-        style="@style/txt_blurb_medium"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:maxLines="20"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="@tools:sample/lorem/random"
-        />
-
-    <Button
-        android:id="@+id/hint_do_not_show_again"
-        style="?attr/buttonBarNeutralButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_disable_message"
-        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
-        app:layout_constraintEnd_toStartOf="@id/confirm"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <Button
-        android:id="@+id/confirm"
-        style="?attr/buttonBarPositiveButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@android:string/ok"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/hint_do_not_show_again"
-        app:layout_constraintTop_toBottomOf="@id/hint"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:id="@+id/hint"
+    style="@style/txt_blurb_medium"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:maxLines="20"
+    tools:ignore="SelectableText"
+    tools:text="@tools:sample/lorem/random"
+    />

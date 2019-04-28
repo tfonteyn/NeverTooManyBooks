@@ -1,49 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Use DrawerLayout as root container for activity -->
-<androidx.drawerlayout.widget.DrawerLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
+    tools:showIn="@layout/activity_main_nav"
     >
 
-    <!-- Your normal content view (in the FrameLayout) must be enclosed by this Layout
-         or else it will overflow the toolbar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/content_frame"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar"
-            android:layout_width="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_scrollFlags="scroll|enterAlways"
             />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <FrameLayout
-            android:id="@+id/main_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Container for contents of drawer
-         use NavigationView to make configuration easier
+    <!-- Dev note: if filling this frame with a scroll view (list,recycler,scroll,...) you
+        need to add:
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        to that scroller view.
     -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        style="@style/nav_view"
-        app:headerLayout="@layout/nav_panel_header"
-        app:menu="@menu/nav_view"
+    <FrameLayout
+        android:id="@+id/main_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
-</androidx.drawerlayout.widget.DrawerLayout>
+
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--android:id="@+id/fab"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="bottom|end"-->
+    <!--android:layout_margin="@dimen/fab_margin"-->
+    <!--android:src="@android:drawable/ic_menu_add"-->
+    <!--/>-->
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

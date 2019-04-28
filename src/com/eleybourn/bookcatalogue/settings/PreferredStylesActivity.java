@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -47,7 +46,8 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
+import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
@@ -111,8 +111,7 @@ public class PreferredStylesActivity
 
         BooklistStyle style = mList.get(position);
 
-        // legal trick to get an instance of Menu.
-        Menu menu = new PopupMenu(this, null).getMenu();
+        Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
@@ -125,12 +124,13 @@ public class PreferredStylesActivity
 
         // display the menu
         String menuTitle = style.getLabel(this);
-        PopupMenuDialog.showContextMenu(this, menuTitle, menu, position,
-                                        this::onContextItemSelected);
+        final MenuPicker<Integer> picker = new MenuPicker<>(this, menuTitle, menu, position,
+                                                            this::onContextItemSelected);
+        picker.show();
     }
 
     /**
-     * Using {@link PopupMenuDialog} for context menus.
+     * Using {@link ValuePicker} for context menus.
      */
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                          @NonNull final Integer position) {
@@ -284,8 +284,8 @@ public class PreferredStylesActivity
     /**
      * Holder pattern object for list items.
      */
-    private class Holder
-            extends RecyclerViewViewHolderBase<BooklistStyle> {
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
         final TextView nameView;
@@ -294,18 +294,12 @@ public class PreferredStylesActivity
         @NonNull
         final TextView kindView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            nameView = rowView.findViewById(R.id.name);
-            groupsView = rowView.findViewById(R.id.groups);
-            kindView = rowView.findViewById(R.id.kind);
-
-            // long-click -> menu
-            rowDetailsView.setOnLongClickListener((v) -> {
-                onCreateContextMenu(getAdapterPosition());
-                return true;
-            });
+            nameView = itemView.findViewById(R.id.name);
+            groupsView = itemView.findViewById(R.id.groups);
+            kindView = itemView.findViewById(R.id.kind);
         }
     }
 
@@ -332,9 +326,9 @@ public class PreferredStylesActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            BooklistStyle style = holder.getItem();
+            BooklistStyle style = getItem(position);
 
-            holder.nameView.setText(style.getLabel(PreferredStylesActivity.this));
+            holder.nameView.setText(style.getLabel(getContext()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(style.isPreferred());
@@ -346,12 +340,18 @@ public class PreferredStylesActivity
                 notifyItemChanged(position);
             });
 
-            holder.groupsView.setText(style.getGroupListDisplayNames(PreferredStylesActivity.this));
+            holder.groupsView.setText(style.getGroupListDisplayNames(getContext()));
             if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {
                 holder.kindView.setText(R.string.style_is_builtin);
             }
+
+            // long-click -> menu
+            holder.rowDetailsView.setOnLongClickListener((v) -> {
+                onCreateContextMenu(position);
+                return true;
+            });
         }
     }
 }

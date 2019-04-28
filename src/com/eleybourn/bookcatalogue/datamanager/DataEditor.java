@@ -19,20 +19,14 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import androidx.annotation.NonNull;
-
 /**
  * Interface supported by an editor object.
- *
- * @author pjw
  */
 public interface DataEditor
         extends DataViewer {
 
     /**
-     * Save current data TO the passed DataManager.
-     *
-     * @param dataManager the parent collection
+     * Save the contents of all Fields to the actual data store/manager.
      */
-    <T extends DataManager> void saveTo(@NonNull T /* in/out */ dataManager);
+    void saveFields();
 }

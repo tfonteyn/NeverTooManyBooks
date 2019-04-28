@@ -127,7 +127,7 @@ public class MultiTypeListCursorAdapter
      * Provide the text for the fast-scroller overlay of ListView
      * and {@link com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
      * <p>
-     * The actual text comes from {@link MultiTypeListHandler#getSectionText(Cursor)}}.
+     * The actual text comes from {@link MultiTypeListHandler#getSectionText}}.
      */
     @Override
     @Nullable
@@ -139,7 +139,7 @@ public class MultiTypeListCursorAdapter
 
         final int savedPos = listCursor.getPosition();
         listCursor.moveToPosition(position);
-        final String[] section = mListHandler.getSectionText(listCursor);
+        final String[] section = mListHandler.getSectionText(mInflater.getContext(), listCursor);
         listCursor.moveToPosition(savedPos);
 
         return section;

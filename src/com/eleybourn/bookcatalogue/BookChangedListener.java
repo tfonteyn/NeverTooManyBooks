@@ -2,7 +2,9 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * Allows to be notified of changes made to book(s).
@@ -29,6 +31,29 @@ public interface BookChangedListener {
      * it was deleted.
      */
     int BOOK_WAS_DELETED = 1 << 9;
+
+    /**
+     * Convenience method. Try in order:
+     * <li>getTargetFragment()</li>
+     * <li>getParentFragment()</li>
+     * <li>getActivity()</li>
+     */
+    static void onBookChanged(@NonNull final Fragment sourceFragment,
+                              final long bookId,
+                              final int fieldsChanged,
+                              @Nullable final Bundle data) {
+
+        if (sourceFragment.getTargetFragment() instanceof BookChangedListener) {
+            ((BookChangedListener) sourceFragment.getTargetFragment())
+                    .onBookChanged(bookId, fieldsChanged, data);
+        } else if (sourceFragment.getParentFragment() instanceof BookChangedListener) {
+            ((BookChangedListener) sourceFragment.getParentFragment())
+                    .onBookChanged(bookId, fieldsChanged, data);
+        } else if (sourceFragment.getActivity() instanceof BookChangedListener) {
+            ((BookChangedListener) sourceFragment.requireActivity())
+                    .onBookChanged(bookId, fieldsChanged, data);
+        }
+    }
 
     /**
      * Called if changes were made.

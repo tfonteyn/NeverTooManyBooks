@@ -27,13 +27,4 @@
         app:layout_constraintTop_toBottomOf="@id/name"
         />
 
-    <include
-        android:id="@+id/buttonbar_cancel_save"
-        layout="@layout/inc_buttonbar_cancel_save"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/blurb"
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>

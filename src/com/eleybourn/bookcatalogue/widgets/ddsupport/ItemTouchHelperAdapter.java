@@ -38,6 +38,7 @@ public interface ItemTouchHelperAdapter {
      *
      * @return {@code true} if the item was moved to the new adapter position.
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean onItemMove(int fromPosition, int toPosition);
 
 

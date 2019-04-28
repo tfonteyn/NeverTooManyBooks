@@ -3,16 +3,17 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.IOException;
@@ -33,8 +34,6 @@ public class ImportDialogFragment
     private static final String TAG = ImportDialogFragment.class.getSimpleName();
 
     private ImportSettings mImportSettings;
-
-    private OnImportTypeSelectionDialogResultsListener mActivity;
 
     /**
      * (syntax sugar for newInstance)
@@ -75,35 +74,37 @@ public class ImportDialogFragment
         }
     }
 
-    @Nullable
+    /**
+     * Create the underlying dialog.
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_import_options, container);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        mActivity = (OnImportTypeSelectionDialogResultsListener) requireActivity();
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mImportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
-
-        view.findViewById(R.id.confirm).setOnClickListener(v -> {
-            updateOptions();
-            mActivity.onImportTypeSelectionDialogResult(mImportSettings);
-            dismiss();
-        });
+        View root = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
 
         if (!archiveHasValidDates()) {
-            View radioNewAndUpdatedBooks = view.findViewById(R.id.radioNewAndUpdatedBooks);
+            View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
             radioNewAndUpdatedBooks.setEnabled(false);
-            TextView blurb = view.findViewById(R.id.radioNewAndUpdatedBooksInfo);
+            TextView blurb = root.findViewById(R.id.radioNewAndUpdatedBooksInfo);
             blurb.setText(R.string.import_warning_old_archive);
         }
+
+        //noinspection ConstantConditions
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(root)
+                .setTitle(R.string.import_options_dialog_title)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, ((d, which) -> {
+                    updateOptions();
+                    OnImportTypeSelectionDialogResultsListener
+                            .onImportTypeSelectionDialogResult(this, mImportSettings);
+                }))
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
 
     private void updateOptions() {
@@ -159,6 +160,27 @@ public class ImportDialogFragment
      * Listener interface to receive notifications when dialog is closed by any means.
      */
     public interface OnImportTypeSelectionDialogResultsListener {
+
+        /**
+         * Convenience method. Try in order:
+         * <li>getTargetFragment()</li>
+         * <li>getParentFragment()</li>
+         * <li>getActivity()</li>
+         */
+        static void onImportTypeSelectionDialogResult(@NonNull final Fragment sourceFragment,
+                                                      @NonNull ImportSettings settings) {
+
+            if (sourceFragment.getTargetFragment() instanceof OnImportTypeSelectionDialogResultsListener) {
+                ((OnImportTypeSelectionDialogResultsListener) sourceFragment.getTargetFragment())
+                        .onImportTypeSelectionDialogResult(settings);
+            } else if (sourceFragment.getParentFragment() instanceof OnImportTypeSelectionDialogResultsListener) {
+                ((OnImportTypeSelectionDialogResultsListener) sourceFragment.getParentFragment())
+                        .onImportTypeSelectionDialogResult(settings);
+            } else if (sourceFragment.getActivity() instanceof OnImportTypeSelectionDialogResultsListener) {
+                ((OnImportTypeSelectionDialogResultsListener) sourceFragment.requireActivity())
+                        .onImportTypeSelectionDialogResult(settings);
+            }
+        }
 
         void onImportTypeSelectionDialogResult(@NonNull ImportSettings settings);
     }

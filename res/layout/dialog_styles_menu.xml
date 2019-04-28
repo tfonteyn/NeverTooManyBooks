@@ -4,18 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     >
-
-    <TextView
-        android:id="@+id/dialog_title"
-        style="@style/dialogTitle"
-        android:text="@string/title_select_style"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/styles"
@@ -24,18 +13,18 @@
         app:layout_constraintBottom_toTopOf="@id/bottomDiv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_title"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_weight="1"
         tools:listitem="@layout/row_radiobutton"
         />
 
     <View
-    android:id="@+id/bottomDiv"
-    style="@style/div_horizontal"
-    app:layout_constraintBottom_toTopOf="@id/menu_show_more_or_less"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    />
+        android:id="@+id/bottomDiv"
+        style="@style/div_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/menu_show_more_or_less"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <TextView
         android:id="@+id/menu_show_more_or_less"
@@ -44,8 +33,8 @@
         android:layout_height="wrap_content"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@id/menu_customize_ellipsis"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="SelectableText"
         tools:text="@string/menu_show_fewer_ellipsis"
         />
@@ -57,9 +46,9 @@
         android:layout_height="wrap_content"
         android:text="@string/menu_customize_ellipsis"
         android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="SelectableText"
         />
 

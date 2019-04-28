@@ -27,27 +27,23 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperViewHolder;
  * <li>R.id.TLV_ROW_CHECKABLE</li>
  * <li>R.id.TLV_ROW_GRABBER</li>
  * </ul>
- *
- * @param <T> type of the encapsulated item for the row.
  */
-public class RecyclerViewViewHolderBase<T>
+public class RecyclerViewViewHolderBase
         extends RecyclerView.ViewHolder
         implements ItemTouchHelperViewHolder {
 
     /** optional row checkable button. */
     @Nullable
     public final CompoundButton mCheckableButton;
+    /** The details part of the row (or the row itself). */
+    @NonNull
+    public final View rowDetailsView;
     /** optional drag handle button for drag/drop support. */
     @Nullable
     final ImageView mDragHandleView;
-    /** The details part of the row (or the row itself). */
-    @NonNull
-    protected final View rowDetailsView;
     /** optional row delete button. */
     @Nullable
-    protected final View mDeleteButton;
-    /** The item that is represented by this row. */
-    protected T item;
+    final View mDeleteButton;
 
     public RecyclerViewViewHolderBase(@NonNull final View itemView) {
         super(itemView);
@@ -64,21 +60,15 @@ public class RecyclerViewViewHolderBase<T>
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
     }
 
-    public T getItem() {
-        return item;
-    }
-
-    public void setItem(final T item) {
-        this.item = item;
-    }
-
     @Override
     public void onItemSelected() {
+        //ENHANCE: style this.
         itemView.setBackgroundColor(Color.LTGRAY);
     }
 
     @Override
     public void onItemClear() {
+        //ENHANCE: maybe style this.
         itemView.setBackgroundColor(Color.TRANSPARENT);
     }
 }

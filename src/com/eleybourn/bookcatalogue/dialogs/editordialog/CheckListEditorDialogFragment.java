@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -39,10 +41,12 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 
 /**
  * DialogFragment to edit a list of checkbox options.
+ *
+ * This is really overkill.. maybe time to switch back to a simple Dialog.
+ * https://developer.android.com/guide/topics/ui/dialogs
  *
  * @param <T> type to use for {@link CheckListItem}
  */
@@ -63,7 +67,7 @@ public class CheckListEditorDialogFragment<T>
      * Constructor.
      *
      * @param callerTag     tag of the calling fragment to send results back to.
-     * @param field         the field whose content we want to edit
+     * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param listGetter    callback interface for getting the list to use.
      * @param <T>           type of the {@link CheckListItem}
@@ -72,7 +76,7 @@ public class CheckListEditorDialogFragment<T>
      */
     public static <T> CheckListEditorDialogFragment<T> newInstance(
             @NonNull final String callerTag,
-            @NonNull final Fields.Field field,
+            @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
             @NonNull final CheckListEditorListGetter<T> listGetter) {
 
@@ -80,7 +84,7 @@ public class CheckListEditorDialogFragment<T>
         Bundle args = new Bundle();
         args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+        args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
         args.putParcelableArrayList(BKEY_CHECK_LIST, listGetter.getList());
         frag.setArguments(args);
         return frag;
@@ -98,11 +102,17 @@ public class CheckListEditorDialogFragment<T>
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
         Objects.requireNonNull(mList);
 
-        CheckListEditorDialog editor = new CheckListEditorDialog(requireActivity());
+        CheckListEditorDialog dialog = new CheckListEditorDialog(requireActivity());
         if (mTitleId != 0) {
-            editor.setTitle(mTitleId);
+            dialog.setTitle(mTitleId);
         }
-        return editor;
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
+                         (dialog1, which) -> dismiss());
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
+                         (d, which) -> getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList));
+
+        return dialog;
     }
 
     @Override
@@ -153,7 +163,7 @@ public class CheckListEditorDialogFragment<T>
         CheckListEditorDialog(@NonNull final Context context) {
             super(context);
 
-            View root = getLayoutInflater().inflate(R.layout.dialog_edit_base, null);
+            View root = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
             setView(root);
 
             // Takes the list of items and create a list of checkboxes in the display.
@@ -166,17 +176,6 @@ public class CheckListEditorDialogFragment<T>
                         (v, isChecked) -> item.setChecked(isChecked));
                 body.addView(buttonView);
             }
-
-            // Handle OK
-            root.findViewById(R.id.confirm).setOnClickListener(
-                    v -> {
-                        dismiss();
-                        getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList);
-                    }
-            );
-
-            // Handle Cancel
-            root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
         }
     }
 }

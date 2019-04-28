@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- top view must be scroller to work with AppBarLayout. -->
 <com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:csf="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     csf:cfsEnabled="true"
     csf:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
     csf:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"

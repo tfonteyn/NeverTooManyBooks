@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 /**
@@ -45,6 +46,10 @@ public abstract class BaseActivity
     /** The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
+
+    @Nullable
+    FloatingActionButton mFloatingActionButton;
+
 
     /**
      * Override this and return the id you need.
@@ -70,8 +75,40 @@ public abstract class BaseActivity
             setContentView(layoutId);
         }
 
-        initToolbar();
-        initNavigationPanel();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        // Normal setup of the action bar now
+        ActionBar bar = getSupportActionBar();
+        if (bar != null) {
+            // default on all activities is to show the "up" (back) button
+            bar.setDisplayHomeAsUpEnabled(true);
+            // but if we are at the top activity
+            if (isTaskRoot()) {
+                // then we want the hamburger menu.
+                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            }
+        }
+
+
+//        mFloatingActionButton = findViewById(R.id.fab);
+
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+//        if (mDrawerLayout != null) {
+//            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                    this, mDrawerLayout, toolbar,
+//                    R.string.navigation_drawer_open,
+//                    R.string.navigation_drawer_close);
+//            mDrawerLayout.addDrawerListener(toggle);
+//            toggle.syncState();
+//        }
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        }
     }
 
     /**
@@ -109,50 +146,20 @@ public abstract class BaseActivity
         }
     }
 
-    /**
-     * Setup the application toolbar to show either 'Home/Hamburger' or 'Up' button.
-     */
-    private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
-
-        // Normal setup of the action bar now
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) {
-
-            // default on all activities is to show the "up" (back) button
-            bar.setDisplayHomeAsUpEnabled(true);
-
-            //bar.setDisplayShowHomeEnabled(true);
-
-            // but if we are at the top activity
-            if (isTaskRoot()) {
-                // then we want the hamburger menu.
-                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
-            }
-        }
-    }
-
-    /**
-     * Using a {@link NavigationView} and matching {@link Toolbar}
-     * see https://developer.android.com/training/implementing-navigation/nav-drawer
-     * <p>
-     * These are optional in our layouts.
-     */
-    private void initNavigationPanel() {
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+    @Override
+    @CallSuper
+    public void onBackPressed() {
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 
     @CallSuper
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawers();
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         }
 
         switch (item.getItemId()) {

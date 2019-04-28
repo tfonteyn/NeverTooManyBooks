@@ -42,8 +42,8 @@ import java.util.Map;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.FieldUsage;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
@@ -69,7 +69,7 @@ public class UpdateFieldsFromInternetActivity
      */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** which fields to update and how. */
-    private final Map<String, Fields.FieldUsage> mFieldUsages = new LinkedHashMap<>();
+    private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
     /** where to look. */
     private int mSearchSites = Site.SEARCH_ALL;
     /** 0 for all books, or a specific book. */
@@ -181,35 +181,35 @@ public class UpdateFieldsFromInternetActivity
      */
     private void initFields() {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_AUTHOR,
-                     R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
+                     R.string.lbl_author, FieldUsage.Usage.AddExtra, true);
         addIfVisible(DBDefinitions.KEY_TITLE,
-                     R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_title, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_ISBN,
-                     R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_isbn, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_COVER_IMAGE,
-                     R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_cover, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES,
-                     R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
+                     R.string.lbl_series, FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, DBDefinitions.KEY_TOC_BITMASK,
-                     R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
+                     R.string.lbl_table_of_content, FieldUsage.Usage.AddExtra, true);
         addIfVisible(DBDefinitions.KEY_PUBLISHER,
-                     R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_publisher, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_DATE_PUBLISHED,
-                     R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_date_published, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                     R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_first_publication, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_DESCRIPTION,
-                     R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_description, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_PAGES,
-                     R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_pages, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_PRICE_LISTED,
-                     R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_price_listed, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_FORMAT,
-                     R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_format, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_GENRE,
-                     R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_genre, FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(DBDefinitions.KEY_LANGUAGE,
-                     R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
+                     R.string.lbl_language, FieldUsage.Usage.CopyIfBlank, false);
     }
 
     /**
@@ -222,12 +222,12 @@ public class UpdateFieldsFromInternetActivity
      */
     private void addIfVisible(@NonNull final String fieldId,
                               @StringRes final int nameStringId,
-                              @NonNull final Fields.FieldUsage.Usage defaultUsage,
+                              @NonNull final FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
-        if (Fields.isUsed(fieldId)) {
+        if (App.isUsed(fieldId)) {
             mFieldUsages.put(fieldId,
-                             new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+                             new FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
     }
 
@@ -243,12 +243,12 @@ public class UpdateFieldsFromInternetActivity
     private void addIfVisible(@NonNull final String fieldId,
                               @NonNull final String visField,
                               @StringRes final int nameStringId,
-                              @NonNull final Fields.FieldUsage.Usage defaultUsage,
+                              @NonNull final FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
-        if (Fields.isUsed(visField)) {
+        if (App.isUsed(visField)) {
             mFieldUsages.put(fieldId,
-                             new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+                             new FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
     }
 
@@ -257,7 +257,7 @@ public class UpdateFieldsFromInternetActivity
      */
     private void populateFields() {
 
-        for (Fields.FieldUsage usage : mFieldUsages.values()) {
+        for (FieldUsage usage : mFieldUsages.values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
                                                    mListContainer, false);
 
@@ -270,7 +270,7 @@ public class UpdateFieldsFromInternetActivity
             cb.setTag(usage);
             cb.setOnClickListener(v -> {
                 // ENHANCE: The check is really a FOUR-state.
-                final Fields.FieldUsage fieldUsage = (Fields.FieldUsage) cb.getTag();
+                final FieldUsage fieldUsage = (FieldUsage) cb.getTag();
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isSelected());
                 cb.setText(fieldUsage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
@@ -292,7 +292,7 @@ public class UpdateFieldsFromInternetActivity
         }
 
         // If the user has selected thumbnails, check if they want to download ALL
-        final Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
+        final FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
         // but don't ask if its a single book only; just download it.
         //noinspection ConstantConditions
         if (mBookId == 0 && coversWanted.isSelected()) {
@@ -307,7 +307,7 @@ public class UpdateFieldsFromInternetActivity
             dialog.setButton(
                     AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
                     (d, which) -> {
-                        coversWanted.usage = Fields.FieldUsage.Usage.Overwrite;
+                        coversWanted.usage = FieldUsage.Usage.Overwrite;
                         startUpdate(mBookId);
                     });
             dialog.setButton(
@@ -318,7 +318,7 @@ public class UpdateFieldsFromInternetActivity
             dialog.setButton(
                     AlertDialog.BUTTON_NEUTRAL, getString(R.string.no),
                     (d, which) -> {
-                        coversWanted.usage = Fields.FieldUsage.Usage.CopyIfBlank;
+                        coversWanted.usage = FieldUsage.Usage.CopyIfBlank;
                         startUpdate(mBookId);
                     });
             dialog.show();
@@ -390,7 +390,7 @@ public class UpdateFieldsFromInternetActivity
             View view = mListContainer.getChildAt(i);
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
-                Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
+                FieldUsage usage = (FieldUsage) cb.getTag();
                 if (usage.isSelected()) {
                     return true;
                 }

@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -64,9 +65,9 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditFormatDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditGenreDialog;
@@ -86,7 +87,6 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
@@ -143,9 +143,11 @@ public class BooksMultiTypeListHandler
      */
     @Nullable
     @Override
-    public String[] getSectionText(@NonNull final Cursor cursor) {
+    public String[] getSectionText(@NonNull final Context context,
+                                   @NonNull final Cursor cursor) {
         BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
-        return new String[]{row.getLevelText(1), row.getLevelText(2)};
+        return new String[]{row.getLevelText(context,1),
+                            row.getLevelText(context,2)};
     }
 
     /**
@@ -295,7 +297,7 @@ public class BooksMultiTypeListHandler
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, 0, R.string.menu_edit_book_notes)
                     .setIcon(R.drawable.ic_note);
 
-                if (Fields.isUsed(DBDefinitions.KEY_LOANEE)) {
+                if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mDb.getLoaneeByBookId(row.getBookId());
                     if (isAvailable) {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN,
@@ -414,20 +416,20 @@ public class BooksMultiTypeListHandler
      * Handle the 'standard' menu items. If the passed activity implements
      * {@link BookChangedListener} then inform it when changes have been made.
      * <p>
-     * ENHANCE: Consider using {@link LocalBroadcastManager} instead to all BooklistChangeListener
+     * ENHANCE: Consider using {@link LocalBroadcastManager} instead of {@link BookChangedListener}.
      *
+     * @param activity Calling Activity
      * @param menuItem Related MenuItem
      * @param db       DBA
      * @param row      Row view for affected cursor row
-     * @param activity Calling Activity
      *
      * @return {@code true} if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+    boolean onContextItemSelected(@NonNull final FragmentActivity activity,
+                                  @NonNull final MenuItem menuItem,
                                   @NonNull final DBA db,
-                                  @NonNull final BooklistCursorRow row,
-                                  @NonNull final FragmentActivity activity) {
+                                  @NonNull final BooklistCursorRow row) {
 
         final long bookId = row.getBookId();
 
@@ -442,6 +444,9 @@ public class BooksMultiTypeListHandler
             case R.id.MENU_BOOK_READ:
                 // toggle the read status
                 if (Book.setRead(bookId, !row.isRead(), db)) {
+//                    Bundle data = new Bundle();
+//                    data.putBoolean(KEY_READ, !row.isRead());
+//                    data.putInt(UniqueId.POSITION, row.getPosition());
                     new TellActivity(activity, bookId, BookChangedListener.BOOK_READ).run();
                 }
                 return true;
@@ -668,9 +673,12 @@ public class BooksMultiTypeListHandler
     private static class TellActivity
             implements Runnable {
 
+        @NonNull
         private final Activity mActivity;
         private final int mFields;
         private final long mBookId;
+        @Nullable
+        private final Bundle mData;
 
         /**
          * Constructor.
@@ -685,15 +693,30 @@ public class BooksMultiTypeListHandler
             mActivity = activity;
             mBookId = bookId;
             mFields = fields;
+            mData = null;
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param activity to tell
+         * @param bookId   single book id, or 0 for all
+         * @param fields   that changed
+         * @param data     bundle to pass
+         */
+        TellActivity(@NonNull final Activity activity,
+                     final long bookId,
+                     final int fields,
+                     @Nullable final Bundle data) {
+            mActivity = activity;
+            mBookId = bookId;
+            mFields = fields;
+            mData = data;
         }
 
         @Override
         public void run() {
-            // Let the Activity know
-            if (mActivity instanceof BookChangedListener) {
-                final BookChangedListener bcl = (BookChangedListener) mActivity;
-                bcl.onBookChanged(mBookId, mFields, null);
-            }
+            ((BookChangedListener) mActivity).onBookChanged(mBookId, mFields, mData);
         }
     }
 
@@ -955,12 +978,12 @@ public class BooksMultiTypeListHandler
 
             // visibility is independent from actual data, so set here.
             readView = rowView.findViewById(R.id.read);
-            readView.setVisibility(Fields.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
-                                                                         : View.GONE);
+            readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
+                                                                      : View.GONE);
 
             // visibility is independent from actual data, so set here.
             coverView = rowView.findViewById(R.id.coverImage);
-            if (Fields.isUsed(UniqueId.BKEY_COVER_IMAGE)
+            if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 coverView.setVisibility(View.VISIBLE);
                 // apply the scale as set per booklist style.
@@ -1018,12 +1041,12 @@ public class BooksMultiTypeListHandler
             titleView.setText(rowData.getTitle());
 
             // Read
-            if (Fields.isUsed(DBDefinitions.KEY_READ)) {
+            if (App.isUsed(DBDefinitions.KEY_READ)) {
                 readView.setChecked(rowData.isRead());
             }
 
             // Series number
-            if (Fields.isUsed(DBDefinitions.KEY_SERIES)
+            if (App.isUsed(DBDefinitions.KEY_SERIES)
                     && rowData.hasSeriesNumber()) {
 
                 String number = rowData.getSeriesNumber();
@@ -1047,7 +1070,7 @@ public class BooksMultiTypeListHandler
                 seriesNumLongView.setVisibility(View.GONE);
             }
 
-            if (Fields.isUsed(UniqueId.BKEY_COVER_IMAGE)
+            if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getBookUuid());

@@ -25,8 +25,9 @@ public class JoinContext {
      */
     public JoinContext(@NonNull final TableDefinition table) {
         mCurrentTable = table;
-        mSql = new StringBuilder();
-        mSql.append(mCurrentTable.getName()).append(' ').append(mCurrentTable.getAlias());
+        mSql = new StringBuilder(mCurrentTable.getName())
+                .append(' ')
+                .append(mCurrentTable.getAlias());
     }
 
     /**
@@ -38,8 +39,8 @@ public class JoinContext {
      */
     @NonNull
     public JoinContext join(@NonNull final TableDefinition to) {
-        mSql.append(mCurrentTable.join(to));
-        mSql.append('\n');
+        mSql.append(mCurrentTable.join(to))
+            .append('\n');
         mCurrentTable = to;
         return this;
     }
@@ -55,8 +56,8 @@ public class JoinContext {
     @NonNull
     public JoinContext join(@NonNull final TableDefinition from,
                             @NonNull final TableDefinition to) {
-        mSql.append(from.join(to));
-        mSql.append('\n');
+        mSql.append(from.join(to))
+            .append('\n');
         mCurrentTable = to;
         return this;
     }

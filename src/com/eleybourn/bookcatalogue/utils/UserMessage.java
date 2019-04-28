@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.App;
 import com.google.android.material.snackbar.Snackbar;

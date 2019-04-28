@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -66,7 +66,7 @@
             >
             <!-- fields are added here dynamically -->
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <Button
         android:id="@+id/cancel"

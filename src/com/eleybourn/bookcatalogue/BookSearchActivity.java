@@ -34,13 +34,16 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
  * Searches the internet for book details based on:
  * - manually provided or scanned ISBN.
  * - Author/Title.
+ * <p>
+ * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * hosting/main activity, which swaps in fragments as needed.
  */
 public class BookSearchActivity
         extends BaseActivityWithTasks {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_nav;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class BookSearchActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.main_fragment, frag, tag)
+                    .replace(R.id.main_fragment, frag, tag)
                     .commit();
         }
     }
@@ -73,7 +76,7 @@ public class BookSearchActivity
         } else if (BookSearchByTextFragment.TAG.equals(tag)) {
             return new BookSearchByTextFragment();
         } else {
-            throw new IllegalArgumentException("t=" + tag);
+            throw new IllegalArgumentException("tag=" + tag);
         }
     }
 }

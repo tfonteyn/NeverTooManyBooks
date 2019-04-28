@@ -42,10 +42,10 @@ import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.FieldUsage;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
@@ -67,7 +67,7 @@ public class UpdateFieldsFromInternetTask
 
     /** The fields that the user requested to update. */
     @NonNull
-    private final Map<String, Fields.FieldUsage> mFields;
+    private final Map<String, FieldUsage> mFields;
 
     /** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
@@ -90,7 +90,7 @@ public class UpdateFieldsFromInternetTask
     private String mCurrentUuid;
 
     /** The (subset) of fields relevant to the current book. */
-    private Map<String, Fields.FieldUsage> mCurrentBookFieldUsages;
+    private Map<String, FieldUsage> mCurrentBookFieldUsages;
 
 //    /**
 //     * Our class local {@link SearchManager.SearchManagerListener}.
@@ -120,7 +120,7 @@ public class UpdateFieldsFromInternetTask
      */
     public UpdateFieldsFromInternetTask(@NonNull final TaskManager taskManager,
                                         final int searchSites,
-                                        @NonNull final Map<String, Fields.FieldUsage> fields,
+                                        @NonNull final Map<String, FieldUsage> fields,
                                         @NonNull final ManagedTaskListener listener) {
         super(taskManager, "UpdateFieldsFromInternetTask");
 
@@ -302,11 +302,11 @@ public class UpdateFieldsFromInternetTask
     /**
      * See if there is a reason to fetch ANY data by checking which fields this book needs.
      */
-    private Map<String, Fields.FieldUsage> getCurrentBookFieldUsages(
-            @NonNull final Map<String, Fields.FieldUsage> requestedFields) {
+    private Map<String, FieldUsage> getCurrentBookFieldUsages(
+            @NonNull final Map<String, FieldUsage> requestedFields) {
 
-        Map<String, Fields.FieldUsage> fieldUsages = new LinkedHashMap<>();
-        for (Fields.FieldUsage usage : requestedFields.values()) {
+        Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
+        for (FieldUsage usage : requestedFields.values()) {
             // Not selected, we don't want it
             if (usage.isSelected()) {
                 switch (usage.usage) {
@@ -325,8 +325,8 @@ public class UpdateFieldsFromInternetTask
         return fieldUsages;
     }
 
-    private void currentCopyIfBlank(@NonNull final Map<String, Fields.FieldUsage> fieldUsages,
-                                    @NonNull final Fields.FieldUsage usage) {
+    private void currentCopyIfBlank(@NonNull final Map<String, FieldUsage> fieldUsages,
+                                    @NonNull final FieldUsage usage) {
         // Handle special cases first, 'default:' for the rest
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
@@ -431,7 +431,7 @@ public class UpdateFieldsFromInternetTask
      */
     private void processSearchResults(final long bookId,
                                       @NonNull final String uuid,
-                                      @NonNull final Map<String, Fields.FieldUsage> requestedFields,
+                                      @NonNull final Map<String, FieldUsage> requestedFields,
                                       @NonNull final Bundle newBookData,
                                       @NonNull final Bundle originalBookData) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
@@ -450,16 +450,16 @@ public class UpdateFieldsFromInternetTask
         }
 
         // For each field, process it according the usage.
-        for (Fields.FieldUsage usage : requestedFields.values()) {
+        for (FieldUsage usage : requestedFields.values()) {
             if (newBookData.containsKey(usage.fieldId)) {
                 // Handle thumbnail specially
                 if (usage.fieldId.equals(UniqueId.BKEY_COVER_IMAGE)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
-                    if (usage.usage == Fields.FieldUsage.Usage.CopyIfBlank) {
+                    if (usage.usage == FieldUsage.Usage.CopyIfBlank) {
                         File file = StorageUtils.getCoverFile(uuid);
                         copyThumb = !file.exists() || file.length() == 0;
-                    } else if (usage.usage == Fields.FieldUsage.Usage.Overwrite) {
+                    } else if (usage.usage == FieldUsage.Usage.Overwrite) {
                         copyThumb = true;
                     }
                     if (copyThumb) {
@@ -496,7 +496,7 @@ public class UpdateFieldsFromInternetTask
     /**
      * AddExtra: merge arrays.
      */
-    private void handleAddExtra(@NonNull final Fields.FieldUsage usage,
+    private void handleAddExtra(@NonNull final FieldUsage usage,
                                 @NonNull final Bundle originalBookData,
                                 @NonNull final Bundle newBookData) {
         // Handle arrays (note: before you're clever, and collapse this to
@@ -528,7 +528,7 @@ public class UpdateFieldsFromInternetTask
     /**
      * CopyIfBlank: replace if needed.
      */
-    private void handleCopyIfBlank(@NonNull final Fields.FieldUsage usage,
+    private void handleCopyIfBlank(@NonNull final FieldUsage usage,
                                    @NonNull final Bundle originalBookData,
                                    @NonNull final Bundle newBookData) {
         switch (usage.fieldId) {

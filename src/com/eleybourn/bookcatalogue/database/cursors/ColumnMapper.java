@@ -92,13 +92,13 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain the name of the domain to get
+     * @param domain the domain to get
      *
      * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final DomainDefinition domain) {
         //noinspection ConstantConditions
-        return -1 == mColumnIndexes.get(domain.name);
+        return (-1 != mColumnIndexes.get(domain.name));
     }
 
     /**

@@ -89,6 +89,7 @@ public class Series
             NUMBER_PREFIXES + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
 
     /** Parse a string into name + number. */
+
     private static final Pattern FROM_STRING_PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
     /** Parse series name/numbers embedded in a book title. */

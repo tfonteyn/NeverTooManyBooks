@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -29,7 +30,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -152,21 +153,9 @@ public class CoverBrowser
         return frag;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.dialog_cover_browser, container);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debugEnter(this, "onViewCreated", savedInstanceState);
-        }
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         mActivity = (BaseActivity) requireActivity();
 
@@ -175,22 +164,26 @@ public class CoverBrowser
         mIsbn = args.getString(DBDefinitions.KEY_ISBN);
         // Create an object to manage the downloaded files
         mFileManager = new FileManager(args.getInt(UniqueId.BKEY_SEARCH_SITES), savedInstanceState);
+
+
         if (savedInstanceState != null) {
             mAlternativeEditions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
         }
 
-        mDisplaySizes = ImageUtils.getDisplaySizes(mActivity);
+        @SuppressLint("InflateParams")
+        View root = getLayoutInflater().inflate(R.layout.dialog_cover_browser, null);
 
-        mStatusTextView = view.findViewById(R.id.statusMessage);
+        // keep the user informed.
+        mStatusTextView = root.findViewById(R.id.statusMessage);
 
-        // setup the gallery; make it horizontal scrolling.
-        mGalleryView = view.findViewById(R.id.gallery);
+        // setup the gallery.
+        mGalleryView = root.findViewById(R.id.gallery);
         LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
         galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         mGalleryView.setLayoutManager(galleryLayoutManager);
 
         // setup the switcher.
-        mImageSwitcherView = view.findViewById(R.id.switcher);
+        mImageSwitcherView = root.findViewById(R.id.switcher);
         mImageSwitcherView.setFactory(() -> {
             ImageView imageView = new ImageView(getContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -227,21 +220,15 @@ public class CoverBrowser
             // close the CoverBrowser
             dismiss();
         });
+
+        return new AlertDialog.Builder(mActivity)
+                .setView(root)
+                .create();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        // force the enclosing dialog to be big enough. When using onCreateView,
-        // this must be done here.
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //noinspection ConstantConditions
-            dialog.getWindow().setLayout(width, height);
-        }
 
         if (mAlternativeEditions == null) {
             mStatusTextView.setText(R.string.progress_msg_finding_editions);
@@ -303,12 +290,13 @@ public class CoverBrowser
             return;
         }
 
-
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);
 
-        // Use our custom adapter to load images
-        GalleryAdapter adapter = new GalleryAdapter();
+        mDisplaySizes = ImageUtils.getDisplaySizes(mActivity);
+
+        // Use our adapter to load the gallery images
+        GalleryAdapter adapter = new GalleryAdapter(mDisplaySizes.small, mDisplaySizes.small);
         mGalleryView.setAdapter(adapter);
     }
 
@@ -681,27 +669,29 @@ public class CoverBrowser
 
         @NonNull
         private final GalleryAdapter mGalleryAdapter;
+        private final int mPosition;
+
         @NonNull
         private final FileManager mFileManager;
 
-        /** View to populate. */
         @NonNull
-        private final GalleryViewHolder mGalleryViewHolder;
+        private final String mIsbn;
 
         /**
          * Constructor.
          *
-         * @param galleryAdapter    to send results to
-         * @param galleryViewHolder view to populate.
-         * @param fileManager       for downloads
+         * @param galleryAdapter to send results to
+         * @param isbn           to get image for
+         * @param fileManager    for downloads
          */
         @UiThread
         GetGalleryImageTask(@NonNull final GalleryAdapter galleryAdapter,
-                            @NonNull final GalleryViewHolder galleryViewHolder,
+                            final int position,
+                            @NonNull final String isbn,
                             @NonNull final FileManager fileManager) {
             mGalleryAdapter = galleryAdapter;
-            mGalleryViewHolder = galleryViewHolder;
-
+            mPosition = position;
+            mIsbn = isbn;
             mFileManager = fileManager;
         }
 
@@ -710,7 +700,7 @@ public class CoverBrowser
         @WorkerThread
         protected String doInBackground(final Void... params) {
             try {
-                return mFileManager.download(mGalleryViewHolder.isbn,
+                return mFileManager.download(mIsbn,
                                              SearchSiteManager.ImageSizes.SMALL,
                                              SearchSiteManager.ImageSizes.MEDIUM,
                                              SearchSiteManager.ImageSizes.LARGE);
@@ -723,16 +713,16 @@ public class CoverBrowser
         }
 
         @Override
-        protected void onCancelled(final String result) {
+        protected void onCancelled(@Nullable final String result) {
             // let the caller clean up.
-            mGalleryAdapter.updateGallery(mGalleryViewHolder, this, result);
+            mGalleryAdapter.updateGallery(this, mPosition, result);
         }
 
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final String result) {
             // always callback; even with a bad result.
-            mGalleryAdapter.updateGallery(mGalleryViewHolder, this, result);
+            mGalleryAdapter.updateGallery(this, mPosition, result);
         }
     }
 
@@ -797,67 +787,64 @@ public class CoverBrowser
     }
 
     /** Stores and recycles views as they are scrolled off screen. */
-    private static class GalleryViewHolder
+    private static class Holder
             extends RecyclerView.ViewHolder {
 
-        /** super.itemView is a 'View'. Caching it here as an 'ImageView' for ease of use. */
         @NonNull
         final ImageView imageView;
-        private final int mMaxWidth;
-        private final int mMaxHeight;
 
-        String isbn;
-
-        GalleryViewHolder(@NonNull final ImageView imageView,
-                          final int maxWidth,
-                          final int maxHeight) {
-            super(imageView);
-            this.imageView = imageView;
-            this.imageView.setLayoutParams(new ViewGroup.LayoutParams(maxWidth, maxHeight));
-            this.imageView.setBackgroundResource(R.drawable.border);
-            mMaxWidth = maxWidth;
-            mMaxHeight = maxHeight;
-        }
-
-        void setImage(@NonNull final File fileSpec) {
-            ImageUtils.setImageView(imageView, fileSpec, mMaxWidth, mMaxHeight, true);
+        Holder(@NonNull final ImageView itemView) {
+            super(itemView);
+            imageView = itemView;
         }
     }
 
     public class GalleryAdapter
-            extends RecyclerView.Adapter<GalleryViewHolder> {
+            extends RecyclerView.Adapter<Holder> {
 
-        @Override
-        @NonNull
-        public GalleryViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                    final int viewType) {
+        private final int mWidth;
+        private final int mHeight;
 
-            ImageView imageView = new ImageView(parent.getContext());
-            return new GalleryViewHolder(imageView, mDisplaySizes.small, mDisplaySizes.small);
+        GalleryAdapter(final int width,
+                       final int height) {
+            mWidth = width;
+            mHeight = height;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final GalleryViewHolder holder,
+        @NonNull
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+
+            ImageView imageView = new ImageView(parent.getContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
+            imageView.setBackgroundResource(R.drawable.border);
+            return new Holder(imageView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
             // fetch an image based on the isbn
-            holder.isbn = mAlternativeEditions.get(position);
+            String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
-            File imageFile = mFileManager.getFile(holder.isbn, SearchSiteManager.ImageSizes.SMALL,
+            File imageFile = mFileManager.getFile(isbn, SearchSiteManager.ImageSizes.SMALL,
                                                   SearchSiteManager.ImageSizes.MEDIUM,
                                                   SearchSiteManager.ImageSizes.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
                              "position=" + position,
-                             "isbn=" + holder.isbn,
+                             "isbn=" + isbn,
                              "fileSpec=" + imageFile);
             }
 
             // See if file is present.
             if (imageFile != null) {
-                holder.setImage(imageFile);
+                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
+
             } else {
                 // Not present; use a placeholder.
                 holder.imageView.setImageResource(R.drawable.ic_image);
@@ -865,23 +852,24 @@ public class CoverBrowser
                 if (!mDismissing) {
                     try {
                         GetGalleryImageTask task =
-                                new GetGalleryImageTask(this, holder, mFileManager);
+                                new GetGalleryImageTask(this, position, isbn, mFileManager);
 
                         addTask(task);
                         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                     } catch (RejectedExecutionException e) {
-                        // some books have a LOT of editions...
+                        // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
                             Logger.debug(this, "onBindViewHolder",
-                                         "isbn=" + holder.isbn,
+                                         "position=" + position,
+                                         "isbn=" + isbn,
                                          "Exception msg=" + e.getLocalizedMessage());
                         }
                     }
                 }
             }
             // image from gallery clicked -> load it into the larger preview (imageSwitcher).
-            holder.imageView.setOnClickListener(v -> updateSwitcher(holder.isbn));
+            holder.imageView.setOnClickListener(v -> updateSwitcher(isbn));
         }
 
         @Override
@@ -892,12 +880,12 @@ public class CoverBrowser
         /**
          * handle result from the {@link GetGalleryImageTask}.
          *
-         * @param holder   with the ImageView to populate
          * @param task     the task that finished
-         * @param fileSpec the file we got.
+         * @param position for which we got an image (or can confirm no image was available)
+         * @param fileSpec the file we got, or null.
          */
-        void updateGallery(@NonNull final GalleryViewHolder holder,
-                           @NonNull final AsyncTask task,
+        void updateGallery(@NonNull final AsyncTask task,
+                           final int position,
                            @Nullable final String fileSpec) {
             removeTask(task);
 
@@ -910,20 +898,21 @@ public class CoverBrowser
                 File imageFile = new File(fileSpec);
                 if (imageFile.exists()) {
                     imageFile.deleteOnExit();
-                    holder.setImage(imageFile);
+
+                    notifyItemChanged(position);
                     return;
                 }
             }
 
-            // Remove the defunct view from the gallery, and if none left, dismiss.
-            int position = holder.getAdapterPosition();
-            // NO_POSITION==-1
+            // Remove the defunct view from the gallery
+            // sanity check...
             if (position >= 0) {
                 mAlternativeEditions.remove(position);
                 notifyItemRemoved(position);
-                notifyItemRangeChanged(position, mAlternativeEditions.size());
+                notifyItemRangeChanged(position, getItemCount());
             }
 
+            // and if none left, dismiss.
             if (getItemCount() == 0) {
                 UserMessage.showUserMessage(mActivity, R.string.warning_cover_not_found);
                 dismiss();

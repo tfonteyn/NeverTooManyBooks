@@ -6,7 +6,7 @@ GOALS:
  2. replace SimpleTask with AsyncTask executing on an Executor (multi-threaded). ==> DONE
 
  3. Removal of ManagedTask
- 4. Removal of taskqueue, maybe...
+ 4. Removal of taskqueue
  5. cropper ?
 
 ----------------------------------------------------------------------------------------------------
@@ -42,7 +42,8 @@ Used by:
 
 Only used by the GoodReads api where it does make sense to have 'survivable' tasks.
 Hardcoded defaults clean up dead tasks after 7 days.
--> Android Service ?
+
+WorkManager sounds like a good replacement.
 
  ----------------------------------------------------------------------------------------------------
 5. CropImageActivity

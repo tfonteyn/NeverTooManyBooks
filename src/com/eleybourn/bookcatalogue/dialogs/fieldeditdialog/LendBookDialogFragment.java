@@ -24,6 +24,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,7 +42,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
@@ -90,11 +91,16 @@ public class LendBookDialogFragment
     /**
      * (syntax sugar for newInstance)
      */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final Book book) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(book).show(fm, TAG);
+    public static LendBookDialogFragment show(@NonNull final Fragment target,
+                                              @NonNull final Book book) {
+        FragmentManager fm = target.getFragmentManager();
+        //noinspection ConstantConditions
+        LendBookDialogFragment dialog = (LendBookDialogFragment) fm.findFragmentByTag(TAG);
+        if (dialog == null) {
+            dialog = newInstance(book);
+            dialog.show(fm, TAG);
         }
+        return dialog;
     }
 
     /**
@@ -138,11 +144,11 @@ public class LendBookDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final FragmentActivity activity = requireActivity();
-
+        Context context = getContext();
         Bundle args = requireArguments();
 
-        mDb = new DBA(activity);
+        //noinspection ConstantConditions
+        mDb = new DBA(context);
         final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
@@ -161,7 +167,7 @@ public class LendBookDialogFragment
         }
 
         @SuppressLint("InflateParams")
-        View root = activity.getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
+        View root = getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
         titleView.setText(args.getString(DBDefinitions.KEY_TITLE));
@@ -175,58 +181,40 @@ public class LendBookDialogFragment
 
         setPhoneContactsAdapter();
 
-        root.findViewById(R.id.confirm).setOnClickListener(v -> {
-            String newName = mLoaneeView.getText().toString().trim();
-            if (newName.isEmpty()) {
-                UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
-                return;
-            }
-
-            dismiss();
-
-            // check if there was something changed at all.
-            if (newName.equals(mLoanee)) {
-                return;
-            }
-            mLoanee = newName;
-
-            // lend book, reluctantly...
-            mDb.updateOrInsertLoan(bookId, mLoanee);
-
-            Bundle data = new Bundle();
-            data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-            tellCaller(bookId, data);
-        });
-
-        // the book was returned, remove the loan data
-        root.findViewById(R.id.return_book).setOnClickListener(v -> {
-            dismiss();
-            mDb.deleteLoan(bookId);
-            tellCaller(bookId, new Bundle());
-        });
-
-        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
-
-        return new AlertDialog.Builder(activity)
+        return new AlertDialog.Builder(context)
                 .setView(root)
                 .setTitle(R.string.lbl_lend_to)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
+                    // the book was returned, remove the loan data
+                    dismiss();
+                    mDb.deleteLoan(bookId);
+                    BookChangedListener.onBookChanged(this, bookId,
+                                                      BookChangedListener.BOOK_LOANEE,null);
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    String newName = mLoaneeView.getText().toString().trim();
+                    if (newName.isEmpty()) {
+                        UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
+                        return;
+                    }
+                    dismiss();
+
+                    // check if there was something changed at all.
+                    if (newName.equals(mLoanee)) {
+                        return;
+                    }
+                    mLoanee = newName;
+
+                    // lend book, reluctantly...
+                    mDb.updateOrInsertLoan(bookId, mLoanee);
+
+                    Bundle data = new Bundle();
+                    data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+                    BookChangedListener.onBookChanged(this, bookId,
+                                                      BookChangedListener.BOOK_LOANEE, data);
+                })
                 .create();
-    }
-
-    private void tellCaller(final long bookId,
-                            @NonNull final Bundle data) {
-
-        data.putLong(DBDefinitions.KEY_ID, bookId);
-
-        // see if there was a fragment?
-        if (getParentFragment() instanceof BookChangedListener) {
-            ((BookChangedListener) getParentFragment())
-                    .onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, data);
-            // or directly to an activity?
-        } else if (requireActivity() instanceof BookChangedListener) {
-            ((BookChangedListener) requireActivity())
-                    .onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, data);
-        }
     }
 
     /**

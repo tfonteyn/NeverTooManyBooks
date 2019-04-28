@@ -297,35 +297,27 @@ public class EditAuthorListActivity
          */
         protected void confirmChanges(@NonNull final Author author,
                                       @NonNull final Author newAuthorData) {
-            ((EditAuthorListActivity) mActivity).processChanges(author, newAuthorData);
+            //noinspection ConstantConditions
+            ((EditAuthorListActivity) getActivity()).processChanges(author, newAuthorData);
         }
     }
 
     /**
      * Holder pattern for each row.
      */
-    private class Holder
-            extends RecyclerViewViewHolderBase<Author> {
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
-        final TextView rowAuthorView;
+        final TextView authorView;
         @NonNull
-        final TextView rowAuthorSortView;
+        final TextView authorSortView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            rowAuthorView = rowView.findViewById(R.id.row_author);
-            rowAuthorSortView = rowView.findViewById(R.id.row_author_sort);
-
-            // click -> edit
-            rowDetailsView.setOnClickListener((v) -> {
-                FragmentManager fm = getSupportFragmentManager();
-                if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
-                    EditBookAuthorDialogFragment.newInstance(item)
-                                                .show(fm, EditBookAuthorDialogFragment.TAG);
-                }
-            });
+            authorView = itemView.findViewById(R.id.row_author);
+            authorSortView = itemView.findViewById(R.id.row_author_sort);
         }
     }
 
@@ -352,16 +344,25 @@ public class EditAuthorListActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            Author author = mList.get(position);
+            Author author = getItem(position);
 
-            holder.rowAuthorView.setText(author.getLabel());
+            holder.authorView.setText(author.getLabel());
 
             if (author.getLabel().equals(author.getSortName())) {
-                holder.rowAuthorSortView.setVisibility(View.GONE);
+                holder.authorSortView.setVisibility(View.GONE);
             } else {
-                holder.rowAuthorSortView.setVisibility(View.VISIBLE);
-                holder.rowAuthorSortView.setText(author.getSortName());
+                holder.authorSortView.setVisibility(View.VISIBLE);
+                holder.authorSortView.setText(author.getSortName());
             }
+
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener((v) -> {
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
+                    EditBookAuthorDialogFragment.newInstance(author)
+                                                .show(fm, EditBookAuthorDialogFragment.TAG);
+                }
+            });
         }
     }
 }

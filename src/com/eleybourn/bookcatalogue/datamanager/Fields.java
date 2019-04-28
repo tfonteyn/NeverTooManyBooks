@@ -49,7 +49,6 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
@@ -67,10 +66,11 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -147,12 +147,6 @@ import com.google.android.material.button.MaterialButton;
  */
 public class Fields {
 
-    /**
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
-
     /** The activity or fragment related to this object. */
     @NonNull
     private final FieldsContext mFieldContext;
@@ -224,17 +218,6 @@ public class Fields {
             }
         }
         throw new NullPointerException("Unable to get associated View object\n" + msg);
-    }
-
-    /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param fieldName to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isUsed(@NonNull final String fieldName) {
-        return App.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**
@@ -834,17 +817,54 @@ public class Fields {
     public static class EditTextAccessor
             extends BaseDataAccessor {
 
+        @NonNull
+        private final TextWatcher mTextWatcher;
+
+        EditTextAccessor(@NonNull final EditText view,
+                         @NonNull final Field field) {
+            mTextWatcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(@NonNull final CharSequence s,
+                                              final int start,
+                                              final int count,
+                                              final int after) {
+                }
+
+                @Override
+                public void onTextChanged(@NonNull final CharSequence s,
+                                          final int start,
+                                          final int before,
+                                          final int count) {
+                }
+
+                @Override
+                public void afterTextChanged(@NonNull final Editable s) {
+                    //FIXME: not very efficient... gets called whenever the field content is set
+                    // This includes when the device is rotated, when a tab is changed...
+                    if (BuildConfig.DEBUG) {
+                        Logger.debug(this,
+                                     "afterTextChanged",
+                                     "s=`" + s.toString() + '`',
+                                     "extract=`" + field.extract(s.toString()) + '`'
+                        );
+                    }
+                    field.setValue(field.extract(s.toString()));
+                }
+            };
+            view.addTextChangedListener(mTextWatcher);
+        }
+
         public synchronized void set(@NonNull final Field field,
                                      @NonNull final String value) {
             EditText view = field.getView();
-            view.removeTextChangedListener(field.mTextWatcher);
+            view.removeTextChangedListener(mTextWatcher);
 
             String newVal = field.format(value);
             String oldVal = view.getText().toString().trim();
             if (!newVal.equals(oldVal)) {
                 view.setText(newVal);
             }
-            view.addTextChangedListener(field.mTextWatcher);
+            view.addTextChangedListener(mTextWatcher);
         }
 
         public void putFieldValueInto(@NonNull final Field field,
@@ -1291,96 +1311,6 @@ public class Fields {
         }
     }
 
-    /**
-     * How to handle a field when updating the entity it belongs to.
-     * e.g. skip it, overwrite the value, etc...
-     */
-    public static class FieldUsage {
-
-        /** a key, usually from {@link UniqueId}. */
-        @NonNull
-        public final String fieldId;
-        /** is the field a list type. */
-        private final boolean mIsList;
-        /** label to show to the user. */
-        @StringRes
-        private final int mNameStringId;
-        /** how to use this field. */
-        @NonNull
-        public Usage usage;
-
-
-        public FieldUsage(@NonNull final String fieldId,
-                          @StringRes final int nameStringId,
-                          @NonNull final Usage usage,
-                          final boolean isList) {
-            this.fieldId = fieldId;
-            mNameStringId = nameStringId;
-            this.usage = usage;
-            mIsList = isList;
-        }
-
-        public boolean isSelected() {
-            return (usage != Usage.Skip);
-        }
-
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(mNameStringId);
-        }
-
-        public String getUsageInfo(@NonNull final Context context) {
-            return context.getString(usage.getStringId());
-        }
-
-        /**
-         * Cycle to the next Usage stage.
-         * <p>
-         * if (isList): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
-         * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
-         */
-        public void nextState() {
-            usage = usage.nextState(mIsList);
-        }
-
-        public enum Usage {
-            Skip, CopyIfBlank, AddExtra, Overwrite;
-
-            @NonNull
-            public Usage nextState(final boolean isList) {
-                switch (this) {
-                    case Skip:
-                        return CopyIfBlank;
-                    case CopyIfBlank:
-                        if (isList) {
-                            return AddExtra;
-                        } else {
-                            return Overwrite;
-                        }
-                    case AddExtra:
-                        return Overwrite;
-
-                    //case Overwrite:
-                    default:
-                        return Skip;
-                }
-            }
-
-            @StringRes
-            int getStringId() {
-                switch (this) {
-                    case CopyIfBlank:
-                        return R.string.lbl_field_usage_copy_if_blank;
-                    case AddExtra:
-                        return R.string.lbl_field_usage_add_extra;
-                    case Overwrite:
-                        return R.string.lbl_field_usage_overwrite;
-                    default:
-                        return R.string.usage_skip;
-                }
-            }
-        }
-    }
-
     /** fronts an Activity context. */
     private static class ActivityContext
             implements FieldsContext {
@@ -1450,6 +1380,40 @@ public class Fields {
     }
 
     /**
+     * Field Formatter for a bitmask based Book Editions field.
+     * <p>
+     * Does not support {@link FieldFormatter#extract}.
+     */
+    public static class BookEditionsFormatter
+            implements FieldFormatter {
+
+        @NonNull
+        @Override
+        public String format(@NonNull final Field field,
+                             @Nullable final String source) {
+            if (source == null || source.isEmpty()) {
+                return "";
+            }
+
+            int bitmask;
+            try {
+                bitmask = Integer.parseInt(source);
+            } catch (NumberFormatException ignore) {
+                return source;
+            }
+            Context context = field.getView().getContext();
+            List<String> list = new ArrayList<>();
+            for (Integer edition : Book.EDITIONS.keySet()) {
+                if ((edition & bitmask) != 0) {
+                    //noinspection ConstantConditions
+                    list.add(context.getString(Book.EDITIONS.get(edition)));
+                }
+            }
+            return Csv.toDisplayString(list, null);
+        }
+    }
+
+    /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
      * ENHANCE: make generic? and use an actual type
@@ -1503,8 +1467,7 @@ public class Fields {
         /** Accessor to use (automatically defined). */
         @NonNull
         private FieldDataAccessor mFieldDataAccessor;
-        /** TextWatcher, used for EditText fields only. */
-        private TextWatcher mTextWatcher;
+
 
         /**
          * Constructor.
@@ -1543,39 +1506,7 @@ public class Fields {
                 addTouchSignalsDirty(view);
 
             } else if (view instanceof EditText) {
-                mFieldDataAccessor = new EditTextAccessor();
-                EditText et = (EditText) view;
-                mTextWatcher = new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(@NonNull final CharSequence s,
-                                                  final int start,
-                                                  final int count,
-                                                  final int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(@NonNull final CharSequence s,
-                                              final int start,
-                                              final int before,
-                                              final int count) {
-                    }
-
-                    @Override
-                    public void afterTextChanged(@NonNull final Editable s) {
-                        // when the device is rotated, I've not found a way yet
-                        // to disable/enable the text watcher like the Edit accessor set()
-                        // does.
-                        // so.. the extract() had to be added here.
-                        if (BuildConfig.DEBUG) {
-                            Logger.debug(this,"afterTextChanged",
-                                         "s=`" + s.toString() + '`',
-                                         "extract=`" + extract(s.toString()) + '`'
-                                         );
-                        }
-                        setValue(extract(s.toString()));
-                    }
-                };
-                et.addTextChangedListener(mTextWatcher);
+                mFieldDataAccessor = new EditTextAccessor((EditText) view, this);
 
             } else if (view instanceof Button) {
                 // a Button *is* a TextView, but this is cleaner
@@ -1599,7 +1530,7 @@ public class Fields {
                 throw new IllegalTypeException(view.getClass().getCanonicalName());
             }
 
-            mIsUsed = Fields.isUsed(group);
+            mIsUsed = App.isUsed(group);
             if (!mIsUsed) {
                 view.setVisibility(View.GONE);
             }
@@ -1619,7 +1550,6 @@ public class Fields {
                     ", mDoNoFetch=" + mDoNoFetch +
                     ", mFieldValidator=" + mFieldValidator +
                     ", mFieldDataAccessor=" + mFieldDataAccessor +
-                    ", mTextWatcher=" + mTextWatcher +
                     '}';
         }
 
@@ -1713,7 +1643,7 @@ public class Fields {
          * Reset one fields visibility based on user preferences.
          */
         private void resetVisibility() {
-            mIsUsed = Fields.isUsed(group);
+            mIsUsed = App.isUsed(group);
             getView().setVisibility(mIsUsed ? View.VISIBLE : View.GONE);
         }
 

@@ -24,6 +24,12 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+
+    <style name="AppTheme.Light.Blue.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.Light.Blue.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+
     <!-- =========== -->
     <!-- Dark theme. -->
     <!-- Parent should become: Theme.MaterialComponents.NoActionBar -->

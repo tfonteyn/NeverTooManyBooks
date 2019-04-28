@@ -135,7 +135,8 @@ public class FileChooserFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        View view = requireView();
+        View view = getView();
+        //noinspection ConstantConditions
         mCurrentFolderView = view.findViewById(R.id.current_folder);
         mFilenameView = view.findViewById(R.id.file_name);
 
@@ -208,7 +209,8 @@ public class FileChooserFragment
 
         // Setup and display the list
         FileDetailsAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
-        RecyclerView listView = requireView().findViewById(android.R.id.list);
+        //noinspection ConstantConditions
+        RecyclerView listView = getView().findViewById(android.R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
         listView.setHasFixedSize(true);
         listView.setAdapter(adapter);
@@ -233,11 +235,11 @@ public class FileChooserFragment
         @NonNull
         File getFile();
 
-        void onBindViewHolder(@NonNull final FileDetailsHolder holder,
+        void onBindViewHolder(@NonNull final Holder holder,
                               @NonNull Context context);
     }
 
-    public static class FileDetailsHolder
+    public static class Holder
             extends RecyclerView.ViewHolder {
 
         public final TextView filenameView;
@@ -248,16 +250,16 @@ public class FileChooserFragment
         public final TextView dateView;
         public final TextView sizeView;
 
-        FileDetailsHolder(@NonNull final View convertView) {
-            super(convertView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            filenameView = convertView.findViewById(R.id.filename);
-            imageView = convertView.findViewById(R.id.icon);
+            filenameView = itemView.findViewById(R.id.filename);
+            imageView = itemView.findViewById(R.id.icon);
 
-            fileDetails = convertView.findViewById(R.id.file_details);
-            fileContentView = convertView.findViewById(R.id.file_content);
-            dateView = convertView.findViewById(R.id.date);
-            sizeView = convertView.findViewById(R.id.size);
+            fileDetails = itemView.findViewById(R.id.file_details);
+            fileContentView = itemView.findViewById(R.id.file_content);
+            dateView = itemView.findViewById(R.id.date);
+            sizeView = itemView.findViewById(R.id.size);
         }
     }
 
@@ -265,7 +267,7 @@ public class FileChooserFragment
      * List Adapter for FileDetails objects.
      */
     protected class FileDetailsAdapter
-            extends RecyclerView.Adapter<FileDetailsHolder> {
+            extends RecyclerView.Adapter<Holder> {
 
         @NonNull
         private final LayoutInflater mInflater;
@@ -282,14 +284,14 @@ public class FileChooserFragment
 
         @NonNull
         @Override
-        public FileDetailsHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                    final int viewType) {
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
             View view = mInflater.inflate(R.layout.row_file_chooser, parent, false);
-            return new FileDetailsHolder(view);
+            return new Holder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final FileDetailsHolder holder,
+        public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
             final FileDetails item = mList.get(position);

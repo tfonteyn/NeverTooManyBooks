@@ -14,14 +14,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BooksOnBookshelf;
+import com.eleybourn.bookcatalogue.BooksOnBookshelfModel;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -293,11 +292,11 @@ public final class Prefs {
                         break;
 
                     case "BooksOnBookshelf.TOP_ROW":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW, (Integer) oldValue);
+                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.TOP_ROW_TOP":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET, (Integer) oldValue);
+                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
@@ -365,7 +364,7 @@ public final class Prefs {
                                 default:
                                     // move everything else
                                     ed.putBoolean(key.replace("field_visibility_",
-                                                              Fields.PREFS_FIELD_VISIBILITY),
+                                                              App.PREFS_FIELD_VISIBILITY),
                                                   (Boolean) oldValue);
                             }
 

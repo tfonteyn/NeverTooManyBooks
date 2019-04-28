@@ -6,23 +6,6 @@
     style="@style/dialogFrame"
     >
 
-    <TextView
-        android:id="@+id/dialog_title"
-        style="@style/dialogTitle"
-        android:text="@string/export_options_dialog_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <View
-        android:id="@+id/header_divider"
-        style="@style/div_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_title"
-        />
-
     <CheckBox
         android:id="@+id/cbx_books_csv"
         style="@style/row_option_checkable"
@@ -30,7 +13,7 @@
         android:text="@string/import_export_option_csv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <CheckBox
@@ -58,11 +41,9 @@
         style="@style/row_option_checkable"
         android:checked="false"
         android:text="@string/import_export_option_xml"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
-        tools:visibility="visible"
         />
 
     <TextView
@@ -72,11 +53,9 @@
         android:layout_marginStart="30dp"
         android:text="@string/import_export_option_xml_info"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
-        tools:visibility="visible"
         />
 
     <View
@@ -158,16 +137,5 @@
         app:layout_constraintTop_toBottomOf="@id/radio_buttons"
         tools:ignore="HardcodedText"
         tools:visibility="visible"
-        />
-
-    <include
-        android:id="@+id/buttonbar_cancel_ok"
-        layout="@layout/inc_buttonbar_cancel_ok"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_button"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

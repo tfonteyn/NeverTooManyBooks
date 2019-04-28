@@ -37,7 +37,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -61,15 +60,16 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
+import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
@@ -115,12 +115,6 @@ public class EditBookTocFragment
     private ArrayList<Editions.Edition> mISFDBEditions;
     private Integer mEditPosition;
 
-    @Override
-    @NonNull
-    public BookManager getBookManager() {
-        return ((BookManager) requireParentFragment()).getBookManager();
-    }
-
     //<editor-fold desc="Fragment startup">
 
     @Override
@@ -134,9 +128,8 @@ public class EditBookTocFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link BookManager#getBook()} on the hosting Activity
-     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume
+     * <li>{@link #onSaveFieldsToBook} from base class onPause
      * <p>
      * <p>{@inheritDoc}
      */
@@ -145,16 +138,16 @@ public class EditBookTocFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Book book = getBookManager().getBook();
-
         // Author to use if mMultipleAuthorsView is set to false
-        List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authorList = mBookModel.getBook().getParcelableArrayList(
+                UniqueId.BKEY_AUTHOR_ARRAY);
         mBookAuthor = authorList.get(0);
 
         // used to call Search sites to populate the TOC
-        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
+        mIsbn = mBookModel.getBook().getString(DBDefinitions.KEY_ISBN);
 
-        ViewUtils.fixFocusSettings(requireView());
+        //noinspection ConstantConditions
+        ViewUtils.fixFocusSettings(getView());
     }
 
     //</editor-fold>
@@ -188,22 +181,20 @@ public class EditBookTocFragment
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(@NonNull final Book book,
-                                        final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(setAllFrom);
 
-        mMultipleAuthorsView.setEnabled(getBookManager().getBook()
-                                                        .getBoolean(Book.HAS_MULTIPLE_WORKS));
+        mMultipleAuthorsView.setEnabled(mBookModel.getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // Populate the list view with the book content table.
-        mList = getBookManager().getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        mList = mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         mListAdapter = new TocListAdapterForEditing(
                 requireContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
-                getBookManager().setDirty(true);
+                mBookModel.setDirty(true);
             }
         });
         mListView.setAdapter(mListAdapter);
@@ -223,13 +214,11 @@ public class EditBookTocFragment
 
     /**
      * The toc list is not a 'real' field. Hence the need to store it manually here.
-     *
-     * @param book field content (toc list) will be copied to this object
      */
     @Override
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        super.onSaveFieldsToBook(book);
-        book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+    protected void onSaveFieldsToBook() {
+        super.onSaveFieldsToBook();
+        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     //</editor-fold>
@@ -265,8 +254,8 @@ public class EditBookTocFragment
     private void onCreateContextMenu(final int position) {
 
         TocEntry item = mList.get(position);
-        // legal trick to get an instance of Menu.
-        Menu menu = new PopupMenu(getContext(), null).getMenu();
+        //noinspection ConstantConditions
+        Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
@@ -274,13 +263,13 @@ public class EditBookTocFragment
 
         // display the menu
         String menuTitle = item.getTitle();
-        //noinspection ConstantConditions
-        PopupMenuDialog.showContextMenu(getContext(), menuTitle, menu, position,
-                                        this::onContextItemSelected);
+        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
+                                                            this::onContextItemSelected);
+        picker.show();
     }
 
     /**
-     * Using {@link PopupMenuDialog} for context menus.
+     * Using {@link ValuePicker} for context menus.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Integer position) {
@@ -315,7 +304,7 @@ public class EditBookTocFragment
     private void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
         mISFDBEditions = editions != null ? editions : new ArrayList<>();
         if (!mISFDBEditions.isEmpty()) {
-            new ISFDBGetBookTask(mISFDBEditions, false, this).execute();
+            new ISFDBGetBookTask(mISFDBEditions, this).execute();
         } else {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getActivity(), R.string.warning_no_editions);
@@ -337,26 +326,24 @@ public class EditBookTocFragment
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = getBookManager().getBook()
-                                                       .getParcelableArrayList(
-                                                               UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> inBook = mBookModel.getBook().getParcelableArrayList(
+                    UniqueId.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
                 }
             }
-            getBookManager().getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication =
                 bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
-            if (getBookManager().getBook()
-                                .getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                getBookManager().getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                                                     bookFirstPublication);
+            if (mBookModel.getBook().getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                mBookModel.getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                                               bookFirstPublication);
             }
         }
 
@@ -370,9 +357,8 @@ public class EditBookTocFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            Book book = getBookManager().getBook();
-            book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-            mFields.getField(R.id.multiple_authors).setValueFrom(book);
+            mBookModel.getBook().putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            mFields.getField(R.id.multiple_authors).setValueFrom(mBookModel.getBook());
         }
 
         mList.addAll(tocEntries);
@@ -385,7 +371,7 @@ public class EditBookTocFragment
     private void getNextEdition() {
         // remove the top one, and try again
         mISFDBEditions.remove(0);
-        new ISFDBGetBookTask(mISFDBEditions, false, this).execute();
+        new ISFDBGetBookTask(mISFDBEditions, this).execute();
     }
 
     //</editor-fold>
@@ -481,32 +467,30 @@ public class EditBookTocFragment
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasToc = tocEntries != null && !tocEntries.isEmpty();
 
-            StringBuilder msg = new StringBuilder();
-            if (hasToc) {
-                msg.append(getString(R.string.warning_toc_confirm)).append("\n\n");
-                for (TocEntry t : tocEntries) {
-                    msg.append(t.getTitle()).append(", ");
-                }
-            } else {
-                msg.append(getString(R.string.error_auto_toc_population_failed));
-            }
-
-            TextView content = new TextView(getContext());
-            content.setText(msg);
-
+            // Dialog content field is just a plain text field.
+            TextView root = new TextView(getContext());
             // we read the value from the attr/style in pixels
             //noinspection ConstantConditions
-            content.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                                App.getTextAppearanceSmallTextSizeInPixels(getContext()));
+            root.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                             App.getTextAppearanceSmallTextSizeInPixels(getContext()));
             //API: 23:
             //content.setTextAppearance(android.R.style.TextAppearance_Small);
             //API: 26 ?
             //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
+            if (hasToc) {
+                StringBuilder message = new StringBuilder(getString(R.string.warning_toc_confirm))
+                        .append("\n\n")
+                        .append(Csv.join(", ", tocEntries, TocEntry::getTitle));
+                root.setText(message);
+            } else {
+                root.setText(getString(R.string.error_auto_toc_population_failed));
+            }
+
             final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setView(content)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                    .setView(root)
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                     .create();
 
             if (hasToc) {
@@ -585,8 +569,7 @@ public class EditBookTocFragment
             Objects.requireNonNull(targetFragment);
 
             @SuppressLint("InflateParams")
-            final View root = requireActivity().getLayoutInflater()
-                                               .inflate(R.layout.dialog_edit_book_toc, null);
+            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_toc, null);
 
             mAuthorTextView = root.findViewById(R.id.author);
             mTitleTextView = root.findViewById(R.id.title);
@@ -617,7 +600,7 @@ public class EditBookTocFragment
             return new AlertDialog.Builder(requireContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                     .setPositiveButton(android.R.string.ok,
                                        (dialog, which) -> {
                                            getFields();
@@ -699,21 +682,17 @@ public class EditBookTocFragment
 
         @NonNull
         private final List<Editions.Edition> mEditions;
-        private final boolean mFetchThumbnail;
 
         /**
          * Constructor.
          *
-         * @param editions       List of ISFDB native ids
-         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-         * @param callback       where to send the results to
+         * @param editions List of ISFDB native ids
+         * @param callback where to send the results to
          */
         @UiThread
         ISFDBGetBookTask(@NonNull final List<Editions.Edition> editions,
-                         final boolean fetchThumbnail,
                          @NonNull final EditBookTocFragment callback) {
             mEditions = editions;
-            mFetchThumbnail = fetchThumbnail;
             mCallback = callback;
         }
 
@@ -722,7 +701,7 @@ public class EditBookTocFragment
         @WorkerThread
         protected Bundle doInBackground(final Void... params) {
             try {
-                return new ISFDBBook().fetch(mEditions, new Bundle(), mFetchThumbnail);
+                return new ISFDBBook().fetch(mEditions, new Bundle(), false);
             } catch (SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
@@ -736,6 +715,28 @@ public class EditBookTocFragment
         protected void onPostExecute(@Nullable final Bundle result) {
             // always send result, even if empty
             mCallback.onGotISFDBBook(result);
+        }
+    }
+
+    /**
+     * Holder pattern for each row.
+     */
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
+
+        @NonNull
+        final TextView titleView;
+        @NonNull
+        final TextView authorView;
+        @NonNull
+        final TextView firstPublicationView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            titleView = rowDetailsView.findViewById(R.id.title);
+            authorView = rowDetailsView.findViewById(R.id.author);
+            firstPublicationView = rowDetailsView.findViewById(R.id.year);
         }
     }
 
@@ -768,55 +769,30 @@ public class EditBookTocFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            holder.titleView.setText(holder.getItem().getTitle());
-            holder.authorView.setText(holder.getItem().getAuthor().getLabel());
+            TocEntry item = getItem(position);
 
-            String year = holder.getItem().getFirstPublication();
+            holder.titleView.setText(item.getTitle());
+            holder.authorView.setText(item.getAuthor().getLabel());
+
+            String year = item.getFirstPublication();
             if (year.isEmpty()) {
                 holder.firstPublicationView.setVisibility(View.GONE);
             } else {
                 holder.firstPublicationView.setVisibility(View.VISIBLE);
-                holder.firstPublicationView.setText(getString(R.string.brackets, year));
+                holder.firstPublicationView.setText(
+                        getContext().getString(R.string.brackets, year));
             }
-        }
-    }
-
-    /**
-     * Holder pattern for each row.
-     */
-    private class Holder
-            extends RecyclerViewViewHolderBase<TocEntry> {
-
-        @NonNull
-        final TextView titleView;
-        @NonNull
-        final TextView authorView;
-        @NonNull
-        final TextView firstPublicationView;
-
-        Holder(@NonNull final View rowView) {
-            super(rowView);
-
-            if (mDeleteButton != null) {
-                mDeleteButton.setOnClickListener(v -> {
-                    mList.remove(item);
-                    mListAdapter.notifyDataSetChanged();
-                });
-            }
-
-            titleView = rowDetailsView.findViewById(R.id.title);
-            authorView = rowDetailsView.findViewById(R.id.author);
-            firstPublicationView = rowDetailsView.findViewById(R.id.year);
 
             // click -> edit
-            rowDetailsView.setOnClickListener((v) -> editItem(getAdapterPosition()));
+            holder.rowDetailsView.setOnClickListener((v) -> editItem(position));
 
             // This is overkill.... user already has a delete button and can click-to-edit.
             // long-click -> menu
-            rowDetailsView.setOnLongClickListener((v) -> {
-                onCreateContextMenu(getAdapterPosition());
+            holder.rowDetailsView.setOnLongClickListener((v) -> {
+                onCreateContextMenu(position);
                 return true;
             });
+
         }
     }
 }

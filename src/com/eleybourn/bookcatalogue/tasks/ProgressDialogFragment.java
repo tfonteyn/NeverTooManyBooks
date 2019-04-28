@@ -1,11 +1,11 @@
 package com.eleybourn.bookcatalogue.tasks;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -15,11 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Progress support for {@link AsyncTask}.
@@ -118,37 +121,26 @@ public class ProgressDialogFragment<Results>
         setRetainInstance(true);
     }
 
-    @Nullable
+
+    @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_task_progress, container, false);
-    }
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        Tracker.enterOnCreateDialog(this, savedInstanceState);
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
+        @SuppressLint("InflateParams")
+        View root = getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
 
-
-        mMessageView = view.findViewById(R.id.message);
-        mProgressBar = view.findViewById(R.id.progressBar);
+        mMessageView = root.findViewById(R.id.message);
+        mProgressBar = root.findViewById(R.id.progressBar);
 
         Bundle args = requireArguments();
 
         // these are fixed
         @StringRes
-        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
-        if (titleId == 0) {
-            titleId = R.string.progress_msg_please_wait;
-        }
-        TextView titleView = view.findViewById(R.id.dialog_title);
-        titleView.setText(titleId);
-
+        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.progress_msg_please_wait);
         mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
         //noinspection ConstantConditions
         mProgressBar.setIndeterminate(mIsIndeterminate);
-
 
         // the other settings can live in the savedInstance
         args = savedInstanceState == null ? args : savedInstanceState;
@@ -159,7 +151,6 @@ public class ProgressDialogFragment<Results>
             //noinspection ConstantConditions
             mMessageView.setText(mMessage);
         }
-
         // current and max values for a 'determinate' progress bar.
         if (!mIsIndeterminate) {
             mProgressBar.setProgress(args.getInt(BKEY_CURRENT_VALUE));
@@ -170,11 +161,18 @@ public class ProgressDialogFragment<Results>
         }
         mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
 
-
-        //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
         //noinspection ConstantConditions
-        getDialog().setCanceledOnTouchOutside(false);
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(root)
+                .create();
+        if (titleId != 0) {
+            dialog.setTitle(titleId);
+        }
+        //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
+        dialog.setCanceledOnTouchOutside(false);
 
+        Tracker.exitOnCreateDialog(this);
+        return dialog;
     }
 
     /**
@@ -285,11 +283,7 @@ public class ProgressDialogFragment<Results>
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
         // Tell the caller we're done. mTaskId will be null if there is no task.
-        if (getTargetFragment() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
-            ((OnProgressCancelledListener) getTargetFragment()).onProgressCancelled(mTaskId);
-        } else if (getActivity() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
-            ((OnProgressCancelledListener) getActivity()).onProgressCancelled(mTaskId);
-        }
+        OnProgressCancelledListener.onProgressCancelled(this, mTaskId);
     }
 
     /** When we are dismissed we need to cancel the task if it's still alive. */
@@ -332,11 +326,7 @@ public class ProgressDialogFragment<Results>
         }
 
         // Tell the caller we're done.
-        if (getTargetFragment() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) getTargetFragment()).onTaskFinished(mTaskId, success, result);
-        } else if (getActivity() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) getActivity()).onTaskFinished(mTaskId, success, result);
-        }
+        OnTaskFinishedListener.onTaskFinished(this, mTaskId, success, result);
 
         // invalidate the current task as its finished. The dialog can be reused.
         mTaskId = null;
@@ -370,6 +360,28 @@ public class ProgressDialogFragment<Results>
     public interface OnTaskFinishedListener {
 
         /**
+         * Convenience method. Try in order:
+         * <li>getTargetFragment()</li>
+         * <li>getParentFragment()</li>
+         * <li>getActivity()</li>
+         */
+        static void onTaskFinished(@NonNull final Fragment fragment,
+                                   final int taskId,
+                                   final boolean success,
+                                   @Nullable final Object result) {
+            if (fragment.getTargetFragment() instanceof OnTaskFinishedListener) {
+                ((OnTaskFinishedListener) fragment.getTargetFragment())
+                        .onTaskFinished(taskId, success, result);
+            } else if (fragment.getParentFragment() instanceof OnTaskFinishedListener) {
+                ((OnTaskFinishedListener) fragment.getParentFragment())
+                        .onTaskFinished(taskId, success, result);
+            } else if (fragment.getActivity() instanceof OnTaskFinishedListener) {
+                ((OnTaskFinishedListener) fragment.getActivity())
+                        .onTaskFinished(taskId, success, result);
+            }
+        }
+
+        /**
          * Called when a task finishes.
          *
          * @param taskId  id for the task which was provided at construction time.
@@ -386,6 +398,28 @@ public class ProgressDialogFragment<Results>
      * Used when the user cancels.
      */
     public interface OnProgressCancelledListener {
+
+        /**
+         * Convenience method. Try in order:
+         * <li>getTargetFragment()</li>
+         * <li>getParentFragment()</li>
+         * <li>getActivity()</li>
+         */
+        @SuppressWarnings("InstanceofIncompatibleInterface")
+        static void onProgressCancelled(@NonNull final Fragment fragment,
+                                        final Integer taskId) {
+
+            if (fragment.getTargetFragment() instanceof OnProgressCancelledListener) {
+                ((OnProgressCancelledListener) fragment.getTargetFragment())
+                        .onProgressCancelled(taskId);
+            } else if (fragment.getParentFragment() instanceof OnProgressCancelledListener) {
+                ((OnProgressCancelledListener) fragment.getParentFragment())
+                        .onProgressCancelled(taskId);
+            } else if (fragment.getActivity() instanceof OnProgressCancelledListener) {
+                ((OnProgressCancelledListener) fragment.getActivity())
+                        .onProgressCancelled(taskId);
+            }
+        }
 
         /**
          * @param taskId for the task; null if there was no embedded task.

@@ -165,8 +165,6 @@ public class EditBooklistStyleGroupsActivity
     /**
      * We build a list of GroupWrappers which is passed to the underlying class for editing.
      * The wrapper includes extra details needed by this activity.
-     * <p>
-     * TOMF: do we really need this ?? Can we just do this in the holder ?
      */
     public static class GroupWrapper
             implements Serializable, Parcelable {
@@ -232,19 +230,19 @@ public class EditBooklistStyleGroupsActivity
      * Holder pattern for each row.
      */
     private static class Holder
-            extends RecyclerViewViewHolderBase<GroupWrapper> {
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
         final TextView nameView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            nameView = rowView.findViewById(R.id.name);
+            nameView = itemView.findViewById(R.id.name);
         }
     }
 
-    protected class GroupWrapperListAdapter
+    protected static class GroupWrapperListAdapter
             extends RecyclerViewAdapterBase<GroupWrapper, Holder> {
 
         GroupWrapperListAdapter(@NonNull final Context context,
@@ -267,10 +265,9 @@ public class EditBooklistStyleGroupsActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            GroupWrapper groupWrapper = holder.getItem();
+            GroupWrapper groupWrapper = getItem(position);
 
-            holder.nameView.setText(
-                    groupWrapper.group.getName(EditBooklistStyleGroupsActivity.this));
+            holder.nameView.setText(groupWrapper.group.getName(getContext()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(groupWrapper.present);

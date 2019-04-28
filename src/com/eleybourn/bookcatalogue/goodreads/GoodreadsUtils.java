@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,11 +14,13 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -73,35 +76,38 @@ public final class GoodreadsUtils {
      */
     @SuppressWarnings("unused")
     @UiThread
-    public static void showGoodreadsOptions(@NonNull final BaseActivity activity) {
+    public static void showGoodreadsOptions(@NonNull final Fragment fragment) {
         @SuppressLint("InflateParams")
-        View root = activity.getLayoutInflater().inflate(R.layout.goodreads_options_list, null);
+        View root = fragment.getLayoutInflater().inflate(R.layout.goodreads_options_list, null);
 
-        final AlertDialog dialog = new AlertDialog.Builder(activity).setView(root).create();
-        dialog.setTitle(R.string.title_select_an_action);
+        //noinspection ConstantConditions
+        final AlertDialog dialog = new AlertDialog.Builder(fragment.getContext())
+                .setView(root)
+                .setTitle(R.string.title_select_an_action)
+                .create();
+
+        // Goodreads SYNC Link
+        root.findViewById(R.id.lbl_sync_with_goodreads)
+            .setOnClickListener(v -> {
+                importAll(fragment, true);
+                dialog.dismiss();
+            });
+
+        // Goodreads IMPORT Link
+        root.findViewById(R.id.lbl_import_all_from_goodreads)
+            .setOnClickListener(v -> {
+                importAll(fragment, false);
+                dialog.dismiss();
+            });
+
+        // Goodreads EXPORT Link
+        root.findViewById(R.id.lbl_send_books_to_goodreads)
+            .setOnClickListener(v -> {
+                sendBooks(fragment);
+                dialog.dismiss();
+            });
+
         dialog.show();
-
-        View view;
-        /* Goodreads SYNC Link */
-        view = root.findViewById(R.id.lbl_sync_with_goodreads);
-        view.setOnClickListener(v -> {
-            importAll(activity, true);
-            dialog.dismiss();
-        });
-
-        /* Goodreads IMPORT Link */
-        view = root.findViewById(R.id.lbl_import_all_from_goodreads);
-        view.setOnClickListener(v -> {
-            importAll(activity, false);
-            dialog.dismiss();
-        });
-
-        /* Goodreads EXPORT Link */
-        view = root.findViewById(R.id.lbl_send_books_to_goodreads);
-        view.setOnClickListener(v -> {
-            sendBooks(activity);
-            dialog.dismiss();
-        });
     }
 
     /**
@@ -110,10 +116,10 @@ public final class GoodreadsUtils {
      * Optionally, display a dialog warning the user that goodreads authentication is required;
      * gives them the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void sendBooks(@NonNull final FragmentActivity activity) {
+    public static void sendBooks(@NonNull final Fragment fragment) {
 
         new AsyncTask<Void, Object, Integer>() {
-            ProgressDialogFragment<Integer> mFragment;
+            ProgressDialogFragment<Integer> mProgressDialog;
             /**
              * {@link #doInBackground} should catch exceptions, and set this field.
              * {@link #onPostExecute} can then check it.
@@ -123,15 +129,15 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
-                //noinspection unchecked
-                mFragment = (ProgressDialogFragment)
-                        activity.getSupportFragmentManager()
-                                .findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
-                if (mFragment == null) {
-                    mFragment = ProgressDialogFragment.newInstance(
+                FragmentManager fm = fragment.getFragmentManager();
+                //noinspection ConstantConditions,unchecked
+                mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(
+                        TAG_GOODREADS_SEND_BOOKS);
+                if (mProgressDialog == null) {
+                    mProgressDialog = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mFragment.setTask(R.id.TASK_ID_GR_SEND_BOOKS, this);
-                    mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_SEND_BOOKS);
+                    mProgressDialog.setTask(R.id.TASK_ID_GR_SEND_BOOKS, this);
+                    mProgressDialog.show(fm, TAG_GOODREADS_SEND_BOOKS);
                 }
             }
 
@@ -152,21 +158,22 @@ public final class GoodreadsUtils {
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
-                mFragment.onTaskFinished(mException == null, result);
+                mProgressDialog.onTaskFinished(mException == null, result);
                 switch (result) {
                     case 0:
                         // let the user choose which books to send
-                        showConfirmationDialog(activity);
+                        showConfirmationDialog(fragment);
                         break;
 
                     case -1:
                         // ask to register
-                        goodreadsAuthAlert(activity);
+                        goodreadsAuthAlert(fragment.getContext(), fragment.getFragmentManager());
                         break;
 
                     default:
                         // specific response.
-                        UserMessage.showUserMessage(activity, result);
+                        //noinspection ConstantConditions
+                        UserMessage.showUserMessage(fragment.getView(), result);
                         break;
                 }
             }
@@ -179,9 +186,9 @@ public final class GoodreadsUtils {
      * @param activity the caller context
      */
     @UiThread
-    private static void showConfirmationDialog(@NonNull final FragmentActivity activity) {
-        // Get the title
-        final AlertDialog dialog = new AlertDialog.Builder(activity)
+    private static void showConfirmationDialog(@NonNull final Fragment activity) {
+        //noinspection ConstantConditions
+        final AlertDialog dialog = new AlertDialog.Builder(activity.getContext())
                 .setTitle(R.string.gr_title_send_book)
                 .setMessage(R.string.gr_send_books_to_goodreads_blurb)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -212,11 +219,11 @@ public final class GoodreadsUtils {
     /**
      * Start a background task that exports all books to goodreads.
      *
-     * @param activity    the caller context
+     * @param fragment    the caller context
      * @param updatesOnly {@code true} if you only want to send updated book,
      *                    {@code false} to send ALL books.
      */
-    private static void sendAllBooks(@NonNull final FragmentActivity activity,
+    private static void sendAllBooks(@NonNull final Fragment fragment,
                                      final boolean updatesOnly) {
 
         new AsyncTask<Void, Object, Integer>() {
@@ -230,16 +237,15 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
-                //noinspection unchecked
-                mFragment = (ProgressDialogFragment)
-                        activity.getSupportFragmentManager()
-                                .findFragmentByTag(TAG_GOODREADS_SEND_ALL_BOOKS);
+                FragmentManager fm = fragment.getFragmentManager();
+                //noinspection unchecked,ConstantConditions
+                mFragment = (ProgressDialogFragment) fm.findFragmentByTag(
+                        TAG_GOODREADS_SEND_ALL_BOOKS);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
                     mFragment.setTask(R.id.TASK_ID_GR_SEND_ALL_BOOKS, this);
-                    mFragment.show(activity.getSupportFragmentManager(),
-                                   TAG_GOODREADS_SEND_ALL_BOOKS);
+                    mFragment.show(fm, TAG_GOODREADS_SEND_ALL_BOOKS);
                 }
             }
 
@@ -253,8 +259,9 @@ public final class GoodreadsUtils {
                         if (isCancelled()) {
                             return R.string.progress_end_cancelled;
                         }
+                        //noinspection ConstantConditions
                         QueueManager.getQueueManager().enqueueTask(
-                                new SendAllBooksTask(activity, updatesOnly),
+                                new SendAllBooksTask(fragment.getContext(), updatesOnly),
                                 QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -271,9 +278,10 @@ public final class GoodreadsUtils {
             protected void onPostExecute(@NonNull final Integer result) {
                 mFragment.onTaskFinished(mException == null, result);
                 if (result == -1) {
-                    goodreadsAuthAlert(activity);
+                    goodreadsAuthAlert(fragment.getContext(), fragment.getFragmentManager());
                 } else {
-                    UserMessage.showUserMessage(activity, result);
+                    //noinspection ConstantConditions
+                    UserMessage.showUserMessage(fragment.getView(), result);
                 }
             }
         }.execute();
@@ -281,12 +289,15 @@ public final class GoodreadsUtils {
 
     /**
      * Start a background task that exports a single books to goodreads.
+     * <p>
+     * * @param context  caller context
      *
-     * @param activity the caller context
-     * @param bookId   the book to send
+     * @param bookId the book to send
      */
     public static void sendOneBook(@NonNull final FragmentActivity activity,
                                    final long bookId) {
+
+        FragmentManager fm = activity.getSupportFragmentManager();
 
         new AsyncTask<Void, Object, Integer>() {
             ProgressDialogFragment<Integer> mFragment;
@@ -299,16 +310,15 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
+
                 //noinspection unchecked
-                mFragment = (ProgressDialogFragment)
-                        activity.getSupportFragmentManager()
-                                .findFragmentByTag(TAG_GOODREADS_SEND_ONE_BOOK);
+                mFragment = (ProgressDialogFragment) fm.findFragmentByTag(
+                        TAG_GOODREADS_SEND_ONE_BOOK);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
                     mFragment.setTask(R.id.TASK_ID_GR_SEND_ONE_BOOK, this);
-                    mFragment.show(activity.getSupportFragmentManager(),
-                                   TAG_GOODREADS_SEND_ONE_BOOK);
+                    mFragment.show(fm, TAG_GOODREADS_SEND_ONE_BOOK);
                 }
             }
 
@@ -340,7 +350,7 @@ public final class GoodreadsUtils {
             protected void onPostExecute(@NonNull final Integer result) {
                 mFragment.onTaskFinished(mException == null, result);
                 if (result == -1) {
-                    goodreadsAuthAlert(activity);
+                    goodreadsAuthAlert(activity, fm);
                 } else {
                     UserMessage.showUserMessage(activity, result);
                 }
@@ -350,9 +360,16 @@ public final class GoodreadsUtils {
 
     /**
      * Start a background task that imports books from goodreads.
+     * <p>
+     * The AsyncTask does the "can we connect" check.
+     * The actual work is done by a {@link GoodreadsTask}.
      */
-    public static void importAll(@NonNull final BaseActivity activity,
+    public static void importAll(@NonNull final Fragment fragment,
                                  final boolean isSync) {
+
+        final Context context = fragment.getContext();
+        final FragmentManager fm = fragment.getFragmentManager();
+        final View userView = fragment.getView();
 
         new AsyncTask<Void, Object, Integer>() {
 
@@ -367,15 +384,13 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
-                //noinspection unchecked
-                mFragment = (ProgressDialogFragment)
-                        activity.getSupportFragmentManager()
-                                .findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
+                //noinspection unchecked,ConstantConditions
+                mFragment = (ProgressDialogFragment) fm.findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
                     mFragment.setTask(R.id.TASK_ID_GR_IMPORT_ALL, this);
-                    mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_IMPORT_ALL);
+                    mFragment.show(fm, TAG_GOODREADS_IMPORT_ALL);
                 }
             }
 
@@ -390,8 +405,9 @@ public final class GoodreadsUtils {
                             return R.string.progress_end_cancelled;
                         }
 
+                        //noinspection ConstantConditions
                         QueueManager.getQueueManager()
-                                    .enqueueTask(new ImportAllTask(activity, isSync),
+                                    .enqueueTask(new ImportAllTask(context, isSync),
                                                  QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -412,12 +428,13 @@ public final class GoodreadsUtils {
                 switch (result) {
                     case -1:
                         // ask to register
-                        goodreadsAuthAlert(activity);
+                        goodreadsAuthAlert(context, fm);
                         break;
 
                     default:
                         // specific response.
-                        UserMessage.showUserMessage(activity, result);
+                        //noinspection ConstantConditions
+                        UserMessage.showUserMessage(userView, result);
                         break;
                 }
             }
@@ -491,31 +508,35 @@ public final class GoodreadsUtils {
     /**
      * Display a dialog warning the user that Goodreads authentication is required.
      * Gives the options: 'request now', 'more info' or 'cancel'.
+     *
+     * @param context         caller context
+     * @param fragmentManager fm
      */
     @UiThread
-    private static void goodreadsAuthAlert(@NonNull final FragmentActivity activity) {
-        final AlertDialog dialog = new AlertDialog.Builder(activity)
+    private static void goodreadsAuthAlert(final Context context,
+                                           final FragmentManager fragmentManager) {
+        final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_title_auth_access)
                 .setMessage(R.string.gr_action_cannot_be_completed)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                          (d, which) -> {
                              d.dismiss();
-                             RequestAuthTask.start(activity.getSupportFragmentManager());
+                             RequestAuthTask.start(fragmentManager);
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         activity.getString(R.string.btn_tell_me_more),
+                         context.getString(R.string.btn_tell_me_more),
                          (d, which) -> {
                              d.dismiss();
-                             Intent intent = new Intent(activity, GoodreadsRegisterActivity.class);
-                             activity.startActivity(intent);
+                             Intent intent = new Intent(context, GoodreadsRegisterActivity.class);
+                             context.startActivity(intent);
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         activity.getString(android.R.string.cancel),
+                         context.getString(android.R.string.cancel),
                          (d, which) -> d.dismiss());
 
         dialog.show();

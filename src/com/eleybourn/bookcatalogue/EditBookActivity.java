@@ -23,24 +23,27 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.entities.BookModel;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * The hosting activity for editing a book.
+ *
+ * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * hosting/main activity, which swaps in fragments as needed.
  */
 public class EditBookActivity
         extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_main_nav_tabbar;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class EditBookActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.main_fragment, frag, EditBookFragment.TAG)
+                    .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
                     .commit();
         }
     }
@@ -65,18 +68,13 @@ public class EditBookActivity
      * <p>{@inheritDoc}
      */
     @Override
-    @CallSuper
     public void onBackPressed() {
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        finishIfClean(getBookManager().isDirty());
-    }
+        BookModel bookModel = ViewModelProviders.of(this).get(BookModel.class);
+        finishIfClean(bookModel.isDirty());
 
-    @NonNull
-    protected BookManager getBookManager() {
-        //noinspection ConstantConditions
-        return ((BookManager) getSupportFragmentManager()
-                .findFragmentByTag(EditBookFragment.TAG)).getBookManager();
+        super.onBackPressed();
     }
 }

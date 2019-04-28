@@ -113,12 +113,12 @@ public class AuthorWorksFragment
     /**
      * Holder pattern for each row.
      */
-    private static class TocViewHolder
+    private static class Holder
             extends RecyclerView.ViewHolder {
 
-        /** It's a book. */
+        /** Icon to show for a book. */
         private static Drawable sBookIndicator;
-        /** It's not a book. e.g. a short story... */
+        /**Icon to show for not a book. e.g. a short story... */
         private static Drawable sStoryIndicator;
 
         @NonNull
@@ -128,7 +128,7 @@ public class AuthorWorksFragment
         @Nullable
         final TextView firstPublicationView;
 
-        TocViewHolder(@NonNull final View itemView) {
+        Holder(@NonNull final View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.title);
             // optional
@@ -136,6 +136,7 @@ public class AuthorWorksFragment
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
 
+            // static initializer
             if (sBookIndicator == null) {
                 sBookIndicator = itemView.getContext().getDrawable(R.drawable.ic_book);
                 sStoryIndicator = itemView.getContext().getDrawable(R.drawable.ic_lens);
@@ -179,22 +180,23 @@ public class AuthorWorksFragment
     }
 
     public class TocAdapter
-            extends RecyclerView.Adapter<TocViewHolder>
+            extends RecyclerView.Adapter<Holder>
             implements SectionIndexerV2 {
 
         @NonNull
         @Override
-        public TocViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                final int viewType) {
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
 
             View itemView = getLayoutInflater().inflate(R.layout.row_toc_entry, parent, false);
-            return new TocViewHolder(itemView);
+            return new Holder(itemView);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final TocViewHolder holder,
+        public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             holder.bind(mTocEntries.get(position));
+            // click -> open book details.
             holder.itemView.setOnClickListener(v -> gotoBook(mTocEntries.get(position)));
         }
 

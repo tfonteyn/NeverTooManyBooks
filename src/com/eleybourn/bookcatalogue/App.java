@@ -115,6 +115,14 @@ public class App
 
     /** Legacy preferences name, pre-v200. */
     public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
+    /**
+     * Users can select which fields they use / don't want to use.
+     * <p>
+     * Each field has an entry in the Preferences.<br/>
+     * The key is suffixed with the name of the field.
+     */
+    public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
+
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
 
@@ -411,6 +419,17 @@ public class App
 
     public static void clearRecreateFlag() {
         getPrefs().edit().remove(PREF_ACTIVITY_RECREATE_STATUS).apply();
+    }
+
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param fieldName to lookup
+     *
+     * @return {@code true} if the user wants to use this field.
+     */
+    public static boolean isUsed(@NonNull final String fieldName) {
+        return getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**

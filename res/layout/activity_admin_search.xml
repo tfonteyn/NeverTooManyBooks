@@ -19,7 +19,9 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_panel"
-        style="@style/tab_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"

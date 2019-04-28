@@ -102,7 +102,7 @@ public class BackupFileDetails
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onBindViewHolder(@NonNull final FileChooserFragment.FileDetailsHolder holder,
+    public void onBindViewHolder(@NonNull final FileChooserFragment.Holder holder,
                                  @NonNull final Context context) {
 
         holder.filenameView.setText(mFile.getName());

@@ -447,7 +447,7 @@ public class XmlImporter
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
                  .setStartAction(context -> {
-                     mTagStack.push(mTag);
+
                      mTag = new TagInfo(context);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
@@ -491,8 +491,6 @@ public class XmlImporter
                              default:
                                  throw new IllegalTypeException(mTag.type);
                          }
-
-                         mTag = mTagStack.pop();
 
                      } catch (NumberFormatException e) {
                          throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
@@ -599,6 +597,9 @@ public class XmlImporter
 
         /**
          * Constructor.
+         * <p>
+         * Important: a tag called "item" will trigger pre-v200 parsing: the 'type' attribute will
+         * be read and be used as the tagname.
          *
          * @param elementContext of the XML tag
          */
@@ -606,9 +607,9 @@ public class XmlImporter
             Attributes attrs = elementContext.getAttributes();
 
             type = elementContext.getLocalName();
-            // Legacy pre-v200 used a fixed tag, with the type as an attribute
+            // Legacy pre-v200 used a fixed tag "item", with the type as an attribute
             if ("item".equals(type)) {
-                type = attrs.getValue("style");
+                type = attrs.getValue("type");
             }
             name = attrs.getValue(XmlUtils.ATTR_NAME);
             String idStr = attrs.getValue(XmlUtils.ATTR_ID);

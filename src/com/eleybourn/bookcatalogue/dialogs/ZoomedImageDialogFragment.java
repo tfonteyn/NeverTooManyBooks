@@ -81,6 +81,5 @@ public class ZoomedImageDialogFragment
                                 true);
 
         imageView.setOnClickListener(v -> dismiss());
-
     }
 }

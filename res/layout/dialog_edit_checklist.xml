@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- views will be added to this layout in code -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    style="@style/dialogFrame"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    />

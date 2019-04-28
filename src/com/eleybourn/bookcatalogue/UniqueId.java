@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
@@ -36,9 +35,13 @@ public final class UniqueId {
     /** request code: open the book 'update-from-internet' screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 2_004;
+
     /** request code: open the book internet-search screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_SEARCH = 2_101;
+    /** request code: open the advanced (FTS) local search screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
 
 
     /** request code: ask the CoverBrowser to get an alternative edition cover. */
@@ -98,56 +101,56 @@ public final class UniqueId {
     /**
      * Single fileSpecs or uri.
      * <p>
-     * String
+     * <p>type: String
      */
     public static final String BKEY_FILE_SPEC = "fileSpec";
 
     /**
      * List of fileSpecs or uri.
      * <p>
-     * ArrayList<String>
+     * <p>type: ArrayList<String>
      */
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     /**
      * A generic layout resource id.
      * <p>
-     * int (LayoutId)
+     * <p>type: int (LayoutId)
      */
     public static final String BKEY_LAYOUT_ID = "layoutId";
 
     /**
      * The title to be used by generic Dialogs.
      * <p>
-     * int (stringId)
+     * <p>type: int (stringId)
      */
     public static final String BKEY_DIALOG_TITLE = "dialogTitle";
 
     /**
      * The message id to be used by generic Dialogs.
      * <p>
-     * int (stringId)
+     * <p>type: int (stringId)
      */
     public static final String BKEY_DIALOG_MSG_ID = "dialogMsgId";
 
     /**
      * The message to be used by generic Dialogs.
      * <p>
-     * String
+     * <p>type: String
      */
     public static final String BKEY_DIALOG_MSG = "dialogMsg";
 
     /**
      * Identifier for the caller of a generic Dialog.
      * <p>
-     * String (often/always the fragment TAG)
+     * <p>type: String (often/always the fragment TAG)
      */
     public static final String BKEY_CALLER_TAG = "dialogCallerId";
 
     /**
      * Identifier of the field we want the generic Dialog to handle.
      * <p>
-     * int (resource id)
+     * <p>type: int (resource id)
      */
     public static final String BKEY_FIELD_ID = "fieldId";
 
@@ -155,41 +158,39 @@ public final class UniqueId {
      * Bundle key to pass a Bundle with book data around.
      * i.e. before the data becomes an actual {@link Book}.
      * <p>
-     * Bundle
+     * <p>type: Bundle
      */
     public static final String BKEY_BOOK_DATA = "bookData";
 
     /**
      * Bundle key to pass a generic {@link java.util.ArrayList<Integer>} around.
      * <p>
-     * IntegerArrayList
+     * <p>type: IntegerArrayList
      */
     public static final String BKEY_ID_LIST = "idList";
 
     /**
      * 3 uses:
-     * <p>
-     * - Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
+     * <li>Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
      * will point to that image.
+     * <li>Flag to indicate we 'want' a thumbnail when downloading book information from search sites.
+     * <li>User Visibility flag
      * <p>
-     * - Flag to indicate we 'want' a thumbnail, in {@link Fields.FieldUsage.Usage}
-     * - Visibility flag
-     * <p>
-     * boolean
+     * <p>type: boolean
      */
     public static final String BKEY_COVER_IMAGE = "thumbnail";
 
     /**
      * tag of fragment to display if an Activity supports multiple.
      * <p>
-     * String
+     * <p>type: String
      */
     public static final String BKEY_FRAGMENT_TAG = "fragment";
 
     /**
      * The resulting {@link ImportSettings#what} flags after an import.
      * <p>
-     * int (bitmask)
+     * <p>type: int (bitmask)
      * setResult
      */
     public static final String BKEY_IMPORT_RESULT = "importResult";
@@ -197,7 +198,7 @@ public final class UniqueId {
     /**
      * The resulting {@link ExportSettings#what} flags after an export.
      * <p>
-     * int (bitmask)
+     * <p>type: int (bitmask)
      * setResult
      */
     public static final String BKEY_EXPORT_RESULT = "exportResult";
@@ -205,14 +206,14 @@ public final class UniqueId {
     /**
      * {@link ExportSettings} or {@link ImportSettings}.
      * <p>
-     * Parcel
+     * <p>type: Parcel
      */
     public static final String BKEY_IMPORT_EXPORT_SETTINGS = "importExportSettings";
 
     /**
      * Indicate the called activity made global changes.
      * <p>
-     * boolean
+     * <p>type: boolean
      * setResult
      */
     public static final String BKEY_GLOBAL_CHANGES_MADE = "globalChanges";
@@ -220,10 +221,18 @@ public final class UniqueId {
     /**
      * Return the status of a startActivityForResult when a task was 'isCancelled'.
      * <p>
-     * boolean
+     * <p>type: boolean
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";
+
+    /**
+     * A position in a generic list.
+     * <p>
+     * <p>type: int
+     */
+    public static final String POSITION = "position";
+
 
     /* ****************************************************************************************** */
 

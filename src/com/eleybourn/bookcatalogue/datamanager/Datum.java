@@ -153,7 +153,6 @@ public class Datum {
      *
      * @return Resulting value (null becomes empty)
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static String toString(@Nullable final Object o) {
         return o == null ? "" : o.toString().trim();
@@ -168,7 +167,6 @@ public class Datum {
      *
      * @throws NumberFormatException if the Object was not boolean compatible.
      */
-    @SuppressWarnings("WeakerAccess")
     public static boolean toBoolean(@Nullable final Object o)
             throws NumberFormatException {
         if (o == null) {
@@ -248,7 +246,7 @@ public class Datum {
     /**
      * Set the DataValidator. Protected against being set twice.
      */
-    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public Datum setValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
@@ -267,7 +265,7 @@ public class Datum {
     /**
      * Set the DataAccessor. Protected against being set twice.
      */
-    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public Datum setAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {

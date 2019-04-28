@@ -207,9 +207,6 @@ public class BooklistBuilder
     private static final String STMT_NAV_IX_2 = "navIx2";
     private static final String STMT_IX_1 = "ix1";
 
-
-    @NonNull
-    private final Context mContext;
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
@@ -235,6 +232,7 @@ public class BooklistBuilder
     /** Style to use in building the list. */
     @NonNull
     private final BooklistStyle mStyle;
+
     /**
      * Instance-based cursor factory so that the builder can be associated with the cursor
      * and the rowView. We could probably send less context, but in the first instance this
@@ -243,7 +241,8 @@ public class BooklistBuilder
     private final CursorFactory mBooklistCursorFactory = (db, masterQuery, editTable, query) ->
             new BooklistCursor(masterQuery, editTable, query, DBA.getSynchronizer(),
                                BooklistBuilder.this);
-    /** The word 'UNKNOWN', used for year/month if those are (guess what...) unknown. */
+
+    /** The word 'UNKNOWN', used for year/month if those are (doh) unknown. */
     private final String mUnknown;
     /** the list of Filters; both active and non-active. */
     private final transient ArrayList<Filter> mFilters = new ArrayList<>();
@@ -292,12 +291,10 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mContext = context;
-
-        mUnknown = mContext.getString(R.string.unknown).toUpperCase();
+        mUnknown = context.getString(R.string.unknown).toUpperCase();
 
         // Get the database and create a statements collection
-        mDb = new DBA(mContext);
+        mDb = new DBA(context);
         mSyncedDb = mDb.getUnderlyingDatabase();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
@@ -861,7 +858,7 @@ public class BooklistBuilder
                 final long t11_nav_table_index_IX1_created = System.nanoTime();
 
                 // Essential for main query! If not present, will make getCount() take
-                // ages because main query is a cross with no index.
+                // ages because main query is a cross without index.
                 SynchronizedStatement ixStmt2 =
                         mStatements.add(STMT_NAV_IX_2,
                                         "CREATE UNIQUE INDEX " + mNavTable + "_IX2"
@@ -2071,7 +2068,7 @@ public class BooklistBuilder
      * @return a {@link BooklistPseudoCursor} instead of a real cursor.
      */
     @NonNull
-    public BooklistPseudoCursor getList() {
+    public BooklistPseudoCursor getListCursor() {
         return new BooklistPseudoCursor(this);
     }
 
@@ -2379,10 +2376,6 @@ public class BooklistBuilder
         return mStyle;
     }
 
-    @NonNull
-    public Context getContext() {
-        return mContext;
-    }
 
     /**
      * General cleanup routine called by both {@link #close()} and {@link #finalize()}.
@@ -2528,16 +2521,16 @@ public class BooklistBuilder
      */
     private static class SqlComponents {
 
-        public String destinationColumns;
+        String destinationColumns;
         /** constructed & assigned, but not used right now (2019-03-29). */
-        public String rootKeyExpression;
-        public String join;
-        public String insert;
-        public String select;
-        public String insertSelect;
+        String rootKeyExpression;
+        String join;
+        String insert;
+        String select;
+        String insertSelect;
         /** constructed & assigned, but not used right now (2019-03-29). */
-        public String insertValues;
-        public String where;
+        String insertValues;
+        String where;
 
         /** List of column names appropriate for 'ORDER BY' clause. */
         String orderByColumns;

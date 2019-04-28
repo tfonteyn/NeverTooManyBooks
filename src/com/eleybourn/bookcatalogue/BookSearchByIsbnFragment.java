@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
@@ -133,7 +134,8 @@ public class BookSearchByIsbnFragment
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
         }
 
-        ActionBar actionBar = mActivity.getSupportActionBar();
+        //noinspection ConstantConditions
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.search_isbn);
             actionBar.setSubtitle(null);
@@ -262,7 +264,8 @@ public class BookSearchByIsbnFragment
      */
     private void initKeypadButton(@IdRes final int id,
                                   @NonNull final String text) {
-        requireView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
+        //noinspection ConstantConditions
+        getView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
     }
 
     /**

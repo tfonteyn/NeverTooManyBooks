@@ -81,6 +81,7 @@ public class DataManager {
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
 
+
     /**
      * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
      *
@@ -123,6 +124,102 @@ public class DataManager {
     protected void addAccessor(@NonNull final String datumKey,
                                @NonNull final DataAccessor accessor) {
         mDatumMap.get(datumKey).setAccessor(accessor);
+    }
+
+    /**
+     * Store all passed values in our collection.
+     * We do the laborious method here to allow Accessors to do their thing.
+     *
+     * @param src bundle to copy from
+     */
+    protected void putAll(@NonNull final Bundle src) {
+        for (String key : src.keySet()) {
+            Object value = src.get(key);
+            if (value instanceof String) {
+                putString(key, (String) value);
+
+            } else if (value instanceof Integer) {
+                //TOMF: use putLong?
+                putInt(key, (Integer) value);
+
+            } else if (value instanceof Long) {
+                putLong(key, (Long) value);
+
+            } else if (value instanceof Double) {
+                putDouble(key, (Double) value);
+
+            } else if (value instanceof Float) {
+                //TOMF: use putDouble?
+                putFloat(key, (Float) value);
+
+            } else if (value instanceof Boolean) {
+                putBoolean(key, (Boolean) value);
+
+            } else if ((value instanceof ArrayList) && ((ArrayList) value).get(
+                    0) instanceof Parcelable) {
+                //noinspection unchecked
+                putParcelableArrayList(key, (ArrayList<Parcelable>) value);
+
+            } else if (value instanceof Serializable) {
+                putSerializable(key, (Serializable) value);
+
+            } else {
+                // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
+                Logger.debugWithStackTrace(this, "putAll", "key=`" + key + "`, value=" + value);
+                if (value != null) {
+                    putString(key, value.toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * Store all passed values in our collection.
+     * We do the laborious method here to allow Accessors to do their thing.
+     * <p>
+     * See the comments on methods in {@link android.database.CursorWindow}
+     * for info on type conversions which explains our use of getLong/getDouble.
+     * <p>
+     * Reminder:
+     * - booleans -> long (0,1)
+     * - int -> long
+     * - float -> double
+     * - date -> string
+     *
+     * @param cursor to read from
+     */
+    protected void putAll(@NonNull final Cursor cursor) {
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            final String name = cursor.getColumnName(i);
+            switch (cursor.getType(i)) {
+                case Cursor.FIELD_TYPE_STRING:
+                    putString(name, cursor.getString(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_INTEGER:
+                    // a null becomes 0
+                    putLong(name, cursor.getLong(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_FLOAT:
+                    // a null becomes 0.0
+                    putDouble(name, cursor.getDouble(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_NULL:
+                    // discard any fields with null values.
+                    break;
+
+                case Cursor.FIELD_TYPE_BLOB:
+                    putSerializable(name, cursor.getBlob(i));
+                    break;
+
+                default:
+                    throw new IllegalTypeException("" + cursor.getType(i));
+            }
+        }
+
     }
 
     /**
@@ -220,39 +317,6 @@ public class DataManager {
         datum.putFloat(this, mRawData, value);
     }
 
-    /**
-     * Note: a bitmask is read/written to the database as a long.
-     *
-     * @param bitmask one or more bits to test for being set
-     *
-     * @return {@code true} if the bit(s) was set.
-     */
-    public boolean isBitSet(@NonNull final String key,
-                            final int bitmask) {
-        return (mDatumMap.get(key).getLong(this, mRawData) & bitmask) != 0;
-    }
-
-    /**
-     * Note: a bitmask is read/written to the database as a long.
-     *
-     * @param bitmask one or more bits to set/reset.
-     */
-    public void setBit(@NonNull final String key,
-                       final int bitmask,
-                       final boolean set) {
-        long value = mDatumMap.get(key).getLong(this, mRawData);
-
-        if (set) {
-            // set the bit
-            value |= bitmask;
-        } else {
-            // or reset the bit
-            value &= ~bitmask;
-        }
-
-        mDatumMap.get(key).putLong(this, mRawData, value);
-    }
-
     /** @return an int value. */
     public int getInt(@NonNull final String key) {
         return mDatumMap.get(key).getInt(this, mRawData);
@@ -289,14 +353,43 @@ public class DataManager {
 
     /**
      * Store a long value.
-     *
-     * @return the DataManager, for chaining
      */
-    @NonNull
-    public DataManager putLong(@NonNull final Datum datum,
-                               final long value) {
+    public void putLong(@NonNull final Datum datum,
+                        final long value) {
         datum.putLong(this, mRawData, value);
-        return this;
+    }
+
+    /**
+     * Note: a bitmask is read/written to the database as a long.
+     *
+     * @param bitmask one or more bits to test for being set
+     *
+     * @return {@code true} if the bit(s) was set.
+     */
+    public boolean isBitSet(@NonNull final String key,
+                            final int bitmask) {
+        return (mDatumMap.get(key).getLong(this, mRawData) & bitmask) != 0;
+    }
+
+    /**
+     * Note: a bitmask is read/written to the database as a long.
+     *
+     * @param bitmask one or more bits to set/reset.
+     */
+    public void setBit(@NonNull final String key,
+                       final int bitmask,
+                       final boolean set) {
+        long value = mDatumMap.get(key).getLong(this, mRawData);
+
+        if (set) {
+            // set the bit
+            value |= bitmask;
+        } else {
+            // or reset the bit
+            value &= ~bitmask;
+        }
+
+        mDatumMap.get(key).putLong(this, mRawData, value);
     }
 
     /**
@@ -336,129 +429,26 @@ public class DataManager {
     }
 
     /**
-     * Store all passed values in our collection.
-     * We do the laborious method here to allow Accessors to do their thing.
-     *
-     * @param src bundle to copy from
-     */
-    protected void putAll(@NonNull final Bundle src) {
-        for (String key : src.keySet()) {
-            Object value = src.get(key);
-            if (value instanceof String) {
-                putString(key, (String) value);
-
-            } else if (value instanceof Integer) {
-                //TOMF: use putLong?
-                putInt(key, (Integer) value);
-
-            } else if (value instanceof Long) {
-                putLong(key, (Long) value);
-
-            } else if (value instanceof Double) {
-                putDouble(key, (Double) value);
-
-            } else if (value instanceof Float) {
-                //TOMF: use putDouble?
-                putFloat(key, (Float) value);
-
-            } else if (value instanceof Boolean) {
-                putBoolean(key, (Boolean) value);
-
-            } else if (value instanceof ArrayList) {
-                putParcelableArrayList(key, (ArrayList) value);
-
-            } else if (value instanceof Serializable) {
-                putSerializable(key, (Serializable) value);
-
-            } else {
-                // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.debugWithStackTrace(this, "putAll", "key=`" + key + "`, value=" + value);
-                if (value != null) {
-                    putString(key, value.toString());
-                }
-            }
-        }
-    }
-
-    /**
-     * Store all passed values in our collection.
-     * We do the laborious method here to allow Accessors to do their thing.
-     * <p>
-     * See the comments on methods in {@link android.database.CursorWindow}
-     * for info on type conversions which explains our use of getLong/getDouble.
-     * <p>
-     * Reminder:
-     * - booleans -> long (0,1)
-     * - int -> long
-     * - float -> double
-     * - date -> string
-     *
-     * @param cursor to read from
-     */
-    protected void putAll(@NonNull final Cursor cursor) {
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            final String name = cursor.getColumnName(i);
-            switch (cursor.getType(i)) {
-                case Cursor.FIELD_TYPE_STRING:
-                    putString(name, cursor.getString(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_INTEGER:
-                    // a null becomes 0
-                    putLong(name, cursor.getLong(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_FLOAT:
-                    // a null becomes 0.0
-                    putDouble(name, cursor.getDouble(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_NULL:
-                    // discard any fields with null values.
-                    break;
-
-                case Cursor.FIELD_TYPE_BLOB:
-                    putSerializable(name, cursor.getBlob(i));
-                    break;
-
-                default:
-                    throw new IllegalTypeException("" + cursor.getType(i));
-            }
-        }
-
-    }
-
-    /**
-     * Get the serializable object from the collection.
-     * We currently do not use a {@link Datum} for special access.
+     * Get the ArrayList<String> from the collection.
      *
      * @param key Key of object
      *
-     * @return The data
+     * @return The ArrayList<String>
      */
-    @SuppressWarnings("unused")
-    @Nullable
-    protected <T extends Serializable> T getSerializable(@NonNull final String key) {
-        return mDatumMap.get(key).getSerializable(this, mRawData);
+    @NonNull
+    public ArrayList<String> getStringArrayList(@NonNull final String key) {
+        return mDatumMap.get(key).getStringArrayList(this, mRawData);
     }
 
     /**
-     * Set the serializable object in the collection.
-     * We currently do not use a {@link Datum} for special access.
+     * Set the ArrayList<String> in the collection.
      *
      * @param key   Key of object
-     * @param value The serializable object
+     * @param value the ArrayList<String>
      */
-    @SuppressWarnings("WeakerAccess")
-    public void putSerializable(@NonNull final String key,
-                                @NonNull final Serializable value) {
-        if (BuildConfig.DEBUG /* always */) {
-            Logger.debugWithStackTrace(this, "putSerializable",
-                                       "key=" + key,
-                                       "type=" + value.getClass().getCanonicalName());
-        }
-        mDatumMap.get(key).putSerializable(mRawData, value);
+    public void putStringArrayList(@NonNull final String key,
+                                   @NonNull final ArrayList<String> value) {
+        mDatumMap.get(key).putStringArrayList(this, mRawData, value);
     }
 
     /**
@@ -485,28 +475,35 @@ public class DataManager {
     }
 
     /**
-     * Get the ArrayList<String> from the collection.
+     * Get the serializable object from the collection.
+     * We currently do not use a {@link Datum} for special access.
      *
      * @param key Key of object
      *
-     * @return The ArrayList<String>
+     * @return The data
      */
-    @NonNull
+    @Nullable
     @SuppressWarnings("unused")
-    public ArrayList<String> getStringArrayList(@NonNull final String key) {
-        return mDatumMap.get(key).getStringArrayList(this, mRawData);
+    protected <T extends Serializable> T getSerializable(@NonNull final String key) {
+        return mDatumMap.get(key).getSerializable(this, mRawData);
     }
 
     /**
-     * Set the ArrayList<String> in the collection.
+     * Set the serializable object in the collection.
+     * We currently do not use a {@link Datum} for special access.
      *
      * @param key   Key of object
-     * @param value the ArrayList<String>
+     * @param value The serializable object
      */
-    @SuppressWarnings("unused")
-    public void putStringArrayList(@NonNull final String key,
-                                   @NonNull final ArrayList<String> value) {
-        mDatumMap.get(key).putStringArrayList(this, mRawData, value);
+    @SuppressWarnings("WeakerAccess")
+    public void putSerializable(@NonNull final String key,
+                                @NonNull final Serializable value) {
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debugWithStackTrace(this, "putSerializable",
+                                       "key=" + key,
+                                       "type=" + value.getClass().getCanonicalName());
+        }
+        mDatumMap.get(key).putSerializable(mRawData, value);
     }
 
     /**
@@ -634,12 +631,15 @@ public class DataManager {
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String toString() {
-        return "DataManager{" + super.toString()
-                + ",mRawData=" + Datum.toString(mRawData)
-                + '}';
+        return "DataManager{" +
+                "mRawData=" + mRawData +
+                ", mDatumMap=" + mDatumMap +
+                ", mValidationExceptions=" + mValidationExceptions +
+                ", mCrossValidators=" + mCrossValidators +
+                '}';
     }
 
     /**

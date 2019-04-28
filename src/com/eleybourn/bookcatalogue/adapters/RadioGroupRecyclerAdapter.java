@@ -23,58 +23,59 @@ import com.eleybourn.bookcatalogue.entities.Entity;
  * @param <T> type of the {@link Entity} represented by each RadioButton.
  */
 public class RadioGroupRecyclerAdapter<T extends Entity>
-        extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.RecyclerViewHolder> {
+        extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
     private final Context mContext;
     @NonNull
-    private final List<T> mList;
+    private final List<T> mItems;
     @Nullable
     private final View.OnClickListener mOnSelectionListener;
+    /** The (pre-)selected item. */
     private T mSelectedItem;
 
     /**
      * @param context caller context
-     * @param objects the list
+     * @param items the list
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
-                                     @NonNull final List<T> objects,
+                                     @NonNull final List<T> items,
                                      @Nullable final T selectedItem,
                                      @Nullable final View.OnClickListener listener) {
 
         mContext = context;
         mInflater = LayoutInflater.from(context);
-        mList = objects;
+        mItems = items;
         mSelectedItem = selectedItem;
         mOnSelectionListener = listener;
     }
 
     @Override
     @NonNull
-    public RecyclerViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                                 final int viewType) {
-        RadioButton button = (RadioButton) mInflater.inflate(R.layout.row_radiobutton,
-                                                             parent, false);
-        return new RecyclerViewHolder<T>(button);
+    public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                     final int viewType) {
+        View view = mInflater.inflate(R.layout.row_radiobutton,
+                                      parent, false);
+        return new Holder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewHolder holder,
+    public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
 
-        holder.item = mList.get(position);
-        holder.buttonView.setTag(holder.item);
+        T item = mItems.get(position);
+        holder.buttonView.setTag(item);
 
-        holder.buttonView.setText(holder.item.getLabel(mContext));
-        holder.buttonView.setChecked(holder.item.getId() == mSelectedItem.getId());
+        holder.buttonView.setText(item.getLabel(mContext));
+        holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
         holder.buttonView.setOnClickListener(this::itemCheckChanged);
     }
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return mItems.size();
     }
 
     /**
@@ -107,22 +108,20 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @SuppressWarnings("unused")
     public void deleteSelectedPosition() {
         if (mSelectedItem != null) {
-            mList.remove(mSelectedItem);
+            mItems.remove(mSelectedItem);
             mSelectedItem = null;
             notifyDataSetChanged();
         }
     }
 
-    static class RecyclerViewHolder<T extends Entity>
+    static class Holder
             extends RecyclerView.ViewHolder {
 
-        /** For non-casting convenience. */
         final RadioButton buttonView;
-        T item;
 
-        RecyclerViewHolder(@NonNull final RadioButton buttonView) {
-            super(buttonView);
-            this.buttonView = buttonView;
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+            buttonView = itemView.findViewById(R.id.button);
         }
     }
 }

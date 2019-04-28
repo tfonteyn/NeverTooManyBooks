@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    >
     <PreferenceCategory android:title="@string/pg_ui">
         <!-- the list contains Locale string id's in contrast to other ListPreference which use 0,1... -->
         <ListPreference
@@ -181,7 +185,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_generation"
             android:entryValues="@array/pv_bob_list_generation"
-            android:icon="@drawable/ic_build"
+            android:icon="@drawable/ic_manage"
             android:key="BookList.CompatibilityMode"
             android:title="@string/pt_bob_list_generation" />
 
@@ -260,7 +264,7 @@
             android:dialogIcon="@drawable/ic_warning"
             android:entries="@array/pe_thumbnails_cropper_layer_type"
             android:entryValues="@array/pv_thumbnails_cropper_layer_type"
-            android:icon="@drawable/ic_build"
+            android:icon="@drawable/ic_manage"
             android:key="Image.ViewLayerType"
             android:title="@string/pt_thumbnail_cropper_layer_type" />
 

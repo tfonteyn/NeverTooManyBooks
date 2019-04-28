@@ -47,13 +47,11 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BitmaskDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BooleanDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
-import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -61,8 +59,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * Represents the underlying data for a book.
- * <p>
- * ENHANCE: would be nice to make this Parcelable...
  *
  * @author pjw
  */
@@ -100,7 +96,7 @@ public class Book
     public static final int RATING_STARS = 5;
     /** mapping the edition bit to a resource string for displaying. */
     @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Integer> EDITIONS = new HashMap<>();
+    public static final Map<Integer, Integer> EDITIONS = new HashMap<>();
 
     /*
      * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}.
@@ -380,6 +376,7 @@ public class Book
      *
      * @param db the database
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Book reload(@NonNull final DBA db) {
         return reload(db, getId());
     }
@@ -731,37 +728,4 @@ public class Book
         }
     }
 
-    /**
-     * Field Formatter for a bitmask based Book Editions field.
-     * <p>
-     * Does not support {@link Fields.FieldFormatter#extract}.
-     */
-    public static class BookEditionsFormatter
-            implements Fields.FieldFormatter {
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Fields.Field field,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
-                return "";
-            }
-
-            int bitmask;
-            try {
-                bitmask = Integer.parseInt(source);
-            } catch (NumberFormatException ignore) {
-                return source;
-            }
-            Context context = field.getView().getContext();
-            List<String> list = new ArrayList<>();
-            for (Integer edition : EDITIONS.keySet()) {
-                if ((edition & bitmask) != 0) {
-                    //noinspection ConstantConditions
-                    list.add(context.getString(EDITIONS.get(edition)));
-                }
-            }
-            return Csv.toDisplayString(list, null);
-        }
-    }
 }

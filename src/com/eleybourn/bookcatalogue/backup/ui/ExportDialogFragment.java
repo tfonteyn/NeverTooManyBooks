@@ -3,16 +3,17 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
@@ -29,8 +30,6 @@ public class ExportDialogFragment
     private static final String TAG = ExportDialogFragment.class.getSimpleName();
 
     private ExportSettings mExportSettings;
-
-    private OnExportTypeSelectionDialogResultsListener mActivity;
 
     /**
      * (syntax sugar for newInstance)
@@ -69,28 +68,31 @@ public class ExportDialogFragment
         }
     }
 
-    @Nullable
+    /**
+     * Create the underlying dialog.
+     */
+    @NonNull
     @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @Nullable final ViewGroup container,
-                             @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_export_options, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        mActivity = (OnExportTypeSelectionDialogResultsListener) requireActivity();
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        view.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
+        View root = getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
-        view.findViewById(R.id.confirm).setOnClickListener(v -> {
-            updateOptions();
-            mActivity.onExportTypeSelectionDialogResult(mExportSettings);
-            dismiss();
-        });
+        //noinspection ConstantConditions
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(root)
+                .setTitle(R.string.export_options_dialog_title)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    updateOptions();
+                    OnExportTypeSelectionDialogResultsListener
+                            .onExportTypeSelectionDialogResult(this, mExportSettings);
+                })
+                .create();
+
+        dialog.setCanceledOnTouchOutside(false);
+        return dialog;
     }
 
     private void updateOptions() {
@@ -147,6 +149,27 @@ public class ExportDialogFragment
      * Listener interface to receive notifications when dialog is confirmed.
      */
     public interface OnExportTypeSelectionDialogResultsListener {
+
+        /**
+         * Convenience method. Try in order:
+         * <li>getTargetFragment()</li>
+         * <li>getParentFragment()</li>
+         * <li>getActivity()</li>
+         */
+        static void onExportTypeSelectionDialogResult(@NonNull final Fragment sourceFragment,
+                                                      @NonNull ExportSettings settings) {
+
+            if (sourceFragment.getTargetFragment() instanceof OnExportTypeSelectionDialogResultsListener) {
+                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.getTargetFragment())
+                        .onExportTypeSelectionDialogResult(settings);
+            } else if (sourceFragment.getParentFragment() instanceof OnExportTypeSelectionDialogResultsListener) {
+                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.getParentFragment())
+                        .onExportTypeSelectionDialogResult(settings);
+            } else if (sourceFragment.getActivity() instanceof OnExportTypeSelectionDialogResultsListener) {
+                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.requireActivity())
+                        .onExportTypeSelectionDialogResult(settings);
+            }
+        }
 
         void onExportTypeSelectionDialogResult(@NonNull ExportSettings settings);
     }

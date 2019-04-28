@@ -308,8 +308,7 @@ public class EditSeriesListActivity
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_SERIES_NUM);
             }
 
-            final View root = mActivity.getLayoutInflater()
-                                       .inflate(R.layout.dialog_edit_book_series, null);
+            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
@@ -324,28 +323,26 @@ public class EditSeriesListActivity
             mNumberView = root.findViewById(R.id.series_num);
             mNumberView.setText(mSeriesNumber);
 
-            root.findViewById(R.id.confirm).setOnClickListener(v -> {
-                mSeriesName = mNameView.getText().toString().trim();
-                if (mSeriesName.isEmpty()) {
-                    UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
-                    return;
-                }
-                if (mIsCompleteView != null) {
-                    mSeriesIsComplete = mIsCompleteView.isChecked();
-                }
-                mSeriesNumber = mNumberView.getText().toString().trim();
-                dismiss();
-
-                //noinspection ConstantConditions
-                mActivity.processChanges(series, mSeriesName, mSeriesIsComplete, mSeriesNumber);
-
-            });
-
-            root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
-
             return new AlertDialog.Builder(mActivity)
                     .setView(root)
                     .setTitle(R.string.title_edit_book_series)
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                    .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
+                        mSeriesName = mNameView.getText().toString().trim();
+                        if (mSeriesName.isEmpty()) {
+                            UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                            return;
+                        }
+                        if (mIsCompleteView != null) {
+                            mSeriesIsComplete = mIsCompleteView.isChecked();
+                        }
+                        mSeriesNumber = mNumberView.getText().toString().trim();
+                        dismiss();
+
+                        //noinspection ConstantConditions
+                        mActivity.processChanges(series, mSeriesName, mSeriesIsComplete,
+                                                 mSeriesNumber);
+                    })
                     .create();
         }
 
@@ -372,28 +369,19 @@ public class EditSeriesListActivity
     /**
      * Holder pattern for each row.
      */
-    private class Holder
-            extends RecyclerViewViewHolderBase<Series> {
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
 
         @NonNull
-        final TextView rowSeriesView;
+        final TextView seriesView;
         @NonNull
-        final TextView rowSeriesSortView;
+        final TextView seriesSortView;
 
-        Holder(@NonNull final View rowView) {
-            super(rowView);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
 
-            rowSeriesView = rowView.findViewById(R.id.row_series);
-            rowSeriesSortView = rowView.findViewById(R.id.row_series_sort);
-
-            // click -> edit
-            rowDetailsView.setOnClickListener((v) -> {
-                FragmentManager fm = getSupportFragmentManager();
-                if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
-                    EditBookSeriesDialogFragment.newInstance(item)
-                                                .show(fm, EditBookSeriesDialogFragment.TAG);
-                }
-            });
+            seriesView = itemView.findViewById(R.id.row_series);
+            seriesSortView = itemView.findViewById(R.id.row_series_sort);
         }
     }
 
@@ -420,16 +408,25 @@ public class EditSeriesListActivity
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            Series series = mList.get(position);
+            Series series = getItem(position);
 
-            holder.rowSeriesView.setText(series.getLabel());
+            holder.seriesView.setText(series.getLabel());
 
             if (series.getLabel().equals(series.getSortName())) {
-                holder.rowSeriesSortView.setVisibility(View.GONE);
+                holder.seriesSortView.setVisibility(View.GONE);
             } else {
-                holder.rowSeriesSortView.setVisibility(View.VISIBLE);
-                holder.rowSeriesSortView.setText(series.getSortName());
+                holder.seriesSortView.setVisibility(View.VISIBLE);
+                holder.seriesSortView.setText(series.getSortName());
             }
+
+            // click -> edit
+            holder.rowDetailsView.setOnClickListener((v) -> {
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
+                    EditBookSeriesDialogFragment.newInstance(series)
+                                                .show(fm, EditBookSeriesDialogFragment.TAG);
+                }
+            });
         }
     }
 }

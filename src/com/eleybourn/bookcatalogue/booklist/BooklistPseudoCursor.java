@@ -220,11 +220,13 @@ public class BooklistPseudoCursor
                 }
 
             }
-            // DEBUG: Remove dump of MRU list!
-            //Logger.info("MRU: ");
-            //for(int i = 0; i < MRU_LIST_SIZE; i++)
-            //Logger.info(mMruList[(mMruListPos+1+i)%MRU_LIST_SIZE] + " ");
-
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.PSEUDO_CURSOR) {
+                Logger.debug(this, "onMove", "MRU: ");
+                for (int i = 0; i < MRU_LIST_SIZE; i++) {
+                    Logger.debug(this, "onMove",
+                                 mMruList[(mMruListPos + 1 + i) % MRU_LIST_SIZE] + " ");
+                }
+            }
             // Set the active cursor, and set its position correctly
             mActiveCursor = mCursors.get(cursorId);
             //noinspection ConstantConditions

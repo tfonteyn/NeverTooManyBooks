@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDoneException;
@@ -9,17 +10,18 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.widget.PopupMenu;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
@@ -33,11 +35,12 @@ import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.PopupMenuDialog;
-import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
@@ -46,7 +49,6 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -69,22 +71,25 @@ public class CoverHandler {
     private static int sTempImageCounter;
 
     @NonNull
-    private final FragmentActivity mActivity;
+    private final FragmentManager mFragmentManager;
+
     @NonNull
     private final Fragment mFragment;
 
+    @NonNull
+    private final Context mContext;
 
     @NonNull
     private final DBA mDb;
     @NonNull
-    private final BookManager mBookManager;
-    private final Fields.Field mCoverField;
+    private final Book mBook;
+    private final ImageView mCoverView;
 
     /**
-     * keep a reference to the ISBN Field, so we can use the *current* value.
-     * (instead of using getBook())
+     * keep a reference to the ISBN Field, so we can use the *current* value
+     * when we're in the book edit fragment.
      */
-    private final Fields.Field mIsbnField;
+    private final TextView mIsbnView;
 
     private final int mMaxWidth;
     private final int mMaxHeight;
@@ -97,33 +102,35 @@ public class CoverHandler {
     /**
      * Constructor.
      */
-    CoverHandler(@NonNull final Fragment fragment,
+    CoverHandler(@NonNull final FragmentManager fragmentManager,
+                 @NonNull final Fragment fragment,
                  @NonNull final DBA db,
-                 @NonNull final BookManager bookManager,
-                 @NonNull final Fields.Field isbnField,
-                 @NonNull final Fields.Field coverField,
+                 @NonNull final Book book,
+                 @NonNull final TextView isbnView,
+                 @NonNull final ImageView coverView,
                  final int maxWidth,
                  final int maxHeight) {
+
+        mFragmentManager = fragmentManager;
         mFragment = fragment;
+        //noinspection ConstantConditions
+        mContext = mFragment.getContext();
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
-        // cache it to avoid multiple calls.
-        mActivity = mFragment.requireActivity();
         mDb = db;
-        mBookManager = bookManager;
-        mCoverField = coverField;
-        mIsbnField = isbnField;
+        mBook = book;
+        mCoverView = coverView;
+        mIsbnView = isbnView;
 
         // add context menu to the cover image
-        mCoverField.getView().setOnLongClickListener(v -> {
+        mCoverView.setOnLongClickListener(v -> {
             prepareCoverContextMenu();
             return true;
         });
 
         //Allow zooming by clicking on the image
-        mCoverField.getView().setOnClickListener(
-                v -> ZoomedImageDialogFragment.show(mActivity.getSupportFragmentManager(),
-                                                    getCoverFile()));
+        mCoverView.setOnClickListener(
+                v -> ZoomedImageDialogFragment.show(mFragmentManager, getCoverFile()));
     }
 
     /**
@@ -152,8 +159,7 @@ public class CoverHandler {
      */
     private void prepareCoverContextMenu() {
 
-        // legal trick to get an instance of Menu.
-        Menu menu = new PopupMenu(mActivity, null).getMenu();
+        Menu menu = MenuPicker.createMenu(mContext);
         menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
@@ -166,7 +172,7 @@ public class CoverHandler {
                       .setIcon(R.drawable.ic_add_a_photo);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 0,
                            R.string.menu_cover_add_from_gallery)
-                      .setIcon(R.drawable.ic_image);
+                      .setIcon(R.drawable.ic_photo_gallery);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 0,
                            R.string.menu_cover_search_alt_editions)
                       .setIcon(R.drawable.ic_find_replace);
@@ -189,13 +195,15 @@ public class CoverHandler {
             .setIcon(R.drawable.ic_crop);
 
         // display
-        String menuTitle = mActivity.getString(R.string.title_cover);
-        PopupMenuDialog.showContextMenu(mActivity, menuTitle, menu, R.id.coverImage,
-                                        this::onViewContextItemSelected);
+        String menuTitle = mContext.getString(R.string.title_cover);
+        final MenuPicker<Integer> picker = new MenuPicker<>(mContext, menuTitle, menu,
+                                                            R.id.coverImage,
+                                                            this::onViewContextItemSelected);
+        picker.show();
     }
 
     /**
-     * Using {@link PopupMenuDialog} for context menus.
+     * Using {@link ValuePicker} for context menus.
      * Reminder: the 'menuItem' here *is* the 'item'.
      *
      * @param menuItem that the user selected
@@ -219,7 +227,7 @@ public class CoverHandler {
             case R.id.SUBMENU_THUMB_ROTATE:
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
-                    HintManager.displayHint(mActivity.getLayoutInflater(),
+                    HintManager.displayHint(LayoutInflater.from(mContext),
                                             R.string.hint_autorotate_camera_images,
                                             null);
                     mGotCameraImage = false;
@@ -263,7 +271,7 @@ public class CoverHandler {
      * (re)load the image into the view.
      */
     void updateCoverView() {
-        ImageUtils.setImageView(mCoverField.getView(), getCoverFile(), mMaxWidth, mMaxHeight, true);
+        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -274,7 +282,7 @@ public class CoverHandler {
      */
     @NonNull
     private File getCoverFile() {
-        if (mBookManager.getBook().getId() == 0) {
+        if (mBook.getId() == 0) {
             return StorageUtils.getTempCoverFile();
         }
         return StorageUtils.getCoverFile(getUuid());
@@ -288,11 +296,11 @@ public class CoverHandler {
      */
     @NonNull
     private String getUuid() {
-        String uuid = (String) mCoverField.getView().getTag(R.id.TAG_UUID);
+        String uuid = (String) mCoverView.getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
             Logger.debugWithStackTrace(this, "getUuid", "UUID was not available on the view t");
-            uuid = mDb.getBookUuid(mBookManager.getBook().getId());
+            uuid = mDb.getBookUuid(mBook.getId());
         }
         return uuid;
     }
@@ -304,25 +312,26 @@ public class CoverHandler {
     private void addCoverFromAlternativeEditions() {
         // this is essential, as we only get alternative editions from LibraryThing for now.
         if (LibraryThingManager.noKey()) {
-            LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
+            LibraryThingManager.needLibraryThingAlert(mContext, true, "cover_browser");
             return;
         }
 
-        String isbn = mIsbnField.getValue().toString();
+        String isbn = mIsbnView.getText().toString().trim();
 
         if (ISBN.isValid(isbn)) {
             // we must use the same fragment manager as the hosting fragment.
-            FragmentManager fm = mFragment.requireFragmentManager();
-            mCoverBrowserFragment = (CoverBrowser) fm.findFragmentByTag(CoverBrowser.TAG);
+            mCoverBrowserFragment = (CoverBrowser) mFragmentManager.findFragmentByTag(
+                    CoverBrowser.TAG);
             if (mCoverBrowserFragment == null) {
                 mCoverBrowserFragment = CoverBrowser.newInstance(isbn, Site.SEARCH_ALL);
-                mCoverBrowserFragment.show(fm, CoverBrowser.TAG);
+                mCoverBrowserFragment.show(mFragmentManager, CoverBrowser.TAG);
             }
             // allow a callback when the user clicks on the image they want to use.
             // at least we don't need to travel round to the Activity this way.
             mCoverBrowserFragment.setTargetFragment(mFragment, UniqueId.REQ_ALT_EDITION);
         } else {
-            UserMessage.showUserMessage(mIsbnField.getView(),
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
                                         R.string.warning_editions_require_isbn);
         }
     }
@@ -391,7 +400,7 @@ public class CoverHandler {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .setType("image/*");
         mFragment.startActivityForResult(
-                Intent.createChooser(intent, mActivity.getString(R.string.title_select_image)),
+                Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
     }
 
@@ -404,8 +413,8 @@ public class CoverHandler {
         if (selectedImageUri != null) {
             boolean imageOk = false;
             // If no 'content' scheme, then use the content resolver.
-            try (InputStream in = mActivity.getContentResolver().openInputStream(
-                    selectedImageUri)) {
+            try (InputStream in = mContext.getContentResolver()
+                                          .openInputStream(selectedImageUri)) {
                 imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
@@ -416,15 +425,15 @@ public class CoverHandler {
                 // Update the ImageView with the new image
                 updateCoverView();
             } else {
-                String msg = mActivity.getString(R.string.warning_cover_copy_failed) + ". "
-                        + mActivity.getString(R.string.error_if_the_problem_persists);
-                UserMessage.showUserMessage(mCoverField.getView(), msg);
+                String msg = mContext.getString(R.string.warning_cover_copy_failed) + ". "
+                        + mContext.getString(R.string.error_if_the_problem_persists);
+                UserMessage.showUserMessage(mCoverView, msg);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the chooser (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            UserMessage.showUserMessage(mCoverField.getView(), R.string.warning_cover_copy_failed);
+            UserMessage.showUserMessage(mCoverView, R.string.warning_cover_copy_failed);
         }
     }
 
@@ -442,7 +451,7 @@ public class CoverHandler {
 
         // We load the file and first scale it to twice the display size.
         // Keep in mind this means it could be up- or downscaled from the original !
-        int imageSize = ImageUtils.getDisplaySizes(mActivity).large * 2;
+        int imageSize = ImageUtils.getDisplaySizes(mContext).large * 2;
 
         // we'll try it twice with a gc in between
         int attempts = 2;
@@ -514,7 +523,7 @@ public class CoverHandler {
         File cropped = getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
 
-        Intent intent = new Intent(mActivity, CropImageActivity.class)
+        Intent intent = new Intent(mContext, CropImageActivity.class)
                 .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
                           imageFile.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
@@ -535,16 +544,14 @@ public class CoverHandler {
      */
     private void cropCoverImageExternal(@NonNull final File imageFile) {
 
-        Uri inputURI = FileProvider.getUriForFile(mActivity,
+        Uri inputURI = FileProvider.getUriForFile(mContext,
                                                   GenericFileProvider.AUTHORITY,
                                                   imageFile);
         File cropped = getCroppedTempCoverFile();
         // make sure any left-over file is removed.
         StorageUtils.deleteFile(cropped);
         Uri outputURI = Uri.fromFile(cropped);
-//                FileProvider.getUriForFile(mActivity,
-//                                                   GenericFileProvider.AUTHORITY,
-//                                                   cropped);
+//        FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY, cropped);
 
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
@@ -571,10 +578,11 @@ public class CoverHandler {
         // Save output image in uri
         intent.putExtra(MediaStore.EXTRA_OUTPUT, outputURI);
 
-        List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
+        List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(mFragment.getView(), R.string.error_no_external_crop_app);
+            UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
+                                        R.string.error_no_external_crop_app);
         } else {
             mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }
@@ -608,7 +616,7 @@ public class CoverHandler {
      * Ensure that the cached images for this book are deleted (if present).
      */
     private void invalidateCachedImages() {
-        if (mBookManager.getBook().getId() != 0) {
+        if (mBook.getId() != 0) {
             try (CoversDBA db = CoversDBA.getInstance()) {
                 db.delete(getUuid());
             } catch (SQLiteDoneException e) {

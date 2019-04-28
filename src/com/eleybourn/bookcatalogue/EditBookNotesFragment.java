@@ -30,7 +30,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -41,7 +40,6 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFra
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
@@ -65,12 +63,6 @@ public class EditBookNotesFragment
     /** Field drop down list. */
     private List<String> mPricePaidCurrencies;
 
-    @Override
-    @NonNull
-    protected BookManager getBookManager() {
-        return ((BookManager) requireParentFragment()).getBookManager();
-    }
-
     //<editor-fold desc="Fragment startup">
 
     @Override
@@ -85,9 +77,8 @@ public class EditBookNotesFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link BookManager#getBook()} on the hosting Activity
-     * <li>{@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * <li>{@link #onSaveFieldsToBook(Book)} from base class onPause
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume
+     * <li>{@link #onSaveFieldsToBook} from base class onPause
      * <p>
      * <p>{@inheritDoc}
      */
@@ -95,7 +86,8 @@ public class EditBookNotesFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ViewUtils.fixFocusSettings(requireView());
+        //noinspection ConstantConditions
+        ViewUtils.fixFocusSettings(getView());
     }
 
     @CallSuper
@@ -140,10 +132,10 @@ public class EditBookNotesFragment
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
         field = mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-                       .setFormatter(new Book.BookEditionsFormatter());
+                       .setFormatter(new Fields.BookEditionsFormatter());
         //noinspection ConstantConditions
         initCheckListEditor(getTag(), field, R.string.lbl_edition,
-                            () -> getBookManager().getBook().getEditableEditionList());
+                            () -> mBookModel.getBook().getEditableEditionList());
 
         field = mFields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
@@ -181,9 +173,8 @@ public class EditBookNotesFragment
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(@NonNull final Book book,
-                                        final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(book, setAllFrom);
+    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
+        super.onLoadFieldsFromBook(setAllFrom);
 
         // Restore default visibility
         showHideFields(false);
@@ -197,10 +188,9 @@ public class EditBookNotesFragment
                                       @NonNull final List<CheckListItem<Integer>> list) {
 
         if (destinationFieldId == R.id.edition) {
-            ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
-            getBookManager().getBook().putEditions(result);
-            mFields.getField(destinationFieldId).setValue(
-                    getBookManager().getBook().getString(DBDefinitions.KEY_EDITION_BITMASK));
+            mBookModel.getBook().putEditions(new Book.EditionCheckListItem().extractList(list));
+            mFields.getField(destinationFieldId)
+                   .setValue(mBookModel.getBook().getString(DBDefinitions.KEY_EDITION_BITMASK));
         }
     }
 

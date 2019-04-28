@@ -43,44 +43,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
         tools:text="Alvin"
-        />
+        >
 
-    <Button
-        android:id="@+id/cancel"
-        style="?attr/buttonBarNegativeButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@android:string/cancel"
-        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
-        app:layout_constraintEnd_toStartOf="@id/return_book"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loaned_to"
-        />
-
-    <Button
-        android:id="@+id/return_book"
-        style="?attr/buttonBarNeutralButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_loan_returned"
-        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
-        app:layout_constraintEnd_toStartOf="@id/confirm"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/cancel"
-        />
-
-    <Button
-        android:id="@+id/confirm"
-        style="?attr/buttonBarPositiveButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@android:string/ok"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/return_book"
-        app:layout_constraintTop_toBottomOf="@id/loaned_to"
-        />
-
+        <requestFocus />
+    </AutoCompleteTextView>
 </androidx.constraintlayout.widget.ConstraintLayout>

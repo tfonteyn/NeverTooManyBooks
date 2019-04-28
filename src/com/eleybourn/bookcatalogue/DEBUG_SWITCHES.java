@@ -21,6 +21,8 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
  */
 public final class DEBUG_SWITCHES {
 
+
+
     /* ****************************************************************************************** */
 
     /** Enable strict mode reporting on network,disc,... usage. */
@@ -63,6 +65,9 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
     public static final boolean BOOKLIST_BUILDER = false;
+
+    /** {@link com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor}. */
+    public static final boolean PSEUDO_CURSOR = false;
 
     /** {@link BooksOnBookshelf}. */
     public static final boolean BOOKS_ON_BOOKSHELF = false;
