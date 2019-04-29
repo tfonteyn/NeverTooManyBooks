@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.tasks;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -66,11 +65,11 @@ public class ProgressDialogFragment<Results>
     private Integer mTaskId;
 
     /**
+     * @param <Results>       the type of the result object from the task.
      * @param titelId         Titel for the dialog, can be 0 for no title.
      * @param isIndeterminate type of progress
-     * @param max             maximum value for progress if isIndeterminate==false
+     * @param maxValue        maximum value for progress if isIndeterminate==false
      *                        Pass in 0 to keep the max as set in the layout file.
-     * @param <Results>       the type of the result object from the task.
      *
      * @return the fragment.
      */
@@ -79,24 +78,39 @@ public class ProgressDialogFragment<Results>
     public static <Results>
     ProgressDialogFragment<Results> newInstance(@StringRes final int titelId,
                                                 final boolean isIndeterminate,
-                                                final int max) {
+                                                final int maxValue) {
         ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
-        args.putInt(BKEY_MAX, max);
+        args.putInt(BKEY_MAX, maxValue);
         frag.setArguments(args);
         return frag;
     }
 
+    /**
+     * This constructor is meant to be shared between all tasks used by:
+     * {@link com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks}.
+     * and should not be used/needed elsewhere.
+     *
+     * @param <Results>       the type of the result object from the task.
+     * @param titelId         Titel for the dialog, can be 0 for no title.
+     * @param isIndeterminate type of progress
+     * @param maxValue        maximum value for progress if isIndeterminate==false
+     *                        Pass in 0 to keep the max as set in the layout file.
+     * @param message         initial message
+     * @param currentValue    initial value
+     *
+     * @return the fragment.
+     */
     @NonNull
     @UiThread
     public static <Results>
     ProgressDialogFragment<Results> newInstance(@StringRes final int titelId,
-                                                @Nullable final String message,
                                                 final boolean isIndeterminate,
-                                                final int currentValue,
-                                                final int maxValue) {
+                                                final int maxValue,
+                                                @Nullable final String message,
+                                                final int currentValue) {
         ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
@@ -121,14 +135,13 @@ public class ProgressDialogFragment<Results>
         setRetainInstance(true);
     }
 
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateDialog(this, savedInstanceState);
 
-        @SuppressLint("InflateParams")
-        View root = getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
 
         mMessageView = root.findViewById(R.id.message);
         mProgressBar = root.findViewById(R.id.progressBar);
@@ -355,43 +368,6 @@ public class ProgressDialogFragment<Results>
     public boolean isIndeterminate() {
         //don't get it from the actual progressbar as that might be null.
         return mIsIndeterminate;
-    }
-
-    public interface OnTaskFinishedListener {
-
-        /**
-         * Convenience method. Try in order:
-         * <li>getTargetFragment()</li>
-         * <li>getParentFragment()</li>
-         * <li>getActivity()</li>
-         */
-        static void onTaskFinished(@NonNull final Fragment fragment,
-                                   final int taskId,
-                                   final boolean success,
-                                   @Nullable final Object result) {
-            if (fragment.getTargetFragment() instanceof OnTaskFinishedListener) {
-                ((OnTaskFinishedListener) fragment.getTargetFragment())
-                        .onTaskFinished(taskId, success, result);
-            } else if (fragment.getParentFragment() instanceof OnTaskFinishedListener) {
-                ((OnTaskFinishedListener) fragment.getParentFragment())
-                        .onTaskFinished(taskId, success, result);
-            } else if (fragment.getActivity() instanceof OnTaskFinishedListener) {
-                ((OnTaskFinishedListener) fragment.getActivity())
-                        .onTaskFinished(taskId, success, result);
-            }
-        }
-
-        /**
-         * Called when a task finishes.
-         *
-         * @param taskId  id for the task which was provided at construction time.
-         * @param success {@code true} if the task finished successfully
-         * @param result  the result object from the {@link AsyncTask}.
-         *                Nullable/NonNull is up to the implementation.
-         */
-        void onTaskFinished(int taskId,
-                            boolean success,
-                            Object result);
     }
 
     /**

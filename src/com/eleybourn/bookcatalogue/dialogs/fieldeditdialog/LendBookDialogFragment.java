@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -42,7 +41,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
@@ -91,10 +89,8 @@ public class LendBookDialogFragment
     /**
      * (syntax sugar for newInstance)
      */
-    public static LendBookDialogFragment show(@NonNull final Fragment target,
+    public static LendBookDialogFragment show(@NonNull final FragmentManager fm,
                                               @NonNull final Book book) {
-        FragmentManager fm = target.getFragmentManager();
-        //noinspection ConstantConditions
         LendBookDialogFragment dialog = (LendBookDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog == null) {
             dialog = newInstance(book);
@@ -157,8 +153,7 @@ public class LendBookDialogFragment
             // if not, we must have the id.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(
-                        args.getLong(DBDefinitions.KEY_AUTHOR)).getLabel();
+                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_AUTHOR)).getLabel();
             }
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
@@ -166,8 +161,8 @@ public class LendBookDialogFragment
             mLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
         }
 
-        @SuppressLint("InflateParams")
-        View root = getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
         titleView.setText(args.getString(DBDefinitions.KEY_TITLE));
@@ -190,7 +185,7 @@ public class LendBookDialogFragment
                     dismiss();
                     mDb.deleteLoan(bookId);
                     BookChangedListener.onBookChanged(this, bookId,
-                                                      BookChangedListener.BOOK_LOANEE,null);
+                                                      BookChangedListener.BOOK_LOANEE, null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
@@ -222,11 +217,12 @@ public class LendBookDialogFragment
      */
     private void setPhoneContactsAdapter() {
         // check security
+        //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(
-                requireActivity(),
+                getActivity(),
                 Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
-                    requireActivity(),
+                    getActivity(),
                     new String[]{Manifest.permission.READ_CONTACTS},
                     UniqueId.REQ_ANDROID_PERMISSIONS);
             return;
@@ -234,7 +230,7 @@ public class LendBookDialogFragment
         // call secured method
         ArrayList<String> contacts = getPhoneContacts();
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line,
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line,
                                    contacts);
         mLoaneeView.setAdapter(adapter);
     }
@@ -251,7 +247,8 @@ public class LendBookDialogFragment
     private ArrayList<String> getPhoneContacts()
             throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
-        ContentResolver cr = requireActivity().getContentResolver();
+        //noinspection ConstantConditions
+        ContentResolver cr = getActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                                               null, null, null)) {
             if (contactsCursor != null) {

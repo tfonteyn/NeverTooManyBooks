@@ -25,6 +25,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 
+/**
+ * The preference key names here are the ones that define USER settings.
+ * See {@link com.eleybourn.bookcatalogue.settings.SettingsActivity} and children.
+ *
+ * Application internal settings are done where they are needed/used.
+ *
+ * The pre-v200 migration method {@link #migratePreV200preferences} is also located here.
+ */
 public final class Prefs {
 
     public static final String pk_ui_language = "App.Locale";
@@ -47,7 +55,6 @@ public final class Prefs {
     public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
     public static final String pk_bob_thumbnails_generating_mode = "BookList.ThumbnailsInBackground";
     public static final String pk_bob_thumbnails_cache_resized = "BookList.ThumbnailsCached";
-
 
 
     public static final String pk_bob_thumbnails_show_large = "BookList.Style.Show.LargeThumbnails";

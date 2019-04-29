@@ -26,6 +26,7 @@ public class GlobalSettingsFragment
         setSummary(screen);
 
         // ENHANCE: make the response conditional, not all changes warrant a recreate!
-        requireActivity().setResult(UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED);
+        //noinspection ConstantConditions
+        getActivity().setResult(UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED);
     }
 }

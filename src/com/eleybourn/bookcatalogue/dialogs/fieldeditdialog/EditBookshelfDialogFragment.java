@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentManager;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.debug.MustImplementException;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -100,7 +101,8 @@ public class EditBookshelfDialogFragment
         //noinspection ConstantConditions
         mDb = new DBA(context);
 
-        View root = getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
@@ -214,8 +216,10 @@ public class EditBookshelfDialogFragment
                 ((OnBookshelfChangedListener) sourceFragment.getParentFragment())
                         .onBookshelfChanged(bookshelfId, booksMoved);
             } else if (sourceFragment.getActivity() instanceof OnBookshelfChangedListener) {
-                ((OnBookshelfChangedListener) sourceFragment.requireActivity())
+                ((OnBookshelfChangedListener) sourceFragment.getActivity())
                         .onBookshelfChanged(bookshelfId, booksMoved);
+            } else {
+                throw new MustImplementException(OnBookshelfChangedListener.class);
             }
         }
 

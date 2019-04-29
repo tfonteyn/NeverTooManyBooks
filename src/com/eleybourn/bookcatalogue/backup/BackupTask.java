@@ -30,8 +30,6 @@ public class BackupTask
 
     /** Fragment manager tag. */
     private static final String TAG = BackupTask.class.getSimpleName();
-    /** Generic identifier. */
-    private static final int M_TASK_ID = R.id.TASK_ID_SAVE_TO_ARCHIVE;
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
@@ -98,7 +96,7 @@ public class BackupTask
             BackupTask task;
             try {
                 task = new BackupTask(context, progressDialog, settings);
-                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.setTask(R.id.TASK_ID_SAVE_TO_ARCHIVE, task);
                 progressDialog.show(fm, TAG);
                 task.execute();
             } catch (IOException e) {

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -189,8 +188,9 @@ public class EditBookTocFragment
         // Populate the list view with the book content table.
         mList = mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
+        //noinspection ConstantConditions
         mListAdapter = new TocListAdapterForEditing(
-                requireContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+                getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -487,7 +487,7 @@ public class EditBookTocFragment
                 root.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
-            final AlertDialog dialog = new AlertDialog.Builder(requireContext())
+            final AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
@@ -568,13 +568,13 @@ public class EditBookTocFragment
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
 
-            @SuppressLint("InflateParams")
-            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_toc, null);
+            @SuppressWarnings("ConstantConditions")
+            final View root = getActivity().getLayoutInflater()
+                                           .inflate(R.layout.dialog_edit_book_toc, null);
 
             mAuthorTextView = root.findViewById(R.id.author);
             mTitleTextView = root.findViewById(R.id.title);
             mPubDateTextView = root.findViewById(R.id.first_publication);
-
 
             Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
 
@@ -582,8 +582,9 @@ public class EditBookTocFragment
             mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
 
             if (mHasMultipleAuthors) {
+                //noinspection ConstantConditions
                 ArrayAdapter<String> authorAdapter =
-                        new ArrayAdapter<>(requireContext(),
+                        new ArrayAdapter<>(getContext(),
                                            android.R.layout.simple_dropdown_item_1line,
                                            targetFragment.mDb.getAuthorsFormattedName());
                 mAuthorTextView.setAdapter(authorAdapter);
@@ -597,7 +598,8 @@ public class EditBookTocFragment
             mTitleTextView.setText(mTocEntry.getTitle());
             mPubDateTextView.setText(mTocEntry.getFirstPublication());
 
-            return new AlertDialog.Builder(requireContext())
+            //noinspection ConstantConditions
+            return new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.dialogs.editordialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
@@ -51,9 +52,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
-import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -90,12 +88,6 @@ public class PartialDatePickerDialogFragment
     @Nullable
     private Integer mDay;
 
-    /** Local ref to year text view. */
-    private EditText mYearView;
-    /** Local ref to month spinner. */
-    private Spinner mMonthSpinner;
-    /** Local ref to day spinner. */
-    private Spinner mDaySpinner;
 
     /**
      * Constructor.
@@ -151,15 +143,16 @@ public class PartialDatePickerDialogFragment
             mDay = args.getInt(BKEY_DAY);
         }
 
-        PartialDatePickerDialog dialog = new PartialDatePickerDialog(requireContext());
+        //noinspection ConstantConditions
+        PartialDatePickerDialog dialog = new PartialDatePickerDialog(getContext());
         if (mTitleId != 0) {
             dialog.setTitle(mTitleId);
         }
-        dialog.setButton(BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         (d, which) -> dismiss());
-        dialog.setButton(BUTTON_POSITIVE, getString(android.R.string.ok),
-                         (d, which) -> checkAndSend());
 
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
+                         (d, which) -> dismiss());
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
+                         (d, which) -> checkAndSend());
         return dialog;
     }
 
@@ -173,11 +166,14 @@ public class PartialDatePickerDialogFragment
     private void checkAndSend() {
 
         if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-            UserMessage.showUserMessage(mMonthSpinner,
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(),
                                         R.string.warning_if_day_set_month_and_year_must_be);
 
         } else if (mMonth != null && mMonth > 0 && mYear == null) {
-            UserMessage.showUserMessage(mYearView, R.string.warning_if_month_set_year_must_be);
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(),
+                                        R.string.warning_if_month_set_year_must_be);
 
         } else {
             dismiss();
@@ -255,8 +251,14 @@ public class PartialDatePickerDialogFragment
     class PartialDatePickerDialog
             extends AlertDialog {
 
+        /** Local ref to year text view. */
+        private final EditText mYearView;
+        /** Local ref to month spinner. */
+        private final Spinner mMonthSpinner;
+        /** Local ref to day spinner. */
+        private final Spinner mDaySpinner;
+
         /** Local ref to day spinner adapter. */
-        @NonNull
         private final ArrayAdapter<String> mDayAdapter;
 
         /**
@@ -268,9 +270,10 @@ public class PartialDatePickerDialogFragment
         PartialDatePickerDialog(@NonNull final Context context) {
             super(context);
 
-            // Get the layout
+            @SuppressWarnings("ConstantConditions")
             @SuppressLint("InflateParams")
-            View root = getLayoutInflater().inflate(R.layout.dialog_partial_date_picker, null);
+            View root = getActivity().getLayoutInflater()
+                                     .inflate(R.layout.dialog_partial_date_picker, null);
 
             // Ensure components match current locale order
             reorderPickers(root);

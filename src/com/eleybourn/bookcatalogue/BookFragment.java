@@ -175,7 +175,7 @@ public class BookFragment
         mFields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         mFields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
-               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
+               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()));
 
         // defined, but handled manually
         mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
@@ -606,7 +606,8 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                LendBookDialogFragment.show(this, mBookModel.getBook())
+                //noinspection ConstantConditions
+                LendBookDialogFragment.show(getFragmentManager(), mBookModel.getBook())
                                       .setTargetFragment(this, 0);
                 return true;
 

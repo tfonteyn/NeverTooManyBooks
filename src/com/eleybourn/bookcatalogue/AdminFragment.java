@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.ExportCSVTask;
 import com.eleybourn.bookcatalogue.backup.csv.ImportCSVTask;
-import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
+import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
+import com.eleybourn.bookcatalogue.backup.ui.RestoreActivity;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -33,6 +35,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
+import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -40,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public class AdminFragment
         extends Fragment
-        implements ProgressDialogFragment.OnTaskFinishedListener {
+        implements OnTaskFinishedListener {
 
     /** Fragment manager tag. */
     public static final String TAG = AdminFragment.class.getSimpleName();
@@ -74,9 +77,7 @@ public class AdminFragment
         //noinspection ConstantConditions
         v = root.findViewById(R.id.lbl_backup);
         v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), BackupAndRestoreActivity.class)
-                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                              BackupAndRestoreActivity.MODE_SAVE);
+            Intent intent = new Intent(getContext(), BackupActivity.class);
             startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
         });
 
@@ -84,9 +85,7 @@ public class AdminFragment
         // Import from Archive - Start the restore activity
         v = root.findViewById(R.id.lbl_import_from_archive);
         v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), BackupAndRestoreActivity.class)
-                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                              BackupAndRestoreActivity.MODE_OPEN);
+            Intent intent = new Intent(getContext(), RestoreActivity.class);
             startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
         });
 
@@ -168,7 +167,18 @@ public class AdminFragment
         settings.what = ExportSettings.BOOK_CSV;
 
         //noinspection ConstantConditions
-        ExportCSVTask.start(getContext(), getFragmentManager(), settings);
+        @NonNull
+        FragmentManager fm = getFragmentManager();
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<Void> progressDialog =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
+                                                       false, 0);
+            //noinspection ConstantConditions
+            ExportCSVTask task = new ExportCSVTask(getContext(), progressDialog, settings);
+            progressDialog.setTask(R.id.TASK_ID_CSV_EXPORT, task);
+            progressDialog.show(fm, TAG);
+            task.execute();
+        }
     }
 
     /**
@@ -222,8 +232,20 @@ public class AdminFragment
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
+
         //noinspection ConstantConditions
-        ImportCSVTask.start(getContext(), getFragmentManager(), settings);
+        @NonNull
+        FragmentManager fm = getFragmentManager();
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<Void> progressDialog =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
+                                                       false, 0);
+            //noinspection ConstantConditions
+            ImportCSVTask task = new ImportCSVTask(getContext(), progressDialog, settings);
+            progressDialog.setTask(R.id.TASK_ID_CSV_IMPORT, task);
+            progressDialog.show(fm, TAG);
+            task.execute();
+        }
     }
 
     @Override
@@ -284,9 +306,7 @@ public class AdminFragment
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                    emailCSVFile();
-                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> emailCSVFile())
                 .create();
 
         try {

@@ -24,8 +24,7 @@ public class ImportCSVTask
 
     /** Fragment manager tag. */
     private static final String TAG = ImportCSVTask.class.getSimpleName();
-    /** Generic identifier. */
-    private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
+
     private final ImportSettings mSettings;
     private final Importer mImporter;
     private final ProgressDialogFragment<Void> mFragment;
@@ -44,33 +43,13 @@ public class ImportCSVTask
      * @param settings the import settings
      */
     @UiThread
-    private ImportCSVTask(@NonNull final Context context,
-                          @NonNull final ProgressDialogFragment<Void> fragment,
-                          @NonNull final ImportSettings settings) {
+    public ImportCSVTask(@NonNull final Context context,
+                         @NonNull final ProgressDialogFragment<Void> fragment,
+                         @NonNull final ImportSettings settings) {
 
         mFragment = fragment;
         mSettings = settings;
         mImporter = new CsvImporter(context, settings);
-    }
-
-    /**
-     * @param context  caller context
-     * @param fm       FragmentManager
-     * @param settings the import settings
-     */
-    @UiThread
-    public static void start(@NonNull final Context context,
-                             @NonNull final FragmentManager fm,
-                             @NonNull final ImportSettings settings) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<Void> progressDialog =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
-                                                       false, 0);
-            ImportCSVTask task = new ImportCSVTask(context, progressDialog, settings);
-            progressDialog.setTask(M_TASK_ID, task);
-            progressDialog.show(fm, TAG);
-            task.execute();
-        }
     }
 
     @Override

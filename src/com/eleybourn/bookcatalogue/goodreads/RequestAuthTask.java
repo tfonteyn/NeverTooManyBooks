@@ -21,8 +21,6 @@ class RequestAuthTask
 
     /** Fragment manager tag. */
     private static final String TAG = RequestAuthTask.class.getSimpleName();
-    /** Generic identifier. */
-    private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;
     @NonNull
     private final ProgressDialogFragment<Integer> mFragment;
     /**
@@ -52,7 +50,7 @@ class RequestAuthTask
                     ProgressDialogFragment.newInstance(R.string.progress_msg_connecting_to_web_site,
                                                        true, 0);
             RequestAuthTask task = new RequestAuthTask(progressDialog);
-            progressDialog.setTask(M_TASK_ID, task);
+            progressDialog.setTask(R.id.TASK_ID_GR_REQUEST_AUTH, task);
             progressDialog.show(fm, TAG);
             task.execute();
         }

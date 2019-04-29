@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,16 +20,12 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
 
 /**
  * Display all TocEntry's for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
- * <p>
- * ENHANCE: we currently only display the TOC entries. We should add books without TOC as well.
- * i.e. the toc of a book without a toc, is the book title itself. (makes sense?)
  */
 public class AuthorWorksFragment
         extends Fragment {
@@ -36,9 +33,13 @@ public class AuthorWorksFragment
     /** Fragment manager tag. */
     public static final String TAG = AuthorWorksFragment.class.getSimpleName();
 
+    /** Optional. Also show the authors book. Defaults to {@code true}. */
+    @SuppressWarnings("WeakerAccess")
+    public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
+
     private DBA mDb;
 
-    private ArrayList<TocEntry> mTocEntries;
+    private AuthorWorksModel mModel;
 
     @Nullable
     @Override
@@ -55,21 +56,17 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         long authorId = getArguments().getLong(DBDefinitions.KEY_ID, 0);
+        boolean withBooks = getArguments().getBoolean(BKEY_WITH_BOOKS, true);
 
         //noinspection ConstantConditions
         mDb = new DBA(getContext());
-        final Author author = mDb.getAuthor(authorId);
-        // the list of TOC entries.
-        //noinspection ConstantConditions
-        mTocEntries = mDb.getTocEntryByAuthor(author, true);
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(author.getLabel() + '[' + mTocEntries.size() + ']');
+        mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
+        mModel.init(mDb, authorId, withBooks);
 
-//        // for testing.
-//        for (int i=0; i < 300; i++) {
-//            mTocEntries.add(new TocEntry(author,"blah " + i,"1978"));
-//        }
+        String title = mModel.getAuthor().getLabel() + '[' + mModel.getTocEntries().size() + ']';
+        //noinspection ConstantConditions
+        getActivity().setTitle(title);
 
         //noinspection ConstantConditions
         RecyclerView listView = getView().findViewById(android.R.id.list);
@@ -118,7 +115,7 @@ public class AuthorWorksFragment
 
         /** Icon to show for a book. */
         private static Drawable sBookIndicator;
-        /**Icon to show for not a book. e.g. a short story... */
+        /** Icon to show for not a book. e.g. a short story... */
         private static Drawable sStoryIndicator;
 
         @NonNull
@@ -195,23 +192,26 @@ public class AuthorWorksFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            holder.bind(mTocEntries.get(position));
+
+            TocEntry tocEntry = mModel.getTocEntries().get(position);
+            holder.bind(tocEntry);
             // click -> open book details.
-            holder.itemView.setOnClickListener(v -> gotoBook(mTocEntries.get(position)));
+            holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
         }
 
         @Override
         public int getItemCount() {
-            return mTocEntries.size();
+            return mModel.getTocEntries().size();
         }
 
         @Nullable
         @Override
         public String[] getSectionTextForPosition(final int position) {
             // make sure it's still in range.
-            int index = MathUtils.clamp(position, 0, mTocEntries.size() - 1);
+            int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
 
-            return new String[]{mTocEntries.get(index).getTitle().substring(0, 1).toUpperCase()};
+            return new String[]{mModel.getTocEntries().get(index).getTitle().substring(0,
+                                                                                       1).toUpperCase()};
         }
     }
 }

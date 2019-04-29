@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,8 +25,6 @@ public class ExportCSVTask
 
     /** Fragment manager tag. */
     private static final String TAG = ExportCSVTask.class.getSimpleName();
-    /** Generic identifier. */
-    private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;
     @NonNull
     private final ProgressDialogFragment<Void> mFragment;
     @NonNull
@@ -49,31 +46,12 @@ public class ExportCSVTask
      * @param settings the export settings
      */
     @UiThread
-    private ExportCSVTask(@NonNull final Context context,
-                          @NonNull final ProgressDialogFragment<Void> fragment,
-                          @NonNull final ExportSettings settings) {
+    public ExportCSVTask(@NonNull final Context context,
+                         @NonNull final ProgressDialogFragment<Void> fragment,
+                         @NonNull final ExportSettings settings) {
         mFragment = fragment;
         mExporter = new CsvExporter(context, settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
-    }
-
-    /**
-     * @param fm       FragmentManager
-     * @param settings the export settings
-     */
-    @UiThread
-    public static void start(@NonNull final Context context,
-                             @NonNull final FragmentManager fm,
-                             @NonNull final ExportSettings settings) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<Void> progressDialog =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
-                                                       false, 0);
-            ExportCSVTask task = new ExportCSVTask(context, progressDialog, settings);
-            progressDialog.setTask(M_TASK_ID, task);
-            progressDialog.show(fm, TAG);
-            task.execute();
-        }
     }
 
     @Override

@@ -59,7 +59,8 @@ public abstract class EditAuthorBaseDialogFragment
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
 
-        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
 
         ArrayAdapter<String> mFamilyNameAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,

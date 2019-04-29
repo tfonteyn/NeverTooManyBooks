@@ -101,7 +101,8 @@ public class EditSeriesDialogFragment
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
-        View root = getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
 
         ArrayAdapter<String> mAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,

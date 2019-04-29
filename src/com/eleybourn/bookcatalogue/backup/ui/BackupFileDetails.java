@@ -18,8 +18,7 @@ import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -84,8 +83,8 @@ public class BackupFileDetails
      * @return {@code true} if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
-        return file.getName().toLowerCase(LocaleUtils.getSystemLocale()).endsWith(
-                ARCHIVE_EXTENSION);
+        return file.getName().toLowerCase(LocaleUtils.getSystemLocale())
+                   .endsWith(ARCHIVE_EXTENSION);
     }
 
     public void setInfo(@NonNull final BackupInfo info) {
@@ -98,9 +97,6 @@ public class BackupFileDetails
         return mFile;
     }
 
-    /**
-     * Fill in the details for the view we returned above.
-     */
     @Override
     public void onBindViewHolder(@NonNull final FileChooserFragment.Holder holder,
                                  @NonNull final Context context) {

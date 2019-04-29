@@ -76,16 +76,16 @@ public class BooklistStyleSettingsFragment
             group.addPreferencesTo(screen);
         }
 
-        Activity activity = requireActivity();
+        //noinspection ConstantConditions
+        @NonNull
+        Activity activity = getActivity();
         // Set the title (not the screen title)
         if (mStyle.getId() == 0) {
-            activity.setTitle(
-                    getString(R.string.title_clone_style_colon_name,
-                              mStyle.getLabel(activity)));
+            activity.setTitle(getString(R.string.title_clone_style_colon_name,
+                                        mStyle.getLabel(activity)));
         } else {
-            activity.setTitle(
-                    getString(R.string.title_edit_style_colon_name,
-                              mStyle.getLabel(activity)));
+            activity.setTitle(getString(R.string.title_edit_style_colon_name,
+                                        mStyle.getLabel(activity)));
         }
         // Display hint if required
         if (savedInstanceState == null) {

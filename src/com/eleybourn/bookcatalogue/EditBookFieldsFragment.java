@@ -62,12 +62,6 @@ public class EditBookFieldsFragment
     private static final int REQ_EDIT_AUTHORS = 0;
     private static final int REQ_EDIT_SERIES = 1;
 
-    /**
-     * Field drop down lists.
-     * Lists in database so far, we cache them for performance but only load
-     * them when really needed.
-     */
-    private List<String> mGenres;
 
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
@@ -117,11 +111,12 @@ public class EditBookFieldsFragment
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
         Field coverImageField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(requireActivity());
+        //noinspection ConstantConditions
+        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getActivity());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         //noinspection ConstantConditions
-        mCoverHandler = new CoverHandler(getFragmentManager(),this, mDb,
+        mCoverHandler = new CoverHandler(getFragmentManager(), this, mDb,
                                          mBookModel.getBook(),
                                          mFields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
@@ -135,7 +130,7 @@ public class EditBookFieldsFragment
                     ArrayList<Author> list =
                             mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
-                    Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class)
+                    Intent intent = new Intent(getActivity(), EditAuthorListActivity.class)
                             .putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId())
                             .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, list);
@@ -150,7 +145,7 @@ public class EditBookFieldsFragment
                     ArrayList<Series> list =
                             mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
-                    Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class)
+                    Intent intent = new Intent(getActivity(), EditSeriesListActivity.class)
                             .putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId())
                             .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_SERIES_ARRAY, list);
@@ -160,7 +155,7 @@ public class EditBookFieldsFragment
         Field field;
 
         field = mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
-        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
+        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres(mDb));
 
 
         // Personal fields
@@ -181,7 +176,8 @@ public class EditBookFieldsFragment
         populateAuthorListField();
         populateSeriesListField();
 
-        ArrayList<Bookshelf> bsList = mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        ArrayList<Bookshelf> bsList = mBookModel.getBook().getParcelableArrayList(
+                UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
@@ -306,24 +302,6 @@ public class EditBookFieldsFragment
 
     //</editor-fold>
 
-    //<editor-fold desc="Field drop down lists">
-
-    /**
-     * Load a genre list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of genres
-     */
-    @NonNull
-    private List<String> getGenres() {
-        if (mGenres == null) {
-            mGenres = mDb.getGenres();
-        }
-        return mGenres;
-    }
-
-    //</editor-fold>
-
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
@@ -340,7 +318,7 @@ public class EditBookFieldsFragment
                         ArrayList<Author> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                         mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                                    list != null ? list : new ArrayList<>());
+                                                                    list != null ? list : new ArrayList<>());
 
                         mBookModel.setDirty(true);
                     } else {
@@ -364,7 +342,7 @@ public class EditBookFieldsFragment
                         ArrayList<Series> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                         mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                                                    list != null ? list : new ArrayList<>());
+                                                                    list != null ? list : new ArrayList<>());
 
                         populateSeriesListField();
                         mBookModel.setDirty(true);

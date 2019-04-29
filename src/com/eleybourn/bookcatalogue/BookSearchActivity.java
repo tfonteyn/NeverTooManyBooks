@@ -26,6 +26,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
@@ -54,14 +55,15 @@ public class BookSearchActivity
         Bundle extras = getIntent().getExtras();
         //noinspection ConstantConditions
         String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
-        if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
+
+        FragmentManager fm = getSupportFragmentManager();
+        if (null == fm.findFragmentByTag(tag)) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.main_fragment, frag, tag)
-                    .commit();
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(R.id.main_fragment, frag, tag)
+              .commit();
         }
     }
 

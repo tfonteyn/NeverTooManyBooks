@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,7 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -83,6 +81,7 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.FTSSearchActivity;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
+import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -98,7 +97,7 @@ public class BooksOnBookshelf
         extends BaseActivity
         implements
         BookChangedListener,
-        ProgressDialogFragment.OnTaskFinishedListener {
+        OnTaskFinishedListener {
 
     /**
      * Set to true to enable true rebuild for debugging. See {@link #initBookList(boolean)}.
@@ -601,7 +600,7 @@ public class BooksOnBookshelf
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (resultCode == Activity.RESULT_OK) {
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
-                        // BackupAndRestoreActivity:
+                        // RestoreActivity:
                         int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
                                                        ImportSettings.NOTHING);
 
@@ -615,7 +614,7 @@ public class BooksOnBookshelf
                             }
                         }
                     } else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
-                        // BackupAndRestoreActivity:
+                        // RestoreActivity:
                         int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT,
                                                        ExportSettings.NOTHING);
                     }
@@ -1167,7 +1166,8 @@ public class BooksOnBookshelf
         private boolean mShowAllStyles;
         private BooklistStyle mCurrentStyle;
 
-        /** The sort menu is tied to the main class, so might as well give full access. */
+        /** The sort menu is 100% tied to the main class, so might as well give full access.
+         * And yes, this is not clean. */
         private BooksOnBookshelf mActivity;
 
         static SortMenuFragment newInstance(final boolean showAllStyles,
@@ -1183,10 +1183,10 @@ public class BooksOnBookshelf
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            mActivity = (BooksOnBookshelf) requireActivity();
+            mActivity = (BooksOnBookshelf) getActivity();
 
-            @SuppressLint("InflateParams")
-            View root = getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
+            @SuppressWarnings("ConstantConditions")
+            View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
 
             Bundle args = requireArguments();
             mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
@@ -1227,7 +1227,7 @@ public class BooksOnBookshelf
                     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
                 });
 
-            return new AlertDialog.Builder(requireActivity())
+            return new AlertDialog.Builder(getContext())
                     .setTitle(R.string.title_select_style)
                     .setView(root)
                     .create();
@@ -1244,8 +1244,7 @@ public class BooksOnBookshelf
 
         /** Fragment manager tag. */
         private static final String TAG = GetBookListTask.class.getSimpleName();
-        /** Generic identifier. */
-        private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
+
         @NonNull
         protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
@@ -1330,7 +1329,7 @@ public class BooksOnBookshelf
                 GetBookListTask task =
                         new GetBookListTask(progressDialog, builderHolder, bookListBuilder,
                                             isFullRebuild);
-                progressDialog.setTask(M_TASK_ID, task);
+                progressDialog.setTask(R.id.TASK_ID_GET_BOOKLIST, task);
                 progressDialog.show(fm, TAG);
                 task.execute();
             }

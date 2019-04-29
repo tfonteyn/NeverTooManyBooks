@@ -76,7 +76,6 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    /** cache our activity to avoid multiple requireActivity and casting. */
     private BaseActivity mActivity;
 
     private ViewPager mViewPager;
@@ -93,7 +92,7 @@ public class EditBookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mActivity = (BaseActivity) requireActivity();
+        mActivity = (BaseActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
         // any specific tab desired as 'selected' ?
@@ -238,7 +237,8 @@ public class EditBookFragment
             String isbn = mBookModel.getBook().getString(DBDefinitions.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
-                StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
+                //noinspection ConstantConditions
+                StandardDialogs.confirmSaveDuplicateBook(getContext(), nextStep);
                 return;
             }
         }

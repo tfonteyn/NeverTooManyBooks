@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -52,7 +53,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public class LibraryThingAdminActivity
         extends BaseActivity
-        implements ProgressDialogFragment.OnTaskFinishedListener {
+        implements OnTaskFinishedListener {
 
     private EditText mDevKeyView;
 
@@ -90,7 +91,16 @@ public class LibraryThingAdminActivity
                .apply();
 
             if (!devKey.isEmpty()) {
-                ValidateKey.start(getSupportFragmentManager());
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.findFragmentByTag(ValidateKey.TAG) == null) {
+                    ProgressDialogFragment<Integer> progressDialog =
+                            ProgressDialogFragment.newInstance(
+                                    R.string.progress_msg_connecting_to_web_site,true, 0);
+                    ValidateKey task = new ValidateKey(progressDialog);
+                    progressDialog.setTask(R.id.TASK_ID_LT_VALIDATE_KEY, task);
+                    progressDialog.show(fm, ValidateKey.TAG);
+                    task.execute();
+                }
             }
         });
 
@@ -113,8 +123,6 @@ public class LibraryThingAdminActivity
         /** Fragment manager tag. */
         private static final String TAG = ValidateKey.class.getSimpleName();
 
-        /** Generic identifier. */
-        private static final int M_TASK_ID = R.id.TASK_ID_LT_VALIDATE_KEY;
         private final ProgressDialogFragment<Integer> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
@@ -131,22 +139,6 @@ public class LibraryThingAdminActivity
         @UiThread
         private ValidateKey(@NonNull final ProgressDialogFragment<Integer> fragment) {
             mFragment = fragment;
-        }
-
-        /**
-         * @param fm FragmentManager
-         */
-        @UiThread
-        public static void start(@NonNull final FragmentManager fm) {
-            if (fm.findFragmentByTag(TAG) == null) {
-                ProgressDialogFragment<Integer> progressDialog =
-                        ProgressDialogFragment.newInstance(
-                                R.string.progress_msg_connecting_to_web_site,true, 0);
-                ValidateKey task = new ValidateKey(progressDialog);
-                progressDialog.setTask(M_TASK_ID, task);
-                progressDialog.show(fm, TAG);
-                task.execute();
-            }
         }
 
         @Override

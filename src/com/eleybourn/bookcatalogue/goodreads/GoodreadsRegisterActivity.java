@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public class GoodreadsRegisterActivity
         extends BaseActivity
-        implements ProgressDialogFragment.OnTaskFinishedListener {
+        implements OnTaskFinishedListener {
 
     @Override
     protected int getLayoutId() {

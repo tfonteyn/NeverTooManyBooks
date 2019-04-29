@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -270,14 +271,16 @@ public abstract class BaseActivityWithTasks
 
         // Create dialog if necessary
         if (mProgressDialog == null) {
-            mProgressDialog = (ProgressDialogFragment) getSupportFragmentManager()
-                    .findFragmentByTag(ProgressDialogFragment.TAG);
+            FragmentManager fm = getSupportFragmentManager();
+
+            mProgressDialog = (ProgressDialogFragment)
+                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
             if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(0, mProgressMessage,
-                                                                     wantInDeterminate,
-                                                                     mProgressCount, mProgressMax);
+                mProgressDialog = ProgressDialogFragment.newInstance(0, wantInDeterminate,
+                                                                     mProgressMax, mProgressMessage,
+                                                                     mProgressCount);
                 // specific tags for specific tasks? -> NO, as the dialog is shared.
-                mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
+                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             }
         } else {
             // otherwise just update it.

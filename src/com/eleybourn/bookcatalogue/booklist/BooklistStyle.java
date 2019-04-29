@@ -78,7 +78,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
  * ENHANCE: when a style is deleted, the prefs are cleared. But the actual file is not removed.
- * How to do this in a device independent manner?
+ * How to do this in a device independent manner? Easy answer: don't bother.
  * <p>
  * How to add a new Group:
  * <p>
@@ -144,10 +144,8 @@ public class BooklistStyle
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
     /** Scaling of text and images. */
-    @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_NORMAL = 1;
     /** Scaling of text and images. */
-    @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_SMALLER = 2;
     /** Scaling of text and images. */
     @SuppressWarnings("WeakerAccess")
@@ -931,6 +929,8 @@ public class BooklistStyle
     /**
      * Construct a clone of this object.
      * The clone is committed! (written to a new pref file, and stored in the database)
+     *
+     * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      */
     @NonNull
     public BooklistStyle getClone(@NonNull final Context context,

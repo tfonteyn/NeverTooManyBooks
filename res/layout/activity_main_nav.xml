@@ -15,7 +15,6 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:showIn="@layout/activity_main_nav"
         >
 
         <com.google.android.material.appbar.AppBarLayout

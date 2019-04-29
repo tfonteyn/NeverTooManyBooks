@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -37,15 +38,15 @@ public class SettingsActivity
                                                        GlobalSettingsFragment.TAG)
                                     : GlobalSettingsFragment.TAG;
 
-        if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (null == fm.findFragmentByTag(tag)) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    // add! not replace!
-                    .add(R.id.main_fragment, frag, tag)
-                    .commit();
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              // add! not replace!
+              .add(R.id.main_fragment, frag, tag)
+              .commit();
         }
     }
 

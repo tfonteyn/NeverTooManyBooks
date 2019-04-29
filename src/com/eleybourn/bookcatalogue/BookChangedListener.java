@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.eleybourn.bookcatalogue.debug.MustImplementException;
+
 /**
  * Allows to be notified of changes made to book(s).
  */
@@ -50,8 +52,10 @@ public interface BookChangedListener {
             ((BookChangedListener) sourceFragment.getParentFragment())
                     .onBookChanged(bookId, fieldsChanged, data);
         } else if (sourceFragment.getActivity() instanceof BookChangedListener) {
-            ((BookChangedListener) sourceFragment.requireActivity())
+            ((BookChangedListener) sourceFragment.getActivity())
                     .onBookChanged(bookId, fieldsChanged, data);
+        } else {
+            throw new MustImplementException(BookChangedListener.class);
         }
     }
 

@@ -253,8 +253,6 @@ public class EditSeriesListActivity
         /** Fragment manager tag. */
         private static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
 
-        private EditSeriesListActivity mActivity;
-
         private AutoCompleteTextView mNameView;
         private Checkable mIsCompleteView;
         private EditText mNumberView;
@@ -291,8 +289,6 @@ public class EditSeriesListActivity
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            mActivity = (EditSeriesListActivity) requireActivity();
-
             Bundle args = requireArguments();
 
             final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
@@ -307,13 +303,14 @@ public class EditSeriesListActivity
                         DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_SERIES_NUM);
             }
-
-            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
+            @SuppressWarnings("ConstantConditions")
+            final View root = getActivity().getLayoutInflater()
+                                           .inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
             mNameView.setText(mSeriesName);
-            mNameView.setAdapter(mActivity.mSeriesAdapter);
+            mNameView.setAdapter(((EditSeriesListActivity) getActivity()).mSeriesAdapter);
 
             mIsCompleteView = root.findViewById(R.id.is_complete);
             if (mIsCompleteView != null) {
@@ -323,7 +320,8 @@ public class EditSeriesListActivity
             mNumberView = root.findViewById(R.id.series_num);
             mNumberView.setText(mSeriesNumber);
 
-            return new AlertDialog.Builder(mActivity)
+            //noinspection ConstantConditions
+            return new AlertDialog.Builder(getContext())
                     .setView(root)
                     .setTitle(R.string.title_edit_book_series)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
@@ -340,8 +338,9 @@ public class EditSeriesListActivity
                         dismiss();
 
                         //noinspection ConstantConditions
-                        mActivity.processChanges(series, mSeriesName, mSeriesIsComplete,
-                                                 mSeriesNumber);
+                        ((EditSeriesListActivity) getActivity())
+                                .processChanges(series, mSeriesName, mSeriesIsComplete,
+                                                mSeriesNumber);
                     })
                     .create();
         }

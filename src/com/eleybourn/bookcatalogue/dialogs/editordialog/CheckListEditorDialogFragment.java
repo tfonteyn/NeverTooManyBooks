@@ -19,9 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 
 /**
  * DialogFragment to edit a list of checkbox options.
- *
+ * <p>
  * This is really overkill.. maybe time to switch back to a simple Dialog.
  * https://developer.android.com/guide/topics/ui/dialogs
  *
@@ -102,15 +101,31 @@ public class CheckListEditorDialogFragment<T>
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
         Objects.requireNonNull(mList);
 
-        CheckListEditorDialog dialog = new CheckListEditorDialog(requireActivity());
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
+
+        // Takes the list of items and create a list of checkboxes in the display.
+        ViewGroup body = root.findViewById(R.id.content);
+        for (final CheckListItem item : mList) {
+            CompoundButton buttonView = new CheckBox(getContext());
+            buttonView.setChecked(item.isChecked());
+            //noinspection ConstantConditions
+            buttonView.setText(item.getLabel(getContext()));
+            buttonView.setOnCheckedChangeListener((v, isChecked) -> item.setChecked(isChecked));
+            body.addView(buttonView);
+        }
+
+        //noinspection ConstantConditions
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(root)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) ->
+                        getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList))
+                .create();
+
         if (mTitleId != 0) {
             dialog.setTitle(mTitleId);
         }
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         (dialog1, which) -> dismiss());
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
-                         (d, which) -> getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList));
 
         return dialog;
     }
@@ -147,35 +162,5 @@ public class CheckListEditorDialogFragment<T>
 
         @NonNull
         ArrayList<CheckListItem<T>> getList();
-    }
-
-    /**
-     * The custom dialog.
-     */
-    private class CheckListEditorDialog
-            extends AlertDialog {
-
-        /**
-         * Constructor.
-         *
-         * @param context caller context
-         */
-        CheckListEditorDialog(@NonNull final Context context) {
-            super(context);
-
-            View root = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
-            setView(root);
-
-            // Takes the list of items and create a list of checkboxes in the display.
-            ViewGroup body = root.findViewById(R.id.content);
-            for (final CheckListItem item : mList) {
-                CompoundButton buttonView = new CheckBox(context);
-                buttonView.setChecked(item.isChecked());
-                buttonView.setText(item.getLabel(context));
-                buttonView.setOnCheckedChangeListener(
-                        (v, isChecked) -> item.setChecked(isChecked));
-                body.addView(buttonView);
-            }
-        }
     }
 }

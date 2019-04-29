@@ -339,7 +339,8 @@ public class BookSearchByIsbnFragment
      * @param existingId of the book we already have in the database
      */
     private void isbnAlreadyPresent(final long existingId) {
-        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
+        //noinspection ConstantConditions
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setMessage(R.string.confirm_duplicate_book_message)
                 .setTitle(R.string.title_duplicate_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)

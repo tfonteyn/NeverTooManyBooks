@@ -43,12 +43,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
+import androidx.fragment.app.FragmentManager;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
+import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
+import com.eleybourn.bookcatalogue.backup.ui.RestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -286,9 +288,7 @@ public class StartupActivity
         startActivity(intent);
 
         if (mBackupRequired) {
-            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class)
-                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                              BackupAndRestoreActivity.MODE_SAVE);
+            Intent backupIntent = new Intent(this, BackupActivity.class);
             startActivity(backupIntent);
         }
 
@@ -297,13 +297,13 @@ public class StartupActivity
     }
 
     private void openProgressDialog() {
+        FragmentManager fm = getSupportFragmentManager();
         //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Void>)
-                getSupportFragmentManager().findFragmentByTag(TAG);
+        mProgressDialog = (ProgressDialogFragment<Void>) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment
                     .newInstance(R.string.lbl_application_startup, true, 0);
-            mProgressDialog.show(getSupportFragmentManager(), TAG);
+            mProgressDialog.show(fm, TAG);
         }
     }
 

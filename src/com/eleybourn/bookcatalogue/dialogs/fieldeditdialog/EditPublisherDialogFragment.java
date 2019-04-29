@@ -94,7 +94,8 @@ public class EditPublisherDialogFragment
             mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
         }
 
-        View root = getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
         ArrayAdapter<String> mAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,

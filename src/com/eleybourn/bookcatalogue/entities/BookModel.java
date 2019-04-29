@@ -1,10 +1,13 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
+
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -23,6 +26,25 @@ public class BookModel
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
     private Book book;
+
+    /**
+     * Field drop down lists.
+     * Lists in database so far, we cache them for performance but only load
+     * them when really needed.
+     */
+    private List<String> mGenres;
+    /** Field drop down list. */
+    private List<String> mLocations;
+    /** Field drop down list. */
+    private List<String> mPricePaidCurrencies;
+    /** Field drop down list. */
+    private List<String> mFormats;
+    /** Field drop down list. */
+    private List<String> mLanguages;
+    /** Field drop down list. */
+    private List<String> mPublishers;
+    /** Field drop down list. */
+    private List<String> mListPriceCurrencies;
 
     /**
      * Conditional constructor.
@@ -73,4 +95,106 @@ public class BookModel
     public void setBook(@NonNull final Book book) {
         this.book = book;
     }
+
+
+    /**
+     * Load a publisher list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of publishers
+     */
+    @NonNull
+    public List<String> getPublishers(@NonNull final DBA db) {
+        if (mPublishers == null) {
+            mPublishers = db.getPublisherNames();
+        }
+        return mPublishers;
+    }
+
+    /**
+     * Load a language list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of languages; full displayName
+     */
+    @NonNull
+    public List<String> getLanguages(@NonNull final DBA db,
+                                      @NonNull final Context context) {
+        if (mLanguages == null) {
+            mLanguages = db.getLanguages(context);
+        }
+        return mLanguages;
+    }
+
+    /**
+     * Load a format list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of formats
+     */
+    @NonNull
+    public List<String> getFormats(@NonNull final DBA db) {
+        if (mFormats == null) {
+            mFormats = db.getFormats();
+        }
+        return mFormats;
+    }
+
+    /**
+     * Load a currency list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getListPriceCurrencyCodes(@NonNull final DBA db) {
+        if (mListPriceCurrencies == null) {
+            mListPriceCurrencies = db.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        }
+        return mListPriceCurrencies;
+    }
+
+    /**
+     * Load a genre list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of genres
+     */
+    @NonNull
+    public List<String> getGenres(@NonNull final DBA db) {
+        if (mGenres == null) {
+            mGenres = db.getGenres();
+        }
+        return mGenres;
+    }
+
+    /**
+     * Load a location list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of locations
+     */
+    @NonNull
+    public List<String> getLocations(@NonNull final DBA db) {
+        if (mLocations == null) {
+            mLocations = db.getLocations();
+        }
+        return mLocations;
+    }
+
+    /**
+     * Load a currency list; reloading this list every time a tab changes is slow.
+     * So we cache it.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getPricePaidCurrencyCodes(@NonNull final DBA db) {
+        if (mPricePaidCurrencies == null) {
+            mPricePaidCurrencies = db.getCurrencyCodes(
+                    DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+        }
+        return mPricePaidCurrencies;
+    }
+
 }

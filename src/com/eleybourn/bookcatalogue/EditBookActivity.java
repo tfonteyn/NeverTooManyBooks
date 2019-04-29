@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -34,7 +35,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * The hosting activity for editing a book.
- *
+ * <p>
  * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
@@ -51,14 +52,14 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (null == getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG)) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (null == fm.findFragmentByTag(EditBookFragment.TAG)) {
             Fragment frag = new EditBookFragment();
             frag.setArguments(getIntent().getExtras());
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
-                    .commit();
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
+              .commit();
         }
     }
 

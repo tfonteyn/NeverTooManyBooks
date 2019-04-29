@@ -21,8 +21,7 @@ public class RestoreTask
 
     /** Fragment manager tag. */
     private static final String TAG = RestoreTask.class.getSimpleName();
-    /** Generic identifier. */
-    private static final int M_TASK_ID = R.id.TASK_ID_READ_FROM_ARCHIVE;
+
     @NonNull
     private final ProgressDialogFragment<ImportSettings> mFragment;
     @NonNull
@@ -44,9 +43,9 @@ public class RestoreTask
      * @throws IOException if the file could not be opened.
      */
     @UiThread
-    private RestoreTask(@NonNull final Context context,
-                        @NonNull final ProgressDialogFragment<ImportSettings> fragment,
-                        @NonNull final ImportSettings /* in/out */settings)
+    public RestoreTask(@NonNull final Context context,
+                       @NonNull final ProgressDialogFragment<ImportSettings> fragment,
+                       @NonNull final ImportSettings /* in/out */settings)
             throws IOException {
 
         mFragment = fragment;
@@ -56,30 +55,6 @@ public class RestoreTask
         }
 
         mBackupReader = BackupManager.readFrom(context, mSettings.file);
-    }
-
-    /**
-     * @param fm       FragmentManager
-     * @param settings the import settings
-     */
-    @UiThread
-    public static void start(@NonNull final Context context,
-                             @NonNull final FragmentManager fm,
-                             @NonNull final ImportSettings settings) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<ImportSettings> progressDialog =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
-                                                       false, 0);
-            RestoreTask task;
-            try {
-                task = new RestoreTask(context, progressDialog, settings);
-                progressDialog.setTask(M_TASK_ID, task);
-                progressDialog.show(fm, TAG);
-                task.execute();
-            } catch (IOException e) {
-                progressDialog.onTaskFinished(false, settings);
-            }
-        }
     }
 
     @Override

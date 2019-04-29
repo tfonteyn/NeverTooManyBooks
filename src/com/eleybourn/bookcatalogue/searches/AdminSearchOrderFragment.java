@@ -63,8 +63,9 @@ public class AdminSearchOrderFragment
         mListView.setLayoutManager(new LinearLayoutManager(getContext()));
         mListView.setHasFixedSize(true);
 
+        //noinspection ConstantConditions
         mListAdapter = new SearchSiteListAdapter(
-                requireContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+                getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         // any change done in the adapter will set the book 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {

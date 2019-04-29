@@ -41,6 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -110,9 +111,6 @@ public class CoverBrowser
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
 
-    /** cached activity. */
-    private BaseActivity mActivity;
-
     /** The gallery displays a list of images, one for each edition. */
     private RecyclerView mGalleryView;
 
@@ -157,21 +155,18 @@ public class CoverBrowser
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        mActivity = (BaseActivity) requireActivity();
-
         Bundle args = requireArguments();
 
         mIsbn = args.getString(DBDefinitions.KEY_ISBN);
         // Create an object to manage the downloaded files
         mFileManager = new FileManager(args.getInt(UniqueId.BKEY_SEARCH_SITES), savedInstanceState);
 
-
         if (savedInstanceState != null) {
             mAlternativeEditions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
         }
 
-        @SuppressLint("InflateParams")
-        View root = getLayoutInflater().inflate(R.layout.dialog_cover_browser, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_cover_browser, null);
 
         // keep the user informed.
         mStatusTextView = root.findViewById(R.id.statusMessage);
@@ -213,7 +208,7 @@ public class CoverBrowser
                                                     Activity.RESULT_OK, data);
                 } else {
                     // if no fragment, assume the activity wants us.
-                    mActivity.onActivityResult(UniqueId.REQ_ALT_EDITION,
+                    ((BaseActivity) getActivity()).onActivityResult(UniqueId.REQ_ALT_EDITION,
                                                Activity.RESULT_OK, data);
                 }
             }
@@ -221,7 +216,8 @@ public class CoverBrowser
             dismiss();
         });
 
-        return new AlertDialog.Builder(mActivity)
+        //noinspection ConstantConditions
+        return new AlertDialog.Builder(getContext())
                 .setView(root)
                 .create();
     }
@@ -286,14 +282,15 @@ public class CoverBrowser
 
         if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
             dismiss();
-            UserMessage.showUserMessage(mActivity, R.string.warning_no_editions);
+            UserMessage.showUserMessage(mStatusTextView, R.string.warning_no_editions);
             return;
         }
 
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);
 
-        mDisplaySizes = ImageUtils.getDisplaySizes(mActivity);
+        //noinspection ConstantConditions
+        mDisplaySizes = ImageUtils.getDisplaySizes(getContext());
 
         // Use our adapter to load the gallery images
         GalleryAdapter adapter = new GalleryAdapter(mDisplaySizes.small, mDisplaySizes.small);
@@ -914,7 +911,8 @@ public class CoverBrowser
 
             // and if none left, dismiss.
             if (getItemCount() == 0) {
-                UserMessage.showUserMessage(mActivity, R.string.warning_cover_not_found);
+                //noinspection ConstantConditions
+                UserMessage.showUserMessage(getActivity(), R.string.warning_cover_not_found);
                 dismiss();
             }
         }

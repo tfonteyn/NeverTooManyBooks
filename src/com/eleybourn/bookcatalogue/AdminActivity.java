@@ -25,13 +25,14 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for admin functions.
- *
+ * <p>
  * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
@@ -49,14 +50,14 @@ public class AdminActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_administration_long);
 
-        if (null == getSupportFragmentManager().findFragmentByTag(AdminFragment.TAG)) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (null == fm.findFragmentByTag(AdminFragment.TAG)) {
             Fragment frag = new AdminFragment();
             frag.setArguments(getIntent().getExtras());
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.main_fragment, frag, AdminFragment.TAG)
-                    .commit();
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(R.id.main_fragment, frag, AdminFragment.TAG)
+              .commit();
         }
     }
 }

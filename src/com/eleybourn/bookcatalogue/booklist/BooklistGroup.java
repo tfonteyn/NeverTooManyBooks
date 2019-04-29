@@ -85,13 +85,8 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTE
  * <p>
  * There is a one-to-one mapping with the members of a {@link RowKind}.
  * <p>
- * {@link RowKind}
- * <p>
- * Not Parcelable: we parcel the 'kind' of the groups in a style.
- * There is no need to parcel the actual group.
- * <p>
- * HOWEVER: The {@link #mDomains} must be set at runtime each time but that is ok as
- * they are only needed at list build time.
+ * IMPORTANT: The {@link #mDomains} must be set at runtime each time but that is ok as
+ * they are only needed at list build time. They are NOT stored.
  *
  * @author Philip Warner
  */
@@ -111,7 +106,7 @@ public class BooklistGroup
                     return new BooklistGroup[size];
                 }
             };
-    /** */
+    /** pre-v200 legacy support. DO NOT CHANGE. */
     private static final long serialVersionUID = 1012206875683862714L;
     /**
      * the kind of row/group we represent, see {@link RowKind}.
@@ -312,6 +307,7 @@ public class BooklistGroup
                     }
                 };
 
+        /** pre-v200 legacy support. DO NOT CHANGE. */
         private static final long serialVersionUID = 9023218506278704155L;
 
         /** Show book under each series it appears in. */
@@ -434,6 +430,8 @@ public class BooklistGroup
                         return new BooklistAuthorGroup[size];
                     }
                 };
+
+        /** pre-v200 legacy support. DO NOT CHANGE. */
         private static final long serialVersionUID = -1984868877792780113L;
         /** Support for 'Show All Authors of Book' property. */
         private transient PBoolean mAllAuthors;

@@ -29,8 +29,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
@@ -48,18 +46,6 @@ public class EditBookPublicationFragment
     /** Fragment manager tag. */
     public static final String TAG = EditBookPublicationFragment.class.getSimpleName();
 
-    /**
-     * Field drop down lists.
-     * Lists in database so far, we cache them for performance but only load
-     * them when really needed.
-     */
-    private List<String> mFormats;
-    /** Field drop down list. */
-    private List<String> mLanguages;
-    /** Field drop down list. */
-    private List<String> mPublishers;
-    /** Field drop down list. */
-    private List<String> mListPriceCurrencies;
 
     //<editor-fold desc="Fragment startup">
 
@@ -106,14 +92,17 @@ public class EditBookPublicationFragment
         mFields.add(R.id.pages, DBDefinitions.KEY_PAGES);
 
         field = mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
-        initValuePicker(field, R.string.lbl_format, R.id.btn_format, getFormats());
+        initValuePicker(field, R.string.lbl_format, R.id.btn_format, mBookModel.getFormats(mDb));
 
         field = mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                        .setFormatter(new Fields.LanguageFormatter());
-        initValuePicker(field, R.string.lbl_language, R.id.btn_language, getLanguages());
+        //noinspection ConstantConditions
+        initValuePicker(field, R.string.lbl_language, R.id.btn_language,
+                        mBookModel.getLanguages(mDb, getContext()));
 
         field = mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
-        initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher, getPublishers());
+        initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
+                        mBookModel.getPublishers(mDb));
 
         field = mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
                        .setFormatter(dateFormatter);
@@ -127,7 +116,7 @@ public class EditBookPublicationFragment
         mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
         field = mFields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
-                        getListPriceCurrencyCodes());
+                        mBookModel.getListPriceCurrencyCodes(mDb));
     }
 
     @Override
@@ -151,66 +140,6 @@ public class EditBookPublicationFragment
         mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Field drop down lists">
-
-    /**
-     * Load a publisher list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of publishers
-     */
-    @NonNull
-    private List<String> getPublishers() {
-        if (mPublishers == null) {
-            mPublishers = mDb.getPublisherNames();
-        }
-        return mPublishers;
-    }
-
-    /**
-     * Load a language list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of languages; full displayName
-     */
-    @NonNull
-    private List<String> getLanguages() {
-        if (mLanguages == null) {
-            //noinspection ConstantConditions
-            mLanguages = mDb.getLanguages(getContext());
-        }
-        return mLanguages;
-    }
-
-    /**
-     * Load a format list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of formats
-     */
-    @NonNull
-    private List<String> getFormats() {
-        if (mFormats == null) {
-            mFormats = mDb.getFormats();
-        }
-        return mFormats;
-    }
-
-    /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    private List<String> getListPriceCurrencyCodes() {
-        if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
-        }
-        return mListPriceCurrencies;
-    }
     //</editor-fold>
 
 }

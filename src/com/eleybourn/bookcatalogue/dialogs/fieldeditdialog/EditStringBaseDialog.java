@@ -71,6 +71,7 @@ public abstract class EditStringBaseDialog {
     protected void edit(@NonNull final String currentText,
                         @LayoutRes final int dialogLayoutId,
                         @StringRes final int title) {
+
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(dialogLayoutId, null);
 

@@ -14,6 +14,10 @@ public class MustImplementException
 
     private static final long serialVersionUID = 1254362943479705468L;
 
+    public MustImplementException(@NonNull final Class clazz) {
+        super("No listener found: " + clazz.getCanonicalName());
+    }
+
     public MustImplementException(@NonNull final Context context,
                                   @NonNull final Class clazz) {
         super("Class " + context.getClass().getCanonicalName() +

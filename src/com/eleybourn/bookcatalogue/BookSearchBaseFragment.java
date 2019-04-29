@@ -64,10 +64,11 @@ public abstract class BookSearchBaseFragment
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mActivity = (BookSearchActivity) requireActivity();
+        mActivity = (BookSearchActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new DBA(mActivity);
+        //noinspection ConstantConditions
+        mDb = new DBA(getContext());
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
@@ -75,9 +76,9 @@ public abstract class BookSearchBaseFragment
         mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, Site.SEARCH_ALL);
 
         if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
-            LibraryThingManager.showLtAlertIfNecessary(mActivity, false, "search");
+            LibraryThingManager.showLtAlertIfNecessary(getContext(), false, "search");
         }
-        if (!NetworkUtils.isNetworkAvailable(mActivity)) {
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
         }
@@ -109,7 +110,7 @@ public abstract class BookSearchBaseFragment
                 return true;
 
             case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(requireContext(), SearchAdminActivity.class)
+                Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
                                   SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);

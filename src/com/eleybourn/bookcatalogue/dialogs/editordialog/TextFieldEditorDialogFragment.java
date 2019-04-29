@@ -102,8 +102,9 @@ public class TextFieldEditorDialogFragment
         args = savedInstanceState == null ? args : savedInstanceState;
         mText = args.getString(BKEY_TEXT, "");
 
-        @SuppressLint("InflateParams")
-        View root = getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
+
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
 
         mTextView = root.findViewById(R.id.text);
         // (re)set the bit for multiple lines allowed

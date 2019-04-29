@@ -25,13 +25,14 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for showing a book.
- *
+ * <p>
  * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
@@ -48,14 +49,14 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (null == getSupportFragmentManager().findFragmentByTag(BookFragment.TAG)) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (null == fm.findFragmentByTag(BookFragment.TAG)) {
             Fragment frag = new BookFragment();
             frag.setArguments(getIntent().getExtras());
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.main_fragment, frag, BookFragment.TAG)
-                    .commit();
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(R.id.main_fragment, frag, BookFragment.TAG)
+              .commit();
         }
     }
 }

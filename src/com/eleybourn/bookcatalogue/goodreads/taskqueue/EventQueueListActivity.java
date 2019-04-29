@@ -46,7 +46,7 @@ public class EventQueueListActivity
         extends BindableItemListActivity {
 
     /** Key to store optional task ID when activity is started. */
-    public static final String REQUEST_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
+    public static final String REQ_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
 
     /** Task ID, if provided in intent. */
     private long mTaskId;
@@ -55,7 +55,7 @@ public class EventQueueListActivity
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
 
-        mTaskId = getIntent().getLongExtra(REQUEST_BKEY_TASK_ID, 0);
+        mTaskId = getIntent().getLongExtra(REQ_BKEY_TASK_ID, 0);
         // Once we have the task id, call the parent
         super.onCreate(savedInstanceState);
 

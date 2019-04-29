@@ -1,19 +1,16 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.EditText;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
@@ -23,11 +20,11 @@ import com.eleybourn.bookcatalogue.debug.MustImplementException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
-public class ExportDialogFragment
+public class ExportOptionsDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = ExportDialogFragment.class.getSimpleName();
+    private static final String TAG = ExportOptionsDialogFragment.class.getSimpleName();
 
     private ExportSettings mExportSettings;
 
@@ -47,25 +44,12 @@ public class ExportDialogFragment
      * @return Created fragment
      */
     @NonNull
-    public static ExportDialogFragment newInstance(@NonNull final ExportSettings settings) {
-        ExportDialogFragment frag = new ExportDialogFragment();
+    public static ExportOptionsDialogFragment newInstance(@NonNull final ExportSettings settings) {
+        ExportOptionsDialogFragment frag = new ExportOptionsDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, settings);
         frag.setArguments(args);
         return frag;
-    }
-
-    /**
-     * Ensure activity supports interface.
-     */
-    @Override
-    @CallSuper
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        if (!(context instanceof OnExportTypeSelectionDialogResultsListener)) {
-            throw new MustImplementException(context,
-                                             OnExportTypeSelectionDialogResultsListener.class);
-        }
     }
 
     /**
@@ -77,7 +61,8 @@ public class ExportDialogFragment
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        View root = getLayoutInflater().inflate(R.layout.dialog_export_options, null);
+        @SuppressWarnings("ConstantConditions")
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
         //noinspection ConstantConditions
         AlertDialog dialog = new AlertDialog.Builder(getContext())
@@ -86,8 +71,8 @@ public class ExportDialogFragment
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     updateOptions();
-                    OnExportTypeSelectionDialogResultsListener
-                            .onExportTypeSelectionDialogResult(this, mExportSettings);
+                    OnOptionsListener
+                            .opOptionsResult(this, mExportSettings);
                 })
                 .create();
 
@@ -148,7 +133,7 @@ public class ExportDialogFragment
     /**
      * Listener interface to receive notifications when dialog is confirmed.
      */
-    public interface OnExportTypeSelectionDialogResultsListener {
+    public interface OnOptionsListener {
 
         /**
          * Convenience method. Try in order:
@@ -156,21 +141,23 @@ public class ExportDialogFragment
          * <li>getParentFragment()</li>
          * <li>getActivity()</li>
          */
-        static void onExportTypeSelectionDialogResult(@NonNull final Fragment sourceFragment,
-                                                      @NonNull ExportSettings settings) {
+        static void opOptionsResult(@NonNull final Fragment sourceFragment,
+                                    @NonNull ExportSettings settings) {
 
-            if (sourceFragment.getTargetFragment() instanceof OnExportTypeSelectionDialogResultsListener) {
-                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.getTargetFragment())
-                        .onExportTypeSelectionDialogResult(settings);
-            } else if (sourceFragment.getParentFragment() instanceof OnExportTypeSelectionDialogResultsListener) {
-                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.getParentFragment())
-                        .onExportTypeSelectionDialogResult(settings);
-            } else if (sourceFragment.getActivity() instanceof OnExportTypeSelectionDialogResultsListener) {
-                ((OnExportTypeSelectionDialogResultsListener) sourceFragment.requireActivity())
-                        .onExportTypeSelectionDialogResult(settings);
+            if (sourceFragment.getTargetFragment() instanceof OnOptionsListener) {
+                ((OnOptionsListener) sourceFragment.getTargetFragment())
+                        .opOptionsResult(settings);
+            } else if (sourceFragment.getParentFragment() instanceof OnOptionsListener) {
+                ((OnOptionsListener) sourceFragment.getParentFragment())
+                        .opOptionsResult(settings);
+            } else if (sourceFragment.getActivity() instanceof OnOptionsListener) {
+                ((OnOptionsListener) sourceFragment.getActivity())
+                        .opOptionsResult(settings);
+            } else {
+                throw new MustImplementException(OnOptionsListener.class);
             }
         }
 
-        void onExportTypeSelectionDialogResult(@NonNull ExportSettings settings);
+        void opOptionsResult(@NonNull ExportSettings settings);
     }
 }

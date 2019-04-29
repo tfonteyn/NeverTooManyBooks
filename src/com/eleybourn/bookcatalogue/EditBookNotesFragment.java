@@ -54,14 +54,6 @@ public class EditBookNotesFragment
     /** Fragment manager tag. */
     public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
-    /**
-     * Field drop down lists.
-     * Lists in database so far, we cache them for performance but only load
-     * them when really needed.
-     */
-    private List<String> mLocations;
-    /** Field drop down list. */
-    private List<String> mPricePaidCurrencies;
 
     //<editor-fold desc="Fragment startup">
 
@@ -126,10 +118,11 @@ public class EditBookNotesFragment
         mFields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
-                        getPricePaidCurrencyCodes());
+                        mBookModel.getPricePaidCurrencyCodes(mDb));
 
         field = mFields.add(R.id.location, DBDefinitions.KEY_LOCATION);
-        initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
+        initValuePicker(field, R.string.lbl_location, R.id.btn_location,
+                        mBookModel.getLocations(mDb));
 
         field = mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
@@ -204,35 +197,4 @@ public class EditBookNotesFragment
 
     //</editor-fold>
 
-    //<editor-fold desc="Field drop down lists">
-
-    /**
-     * Load a location list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of locations
-     */
-    @NonNull
-    private List<String> getLocations() {
-        if (mLocations == null) {
-            mLocations = mDb.getLocations();
-        }
-        return mLocations;
-    }
-
-    /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    private List<String> getPricePaidCurrencyCodes() {
-        if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mDb.getCurrencyCodes(
-                    DBDefinitions.KEY_PRICE_PAID_CURRENCY);
-        }
-        return mPricePaidCurrencies;
-    }
-    //</editor-fold>
 }

@@ -276,7 +276,7 @@ public class DBA
     private static DBHelper sDbHelper;
     /** the synchronized wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
-    /** needed for Resources & for getting the covers db. */
+    /** needed for Resources. */
     @NonNull
     private final Context mContext;
 
@@ -287,7 +287,9 @@ public class DBA
     private boolean mCloseCalled;
 
     /**
-     * Constructor - takes the context to allow the database to be opened/created.
+     * Constructor - the passed context is NOT used to open the database (helper),
+     * but is for accessing resources etc ONLY.
+     *
      * <p>
      * Note: don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dba which is).
@@ -2873,13 +2875,16 @@ public class DBA
     /**
      * Returns a unique list of all languages in the database.
      *
+     * @param desiredContext the DESIRED context, which could be different then the context used to create
+     *                       the {@link DBA} object with.
+     *
      * @return The list; expanded full displayName's in the current Locale
      */
     @NonNull
-    public ArrayList<String> getLanguages(@NonNull final Context context) {
+    public ArrayList<String> getLanguages(@NonNull final Context desiredContext) {
         ArrayList<String> names = new ArrayList<>();
         for (String code : getLanguageCodes()) {
-            names.add(LocaleUtils.getDisplayName(context, code));
+            names.add(LocaleUtils.getDisplayName(desiredContext, code));
         }
 
         return names;
@@ -3395,6 +3400,7 @@ public class DBA
      * - Exclude the primary key from the list of columns.
      * - data will be transformed based on the intended type of the underlying column
      * based on column definition (based on actual storage class of sqlite)
+     * e.g. if a columns says it's Integer, an incoming boolean will be transformed to 0/1
      *
      * @param tableName destination table
      * @param book      A collection with the columns to be set. May contain extra data.
@@ -3447,9 +3453,32 @@ public class DBA
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
                                 } else if (entry != null) {
-                                    String s = entry.toString();
+                                    String s = entry.toString().toLowerCase(
+                                            LocaleUtils.getSystemLocale());
                                     if (!s.isEmpty()) {
-                                        cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
+                                        // It's not strictly needed to do these conversions.
+                                        // parseInt/catch works, but it's not elegant...
+                                        switch (s) {
+                                            case "1":
+                                            case "true":
+                                            case "t":
+                                            case "yes":
+                                            case "y":
+                                                cv.put(columnInfo.name, 1);
+                                                break;
+
+                                            case "0":
+                                            case "false":
+                                            case "f":
+                                            case "no":
+                                            case "n":
+                                                cv.put(columnInfo.name, 0);
+                                                break;
+
+                                            default:
+                                                cv.put(columnInfo.name, Integer.parseInt(s));
+                                        }
+
                                     } else {
                                         cv.put(columnInfo.name, s);
                                     }
@@ -3482,7 +3511,9 @@ public class DBA
                                 break;
                         }
                     } catch (NumberFormatException e) {
-                        Logger.error(this, e);
+                        Logger.error(this, e,
+                                     "column=" + columnInfo.name,
+                                     "stringValue=" + entry.toString());
                         // not really ok, but let's store it anyhow.
                         cv.put(columnInfo.name, entry.toString());
                     }

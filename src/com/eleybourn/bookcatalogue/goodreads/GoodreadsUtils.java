@@ -118,6 +118,10 @@ public final class GoodreadsUtils {
      */
     public static void sendBooks(@NonNull final Fragment fragment) {
 
+        final Context context = fragment.getContext();
+        final FragmentManager fm = fragment.getFragmentManager();
+        final View userView = fragment.getView();
+
         new AsyncTask<Void, Object, Integer>() {
             ProgressDialogFragment<Integer> mProgressDialog;
             /**
@@ -129,8 +133,7 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
-                FragmentManager fm = fragment.getFragmentManager();
-                //noinspection ConstantConditions,unchecked
+                //noinspection unchecked
                 mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(
                         TAG_GOODREADS_SEND_BOOKS);
                 if (mProgressDialog == null) {
@@ -167,13 +170,13 @@ public final class GoodreadsUtils {
 
                     case -1:
                         // ask to register
-                        goodreadsAuthAlert(fragment.getContext(), fragment.getFragmentManager());
+                        goodreadsAuthAlert(context, fm);
                         break;
 
                     default:
                         // specific response.
                         //noinspection ConstantConditions
-                        UserMessage.showUserMessage(fragment.getView(), result);
+                        UserMessage.showUserMessage(userView, result);
                         break;
                 }
             }
@@ -183,37 +186,25 @@ public final class GoodreadsUtils {
     /**
      * Called from {@link #sendBooks} to let the user confirm which books to send.
      *
-     * @param activity the caller context
+     * @param fragment the caller context
      */
     @UiThread
-    private static void showConfirmationDialog(@NonNull final Fragment activity) {
-        //noinspection ConstantConditions
-        final AlertDialog dialog = new AlertDialog.Builder(activity.getContext())
+    private static void showConfirmationDialog(@NonNull final Fragment fragment) {
+        new AlertDialog.Builder(fragment.getContext())
                 .setTitle(R.string.gr_title_send_book)
                 .setMessage(R.string.gr_send_books_to_goodreads_blurb)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         activity.getString(
-                                 R.string.gr_btn_send_updated),
-                         (d, which) -> {
-                             d.dismiss();
-                             sendAllBooks(activity, true);
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         activity.getString(R.string.gr_btn_send_all),
-                         (d, which) -> {
-                             d.dismiss();
-                             sendAllBooks(activity, false);
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         activity.getString(android.R.string.cancel),
-                         (d, which) -> d.dismiss());
-
-        dialog.show();
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.gr_btn_send_all, (d, which) -> {
+                    d.dismiss();
+                    sendAllBooks(fragment, false);
+                })
+                .setPositiveButton(R.string.gr_btn_send_updated, (d, which) -> {
+                    d.dismiss();
+                    sendAllBooks(fragment, true);
+                })
+                .create()
+                .show();
     }
 
     /**
@@ -226,6 +217,10 @@ public final class GoodreadsUtils {
     private static void sendAllBooks(@NonNull final Fragment fragment,
                                      final boolean updatesOnly) {
 
+        final Context context = fragment.getContext();
+        final FragmentManager fm = fragment.getFragmentManager();
+        final View userView = fragment.getView();
+
         new AsyncTask<Void, Object, Integer>() {
             ProgressDialogFragment<Integer> mFragment;
             /**
@@ -237,7 +232,6 @@ public final class GoodreadsUtils {
 
             @Override
             protected void onPreExecute() {
-                FragmentManager fm = fragment.getFragmentManager();
                 //noinspection unchecked,ConstantConditions
                 mFragment = (ProgressDialogFragment) fm.findFragmentByTag(
                         TAG_GOODREADS_SEND_ALL_BOOKS);
@@ -261,7 +255,7 @@ public final class GoodreadsUtils {
                         }
                         //noinspection ConstantConditions
                         QueueManager.getQueueManager().enqueueTask(
-                                new SendAllBooksTask(fragment.getContext(), updatesOnly),
+                                new SendAllBooksTask(context, updatesOnly),
                                 QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -278,10 +272,10 @@ public final class GoodreadsUtils {
             protected void onPostExecute(@NonNull final Integer result) {
                 mFragment.onTaskFinished(mException == null, result);
                 if (result == -1) {
-                    goodreadsAuthAlert(fragment.getContext(), fragment.getFragmentManager());
+                    goodreadsAuthAlert(context, fm);
                 } else {
                     //noinspection ConstantConditions
-                    UserMessage.showUserMessage(fragment.getView(), result);
+                    UserMessage.showUserMessage(userView, result);
                 }
             }
         }.execute();

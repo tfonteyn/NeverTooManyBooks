@@ -109,7 +109,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity> <!-- Data Import/Export -->
-        <activity android:name=".backup.ui.BackupAndRestoreActivity" />
+        <activity android:name=".backup.ui.RestoreActivity" />
         <!-- Update book Fields from the internet -->
         <activity android:name=".UpdateFieldsFromInternetActivity" />
         <!-- Credentials Goodreads -->
@@ -190,6 +190,7 @@
                     android:scheme="com.eleybourn.bookcatalogue" />
             </intent-filter>
         </activity>
+        <activity android:name=".backup.ui.BackupActivity" />
     </application>
 
 </manifest>

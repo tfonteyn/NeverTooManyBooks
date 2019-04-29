@@ -54,7 +54,9 @@ public class AlertDialogFragment
     @NonNull
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        AlertDialogListener listener = (AlertDialogListener) requireActivity();
+        //noinspection ConstantConditions
+        @NonNull
+        AlertDialogListener listener = (AlertDialogListener) getActivity();
 
         @StringRes
         int titleId = 0;
