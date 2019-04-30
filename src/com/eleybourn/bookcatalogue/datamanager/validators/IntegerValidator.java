@@ -72,7 +72,7 @@ public class IntegerValidator
                 value = Integer.parseInt(o.toString());
             } catch (NumberFormatException e) {
                 throw new ValidatorException(R.string.vldt_integer_expected,
-                                             new Object[]{datum.getKey()});
+                                             datum.getKey());
             }
         }
         dataManager.putInt(datum, value);

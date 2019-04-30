@@ -8,14 +8,11 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     >
-    <!--tools:openDrawer="start"-->
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-
-        <!-- TOMF: framelayout correct size -> no scroll - OR - FL sticks out at the bottom, but scroll ok. -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -46,9 +43,12 @@
                     />
 
             </com.google.android.material.appbar.AppBarLayout>
+            <!--
+            Studio bug: layout_behavior on this FrameLayout **must** be set even if Studio claims not to resolve it.
 
-            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            -->
+            <!-- TOMF: framelayout correct size -> no scroll - OR - FL sticks out at the bottom, but scroll ok. -->
             <FrameLayout
                 android:id="@+id/main_fragment"
                 android:layout_width="0dp"

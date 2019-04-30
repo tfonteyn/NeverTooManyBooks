@@ -157,8 +157,7 @@ public class EditBookNotesFragment
                     return;
                 }
                 if (start.compareToIgnoreCase(end) > 0) {
-                    throw new ValidatorException(R.string.vldt_read_start_after_end,
-                                                 new Object[]{});
+                    throw new ValidatorException(R.string.vldt_read_start_after_end);
                 }
             }
         });

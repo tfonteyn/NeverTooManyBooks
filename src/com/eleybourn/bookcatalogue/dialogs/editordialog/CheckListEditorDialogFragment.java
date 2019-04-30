@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;

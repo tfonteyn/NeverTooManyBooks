@@ -464,7 +464,7 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK)
                 && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
             mBookData.putString(DBDefinitions.KEY_FORMAT,
-                                // it would be really hard, maybe impossible to get a proper context here.
+                                //TODO: do not use Application Context for String resources
                                 App.getAppContext().getString(R.string.book_format_ebook));
         }
 

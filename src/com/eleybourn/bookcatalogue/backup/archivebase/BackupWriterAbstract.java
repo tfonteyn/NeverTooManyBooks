@@ -24,6 +24,7 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
@@ -36,6 +37,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -61,17 +63,25 @@ public abstract class BackupWriterAbstract
         implements BackupWriter {
 
     @NonNull
-    private final Context mContext;
-    @NonNull
     private final DBA mDb;
-    private final Exporter mExporter;
+    /** progress message. */
+    private final String mProgress_msg_covers;
+    /** progress message. */
+    private final String mProgress_msg_covers_skip;
+
     private ExportSettings mSettings;
     private BackupWriter.BackupWriterListener mProgressListener;
 
-    protected BackupWriterAbstract(@NonNull final Context context) {
-        mContext = context;
-        mDb = new DBA(mContext);
-        mExporter = new CsvExporter(mContext, mSettings);
+    /**
+     * Constructor.
+     */
+    protected BackupWriterAbstract() {
+        mDb = new DBA();
+
+        //TODO: do not use Application Context for String resources
+        Context context = App.getAppContext();
+        mProgress_msg_covers = context.getString(R.string.progress_msg_covers);
+        mProgress_msg_covers_skip = context.getString(R.string.progress_msg_covers_skip);
     }
 
     /**
@@ -106,6 +116,8 @@ public abstract class BackupWriterAbstract
                 // Get a temp file and set for delete
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
+
+                Exporter mExporter = new CsvExporter(mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
                     infoValues.bookCount = mExporter.doBooks(output, new ForwardingListener());
                 }
@@ -169,13 +181,13 @@ public abstract class BackupWriterAbstract
 
     private void doInfo(@NonNull final BackupInfo.InfoUserValues infoValues)
             throws IOException {
-        mProgressListener.onProgressStep(null, 1);
+        mProgressListener.onProgressStep(1, null);
 
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-        try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
+        try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doBackupInfoBlock(out, new ForwardingListener(),
                                           BackupInfo.newInstance(getContainer(), infoValues));
         }
@@ -191,7 +203,7 @@ public abstract class BackupWriterAbstract
         tempXmlBackupFile.deleteOnExit();
 
         try (OutputStream output = new FileOutputStream(tempXmlBackupFile)) {
-            XmlExporter exporter = new XmlExporter(mContext, mSettings);
+            XmlExporter exporter = new XmlExporter(mSettings);
             exporter.doAll(output, new ForwardingListener());
             putXmlData(tempXmlBackupFile);
         } finally {
@@ -206,12 +218,12 @@ public abstract class BackupWriterAbstract
         final BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-        try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
+        try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doPreferences(out, new ForwardingListener());
         }
         out.close();
         putPreferences(data.toByteArray());
-        mProgressListener.onProgressStep(null, 1);
+        mProgressListener.onProgressStep(1, null);
     }
 
     private void doStyles()
@@ -223,12 +235,12 @@ public abstract class BackupWriterAbstract
             final BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-            try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
+            try (XmlExporter xmlExporter = new XmlExporter()) {
                 xmlExporter.doStyles(out, new ForwardingListener());
             }
             out.close();
             putBooklistStyles(data.toByteArray());
-            mProgressListener.onProgressStep(null, 1);
+            mProgressListener.onProgressStep(1, null);
         }
     }
 
@@ -269,12 +281,11 @@ public abstract class BackupWriterAbstract
                 if (!dryRun) {
                     String message;
                     if (skipped == 0) {
-                        message = mContext.getString(R.string.progress_msg_covers, ok, missing);
+                        message = String.format(mProgress_msg_covers, ok, missing);
                     } else {
-                        message = mContext.getString(R.string.progress_msg_covers_skip, ok, missing,
-                                                     skipped);
+                        message = String.format(mProgress_msg_covers_skip, ok, missing, skipped);
                     }
-                    mProgressListener.onProgressStep(message, 1);
+                    mProgressListener.onProgressStep(1, message);
                 }
             }
         }
@@ -316,8 +327,14 @@ public abstract class BackupWriterAbstract
         @Override
         public void onProgress(@NonNull final String message,
                                final int position) {
-            // The progress is sent periodically and has jumps, so we calculate deltas
-            mProgressListener.onProgressStep(message, position - mLastPos);
+            mProgressListener.onProgressStep(position - mLastPos, message);
+            mLastPos = position;
+        }
+
+        @Override
+        public void onProgress(@StringRes int messageId,
+                               int position) {
+            mProgressListener.onProgressStep(position - mLastPos, messageId);
             mLastPos = position;
         }
 

@@ -49,7 +49,7 @@ public interface Importer
     int doBooks(@NonNull InputStream importStream,
                 @Nullable CoverFinder coverFinder,
                 @NonNull ImportListener listener)
-            throws IOException;
+            throws IOException, ImportException;
 
     /**
      * Interface for finding a cover file on the local device if missing from
@@ -80,11 +80,11 @@ public interface Importer
         /**
          * Report progress in absolute position.
          *
-         * @param message  to display
          * @param position absolute position for the progress counter
+         * @param message  to display
          */
-        void onProgress(@NonNull String message,
-                        int position);
+        void onProgress(int position,
+                        @NonNull String message);
 
         /**
          * @return {@code true} if we are cancelled.

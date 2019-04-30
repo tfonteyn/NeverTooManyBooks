@@ -1,17 +1,14 @@
 package com.eleybourn.bookcatalogue.backup;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.IOException;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
@@ -20,14 +17,12 @@ public class RestoreTask
         extends AsyncTask<Void, Object, ImportSettings> {
 
     /** Fragment manager tag. */
-    private static final String TAG = RestoreTask.class.getSimpleName();
+    public static final String TAG = RestoreTask.class.getSimpleName();
 
     @NonNull
-    private final ProgressDialogFragment<ImportSettings> mFragment;
+    private final ProgressDialogFragment<ImportSettings> mProgressDialog;
     @NonNull
     private final ImportSettings mSettings;
-    @NonNull
-    private final BackupReader mBackupReader;
 
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -37,24 +32,18 @@ public class RestoreTask
     private Exception mException;
 
     /**
-     * @param fragment ProgressDialogFragment
-     * @param settings the import settings
-     *
-     * @throws IOException if the file could not be opened.
+     * @param progressDialog ProgressDialogFragment
+     * @param settings       the import settings
      */
     @UiThread
-    public RestoreTask(@NonNull final Context context,
-                       @NonNull final ProgressDialogFragment<ImportSettings> fragment,
-                       @NonNull final ImportSettings /* in/out */settings)
-            throws IOException {
+    public RestoreTask(@NonNull final ProgressDialogFragment<ImportSettings> progressDialog,
+                       @NonNull final ImportSettings /* in/out */settings) {
 
-        mFragment = fragment;
+        mProgressDialog = progressDialog;
         mSettings = settings;
         if (((mSettings.what & ImportSettings.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
-
-        mBackupReader = BackupManager.readFrom(context, mSettings.file);
     }
 
     @Override
@@ -62,21 +51,29 @@ public class RestoreTask
     @WorkerThread
     protected ImportSettings doInBackground(final Void... params) {
 
-        try {
-            mBackupReader.restore(mSettings, new BackupReader.BackupReaderListener() {
+        //noinspection ConstantConditions
+        try (BackupReader reader = BackupManager.readFrom(mSettings.file)) {
+
+            reader.restore(mSettings, new BackupReader.BackupReaderListener() {
 
                 private int mProgress;
 
                 @Override
                 public void setMax(final int max) {
-                    mFragment.setMax(max);
+                    mProgressDialog.setMax(max);
                 }
 
                 @Override
-                public void onProgressStep(@NonNull final String message,
-                                           final int delta) {
+                public void onProgressStep(final int delta,
+                                           @NonNull final String message) {
                     mProgress += delta;
-                    publishProgress(message, mProgress);
+                    publishProgress(mProgress, message);
+                }
+
+                @Override
+                public void onProgress(final int position,
+                                       @NonNull final String message) {
+                    publishProgress(position, message);
                 }
 
                 @Override
@@ -84,25 +81,29 @@ public class RestoreTask
                     return RestoreTask.this.isCancelled();
                 }
             });
+
         } catch (IOException e) {
             Logger.error(this, e);
             mException = e;
-        } finally {
-            try {
-                mBackupReader.close();
-            } catch (IOException ignore) {
-            }
+        } catch (ImportException e) {
+            Logger.error(this, e);
+            mException = e;
         }
         return mSettings;
     }
 
     /**
-     * @param values: [0] String message, [1] Integer position/delta
+     * @param values: [0] Integer position/delta, [1] String message
+     *                [0] Integer position/delta, [1] StringRes messageId
      */
     @Override
     @UiThread
     protected void onProgressUpdate(@NonNull final Object... values) {
-        mFragment.onProgress((String) values[0], (Integer) values[1]);
+        if (values[1] instanceof String) {
+            mProgressDialog.onProgress((Integer) values[0], (String) values[1]);
+        } else {
+            mProgressDialog.onProgress((Integer) values[0], (Integer) values[1]);
+        }
     }
 
     /**
@@ -114,6 +115,6 @@ public class RestoreTask
     @Override
     @UiThread
     protected void onPostExecute(@NonNull final ImportSettings result) {
-        mFragment.onTaskFinished(mException == null, result);
+        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

@@ -81,8 +81,7 @@ public class EditPublisherDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Context context = getContext();
-        //noinspection ConstantConditions
-        mDb = new DBA(context);
+        mDb = new DBA();
 
         Bundle args = requireArguments();
 
@@ -97,6 +96,7 @@ public class EditPublisherDialogFragment
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
+        //noinspection ConstantConditions
         ArrayAdapter<String> mAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
                                    mDb.getPublisherNames());

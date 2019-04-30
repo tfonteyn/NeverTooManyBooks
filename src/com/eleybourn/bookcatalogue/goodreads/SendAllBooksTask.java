@@ -62,9 +62,9 @@ public class SendAllBooksTask
     /**
      * Constructor.
      */
-    SendAllBooksTask(@NonNull final Context context,
+    SendAllBooksTask(@NonNull final String description,
                      final boolean updatesOnly) {
-        super(context.getString(R.string.gr_title_send_book));
+        super(description);
         mUpdatesOnly = updatesOnly;
     }
 
@@ -78,8 +78,7 @@ public class SendAllBooksTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
 
-        // Use the app context; the calling activity may go away
-        try (DBA db = new DBA(context.getApplicationContext());
+        try (DBA db = new DBA();
              BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
             final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;

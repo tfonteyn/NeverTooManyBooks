@@ -113,13 +113,6 @@ public final class UniqueId {
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     /**
-     * A generic layout resource id.
-     * <p>
-     * <p>type: int (LayoutId)
-     */
-    public static final String BKEY_LAYOUT_ID = "layoutId";
-
-    /**
      * The title to be used by generic Dialogs.
      * <p>
      * <p>type: int (stringId)
@@ -225,14 +218,6 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";
-
-    /**
-     * A position in a generic list.
-     * <p>
-     * <p>type: int
-     */
-    public static final String POSITION = "position";
-
 
     /* ****************************************************************************************** */
 

@@ -27,6 +27,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
@@ -88,7 +89,7 @@ public class GoodreadsAuthorizationActivity
 
             // Handle the auth response by passing it off to a background task to check.
             GoodreadsAuthorizationResultCheckTask task =
-                    new GoodreadsAuthorizationResultCheckTask(this);
+                    new GoodreadsAuthorizationResultCheckTask(getString(R.string.gr_auth_check));
             QueueManager.getQueueManager().enqueueTask(task, QueueManager.Q_SMALL_JOBS);
         }
 

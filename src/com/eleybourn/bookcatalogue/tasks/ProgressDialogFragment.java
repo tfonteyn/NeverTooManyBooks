@@ -27,7 +27,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
  * Progress support for {@link AsyncTask}.
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
- * Do we still need to use onSaveInstanceState ? I suppose not ? TEST
  */
 public class ProgressDialogFragment<Results>
         extends DialogFragment {
@@ -217,17 +216,42 @@ public class ProgressDialogFragment<Results>
      * <p>
      * Typically called from {@link AsyncTask} #onProgressUpdate
      *
-     * @param message     to display
      * @param absPosition absolute position
+     * @param messageId   to display
      */
     @UiThread
-    public void onProgress(@Nullable final String message,
-                           @Nullable final Integer absPosition) {
+    public void onProgress(@Nullable final Integer absPosition,
+                           @Nullable final Integer messageId) {
         synchronized (this) {
 
-            setMessage(message);
+            setAbsPosition(absPosition);
+
+
+            if (messageId != null) {
+                //noinspection ConstantConditions
+                setMessage(getContext().getString(messageId));
+            } else {
+                setMessage("");
+            }
+
+        }
+    }
+
+    /**
+     * Update the message and progress value.
+     * <p>
+     * Typically called from {@link AsyncTask} #onProgressUpdate
+     *
+     * @param absPosition absolute position
+     * @param message     to display
+     */
+    @UiThread
+    public void onProgress(@Nullable final Integer absPosition,
+                           @Nullable final String message) {
+        synchronized (this) {
 
             setAbsPosition(absPosition);
+            setMessage(message);
         }
     }
 
@@ -323,10 +347,12 @@ public class ProgressDialogFragment<Results>
      *
      * @param success {@code true} if the task finished successfully
      * @param result  task result object
+     * @param e       if the task finished with an exception, or null.
      */
     @UiThread
     public void onTaskFinished(final boolean success,
-                               @Nullable final Results result) {
+                               @Nullable final Results result,
+                               @Nullable final Exception e) {
         // Make sure we check if it is resumed because we will crash if trying to dismiss
         // the dialog after the user has switched to another app.
         if (isResumed()) {
@@ -339,7 +365,7 @@ public class ProgressDialogFragment<Results>
         }
 
         // Tell the caller we're done.
-        OnTaskFinishedListener.onTaskFinished(this, mTaskId, success, result);
+        OnTaskFinishedListener.onTaskFinished(this, mTaskId, success, result, e);
 
         // invalidate the current task as its finished. The dialog can be reused.
         mTaskId = null;

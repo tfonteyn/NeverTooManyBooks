@@ -86,6 +86,7 @@ public abstract class Task
 
     @NonNull
     public String getDescription(@NonNull final Context context) {
+        // context is not used here, but it is used in child classes.
         return mDescription;
     }
 

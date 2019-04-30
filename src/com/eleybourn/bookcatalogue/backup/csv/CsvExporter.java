@@ -19,11 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
@@ -33,6 +30,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -107,11 +105,10 @@ public class CsvExporter
     /** backup copies to keep. */
     private static final int COPIES = 5;
     @NonNull
-    private final Context mContext;
-    @NonNull
-    private final DBA mDb;
-    @NonNull
     private final ExportSettings mSettings;
+
+    private final String mUnknownString;
+
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
@@ -164,17 +161,17 @@ public class CsvExporter
     /**
      * Constructor.
      *
-     * @param settings {@link ExportSettings#file} is not used, as we must support writing
-     *                 to a stream. {@link ExportSettings#EXPORT_SINCE} and
-     *                 {@link ExportSettings#dateFrom} are respected.
-     *                 Other flags are ignored, as this method only
-     *                 handles {@link ExportSettings#BOOK_CSV} anyhow.
+     * @param settings      {@link ExportSettings#file} is not used, as we must support writing
+     *                      to a stream. {@link ExportSettings#EXPORT_SINCE} and
+     *                      {@link ExportSettings#dateFrom} are respected.
+     *                      Other flags are ignored, as this method only
+     *                      handles {@link ExportSettings#BOOK_CSV} anyhow.
      */
-    @UiThread
-    public CsvExporter(@NonNull final Context context,
-                       @NonNull final ExportSettings settings) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    public CsvExporter(@NonNull final ExportSettings settings) {
+
+        //TODO: do not use Application Context for String resources
+        mUnknownString = App.getAppContext().getString(R.string.unknown);
+
         mSettings = settings;
         settings.validate();
     }
@@ -203,18 +200,16 @@ public class CsvExporter
     public int doBooks(@NonNull final OutputStream outputStream,
                        @NonNull final Exporter.ExportListener listener)
             throws IOException {
-        final String UNKNOWN = mContext.getString(R.string.unknown);
-        final String AUTHOR = mContext.getString(R.string.lbl_author);
 
         // Display startup message
-        listener.onProgress(mContext.getString(R.string.progress_msg_export_starting), 0);
-        boolean displayingStartupMessage = true;
+        listener.onProgress(R.string.progress_msg_export_starting, 0);
 
         long lastUpdate = 0;
         int numberOfBooksExported = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom);
+        try (DBA mDb = new DBA();
+             BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom);
              BufferedWriter out = new BufferedWriter(
                      new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
@@ -238,7 +233,7 @@ public class CsvExporter
                 // Sanity check: ensure author is non-blank. This HAPPENS.
                 // Probably due to constraint failures.
                 if (authorStringList.trim().isEmpty()) {
-                    authorStringList = AUTHOR + ", " + UNKNOWN;
+                    authorStringList = mUnknownString + ", " + mUnknownString;
                 }
 
                 String title = bookCursorRow.getTitle();
@@ -246,7 +241,7 @@ public class CsvExporter
                 // know if does for author, so completeness suggests making sure all 'required'
                 // fields are non-blank.
                 if (title.trim().isEmpty()) {
-                    title = UNKNOWN;
+                    title = mUnknownString;
                 }
 
                 row.setLength(0);
@@ -304,23 +299,12 @@ public class CsvExporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200) {
-                    if (displayingStartupMessage) {
-                        listener.onProgress("", 0);
-                        displayingStartupMessage = false;
-                    }
                     listener.onProgress(title, numberOfBooksExported);
                     lastUpdate = now;
                 }
             }
         } finally {
             Logger.info(this, "doBooks", "books=" + numberOfBooksExported);
-            if (displayingStartupMessage) {
-                try {
-                    listener.onProgress("", 0);
-                } catch (RuntimeException ignored) {
-                }
-            }
-            mDb.close();
         }
         return numberOfBooksExported;
     }

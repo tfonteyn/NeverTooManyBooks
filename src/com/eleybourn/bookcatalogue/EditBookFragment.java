@@ -280,7 +280,7 @@ public class EditBookFragment
                 }
             }
         } else {
-            mDb.updateBook(mBookModel.getBook().getId(), mBookModel.getBook(), 0);
+            mDb.updateBook(mBookModel.getBook().getId(), mBookModel.getBook(),0);
         }
     }
 

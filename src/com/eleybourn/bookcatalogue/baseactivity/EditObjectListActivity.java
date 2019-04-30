@@ -119,7 +119,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA(this);
+        mDb = new DBA();
 
         // Look for id and title
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();

@@ -71,7 +71,7 @@ abstract class BindableItemListActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new DBA(this);
+        mDb = new DBA();
         super.onCreate(savedInstanceState);
 
         // The View for the list.

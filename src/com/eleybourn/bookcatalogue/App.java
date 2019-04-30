@@ -219,6 +219,12 @@ public class App
         return packageInfo;
     }
 
+    public static void showNotification(@NonNull final Context context,
+                                        @StringRes final int titleId,
+                                        @StringRes final int messageId) {
+        showNotification(context,titleId, context.getString(messageId));
+    }
+
     /**
      * Show a notification while this app is running.
      *

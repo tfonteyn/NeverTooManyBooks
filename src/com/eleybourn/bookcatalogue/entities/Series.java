@@ -76,7 +76,7 @@ public class Series
     /**
      * Regular expression - TODO: make this user controlled ? Add more languages here?
      * <p>
-     * or use //Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
+     * or use //Resources res = LocaleUtils.getLocalizedResources(mContext, series.getLocale());
      */
     private static final String NUMBER_PREFIXES =
             "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)";
@@ -483,6 +483,20 @@ public class Series
         mName = source.mName;
         mIsComplete = source.mIsComplete;
         mNumber = source.mNumber;
+    }
+
+    /**
+     * Stopgap.... makes the code elsewhere clean.
+     * <p>
+     * ENHANCE: The locale of the series
+     * should be based on either a specific language setting for
+     * the Series itself, or on the locale of the primary book.
+     * Neither is implemented for now. So we cheat.
+     *
+     * @return the locale of the Series
+     */
+    public Locale getLocale() {
+        return LocaleUtils.getSystemLocale();
     }
 
     @Override

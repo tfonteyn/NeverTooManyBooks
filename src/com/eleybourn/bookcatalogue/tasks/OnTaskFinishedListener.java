@@ -19,17 +19,18 @@ public interface OnTaskFinishedListener {
     static void onTaskFinished(@NonNull final Fragment sourceFragment,
                                final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
 
         if (sourceFragment.getTargetFragment() instanceof OnTaskFinishedListener) {
             ((OnTaskFinishedListener) sourceFragment.getTargetFragment())
-                    .onTaskFinished(taskId, success, result);
+                    .onTaskFinished(taskId, success, result, e);
         } else if (sourceFragment.getParentFragment() instanceof OnTaskFinishedListener) {
             ((OnTaskFinishedListener) sourceFragment.getParentFragment())
-                    .onTaskFinished(taskId, success, result);
+                    .onTaskFinished(taskId, success, result, e);
         } else if (sourceFragment.getActivity() instanceof OnTaskFinishedListener) {
             ((OnTaskFinishedListener) sourceFragment.getActivity())
-                    .onTaskFinished(taskId, success, result);
+                    .onTaskFinished(taskId, success, result, e);
         } else {
             throw new MustImplementException(OnTaskFinishedListener.class);
         }
@@ -42,8 +43,10 @@ public interface OnTaskFinishedListener {
      * @param success {@code true} if the task finished successfully
      * @param result  the result object from the {@link AsyncTask}.
      *                Nullable/NonNull is up to the implementation.
+     * @param e       if the task finished with an exception, or null.
      */
     void onTaskFinished(int taskId,
                         boolean success,
-                        Object result);
+                        Object result,
+                        @Nullable final Exception e);
 }

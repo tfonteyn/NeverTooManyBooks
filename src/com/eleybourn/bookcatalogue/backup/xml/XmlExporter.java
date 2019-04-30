@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.backup.xml;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -129,15 +128,12 @@ public class XmlExporter
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
 
     @NonNull
-    private final Context mContext;
-    @NonNull
     private final DBA mDb;
     @NonNull
     private final ExportSettings mSettings;
 
-    public XmlExporter(@NonNull final Context context) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    public XmlExporter() {
+        mDb = new DBA();
         mSettings = new ExportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -149,10 +145,8 @@ public class XmlExporter
      *                 All other flags are ignored.
      */
     @UiThread
-    public XmlExporter(@NonNull final Context context,
-                       @NonNull final ExportSettings settings) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    public XmlExporter(@NonNull final ExportSettings settings) {
+        mDb = new DBA();
         settings.validate();
         mSettings = settings;
     }
@@ -201,34 +195,34 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(mContext.getString(R.string.lbl_bookshelves), pos++);
+                listener.onProgress(R.string.lbl_bookshelves, pos++);
                 pos += doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(mContext.getString(R.string.lbl_author), pos++);
+                listener.onProgress(R.string.lbl_author, pos++);
                 pos += doAuthors(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(mContext.getString(R.string.lbl_series), pos++);
+                listener.onProgress(R.string.lbl_series, pos++);
                 pos += doSeries(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(mContext.getString(R.string.lbl_book), pos++);
+                listener.onProgress(R.string.lbl_book, pos++);
                 pos += doBooks(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
-                listener.onProgress(mContext.getString(R.string.lbl_styles), pos++);
+                listener.onProgress(R.string.lbl_styles, pos++);
                 pos += doStyles(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                listener.onProgress(mContext.getString(R.string.lbl_settings), pos++);
+                listener.onProgress(R.string.lbl_settings, pos++);
                 pos += doPreferences(out, listener);
             }
 
@@ -789,7 +783,7 @@ public class XmlExporter
          * @param name (optional) of the SharedPreference
          */
         PreferencesWriter(@NonNull final Map<String, ?> map,
-                          @Nullable final String name) {
+                          @SuppressWarnings("SameParameterValue") @Nullable final String name) {
             mMap = map;
             mName = name;
         }

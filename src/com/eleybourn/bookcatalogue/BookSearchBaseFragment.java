@@ -67,8 +67,7 @@ public abstract class BookSearchBaseFragment
         mActivity = (BookSearchActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DBA(getContext());
+        mDb = new DBA();
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
@@ -76,8 +75,10 @@ public abstract class BookSearchBaseFragment
         mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, Site.SEARCH_ALL);
 
         if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
+            //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false, "search");
         }
+        //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);

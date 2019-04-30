@@ -106,10 +106,10 @@ public class ImportAllTask
     /**
      * Constructor.
      */
-    ImportAllTask(@NonNull final Context context,
+    ImportAllTask(@NonNull final String description,
                   final boolean isSync) {
 
-        super(context.getString(R.string.gr_import_all_from_goodreads));
+        super(description);
 
         mPosition = 0;
         mIsSync = isSync;
@@ -137,13 +137,14 @@ public class ImportAllTask
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
 
-        try (DBA db = new DBA(context)) {
+        try (DBA db = new DBA()) {
             // Load the goodreads reviews
             boolean ok = processReviews(queueManager, db);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
-                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(context, true),
+                QueueManager.getQueueManager().enqueueTask(
+                        new SendAllBooksTask(context.getString(R.string.gr_title_send_book), true),
                                                            QueueManager.Q_MAIN);
             }
             return ok;
@@ -353,7 +354,8 @@ public class ImportAllTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
-        db.updateBook(bookCursorRow.getId(), book, DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(bookCursorRow.getId(), book,
+                      DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
@@ -42,7 +40,7 @@ public class FileListerTask
                                   LocaleUtils.getSystemLocale()));
 
     @NonNull
-    protected final ProgressDialogFragment<FileChooserFragment.DirectoryContent> mFragment;
+    protected final ProgressDialogFragment<FileChooserFragment.DirectoryContent> mProgressDialog;
 
     @NonNull
     private final FileChooserFragment.DirectoryContent mDir;
@@ -57,14 +55,14 @@ public class FileListerTask
     /**
      * Constructor.
      *
-     * @param fragment ProgressDialogFragment
+     * @param progressDialog ProgressDialogFragment
      * @param root     folder to list
      */
     @UiThread
-    FileListerTask(@NonNull final ProgressDialogFragment<FileChooserFragment.DirectoryContent> fragment,
+    FileListerTask(@NonNull final ProgressDialogFragment<FileChooserFragment.DirectoryContent> progressDialog,
                    @NonNull final File root) {
 
-        mFragment = fragment;
+        mProgressDialog = progressDialog;
         mDir = new FileChooserFragment.DirectoryContent(root);
     }
 
@@ -88,14 +86,7 @@ public class FileListerTask
             BackupFileDetails fd = new BackupFileDetails(file);
             mDir.files.add(fd);
             if (BackupFileDetails.isArchive(file)) {
-                Context context = mFragment.getContext();
-                if (context == null) {
-                    // debugging... me bad.
-                    Logger.warnWithStackTrace(this, "getContext() was NULL, using AppContext");
-                    context = App.getAppContext();
-                }
-
-                try (BackupReader reader = BackupManager.readFrom(context, file)) {
+                try (BackupReader reader = BackupManager.readFrom(file)) {
                     fd.setInfo(reader.getInfo());
                 } catch (IOException e) {
                     Logger.error(this, e);
@@ -110,6 +101,6 @@ public class FileListerTask
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final FileChooserFragment.DirectoryContent result) {
-        mFragment.onTaskFinished(mException == null, result);
+        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

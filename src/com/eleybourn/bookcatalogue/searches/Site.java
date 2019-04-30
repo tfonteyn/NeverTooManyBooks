@@ -85,6 +85,7 @@ public class Site
      * @param nameSuffix suffix to the add to the name
      * @param priority   the search priority order
      */
+    @SuppressWarnings("SameParameterValue")
     Site(final int id,
          @NonNull final String nameSuffix,
          final int priority) {

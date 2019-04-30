@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
@@ -51,8 +52,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public abstract class BackupReaderAbstract
         implements BackupReader {
 
-    @NonNull
-    private final Context mContext;
+
     @NonNull
     private final DBA mDb;
     /** progress message. */
@@ -68,14 +68,16 @@ public abstract class BackupReaderAbstract
 
     /**
      * Constructor.
+     *
      */
-    protected BackupReaderAbstract(@NonNull final Context context) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    protected BackupReaderAbstract() {
+        mDb = new DBA();
 
-        processPreferences = mContext.getString(R.string.progress_msg_process_preferences);
-        processCover = mContext.getString(R.string.progress_msg_process_cover);
-        processBooklistStyles = mContext.getString(R.string.progress_msg_process_booklist_style);
+        //TODO: do not use Application Context for String resources
+        Context context = App.getAppContext();
+        processPreferences = context.getString(R.string.progress_msg_process_preferences);
+        processCover = context.getString(R.string.progress_msg_process_cover);
+        processBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
     }
 
     /**
@@ -87,7 +89,7 @@ public abstract class BackupReaderAbstract
     public void restore(@NonNull final ImportSettings settings,
                         @NonNull final BackupReaderListener listener
     )
-            throws IOException {
+            throws IOException, ImportException {
 
         mSettings = settings;
         mProgressListener = listener;
@@ -140,8 +142,8 @@ public abstract class BackupReaderAbstract
                     case Preferences:
                         // current format
                         if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
-                            mProgressListener.onProgressStep(processPreferences, 1);
-                            try (XmlImporter importer = new XmlImporter(mContext)) {
+                            mProgressListener.onProgressStep(1, processPreferences);
+                            try (XmlImporter importer = new XmlImporter()) {
 
                                 importer.doPreferences(entity, new ForwardingListener(),
                                                        App.getPrefs());
@@ -154,8 +156,8 @@ public abstract class BackupReaderAbstract
                     case BooklistStyles:
                         // current format
                         if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
-                            mProgressListener.onProgressStep(processBooklistStyles, 1);
-                            try (XmlImporter importer = new XmlImporter(mContext)) {
+                            mProgressListener.onProgressStep(1, processBooklistStyles);
+                            try (XmlImporter importer = new XmlImporter()) {
                                 importer.doEntity(entity, new ForwardingListener());
                             }
                             entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
@@ -170,9 +172,9 @@ public abstract class BackupReaderAbstract
                     case PreferencesPreV200:
                         // pre-v200 format
                         if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
-                            mProgressListener.onProgressStep(processPreferences, 1);
+                            mProgressListener.onProgressStep(1, processPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
-                            try (XmlImporter importer = new XmlImporter(mContext)) {
+                            try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, new ForwardingListener(),
                                                        App.getPrefs(
                                                                App.PREF_LEGACY_BOOK_CATALOGUE));
@@ -225,16 +227,16 @@ public abstract class BackupReaderAbstract
      * @throws IOException on failure
      */
     private void restoreBooks(@NonNull final ReaderEntity entity)
-            throws IOException {
+            throws IOException, ImportException {
         // Listener that just passes on the progress to our own listener
         Importer.ImportListener importListener = new Importer.ImportListener() {
             private int mLastPos;
 
             @Override
-            public void onProgress(@NonNull final String message,
-                                   final int position) {
+            public void onProgress(final int position,
+                                   @NonNull final String message) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
-                mProgressListener.onProgressStep(message, position - mLastPos);
+                mProgressListener.onProgressStep(position - mLastPos, message);
                 mLastPos = position;
             }
 
@@ -250,7 +252,7 @@ public abstract class BackupReaderAbstract
         };
 
         // Now do the import
-        try (Importer importer = new CsvImporter(mContext, mSettings)) {
+        try (Importer importer = new CsvImporter(mSettings)) {
             importer.doBooks(entity.getStream(), null, importListener);
         }
     }
@@ -264,7 +266,7 @@ public abstract class BackupReaderAbstract
      */
     private void restoreCover(@NonNull final ReaderEntity cover)
             throws IOException {
-        mProgressListener.onProgressStep(processCover, 1);
+        mProgressListener.onProgressStep(1, processCover);
 
         // see if we have this file already
         final File currentCover = StorageUtils.getRawCoverFile(cover.getName());
@@ -294,7 +296,7 @@ public abstract class BackupReaderAbstract
     private void restorePreV200Style(@NonNull final ReaderEntity entity)
             throws IOException {
 
-        mProgressListener.onProgressStep(processBooklistStyles, 1);
+        mProgressListener.onProgressStep(1, processBooklistStyles);
         BooklistStyle style = null;
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
@@ -342,14 +344,14 @@ public abstract class BackupReaderAbstract
         }
 
         /**
-         * @param message  to display
          * @param position absolute position for the progress counter
+         * @param message  to display
          */
         @Override
-        public void onProgress(@NonNull final String message,
-                               final int position) {
+        public void onProgress(final int position,
+                               @NonNull final String message) {
             // The progress is sent periodically and has jumps, so we calculate deltas
-            mProgressListener.onProgressStep(message, position - mLastPos);
+            mProgressListener.onProgressStep(position - mLastPos, message);
             mLastPos = position;
         }
 

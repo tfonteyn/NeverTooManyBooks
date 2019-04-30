@@ -49,6 +49,6 @@ public class BlankValidator
             dataManager.putString(datum, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
+        throw new ValidatorException(R.string.vldt_blank_required, datum.getKey());
     }
 }

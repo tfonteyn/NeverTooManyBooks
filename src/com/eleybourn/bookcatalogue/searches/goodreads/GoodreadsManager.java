@@ -1058,7 +1058,7 @@ public class GoodreadsManager
            .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
            .apply();
 
-        // Open the web page
+        // Open the web page, always use the app context here.
         App.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 

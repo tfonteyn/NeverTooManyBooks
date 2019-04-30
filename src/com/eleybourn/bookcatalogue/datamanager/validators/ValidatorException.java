@@ -24,6 +24,8 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
+
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.
  * <p>
@@ -32,9 +34,10 @@ import androidx.annotation.StringRes;
  * @author Philip Warner
  */
 public class ValidatorException
-        extends RuntimeException {
+        extends RuntimeException
+        implements FormattedMessageException {
 
-    private static final long serialVersionUID = -726920065494753160L;
+    private static final long serialVersionUID = 171094428181491962L;
     @StringRes
     private final int mStringId;
     /** Args to pass to format function. */
@@ -42,7 +45,7 @@ public class ValidatorException
     private final Object[] mArgs;
 
     public ValidatorException(@StringRes final int stringId,
-                              @NonNull final Object[] args) {
+                              @NonNull final Object... args) {
         mStringId = stringId;
         mArgs = args;
     }

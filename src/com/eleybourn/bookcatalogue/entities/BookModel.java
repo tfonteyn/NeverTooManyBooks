@@ -7,11 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * This is the (obvious) replacement of the homegrown BookManager in previous commits.
@@ -115,13 +117,20 @@ public class BookModel
      * Load a language list; reloading this list every time a tab changes is slow.
      * So we cache it.
      *
-     * @return List of languages; full displayName
+     * Returns a unique list of all languages in the database.
+     *
+     * @param desiredContext the DESIRED context; e.g. get the names in a different language.
+     *
+     * @return The list; expanded full displayName's in the desiredContext Locale
      */
     @NonNull
     public List<String> getLanguages(@NonNull final DBA db,
-                                      @NonNull final Context context) {
+                                      @NonNull final Context desiredContext) {
         if (mLanguages == null) {
-            mLanguages = db.getLanguages(context);
+            mLanguages = new ArrayList<>();
+            for (String code : db.getLanguageCodes()) {
+                mLanguages.add(LocaleUtils.getDisplayName(desiredContext, code));
+            }
         }
         return mLanguages;
     }

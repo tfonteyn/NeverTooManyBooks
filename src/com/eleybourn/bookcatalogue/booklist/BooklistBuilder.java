@@ -294,7 +294,7 @@ public class BooklistBuilder
         mUnknown = context.getString(R.string.unknown).toUpperCase();
 
         // Get the database and create a statements collection
-        mDb = new DBA(context);
+        mDb = new DBA();
         mSyncedDb = mDb.getUnderlyingDatabase();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -287,13 +288,24 @@ public class TocEntry
         mFirstPublicationDate = publicationDate;
     }
 
+    /**
+     * Stopgap.... makes the code elsewhere clean.
+     * <p>
+     * ENHANCE: The locale of the TocEntry
+     * should be based on either a specific language setting for
+     * the TocEntry itself, or on the locale of the primary book.
+     * Neither is implemented for now. So we cheat.
+     *
+     * @return the locale of the TocEntry
+     */
+    public Locale getLocale() {
+        return LocaleUtils.getSystemLocale();
+    }
+
     @Override
     public long fixupId(@NonNull final DBA db) {
         mAuthor.fixupId(db);
-        //TOMF: book locale, but if TOC is present in multiple books... which book locale ?
-        //TODO: finding an existing TOC relies on exact match of the title. Make flexible? how?
-        mId = db.getTocEntryId(mAuthor.getId(),
-                               mTitle.toLowerCase(LocaleUtils.getPreferredLocal()));
+        mId = db.getTocEntryId(getLocale(), mAuthor.getId(), mTitle);
         return mId;
     }
 

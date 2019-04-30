@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -103,16 +101,16 @@ public class TarBackupContainer
 
     @Override
     @NonNull
-    public BackupReader newReader(@NonNull final Context context)
+    public BackupReader newReader()
             throws IOException {
-        return new TarBackupReader(context, this);
+        return new TarBackupReader(this);
     }
 
     @Override
     @NonNull
-    public BackupWriter newWriter(@NonNull final Context context)
+    public BackupWriter newWriter()
             throws IOException {
-        return new TarBackupWriter(context, this);
+        return new TarBackupWriter(this);
     }
 
     /**
@@ -135,9 +133,9 @@ public class TarBackupContainer
      * @return {@code true} if valid
      */
     @Override
-    public boolean isValid(@NonNull final Context context) {
+    public boolean isValid() {
         // The reader will do basic validation.
-        try (BackupReader reader = newReader(context)) {
+        try (BackupReader reader = newReader()) {
             BackupInfo backupInfo = reader.getInfo();
             // the info block will/can do more checks.
             return backupInfo.isValid();

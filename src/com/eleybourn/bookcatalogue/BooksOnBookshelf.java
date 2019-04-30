@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -136,12 +137,27 @@ public class BooksOnBookshelf
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        mDb = new DBA(this);
+        mDb = new DBA();
 
         Bundle args = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
 
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
-        mModel.init(getIntent(), args, mDb);
+        mModel.init(args);
+
+        // Restore bookshelf
+        mModel.setCurrentBookshelf(Bookshelf.getPreferred(this, mDb));
+
+        String searchText = "";
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            // Return the search results instead of all books (for the bookshelf)
+            searchText = getIntent().getStringExtra(SearchManager.QUERY).trim();
+
+        } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
+            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
+            searchText = getIntent().getDataString();
+        }
+        mModel.getSearchCriteria().setText(searchText);
+
 
         mListView = findViewById(android.R.id.list);
         mListView.setFastScrollEnabled(true);
@@ -606,7 +622,7 @@ public class BooksOnBookshelf
 
                         if ((options & ImportSettings.PREFERENCES) != 0) {
                             // the imported prefs could have a different preferred bookshelf.
-                            Bookshelf newBookshelf = Bookshelf.getPreferred(mDb);
+                            Bookshelf newBookshelf = Bookshelf.getPreferred(this, mDb);
                             if (!mModel.getCurrentBookshelf().equals(newBookshelf)) {
                                 // if it was.. then switch to it.
                                 mModel.setCurrentBookshelf(newBookshelf);
@@ -937,7 +953,7 @@ public class BooksOnBookshelf
                     mModel.setCurrentBookshelf(mDb.getBookshelfByName(bsName));
                     if (mModel.getCurrentBookshelf() == null) {
                         // shelf must have been deleted, switch to 'all book'
-                        mModel.setCurrentBookshelf(Bookshelf.getAllBooksBookshelf(mDb));
+                        mModel.setCurrentBookshelf(Bookshelf.getAllBooksBookshelf(view.getContext(), mDb));
                     }
                     mModel.getCurrentBookshelf().setAsPreferred();
 
@@ -1129,7 +1145,8 @@ public class BooksOnBookshelf
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
 
         if (taskId == R.id.TASK_ID_GET_BOOKLIST && result != null) {
             // Save a flag to say list was loaded at least once successfully (or not)
@@ -1246,7 +1263,7 @@ public class BooksOnBookshelf
         private static final String TAG = GetBookListTask.class.getSimpleName();
 
         @NonNull
-        protected final ProgressDialogFragment<BuilderHolder> mFragment;
+        protected final ProgressDialogFragment<BuilderHolder> mProgressDialog;
         /**
          * Indicates whole table structure needs rebuild,
          * versus just do a reselect of underlying data.
@@ -1273,14 +1290,14 @@ public class BooksOnBookshelf
         /**
          * Constructor.
          *
-         * @param fragment        ProgressDialogFragment
+         * @param progressDialog        ProgressDialogFragment
          * @param builderHolder   holder class with input fields / results.
          * @param bookListBuilder the builder
          * @param isFullRebuild   Indicates whole table structure needs rebuild,
          *                        versus just do a reselect of underlying data
          */
         @UiThread
-        private GetBookListTask(@NonNull final ProgressDialogFragment<BuilderHolder> fragment,
+        private GetBookListTask(@NonNull final ProgressDialogFragment<BuilderHolder> progressDialog,
                                 @NonNull final BuilderHolder builderHolder,
                                 @NonNull final BooklistBuilder bookListBuilder,
                                 final boolean isFullRebuild) {
@@ -1289,7 +1306,7 @@ public class BooksOnBookshelf
                 Logger.debug(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
             }
 
-            mFragment = fragment;
+            mProgressDialog = progressDialog;
             mIsFullRebuild = isFullRebuild;
             mBooklistBuilder = bookListBuilder;
             mHolder = builderHolder;
@@ -1509,13 +1526,13 @@ public class BooksOnBookshelf
             }
             tempListCursor = null;
             // close the progress dialog
-            mFragment.dismiss();
+            mProgressDialog.dismiss();
         }
 
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final BuilderHolder result) {
-            mFragment.onTaskFinished(mException == null, result);
+            mProgressDialog.onTaskFinished(mException == null, result, mException);
         }
     }
 

@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 
 /**
@@ -47,7 +48,7 @@ public interface BackupReader
      */
     void restore(@NonNull ImportSettings settings,
                  @NonNull BackupReaderListener listener)
-            throws IOException;
+            throws IOException, ImportException;
 
     /**
      * Read the next ReaderEntity from the backup.
@@ -92,8 +93,14 @@ public interface BackupReader
         /**
          * Advance progress by 'delta'.
          */
-        void onProgressStep(@NonNull String message,
-                            int delta);
+        void onProgressStep(int delta,
+                            @NonNull String message);
+
+        /**
+         * report progress in absolute position.
+         */
+        void onProgress(int position,
+                        @NonNull String message);
 
         /**
          * @return {@code true} if operation is cancelled.

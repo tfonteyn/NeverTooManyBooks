@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.backup.xml;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Base64;
@@ -63,8 +62,6 @@ public class XmlImporter
             "Unable to process XML entity ";
 
     @NonNull
-    private final Context mContext;
-    @NonNull
     private final DBA mDb;
     @NonNull
     private final ImportSettings mSettings;
@@ -81,9 +78,8 @@ public class XmlImporter
     /**
      * Constructor.
      */
-    public XmlImporter(@NonNull final Context context) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    public XmlImporter() {
+        mDb = new DBA();
         mSettings = new ImportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -93,11 +89,8 @@ public class XmlImporter
      *
      * @param settings the import settings
      */
-    @SuppressWarnings("unused")
-    public XmlImporter(@NonNull final Context context,
-                       @NonNull final ImportSettings settings) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    public XmlImporter(@NonNull final ImportSettings settings) {
+        mDb = new DBA();
         settings.validate();
         mSettings = settings;
     }

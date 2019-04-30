@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import android.content.Context;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -54,13 +52,10 @@ public class TarBackupWriter
     /**
      * Constructor.
      *
-     * @param context   caller context
-     * @param container Parent
+     * @param container     Parent
      */
-    TarBackupWriter(@NonNull final Context context,
-                    @NonNull final TarBackupContainer container)
+    TarBackupWriter(@NonNull final TarBackupContainer container)
             throws IOException {
-        super(context);
         mContainer = container;
         // Open the archive for writing
         OutputStream out = new FileOutputStream(container.getFile());

@@ -204,7 +204,8 @@ public abstract class SendBooksTask
          */
         public void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
-            SendOneBookTask task = new SendOneBookTask(context, mBookId);
+            SendOneBookTask task = new SendOneBookTask(context.getString(R.string.gr_send_book_to_goodreads, mBookId),
+                                                       mBookId);
             qm.enqueueTask(task, QueueManager.Q_SMALL_JOBS);
             qm.deleteEvent(getId());
         }

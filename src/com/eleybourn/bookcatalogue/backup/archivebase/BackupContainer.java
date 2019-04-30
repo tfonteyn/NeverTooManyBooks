@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -35,27 +33,23 @@ public interface BackupContainer {
     /**
      * Get a BackupReader for the referenced archive.
      *
-     * @param context caller context
-     *
      * @return a new reader
      *
      * @throws IOException on failure
      */
     @NonNull
-    BackupReader newReader(@NonNull final Context context)
+    BackupReader newReader()
             throws IOException;
 
     /**
      * Get a BackupWriter for the referenced archive.
-     *
-     * @param context caller context
      *
      * @return a new writer
      *
      * @throws IOException on failure
      */
     @NonNull
-    BackupWriter newWriter(@NonNull final Context context)
+    BackupWriter newWriter()
             throws IOException;
 
     /**
@@ -74,9 +68,7 @@ public interface BackupContainer {
      * Checks if the current archive looks valid. Does not need to be
      * exhaustive. Do not call if an archive is being written.
      *
-     * @param context caller context
-     *
      * @return {@code true} if valid
      */
-    boolean isValid(@NonNull final Context context);
+    boolean isValid();
 }

@@ -209,7 +209,8 @@ public class FileChooserFragment
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (taskId) {

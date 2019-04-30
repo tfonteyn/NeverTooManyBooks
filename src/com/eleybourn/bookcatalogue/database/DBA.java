@@ -21,8 +21,6 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -130,6 +128,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FTS_AUTHOR_
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_READ_STATUS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
@@ -152,6 +151,10 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_TOC_ENTRIES
 /**
  * Book Catalogue database access helper class.
  * (reminder: setting books dirty is now done with triggers).
+ * <p>
+ * This class is 'context-free'. KEEP IT THAT WAY.
+ * We need to use this in background tasks and ViewModel classes.
+ * Using {@link App#getAppContext()}} is however allowed.
  *
  * <p>
  * insert:
@@ -276,9 +279,6 @@ public class DBA
     private static DBHelper sDbHelper;
     /** the synchronized wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
-    /** needed for Resources. */
-    @NonNull
-    private final Context mContext;
 
     /** a cache for statements, where they are pre-compiled. */
     private final SqlStatementManager mStatements;
@@ -287,20 +287,14 @@ public class DBA
     private boolean mCloseCalled;
 
     /**
-     * Constructor - the passed context is NOT used to open the database (helper),
-     * but is for accessing resources etc ONLY.
-     *
+     * Constructor.
      * <p>
      * Note: don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dba which is).
-     *
-     * @param context caller context
      */
-    public DBA(@NonNull final Context context) {
-        mContext = context;
+    public DBA() {
         // initialise static if not done yet
         if (sDbHelper == null) {
-            // don't pass local context, the helper uses the app context to avoid leaks.
             sDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
         }
 
@@ -479,11 +473,6 @@ public class DBA
         sDbHelper.createTriggers(sSyncedDb);
     }
 
-    @NonNull
-    public Context getContext() {
-        return mContext;
-    }
-
     public void analyze() {
         sSyncedDb.analyze();
     }
@@ -608,25 +597,31 @@ public class DBA
     /**
      * Return the {@link TocEntry} ID for a given author/title.
      * (note that publication year is NOT used).
-     * The title will be checked for (equal 'OR' as {@link #preprocessTitle})
+     * The title will be checked for being equal 'OR' as {@link #preprocessTitle}) reordered.
+     * TODO: finding an existing TOC relies on exact match of the title. Make flexible? how?
      *
      * @param authorId id of author
-     * @param title_lc title in LOWER CASE (allows the caller to use the correct locale)
+     * @param title    title
      *
      * @return the id of the {@link TocEntry} entry, or 0 if not found
      */
-    public long getTocEntryId(final long authorId,
-                              @NonNull final String title_lc) {
+    public long getTocEntryId(@NonNull final Locale locale,
+                              final long authorId,
+                              @NonNull final String title) {
+
         SynchronizedStatement stmt = mStatements.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
+
+        String lc_title = title.toLowerCase(locale);
+
         // Be cautious; other threads may use the cached stmt, and set parameters.
         // the check of preprocessTitle is unconditional as it's an OR.
         synchronized (stmt) {
             stmt.bindLong(1, authorId);
-            stmt.bindString(2, title_lc);
-            stmt.bindString(3, preprocessTitle(title_lc, null));
+            stmt.bindString(2, lc_title);
+            stmt.bindString(3, preprocessTitle(locale, lc_title));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -997,15 +992,11 @@ public class DBA
     /**
      * Examine the values and make any changes necessary before writing the data.
      *
-     * @param isNew indicates if the book is new
      * @param book  A collection with the columns to be set. May contain extra data.
+     * @param isNew indicates if the book is new
      */
-    private void preprocessBook(final boolean isNew,
-                                @NonNull final Book book) {
-
-        // Handle Language field first, we might need it for 'order by LC' fields.
-        // 'true': try to update the language field of the book to the iso3 code.
-        Locale bookLocale = book.getLocale(true);
+    private void preprocessBook(@NonNull final Book book,
+                                final boolean isNew) {
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)
@@ -1017,13 +1008,14 @@ public class DBA
         if (book.containsKey(DBDefinitions.KEY_TITLE)) {
             // new books only: clean the title
             if (isNew) {
-                Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
-                String title = preprocessTitle(book.getString(DBDefinitions.KEY_TITLE), res);
+                String title = preprocessTitle(book.getLocale(false),
+                                               book.getString(DBDefinitions.KEY_TITLE));
                 book.putString(DBDefinitions.KEY_TITLE, title);
             }
             // both new and updates: set the 'order by' field
             book.putString(DOM_TITLE_LC.name,
-                           book.getString(DBDefinitions.KEY_TITLE).toLowerCase(bookLocale));
+                           book.getString(DBDefinitions.KEY_TITLE).toLowerCase(
+                                   book.getLocale(false)));
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
@@ -1161,25 +1153,21 @@ public class DBA
     /**
      * Move "The, A, An" etc... to the end of the string.
      *
-     * @param title     to format
-     * @param resources to use for the prefix, can be null to use the default.
+     * @param title to format
      *
      * @return formatted title
      */
-    private String preprocessTitle(@NonNull final String title,
-                                   @Nullable Resources resources) {
+    private String preprocessTitle(@NonNull final Locale locale,
+                                   @NonNull final String title) {
+
+        //TODO: do not use Application Context for String resources
+        String reorderPattern = LocaleUtils.getLocalizedResources(App.getAppContext(), locale)
+                                           .getString(R.string.title_reorder);
 
         StringBuilder newTitle = new StringBuilder();
         String[] titleWords = title.split(" ");
         try {
-            String pattern;
-            if (resources == null) {
-                pattern = mContext.getString(R.string.title_reorder);
-            } else {
-                pattern = resources.getString(R.string.title_reorder);
-            }
-
-            if (titleWords[0].matches(pattern)) {
+            if (titleWords[0].matches(reorderPattern)) {
                 for (int i = 1; i < titleWords.length; i++) {
                     if (i != 1) {
                         newTitle.append(' ');
@@ -1189,7 +1177,7 @@ public class DBA
                 newTitle.append(", ").append(titleWords[0]);
                 return newTitle.toString();
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") RuntimeException ignore) {
+        } catch (RuntimeException ignore) {
             //do nothing. Title stays the same
         }
         return title;
@@ -1391,13 +1379,17 @@ public class DBA
             txLock = sSyncedDb.beginTransaction(true);
         }
 
+        // Handle Language field FIRST, we might need it for 'order by LC' fields.
+        // 'true': try to update the language field of the book to the iso3 code.
+        book.getLocale(true);
+
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
                 Logger.debug(this, "insertBook", book.getRawData());
             }
             // Cleanup fields (author, series, title and remove blank fields for which
             // we have defaults)
-            preprocessBook(bookId == 0, book);
+            preprocessBook(book, bookId == 0);
 
             /* Set defaults if not present in book
              *
@@ -1474,6 +1466,10 @@ public class DBA
             txLock = sSyncedDb.beginTransaction(true);
         }
 
+        // Handle Language field FIRST, we might need it for 'order by LC' fields.
+        // 'true': try to update the language field of the book to the iso3 code.
+        book.getLocale(true);
+
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
                 Logger.debug(this, "updateBook", book.getRawData().toString());
@@ -1481,7 +1477,7 @@ public class DBA
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
             // and remove blank fields for which we have defaults)
-            preprocessBook(bookId == 0, book);
+            preprocessBook(book, bookId == 0);
 
             ContentValues cv = filterValues(TBL_BOOKS.getName(), book);
 
@@ -1502,6 +1498,7 @@ public class DBA
             // but we don't know what columns are provided in the bundle....
             int rowsAffected = sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
                                                 new String[]{String.valueOf(bookId)});
+
             insertBookDependents(bookId, book);
             updateFts(bookId);
 
@@ -1521,6 +1518,20 @@ public class DBA
                 sSyncedDb.endTransaction(txLock);
             }
         }
+    }
+
+    public int updateBookRead(final long bookId,
+                              final boolean read) {
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_READ_STATUS.name, read);
+        if (read) {
+            cv.put(DOM_BOOK_READ_END.name, DateUtils.localSqlDateForToday());
+        } else {
+            cv.put(DOM_BOOK_READ_END.name, "");
+        }
+
+        return sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
+                                new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -1719,8 +1730,6 @@ public class DBA
 
         ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        Locale bookLocale = book.getLocale(false);
-        Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1772,11 +1781,11 @@ public class DBA
                 // Be cautious; other threads may use the cached stmt, and set parameters.
                 synchronized (insertTocStmt) {
                     // standardize the title for new entries
-                    String title = preprocessTitle(tocEntry.getTitle(), res);
+                    String title = preprocessTitle(book.getLocale(false), tocEntry.getTitle());
 
                     insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
                     insertTocStmt.bindString(2, title);
-                    insertTocStmt.bindString(3, title.toLowerCase(bookLocale));
+                    insertTocStmt.bindString(3, title.toLowerCase(book.getLocale(false)));
                     insertTocStmt.bindString(4, tocEntry.getFirstPublication());
                     long iId = insertTocStmt.executeInsert();
                     if (iId > 0) {
@@ -1791,7 +1800,7 @@ public class DBA
                 String title = tocEntry.getTitle();
                 ContentValues cv = new ContentValues();
                 cv.put(DOM_TITLE.name, title);
-                cv.put(DOM_TITLE_LC.name, title.toLowerCase(bookLocale));
+                cv.put(DOM_TITLE_LC.name, title.toLowerCase(book.getLocale(false)));
                 cv.put(DOM_FIRST_PUBLICATION.name, tocEntry.getFirstPublication());
 
                 sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
@@ -2872,24 +2881,6 @@ public class DBA
         }
     }
 
-    /**
-     * Returns a unique list of all languages in the database.
-     *
-     * @param desiredContext the DESIRED context, which could be different then the context used to create
-     *                       the {@link DBA} object with.
-     *
-     * @return The list; expanded full displayName's in the current Locale
-     */
-    @NonNull
-    public ArrayList<String> getLanguages(@NonNull final Context desiredContext) {
-        ArrayList<String> names = new ArrayList<>();
-        for (String code : getLanguageCodes()) {
-            names.add(LocaleUtils.getDisplayName(desiredContext, code));
-        }
-
-        return names;
-    }
-
     public void updateLanguage(@NonNull final String from,
                                @NonNull final String to) {
 
@@ -3047,9 +3038,7 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
-
-        //Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
-        String title = preprocessTitle(series.getName(), null);
+        String title = preprocessTitle(series.getLocale(), series.getName());
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -4007,6 +3996,7 @@ public class DBA
                         + " THEN Coalesce(s." + DOM_SERIES_FORMATTED + ",'')"
                         + " ELSE "
                         + DOM_SERIES_FORMATTED
+                        //TODO: do not use Application Context for String resources
                         + "||' " + App.getAppContext().getString(R.string.and_others) + '\''
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;

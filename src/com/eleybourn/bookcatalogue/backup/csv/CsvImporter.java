@@ -25,6 +25,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -80,11 +83,12 @@ public class CsvImporter
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     @NonNull
-    private final Context mContext;
-    @NonNull
     private final DBA mDb;
     @NonNull
     private final ImportSettings mSettings;
+    private final String mProgress_msg_n_created_m_updated;
+
+    private final String mUnknownString;
 
     @NonNull
     private Integer mCreated = 0;
@@ -94,26 +98,31 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param context  caller context
-     * @param settings {@link ImportSettings#file} is not used, as we must support
-     *                 reading from a stream.
-     *                 {@link ImportSettings##dateFrom} is not applicable
-     *                 {@link ImportSettings#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
-     *                 Other flags are ignored, as this class only
-     *                 handles {@link ImportSettings#BOOK_CSV} anyhow.
+     * @param settings      {@link ImportSettings#file} is not used, as we must support
+     *                      reading from a stream.
+     *                      {@link ImportSettings##dateFrom} is not applicable
+     *                      {@link ImportSettings#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                      Other flags are ignored, as this class only
+     *                      handles {@link ImportSettings#BOOK_CSV} anyhow.
      */
-    public CsvImporter(@NonNull final Context context,
-                       @NonNull final ImportSettings settings) {
-        mContext = context;
-        mDb = new DBA(mContext);
+    @UiThread
+    public CsvImporter(@NonNull final ImportSettings settings) {
+
+        //TODO: do not use Application Context for String resources
+        Context context = App.getAppContext();
+        mUnknownString = context.getString(R.string.unknown);
+        mProgress_msg_n_created_m_updated = context.getString(R.string.progress_msg_n_created_m_updated);
+
+        mDb = new DBA();
         mSettings = settings;
     }
 
     @Override
+    @WorkerThread
     public int doBooks(@NonNull final InputStream importStream,
                        @Nullable final CoverFinder coverFinder,
                        @NonNull final ImportListener listener)
-            throws IOException {
+            throws IOException, ImportException {
 
         final List<String> importedList = new ArrayList<>();
 
@@ -258,17 +267,14 @@ public class CsvImporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
-                    String msg = mContext.getString(R.string.progress_msg_n_created_m_updated,
-                                                    mCreated, mUpdated);
-                    listener.onProgress(title + "\n(" + msg + ')', row);
+                    String msg = String.format(mProgress_msg_n_created_m_updated,
+                                               mCreated, mUpdated);
+                    listener.onProgress(row, title + "\n(" + msg + ')');
                     lastUpdate = now;
                 }
 
                 row++;
             } // end while
-
-        } catch (ImportException e) {
-            throw new RuntimeException(e);
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
@@ -462,10 +468,9 @@ public class CsvImporter
 
         // A pre-existing bug sometimes results in blank author-details due to bad underlying data
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
-        // so we allow blank author_details and fill in a regional version of "Author, Unknown"
+        // so we allow blank author_details and fill in a localised version of "Unknown, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = mContext.getString(R.string.lbl_author) + ", "
-                    + mContext.getString(R.string.unknown);
+            encodedList = mUnknownString + ", " + mUnknownString;
         }
 
         // Now build the array for authors
@@ -613,9 +618,8 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(
-                mContext.getString(R.string.import_error_csv_file_must_contain_any_column,
-                                   TextUtils.join(",", names)));
+        throw new ImportException(R.string.import_error_csv_file_must_contain_any_column,
+                                  (TextUtils.join(",", names)));
     }
 
     private void requireNonBlankOrThrow(@NonNull final Book book,
@@ -626,7 +630,7 @@ public class CsvImporter
         if (!book.getString(name).isEmpty()) {
             return;
         }
-        throw new ImportException(mContext.getString(R.string.error_column_is_blank, name, row));
+        throw new ImportException(R.string.error_column_is_blank, name, row);
     }
 
     @SuppressWarnings("unused")
@@ -640,8 +644,8 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(mContext.getString(R.string.error_columns_are_blank,
-                                                     TextUtils.join(",", names), row));
+        throw new ImportException(R.string.error_columns_are_blank,
+                                  TextUtils.join(",", names), row);
     }
 
     /**

@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.App;
@@ -53,14 +52,12 @@ public class RestoreActivity
         extends BRBaseActivity
         implements ImportOptionsDialogFragment.OnOptionsListener {
 
-    private static final String TAG = RestoreActivity.class.getSimpleName();
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (null == getSupportFragmentManager().findFragmentById(R.id.browser_fragment)) {
-            createFileBrowser( "");
+            createFileBrowser("");
         }
 
         Button confirm = findViewById(R.id.confirm);
@@ -114,20 +111,16 @@ public class RestoreActivity
         if (settings.what == ImportSettings.NOTHING) {
             return;
         }
+
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(TAG) == null) {
+        if (fm.findFragmentByTag(RestoreTask.TAG) == null) {
             ProgressDialogFragment<ImportSettings> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
                                                        false, 0);
-            RestoreTask task;
-            try {
-                task = new RestoreTask(this, progressDialog, settings);
-                progressDialog.setTask(R.id.TASK_ID_READ_FROM_ARCHIVE, task);
-                progressDialog.show(fm, TAG);
-                task.execute();
-            } catch (IOException e) {
-                progressDialog.onTaskFinished(false, settings);
-            }
+            RestoreTask task = new RestoreTask(progressDialog, settings);
+            progressDialog.setTask(R.id.TASK_ID_READ_FROM_ARCHIVE, task);
+            progressDialog.show(fm, RestoreTask.TAG);
+            task.execute();
         }
     }
 
@@ -143,7 +136,8 @@ public class RestoreActivity
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (taskId) {

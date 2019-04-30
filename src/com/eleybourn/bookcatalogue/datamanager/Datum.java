@@ -638,6 +638,7 @@ public class Datum {
 
         private static final long serialVersionUID = 2561013689178409200L;
 
+        @SuppressWarnings("SameParameterValue")
         AccessorNotSupportedException(@NonNull final String typeDescription) {
             super("Accessor not supported for " + typeDescription + " objects");
         }

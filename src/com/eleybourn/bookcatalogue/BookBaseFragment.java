@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -125,8 +124,7 @@ public abstract class BookBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DBA(getContext());
+        mDb = new DBA();
 
         //noinspection ConstantConditions
         mBookModel = ViewModelProviders.of(getActivity()).get(BookModel.class);

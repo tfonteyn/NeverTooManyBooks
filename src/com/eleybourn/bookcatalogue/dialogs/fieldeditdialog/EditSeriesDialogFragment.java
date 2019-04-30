@@ -85,9 +85,11 @@ public class EditSeriesDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Context context = getContext();
+
         //noinspection ConstantConditions
-        mDb = new DBA(context);
+        @NonNull
+        Context context = getContext();
+        mDb = new DBA();
 
         Bundle args = requireArguments();
 
@@ -135,6 +137,7 @@ public class EditSeriesDialogFragment
                     }
                     series.setName(mName);
                     series.setComplete(mIsComplete);
+
                     mDb.updateOrInsertSeries(series);
                     BookChangedListener.onBookChanged(this, 0, BookChangedListener.SERIES, null);
                 })

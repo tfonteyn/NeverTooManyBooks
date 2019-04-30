@@ -443,7 +443,7 @@ public class BooksMultiTypeListHandler
 
             case R.id.MENU_BOOK_READ:
                 // toggle the read status
-                if (Book.setRead(bookId, !row.isRead(), db)) {
+                if (db.updateBookRead(bookId, !row.isRead()) == 1) {
 //                    Bundle data = new Bundle();
 //                    data.putBoolean(KEY_READ, !row.isRead());
 //                    data.putInt(UniqueId.POSITION, row.getPosition());

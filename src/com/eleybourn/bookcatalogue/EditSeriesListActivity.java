@@ -218,8 +218,7 @@ public class EditSeriesListActivity
                 .setIcon(R.drawable.ic_info_outline)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         getString(R.string.btn_this_book),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              d.dismiss();
 

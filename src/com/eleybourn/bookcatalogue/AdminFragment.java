@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.ExportCSVTask;
@@ -173,8 +174,7 @@ public class AdminFragment
             ProgressDialogFragment<Void> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
                                                        false, 0);
-            //noinspection ConstantConditions
-            ExportCSVTask task = new ExportCSVTask(getContext(), progressDialog, settings);
+            ExportCSVTask task = new ExportCSVTask(settings, progressDialog);
             progressDialog.setTask(R.id.TASK_ID_CSV_EXPORT, task);
             progressDialog.show(fm, TAG);
             task.execute();
@@ -240,8 +240,8 @@ public class AdminFragment
             ProgressDialogFragment<Void> progressDialog =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
                                                        false, 0);
-            //noinspection ConstantConditions
-            ImportCSVTask task = new ImportCSVTask(getContext(), progressDialog, settings);
+
+            ImportCSVTask task = new ImportCSVTask(settings, progressDialog);
             progressDialog.setTask(R.id.TASK_ID_CSV_IMPORT, task);
             progressDialog.show(fm, TAG);
             task.execute();
@@ -284,15 +284,31 @@ public class AdminFragment
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
         switch (taskId) {
             case R.id.TASK_ID_CSV_EXPORT:
                 if (success) {
                     onExportFinished();
+                } else {
+                    //noinspection ConstantConditions
+                    UserMessage.showUserMessage(getView(), e.getLocalizedMessage());
                 }
                 break;
 
             case R.id.TASK_ID_CSV_IMPORT:
+                if (!success) {
+                    String msg;
+                    if (e instanceof FormattedMessageException) {
+                        msg = ((FormattedMessageException) e).getFormattedMessage(getResources());
+                    } else if (e != null) {
+                        msg = e.getLocalizedMessage();
+                    } else {
+                        msg = getString(R.string.error_import_failed);
+                    }
+                    //noinspection ConstantConditions
+                    UserMessage.showUserMessage(getView(), msg);
+                }
                 break;
         }
     }

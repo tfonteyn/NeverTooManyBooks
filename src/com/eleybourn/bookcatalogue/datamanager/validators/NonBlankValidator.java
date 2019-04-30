@@ -45,8 +45,7 @@ public class NonBlankValidator
 
         String v = dataManager.getString(datum).trim();
         if (v.isEmpty()) {
-            throw new ValidatorException(R.string.vldt_non_blank_required,
-                                         new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_non_blank_required, datum.getKey());
         }
     }
 }

@@ -141,6 +141,7 @@ public class EditBookFieldsFragment
         mFields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
                .getView().setOnClickListener(
                 v -> {
+                    // use the current title.
                     String title = mFields.getField(R.id.title).getValue().toString().trim();
                     ArrayList<Series> list =
                             mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -217,7 +218,8 @@ public class EditBookFieldsFragment
             }
             if (bookshelf == null) /* || name.isEmpty() */ {
                 // unlikely to be true, but use default just in case
-                bookshelf = Bookshelf.getDefaultBookshelf(mDb);
+                //noinspection ConstantConditions
+                bookshelf = Bookshelf.getDefaultBookshelf(getContext(), mDb);
             }
 
             mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());

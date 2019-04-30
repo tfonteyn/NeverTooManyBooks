@@ -1,10 +1,10 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -26,7 +25,7 @@ public class ExportCSVTask
     /** Fragment manager tag. */
     private static final String TAG = ExportCSVTask.class.getSimpleName();
     @NonNull
-    private final ProgressDialogFragment<Void> mFragment;
+    private final ProgressDialogFragment<Void> mProgressDialog;
     @NonNull
     private final Exporter mExporter;
     @NonNull
@@ -42,15 +41,14 @@ public class ExportCSVTask
     /**
      * Constructor.
      *
-     * @param fragment ProgressDialogFragment
-     * @param settings the export settings
+     * @param settings       the export settings
+     * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    public ExportCSVTask(@NonNull final Context context,
-                         @NonNull final ProgressDialogFragment<Void> fragment,
-                         @NonNull final ExportSettings settings) {
-        mFragment = fragment;
-        mExporter = new CsvExporter(context, settings);
+    public ExportCSVTask(@NonNull final ExportSettings settings,
+                         @NonNull final ProgressDialogFragment<Void> progressDialog) {
+        mProgressDialog = progressDialog;
+        mExporter = new CsvExporter(settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
 
@@ -74,7 +72,13 @@ public class ExportCSVTask
                 @Override
                 public void onProgress(@NonNull final String message,
                                        final int position) {
-                    publishProgress(message, position);
+                    publishProgress(position, message);
+                }
+
+                @Override
+                public void onProgress(@StringRes final int messageId,
+                                       final int position) {
+                    publishProgress(position, messageId);
                 }
 
                 @Override
@@ -84,7 +88,7 @@ public class ExportCSVTask
 
                 @Override
                 public void setMax(final int max) {
-                    mFragment.setMax(max);
+                    mProgressDialog.setMax(max);
                 }
             });
 
@@ -103,12 +107,17 @@ public class ExportCSVTask
     }
 
     /**
-     * @param values: [0] String message, [1] Integer position/delta
+     * @param values: [0] Integer position/delta, [1] String message
+     *                [0] Integer position/delta, [1] StringRes messageId
      */
     @Override
     @UiThread
     protected void onProgressUpdate(@NonNull final Object... values) {
-        mFragment.onProgress((String) values[0], (Integer) values[1]);
+        if (values[1] instanceof String) {
+            mProgressDialog.onProgress((Integer) values[0], (String) values[1]);
+        } else {
+            mProgressDialog.onProgress((Integer) values[0], (Integer) values[1]);
+        }
     }
 
     /**
@@ -120,6 +129,6 @@ public class ExportCSVTask
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final Void result) {
-        mFragment.onTaskFinished(mException == null, result);
+        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

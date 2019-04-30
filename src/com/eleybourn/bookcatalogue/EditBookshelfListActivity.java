@@ -75,7 +75,7 @@ public class EditBookshelfListActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
-        mDb = new DBA(this);
+        mDb = new DBA();
         mList = mDb.getBookshelves();
         mAdapter = new BookshelfAdapter(this, mList);
 

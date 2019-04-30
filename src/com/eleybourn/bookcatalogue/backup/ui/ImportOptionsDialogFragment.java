@@ -118,7 +118,7 @@ public class ImportOptionsDialogFragment
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(getContext(), mImportSettings.file)) {
+        try (BackupReader reader = BackupManager.readFrom(mImportSettings.file)) {
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;

@@ -174,7 +174,8 @@ public class Bookshelf
      *
      * @return the preferred bookshelf.
      */
-    public static Bookshelf getPreferred(@NonNull final DBA db) {
+    public static Bookshelf getPreferred(@NonNull final Context context,
+                                         @NonNull final DBA db) {
         String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
         if (bookshelfName != null && !bookshelfName.isEmpty()) {
             // try to get the preferred shelf
@@ -183,11 +184,11 @@ public class Bookshelf
                 return bookshelf;
             }
             // shelf must have been deleted, switch to 'all book'
-            return getAllBooksBookshelf(db);
+            return getAllBooksBookshelf(context, db);
 
         } else {
             // no current shelf, start with initial shelf
-            return getDefaultBookshelf(db);
+            return getDefaultBookshelf(context, db);
         }
     }
 
@@ -198,9 +199,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getDefaultBookshelf(@NonNull final DBA db) {
+    public static Bookshelf getDefaultBookshelf(@NonNull final Context context,
+                                                @NonNull final DBA db) {
         return new Bookshelf(DEFAULT_ID,
-                             db.getContext().getString(R.string.bookshelf_my_books),
+                             context.getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 
@@ -211,9 +213,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getAllBooksBookshelf(@NonNull final DBA db) {
+    public static Bookshelf getAllBooksBookshelf(@NonNull final Context context,
+                                                 @NonNull final DBA db) {
         return new Bookshelf(ALL_BOOKS,
-                             db.getContext().getString(R.string.bookshelf_all_books),
+                             context.getString(R.string.bookshelf_all_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 

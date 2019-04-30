@@ -464,7 +464,7 @@ public final class BooklistStyles {
         }
 
         // try user-defined
-        try (DBA db = new DBA(context)) {
+        try (DBA db = new DBA()) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
                 if (style.getLabel(context).equals(name)) {
                     return style.getId();

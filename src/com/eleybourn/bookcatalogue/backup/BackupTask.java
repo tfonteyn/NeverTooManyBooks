@@ -1,22 +1,19 @@
 package com.eleybourn.bookcatalogue.backup;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.backup.ui.BackupFileDetails;
@@ -29,7 +26,7 @@ public class BackupTask
         extends AsyncTask<Void, Object, ExportSettings> {
 
     /** Fragment manager tag. */
-    private static final String TAG = BackupTask.class.getSimpleName();
+    public static final String TAG = BackupTask.class.getSimpleName();
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
@@ -38,9 +35,7 @@ public class BackupTask
     @NonNull
     private final File mTmpFile;
     @NonNull
-    private final ProgressDialogFragment<ExportSettings> mFragment;
-
-    private final BackupWriter mBackupWriter;
+    private final ProgressDialogFragment<ExportSettings> mProgressDialog;
 
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -52,16 +47,15 @@ public class BackupTask
     /**
      * Constructor.
      *
-     * @param fragment ProgressDialogFragment
-     * @param settings the export settings
+     * @param progressDialog ProgressDialogFragment
+     * @param settings       the export settings
      */
     @UiThread
-    private BackupTask(@NonNull final Context context,
-                       @NonNull final ProgressDialogFragment<ExportSettings> fragment,
-                       @NonNull final ExportSettings settings)
+    public BackupTask(@NonNull final ProgressDialogFragment<ExportSettings> progressDialog,
+                      @NonNull final ExportSettings settings)
             throws IOException {
 
-        mFragment = fragment;
+        mProgressDialog = progressDialog;
         mSettings = settings;
         // sanity checks
         if ((mSettings.file == null) || ((mSettings.what & ExportSettings.MASK) == 0)) {
@@ -76,33 +70,6 @@ public class BackupTask
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
         mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
-
-        BackupContainer bkp = new TarBackupContainer(mTmpFile);
-        mBackupWriter = bkp.newWriter(context);
-    }
-
-    /**
-     * @param fm       FragmentManager
-     * @param settings the export settings
-     */
-    @UiThread
-    public static void start(@NonNull final Context context,
-                             @NonNull final FragmentManager fm,
-                             @NonNull final ExportSettings settings) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            ProgressDialogFragment<ExportSettings> progressDialog =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
-                                                       false, 0);
-            BackupTask task;
-            try {
-                task = new BackupTask(context, progressDialog, settings);
-                progressDialog.setTask(R.id.TASK_ID_SAVE_TO_ARCHIVE, task);
-                progressDialog.show(fm, TAG);
-                task.execute();
-            } catch (IOException e) {
-                progressDialog.onTaskFinished(false, settings);
-            }
-        }
     }
 
     @UiThread
@@ -121,22 +88,41 @@ public class BackupTask
     @WorkerThread
     protected ExportSettings doInBackground(final Void... params) {
 
-        try {
-            // go go go...
+        try (BackupWriter mBackupWriter = new TarBackupContainer(mTmpFile).newWriter()) {
+
             mBackupWriter.backup(mSettings, new BackupWriter.BackupWriterListener() {
 
                 private int mProgress;
 
                 @Override
                 public void setMax(final int max) {
-                    mFragment.setMax(max);
+                    mProgressDialog.setMax(max);
                 }
 
                 @Override
-                public void onProgressStep(@Nullable final String message,
-                                           final int delta) {
+                public void onProgressStep(final int delta,
+                                           @Nullable final String message) {
                     mProgress += delta;
-                    publishProgress(message, mProgress);
+                    publishProgress(mProgress, message);
+                }
+
+                @Override
+                public void onProgressStep(final int delta,
+                                           @StringRes final int messageId) {
+                    mProgress += delta;
+                    publishProgress(mProgress, messageId);
+                }
+
+                @Override
+                public void onProgress(final int position,
+                                       @Nullable final String message) {
+                    publishProgress(position, message);
+                }
+
+                @Override
+                public void onProgress(final int position,
+                                       @StringRes final int messageId) {
+                    publishProgress(position, messageId);
                 }
 
                 @Override
@@ -166,23 +152,23 @@ public class BackupTask
             Logger.error(this, e);
             mException = e;
             cleanup();
-        } finally {
-            try {
-                mBackupWriter.close();
-            } catch (IOException ignore) {
-            }
         }
 
         return mSettings;
     }
 
     /**
-     * @param values: [0] String message, [1] Integer position/delta
+     * @param values: [0] Integer position/delta, [1] String message
+     *                [0] Integer position/delta, [1] StringRes messageId
      */
     @Override
     @UiThread
     protected void onProgressUpdate(@NonNull final Object... values) {
-        mFragment.onProgress((String) values[0], (Integer) values[1]);
+        if (values[1] instanceof String) {
+            mProgressDialog.onProgress((Integer) values[0], (String) values[1]);
+        } else {
+            mProgressDialog.onProgress((Integer) values[0], (Integer) values[1]);
+        }
     }
 
     /**
@@ -194,6 +180,6 @@ public class BackupTask
     @Override
     @UiThread
     protected void onPostExecute(@NonNull final ExportSettings result) {
-        mFragment.onTaskFinished(mException == null, result);
+        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

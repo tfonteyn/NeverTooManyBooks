@@ -27,8 +27,10 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.App;
@@ -39,6 +41,7 @@ import com.eleybourn.bookcatalogue.backup.BackupTask;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -51,8 +54,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 public class BackupActivity
         extends BRBaseActivity
         implements ExportOptionsDialogFragment.OnOptionsListener {
-
-    private static final String TAG = BackupActivity.class.getSimpleName();
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -104,7 +105,7 @@ public class BackupActivity
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // User wants to backup all.
                         settings.what = ExportSettings.ALL;
-                        BackupTask.start(this, getSupportFragmentManager(), settings);
+                        onOptionsResult(settings);
                     })
                     .create()
                     .show();
@@ -115,7 +116,7 @@ public class BackupActivity
      * User has set his choices for backup... check them, and kick of the backup task.
      */
     @Override
-    public void opOptionsResult(@NonNull final ExportSettings settings) {
+    public void onOptionsResult(@NonNull final ExportSettings settings) {
         // sanity check
         if (settings.what == ExportSettings.NOTHING) {
             return;
@@ -136,7 +137,21 @@ public class BackupActivity
             settings.dateFrom = null;
         }
 
-        BackupTask.start(this, getSupportFragmentManager(), settings);
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(BackupTask.TAG) == null) {
+            ProgressDialogFragment<ExportSettings> progressDialog =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
+                                                       false, 0);
+            BackupTask task;
+            try {
+                task = new BackupTask(progressDialog, settings);
+                progressDialog.setTask(R.id.TASK_ID_SAVE_TO_ARCHIVE, task);
+                progressDialog.show(fm, BackupTask.TAG);
+                task.execute();
+            } catch (IOException e) {
+                progressDialog.onTaskFinished(false, settings, e);
+            }
+        }
     }
 
     /**
@@ -151,7 +166,8 @@ public class BackupActivity
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result) {
+                               @Nullable final Object result,
+                               @Nullable final Exception e) {
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (taskId) {

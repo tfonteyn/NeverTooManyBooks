@@ -65,7 +65,7 @@ public class GoodreadsSearchCriteriaActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA(this);
+        mDb = new DBA();
 
         mCriteriaView = findViewById(R.id.search_text);
 

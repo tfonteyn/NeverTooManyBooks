@@ -24,7 +24,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
@@ -53,9 +52,9 @@ public class SendOneBookTask
      *
      * @param bookId Book to send
      */
-    SendOneBookTask(@NonNull final Context context,
+    SendOneBookTask(@NonNull final String description,
                     final long bookId) {
-        super(context.getString(R.string.gr_send_book_to_goodreads, bookId));
+        super(description);
         mBookId = bookId;
     }
 
@@ -66,8 +65,7 @@ public class SendOneBookTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
 
-        // Use the app context; the calling activity may go away
-        try (DBA db = new DBA(context.getApplicationContext());
+        try (DBA db = new DBA();
              BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
             final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {

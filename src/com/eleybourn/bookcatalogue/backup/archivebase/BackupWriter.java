@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
@@ -132,8 +133,26 @@ public interface BackupWriter
         /**
          * Advance progress by 'delta'.
          */
-        void onProgressStep(@Nullable String message,
-                            int delta);
+        void onProgressStep(int delta,
+                            @StringRes int messageId);
+
+        /**
+         * Advance progress by 'delta'.
+         */
+        void onProgressStep(int delta,
+                            @Nullable String message);
+
+        /**
+         * report progress in absolute position.
+         */
+        void onProgress(int position,
+                        @Nullable String message);
+
+        /**
+         * report progress in absolute position.
+         */
+        void onProgress(int position,
+                        @StringRes int messageId);
 
         /**
          * @return {@code true} if operation is cancelled.

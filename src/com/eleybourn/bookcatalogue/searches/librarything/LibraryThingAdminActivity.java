@@ -110,7 +110,8 @@ public class LibraryThingAdminActivity
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               final Object result) {
+                               final Object result,
+                               @Nullable final Exception e) {
         UserMessage.showUserMessage(this, (Integer) result);
     }
 
@@ -123,7 +124,7 @@ public class LibraryThingAdminActivity
         /** Fragment manager tag. */
         private static final String TAG = ValidateKey.class.getSimpleName();
 
-        private final ProgressDialogFragment<Integer> mFragment;
+        private final ProgressDialogFragment<Integer> mProgressDialog;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
@@ -134,11 +135,11 @@ public class LibraryThingAdminActivity
         /**
          * Constructor.
          *
-         * @param fragment ProgressDialogFragment
+         * @param progressDialog ProgressDialogFragment
          */
         @UiThread
-        private ValidateKey(@NonNull final ProgressDialogFragment<Integer> fragment) {
-            mFragment = fragment;
+        private ValidateKey(@NonNull final ProgressDialogFragment<Integer> progressDialog) {
+            mProgressDialog = progressDialog;
         }
 
         @Override
@@ -175,7 +176,7 @@ public class LibraryThingAdminActivity
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final Integer result) {
-            mFragment.onTaskFinished(mException == null, result);
+            mProgressDialog.onTaskFinished(mException == null, result, mException);
         }
     }
 }

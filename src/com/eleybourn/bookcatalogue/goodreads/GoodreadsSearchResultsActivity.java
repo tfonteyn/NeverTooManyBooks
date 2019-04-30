@@ -47,7 +47,6 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -80,7 +79,7 @@ public class GoodreadsSearchResultsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA(this);
+        mDb = new DBA();
 
         mListView = findViewById(android.R.id.list);
         mListView.setLayoutManager(new LinearLayoutManager(this));
@@ -140,7 +139,7 @@ public class GoodreadsSearchResultsActivity
             return;
         }
 
-        ResultsAdapter adapter = new ResultsAdapter(this, works, null);
+        ResultsAdapter adapter = new ResultsAdapter(this, works);
         mListView.setAdapter(adapter);
     }
 
@@ -191,14 +190,12 @@ public class GoodreadsSearchResultsActivity
 
         /**
          * Constructor.
-         *
-         * @param context caller context
+         *  @param context caller context
          * @param items   the list
          */
         ResultsAdapter(@NonNull final Context context,
-                       @NonNull final List<GoodreadsWork> items,
-                       @Nullable final OnStartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+                       @NonNull final List<GoodreadsWork> items) {
+            super(context, items, null);
         }
 
         @NonNull

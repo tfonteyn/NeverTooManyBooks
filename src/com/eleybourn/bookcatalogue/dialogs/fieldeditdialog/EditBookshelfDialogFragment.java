@@ -98,8 +98,7 @@ public class EditBookshelfDialogFragment
             mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);
         }
 
-        //noinspection ConstantConditions
-        mDb = new DBA(context);
+        mDb = new DBA();
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
@@ -107,6 +106,7 @@ public class EditBookshelfDialogFragment
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
 
+        //noinspection ConstantConditions
         return new AlertDialog.Builder(context)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)

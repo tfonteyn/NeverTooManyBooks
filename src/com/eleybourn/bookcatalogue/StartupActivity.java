@@ -50,7 +50,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
-import com.eleybourn.bookcatalogue.backup.ui.RestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -391,10 +390,10 @@ public class StartupActivity
 
     private void openDBA() {
         try {
-            mDb = new DBA(this);
+            mDb = new DBA();
         } catch (DBHelper.UpgradeException e) {
-           Logger.warn(this, "openDBA", e.getLocalizedMessage());
-            App.showNotification(this, R.string.error_unknown, getString(e.messageId));
+            Logger.warn(this, "openDBA", e.getLocalizedMessage());
+            App.showNotification(this, R.string.error_unknown, e.messageId);
             finish();
         }
     }

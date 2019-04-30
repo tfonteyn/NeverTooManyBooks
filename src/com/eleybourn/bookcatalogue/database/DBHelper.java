@@ -805,6 +805,7 @@ public class DBHelper
         @StringRes
         public final int messageId;
 
+        @SuppressWarnings("SameParameterValue")
         UpgradeException(final int messageId) {
             this.messageId = messageId;
         }

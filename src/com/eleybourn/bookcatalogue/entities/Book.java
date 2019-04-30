@@ -166,22 +166,6 @@ public class Book
     }
 
     /**
-     * static helper to set the read-status for a given book id.
-     * <p>
-     * ENHANCE: create a dedicated SQL entry instead of loading the full book first.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(final long bookId,
-                                  final boolean isRead,
-                                  @NonNull final DBA db) {
-        // load from database
-        Book book = new Book(bookId, db);
-        book.putBoolean(Book.IS_READ, isRead);
-        book.putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
-        return db.updateBook(bookId, book, 0) == 1;
-    }
-
-    /**
      * Perform sharing of book. Create chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      */
@@ -336,20 +320,16 @@ public class Book
     @SuppressWarnings("UnusedReturnValue")
     public boolean setRead(@NonNull final DBA db,
                            final boolean isRead) {
-        // allow for rollback.
-        boolean prevRead = getBoolean(Book.IS_READ);
-        String prevReadEnd = getString(DBDefinitions.KEY_READ_END);
-
-        putBoolean(Book.IS_READ, isRead);
-        putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
-
-        if (db.updateBook(getId(), this, 0) != 1) {
-            //rollback
-            putBoolean(Book.IS_READ, prevRead);
-            putString(DBDefinitions.KEY_READ_END, prevReadEnd);
-            return false;
+        if (db.updateBookRead(getId(), isRead) == 1) {
+            putBoolean(Book.IS_READ, isRead);
+            if (isRead) {
+                putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
+            } else {
+                putString(DBDefinitions.KEY_READ_END, "");
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

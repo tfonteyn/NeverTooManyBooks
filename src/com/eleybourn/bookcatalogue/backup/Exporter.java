@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -64,6 +65,12 @@ public interface Exporter {
          * report progress in absolute position.
          */
         void onProgress(@NonNull String message,
+                        int position);
+
+        /**
+         * report progress in absolute position.
+         */
+        void onProgress(@StringRes int messageId,
                         int position);
 
         boolean isCancelled();

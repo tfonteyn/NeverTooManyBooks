@@ -22,7 +22,7 @@ class RequestAuthTask
     /** Fragment manager tag. */
     private static final String TAG = RequestAuthTask.class.getSimpleName();
     @NonNull
-    private final ProgressDialogFragment<Integer> mFragment;
+    private final ProgressDialogFragment<Integer> mProgressDialog;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -33,11 +33,11 @@ class RequestAuthTask
     /**
      * Constructor.
      *
-     * @param fragment ProgressDialogFragment
+     * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    private RequestAuthTask(@NonNull ProgressDialogFragment<Integer> fragment) {
-        mFragment = fragment;
+    private RequestAuthTask(@NonNull ProgressDialogFragment<Integer> progressDialog) {
+        mProgressDialog = progressDialog;
     }
 
     /**
@@ -95,6 +95,6 @@ class RequestAuthTask
     @Override
     @UiThread
     protected void onPostExecute(@NonNull final Integer result) {
-        mFragment.onTaskFinished(mException == null, result);
+        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

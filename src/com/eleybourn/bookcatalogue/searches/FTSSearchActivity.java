@@ -156,7 +156,7 @@ public class FTSSearchActivity
             mCSearchView.setText(mGenericSearchText);
         }
 
-        mDb = new DBA(this);
+        mDb = new DBA();
 
         mBooksFound = findViewById(R.id.books_found);
 

@@ -58,8 +58,7 @@ public class AuthorWorksFragment
         long authorId = getArguments().getLong(DBDefinitions.KEY_ID, 0);
         boolean withBooks = getArguments().getBoolean(BKEY_WITH_BOOKS, true);
 
-        //noinspection ConstantConditions
-        mDb = new DBA(getContext());
+        mDb = new DBA();
 
         mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
         mModel.init(mDb, authorId, withBooks);

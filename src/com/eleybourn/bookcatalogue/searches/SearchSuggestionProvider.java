@@ -74,8 +74,7 @@ public class SearchSuggestionProvider
             return null;
         }
         if (mDb == null) {
-            //noinspection ConstantConditions
-            mDb = new DBA(getContext());
+            mDb = new DBA();
         }
         mSSCursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
         return mSSCursor;

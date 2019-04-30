@@ -143,8 +143,7 @@ public class LendBookDialogFragment
         Context context = getContext();
         Bundle args = requireArguments();
 
-        //noinspection ConstantConditions
-        mDb = new DBA(context);
+        mDb = new DBA();
         final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
@@ -176,6 +175,7 @@ public class LendBookDialogFragment
 
         setPhoneContactsAdapter();
 
+        //noinspection ConstantConditions
         return new AlertDialog.Builder(context)
                 .setView(root)
                 .setTitle(R.string.lbl_lend_to)

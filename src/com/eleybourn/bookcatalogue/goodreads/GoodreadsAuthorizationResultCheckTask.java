@@ -58,8 +58,8 @@ public class GoodreadsAuthorizationResultCheckTask
     /**
      * Constructor sets the task description.
      */
-    GoodreadsAuthorizationResultCheckTask(@NonNull final Context context) {
-        super(context.getString(R.string.gr_auth_check));
+    GoodreadsAuthorizationResultCheckTask(@NonNull final String description) {
+        super(description);
     }
 
     /**
@@ -74,8 +74,7 @@ public class GoodreadsAuthorizationResultCheckTask
             grMgr.handleAuthentication();
 
             if (grMgr.hasValidCredentials()) {
-                App.showNotification(context, R.string.info_authorized,
-                                     context.getString(R.string.gr_auth_successful));
+                App.showNotification(context, R.string.info_authorized, R.string.gr_auth_successful);
             } else {
                 String msg = context.getString(R.string.error_authorization_failed,
                                                context.getString(R.string.goodreads));

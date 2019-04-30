@@ -325,7 +325,7 @@ public class ISFDBBook
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(DBDefinitions.KEY_FORMAT,
-                                       // it would be really hard, maybe impossible to get a proper context here.
+                                       //TODO: do not use Application Context for String resources
                                        Format.map(App.getAppContext(), tmp));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {

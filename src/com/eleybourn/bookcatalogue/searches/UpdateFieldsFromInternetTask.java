@@ -124,7 +124,7 @@ public class UpdateFieldsFromInternetTask
                                         @NonNull final ManagedTaskListener listener) {
         super(taskManager, "UpdateFieldsFromInternetTask");
 
-        mDb = new DBA(taskManager.getContext());
+        mDb = new DBA();
         mFields = fields;
         mSearchSites = searchSites;
 
@@ -490,7 +490,6 @@ public class UpdateFieldsFromInternetTask
         if (!newBookData.isEmpty()) {
             mDb.updateBook(bookId, new Book(newBookData), 0);
         }
-
     }
 
     /**

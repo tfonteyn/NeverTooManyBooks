@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import android.content.Context;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,13 +62,10 @@ public class TarBackupReader
     /**
      * Constructor.
      *
-     * @param context   caller context
      * @param container Parent
      */
-    TarBackupReader(@NonNull final Context context,
-                    @NonNull final TarBackupContainer container)
+    TarBackupReader(@NonNull final TarBackupContainer container)
             throws IOException {
-        super(context);
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());
         mInput = new TarArchiveInputStream(in);
@@ -83,7 +78,7 @@ public class TarBackupReader
 
         // read the INFO
         mInfo = new BackupInfo();
-        try (XmlImporter importer = new XmlImporter(context)) {
+        try (XmlImporter importer = new XmlImporter()) {
             importer.doBackupInfoBlock(entity, mInfo);
         }
 

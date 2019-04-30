@@ -82,7 +82,8 @@ public class GoodreadsRegisterActivity
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               final Object result) {
+                               final Object result,
+                               @Nullable final Exception e) {
         UserMessage.showUserMessage(this, (Integer) result);
     }
 

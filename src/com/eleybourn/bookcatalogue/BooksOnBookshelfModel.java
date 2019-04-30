@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
-import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
@@ -70,12 +68,9 @@ public class BooksOnBookshelfModel
     private Bookshelf mCurrentBookshelf;
 
     /**
-     * @param intent with the search-text.
      * @param args   Bundle savedInstance/Extras
      */
-    void init(@NonNull final Intent intent,
-              @Nullable final Bundle args,
-              @NonNull final DBA db) {
+    void init(@Nullable final Bundle args) {
         if (mSearchCriteria != null) {
             // already initialized.
             return;
@@ -93,22 +88,9 @@ public class BooksOnBookshelfModel
             mSearchCriteria.from(args);
         }
 
-        // Restore bookshelf
-        mCurrentBookshelf = Bookshelf.getPreferred(db);
         // Restore list position on bookshelf
         mTopRow = App.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
         mTopRowOffset = App.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
-
-        String searchText = "";
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            // Return the search results instead of all books (for the bookshelf)
-            searchText = intent.getStringExtra(SearchManager.QUERY).trim();
-
-        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
-            searchText = intent.getDataString();
-        }
-        mSearchCriteria.setText(searchText);
 
         // Debug; makes list structures vary across calls to ensure code is correct...
         mCurrentPositionedBookId = -1;
