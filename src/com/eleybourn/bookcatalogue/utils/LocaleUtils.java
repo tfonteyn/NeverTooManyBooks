@@ -352,8 +352,7 @@ public final class LocaleUtils {
 
     public static String toDebugString(@NonNull final Context context) {
         Locale cur = from(context);
-        return ""
-                + "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
+        return  "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
                 + "\nsSystemInitialLocale(cur)       : " + sSystemInitialLocale.getDisplayName(cur)
                 + "\nconfiguration.locale            : " + context.getResources().getConfiguration().locale.getDisplayName()
                 + "\nconfiguration.locale(cur)       : " + context.getResources().getConfiguration().locale.getDisplayName(

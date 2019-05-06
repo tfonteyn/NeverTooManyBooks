@@ -81,13 +81,13 @@ public class GoodreadsWork {
                 new GetImageTask(getBestUrl(), this)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification
-                imageView.setTag(R.id.TAG_GOODREADS_WORK, this);
+                imageView.setTag(R.id.TAG_GR_WORK, this);
                 //QueueManager.getQueueManager().bringTaskToFront(imageTaskId);
             } else {
                 // We already have an image, so just expand it.
                 imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
                 // Clear the work in the View, in case some other job was running
-                imageView.setTag(R.id.TAG_GOODREADS_WORK, null);
+                imageView.setTag(R.id.TAG_GR_WORK, null);
             }
         }
     }
@@ -113,7 +113,7 @@ public class GoodreadsWork {
         if (imageView != null) {
             synchronized (imageView) {
                 // Make sure our view is still associated with us
-                if (this.equals(imageView.getTag(R.id.TAG_GOODREADS_WORK))) {
+                if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
                     imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
                 }
             }
@@ -127,7 +127,7 @@ public class GoodreadsWork {
      * @author Philip Warner
      */
     static class GetImageTask
-            extends AsyncTask<Void, Void, Void> {
+            extends AsyncTask<Void, Void,  byte[]> {
 
         /** URL of image to fetch. */
         @NonNull
@@ -135,11 +135,6 @@ public class GoodreadsWork {
         /** Related work. */
         @NonNull
         private final GoodreadsWork mWork;
-        /**
-         * Byte data of image. NOT a Bitmap because we fetch several and store them in the related
-         * GoodreadsWork object and Bitmap objects are much larger than JPG objects.
-         */
-        private byte[] mBytes;
 
         /**
          * Constructor.
@@ -154,13 +149,14 @@ public class GoodreadsWork {
         }
 
         /**
-         * Just get the bytes from the URL.
+         * Just get the byte data of the image.
+         * NOT a Bitmap because we fetch several and store them in the related
+         * GoodreadsWork object and Bitmap objects are much larger than JPG objects.
          */
         @Override
         @WorkerThread
-        protected Void doInBackground(final Void... params) {
-            mBytes = ImageUtils.getBytes(mUrl);
-            return null;
+        protected  byte[] doInBackground(final Void... params) {
+            return ImageUtils.getBytes(mUrl);
         }
 
         /**
@@ -168,8 +164,8 @@ public class GoodreadsWork {
          */
         @Override
         @UiThread
-        protected void onPostExecute(final Void result) {
-            mWork.onGetImageTaskFinished(mBytes);
+        protected void onPostExecute(final  byte[] result) {
+            mWork.onGetImageTaskFinished(result);
         }
     }
 }

@@ -15,13 +15,15 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperViewHolder;
 /**
  * Holder pattern for each row in a RecyclerView.
  * <p>
- * <ul>Extends the original with support for:
+ * Extends the original with support for:
+ * <ul>
  * <li>typed encapsulated item</li>
  * <li>a 'delete' button</li>
  * <li>a 'checkable' button</li>
  * <li>{@link ItemTouchHelperViewHolder}</li>
  * </ul>
- * <ul>Uses pre-defined id's:
+ * Uses pre-defined id's:
+ * <ul>
  * <li>R.id.TLV_ROW_DETAILS</li>
  * <li>R.id.TLV_ROW_DELETE</li>
  * <li>R.id.TLV_ROW_CHECKABLE</li>

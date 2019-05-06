@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
@@ -66,9 +67,10 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
                                  final int position) {
 
         T item = mItems.get(position);
-        holder.buttonView.setTag(item);
+        holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
         holder.buttonView.setText(item.getLabel(mContext));
+        // only 'check' the pre-selected item.
         holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
         holder.buttonView.setOnClickListener(this::itemCheckChanged);
     }
@@ -83,7 +85,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
      */
     private void itemCheckChanged(@NonNull final View v) {
         //noinspection unchecked
-        mSelectedItem = (T) v.getTag();
+        mSelectedItem = (T) v.getTag(R.id.TAG_ITEM);
         // this triggers a bind calls for the rows, which in turn set the checked status.
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
@@ -117,7 +119,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     static class Holder
             extends RecyclerView.ViewHolder {
 
-        final RadioButton buttonView;
+        final CompoundButton buttonView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);

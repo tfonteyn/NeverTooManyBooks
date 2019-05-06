@@ -94,56 +94,56 @@ public final class UniqueId {
     /**
      * Search site flags as in {@link com.eleybourn.bookcatalogue.searches.SearchSites}.
      * <p>
-     * int (bitmask)
+     * <br>int (bitmask)
      */
     public static final String BKEY_SEARCH_SITES = "searchFlags";
 
     /**
      * Single fileSpecs or uri.
      * <p>
-     * <p>type: String
+     * <br>type: String
      */
     public static final String BKEY_FILE_SPEC = "fileSpec";
 
     /**
      * List of fileSpecs or uri.
      * <p>
-     * <p>type: ArrayList<String>
+     * <br>type: ArrayList<String>
      */
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     /**
      * The title to be used by generic Dialogs.
      * <p>
-     * <p>type: int (stringId)
+     * <br>type: int (stringId)
      */
     public static final String BKEY_DIALOG_TITLE = "dialogTitle";
 
     /**
      * The message id to be used by generic Dialogs.
      * <p>
-     * <p>type: int (stringId)
+     * <br>type: int (stringId)
      */
     public static final String BKEY_DIALOG_MSG_ID = "dialogMsgId";
 
     /**
      * The message to be used by generic Dialogs.
      * <p>
-     * <p>type: String
+     * <br>type: String
      */
     public static final String BKEY_DIALOG_MSG = "dialogMsg";
 
     /**
      * Identifier for the caller of a generic Dialog.
      * <p>
-     * <p>type: String (often/always the fragment TAG)
+     * <br>type: String (often/always the fragment TAG)
      */
     public static final String BKEY_CALLER_TAG = "dialogCallerId";
 
     /**
      * Identifier of the field we want the generic Dialog to handle.
      * <p>
-     * <p>type: int (resource id)
+     * <br>type: int (resource id)
      */
     public static final String BKEY_FIELD_ID = "fieldId";
 
@@ -151,39 +151,41 @@ public final class UniqueId {
      * Bundle key to pass a Bundle with book data around.
      * i.e. before the data becomes an actual {@link Book}.
      * <p>
-     * <p>type: Bundle
+     * <br>type: Bundle
      */
     public static final String BKEY_BOOK_DATA = "bookData";
 
     /**
      * Bundle key to pass a generic {@link java.util.ArrayList<Integer>} around.
      * <p>
-     * <p>type: IntegerArrayList
+     * <br>type: IntegerArrayList
      */
     public static final String BKEY_ID_LIST = "idList";
 
     /**
      * 3 uses:
+     * <ul>
      * <li>Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
-     * will point to that image.
-     * <li>Flag to indicate we 'want' a thumbnail when downloading book information from search sites.
-     * <li>User Visibility flag
-     * <p>
-     * <p>type: boolean
+     * will point to that image.</li>
+     * <li>Flag to indicate we 'want' a thumbnail when downloading book information
+     * from search sites.</li>
+     * <li>User Visibility flag</li>
+     * </ul>
+     * <br>type: boolean
      */
     public static final String BKEY_COVER_IMAGE = "thumbnail";
 
     /**
      * tag of fragment to display if an Activity supports multiple.
      * <p>
-     * <p>type: String
+     * <br>type: String
      */
     public static final String BKEY_FRAGMENT_TAG = "fragment";
 
     /**
      * The resulting {@link ImportSettings#what} flags after an import.
      * <p>
-     * <p>type: int (bitmask)
+     * <br>type: int (bitmask)
      * setResult
      */
     public static final String BKEY_IMPORT_RESULT = "importResult";
@@ -191,7 +193,7 @@ public final class UniqueId {
     /**
      * The resulting {@link ExportSettings#what} flags after an export.
      * <p>
-     * <p>type: int (bitmask)
+     * <br>type: int (bitmask)
      * setResult
      */
     public static final String BKEY_EXPORT_RESULT = "exportResult";
@@ -199,14 +201,14 @@ public final class UniqueId {
     /**
      * {@link ExportSettings} or {@link ImportSettings}.
      * <p>
-     * <p>type: Parcel
+     * <br>type: Parcel
      */
     public static final String BKEY_IMPORT_EXPORT_SETTINGS = "importExportSettings";
 
     /**
      * Indicate the called activity made global changes.
      * <p>
-     * <p>type: boolean
+     * <br>type: boolean
      * setResult
      */
     public static final String BKEY_GLOBAL_CHANGES_MADE = "globalChanges";
@@ -214,7 +216,7 @@ public final class UniqueId {
     /**
      * Return the status of a startActivityForResult when a task was 'isCancelled'.
      * <p>
-     * <p>type: boolean
+     * <br>type: boolean
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";

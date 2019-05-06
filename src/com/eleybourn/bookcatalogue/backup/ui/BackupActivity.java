@@ -30,8 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
@@ -41,6 +39,7 @@ import com.eleybourn.bookcatalogue.backup.BackupTask;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -53,19 +52,32 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class BackupActivity
         extends BRBaseActivity
-        implements ExportOptionsDialogFragment.OnOptionsListener {
+        implements
+        ExportOptionsDialogFragment.OnOptionsListener,
+        OnTaskFinishedListener<ExportSettings> {
+
+    private ProgressDialogFragment<Object, ExportSettings> mProgressDialog;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (null == getSupportFragmentManager().findFragmentById(R.id.browser_fragment)) {
+        FragmentManager fm = getSupportFragmentManager();
 
+        //noinspection unchecked
+        mProgressDialog = (ProgressDialogFragment<Object, ExportSettings>)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        if (mProgressDialog != null) {
+            mProgressDialog.setOnTaskFinishedListener(this);
+//            mProgressDialog.setOnProgressCancelledListener(this);
+        }
+
+        if (fm.findFragmentByTag(FileChooserFragment.TAG) == null) {
             String defaultFilename = getString(R.string.app_name) + '-'
                     + DateUtils.localSqlDateForToday()
                                .replace(" ", "-")
                                .replace(":", "")
-                    + BackupFileDetails.ARCHIVE_EXTENSION;
+                    + BackupManager.ARCHIVE_EXTENSION;
 
             createFileBrowser(defaultFilename);
         }
@@ -82,7 +94,7 @@ public class BackupActivity
      */
     private void doBackup() {
         FileChooserFragment frag = (FileChooserFragment)
-                getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
+                getSupportFragmentManager().findFragmentByTag(FileChooserFragment.TAG);
         if (frag != null) {
             File file = frag.getSelectedFile();
             if (file.exists() && !file.isFile()) {
@@ -105,7 +117,7 @@ public class BackupActivity
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // User wants to backup all.
                         settings.what = ExportSettings.ALL;
-                        onOptionsResult(settings);
+                        onOptionsSet(settings);
                     })
                     .create()
                     .show();
@@ -116,7 +128,7 @@ public class BackupActivity
      * User has set his choices for backup... check them, and kick of the backup task.
      */
     @Override
-    public void onOptionsResult(@NonNull final ExportSettings settings) {
+    public void onOptionsSet(@NonNull final ExportSettings settings) {
         // sanity check
         if (settings.what == ExportSettings.NOTHING) {
             return;
@@ -138,20 +150,18 @@ public class BackupActivity
         }
 
         FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(BackupTask.TAG) == null) {
-            ProgressDialogFragment<ExportSettings> progressDialog =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
-                                                       false, 0);
-            BackupTask task;
-            try {
-                task = new BackupTask(progressDialog, settings);
-                progressDialog.setTask(R.id.TASK_ID_SAVE_TO_ARCHIVE, task);
-                progressDialog.show(fm, BackupTask.TAG);
-                task.execute();
-            } catch (IOException e) {
-                progressDialog.onTaskFinished(false, settings, e);
-            }
+        //noinspection unchecked
+        mProgressDialog = (ProgressDialogFragment<Object, ExportSettings>)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialogFragment.newInstance(
+                    R.string.progress_msg_backing_up, false, 0);
+            BackupTask task = new BackupTask(mProgressDialog, settings);
+            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            task.execute();
         }
+        mProgressDialog.setOnTaskFinishedListener(this);
+//        mProgressDialog.setOnProgressCancelledListener(this);
     }
 
     /**
@@ -166,14 +176,43 @@ public class BackupActivity
     @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
-                               @Nullable final Object result,
+                               @NonNull final ExportSettings result,
                                @Nullable final Exception e) {
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (taskId) {
-            case R.id.TASK_ID_SAVE_TO_ARCHIVE:
-                ExportSettings exportSettings = (ExportSettings) Objects.requireNonNull(result);
-                handleResults(success, exportSettings);
+            case R.id.TASK_ID_WRITE_TO_ARCHIVE:
+                if (success) {
+                    //noinspection ConstantConditions
+                    String msg = getString(R.string.export_info_success_archive_details,
+                                           result.file.getParent(),
+                                           result.file.getName(),
+                                           Utils.formatFileSize(this, result.file.length()));
+
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.lbl_backup)
+                            .setMessage(msg)
+                            .setPositiveButton(android.R.string.ok, (d, which) -> {
+                                d.dismiss();
+                                Intent data = new Intent().putExtra(UniqueId.BKEY_EXPORT_RESULT,
+                                                                    result.what);
+                                setResult(Activity.RESULT_OK, data);
+                                finish();
+                            })
+                            .create()
+                            .show();
+                } else {
+                    String msg = getString(R.string.error_backup_failed)
+                            + ' ' + getString(R.string.error_storage_not_writable)
+                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
+
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.lbl_backup)
+                            .setMessage(msg)
+                            .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
+                            .create()
+                            .show();
+                }
                 break;
 
             default:
@@ -181,38 +220,4 @@ public class BackupActivity
                 break;
         }
     }
-
-    private void handleResults(final boolean success,
-                               @NonNull final ExportSettings resultSettings) {
-        if (success) {
-            //noinspection ConstantConditions
-            String msg = getString(R.string.export_info_success_archive_details,
-                                   resultSettings.file.getParent(),
-                                   resultSettings.file.getName(),
-                                   Utils.formatFileSize(this, resultSettings.file.length()));
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.lbl_backup).setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        d.dismiss();
-                        Intent data = new Intent().putExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                            resultSettings.what);
-                        setResult(Activity.RESULT_OK, data);
-                        finish();
-                    })
-                    .create()
-                    .show();
-        } else {
-            String msg = getString(R.string.error_backup_failed)
-                    + ' ' + getString(R.string.error_storage_not_writable)
-                    + "\n\n" + getString(R.string.error_if_the_problem_persists);
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.lbl_backup).setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
-                    .create()
-                    .show();
-        }
-    }
-
 }

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.backup.xml;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,10 +10,14 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,6 +33,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -44,6 +50,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -127,6 +134,8 @@ public class XmlExporter
     // individual format version of Styles
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
 
+    private static final int BUFFER_SIZE = 32768;
+
     @NonNull
     private final DBA mDb;
     @NonNull
@@ -151,28 +160,269 @@ public class XmlExporter
         mSettings = settings;
     }
 
+    private static String version(final long version) {
+        return ' ' + XmlTags.ATTR_VERSION + "=\"" + version + '"';
+    }
+
     /**
-     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ExportListener)}.
+     * Database row-id.
+     *
+     * @param id of the item in its table
+     *
+     * @return string representation of the attribute, with leading space.
+     */
+    private static String id(final long id) {
+        return ' ' + XmlTags.ATTR_ID + "=\"" + id + '"';
+    }
+
+    /** element name attribute; i.e. the "thing" we are reading/writing. */
+    private static String name(@NonNull final String name) {
+        return ' ' + XmlTags.ATTR_NAME + "=\"" + name + '"';
+    }
+
+    /** the value of the individual item of the "thing". */
+    private static String value(@NonNull final String value) {
+        return ' ' + XmlTags.ATTR_VALUE + "=\"" + encodeString(value) + '"';
+    }
+
+    private static String size(final long size) {
+        return ' ' + XmlTags.ATTR_SIZE + "=\"" + size + '"';
+    }
+
+
+    private static String attr(@NonNull final String attr,
+                               final double value) {
+        return ' ' + attr + "=\"" + value + '"';
+    }
+
+    private static String attr(@NonNull final String attr,
+                               final long value) {
+        return ' ' + attr + "=\"" + value + '"';
+    }
+
+    /**
+     * Generic String value attribute. The String will be encoded.
+     *
+     * @param attr  attribute name
+     * @param value attribute value, a string
+     *
+     * @return string representation of the attribute, with leading space.
+     */
+    private static String attr(@NonNull final String attr,
+                               @NonNull final String value) {
+        return ' ' + attr + "=\"" + encodeString(value) + '"';
+    }
+
+    /**
+     * String values are automatically encoded.
+     *
+     * @return tag with (optional) name and value attribute, empty body
+     */
+    private static String tag(@NonNull final String tag,
+                              @Nullable final String name,
+                              @NonNull final Object value)
+            throws IOException {
+        if (value instanceof String) {
+            // strings are encoded
+            return '<' + tag + (name != null ? name(name) : "")
+                    + value(encodeString(String.valueOf(value))) + "/>\n";
+        } else {
+            // non-strings as-is; for boolean this means: true,false
+            return typedTag(name, value);
+        }
+    }
+
+    /**
+     * No encoding of the value is done here.
+     *
+     * @return tag with (optional) name attribute and content body
+     */
+    private static String tagWithBody(@NonNull final String tag,
+                                      @Nullable final String name,
+                                      @NonNull final Object value) {
+
+        return '<' + tag + (name != null ? name(name) : "") + '>'
+                + value
+                + "</" + tag + ">\n";
+    }
+
+
+    /**
+     * @return tag with (optional) name attribute and CDATA content body
+     */
+    private static String tagWithCData(@NonNull final String tag,
+                                       @Nullable final String name,
+                                       @NonNull final String value) {
+        return '<' + tag + (name != null ? name(name) : "") + ">\n"
+                + "<![CDATA[" + value + "]]>\n"
+                + "</" + tag + ">\n";
+    }
+
+    /**
+     * Encodes a single value with a tag equal to the value's type.
+     * Strings are CDATA encoded; others use the 'value' attribute.
+     *
+     * @param name  (optional) attribute for the tag
+     * @param value to encode
+     *
+     * @return xml tag
+     */
+    private static String typedTag(@Nullable final String name,
+                                   @NonNull final Object value)
+            throws IOException {
+        if (value instanceof String) {
+            return tagWithCData(XmlTags.XML_STRING, name, String.valueOf(value));
+
+        } else if (value instanceof Boolean) {
+            return tag(XmlTags.XML_BOOLEAN, name, String.valueOf(value));
+        } else if (value instanceof Integer) {
+            return tag(XmlTags.XML_INT, name, String.valueOf(value));
+        } else if (value instanceof Long) {
+            return tag(XmlTags.XML_LONG, name, String.valueOf(value));
+        } else if (value instanceof Float) {
+            return tag(XmlTags.XML_FLOAT, name, String.valueOf(value));
+        } else if (value instanceof Double) {
+            return tag(XmlTags.XML_DOUBLE, name, String.valueOf(value));
+
+        } else if (value instanceof Set) {
+            return tagWithBody(XmlTags.XML_SET, name, typedCollection((Collection) value));
+        } else if (value instanceof List) {
+            return tagWithBody(XmlTags.XML_LIST, name, typedCollection((Collection) value));
+
+        } else if (value instanceof Serializable) {
+            return tagWithBody(XmlTags.XML_SERIALIZABLE, name,
+                               Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
+
+        } else {
+            //noinspection ConstantConditions
+            throw new IllegalTypeException(value.getClass().getCanonicalName());
+        }
+    }
+
+    /**
+     * Encode the given Collection to xml.
+     *
+     * @param values to encode
+     *
+     * @return partial xml
+     */
+    private static String typedCollection(@NonNull final Collection values)
+            throws IOException {
+        StringBuilder sb = new StringBuilder("\n");
+        for (Object value : values) {
+            sb.append(typedTag(null, value));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Helper for encoding an object to Base64. The android lib wants a byte[]
+     *
+     * @param object to transform
+     *
+     * @return the array
+     *
+     * @throws IOException on failure
+     */
+    private static byte[] convertToBytes(@NonNull final Object object)
+            throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutput out = new ObjectOutputStream(bos)) {
+            out.writeObject(object);
+            return bos.toByteArray();
+        }
+    }
+
+    /**
+     * The 'value' attribute should be encoded if it's a String.
+     * If there is a String body, then use {@link #tagWithCData}
+     * <p>
+     * escape reserved XML characters + all newlines/tab and the backslash.
+     * <p>
+     * quot "   U+0022 (34) XML 1.0 double quotation mark
+     * amp  &   U+0026 (38) XML 1.0 ampersand
+     * apos '   U+0027 (39) XML 1.0 apostrophe (apostrophe-quote)
+     * lt   <   U+003C (60) XML 1.0 less-than sign
+     * gt   >   U+003E (62) XML 1.0 greater-than sign
+     *
+     * @param data to encode
+     *
+     * @return The encoded data
+     */
+    @NonNull
+    private static String encodeString(@Nullable final String data) {
+        try {
+            if (data == null || data.trim().isEmpty() || "null".equalsIgnoreCase(data)) {
+                return "";
+            }
+
+            final StringBuilder sb = new StringBuilder();
+            int endPos = data.length() - 1;
+            int pos = 0;
+            while (pos <= endPos) {
+                char c = data.charAt(pos);
+                switch (c) {
+                    case '"':
+                        sb.append("&quot;");
+                        break;
+                    case '&':
+                        sb.append("&amp;");
+                        break;
+                    case '\'':
+                        sb.append("&apos;");
+                        break;
+                    case '<':
+                        sb.append("&lt;");
+                        break;
+                    case '>':
+                        sb.append("&gt;");
+                        break;
+
+                    case '\r':
+                        sb.append("\\r");
+                        break;
+                    case '\n':
+                        sb.append("\\n");
+                        break;
+                    case '\t':
+                        sb.append("\\t");
+                        break;
+                    case '\\':
+                        sb.append("\\\\");
+                        break;
+                    default:
+                        sb.append(c);
+                }
+                pos++;
+
+            }
+            return sb.toString();
+        } catch (NullPointerException e) {
+            return "\"\"";
+        }
+    }
+
+    /**
+     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ProgressListener)}.
      * Not in direct use yet.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final Exporter.ExportListener listener)
+                       @NonNull final ProgressListener listener)
             throws IOException {
 
         int pos;
 
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream,
-                                                                            StandardCharsets.UTF_8),
-                                                     XmlUtils.BUFFER_SIZE)) {
-            out.append('<' + XmlUtils.XML_ROOT)
-               .append(XmlUtils.version(XML_EXPORTER_VERSION))
+        try (BufferedWriter out = new BufferedWriter(
+                new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
+            out.append('<' + XmlTags.XML_ROOT)
+               .append(version(XML_EXPORTER_VERSION))
                .append(">\n");
             pos = doBooks(out, listener);
-            out.append("</" + XmlUtils.XML_ROOT + ">\n");
+            out.append("</" + XmlTags.XML_ROOT + ">\n");
         }
         return pos;
     }
@@ -180,18 +430,17 @@ public class XmlExporter
     @SuppressWarnings("UnusedReturnValue")
     @WorkerThread
     public int doAll(@NonNull final OutputStream outputStream,
-                     @NonNull final Exporter.ExportListener listener)
+                     @NonNull final ProgressListener listener)
             throws IOException {
 
         int pos = 0;
         listener.setMax(5);
 
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream,
-                                                                            StandardCharsets.UTF_8),
-                                                     XmlUtils.BUFFER_SIZE)) {
+        try (BufferedWriter out = new BufferedWriter(
+                new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
-            out.append('<' + XmlUtils.XML_ROOT)
-               .append(XmlUtils.version(XML_EXPORTER_VERSION))
+            out.append('<' + XmlTags.XML_ROOT)
+               .append(version(XML_EXPORTER_VERSION))
                .append(">\n");
 
             if (!listener.isCancelled()) {
@@ -226,7 +475,7 @@ public class XmlExporter
                 pos += doPreferences(out, listener);
             }
 
-            out.append("</" + XmlUtils.XML_ROOT + ">\n");
+            out.append("</" + XmlTags.XML_ROOT + ">\n");
         }
         return pos;
     }
@@ -242,22 +491,22 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doBookshelves(@NonNull final BufferedWriter out,
-                              @NonNull final Exporter.ExportListener listener)
+                              @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
         List<Bookshelf> list = mDb.getBookshelves();
-        out.append('<' + XmlUtils.XML_BOOKSHELF_LIST)
-           .append(XmlUtils.version(XML_EXPORTER_BOOKSHELVES_VERSION))
+        out.append('<' + XmlTags.XML_BOOKSHELF_LIST)
+           .append(version(XML_EXPORTER_BOOKSHELVES_VERSION))
            .append(">\n");
 
         for (Bookshelf bookshelf : list) {
-            out.append('<' + XmlUtils.XML_BOOKSHELF)
-               .append(XmlUtils.id(bookshelf.getId()))
-               .append(XmlUtils.attr(DOM_BOOKSHELF.name, bookshelf.getName()))
+            out.append('<' + XmlTags.XML_BOOKSHELF)
+               .append(id(bookshelf.getId()))
+               .append(attr(DOM_BOOKSHELF.name, bookshelf.getName()))
                .append("/>\n");
             count++;
         }
-        out.append("</" + XmlUtils.XML_BOOKSHELF_LIST + ">\n");
+        out.append("</" + XmlTags.XML_BOOKSHELF_LIST + ">\n");
         return count;
     }
 
@@ -272,31 +521,31 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doAuthors(@NonNull final BufferedWriter out,
-                          @NonNull final Exporter.ExportListener listener)
+                          @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
-        out.append('<' + XmlUtils.XML_AUTHOR_LIST)
-           .append(XmlUtils.version(XML_EXPORTER_AUTHORS_VERSION))
+        out.append('<' + XmlTags.XML_AUTHOR_LIST)
+           .append(version(XML_EXPORTER_AUTHORS_VERSION))
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
 
             while (cursor.moveToNext()) {
-                out.append('<' + XmlUtils.XML_AUTHOR)
-                   .append(XmlUtils.id(mapper.getLong(DOM_PK_ID)))
+                out.append('<' + XmlTags.XML_AUTHOR)
+                   .append(id(mapper.getLong(DOM_PK_ID)))
 
-                   .append(XmlUtils.attr(DOM_AUTHOR_FAMILY_NAME.name,
-                                         mapper.getString(DOM_AUTHOR_FAMILY_NAME)))
-                   .append(XmlUtils.attr(DOM_AUTHOR_GIVEN_NAMES.name,
-                                         mapper.getString(DOM_AUTHOR_GIVEN_NAMES)))
-                   .append(XmlUtils.attr(DOM_AUTHOR_IS_COMPLETE.name,
-                                         mapper.getInt(DOM_AUTHOR_IS_COMPLETE)))
+                   .append(attr(DOM_AUTHOR_FAMILY_NAME.name,
+                                mapper.getString(DOM_AUTHOR_FAMILY_NAME)))
+                   .append(attr(DOM_AUTHOR_GIVEN_NAMES.name,
+                                mapper.getString(DOM_AUTHOR_GIVEN_NAMES)))
+                   .append(attr(DOM_AUTHOR_IS_COMPLETE.name,
+                                mapper.getInt(DOM_AUTHOR_IS_COMPLETE)))
                    .append("/>\n");
                 count++;
             }
         }
-        out.append("</" + XmlUtils.XML_AUTHOR_LIST + ">\n");
+        out.append("</" + XmlTags.XML_AUTHOR_LIST + ">\n");
         return count;
     }
 
@@ -311,26 +560,26 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doSeries(@NonNull final BufferedWriter out,
-                         @NonNull final Exporter.ExportListener listener)
+                         @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
-        out.append('<' + XmlUtils.XML_SERIES_LIST)
-           .append(XmlUtils.version(XML_EXPORTER_SERIES_VERSION))
+        out.append('<' + XmlTags.XML_SERIES_LIST)
+           .append(version(XML_EXPORTER_SERIES_VERSION))
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES);
             while (cursor.moveToNext()) {
-                out.append('<' + XmlUtils.XML_SERIES)
-                   .append(XmlUtils.id(mapper.getLong(DOM_PK_ID)))
-                   .append(XmlUtils.attr(DOM_SERIES_TITLE.name,
-                                         mapper.getString(DOM_SERIES_TITLE)))
-                   .append(XmlUtils.attr(DOM_SERIES_IS_COMPLETE.name,
-                                         mapper.getInt(DOM_SERIES_IS_COMPLETE)))
+                out.append('<' + XmlTags.XML_SERIES)
+                   .append(id(mapper.getLong(DOM_PK_ID)))
+                   .append(attr(DOM_SERIES_TITLE.name,
+                                mapper.getString(DOM_SERIES_TITLE)))
+                   .append(attr(DOM_SERIES_IS_COMPLETE.name,
+                                mapper.getInt(DOM_SERIES_IS_COMPLETE)))
                    .append("/>\n");
             }
         }
-        out.append("</" + XmlUtils.XML_SERIES_LIST + ">\n");
+        out.append("</" + XmlTags.XML_SERIES_LIST + ">\n");
         return count;
     }
 
@@ -347,113 +596,113 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doBooks(@NonNull final BufferedWriter out,
-                       @NonNull final Exporter.ExportListener listener)
+                       @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
-        out.append('<' + XmlUtils.XML_BOOK_LIST)
-           .append(XmlUtils.version(XML_EXPORTER_BOOKS_VERSION))
+        out.append('<' + XmlTags.XML_BOOK_LIST)
+           .append(version(XML_EXPORTER_BOOKS_VERSION))
            .append(">\n");
 
         try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom)) {
             BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
                 // basic ID
-                out.append('<' + XmlUtils.XML_BOOK)
-                   .append(XmlUtils.id(bookCursorRow.getId()))
-                   .append(XmlUtils.attr(DOM_TITLE.name,
-                                         bookCursorRow.getTitle()))
-                   .append(XmlUtils.attr(DOM_BOOK_ISBN.name,
-                                         bookCursorRow.getIsbn()))
+                out.append('<' + XmlTags.XML_BOOK)
+                   .append(id(bookCursorRow.getId()))
+                   .append(attr(DOM_TITLE.name,
+                                bookCursorRow.getTitle()))
+                   .append(attr(DOM_BOOK_ISBN.name,
+                                bookCursorRow.getIsbn()))
                    .append("\n")
 
                    // publishing information
-                   .append(XmlUtils.attr(DOM_BOOK_PUBLISHER.name,
-                                         bookCursorRow.getPublisherName()))
-                   .append(XmlUtils.attr(DOM_BOOK_DATE_PUBLISHED.name,
-                                         bookCursorRow.getDatePublished()))
-                   .append(XmlUtils.attr(DOM_FIRST_PUBLICATION.name,
-                                         bookCursorRow.getFirstPublication()))
+                   .append(attr(DOM_BOOK_PUBLISHER.name,
+                                bookCursorRow.getPublisherName()))
+                   .append(attr(DOM_BOOK_DATE_PUBLISHED.name,
+                                bookCursorRow.getDatePublished()))
+                   .append(attr(DOM_FIRST_PUBLICATION.name,
+                                bookCursorRow.getFirstPublication()))
                    .append("\n")
-                   .append(XmlUtils.attr(DOM_BOOK_FORMAT.name,
-                                         bookCursorRow.getFormat()))
-                   .append(XmlUtils.attr(DOM_BOOK_PAGES.name,
-                                         bookCursorRow.getPages()))
-                   .append(XmlUtils.attr(DOM_BOOK_GENRE.name,
-                                         bookCursorRow.getGenre()))
-                   .append(XmlUtils.attr(DOM_BOOK_LANGUAGE.name,
-                                         bookCursorRow.getLanguageCode()))
-                   .append(XmlUtils.attr(DOM_BOOK_TOC_BITMASK.name,
-                                         bookCursorRow.getAnthologyBitMask()))
+                   .append(attr(DOM_BOOK_FORMAT.name,
+                                bookCursorRow.getFormat()))
+                   .append(attr(DOM_BOOK_PAGES.name,
+                                bookCursorRow.getPages()))
+                   .append(attr(DOM_BOOK_GENRE.name,
+                                bookCursorRow.getGenre()))
+                   .append(attr(DOM_BOOK_LANGUAGE.name,
+                                bookCursorRow.getLanguageCode()))
+                   .append(attr(DOM_BOOK_TOC_BITMASK.name,
+                                bookCursorRow.getAnthologyBitMask()))
                    .append("\n")
 
                    // reading facts
-                   .append(XmlUtils.attr(DOM_BOOK_READ.name,
-                                         bookCursorRow.getRead()))
-                   .append(XmlUtils.attr(DOM_BOOK_READ_START.name,
-                                         bookCursorRow.getReadStart()))
-                   .append(XmlUtils.attr(DOM_BOOK_READ_END.name,
-                                         bookCursorRow.getReadEnd()))
+                   .append(attr(DOM_BOOK_READ.name,
+                                bookCursorRow.getRead()))
+                   .append(attr(DOM_BOOK_READ_START.name,
+                                bookCursorRow.getReadStart()))
+                   .append(attr(DOM_BOOK_READ_END.name,
+                                bookCursorRow.getReadEnd()))
                    .append("\n")
 
                    // price information
-                   .append(XmlUtils.attr(DOM_BOOK_PRICE_LISTED.name,
-                                         bookCursorRow.getListPrice()))
-                   .append(XmlUtils.attr(DOM_BOOK_PRICE_LISTED_CURRENCY.name,
-                                         bookCursorRow.getListPriceCurrency()))
-                   .append(XmlUtils.attr(DOM_BOOK_PRICE_PAID.name,
-                                         bookCursorRow.getPricePaid()))
-                   .append(XmlUtils.attr(DOM_BOOK_PRICE_PAID_CURRENCY.name,
-                                         bookCursorRow.getPricePaidCurrency()))
-                   .append(XmlUtils.attr(DOM_BOOK_DATE_ACQUIRED.name,
-                                         bookCursorRow.getDateAcquired()))
+                   .append(attr(DOM_BOOK_PRICE_LISTED.name,
+                                bookCursorRow.getListPrice()))
+                   .append(attr(DOM_BOOK_PRICE_LISTED_CURRENCY.name,
+                                bookCursorRow.getListPriceCurrency()))
+                   .append(attr(DOM_BOOK_PRICE_PAID.name,
+                                bookCursorRow.getPricePaid()))
+                   .append(attr(DOM_BOOK_PRICE_PAID_CURRENCY.name,
+                                bookCursorRow.getPricePaidCurrency()))
+                   .append(attr(DOM_BOOK_DATE_ACQUIRED.name,
+                                bookCursorRow.getDateAcquired()))
                    .append("\n")
 
 
-                   .append(XmlUtils.attr(DOM_BOOK_LOCATION.name,
-                                         bookCursorRow.getLocation()))
-                   .append(XmlUtils.attr(DOM_BOOK_RATING.name,
-                                         bookCursorRow.getRating()))
-                   .append(XmlUtils.attr(DOM_BOOK_SIGNED.name,
-                                         bookCursorRow.getSigned()))
-                   .append(XmlUtils.attr(DOM_BOOK_EDITION_BITMASK.name,
-                                         bookCursorRow.getEditionBitMask()))
+                   .append(attr(DOM_BOOK_LOCATION.name,
+                                bookCursorRow.getLocation()))
+                   .append(attr(DOM_BOOK_RATING.name,
+                                bookCursorRow.getRating()))
+                   .append(attr(DOM_BOOK_SIGNED.name,
+                                bookCursorRow.getSigned()))
+                   .append(attr(DOM_BOOK_EDITION_BITMASK.name,
+                                bookCursorRow.getEditionBitMask()))
                    .append("\n")
 
                    // external id's
-                   .append(XmlUtils.attr(DOM_BOOK_LIBRARY_THING_ID.name,
-                                         bookCursorRow.getLibraryThingBookId()))
-                   .append(XmlUtils.attr(DOM_BOOK_OPEN_LIBRARY_ID.name,
-                                         bookCursorRow.getOpenLibraryBookId()))
-                   .append(XmlUtils.attr(DOM_BOOK_ISFDB_ID.name,
-                                         bookCursorRow.getISFDBBookId()))
-                   .append(XmlUtils.attr(DOM_BOOK_GOODREADS_BOOK_ID.name,
-                                         bookCursorRow.getGoodreadsBookId()))
-                   .append(XmlUtils.attr(DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name,
-                                         bookCursorRow.getDateLastSyncedWithGoodreads()))
+                   .append(attr(DOM_BOOK_LIBRARY_THING_ID.name,
+                                bookCursorRow.getLibraryThingBookId()))
+                   .append(attr(DOM_BOOK_OPEN_LIBRARY_ID.name,
+                                bookCursorRow.getOpenLibraryBookId()))
+                   .append(attr(DOM_BOOK_ISFDB_ID.name,
+                                bookCursorRow.getISFDBBookId()))
+                   .append(attr(DOM_BOOK_GOODREADS_BOOK_ID.name,
+                                bookCursorRow.getGoodreadsBookId()))
+                   .append(attr(DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name,
+                                bookCursorRow.getDateLastSyncedWithGoodreads()))
                    .append("\n")
 
-                   .append(XmlUtils.attr(DOM_BOOK_DATE_ADDED.name,
-                                         bookCursorRow.getDateAdded()))
-                   .append(XmlUtils.attr(DOM_LAST_UPDATE_DATE.name,
-                                         bookCursorRow.getDateLastUpdated()))
-                   .append(XmlUtils.attr(DOM_BOOK_UUID.name,
-                                         bookCursorRow.getBookUuid()))
+                   .append(attr(DOM_BOOK_DATE_ADDED.name,
+                                bookCursorRow.getDateAdded()))
+                   .append(attr(DOM_LAST_UPDATE_DATE.name,
+                                bookCursorRow.getDateLastUpdated()))
+                   .append(attr(DOM_BOOK_UUID.name,
+                                bookCursorRow.getBookUuid()))
                    .append("\n")
 
-                   .append(XmlUtils.attr(DOM_BOOK_LOANEE.name,
-                                         bookCursorRow.getLoanedTo()))
+                   .append(attr(DOM_BOOK_LOANEE.name,
+                                bookCursorRow.getLoanedTo()))
                    .append(">\n");
 
-                out.append(XmlUtils.tagWithCData(DOM_BOOK_DESCRIPTION.name, null,
-                                                 bookCursorRow.getDescription()));
-                out.append(XmlUtils.tagWithCData(DOM_BOOK_NOTES.name, null,
-                                                 bookCursorRow.getNotes()));
+                out.append(tagWithCData(DOM_BOOK_DESCRIPTION.name, null,
+                                        bookCursorRow.getDescription()));
+                out.append(tagWithCData(DOM_BOOK_NOTES.name, null,
+                                        bookCursorRow.getNotes()));
 
-                out.append("</" + XmlUtils.XML_BOOK + ">\n");
+                out.append("</" + XmlTags.XML_BOOK + ">\n");
                 count++;
             }
         }
-        out.append("</" + XmlUtils.XML_BOOK_LIST + ">\n");
+        out.append("</" + XmlTags.XML_BOOK_LIST + ">\n");
         return count;
     }
 
@@ -468,53 +717,53 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doStyles2(@NonNull final BufferedWriter out,
-                         @NonNull final Exporter.ExportListener listener)
+                         @NonNull final ProgressListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }
 
-        out.append('<' + XmlUtils.XML_STYLE_LIST)
-           .append(XmlUtils.version(XML_EXPORTER_STYLES_VERSION))
+        out.append('<' + XmlTags.XML_STYLE_LIST)
+           .append(version(XML_EXPORTER_STYLES_VERSION))
            .append(">\n");
 
         for (BooklistStyle style : styles) {
-            out.append('<' + XmlUtils.XML_STYLE)
-               .append(XmlUtils.id(style.getId()))
-               .append(XmlUtils.name(style.getUuid()))
+            out.append('<' + XmlTags.XML_STYLE)
+               .append(id(style.getId()))
+               .append(name(style.getUuid()))
                .append(">\n");
 
             // 'Flat' Preferences for this style.
             for (PPref p : style.getPreferences(false).values()) {
-                out.append(XmlUtils.typedTag(p.getKey(), p.get()));
+                out.append(typedTag(p.getKey(), p.get()));
             }
 
             // Groups with their Preferences
-            out.append('<' + XmlUtils.XML_GROUP_LIST + '>');
+            out.append('<' + XmlTags.XML_GROUP_LIST + '>');
             for (BooklistGroup group : style.getGroups()) {
-                out.append('<' + XmlUtils.XML_GROUP)
-                   .append(XmlUtils.id(group.getKind()))
+                out.append('<' + XmlTags.XML_GROUP)
+                   .append(id(group.getKind()))
                    .append(">\n");
                 for (PPref p : group.getPreferences().values()) {
-                    out.append(XmlUtils.typedTag(p.getKey(), p.get()));
+                    out.append(typedTag(p.getKey(), p.get()));
                 }
-                out.append("</" + XmlUtils.XML_GROUP + ">\n");
+                out.append("</" + XmlTags.XML_GROUP + ">\n");
             }
-            out.append("</" + XmlUtils.XML_GROUP_LIST + '>');
+            out.append("</" + XmlTags.XML_GROUP_LIST + '>');
 
             // Filters with their Preferences
-            out.append('<' + XmlUtils.XML_FILTER_LIST + '>');
+            out.append('<' + XmlTags.XML_FILTER_LIST + '>');
             for (BooleanFilter filter : style.getFilters().values()) {
                 if (filter.isActive()) {
-                    out.append(XmlUtils.tag(XmlUtils.XML_FILTER, filter.getKey(), filter.get()));
+                    out.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
                 }
             }
-            out.append("</" + XmlUtils.XML_FILTER_LIST + '>');
+            out.append("</" + XmlTags.XML_FILTER_LIST + '>');
 
-            out.append("</" + XmlUtils.XML_STYLE + ">\n");
+            out.append("</" + XmlTags.XML_STYLE + ">\n");
         }
-        out.append("</" + XmlUtils.XML_STYLE_LIST + ">\n");
+        out.append("</" + XmlTags.XML_STYLE_LIST + ">\n");
         return styles.size();
     }
 
@@ -529,7 +778,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doStyles(@NonNull final BufferedWriter out,
-                        @NonNull final Exporter.ExportListener listener)
+                        @NonNull final ProgressListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
@@ -550,7 +799,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doPreferences(@NonNull final BufferedWriter out,
-                             @NonNull final Exporter.ExportListener listener)
+                             @NonNull final ProgressListener listener)
             throws IOException {
         // remove the acra settings
         Map<String, ?> all = App.getPrefs().getAll();
@@ -574,7 +823,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public void doBackupInfoBlock(@NonNull final BufferedWriter out,
-                                  @NonNull final Exporter.ExportListener listener,
+                                  @NonNull final ProgressListener listener,
                                   @NonNull final BackupInfo info)
             throws IOException {
         toXml(out, new InfoWriter(info));
@@ -592,7 +841,7 @@ public class XmlExporter
 
         String listRoot = accessor.getListRoot();
         out.append('<').append(listRoot)
-           .append(XmlUtils.size(accessor.size()))
+           .append(size(accessor.size()))
            .append(">\n");
 
         // loop through all elements
@@ -605,14 +854,14 @@ public class XmlExporter
             out.append('<').append(accessor.getElementRoot());
             String nameAttr = accessor.getNameAttribute();
             if (nameAttr != null) {
-                out.append(XmlUtils.name(nameAttr));
+                out.append(name(nameAttr));
             }
-            out.append(XmlUtils.version(accessor.getVersionAttribute()))
+            out.append(version(accessor.getVersionAttribute()))
                .append(" >\n");
 
             // loop through all keys of the element
             for (String name : keys) {
-                out.append(XmlUtils.typedTag(name, accessor.get(name)));
+                out.append(typedTag(name, accessor.get(name)));
             }
             out.append("</").append(accessor.getElementRoot()).append(">\n");
         } while (accessor.hasMore());
@@ -714,13 +963,13 @@ public class XmlExporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_INFO_LIST;
+            return XmlTags.XML_INFO_LIST;
         }
 
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlUtils.XML_INFO;
+            return XmlTags.XML_INFO;
         }
 
         @Override
@@ -791,7 +1040,7 @@ public class XmlExporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_PREFERENCES_LIST;
+            return XmlTags.XML_PREFERENCES_LIST;
         }
 
         @Override
@@ -807,7 +1056,7 @@ public class XmlExporter
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlUtils.XML_PREFERENCES;
+            return XmlTags.XML_PREFERENCES;
         }
 
         @Nullable
@@ -865,7 +1114,7 @@ public class XmlExporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_STYLE_LIST;
+            return XmlTags.XML_STYLE_LIST;
         }
 
         @Override
@@ -887,7 +1136,7 @@ public class XmlExporter
         @NonNull
         @Override
         public String getElementRoot() {
-            return XmlUtils.XML_STYLE;
+            return XmlTags.XML_STYLE;
         }
 
         @Nullable

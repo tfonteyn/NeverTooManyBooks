@@ -11,7 +11,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.io.IOException;
@@ -43,7 +42,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class SendBooksTask
+public abstract class GrSendBooksTaskBase
         extends GoodreadsTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
@@ -61,7 +60,7 @@ public abstract class SendBooksTask
      *
      * @param description for the task
      */
-    SendBooksTask(@NonNull final String description) {
+    GrSendBooksTaskBase(@NonNull final String description) {
         super(description);
     }
 
@@ -167,14 +166,6 @@ public abstract class SendBooksTask
     private static class GrSendBookEvent
             extends Event {
 
-        /**
-         * Retry sending a book to goodreads.
-         */
-        @Nullable
-        static final View.OnClickListener mRetryButtonListener = v -> {
-            BookEventHolder holder = (BookEventHolder) v.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-            holder.event.retry(v.getContext());
-        };
         private static final long serialVersionUID = 8056090158313083738L;
         private final long mBookId;
 
@@ -204,8 +195,9 @@ public abstract class SendBooksTask
          */
         public void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
-            SendOneBookTask task = new SendOneBookTask(context.getString(R.string.gr_send_book_to_goodreads, mBookId),
-                                                       mBookId);
+            GrSendOneBookTask task = new GrSendOneBookTask(
+                    context.getString(R.string.gr_send_book_to_goodreads, mBookId),
+                    mBookId);
             qm.enqueueTask(task, QueueManager.Q_SMALL_JOBS);
             qm.deleteEvent(getId());
         }
@@ -221,13 +213,13 @@ public abstract class SendBooksTask
                             @NonNull final BindableItemCursor cursor,
                             @NonNull final ViewGroup parent) {
             View view = inflater.inflate(R.layout.row_event_info, parent, false);
-            view.setTag(R.id.TAG_EVENT, this);
+            view.setTag(R.id.TAG_GR_EVENT, this);
             BookEventHolder holder = new BookEventHolder(view);
             holder.event = this;
             holder.rowId = cursor.getId();
 
-            holder.buttonView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            holder.retryView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            holder.buttonView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
+            holder.retryView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
 
             return view;
         }
@@ -244,7 +236,7 @@ public abstract class SendBooksTask
 
             // Update event info binding; the Views in the holder are unchanged,
             // but when it is reused the Event and ID will change.
-            BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+            BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
             holder.event = this;
             holder.rowId = eventsCursor.getId();
 
@@ -278,7 +270,7 @@ public abstract class SendBooksTask
             holder.buttonView.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
                         BookEventHolder bookEventHolder = (BookEventHolder)
-                                buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+                                buttonView.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
                         eventsCursor.setSelected(bookEventHolder.rowId, isChecked);
                     });
 
@@ -287,8 +279,11 @@ public abstract class SendBooksTask
             // Hide parts of view based on current book having an isbn or not..
             if (isbn != null && !isbn.isEmpty()) {
                 holder.retryView.setVisibility(View.VISIBLE);
-                holder.retryView.setTag(this);
-                holder.retryView.setOnClickListener(mRetryButtonListener);
+                holder.retryView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, this);
+                holder.retryView.setOnClickListener(v -> {
+                    BookEventHolder h = (BookEventHolder) v.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
+                    h.event.retry(v.getContext());
+                });
                 return;
             }
             holder.retryView.setVisibility(View.GONE);
@@ -313,7 +308,7 @@ public abstract class SendBooksTask
                     context.getString(R.string.menu_edit_book),
                     () -> {
                         try {
-                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
+                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
                                     .putExtra(DBDefinitions.KEY_ID, event.getBookId())
                                     .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
@@ -326,18 +321,13 @@ public abstract class SendBooksTask
             // ENHANCE: Reinstate goodreads search when goodreads work.editions API is available
 //            // SEARCH GOODREADS
 //            items.add(new ContextDialogItem(
-//                    context.getString(R.string.gr_search_goodreads),
-//                    new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            BookEventHolder holder = (BookEventHolder)
-//                                    view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-//                            Intent intent = new Intent(context,
-//                                                       GoodreadsSearchCriteriaActivity.class)
-//                                  .putExtra(UniqueId.KEY_ID, holder.event.getId());
-//                            context.startActivity(intent);
-//                        }
-//                    }));
+//                    context.getString(R.string.searching_goodreads), () -> {
+//                BookEventHolder holder = (BookEventHolder)
+//                        view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+//                Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class)
+//                        .putExtra(DBDefinitions.KEY_ID, holder.event.getId());
+//                context.startActivity(intent);
+//            }));
 
             // DELETE EVENT
             items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
@@ -351,7 +341,7 @@ public abstract class SendBooksTask
                         () -> {
                             try {
                                 GrSendBookEvent event = (GrSendBookEvent)
-                                        view.getTag(R.id.TAG_EVENT);
+                                        view.getTag(R.id.TAG_GR_EVENT);
                                 event.retry(context);
                                 QueueManager.getQueueManager().deleteEvent(id);
                             } catch (RuntimeException ignore) {
@@ -384,7 +374,7 @@ public abstract class SendBooksTask
                 errorView = view.findViewById(R.id.error);
                 retryView = view.findViewById(R.id.retry);
 
-                view.setTag(R.id.TAG_BOOK_EVENT_HOLDER, this);
+                view.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, this);
             }
         }
 

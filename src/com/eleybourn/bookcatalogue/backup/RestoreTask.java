@@ -1,49 +1,42 @@
 package com.eleybourn.bookcatalogue.backup;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 
 public class RestoreTask
-        extends AsyncTask<Void, Object, ImportSettings> {
+        extends TaskWithProgress<Object, ImportSettings> {
 
-    /** Fragment manager tag. */
-    public static final String TAG = RestoreTask.class.getSimpleName();
-
-    @NonNull
-    private final ProgressDialogFragment<ImportSettings> mProgressDialog;
     @NonNull
     private final ImportSettings mSettings;
-
-    /**
-     * {@link #doInBackground} should catch exceptions, and set this field.
-     * {@link #onPostExecute} can then check it.
-     */
-    @Nullable
-    private Exception mException;
 
     /**
      * @param progressDialog ProgressDialogFragment
      * @param settings       the import settings
      */
     @UiThread
-    public RestoreTask(@NonNull final ProgressDialogFragment<ImportSettings> progressDialog,
-                       @NonNull final ImportSettings /* in/out */settings) {
+    public RestoreTask(@NonNull final ProgressDialogFragment<Object, ImportSettings> progressDialog,
+                       @NonNull final ImportSettings /* in/out */ settings) {
+        super(progressDialog);
 
-        mProgressDialog = progressDialog;
         mSettings = settings;
         if (((mSettings.what & ImportSettings.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
+    }
+
+    protected int getId() {
+        return R.id.TASK_ID_READ_FROM_ARCHIVE;
     }
 
     @Override
@@ -52,11 +45,11 @@ public class RestoreTask
     protected ImportSettings doInBackground(final Void... params) {
 
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(mSettings.file)) {
+        try (BackupReader reader = BackupManager.getReader(mSettings.file)) {
 
-            reader.restore(mSettings, new BackupReader.BackupReaderListener() {
+            reader.restore(mSettings, new ProgressListener() {
 
-                private int mProgress;
+                private int mAbsPosition;
 
                 @Override
                 public void setMax(final int max) {
@@ -65,15 +58,23 @@ public class RestoreTask
 
                 @Override
                 public void onProgressStep(final int delta,
-                                           @NonNull final String message) {
-                    mProgress += delta;
-                    publishProgress(mProgress, message);
+                                           @Nullable final String message) {
+                    mAbsPosition += delta;
+                    publishProgress(mAbsPosition, message);
                 }
 
                 @Override
-                public void onProgress(final int position,
-                                       @NonNull final String message) {
-                    publishProgress(position, message);
+                public void onProgress(final int absPosition,
+                                       @Nullable final String message) {
+                    mAbsPosition = absPosition;
+                    publishProgress(mAbsPosition, message);
+                }
+
+                @Override
+                public void onProgress(final int absPosition,
+                                       @StringRes final int messageId) {
+                    mAbsPosition = absPosition;
+                    publishProgress(mAbsPosition, messageId);
                 }
 
                 @Override
@@ -90,31 +91,5 @@ public class RestoreTask
             mException = e;
         }
         return mSettings;
-    }
-
-    /**
-     * @param values: [0] Integer position/delta, [1] String message
-     *                [0] Integer position/delta, [1] StringRes messageId
-     */
-    @Override
-    @UiThread
-    protected void onProgressUpdate(@NonNull final Object... values) {
-        if (values[1] instanceof String) {
-            mProgressDialog.onProgress((Integer) values[0], (String) values[1]);
-        } else {
-            mProgressDialog.onProgress((Integer) values[0], (Integer) values[1]);
-        }
-    }
-
-    /**
-     * If the task was cancelled (by the user cancelling the progress dialog) then
-     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-     *
-     * @param result of the task
-     */
-    @Override
-    @UiThread
-    protected void onPostExecute(@NonNull final ImportSettings result) {
-        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

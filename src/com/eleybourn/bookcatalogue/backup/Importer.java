@@ -39,8 +39,8 @@ public interface Importer
      *
      * @param importStream Stream for reading data
      * @param coverFinder  (Optional) object to find a cover on the local device
-     * @param listener     Progress and cancellation provider
      *
+     * @param listener     Progress and cancellation provider
      * @return number of books handled (!= imported)
      *
      * @throws IOException on failure
@@ -48,7 +48,7 @@ public interface Importer
     @SuppressWarnings("UnusedReturnValue")
     int doBooks(@NonNull InputStream importStream,
                 @Nullable CoverFinder coverFinder,
-                @NonNull ImportListener listener)
+                @NonNull ProgressListener listener)
             throws IOException, ImportException;
 
     /**
@@ -65,31 +65,5 @@ public interface Importer
         void copyOrRenameCoverFile(long srcId,
                                    @NonNull String uuidFromBook)
                 throws IOException;
-    }
-
-    /**
-     * Listener interface to get progress messages.
-     */
-    interface ImportListener {
-
-        /**
-         * @param max value (can be estimated) for the progress counter
-         */
-        void setMax(int max);
-
-        /**
-         * Report progress in absolute position.
-         *
-         * @param position absolute position for the progress counter
-         * @param message  to display
-         */
-        void onProgress(int position,
-                        @NonNull String message);
-
-        /**
-         * @return {@code true} if we are cancelled.
-         */
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-        boolean isCancelled();
     }
 }

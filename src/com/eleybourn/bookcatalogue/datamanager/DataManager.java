@@ -216,7 +216,7 @@ public class DataManager {
                     break;
 
                 default:
-                    throw new IllegalTypeException("" + cursor.getType(i));
+                    throw new IllegalTypeException(String.valueOf(cursor.getType(i)));
             }
         }
 

@@ -122,7 +122,7 @@ public class EditBooklistStyleGroupsActivity
     /**
      * Adds the style to the resulting data
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     protected boolean onSave(@NonNull final Intent data) {

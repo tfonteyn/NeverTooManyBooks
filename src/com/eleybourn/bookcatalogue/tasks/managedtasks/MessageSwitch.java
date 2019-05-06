@@ -72,16 +72,19 @@ public class MessageSwitch<T, U> {
 
     /** List of message sources. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(
-            new HashMap<>());
+    private final Map<Long, MessageSender<U>> mSenders =
+            Collections.synchronizedMap(new HashMap<>());
 
     /** List of all messages in the message queue, both messages and replies. */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
 
     /** List of message listener queues. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(
-            new HashMap<>());
+    private final Map<Long, MessageListeners> mListeners =
+            Collections.synchronizedMap(new HashMap<>());
+
+    public MessageSwitch() {
+    }
 
     /**
      * Register a new sender and it's controller object.
@@ -105,10 +108,6 @@ public class MessageSwitch<T, U> {
     public void addListener(@NonNull final Long senderId,
                             @NonNull final T listener,
                             final boolean deliverLast) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "addListener", listener,
-                         "senderId=" + senderId);
-        }
         // Add the listener to the queue, creating the queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {
@@ -126,18 +125,8 @@ public class MessageSwitch<T, U> {
             if (routingSlip != null) {
                 // Do it on the UI thread.
                 if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                        Logger.debug(this, "addListener",
-                                     "UI thread", "delivering to listener: " + listener,
-                                     "msg=" + routingSlip.message.toString());
-                    }
                     routingSlip.message.deliver(listener);
                 } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                        Logger.debug(this, "addListener",
-                                     "post runnable", "delivering to listener: " + listener,
-                                     "msg=" + routingSlip.message.toString());
-                    }
                     HANDLER.post(() -> routingSlip.message.deliver(listener));
                 }
             }
@@ -149,10 +138,6 @@ public class MessageSwitch<T, U> {
      */
     public void removeListener(@NonNull final Long senderId,
                                @NonNull final T listener) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "removeListener",
-                         "senderId=" + senderId, listener);
-        }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
             if (queue != null) {
@@ -169,19 +154,19 @@ public class MessageSwitch<T, U> {
      */
     public void send(@NonNull final Long senderId,
                      @NonNull final Message<T> message) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debug(this, "send",
-                         "senderId=" + senderId, "message=" + message);
-        }
-
         // Create a routing slip
         RoutingSlip routingSlip = new MessageRoutingSlip(senderId, message);
         // Add to queue
         synchronized (mMessageQueue) {
             mMessageQueue.add(routingSlip);
         }
-        // Process queue
-        startProcessingMessages();
+        // If in UI thread, then simply process the queue,
+        // otherwise post a new runnable to do so.
+        if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
+            processMessages();
+        } else {
+            HANDLER.post(this::processMessages);
+        }
     }
 
 
@@ -203,28 +188,7 @@ public class MessageSwitch<T, U> {
     }
 
     /**
-     * Remove a sender and its queue.
-     */
-    private void removeSender(@NonNull final MessageSender<U> sender) {
-        synchronized (mSenders) {
-            mSenders.remove(sender.getId());
-        }
-    }
-
-    /**
-     * If in UI thread, then process the queue, otherwise post a new runnable
-     * to process the queued messages.
-     */
-    private void startProcessingMessages() {
-        if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
-            processMessages();
-        } else {
-            HANDLER.post(this::processMessages);
-        }
-    }
-
-    /**
-     * Process the queued messages.
+     * Process all queued messages.
      */
     private void processMessages() {
         RoutingSlip routingSlip;
@@ -471,7 +435,9 @@ public class MessageSwitch<T, U> {
         @Override
         public void close() {
             synchronized (mSenders) {
-                removeSender(this);
+                synchronized (mSenders) {
+                    mSenders.remove(((MessageSender<U>) this).getId());
+                }
             }
         }
     }

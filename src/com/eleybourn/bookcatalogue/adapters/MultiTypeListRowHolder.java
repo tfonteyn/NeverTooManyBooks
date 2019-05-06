@@ -20,22 +20,16 @@
 
 package com.eleybourn.bookcatalogue.adapters;
 
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
-
 /**
- * Holder for rows in a {@link MultiTypeListHandler}.
- *
- * Method names now mimic {@link androidx.recyclerview.widget.RecyclerView.ViewHolder}
- * but with creating View and Holder split. This is done to allow for example scaling
- * the view components before using them.
- * Example see: {@link BooksMultiTypeListHandler#getView(Cursor, LayoutInflater, View, ViewGroup)}
+ * Holder for rows in a {@link MultiTypeListCursorAdapter.MultiTypeListHandler}.
+ * <p>
+ * Method names now mimic {@link androidx.recyclerview.widget.RecyclerView.Adapter}.
  * <p>
  * Intention is to use a Recycler ViewHolder eventually.
  */
@@ -57,15 +51,15 @@ public interface MultiTypeListRowHolder<T> {
      *
      * @param rowData to read global info from in order to setup the holder.
      *                Do NOT use specific row date here.
-     * @param rowView the view as created in {@link #onCreateView} for this row.
+     * @param view the view as created in {@link #onCreateView} for this row.
      */
     void onCreateViewHolder(@NonNull T rowData,
-                            @NonNull View rowView);
+                            @NonNull View view);
 
     /**
      * @param rowData to fill in the actual data details for the current row.
-     * @param rowView the view as created in {@link #onCreateView} for this row.
+     * @param view the view as created in {@link #onCreateView} for this row.
      */
     void onBindViewHolder(@NonNull T rowData,
-                          @NonNull View rowView);
+                          @NonNull View view);
 }

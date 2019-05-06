@@ -39,7 +39,7 @@ public class SettingsActivity
                                     : GlobalSettingsFragment.TAG;
 
         FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(tag)) {
+        if (fm.findFragmentByTag(tag) == null) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
@@ -84,7 +84,7 @@ public class SettingsActivity
      * PreferenceScreen elements, then a click on those will trigger this method.
      *
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     public boolean onPreferenceStartScreen(@NonNull final PreferenceFragmentCompat caller,

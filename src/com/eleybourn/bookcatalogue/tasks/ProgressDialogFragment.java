@@ -16,7 +16,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+
+import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -28,10 +29,13 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
  */
-public class ProgressDialogFragment<Results>
+public class ProgressDialogFragment<Progress, Result>
         extends DialogFragment {
 
-    /** Fragment manager tag used if no custom tag is needed. */
+    /**
+     * Fragment manager tag used if no custom tag is needed; e.g. when this dialog is shared
+     * among multiple tasks.
+     */
     public static final String TAG = ProgressDialogFragment.class.getSimpleName();
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
@@ -58,13 +62,17 @@ public class ProgressDialogFragment<Results>
     private String mMessage;
     /** the current task. */
     @Nullable
-    private AsyncTask<Void, Object, Results> mTask;
+    private AsyncTask<Void, Progress, Result> mTask;
     /** the current task. */
     @Nullable
     private Integer mTaskId;
 
+    @Nullable
+    private WeakReference<OnTaskFinishedListener<Result>> mOnTaskFinishedListenerWR;
+    @Nullable
+    private WeakReference<OnUserCancelledListener> mOnProgressCancelledListenerWR;
+
     /**
-     * @param <Results>       the type of the result object from the task.
      * @param titelId         Titel for the dialog, can be 0 for no title.
      * @param isIndeterminate type of progress
      * @param maxValue        maximum value for progress if isIndeterminate==false
@@ -75,10 +83,10 @@ public class ProgressDialogFragment<Results>
     @NonNull
     @UiThread
     public static <Results>
-    ProgressDialogFragment<Results> newInstance(@StringRes final int titelId,
-                                                final boolean isIndeterminate,
-                                                final int maxValue) {
-        ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
+    ProgressDialogFragment<Object, Results> newInstance(@StringRes final int titelId,
+                                                        final boolean isIndeterminate,
+                                                        final int maxValue) {
+        ProgressDialogFragment<Object, Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
@@ -92,7 +100,6 @@ public class ProgressDialogFragment<Results>
      * {@link com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks}.
      * and should not be used/needed elsewhere.
      *
-     * @param <Results>       the type of the result object from the task.
      * @param titelId         Titel for the dialog, can be 0 for no title.
      * @param isIndeterminate type of progress
      * @param maxValue        maximum value for progress if isIndeterminate==false
@@ -105,12 +112,12 @@ public class ProgressDialogFragment<Results>
     @NonNull
     @UiThread
     public static <Results>
-    ProgressDialogFragment<Results> newInstance(@StringRes final int titelId,
-                                                final boolean isIndeterminate,
-                                                final int maxValue,
-                                                @Nullable final String message,
-                                                final int currentValue) {
-        ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
+    ProgressDialogFragment<Object, Results> newInstance(@StringRes final int titelId,
+                                                        final boolean isIndeterminate,
+                                                        final int maxValue,
+                                                        @Nullable final String message,
+                                                        final int currentValue) {
+        ProgressDialogFragment<Object, Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
@@ -121,6 +128,14 @@ public class ProgressDialogFragment<Results>
         args.putInt(BKEY_MAX, maxValue);
         frag.setArguments(args);
         return frag;
+    }
+
+    public void setOnTaskFinishedListener(@Nullable final OnTaskFinishedListener<Result> listener) {
+        mOnTaskFinishedListenerWR = new WeakReference<>(listener);
+    }
+
+    public void setOnProgressCancelledListener(@Nullable final OnUserCancelledListener listener) {
+        mOnProgressCancelledListenerWR = new WeakReference<>(listener);
     }
 
     @Override
@@ -142,7 +157,7 @@ public class ProgressDialogFragment<Results>
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
 
-        mMessageView = root.findViewById(R.id.message);
+        mMessageView = root.findViewById(R.id.progressMessage);
         mProgressBar = root.findViewById(R.id.progressBar);
 
         Bundle args = requireArguments();
@@ -194,9 +209,86 @@ public class ProgressDialogFragment<Results>
      * @param task   that will use us for progress updates.
      */
     public void setTask(final int taskId,
-                        @Nullable final AsyncTask<Void, Object, Results> task) {
+                        @Nullable final AsyncTask<Void, Progress, Result> task) {
         mTaskId = taskId;
+        if (mTask != null) {
+            mTask.cancel(true);
+        }
         mTask = task;
+    }
+
+    /**
+     * Called when the task finishes.
+     *
+     * @param success {@code true} if the task finished successfully
+     * @param result  task result object
+     * @param e       if the task finished with an exception, or null.
+     */
+    @UiThread
+    public void onTaskFinished(final boolean success,
+                               @Nullable final Result result,
+                               @Nullable final Exception e) {
+        // Make sure we check if it is resumed because we will crash if trying to dismiss
+        // the dialog after the user has switched to another app.
+        if (isResumed()) {
+            dismiss();
+        }
+
+        // sanity check
+        if (mTaskId == null) {
+            throw new IllegalArgumentException("task id was NULL");
+        }
+
+
+        Integer tmpTaskId = mTaskId;
+        // invalidate the current task as its finished. The dialog can be reused.
+        mTaskId = null;
+        mTask = null;
+
+        // Tell the caller we're done.
+        if (mOnTaskFinishedListenerWR != null) {
+            OnTaskFinishedListener<Result> listener = mOnTaskFinishedListenerWR.get();
+            if (listener != null) {
+                listener.onTaskFinished(tmpTaskId, success, result, e);
+            } else {
+                Logger.warn(this, "onTaskFinished", "reference to listener was dead");
+            }
+        } else {
+            Logger.warn(this, "onTaskFinished", "no OnTaskFinishedListener set.");
+        }
+
+    }
+
+    @Override
+    public void onCancel(@NonNull final DialogInterface dialog) {
+        // Tell the caller we're done. mTaskId will be null if there is no task.
+        if (mOnProgressCancelledListenerWR != null) {
+            OnUserCancelledListener listener = mOnProgressCancelledListenerWR.get();
+            if (listener != null) {
+                listener.onProgressDialogCancelled(mTaskId);
+            } else {
+                Logger.warn(this, "onCancel", "reference to listener was dead");
+            }
+        } else {
+            Logger.warn(this, "onCancel", "no OnUserCancelledListener set.");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(BKEY_WAS_CANCELLED, mWasCancelled);
+
+        outState.putInt(BKEY_MAX, mMax);
+        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
+        if (mProgressBar != null) {
+            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
+        }
+    }
+
+    public boolean isIndeterminate() {
+        //don't get it from the actual progressbar as that might be null.
+        return mIsIndeterminate;
     }
 
     /**
@@ -207,7 +299,7 @@ public class ProgressDialogFragment<Results>
     @AnyThread
     public void setMax(final int max) {
         mMax = max;
-        // trigger the next onProgress to update the max value.
+        // trigger the next onTaskProgress to update the max value.
         mUpdateMax = true;
     }
 
@@ -261,9 +353,21 @@ public class ProgressDialogFragment<Results>
      * @param message to display
      */
     @UiThread
-    public void onProgress(@Nullable final String message) {
+    public void onMessage(@Nullable final String message) {
         synchronized (this) {
             setMessage(message);
+        }
+    }
+
+    /**
+     * Update the message on the progress dialog.
+     *
+     * @param messageId to display
+     */
+    @UiThread
+    public void onMessage(@StringRes final int messageId) {
+        synchronized (this) {
+            setMessage(getString(messageId));
         }
     }
 
@@ -305,73 +409,6 @@ public class ProgressDialogFragment<Results>
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_WAS_CANCELLED, mWasCancelled);
-
-        outState.putInt(BKEY_MAX, mMax);
-        outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
-        if (mProgressBar != null) {
-            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
-        }
-    }
-
-    @Override
-    public void onCancel(@NonNull final DialogInterface dialog) {
-        // Tell the caller we're done. mTaskId will be null if there is no task.
-        OnProgressCancelledListener.onProgressCancelled(this, mTaskId);
-    }
-
-    /** When we are dismissed we need to cancel the task if it's still alive. */
-    @Override
-    public void onDismiss(@NonNull final DialogInterface dialog) {
-        super.onDismiss(dialog);
-        // If true, the thread is interrupted immediately, which may do bad things.
-        // If false, it guarantees a result is never returned (onPostExecute() isn't called)
-        // but you have to repeatedly call isCancelled() in your doInBackground()
-        // function to check if it should exit. For some tasks that might not be feasible.
-        if (mTask != null) {
-            mTask.cancel(false);
-            mWasCancelled = true;
-        }
-
-        // Tell our caller the task was cancelled.
-        if (mWasCancelled) {
-            onCancel(dialog);
-        }
-    }
-
-    /**
-     * Called when the task finishes.
-     *
-     * @param success {@code true} if the task finished successfully
-     * @param result  task result object
-     * @param e       if the task finished with an exception, or null.
-     */
-    @UiThread
-    public void onTaskFinished(final boolean success,
-                               @Nullable final Results result,
-                               @Nullable final Exception e) {
-        // Make sure we check if it is resumed because we will crash if trying to dismiss
-        // the dialog after the user has switched to another app.
-        if (isResumed()) {
-            dismiss();
-        }
-
-        // sanity check
-        if (mTaskId == null) {
-            throw new IllegalArgumentException("task id was NULL");
-        }
-
-        // Tell the caller we're done.
-        OnTaskFinishedListener.onTaskFinished(this, mTaskId, success, result, e);
-
-        // invalidate the current task as its finished. The dialog can be reused.
-        mTaskId = null;
-        mTask = null;
-    }
-
     /**
      * ENHANCE: Work-around for bug in androidx library.
      * <p>
@@ -380,7 +417,7 @@ public class ProgressDialogFragment<Results>
      * Still not fixed in April 2019
      *
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -391,41 +428,14 @@ public class ProgressDialogFragment<Results>
         super.onDestroyView();
     }
 
-    public boolean isIndeterminate() {
-        //don't get it from the actual progressbar as that might be null.
-        return mIsIndeterminate;
-    }
-
     /**
-     * Used when the user cancels.
+     * Used when the USER cancels.
      */
-    public interface OnProgressCancelledListener {
-
-        /**
-         * Convenience method. Try in order:
-         * <li>getTargetFragment()</li>
-         * <li>getParentFragment()</li>
-         * <li>getActivity()</li>
-         */
-        @SuppressWarnings("InstanceofIncompatibleInterface")
-        static void onProgressCancelled(@NonNull final Fragment fragment,
-                                        final Integer taskId) {
-
-            if (fragment.getTargetFragment() instanceof OnProgressCancelledListener) {
-                ((OnProgressCancelledListener) fragment.getTargetFragment())
-                        .onProgressCancelled(taskId);
-            } else if (fragment.getParentFragment() instanceof OnProgressCancelledListener) {
-                ((OnProgressCancelledListener) fragment.getParentFragment())
-                        .onProgressCancelled(taskId);
-            } else if (fragment.getActivity() instanceof OnProgressCancelledListener) {
-                ((OnProgressCancelledListener) fragment.getActivity())
-                        .onProgressCancelled(taskId);
-            }
-        }
+    public interface OnUserCancelledListener {
 
         /**
          * @param taskId for the task; null if there was no embedded task.
          */
-        void onProgressCancelled(@Nullable Integer taskId);
+        void onProgressDialogCancelled(@Nullable Integer taskId);
     }
 }

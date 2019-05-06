@@ -573,11 +573,11 @@ public class PartialDatePickerDialogFragment
             // Don't forget we have a '--' in the adapter
             if (mDayAdapter.getCount() <= totalDays) {
                 for (int i = mDayAdapter.getCount(); i <= totalDays; i++) {
-                    mDayAdapter.add("" + i);
+                    mDayAdapter.add(String.valueOf(i));
                 }
             } else {
                 for (int i = mDayAdapter.getCount() - 1; i > totalDays; i--) {
-                    mDayAdapter.remove("" + i);
+                    mDayAdapter.remove(String.valueOf(i));
                 }
             }
 

@@ -85,16 +85,16 @@ import com.google.android.material.button.MaterialButton;
  * <p>
  * Features provides are:
  * <ul>
- * <li> handling of visibility via preferences
- * <li> handling of 'group' visibility via the 'group' property of a field.
+ * <li> handling of visibility via preferences</li>
+ * <li> handling of 'group' visibility via the 'group' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
- * will be necessary to add new {@link FieldDataAccessor} implementations.
- * <li> Custom data accessors and formatters to provide application-specific data rules.
- * <li> validation: calling {@link #validateAllFields} will call user-defined or predefined
- * validation routines. The text of any exceptions will be available after the call.
- * <li> simplified loading of data from a Cursor.
- * <li> simplified extraction of data to a {@link ContentValues} collection.
+ * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
+ * <li> Custom data accessors and formatters to provide application-specific data rules.</li>
+ * <li> validation: calling {@link #validateAllFields} will call user-defined or predefined</li>
+ * validation routines. The text of any exceptions will be available after the call.</li>
+ * <li> simplified loading of data from a Cursor.</li>
+ * <li> simplified extraction of data to a {@link ContentValues} collection.</li>
  * </ul>
  * <p>
  * Formatters and Accessors
@@ -109,38 +109,34 @@ import com.google.android.material.button.MaterialButton;
  * The use of a formatter typically results in all values being converted to strings so
  * they should be avoided for most non-string data.
  * <p>
- * Data Flow
- * <p>
  * Data flows to and from a view as follows:
- * IN  ( no formatter ):
- * (Cursor or other source) -> transform (in accessor) -> View
- * <p>
- * IN  (with formatter):
- * (Cursor or other source) -> format() (via accessor) -> transform (in accessor) -> View
- * <p>
- * OUT ( no formatter ):
- * (Cursor or other source) -> transform (in accessor) -> validator -> (ContentValues or Object)
- * <p>
- * OUT (with formatter):
- * (Cursor or other source) -> transform (in accessor) -> extract (via accessor)
- * -> validator -> (ContentValues or Object)
+ * <ul>
+ * <li>IN  ( no formatter ):
+ * <br>(Cursor or other source) -> transform (in accessor) -> View</li>
+ * <li>IN  (with formatter):
+ * <br>(Cursor or other source) -> format() (via accessor) -> transform (in accessor) -> View</li>
+ * <li>OUT ( no formatter ):
+ * <br>(Cursor or other source) -> transform (in accessor) -> validator -> (ContentValues or Object)</li>
+ * <li>OUT (with formatter):
+ * <br>(Cursor or other source) -> transform (in accessor) -> extract (via accessor)
+ * -> validator -> (ContentValues or Object)</li>
+ * </ul>
  * <p>
  * Usage Note:
- * <p>
- * 1. Which Views to Add?
- * <p>
+ * <ol>
+ * <li>Which Views to Add?
+ * <br>
  * It is not necessary to add every control to the 'Fields' collection, but as a general rule
  * any control that displays data from a database, or related derived data, or labels for such
  * data should be added.
- * <p>
+ * <br>
  * Typical controls NOT added, are 'Save' and 'Cancel' buttons, or other controls whose
- * interactions are purely functional.
- * <p>
- * 2. Handlers?
- * <p>
+ * interactions are purely functional.</li>
+ * <li>Handlers?
+ * <br>
  * The add() method of Fields returns a new {@link Field} object which exposes the 'View' member;
- * this can be used to perform view-specific tasks like setting onClick() handlers.
- * <p>
+ * this can be used to perform view-specific tasks like setting onClick() handlers.</li>
+ * </ol>
  * TODO: Rationalize the use of this collection with the {@link DataManager}.
  *
  * @author Philip Warner

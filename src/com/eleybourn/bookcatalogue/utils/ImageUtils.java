@@ -497,7 +497,7 @@ public final class ImageUtils {
         private static final int MAX_SIZE_SMALL = 256;
         /** on the View Screens. */
         private static final int MAX_SIZE_STANDARD = 512;
-        /** in zoomed mode. */
+        /** in zoomed (but not full-screen) mode. */
         private static final int MAX_SIZE_LARGE = 1024;
 
         /** Display size in pixels. */

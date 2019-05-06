@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.searches;
+package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -41,10 +41,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -231,7 +227,7 @@ public class FTSSearchActivity
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     tmpMsg += "\n in " + (System.nanoTime() - t0) + "nano)";
                 }
-                mBookIdsFound = new ArrayList<>();
+                mBookIdsFound = new ArrayList<>(cursor.getCount());
                 while (cursor.moveToNext()) {
                     mBookIdsFound.add(cursor.getInt(0));
                 }

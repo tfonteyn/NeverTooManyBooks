@@ -39,8 +39,8 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  *
  * @author Philip Warner
  */
-public class SendOneBookTask
-        extends SendBooksTask {
+public class GrSendOneBookTask
+        extends GrSendBooksTaskBase {
 
     private static final long serialVersionUID = 8585857100291691934L;
 
@@ -52,8 +52,8 @@ public class SendOneBookTask
      *
      * @param bookId Book to send
      */
-    SendOneBookTask(@NonNull final String description,
-                    final long bookId) {
+    GrSendOneBookTask(@NonNull final String description,
+                      final long bookId) {
         super(description);
         mBookId = bookId;
     }

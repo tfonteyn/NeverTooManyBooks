@@ -92,7 +92,7 @@ public abstract class BaseSettingsFragment
      * Update the summary after a change.
      *
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @CallSuper
     @Override

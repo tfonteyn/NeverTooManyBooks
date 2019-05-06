@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
@@ -60,6 +61,8 @@ public class XmlImporter
 
     private static final String UNABLE_TO_PROCESS_XML_ENTITY_ERROR =
             "Unable to process XML entity ";
+
+    public static final int BUFFER_SIZE = 32768;
 
     @NonNull
     private final DBA mDb;
@@ -96,14 +99,35 @@ public class XmlImporter
     }
 
     /**
-     * Not supported here for now.
+     * counterpart of {@link XmlExporter} #encodeString}
      * <p>
-     * <p>{@inheritDoc}
+     * Only String 'value' tags need decoding.
+     * <p>
+     * decode the bare essentials only. To decode all possible entities we could add the Apache
+     * 'lang' library I suppose.... maybe some day.
+     */
+    private static String decodeString(@Nullable final String data) {
+        if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+            return "";
+        }
+
+        return data.replace("&quot;", "\"")
+                   .replace("&apos;", "'")
+                   .replace("&lt;", "<")
+                   .replace("&gt;", ">")
+                   // must be last of the entities
+                   .replace("&amp;", "&");
+    }
+
+    /**
+     * Not supported for now.
+     * <p>
+     * <br>{@inheritDoc}
      */
     @Override
     public int doBooks(@NonNull final InputStream importStream,
                        @Nullable final CoverFinder coverFinder,
-                       @NonNull final ImportListener listener) {
+                       @NonNull final ProgressListener listener) {
         throw new UnsupportedOperationException();
     }
 
@@ -116,11 +140,10 @@ public class XmlImporter
      * @throws IOException on failure
      */
     public void doEntity(@NonNull final ReaderEntity entity,
-                         @NonNull final ImportListener listener)
+                         @NonNull final ProgressListener listener)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
-                XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (entity.getType()) {
@@ -147,8 +170,7 @@ public class XmlImporter
                                   @NonNull final BackupInfo info)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
-                XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
         fromXml(in, null, new InfoReader(info));
     }
 
@@ -162,12 +184,11 @@ public class XmlImporter
      * @throws IOException on failure
      */
     public void doPreferences(@NonNull final ReaderEntity entity,
-                              @NonNull final ImportListener listener,
+                              @NonNull final ProgressListener listener,
                               @NonNull final SharedPreferences prefs)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
-                XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), BUFFER_SIZE);
         SharedPreferences.Editor editor = prefs.edit();
         fromXml(in, listener, new PreferencesReader(editor));
         editor.apply();
@@ -181,7 +202,7 @@ public class XmlImporter
      * @throws IOException on failure
      */
     private void fromXml(@NonNull final BufferedReader in,
-                         @Nullable final ImportListener listener,
+                         @Nullable final ProgressListener listener,
                          @NonNull final EntityReader<String> accessor)
             throws IOException {
 
@@ -203,7 +224,7 @@ public class XmlImporter
                      // use as top-tag
                      mTag = new TagInfo(context);
                      // we only have a version on the top tag, not on every tag.
-                     String version = context.getAttributes().getValue(XmlUtils.ATTR_VERSION);
+                     String version = context.getAttributes().getValue(XmlTags.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                          Logger.debug(this, "fromXml",
@@ -227,28 +248,28 @@ public class XmlImporter
             // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
                 switch (mTag.type) {
-                    case XmlUtils.XML_STRING:
+                    case XmlTags.XML_STRING:
                         // attribute Strings are encoded.
-                        accessor.putString(mTag.name, XmlUtils.decodeString(mTag.value));
+                        accessor.putString(mTag.name, decodeString(mTag.value));
                         break;
 
-                    case XmlUtils.XML_BOOLEAN:
+                    case XmlTags.XML_BOOLEAN:
                         accessor.putBoolean(mTag.name, Boolean.parseBoolean(mTag.value));
                         break;
 
-                    case XmlUtils.XML_INT:
+                    case XmlTags.XML_INT:
                         accessor.putInt(mTag.name, Integer.parseInt(mTag.value));
                         break;
 
-                    case XmlUtils.XML_LONG:
+                    case XmlTags.XML_LONG:
                         accessor.putLong(mTag.name, Long.parseLong(mTag.value));
                         break;
 
-                    case XmlUtils.XML_FLOAT:
+                    case XmlTags.XML_FLOAT:
                         accessor.putFloat(mTag.name, Float.parseFloat(mTag.value));
                         break;
 
-                    case XmlUtils.XML_DOUBLE:
+                    case XmlTags.XML_DOUBLE:
                         accessor.putDouble(mTag.name, Double.parseDouble(mTag.value));
                         break;
                 }
@@ -265,19 +286,19 @@ public class XmlImporter
             }
             try {
                 switch (mTag.type) {
-                    case XmlUtils.XML_STRING:
+                    case XmlTags.XML_STRING:
                         // body Strings use CDATA
                         accessor.putString(mTag.name, context.getBody());
                         break;
 
-                    case XmlUtils.XML_SET:
-                    case XmlUtils.XML_LIST:
+                    case XmlTags.XML_SET:
+                    case XmlTags.XML_LIST:
                         accessor.putStringSet(mTag.name, currentStringSet);
                         // cleanup, ready for the next Set
                         currentStringSet.clear();
                         break;
 
-                    case XmlUtils.XML_SERIALIZABLE:
+                    case XmlTags.XML_SERIALIZABLE:
                         accessor.putSerializable(mTag.name,
                                                  Base64.decode(context.getBody(), Base64.DEFAULT));
                         break;
@@ -297,28 +318,28 @@ public class XmlImporter
         };
 
         // typed tags that only use a value attribute only need action on the start of a tag
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_BOOLEAN)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_BOOLEAN)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_INT)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_INT)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_LONG)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LONG)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_FLOAT)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_FLOAT)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_DOUBLE)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_DOUBLE)
                  .setStartAction(startTypedTag);
 
         // typed tags that have bodies.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_STRING)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_STRING)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_SET)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SET)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_LIST)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LIST)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_SERIALIZABLE)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SERIALIZABLE)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
 
@@ -341,11 +362,11 @@ public class XmlImporter
             if (mTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
-                    case XmlUtils.XML_BOOLEAN:
-                    case XmlUtils.XML_INT:
-                    case XmlUtils.XML_LONG:
-                    case XmlUtils.XML_FLOAT:
-                    case XmlUtils.XML_DOUBLE:
+                    case XmlTags.XML_BOOLEAN:
+                    case XmlTags.XML_INT:
+                    case XmlTags.XML_LONG:
+                    case XmlTags.XML_FLOAT:
+                    case XmlTags.XML_DOUBLE:
                         currentStringSet.add(mTag.value);
                         break;
                 }
@@ -367,10 +388,10 @@ public class XmlImporter
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
                     // No support for list/set inside a list/set (no point)
-                    case XmlUtils.XML_SERIALIZABLE:
+                    case XmlTags.XML_SERIALIZABLE:
                         // serializable is indeed just added as a string...
                         // this 'case' is only here for completeness sake.
-                    case XmlUtils.XML_STRING:
+                    case XmlTags.XML_STRING:
                         // body strings use CDATA
                         currentStringSet.add(context.getBody());
                         break;
@@ -387,22 +408,22 @@ public class XmlImporter
 
         // Set<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.XML_SET, XmlUtils.XML_STRING)
+                              XmlTags.XML_SET, XmlTags.XML_STRING)
                  .setStartAction(startElementInCollection)
                  .setEndAction(endElementInCollection);
         // List<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.XML_LIST, XmlUtils.XML_STRING)
+                              XmlTags.XML_LIST, XmlTags.XML_STRING)
                  .setStartAction(startElementInCollection)
                  .setEndAction(endElementInCollection);
 
         // Set<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.XML_SET, XmlUtils.XML_INT)
+                              XmlTags.XML_SET, XmlTags.XML_INT)
                  .setStartAction(startElementInCollection);
         // List<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.XML_LIST, XmlUtils.XML_INT)
+                              XmlTags.XML_LIST, XmlTags.XML_INT)
                  .setStartAction(startElementInCollection);
 
 
@@ -604,8 +625,8 @@ public class XmlImporter
             if ("item".equals(type)) {
                 type = attrs.getValue("type");
             }
-            name = attrs.getValue(XmlUtils.ATTR_NAME);
-            String idStr = attrs.getValue(XmlUtils.ATTR_ID);
+            name = attrs.getValue(XmlTags.ATTR_NAME);
+            String idStr = attrs.getValue(XmlTags.ATTR_ID);
             if (idStr != null) {
                 try {
                     id = Integer.parseInt(idStr);
@@ -616,7 +637,7 @@ public class XmlImporter
                     }
                 }
             }
-            value = attrs.getValue(XmlUtils.ATTR_VALUE);
+            value = attrs.getValue(XmlTags.ATTR_VALUE);
         }
 
         @Override
@@ -632,8 +653,8 @@ public class XmlImporter
     }
 
     /**
-     * Supports a *single* {@link XmlUtils#XML_INFO} block,
-     * enclosed inside a {@link XmlUtils#XML_INFO_LIST}.
+     * Supports a *single* {@link XmlTags#XML_INFO} block,
+     * enclosed inside a {@link XmlTags#XML_INFO_LIST}.
      */
     static class InfoReader
             implements EntityReader<String> {
@@ -651,13 +672,13 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_INFO_LIST;
+            return XmlTags.XML_INFO_LIST;
         }
 
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlUtils.XML_INFO;
+            return XmlTags.XML_INFO;
         }
 
         @Override
@@ -719,8 +740,8 @@ public class XmlImporter
     }
 
     /**
-     * Supports a *single* {@link XmlUtils#XML_PREFERENCES} block,
-     * enclosed inside a {@link XmlUtils#XML_PREFERENCES_LIST}.
+     * Supports a *single* {@link XmlTags#XML_PREFERENCES} block,
+     * enclosed inside a {@link XmlTags#XML_PREFERENCES_LIST}.
      */
     static class PreferencesReader
             implements EntityReader<String> {
@@ -737,13 +758,13 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_PREFERENCES_LIST;
+            return XmlTags.XML_PREFERENCES_LIST;
         }
 
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlUtils.XML_PREFERENCES;
+            return XmlTags.XML_PREFERENCES;
         }
 
         @Override
@@ -795,19 +816,19 @@ public class XmlImporter
         @Override
         public void putDouble(@NonNull final String key,
                               final double value) {
-            throw new IllegalTypeException(XmlUtils.XML_DOUBLE);
+            throw new IllegalTypeException(XmlTags.XML_DOUBLE);
         }
 
         @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
-            throw new IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
+            throw new IllegalTypeException(XmlTags.XML_SERIALIZABLE);
         }
     }
 
     /**
-     * Supports a *list* of {@link XmlUtils#XML_STYLE} block,
-     * enclosed inside a {@link XmlUtils#XML_STYLE_LIST}
+     * Supports a *list* of {@link XmlTags#XML_STYLE} block,
+     * enclosed inside a {@link XmlTags#XML_STYLE_LIST}
      * <p>
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
@@ -837,13 +858,13 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlUtils.XML_STYLE_LIST;
+            return XmlTags.XML_STYLE_LIST;
         }
 
         @NonNull
         @Override
         public String getElementRoot() {
-            return XmlUtils.XML_STYLE;
+            return XmlTags.XML_STYLE;
         }
 
         /**
@@ -851,7 +872,7 @@ public class XmlImporter
          * <p>
          * Creates a new BooklistStyle, and sets it as the 'current' one ready for writes.
          * <p>
-         * <p>{@inheritDoc}
+         * <br>{@inheritDoc}
          */
         @Override
         public void startElement(final int version,
@@ -926,25 +947,25 @@ public class XmlImporter
         @Override
         public void putLong(@NonNull final String key,
                             final long value) {
-            throw new IllegalTypeException(XmlUtils.XML_LONG);
+            throw new IllegalTypeException(XmlTags.XML_LONG);
         }
 
         @Override
         public void putFloat(@NonNull final String key,
                              final float value) {
-            throw new IllegalTypeException(XmlUtils.XML_FLOAT);
+            throw new IllegalTypeException(XmlTags.XML_FLOAT);
         }
 
         @Override
         public void putDouble(@NonNull final String key,
                               final double value) {
-            throw new IllegalTypeException(XmlUtils.XML_DOUBLE);
+            throw new IllegalTypeException(XmlTags.XML_DOUBLE);
         }
 
         @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
-            throw new IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
+            throw new IllegalTypeException(XmlTags.XML_SERIALIZABLE);
         }
     }
 

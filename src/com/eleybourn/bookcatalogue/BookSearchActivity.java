@@ -43,11 +43,6 @@ public class BookSearchActivity
         extends BaseActivityWithTasks {
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main_nav;
-    }
-
-    @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +52,7 @@ public class BookSearchActivity
         String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
 
         FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(tag)) {
+        if (fm.findFragmentByTag(tag) == null) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()

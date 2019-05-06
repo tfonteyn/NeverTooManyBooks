@@ -233,7 +233,7 @@ public class Site
         return mEnabled;
     }
 
-    void setEnabled(final boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         mEnabled = enabled;
     }
 
@@ -241,7 +241,7 @@ public class Site
         return mPriority;
     }
 
-    void setPriority(final int priority) {
+    public void setPriority(final int priority) {
         mPriority = priority;
     }
 

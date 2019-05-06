@@ -27,10 +27,8 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
@@ -88,9 +86,7 @@ public class GoodreadsAuthorizationActivity
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
             // Handle the auth response by passing it off to a background task to check.
-            GoodreadsAuthorizationResultCheckTask task =
-                    new GoodreadsAuthorizationResultCheckTask(getString(R.string.gr_auth_check));
-            QueueManager.getQueueManager().enqueueTask(task, QueueManager.Q_SMALL_JOBS);
+            new AuthorizationResultCheckTask().execute();
         }
 
         // Bring the main app task back to the top

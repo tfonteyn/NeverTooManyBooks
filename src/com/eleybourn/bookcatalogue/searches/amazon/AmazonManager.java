@@ -27,34 +27,35 @@ import com.eleybourn.bookcatalogue.utils.Throttler;
 /**
  * March/April 2019, I got this error:
  * //
- * //Warning: file_get_contents(http://webservices.amazon.com/onca/xml?AssociateTag=theagidir-20
- * // &Keywords=9780385269179
- * // &Operation=ItemSearch&ResponseGroup=Medium,Images
- * // &SearchIndex=Books&Service=AWSECommerceService
- * // &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
- * // &Timestamp=2019-04-08T11:10:15.000Z
- * // &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
- * // failed to open stream: HTTP request failed!
- * // HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
- * //
- * // When executing the actual url:
- * //
- * // <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
- * //<Error>
- * //<Code>RequestThrottled</Code>
- * //<Message>
- * //AWS Access Key ID: AKIAIHF2BM6OTOA23JEQ. You are submitting requests too quickly.
- * // Please retry your requests at a slower rate.
- * //</Message>
- * //</Error>
- * //<RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
- * //</ItemSearchErrorResponse>
+ * //Warning: file_get_contents(http://webservices.amazon.com/onca/xml?
+ * AssociateTag=theagidir-20
+ * &Keywords=9780385269179
+ * &Operation=ItemSearch&ResponseGroup=Medium,Images
+ * &SearchIndex=Books&Service=AWSECommerceService
+ * &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
+ * &Timestamp=2019-04-08T11:10:15.000Z
+ * &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
+ *
+ * failed to open stream: HTTP request failed!
+ * HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
+ *
+ *  When executing the actual url:
+ *
+ *  <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
+ * <Error>
+ * <Code>RequestThrottled</Code>
+ * <Message>
+ * AWS Access Key ID: AKIAIHF2BM6OTOA23JEQ. You are submitting requests too quickly.
+ *  Please retry your requests at a slower rate.
+ * </Message>
+ * </Error>
+ * <RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
+ * </ItemSearchErrorResponse>
  * <p>
- * So... adding throttling. But obviously if the issue is on the actual 'theagiledirector'
- * site, this will not help. But with throttling I will at least not cause extra trouble.
  *
  * 2019-04-20: it's the actual 'theagiledirector'.
  * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
+ * but how.... seems AWS is dependent/linked to have a website.
  */
 public final class AmazonManager
         implements SearchSiteManager {
@@ -100,7 +101,11 @@ public final class AmazonManager
 
     /**
      * This searches the amazon REST site based on a specific isbn.
-     * FIXME: Search proxies through theagiledirector.com - amazon not supporting mobile devices?
+     *
+     * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/EX_LookupbyISBN.html
+     * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/becomingAssociate.html#locale
+     *
+     * Search proxies through theagiledirector.com - the service does not support mobile devices...
      *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *

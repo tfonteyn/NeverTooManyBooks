@@ -35,9 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 /**
- * Base class for all (most) Activity's.
- *
- * @author pjw
+ * Base class for all (most?) Activity's.
  */
 public abstract class BaseActivity
         extends AppCompatActivity

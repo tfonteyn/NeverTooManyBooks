@@ -77,7 +77,7 @@ public final class DateUtils {
     /* ------------------------------ PARSING --------------------------------------------------- */
 
     /** List of formats we'll use to parse dates. */
-    private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>();
+    private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS;
 
     static {
         // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
@@ -100,6 +100,9 @@ public final class DateUtils {
     static {
 
         // create the parser list. These will be tried IN THE ORDER DEFINED HERE.
+
+        // 2019-05-04: there are 21 formats, setting capacity to 22.
+        PARSE_DATE_FORMATS = new ArrayList<>(22);
 
         // pure numerical formats
         addParseDateFormat("MM-dd-yyyy HH:mm:ss", false);
@@ -143,8 +146,6 @@ public final class DateUtils {
         // TEST: PARTIAL format... "March 2009" added due to OpenLibrary
         addParseDateFormat("MMM yyyy", addEnglish);
     }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     private DateUtils() {
     }

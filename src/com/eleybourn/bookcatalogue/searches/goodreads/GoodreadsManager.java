@@ -74,9 +74,9 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.goodreads.AuthorizationResultCheckTask;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationResultCheckTask;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.goodreads.api.AuthUserApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler;
@@ -136,6 +136,7 @@ public class GoodreadsManager
     /** error string. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
+    private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API = "Unexpected status code from API: ";
 
     /** Set to {@code true} when the credentials have been successfully verified. */
     private static boolean sHasValidCredentials;
@@ -217,7 +218,7 @@ public class GoodreadsManager
         }
         if (wait > 0) {
             try {
-                Log.d("sleep", "" + wait);
+                Log.d("sleep", String.valueOf(wait));
                 Thread.sleep(wait);
             } catch (InterruptedException ignored) {
             }
@@ -412,7 +413,7 @@ public class GoodreadsManager
                 throw new BookNotFoundException();
 
             default:
-                throw new IOException("Unexpected status code from API: "
+                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
                                               + response.getStatusLine().getStatusCode()
                                               + '/' + response.getStatusLine().getReasonPhrase());
         }
@@ -477,7 +478,7 @@ public class GoodreadsManager
                 throw new BookNotFoundException();
 
             default:
-                throw new IOException("Unexpected status code from API: "
+                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
                                               + response.getStatusLine().getStatusCode()
                                               + '/' + response.getStatusLine().getReasonPhrase());
         }
@@ -1063,11 +1064,12 @@ public class GoodreadsManager
     }
 
     /**
-     * Called by the callback activity, {@link GoodreadsAuthorizationResultCheckTask},
+     * Called by the callback activity, {@link AuthorizationResultCheckTask},
      * when a request has been authorized by the user.
      *
      * @author Philip Warner
      */
+    @WorkerThread
     public void handleAuthentication()
             throws AuthorizationException,
                    IOException {

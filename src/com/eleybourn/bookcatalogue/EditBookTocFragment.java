@@ -127,10 +127,11 @@ public class EditBookTocFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume
-     * <li>{@link #onSaveFieldsToBook} from base class onPause
-     * <p>
-     * <p>{@inheritDoc}
+     * <ul>
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
+     * </ul>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -138,12 +139,12 @@ public class EditBookTocFragment
         super.onActivityCreated(savedInstanceState);
 
         // Author to use if mMultipleAuthorsView is set to false
-        List<Author> authorList = mBookModel.getBook().getParcelableArrayList(
+        List<Author> authorList = mBookBaseFragmentModel.getBook().getParcelableArrayList(
                 UniqueId.BKEY_AUTHOR_ARRAY);
         mBookAuthor = authorList.get(0);
 
         // used to call Search sites to populate the TOC
-        mIsbn = mBookModel.getBook().getString(DBDefinitions.KEY_ISBN);
+        mIsbn = mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_ISBN);
 
         //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
@@ -183,10 +184,10 @@ public class EditBookTocFragment
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         super.onLoadFieldsFromBook(setAllFrom);
 
-        mMultipleAuthorsView.setEnabled(mBookModel.getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
+        mMultipleAuthorsView.setEnabled(mBookBaseFragmentModel.getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // Populate the list view with the book content table.
-        mList = mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        mList = mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new TocListAdapterForEditing(
@@ -194,7 +195,7 @@ public class EditBookTocFragment
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
-                mBookModel.setDirty(true);
+                mBookBaseFragmentModel.setDirty(true);
             }
         });
         mListView.setAdapter(mListAdapter);
@@ -218,7 +219,7 @@ public class EditBookTocFragment
     @Override
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
-        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     //</editor-fold>
@@ -326,7 +327,7 @@ public class EditBookTocFragment
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = mBookModel.getBook().getParcelableArrayList(
+            ArrayList<Series> inBook = mBookBaseFragmentModel.getBook().getParcelableArrayList(
                     UniqueId.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
@@ -334,16 +335,16 @@ public class EditBookTocFragment
                     inBook.add(s);
                 }
             }
-            mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication =
                 bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
-            if (mBookModel.getBook().getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                mBookModel.getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                                               bookFirstPublication);
+            if (mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                mBookBaseFragmentModel.getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                                                           bookFirstPublication);
             }
         }
 
@@ -357,8 +358,8 @@ public class EditBookTocFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            mBookModel.getBook().putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-            mFields.getField(R.id.multiple_authors).setValueFrom(mBookModel.getBook());
+            mBookBaseFragmentModel.getBook().putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            mFields.getField(R.id.multiple_authors).setValueFrom(mBookBaseFragmentModel.getBook());
         }
 
         mList.addAll(tocEntries);
@@ -469,10 +470,7 @@ public class EditBookTocFragment
 
             // Dialog content field is just a plain text field.
             TextView root = new TextView(getContext());
-            // we read the value from the attr/style in pixels
-            //noinspection ConstantConditions
-            root.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                             App.getTextAppearanceSmallTextSizeInPixels(getContext()));
+            root.setTextSize(TypedValue.COMPLEX_UNIT_PX, R.dimen.text_size_small);
             //API: 23:
             //content.setTextAppearance(android.R.style.TextAppearance_Small);
             //API: 26 ?
@@ -487,6 +485,7 @@ public class EditBookTocFragment
                 root.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
+            //noinspection ConstantConditions
             final AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
@@ -539,8 +538,7 @@ public class EditBookTocFragment
                                 @NonNull final TocEntry tocEntry) {
             FragmentManager fm = target.requireFragmentManager();
             if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, hasMultipleAuthors, tocEntry)
-                        .show(fm, TAG);
+                newInstance(target, hasMultipleAuthors, tocEntry).show(fm, TAG);
             }
         }
 

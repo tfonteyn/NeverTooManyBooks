@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -14,12 +15,10 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public abstract class BRBaseActivity
-        extends BaseActivity
-        implements OnTaskFinishedListener {
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -43,7 +42,7 @@ public abstract class BRBaseActivity
      *
      * @param defaultFilename for the user input field.
      */
-    void createFileBrowser(final String defaultFilename) {
+    void createFileBrowser(@NonNull final String defaultFilename) {
         // use lastBackupFile as the root directory for the browser.
         String lastBackupFile =
                 App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,

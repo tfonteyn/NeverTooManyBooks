@@ -109,7 +109,7 @@ public class BooklistStyleSettingsFragment
      * Update the summaries after a change.
      *
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,

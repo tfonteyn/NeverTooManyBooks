@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BooksOnBookshelfModel;
+import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;

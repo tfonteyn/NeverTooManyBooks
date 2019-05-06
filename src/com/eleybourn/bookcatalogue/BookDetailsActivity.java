@@ -50,7 +50,7 @@ public class BookDetailsActivity
         super.onCreate(savedInstanceState);
 
         FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(BookFragment.TAG)) {
+        if (fm.findFragmentByTag(BookFragment.TAG) == null) {
             Fragment frag = new BookFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()

@@ -79,10 +79,11 @@ public class EditBookFieldsFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume
-     * <li>{@link #onSaveFieldsToBook} from base class onPause
-     * <p>
-     * <p>{@inheritDoc}
+     * <ul>
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
+     * </ul>
+     * {@inheritDoc}
      */
     @CallSuper
     @Override
@@ -95,7 +96,7 @@ public class EditBookFieldsFragment
     /**
      * Some fields are only present (or need specific handling) on {@link BookFragment}.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -117,7 +118,7 @@ public class EditBookFieldsFragment
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         //noinspection ConstantConditions
         mCoverHandler = new CoverHandler(getFragmentManager(), this, mDb,
-                                         mBookModel.getBook(),
+                                         mBookBaseFragmentModel.getBook(),
                                          mFields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
                                          displaySizes.small, displaySizes.small);
@@ -128,10 +129,10 @@ public class EditBookFieldsFragment
                 v -> {
                     String title = mFields.getField(R.id.title).getValue().toString().trim();
                     ArrayList<Author> list =
-                            mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                            mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
                     Intent intent = new Intent(getActivity(), EditAuthorListActivity.class)
-                            .putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId())
+                            .putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId())
                             .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, list);
                     startActivityForResult(intent, REQ_EDIT_AUTHORS);
@@ -144,10 +145,10 @@ public class EditBookFieldsFragment
                     // use the current title.
                     String title = mFields.getField(R.id.title).getValue().toString().trim();
                     ArrayList<Series> list =
-                            mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                            mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
                     Intent intent = new Intent(getActivity(), EditSeriesListActivity.class)
-                            .putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId())
+                            .putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId())
                             .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_SERIES_ARRAY, list);
                     startActivityForResult(intent, REQ_EDIT_SERIES);
@@ -156,7 +157,7 @@ public class EditBookFieldsFragment
         Field field;
 
         field = mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
-        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookModel.getGenres(mDb));
+        initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, mBookBaseFragmentModel.getGenres());
 
 
         // Personal fields
@@ -166,7 +167,7 @@ public class EditBookFieldsFragment
         field = mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
         //noinspection ConstantConditions
         initCheckListEditor(getTag(), field, R.string.lbl_bookshelves_long,
-                            () -> mBookModel.getBook().getEditableBookshelvesList(mDb));
+                            () -> mBookBaseFragmentModel.getBook().getEditableBookshelvesList(mDb));
     }
 
     @Override
@@ -177,14 +178,14 @@ public class EditBookFieldsFragment
         populateAuthorListField();
         populateSeriesListField();
 
-        ArrayList<Bookshelf> bsList = mBookModel.getBook().getParcelableArrayList(
+        ArrayList<Bookshelf> bsList = mBookBaseFragmentModel.getBook().getParcelableArrayList(
                 UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
         mFields.getField(R.id.coverImage).getView()
-               .setTag(R.id.TAG_UUID, mBookModel.getBook().get(DBDefinitions.KEY_BOOK_UUID));
+               .setTag(R.id.TAG_UUID, mBookBaseFragmentModel.getBook().get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // Restore default visibility
@@ -198,7 +199,7 @@ public class EditBookFieldsFragment
     /**
      * Handle the Bookshelf default.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     protected void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
@@ -206,7 +207,7 @@ public class EditBookFieldsFragment
 
         // If the new book is not on any Bookshelf, use the current bookshelf as default
         final ArrayList<Bookshelf> list =
-                mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+                mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
 
         if (list.isEmpty()) {
 
@@ -225,20 +226,20 @@ public class EditBookFieldsFragment
             mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
             list.add(bookshelf);
-            mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
     }
 
     private void populateAuthorListField() {
-        ArrayList<Author> list = mBookModel.getBook()
-                                           .getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = mBookBaseFragmentModel.getBook()
+                                                       .getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
-            mBookModel.setDirty(true);
-            mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+            mBookBaseFragmentModel.setDirty(true);
+            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
 
         //noinspection ConstantConditions
-        String newText = mBookModel.getBook().getAuthorTextShort(getContext());
+        String newText = mBookBaseFragmentModel.getBook().getAuthorTextShort(getContext());
         if (newText.isEmpty()) {
             newText = getString(R.string.btn_set_authors);
         }
@@ -249,15 +250,15 @@ public class EditBookFieldsFragment
 
         if (mFields.getField(R.id.series).isUsed()) {
 
-            ArrayList<Series> list = mBookModel.getBook()
-                                               .getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> list = mBookBaseFragmentModel.getBook()
+                                                           .getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
-                mBookModel.setDirty(true);
-                mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                mBookBaseFragmentModel.setDirty(true);
+                mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
             }
 
             //noinspection ConstantConditions
-            String newText = mBookModel.getBook().getSeriesTextShort(getContext());
+            String newText = mBookBaseFragmentModel.getBook().getSeriesTextShort(getContext());
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
@@ -291,7 +292,7 @@ public class EditBookFieldsFragment
 
         if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = new Book.BookshelfCheckListItem().extractList(list);
-            mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
             mFields.getField(destinationFieldId).setValue(Bookshelf.toDisplayString(bsList));
         }
     }
@@ -319,19 +320,19 @@ public class EditBookFieldsFragment
                         //noinspection ConstantConditions
                         ArrayList<Author> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                                                    list != null ? list : new ArrayList<>());
+                        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
+                                                                    list != null ? list : new ArrayList<>(0));
 
-                        mBookModel.setDirty(true);
+                        mBookBaseFragmentModel.setDirty(true);
                     } else {
                         // Even though the dialog was terminated,
                         // some authors MAY have been modified.
-                        mBookModel.getBook().refreshAuthorList(mDb);
+                        mBookBaseFragmentModel.refreshAuthorList();
                     }
 
-                    boolean wasDirty = mBookModel.isDirty();
+                    boolean wasDirty = mBookBaseFragmentModel.isDirty();
                     populateAuthorListField();
-                    mBookModel.setDirty(wasDirty);
+                    mBookBaseFragmentModel.setDirty(wasDirty);
 
                 }
                 break;
@@ -343,20 +344,20 @@ public class EditBookFieldsFragment
                         //noinspection ConstantConditions
                         ArrayList<Series> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                                                                    list != null ? list : new ArrayList<>());
+                        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
+                                                                    list != null ? list : new ArrayList<>(0));
 
                         populateSeriesListField();
-                        mBookModel.setDirty(true);
+                        mBookBaseFragmentModel.setDirty(true);
                     } else {
                         // Even though the dialog was terminated,
                         // some series MAY have been modified.
-                        mBookModel.getBook().refreshSeriesList(mDb);
+                        mBookBaseFragmentModel.refreshSeriesList();
                     }
 
-                    boolean wasDirty = mBookModel.isDirty();
+                    boolean wasDirty = mBookBaseFragmentModel.isDirty();
                     populateSeriesListField();
-                    mBookModel.setDirty(wasDirty);
+                    mBookBaseFragmentModel.setDirty(wasDirty);
 
                 }
                 break;

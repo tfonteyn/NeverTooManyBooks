@@ -2,43 +2,63 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/toolbar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            />
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Dev note: if filling this frame with a scroll view (list,recycler,scroll,...) you
-        need to add:
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        to that scroller view.
-
-       Studio bug: layout_behavior on this FrameLayout **must** be set even if Studio claims not to resolve it.
-    -->
-    <FrameLayout
-        android:id="@+id/main_fragment"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        >
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/toolbar"
+                app:layout_scrollFlags="scroll|enterAlways"
+                />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/main_fragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_bar_layout"
+            />
+
+        <FrameLayout
+            android:id="@+id/progressOverlay"
+            style="@style/progressOverlay"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            >
+
+            <include layout="@layout/dialog_task_progress" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
-    <!--android:id="@+id/fab"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_gravity="bottom|end"-->
-    <!--android:layout_margin="@dimen/fab_margin"-->
-    <!--android:src="@android:drawable/ic_menu_add"-->
-    <!--/>-->
+        <!--android:id="@+id/fab"-->
+        <!--style="@style/floatingActionButton"-->
+        <!--android:src="@drawable/ic_add"-->
+        <!--tools:visibility="visible"-->
+        <!--/>-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -20,10 +20,8 @@
 
 package com.eleybourn.bookcatalogue.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -47,61 +45,23 @@ public class MultiTypeListCursorAdapter
         implements SectionIndexerV2 {
 
     @NonNull
-    private final LayoutInflater mInflater;
+    private final Context mContext;
     @NonNull
     private final MultiTypeListHandler mListHandler;
 
-    public MultiTypeListCursorAdapter(@NonNull final Activity activity,
+    public MultiTypeListCursorAdapter(@NonNull final Context context,
                                       @NonNull final Cursor cursor,
                                       @NonNull final MultiTypeListHandler handler) {
-        super(activity, cursor);
-        mInflater = LayoutInflater.from(activity);
+        super(context, cursor);
+        mContext = context;
         mListHandler = handler;
-    }
-
-    /**
-     * NOT USED. Should never be called. Die if it is.
-     * (Normally called from getView, but we override that)
-     */
-    @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final Cursor cursor) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * NOT USED. Should never be called. Die if it is.
-     * (Normally called from getView, but we override that)
-     */
-    @NonNull
-    @Override
-    public View newView(@NonNull final Context context,
-                        @NonNull final Cursor cursor,
-                        @NonNull final ViewGroup parent) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public int getItemViewType(final int position) {
         final Cursor listCursor = getCursor();
-        //
-        // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
-        // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
-        // This code attempts to gather more details of how this error occurs.
-        //
-        // NOTE: It DOES NOT fix the error; just gathers more debug info
-        //
-        if (listCursor.isClosed()) {
-            throw new IllegalStateException(
-                    "Attempt to get type of item on closed cursor (" + listCursor + ')');
-        } else if (position >= listCursor.getCount()) {
-            throw new IllegalStateException(
-                    "Attempt to get type of item beyond end of cursor (" + listCursor + ')');
-        } else {
-            listCursor.moveToPosition(position);
-            return mListHandler.getItemViewType(listCursor);
-        }
+        listCursor.moveToPosition(position);
+        return mListHandler.getItemViewType(listCursor);
     }
 
     @Override
@@ -109,18 +69,22 @@ public class MultiTypeListCursorAdapter
         return mListHandler.getViewTypeCount();
     }
 
-    /**
-     * The original/parent normally provides re-use of views in conjunction with newView/bindView.
-     */
-    @NonNull
-    @Override
-    public View getView(final int position,
-                        final View convertView,
-                        @NonNull final ViewGroup parent) {
-        Cursor listCursor = getCursor();
-        listCursor.moveToPosition(position);
+    public int getAbsolutePosition(@NonNull final View v) {
+        return mListHandler.getAbsolutePosition(v);
+    }
 
-        return mListHandler.getView(listCursor, mInflater, convertView, parent);
+    @Override
+    public View newView(@NonNull final Context context,
+                        @NonNull final Cursor cursor,
+                        @NonNull final ViewGroup parent) {
+        return mListHandler.newView(context, cursor, parent);
+    }
+
+    @Override
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
+        mListHandler.bindView(view, context, cursor);
     }
 
     /**
@@ -133,15 +97,84 @@ public class MultiTypeListCursorAdapter
     @Nullable
     public String[] getSectionTextForPosition(final int position) {
         final Cursor listCursor = getCursor();
+        // sanity check.
         if (position < 0 || position >= listCursor.getCount()) {
             return null;
         }
 
+        // temporary move the cursor to the requested position, restore after we got the text.
         final int savedPos = listCursor.getPosition();
         listCursor.moveToPosition(position);
-        final String[] section = mListHandler.getSectionText(mInflater.getContext(), listCursor);
+        final String[] section = mListHandler.getSectionText(mContext, listCursor);
         listCursor.moveToPosition(savedPos);
 
         return section;
+    }
+
+    /**
+     * Interface for handling the View-related tasks in a multi-type ListView.
+     *
+     * @author Philip Warner
+     */
+    public interface MultiTypeListHandler {
+
+        /**
+         * Return the view type that will be used for any row of the type represented by
+         * the current cursor position.
+         *
+         * @param cursor Cursor positioned at representative row.
+         *
+         * @return view type
+         */
+        int getItemViewType(@NonNull Cursor cursor);
+
+        /**
+         * @return the total number of view types that can be returned.
+         */
+        int getViewTypeCount();
+
+        /**
+         * Return the absolute position in the list for the passed View.
+         *
+         * @param view to find
+         *
+         * @return position
+         */
+        int getAbsolutePosition(@NonNull final View view);
+
+        /**
+         * Get the text to display in ListView for row at current cursor position.
+         *
+         * @param context caller context
+         * @param cursor  Cursor, correctly positioned.
+         *
+         * @return the section text as an array.
+         */
+        String[] getSectionText(@NonNull Context context,
+                                @NonNull Cursor cursor);
+
+        /**
+         * Create a new view based on the current row of the cursor.
+         *
+         * @param cursor Cursor, positioned at current row
+         * @param parent Parent view group
+         *
+         * @return new view.
+         */
+        @NonNull
+        View newView(@NonNull Context context,
+                     @NonNull Cursor cursor,
+                     @NonNull ViewGroup parent);
+
+
+        /**
+         * Fill the view in with details pointed to by the current cursor.
+         *
+         * @param view   Pointer to reusable view of correct type.
+         * @param cursor Cursor, positioned at current row
+         */
+        void bindView(@NonNull View view,
+                      @NonNull Context context,
+                      @NonNull Cursor cursor);
     }
 }

@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -83,10 +84,11 @@ public class BookSearchByIsbnFragment
     /** all digits in ISBN strings. */
     private static final String ISBN_DIGITS = "0123456789xX";
     /** listener/acceptor for all ISBN digits. */
-    private static final DigitsKeyListener ISBN_LISTENER = DigitsKeyListener.getInstance(
-            ISBN_DIGITS);
+    private static final DigitsKeyListener ISBN_LISTENER =
+            DigitsKeyListener.getInstance(ISBN_DIGITS);
     /** filter to remove all ASIN digits from ISBN strings (leave xX!). */
-    private static final String ISBN_REGEX = "[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]";
+    private static final Pattern ISBN_PATTERN =
+            Pattern.compile("[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]");
     /** flag indicating we're running in SCAN mode. */
     private boolean mScanMode;
     /** flag indicating the scanner is already started. */
@@ -249,11 +251,10 @@ public class BookSearchByIsbnFragment
             mIsbnView.setKeyListener(ISBN_LISTENER);
             // remove invalid digits
             String txt = mIsbnView.getText().toString().trim();
-            mIsbnView.setText(txt.replaceAll(ISBN_REGEX, ""));
+            mIsbnView.setText(ISBN_PATTERN.matcher(txt).replaceAll(""));
         }
 
-        mIsbnView.setInputType(
-                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        mIsbnView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
     }
 
     /**
@@ -402,7 +403,7 @@ public class BookSearchByIsbnFragment
      * <p>
      * The details will get sent to {@link EditBookActivity}
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
@@ -411,8 +412,6 @@ public class BookSearchByIsbnFragment
         }
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager()
-                         .sendHeaderUpdate(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(mActivity, EditBookActivity.class)
                         .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);

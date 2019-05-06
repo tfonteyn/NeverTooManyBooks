@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
@@ -369,6 +370,17 @@ public abstract class ShowBookApiHandler
     }
 
     /**
+     * @param imageName to check
+     *
+     * @return {@code true} if the name DOES contain the string 'nocover'
+     */
+    private static boolean hasNoCover(final String imageName) {
+        return imageName != null
+                && imageName.toLowerCase(LocaleUtils.getSystemLocale())
+                            .contains(GoodreadsUtils.NO_COVER);
+    }
+
+    /**
      * Perform a search and handle the results.
      *
      * @param request        HttpGet request to use
@@ -415,10 +427,10 @@ public abstract class ShowBookApiHandler
             String bestImage = null;
             if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
                 bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
-                if (GoodreadsUtils.hasNoCover(bestImage)
+                if (hasNoCover(bestImage)
                         && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
                     bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
-                    if (GoodreadsUtils.hasNoCover(bestImage)) {
+                    if (hasNoCover(bestImage)) {
                         bestImage = null;
                     }
                 }

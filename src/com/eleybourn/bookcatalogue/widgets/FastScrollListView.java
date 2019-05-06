@@ -216,7 +216,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -233,7 +233,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -247,7 +247,7 @@ public class FastScrollListView
     /**
      * Pass to scroller if defined, otherwise perform default actions.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -259,7 +259,7 @@ public class FastScrollListView
     /**
      * Send draw() to the scroller as well.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -418,17 +418,10 @@ public class FastScrollListView
                 mOverlayDrawable = context.getDrawable(android.R.drawable.alert_dark_frame);
             }
 
-            // Determine the overlay size based on 3 x LargeTextSize;
-            // if we get an error, just use a hard-coded guess.
-            try {
-                float scale = context.getResources().getDisplayMetrics().scaledDensity;
-                sLargeTextScaledSizeInSp = (int) (LARGE_TEXT_SIZE_IN_SP * scale);
+            float scale = context.getResources().getDisplayMetrics().scaledDensity;
+            sLargeTextScaledSizeInSp = (int) (LARGE_TEXT_SIZE_IN_SP * scale);
 
-            } catch (RuntimeException e) {
-                // Not a critical value; just try to get it close.
-                sLargeTextScaledSizeInSp = LARGE_TEXT_SIZE_IN_SP;
-            }
-
+            // allow 2 lines of text and some padding
             mOverlaySize = 3 * sLargeTextScaledSizeInSp;
 
             // Can't use the view width yet, because it has probably not been set up so we just

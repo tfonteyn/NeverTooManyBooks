@@ -8,20 +8,11 @@
     tools:context=".UpdateFieldsFromInternetActivity"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/toolbar"
-        android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
     <TextView
         android:id="@+id/title"
         style="@style/txt_detail_large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
         tools:text="Anna Karenina"
         />
@@ -51,7 +42,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/cancel"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        app:layout_constraintBottom_toTopOf="@id/confirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
@@ -63,22 +55,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
             android:orientation="vertical"
+
             >
             <!-- fields are added here dynamically -->
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <Button
-        android:id="@+id/cancel"
-        style="?attr/buttonBarNegativeButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@android:string/cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/confirm"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        />
 
     <Button
         android:id="@+id/confirm"
@@ -88,8 +69,6 @@
         android:text="@string/btn_confirm_update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/cancel"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

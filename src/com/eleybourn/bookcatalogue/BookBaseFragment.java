@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookModel;
+import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
 /**
  * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
@@ -81,20 +81,22 @@ public abstract class BookBaseFragment
     protected DBA mDb;
 
     /** The book. */
-    BookModel mBookModel;
+    BookBaseFragmentModel mBookBaseFragmentModel;
 
     /** The fields collection. */
     Fields mFields;
 
     private void setActivityTitle() {
+        Book book = mBookBaseFragmentModel.getBook();
+
         //noinspection ConstantConditions
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            if (mBookModel.getBook().getId() > 0) {
+            if (book.getId() > 0) {
                 // EDIT existing book
-                actionBar.setTitle(mBookModel.getBook().getString(DBDefinitions.KEY_TITLE));
+                actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions
-                actionBar.setSubtitle(mBookModel.getBook().getAuthorTextShort(getContext()));
+                actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             } else {
                 // NEW book
                 actionBar.setTitle(R.string.title_add_book);
@@ -117,7 +119,7 @@ public abstract class BookBaseFragment
     /**
      * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -127,9 +129,9 @@ public abstract class BookBaseFragment
         mDb = new DBA();
 
         //noinspection ConstantConditions
-        mBookModel = ViewModelProviders.of(getActivity()).get(BookModel.class);
+        mBookBaseFragmentModel = ViewModelProviders.of(getActivity()).get(BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookModel.init(args, mDb);
+        mBookBaseFragmentModel.init(args);
 
         initFields();
     }
@@ -153,7 +155,7 @@ public abstract class BookBaseFragment
     /**
      * Trigger the Fragment to load its Fields from the Book.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -172,19 +174,19 @@ public abstract class BookBaseFragment
      * <p>
      * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     public final void loadFields() {
         // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
         // preserve the 'dirty' status.
-        final boolean wasDirty = mBookModel.isDirty();
+        final boolean wasDirty = mBookBaseFragmentModel.isDirty();
         // make it so!
         onLoadFieldsFromBook(false);
 
-        mBookModel.setDirty(wasDirty);
-        mFields.setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
+        mBookBaseFragmentModel.setDirty(wasDirty);
+        mFields.setAfterFieldChangeListener((field, newValue) -> mBookBaseFragmentModel.setDirty(true));
 
         // this is a good place to do this, as we use data from the book for the title.
         setActivityTitle();
@@ -201,7 +203,7 @@ public abstract class BookBaseFragment
     @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         if (!setAllFrom) {
-            mFields.setAllFrom(mBookModel.getBook());
+            mFields.setAllFrom(mBookBaseFragmentModel.getBook());
         }
     }
 
@@ -236,30 +238,31 @@ public abstract class BookBaseFragment
     /**
      * Set visibility of menu items as appropriate.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        boolean bookExists = mBookModel.getBook().getId() != 0;
+        boolean bookExists = mBookBaseFragmentModel.getBook().getId() != 0;
         menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, bookExists);
     }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        Book book = mBookBaseFragmentModel.getBook();
+
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
                 Intent intentUpdateFields =
                         new Intent(getContext(), UpdateFieldsFromInternetActivity.class)
-                                .putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId())
+                                .putExtra(DBDefinitions.KEY_ID, book.getId())
                                 .putExtra(DBDefinitions.KEY_TITLE,
-                                          mBookModel.getBook().getString(DBDefinitions.KEY_TITLE))
+                                          book.getString(DBDefinitions.KEY_TITLE))
                                 .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                          mBookModel.getBook().getString(
-                                                  DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields,
                                        UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
@@ -413,7 +416,7 @@ public abstract class BookBaseFragment
                     if (bookId > 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
-                        mBookModel.setBook(new Book(bookId, mDb));
+                        mBookBaseFragmentModel.setBook(bookId);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                             Logger.debug("onActivityResult",

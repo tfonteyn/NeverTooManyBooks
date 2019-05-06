@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -43,8 +44,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -274,6 +278,8 @@ public class DBA
     private static final String ERROR_NEEDS_TRANSACTION = "Needs transaction";
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to update FTS";
 
+    /** See {@link #encodeString(String)}. */
+    private static final Pattern ENCODE_STRING = Pattern.compile("'", Pattern.LITERAL);
 
     /** the actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
@@ -344,10 +350,13 @@ public class DBA
      * @param value to encode
      *
      * @return escaped value.
+     *
+     * Note: Using the compiled pattern is theoretically faster than using
+     * {@link String#replace(CharSequence, CharSequence)}.
      */
     @NonNull
     public static String encodeString(@NonNull final String value) {
-        return value.replace("'", "''");
+        return ENCODE_STRING.matcher(value).replaceAll(Matcher.quoteReplacement("''"));
     }
 
     /**
@@ -887,7 +896,7 @@ public class DBA
 
     /**
      * @return a complete list of author family names from the database.
-     * Used for {@link android.widget.AutoCompleteTextView}.
+     * Used for {@link AutoCompleteTextView}.
      */
     @NonNull
     public ArrayList<String> getAuthorsFamilyName() {
@@ -897,7 +906,7 @@ public class DBA
 
     /**
      * @return a complete list of author given names from the database.
-     * Used for {@link android.widget.AutoCompleteTextView}.
+     * Used for {@link AutoCompleteTextView}.
      */
     @NonNull
     public ArrayList<String> getAuthorsGivenNames() {
@@ -907,7 +916,7 @@ public class DBA
 
     /**
      * @return a complete list of formatted author names from the database.
-     * Used for {@link android.widget.AutoCompleteTextView}.
+     * Used for {@link AutoCompleteTextView}.
      */
     @NonNull
     public ArrayList<String> getAuthorsFormattedName() {
@@ -1520,8 +1529,16 @@ public class DBA
         }
     }
 
-    public int updateBookRead(final long bookId,
-                              final boolean read) {
+    /**
+     * Update the 'read' status of the book.
+     *
+     * @param id   book id
+     * @param read the status to set
+     *
+     * @return {@code true} for success.
+     */
+    public boolean updateBookRead(final long id,
+                                  final boolean read) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_READ_STATUS.name, read);
         if (read) {
@@ -1530,8 +1547,8 @@ public class DBA
             cv.put(DOM_BOOK_READ_END.name, "");
         }
 
-        return sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
-                                new String[]{String.valueOf(bookId)});
+        return 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
+                                    new String[]{String.valueOf(id)});
     }
 
     /**
@@ -2410,7 +2427,7 @@ public class DBA
     public BookCursor fetchBooksForFieldUpdate(@NonNull final String whereClause) {
         // the order by is used to be able to restart the update.
         String sql = getAllBooksSql(whereClause)
-                + " ORDER BY " + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID);
+                + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
@@ -2479,7 +2496,7 @@ public class DBA
      * Return a {@link Cursor} for the given {@link Book} id.
      * <p>
      * The columns fetched are limited to what is needed for the
-     * {@link com.eleybourn.bookcatalogue.BooksOnBookshelf} so called "extras" fields.
+     * {@link BooksOnBookshelf} so called "extras" fields.
      *
      * @param bookId      to retrieve
      * @param extrasToGet which extra fields need fetching. (Allows optimizing the fetch)
@@ -4049,54 +4066,54 @@ public class DBA
                 "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
 
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FAMILY_NAMES =
                 "SELECT DISTINCT " + DOM_AUTHOR_FAMILY_NAME + " FROM " + TBL_AUTHORS
                         + " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_GIVEN_NAMES =
                 "SELECT DISTINCT " + DOM_AUTHOR_GIVEN_NAMES + " FROM " + TBL_AUTHORS
                         + " ORDER BY lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_WITH_FORMATTED_NAMES =
                 "SELECT " + SqlColumns.AUTHOR_FORMATTED
                         + " FROM " + TBL_AUTHORS.ref()
                         + " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION
                         + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String SERIES_NAME =
                 "SELECT " + DOM_SERIES_TITLE
                         + " FROM " + TBL_SERIES
                         + " ORDER BY lower(" + DOM_SERIES_TITLE + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String FORMATS =
                 "SELECT DISTINCT " + DOM_BOOK_FORMAT
                         + " FROM " + TBL_BOOKS
                         + " ORDER BY lower(" + DOM_BOOK_FORMAT + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
                 "SELECT DISTINCT " + DOM_BOOK_GENRE
                         + " FROM " + TBL_BOOKS
                         + " ORDER BY lower(" + DOM_BOOK_GENRE + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + DOM_BOOK_LANGUAGE
                         + " FROM " + TBL_BOOKS
                         + " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
                 "SELECT DISTINCT " + DOM_BOOK_LOCATION
                         + " FROM " + TBL_BOOKS
                         + " ORDER BY lower(" + DOM_BOOK_LOCATION + ')' + COLLATION;
 
-        /** name only, for {@link android.widget.AutoCompleteTextView}. */
+        /** name only, for {@link AutoCompleteTextView}. */
         private static final String PUBLISHERS =
                 "SELECT DISTINCT " + DOM_BOOK_PUBLISHER
                         + " FROM " + TBL_BOOKS

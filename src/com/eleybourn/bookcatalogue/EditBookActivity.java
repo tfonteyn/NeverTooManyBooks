@@ -30,8 +30,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.entities.BookModel;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
 /**
  * The hosting activity for editing a book.
@@ -53,7 +53,7 @@ public class EditBookActivity
         super.onCreate(savedInstanceState);
 
         FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(EditBookFragment.TAG)) {
+        if (fm.findFragmentByTag(EditBookFragment.TAG) == null) {
             Fragment frag = new EditBookFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
@@ -66,15 +66,16 @@ public class EditBookActivity
     /**
      * When the user clicks 'back/up', check if we're clean to leave.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     public void onBackPressed() {
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        BookModel bookModel = ViewModelProviders.of(this).get(BookModel.class);
-        finishIfClean(bookModel.isDirty());
+        BookBaseFragmentModel bookBaseFragmentModel = ViewModelProviders.of(this).get(
+                BookBaseFragmentModel.class);
+        finishIfClean(bookBaseFragmentModel.isDirty());
 
         super.onBackPressed();
     }

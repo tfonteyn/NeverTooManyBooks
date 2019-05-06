@@ -72,7 +72,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  *
  * @author Philip Warner
  */
-public class ImportAllTask
+public class GrImportAllTask
         extends GoodreadsTask {
 
     private static final long serialVersionUID = -3535324410982827612L;
@@ -106,8 +106,8 @@ public class ImportAllTask
     /**
      * Constructor.
      */
-    ImportAllTask(@NonNull final String description,
-                  final boolean isSync) {
+    GrImportAllTask(@NonNull final String description,
+                    final boolean isSync) {
 
         super(description);
 
@@ -127,6 +127,16 @@ public class ImportAllTask
         }
     }
 
+    /**
+     * @param imageName to check
+     *
+     * @return {@code true} if the name does NOT contain the string 'nocover'
+     */
+    private static boolean hasCover(final String imageName) {
+        return imageName != null
+                && !imageName.toLowerCase(LocaleUtils.getSystemLocale())
+                             .contains(GoodreadsUtils.NO_COVER);
+    }
 
     /**
      * Do the actual work.
@@ -144,8 +154,9 @@ public class ImportAllTask
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
-                        new SendAllBooksTask(context.getString(R.string.gr_title_send_book), true),
-                                                           QueueManager.Q_MAIN);
+                        new GrSendAllBooksTask(context.getString(R.string.gr_title_send_book),
+                                               true),
+                        QueueManager.Q_MAIN);
             }
             return ok;
         } catch (AuthorizationException e) {
@@ -308,8 +319,9 @@ public class ImportAllTask
             return null;
         }
         if (mBookshelfLookup == null) {
-            mBookshelfLookup = new HashMap<>();
-            for (Bookshelf bookshelf : db.getBookshelves()) {
+            List<Bookshelf> bookshelves = db.getBookshelves();
+            mBookshelfLookup = new HashMap<>(bookshelves.size());
+            for (Bookshelf bookshelf : bookshelves) {
                 mBookshelfLookup.put(
                         GoodreadsManager.canonicalizeBookshelfName(bookshelf.getName()),
                         bookshelf.getName());
@@ -327,7 +339,7 @@ public class ImportAllTask
     @NonNull
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(5);
         addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewFields.ISBN13));
         addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
         return list;
@@ -537,7 +549,7 @@ public class ImportAllTask
                     bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db).getId()));
                 }
             }
-            //TEST
+            //TEST see above
             //--- begin 2019-02-04 ---
             Utils.pruneList(db, bsList);
             //--- end 2019-02-04 ---
@@ -557,9 +569,9 @@ public class ImportAllTask
             String thumbnail;
             String largeImage = review.getString(ReviewFields.LARGE_IMAGE);
             String smallImage = review.getString(ReviewFields.SMALL_IMAGE);
-            if (GoodreadsUtils.hasCover(largeImage)) {
+            if (hasCover(largeImage)) {
                 thumbnail = largeImage;
-            } else if (GoodreadsUtils.hasCover(smallImage)) {
+            } else if (hasCover(smallImage)) {
                 thumbnail = smallImage;
             } else {
                 thumbnail = null;

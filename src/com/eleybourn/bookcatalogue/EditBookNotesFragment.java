@@ -69,10 +69,11 @@ public class EditBookNotesFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume
-     * <li>{@link #onSaveFieldsToBook} from base class onPause
-     * <p>
-     * <p>{@inheritDoc}
+     * <ul>
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
+     * </ul>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -118,17 +119,17 @@ public class EditBookNotesFragment
         mFields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
-                        mBookModel.getPricePaidCurrencyCodes(mDb));
+                        mBookBaseFragmentModel.getPricePaidCurrencyCodes());
 
         field = mFields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location,
-                        mBookModel.getLocations(mDb));
+                        mBookBaseFragmentModel.getLocations());
 
         field = mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
         //noinspection ConstantConditions
         initCheckListEditor(getTag(), field, R.string.lbl_edition,
-                            () -> mBookModel.getBook().getEditableEditionList());
+                            () -> mBookBaseFragmentModel.getBook().getEditableEditionList());
 
         field = mFields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
@@ -180,9 +181,9 @@ public class EditBookNotesFragment
                                       @NonNull final List<CheckListItem<Integer>> list) {
 
         if (destinationFieldId == R.id.edition) {
-            mBookModel.getBook().putEditions(new Book.EditionCheckListItem().extractList(list));
+            mBookBaseFragmentModel.getBook().putEditions(new Book.EditionCheckListItem().extractList(list));
             mFields.getField(destinationFieldId)
-                   .setValue(mBookModel.getBook().getString(DBDefinitions.KEY_EDITION_BITMASK));
+                   .setValue(mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_EDITION_BITMASK));
         }
     }
 

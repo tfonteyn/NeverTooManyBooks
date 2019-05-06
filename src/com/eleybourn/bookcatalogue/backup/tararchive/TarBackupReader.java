@@ -194,7 +194,7 @@ public class TarBackupReader
      *
      * @author pjw
      */
-    public static class TarBackupReaderEntity
+    private static class TarBackupReaderEntity
             extends ReaderEntityAbstract {
 
         @NonNull

@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.viewmodels;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BooksOnBookshelf;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -70,7 +73,7 @@ public class BooksOnBookshelfModel
     /**
      * @param args   Bundle savedInstance/Extras
      */
-    void init(@Nullable final Bundle args) {
+    public void init(@Nullable final Bundle args) {
         if (mSearchCriteria != null) {
             // already initialized.
             return;
@@ -96,8 +99,8 @@ public class BooksOnBookshelfModel
         mCurrentPositionedBookId = -1;
     }
 
-    void savePosition(final int topRow,
-                      final int topRowOffset) {
+    public void savePosition(final int topRow,
+                             final int topRowOffset) {
         mTopRow = topRow;
         mTopRowOffset = topRowOffset;
 
@@ -210,36 +213,41 @@ public class BooksOnBookshelfModel
      * Only some are supported by
      * {@link com.eleybourn.bookcatalogue.entities.Book}#onSearchRequested()}.
      */
-    static class SearchCriteria {
+    public static class SearchCriteria {
 
         /**
          * Author to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
+        public
         String author = "";
         /**
          * Title to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
+        public
         String title = "";
         /**
          * Series to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
+        public
         String series = "";
         /**
          * Name of the person we loaned books to, to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
+        public
         String loanee = "";
         /**
          * List of bookId's to display. The result of a search.
          */
         @Nullable
+        public
         ArrayList<Integer> bookList;
         /**
          * Text to use in search query.
@@ -249,7 +257,7 @@ public class BooksOnBookshelfModel
         @NonNull
         private String mText = "";
 
-        void clear() {
+        public void clear() {
             mText = "";
             author = "";
             title = "";
@@ -271,7 +279,7 @@ public class BooksOnBookshelfModel
             }
         }
 
-        void from(@NonNull final Bundle bundle) {
+        public void from(@NonNull final Bundle bundle) {
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
                 setText(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
             }
@@ -296,7 +304,7 @@ public class BooksOnBookshelfModel
          * @param intent which will be used for a
          *               {@link BooksOnBookshelfModel} #startActivityForResult}
          */
-        void to(@NonNull final Intent intent) {
+        public void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, mText)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author)
                   .putExtra(DBDefinitions.KEY_TITLE, title)
@@ -308,7 +316,7 @@ public class BooksOnBookshelfModel
         /**
          * @param outState from {@link BooksOnBookshelfModel}#onSaveInstanceState}
          */
-        void to(final Bundle outState) {
+        public void to(final Bundle outState) {
             outState.putString(UniqueId.BKEY_SEARCH_TEXT, mText);
             outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
             outState.putString(DBDefinitions.KEY_TITLE, title);
@@ -317,7 +325,7 @@ public class BooksOnBookshelfModel
             outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
         }
 
-        boolean isEmpty() {
+        public boolean isEmpty() {
             return mText.isEmpty()
                     && (author == null || author.isEmpty())
                     && (title == null || title.isEmpty())

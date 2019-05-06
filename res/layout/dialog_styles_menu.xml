@@ -1,55 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame"
     >
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/styles"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomDiv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         tools:listitem="@layout/row_radiobutton"
         />
 
-    <View
-        android:id="@+id/bottomDiv"
-        style="@style/div_horizontal"
-        app:layout_constraintBottom_toTopOf="@id/menu_show_more_or_less"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/menu_show_more_or_less"
-        style="@style/row_option_menu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toTopOf="@id/menu_customize_ellipsis"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="@string/menu_show_fewer_ellipsis"
-        />
-
-    <TextView
-        android:id="@+id/menu_customize_ellipsis"
-        style="@style/row_option_menu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_customize_ellipsis"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="SelectableText"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -69,11 +69,15 @@ public abstract class ManagedTask
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    private static final MessageSwitch<ManagedTaskListener, ManagedTaskController> MESSAGE_SWITCH = new MessageSwitch<>();
+    public static final MessageSwitch<ManagedTaskListener, ManagedTaskController>
+            MESSAGE_SWITCH = new MessageSwitch<>();
+
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
     protected final TaskManager mTaskManager;
-    /** */
+    /**
+     *
+     */
     private final long mMessageSenderId;
     /** message to send to the TaskManager when all is said and done. */
     @Nullable
@@ -116,11 +120,6 @@ public abstract class ManagedTask
         mTaskManager.addTask(this);
     }
 
-    @NonNull
-    public static MessageSwitch<ManagedTaskListener, ManagedTaskController> getMessageSwitch() {
-        return MESSAGE_SWITCH;
-    }
-
     /**
      * Called when the task has finished, override if needed.
      */
@@ -160,8 +159,7 @@ public abstract class ManagedTask
         onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
-        MESSAGE_SWITCH.send(mMessageSenderId,
-                            listener -> {
+        MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                                     Logger.debug(ManagedTask.this, "run",
                                                  "ManagedTask=" + getName(),
@@ -206,24 +204,4 @@ public abstract class ManagedTask
     public String getFinalMessage() {
         return mFinalMessage;
     }
-
-    /**
-     * Controller interface for this object.
-     */
-    interface ManagedTaskController {
-
-        void requestAbort();
-
-        @NonNull
-        ManagedTask getManagedTask();
-    }
-
-    /**
-     * Allows other objects to know when a task completed.
-     */
-    public interface ManagedTaskListener {
-
-        void onTaskFinished(@NonNull final ManagedTask task);
-    }
-
 }

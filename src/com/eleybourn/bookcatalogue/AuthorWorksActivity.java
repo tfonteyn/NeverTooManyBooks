@@ -30,7 +30,7 @@ public class AuthorWorksActivity
         super.onCreate(savedInstanceState);
 
         FragmentManager fm = getSupportFragmentManager();
-        if (null == fm.findFragmentByTag(AuthorWorksFragment.TAG)) {
+        if (fm.findFragmentByTag(AuthorWorksFragment.TAG) == null) {
             Fragment frag = new AuthorWorksFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()

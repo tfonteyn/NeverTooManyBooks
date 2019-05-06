@@ -263,6 +263,7 @@ public class FlattenedBooklist
 
     /**
      * Cleanup the underlying table.
+     * It's a temp table, but cleaning up properly is a good thing.
      */
     public void deleteData() {
         mTable.drop(mSyncedDb);

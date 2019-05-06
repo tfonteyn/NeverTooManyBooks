@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.viewmodels;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -12,16 +12,26 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 public class AuthorWorksModel
         extends ViewModel {
 
+    private DBA mDb;
+
     private Author author;
     private ArrayList<TocEntry> mTocEntries;
 
-    void init(@NonNull final DBA db,
-              final long authorId,
-              @SuppressWarnings("SameParameterValue") final boolean withBooks) {
+    @Override
+    protected void onCleared() {
+        if (mDb != null) {
+            mDb.close();
+        }
+    }
+
+    public void init(final long authorId,
+                     @SuppressWarnings("SameParameterValue") final boolean withBooks) {
         if (author == null || authorId != author.getId()) {
-            author = db.getAuthor(authorId);
+
+            mDb = new DBA();
+            author = mDb.getAuthor(authorId);
             if (author != null) {
-                mTocEntries = db.getTocEntryByAuthor(author, withBooks);
+                mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);
 
                 // for testing.
 //                for (int i = 0; i < 300; i++) {
@@ -41,5 +51,10 @@ public class AuthorWorksModel
     @NonNull
     public ArrayList<TocEntry> getTocEntries() {
         return mTocEntries;
+    }
+
+    @NonNull
+    public ArrayList<Integer> getBookIds(@NonNull final TocEntry item) {
+        return mDb.getBookIdsByTocEntry(item.getId());
     }
 }

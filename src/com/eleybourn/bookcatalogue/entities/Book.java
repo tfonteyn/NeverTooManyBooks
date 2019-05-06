@@ -315,21 +315,23 @@ public class Book
      *
      * @param db database
      *
-     * @return {@code true} if the update was successful, {@code false} on failure
+     * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public boolean setRead(@NonNull final DBA db,
                            final boolean isRead) {
-        if (db.updateBookRead(getId(), isRead) == 1) {
+        boolean old = getBoolean(Book.IS_READ);
+
+        if (db.updateBookRead(getId(), isRead)) {
             putBoolean(Book.IS_READ, isRead);
             if (isRead) {
                 putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
             } else {
                 putString(DBDefinitions.KEY_READ_END, "");
             }
-            return true;
+            return isRead;
         }
-        return false;
+
+        return old;
     }
 
     /**
@@ -579,6 +581,10 @@ public class Book
         addAccessor(HAS_MULTIPLE_AUTHORS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Authors.MULTIPLE_AUTHORS));
+    }
+
+    public String getLoanee(final DBA db) {
+        return db.getLoaneeByBookId(getId());
     }
 
     /**

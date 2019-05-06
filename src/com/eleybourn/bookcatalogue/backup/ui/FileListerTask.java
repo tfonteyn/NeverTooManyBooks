@@ -1,7 +1,5 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -13,11 +11,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
@@ -26,9 +26,9 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * @author pjw
  */
 public class FileListerTask
-        extends AsyncTask<Void, Object, FileChooserFragment.DirectoryContent> {
+        extends TaskWithProgress<Object, FileChooserFragment.DirectoryContent> {
 
-    /** Fragment manager tag. */
+    /** Used by the {@link ProgressDialogFragment} for this task. */
     public static final String TAG = FileListerTask.class.getSimpleName();
 
     /**
@@ -40,30 +40,24 @@ public class FileListerTask
                                   LocaleUtils.getSystemLocale()));
 
     @NonNull
-    protected final ProgressDialogFragment<FileChooserFragment.DirectoryContent> mProgressDialog;
-
-    @NonNull
     private final FileChooserFragment.DirectoryContent mDir;
-
-    /**
-     * {@link #doInBackground} should catch exceptions, and set this field.
-     * {@link #onPostExecute} can then check it.
-     */
-    @Nullable
-    private Exception mException;
 
     /**
      * Constructor.
      *
      * @param progressDialog ProgressDialogFragment
-     * @param root     folder to list
+     * @param root           folder to list
      */
     @UiThread
-    FileListerTask(@NonNull final ProgressDialogFragment<FileChooserFragment.DirectoryContent> progressDialog,
+    FileListerTask(@NonNull final ProgressDialogFragment<Object, FileChooserFragment.DirectoryContent> progressDialog,
                    @NonNull final File root) {
+        super(progressDialog);
 
-        mProgressDialog = progressDialog;
         mDir = new FileChooserFragment.DirectoryContent(root);
+    }
+
+    protected int getId() {
+        return R.id.TASK_ID_FILE_LISTER;
     }
 
     @Override
@@ -74,7 +68,7 @@ public class FileListerTask
         // Filter for directories and our own archive files.
         FileFilter fileFilter = pathname ->
                 (pathname.isDirectory() && pathname.canWrite())
-                        || (pathname.isFile() && BackupFileDetails.isArchive(pathname));
+                        || (pathname.isFile() && BackupManager.isArchive(pathname));
 
         // Get a file list
         File[] files = mDir.root.listFiles(fileFilter);
@@ -85,8 +79,8 @@ public class FileListerTask
         for (File file : files) {
             BackupFileDetails fd = new BackupFileDetails(file);
             mDir.files.add(fd);
-            if (BackupFileDetails.isArchive(file)) {
-                try (BackupReader reader = BackupManager.readFrom(file)) {
+            if (BackupManager.isArchive(file)) {
+                try (BackupReader reader = BackupManager.getReader(file)) {
                     fd.setInfo(reader.getInfo());
                 } catch (IOException e) {
                     Logger.error(this, e);
@@ -96,11 +90,5 @@ public class FileListerTask
 
         Collections.sort(mDir.files, FILE_DETAILS_COMPARATOR);
         return mDir;
-    }
-
-    @Override
-    @UiThread
-    protected void onPostExecute(@Nullable final FileChooserFragment.DirectoryContent result) {
-        mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

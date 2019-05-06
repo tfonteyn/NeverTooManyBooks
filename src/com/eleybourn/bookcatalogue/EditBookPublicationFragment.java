@@ -60,10 +60,11 @@ public class EditBookPublicationFragment
     /**
      * Has no specific Arguments or savedInstanceState.
      * All storage interaction is done via:
-     * <li>{@link #onLoadFieldsFromBook} from base class onResume
-     * <li>{@link #onSaveFieldsToBook} from base class onPause
-     * <p>
-     * <p>{@inheritDoc}
+     * <ul>
+     * <li>{@link #onLoadFieldsFromBook} from base class onResume</li>
+     * <li>{@link #onSaveFieldsToBook} from base class onPause</li>
+     * </ul>
+     * {@inheritDoc}
      */
     @CallSuper
     @Override
@@ -76,7 +77,7 @@ public class EditBookPublicationFragment
     /**
      * Some fields are only present (or need specific handling) on {@link BookFragment}.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -92,17 +93,17 @@ public class EditBookPublicationFragment
         mFields.add(R.id.pages, DBDefinitions.KEY_PAGES);
 
         field = mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
-        initValuePicker(field, R.string.lbl_format, R.id.btn_format, mBookModel.getFormats(mDb));
+        initValuePicker(field, R.string.lbl_format, R.id.btn_format, mBookBaseFragmentModel.getFormats());
 
         field = mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                        .setFormatter(new Fields.LanguageFormatter());
         //noinspection ConstantConditions
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
-                        mBookModel.getLanguages(mDb, getContext()));
+                        mBookBaseFragmentModel.getLanguages(getContext()));
 
         field = mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
-                        mBookModel.getPublishers(mDb));
+                        mBookBaseFragmentModel.getPublishers());
 
         field = mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
                        .setFormatter(dateFormatter);
@@ -116,7 +117,7 @@ public class EditBookPublicationFragment
         mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
         field = mFields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
-                        mBookModel.getListPriceCurrencyCodes(mDb));
+                        mBookBaseFragmentModel.getListPriceCurrencyCodes());
     }
 
     @Override

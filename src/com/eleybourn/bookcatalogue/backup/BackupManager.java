@@ -27,12 +27,12 @@ import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * Class for public static methods relating to backup/restore.
- *
- * @author pjw
+ * Encapsulates the actual container used for backup/restore.
  */
 public final class BackupManager {
 
@@ -40,6 +40,8 @@ public final class BackupManager {
     public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
     /** Last full backup file path. */
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
+    /** @see #isArchive(File) */
+    public static final String ARCHIVE_EXTENSION = ".bcbk";
 
     private BackupManager() {
     }
@@ -54,7 +56,7 @@ public final class BackupManager {
      * @throws IOException on failure
      */
     @NonNull
-    public static BackupReader readFrom(@NonNull final File file)
+    public static BackupReader getReader(@NonNull final File file)
             throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
@@ -69,5 +71,36 @@ public final class BackupManager {
         }
 
         return bkp.newReader();
+    }
+
+    /**
+     * Create a BackupWriter for the specified file.
+     *
+     * @param file to read from
+     *
+     * @return a new writer
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    public static BackupWriter getWriter(@NonNull final File file)
+            throws IOException {
+
+        // We only support one backup format; so we use that.
+        BackupContainer bkp = new TarBackupContainer(file);
+
+        return bkp.newWriter();
+    }
+
+    /**
+     * Simple check on the file being an archive.
+     *
+     * @param file to check
+     *
+     * @return {@code true} if it's an archive
+     */
+    public static boolean isArchive(@NonNull final File file) {
+        return file.getName().toLowerCase(LocaleUtils.getSystemLocale())
+                   .endsWith(ARCHIVE_EXTENSION);
     }
 }

@@ -1,7 +1,7 @@
-Building in Android Studio (ver. 1.0.2+):
+Building in Android Studio (ver. 3.4.0+):
 1. Open Android Studio
 2. Select "Open an existing Android Studio project"
-3. Point to `build.gradle` file in 'Book-Catalogue' folder 
+3. Point to `build.gradle` file in 'Book-Catalogue' folder
 4. Click OK
 5. In next dialog select "Use default Gradle wrapper"
 6. Click OK

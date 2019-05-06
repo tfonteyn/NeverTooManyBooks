@@ -147,7 +147,7 @@ public class EditBookFragment
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(showTab);
 
-        boolean isExistingBook = mBookModel.getBook().getId() > 0;
+        boolean isExistingBook = mBookBaseFragmentModel.getBook().getId() > 0;
         Button confirmButton = getView().findViewById(R.id.confirm);
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
                                              : R.string.btn_confirm_add_book);
@@ -160,7 +160,7 @@ public class EditBookFragment
     /**
      * the only thing on this level is the TAB we're on.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -198,19 +198,19 @@ public class EditBookFragment
         }
 
         // Ignore validation failures; but we still validate to get the current values updated.
-        mBookModel.getBook().validate();
+        mBookBaseFragmentModel.getBook().validate();
         // if (!book.validate()) {
         //      StandardDialogs.sendTaskUserMessage(this,
         //      book.getValidationExceptionMessage(getResources()));
         // }
         // However, there is some data that we really do require...
-        if (mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        if (mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
             return;
         }
-        if (!mBookModel.getBook().containsKey(
-                DBDefinitions.KEY_TITLE) || mBookModel.getBook().getString(
+        if (!mBookBaseFragmentModel.getBook().containsKey(
+                DBDefinitions.KEY_TITLE) || mBookBaseFragmentModel.getBook().getString(
                 DBDefinitions.KEY_TITLE).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_title);
@@ -222,7 +222,7 @@ public class EditBookFragment
             public void onPositiveButton() {
                 saveBook();
                 Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
-                                                    mBookModel.getBook().getId());
+                                                    mBookBaseFragmentModel.getBook().getId());
                 mActivity.setResult(Activity.RESULT_OK, data);
                 mActivity.finish();
             }
@@ -233,8 +233,8 @@ public class EditBookFragment
             }
         };
 
-        if (mBookModel.getBook().getId() == 0) {
-            String isbn = mBookModel.getBook().getString(DBDefinitions.KEY_ISBN);
+        if (mBookBaseFragmentModel.getBook().getId() == 0) {
+            String isbn = mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 //noinspection ConstantConditions
@@ -256,21 +256,21 @@ public class EditBookFragment
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, mBookModel.getBook().getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
-        mActivity.finishIfClean(mBookModel.isDirty());
+        mActivity.finishIfClean(mBookBaseFragmentModel.isDirty());
     }
 
     /**
      * Save the collected book details.
      */
     private void saveBook() {
-        if (mBookModel.getBook().getId() == 0) {
-            long id = mDb.insertBook(mBookModel.getBook());
+        if (mBookBaseFragmentModel.getBook().getId() == 0) {
+            long id = mDb.insertBook(mBookBaseFragmentModel.getBook());
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
-                if (mBookModel.getBook().getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
+                if (mBookBaseFragmentModel.getBook().getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();
@@ -280,14 +280,14 @@ public class EditBookFragment
                 }
             }
         } else {
-            mDb.updateBook(mBookModel.getBook().getId(), mBookModel.getBook(),0);
+            mDb.updateBook(mBookBaseFragmentModel.getBook().getId(), mBookBaseFragmentModel.getBook(), 0);
         }
     }
 
     private static class ViewPagerAdapter
             extends FragmentPagerAdapter {
 
-        private final List<FragmentHolder> mFragmentList = new ArrayList<>();
+        private final List<FragmentHolder> mFragmentList = new ArrayList<>(5);
 
         /**
          * Constructor.
@@ -295,7 +295,7 @@ public class EditBookFragment
          * @param fm FragmentManager
          */
         ViewPagerAdapter(@NonNull final FragmentManager fm) {
-            super(fm);
+            super(fm, RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override

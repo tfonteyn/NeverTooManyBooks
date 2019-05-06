@@ -26,6 +26,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.backup.ImportException;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 
 /**
@@ -47,7 +48,7 @@ public interface BackupReader
      * @throws IOException on failure
      */
     void restore(@NonNull ImportSettings settings,
-                 @NonNull BackupReaderListener listener)
+                 @NonNull ProgressListener listener)
             throws IOException, ImportException;
 
     /**
@@ -77,35 +78,4 @@ public interface BackupReader
      */
     @NonNull
     BackupInfo getInfo();
-
-    /**
-     * Interface for processes doing a restore operation; allows for progress indications.
-     *
-     * @author pjw
-     */
-    interface BackupReaderListener {
-
-        /**
-         * Set the end point for the progress.
-         */
-        void setMax(int max);
-
-        /**
-         * Advance progress by 'delta'.
-         */
-        void onProgressStep(int delta,
-                            @NonNull String message);
-
-        /**
-         * report progress in absolute position.
-         */
-        void onProgress(int position,
-                        @NonNull String message);
-
-        /**
-         * @return {@code true} if operation is cancelled.
-         */
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-        boolean isCancelled();
-    }
 }

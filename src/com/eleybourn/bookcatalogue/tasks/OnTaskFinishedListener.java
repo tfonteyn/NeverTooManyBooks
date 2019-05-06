@@ -2,39 +2,9 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.os.AsyncTask;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-import com.eleybourn.bookcatalogue.debug.MustImplementException;
-
-public interface OnTaskFinishedListener {
-
-    /**
-     * Convenience method. Try in order:
-     * <li>getTargetFragment()</li>
-     * <li>getParentFragment()</li>
-     * <li>getActivity()</li>
-     */
-    static void onTaskFinished(@NonNull final Fragment sourceFragment,
-                               final int taskId,
-                               final boolean success,
-                               @Nullable final Object result,
-                               @Nullable final Exception e) {
-
-        if (sourceFragment.getTargetFragment() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) sourceFragment.getTargetFragment())
-                    .onTaskFinished(taskId, success, result, e);
-        } else if (sourceFragment.getParentFragment() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) sourceFragment.getParentFragment())
-                    .onTaskFinished(taskId, success, result, e);
-        } else if (sourceFragment.getActivity() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) sourceFragment.getActivity())
-                    .onTaskFinished(taskId, success, result, e);
-        } else {
-            throw new MustImplementException(OnTaskFinishedListener.class);
-        }
-    }
+public interface OnTaskFinishedListener<Result> {
 
     /**
      * Called when a task finishes.
@@ -47,6 +17,6 @@ public interface OnTaskFinishedListener {
      */
     void onTaskFinished(int taskId,
                         boolean success,
-                        Object result,
+                        Result result,
                         @Nullable final Exception e);
 }

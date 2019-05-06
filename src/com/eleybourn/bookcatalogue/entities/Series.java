@@ -279,9 +279,6 @@ public class Series
     @SuppressWarnings("UnusedReturnValue")
     public static boolean pruneSeriesList(@NonNull final List<Series> list) {
 
-        //TOMF: book locale or user-preferred?
-        Locale locale = LocaleUtils.getPreferredLocal();
-
         // keep track of what we have
         Map<String, Series> map = new HashMap<>();
 
@@ -291,6 +288,7 @@ public class Series
         Iterator<Series> it = list.iterator();
         while (it.hasNext()) {
             Series series = it.next();
+            Locale locale = series.getLocale();
 
             final String name = series.getName().trim().toLowerCase(locale);
             if (!map.containsKey(name)) {

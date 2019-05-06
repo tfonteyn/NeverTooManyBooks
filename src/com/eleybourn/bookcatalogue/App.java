@@ -33,9 +33,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
@@ -118,7 +116,8 @@ public class App
     /**
      * Users can select which fields they use / don't want to use.
      * <p>
-     * Each field has an entry in the Preferences.<br/>
+     * Each field has an entry in the Preferences.
+     * <p>
      * The key is suffixed with the name of the field.
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
@@ -159,7 +158,7 @@ public class App
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. */
-    private static int sCurrentTheme;
+    private static int sCurrentTheme = DEFAULT_THEME;
 
     /** create a singleton. */
     @SuppressWarnings("unused")
@@ -177,20 +176,6 @@ public class App
     @NonNull
     public static Context getAppContext() {
         return sInstance.getApplicationContext();
-    }
-
-    /**
-     * Reads the application version from the manifest.
-     *
-     * @return the versionCode.
-     */
-    public static long getVersion() {
-        // versionCode deprecated and new method in API: 28, till then ignore...
-        PackageInfo packageInfo = getPackageInfo(0);
-        if (packageInfo != null) {
-            return (long) packageInfo.versionCode;
-        }
-        return 0;
     }
 
     /**
@@ -217,12 +202,6 @@ public class App
 
         }
         return packageInfo;
-    }
-
-    public static void showNotification(@NonNull final Context context,
-                                        @StringRes final int titleId,
-                                        @StringRes final int messageId) {
-        showNotification(context,titleId, context.getString(messageId));
     }
 
     /**
@@ -253,24 +232,6 @@ public class App
                 .build();
 
         sNotifier.notify(NOTIFICATION_ID, notification);
-    }
-
-    /**
-     * Get the textSize attribute of the standard "TextAppearance_Small" style.
-     * API 23 required to use it directly: {@link TextView#setTextAppearance(int)}
-     *
-     * @param context caller context
-     *
-     * @return the size
-     */
-    public static int getTextAppearanceSmallTextSizeInPixels(@NonNull final Context context) {
-
-        int[] attrs = {android.R.attr.textSize};
-        TypedArray ta = context.obtainStyledAttributes(android.R.style.TextAppearance_Small,
-                                                       attrs);
-        int size = ta.getDimensionPixelSize(0, 14);
-        ta.recycle();
-        return size;
     }
 
     /**
@@ -441,7 +402,7 @@ public class App
     /**
      * Initialize ACRA for a given Application.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -496,7 +457,7 @@ public class App
 
         if (BuildConfig.DEBUG /* always */) {
             //API 24: newConfig.getLocales().get(0)
-            Logger.debug(this, "onConfigurationChanged", "" + newConfig.locale);
+            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
         }
 
     }

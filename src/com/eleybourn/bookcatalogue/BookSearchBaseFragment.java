@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
+import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -29,9 +29,9 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public abstract class BookSearchBaseFragment
         extends Fragment
-        implements SearchCoordinator.SearchCoordinatorListener {
+        implements SearchCoordinator.OnSearchFinishedListener {
 
-    /** tag. */
+    /** Fragment manager tag. */
     private static final String TAG = BookSearchBaseFragment.class.getSimpleName();
 
     /** stores an active search id, or 0 when none active. */
@@ -42,7 +42,7 @@ public abstract class BookSearchBaseFragment
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
 
     /** hosting activity. */
-    protected BookSearchActivity mActivity;
+    BookSearchActivity mActivity;
 
     /** Database instance. */
     protected DBA mDb;
@@ -125,14 +125,14 @@ public abstract class BookSearchBaseFragment
     /**
      * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
         if (mSearchManagerId != 0) {
-            SearchCoordinator.getMessageSwitch()
+            SearchCoordinator.MESSAGE_SWITCH
                              .addListener(mSearchManagerId, this, true);
         }
     }
@@ -141,7 +141,7 @@ public abstract class BookSearchBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in
-     * {@link SearchCoordinator.SearchCoordinatorListener#onSearchFinished(boolean, Bundle)}
+     * {@link SearchCoordinator.OnSearchFinishedListener#onSearchFinished(boolean, Bundle)}
      *
      * @return {@code true} if search was started.
      */
@@ -182,13 +182,13 @@ public abstract class BookSearchBaseFragment
     /**
      * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
     public void onPause() {
         if (mSearchManagerId != 0) {
-            SearchCoordinator.getMessageSwitch().removeListener(mSearchManagerId, this);
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, this);
         }
         super.onPause();
     }

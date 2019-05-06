@@ -50,7 +50,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
- * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
+ * Activity to edit a list of authors provided in an ArrayList and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
  *

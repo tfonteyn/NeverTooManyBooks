@@ -44,7 +44,11 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
- * Base class for Web site searches.
+ * Searches a single {@link SearchSiteManager},
+ * and send the results back to the {@link SearchCoordinator}.
+ * <p>
+ * (the 'results' being this while Task object first send to the {@link TaskManager} which
+ * then routes it to our creator, the @link SearchCoordinator})
  */
 public class SearchTask
         extends ManagedTask {
@@ -81,14 +85,16 @@ public class SearchTask
      * is provided that will be used to the exclusion of all others.
      *
      * @param manager           TaskHandler implementation
-     * @param site              the search site definition
+     * @param taskId            identifier
+     * @param taskName          thread name, used for debug only really.
      * @param searchSiteManager the search site manager
      */
     SearchTask(@NonNull final TaskManager manager,
-               @NonNull final Site site,
+               final int taskId,
+               @NonNull final String taskName,
                @NonNull final SearchSiteManager searchSiteManager) {
-        super(manager, site.getName());
-        mTaskId = site.id;
+        super(manager, taskName);
+        mTaskId = taskId;
         mSearchSiteManager = searchSiteManager;
         // cache the resId for convenience
         mProgressTitleResId = mSearchSiteManager.getSearchingResId();
@@ -258,4 +264,5 @@ public class SearchTask
         mFinalMessage = getContext().getString(R.string.error_search_exception,
                                                getContext().getString(id), s);
     }
+
 }

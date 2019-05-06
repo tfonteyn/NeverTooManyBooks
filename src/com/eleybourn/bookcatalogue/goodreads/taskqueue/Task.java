@@ -55,7 +55,7 @@ public abstract class Task
 
 
     private static final long serialVersionUID = -1735892871810069L;
-    private final int mRetryLimit = 15;
+    private static final int mRetryLimit = 15;
     @NonNull
     private final String mDescription;
     private long mId;

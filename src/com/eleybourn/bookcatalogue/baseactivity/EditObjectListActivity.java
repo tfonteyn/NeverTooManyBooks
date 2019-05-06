@@ -76,31 +76,24 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     private final String mBKey;
 
     protected DBA mDb;
+
     /** the rows. */
     protected ArrayList<T> mList;
-    /**
-     * Handle 'Save'.
-     * <p>
-     * TEST: setResult(Activity.RESULT_OK although we might not have made any.
-     */
-    private final OnClickListener mSaveListener = new OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            Intent data = new Intent().putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
-            if (onSave(data)) {
-                finish();
-            }
-        }
-    };
+
+
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
+
     /** The View for the list. */
     protected RecyclerView mListView;
+
     protected LinearLayoutManager mLayoutManager;
+
     @Nullable
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
+
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -149,7 +142,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         setTextOrHideView(R.id.title, mBookTitle);
 
         // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
-        setOnClickListener(R.id.confirm, mSaveListener);
+        setOnClickListener(R.id.confirm, v -> {
+            Intent data = new Intent().putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
+            if (onSave(data)) {
+                finish();
+            }
+        });
         setOnClickListener(R.id.cancel, v -> {
             if (onCancel()) {
                 finish();
@@ -157,7 +155,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         });
         setOnClickListener(R.id.add, this::onAdd);
     }
-
 
     /**
      * Load the list.

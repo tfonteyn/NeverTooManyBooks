@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
  * Use background tasks to get thumbnails and update when retrieved.
  * <p>
  * Used by {@link GoodreadsSearchCriteriaActivity} which is currently
- * commented out in {@link SendBooksTask}
+ * commented out in {@link GrSendBooksTaskBase}
  *
  * @author Philip Warner
  */
@@ -213,7 +213,8 @@ public class GoodreadsSearchResultsActivity
 
             GoodreadsWork work = getItem(position);
 
-            holder.itemView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));
+            holder.itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
+            holder.itemView.setOnClickListener(v -> doItemClick((Holder) v.getTag(R.id.TAG_VIEW_HOLDER)));
 
             // get the cover (or put it in background task)
             work.fillImageView(holder.coverView);

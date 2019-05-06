@@ -79,10 +79,10 @@ public abstract class GoodreadsTask
                         @NonNull final BindableItemCursor cursor,
                         @NonNull final ViewGroup parent) {
         View view = inflater.inflate(R.layout.row_task_info, parent, false);
-        view.setTag(R.id.TAG_TASK, this);
+        view.setTag(R.id.TAG_GR_TASK, this);
 
         TaskHolder holder = new TaskHolder(view);
-        holder.checkButton.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
+        holder.checkButton.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
 
         return view;
     }
@@ -95,7 +95,7 @@ public abstract class GoodreadsTask
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
-        TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_TASK_HOLDER);
+        TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
         Locale locale = LocaleUtils.from(context);
@@ -187,7 +187,7 @@ public abstract class GoodreadsTask
             checkButton = view.findViewById(R.id.checked);
             retryButton = view.findViewById(R.id.retry);
 
-            view.setTag(R.id.TAG_TASK_HOLDER, this);
+            view.setTag(R.id.TAG_GR_TASK_HOLDER, this);
         }
     }
 }

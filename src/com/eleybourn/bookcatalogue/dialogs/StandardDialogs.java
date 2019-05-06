@@ -77,7 +77,7 @@ public final class StandardDialogs {
     public static void deleteSeriesAlert(@NonNull final Context context,
                                          @NonNull final DBA db,
                                          @NonNull final Series series,
-                                         @NonNull final Runnable onDeleted) {
+                                         @NonNull final Runnable onDoDelete) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(context.getString(R.string.confirm_really_delete_series,
@@ -91,8 +91,7 @@ public final class StandardDialogs {
                          context.getString(android.R.string.ok),
                          (d, which) -> {
                              d.dismiss();
-                             db.deleteSeries(series.getId());
-                             onDeleted.run();
+                             onDoDelete.run();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
@@ -105,15 +104,11 @@ public final class StandardDialogs {
     public static void deleteBookAlert(@NonNull final Context context,
                                        @NonNull final DBA db,
                                        final long bookId,
-                                       @NonNull final Runnable onDeleted) {
+                                       @NonNull final String title,
+                                       @NonNull final Runnable onDoDelete) {
 
         String UNKNOWN = '<' + context.getString(R.string.unknown).toUpperCase() + '>';
         List<Author> authorList = db.getAuthorsByBookId(bookId);
-
-        String title = db.getBookTitle(bookId);
-        if (title == null || title.isEmpty()) {
-            title = UNKNOWN;
-        }
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
@@ -141,8 +136,7 @@ public final class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                          (d, which) -> {
                              d.dismiss();
-                             db.deleteBook(bookId);
-                             onDeleted.run();
+                             onDoDelete.run();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,

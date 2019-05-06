@@ -20,8 +20,6 @@
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
@@ -29,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 
 /**
  * Public interface for any backup archive writer.
@@ -47,7 +46,7 @@ public interface BackupWriter
      */
     @WorkerThread
     void backup(@NonNull ExportSettings settings,
-                @NonNull BackupWriter.BackupWriterListener listener)
+                @NonNull ProgressListener listener)
             throws IOException;
 
     /**
@@ -117,46 +116,4 @@ public interface BackupWriter
     void close()
             throws IOException;
 
-    /**
-     * Interface for processes doing a backup operation; allows for progress indications
-     * and saves some useful context.
-     *
-     * @author pjw
-     */
-    interface BackupWriterListener {
-
-        /**
-         * Set the end point for the progress.
-         */
-        void setMax(int max);
-
-        /**
-         * Advance progress by 'delta'.
-         */
-        void onProgressStep(int delta,
-                            @StringRes int messageId);
-
-        /**
-         * Advance progress by 'delta'.
-         */
-        void onProgressStep(int delta,
-                            @Nullable String message);
-
-        /**
-         * report progress in absolute position.
-         */
-        void onProgress(int position,
-                        @Nullable String message);
-
-        /**
-         * report progress in absolute position.
-         */
-        void onProgress(int position,
-                        @StringRes int messageId);
-
-        /**
-         * @return {@code true} if operation is cancelled.
-         */
-        boolean isCancelled();
-    }
 }

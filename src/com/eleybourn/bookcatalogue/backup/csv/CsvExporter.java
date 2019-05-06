@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
@@ -115,7 +116,7 @@ public class CsvExporter
      * The fields CSV_COLUMN_* are {@link StringList} encoded
      */
     @SuppressWarnings("NonConstantFieldWithUpperCaseName")
-    private final String EXPORT_FIELD_HEADERS =
+    private static final String EXPORT_FIELD_HEADERS =
             "\"" + DOM_PK_ID + "\","
                     + '"' + CSV_COLUMN_AUTHORS + "\","
                     + '"' + DOM_TITLE + "\","
@@ -198,7 +199,7 @@ public class CsvExporter
     @Override
     @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final Exporter.ExportListener listener)
+                       @NonNull final ProgressListener listener)
             throws IOException {
 
         // Display startup message
@@ -299,7 +300,7 @@ public class CsvExporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200) {
-                    listener.onProgress(title, numberOfBooksExported);
+                    listener.onProgress(numberOfBooksExported, title);
                     lastUpdate = now;
                 }
             }
@@ -311,12 +312,12 @@ public class CsvExporter
 
     @NonNull
     private String formatCell(final long cell) {
-        return formatCell(cell + "");
+        return formatCell(String.valueOf(cell));
     }
 
     @NonNull
     private String formatCell(final double cell) {
-        return formatCell(cell + "");
+        return formatCell(String.valueOf(cell));
     }
 
     /**

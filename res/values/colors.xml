@@ -2,9 +2,9 @@
 <resources>
 
     <!-- TODO: make these colors styleable -->
-    <color name="CropHighlightView_outlinePaint_noFocus">#FF000000</color>
-    <color name="CropHighlightView_outlinePaint_circle">#d500f9</color>
-    <color name="CropHighlightView_outlinePaint_rectangle">#fb8c00</color>
+    <color name="CropHighlightView_outlinePaint_noFocus">@color/black</color>
+    <color name="CropHighlightView_outlinePaint_circle">@color/purple_a400</color>
+    <color name="CropHighlightView_outlinePaint_rectangle">@color/orange_600</color>
 
     <!-- Material Design - Color Palette -->
     <!-- Date: 1/15/2015 -->

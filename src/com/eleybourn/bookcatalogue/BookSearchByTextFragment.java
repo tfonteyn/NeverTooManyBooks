@@ -141,7 +141,7 @@ public class BookSearchByTextFragment
      * <p>
      * The details will get sent to {@link EditBookActivity}
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
@@ -209,7 +209,7 @@ public class BookSearchByTextFragment
     private void populateAuthorList() {
         // Get all known authors and build a Set of the names
         final ArrayList<String> authors = mDb.getAuthorsFormattedName();
-        final Set<String> uniqueNames = new HashSet<>();
+        final Set<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
             uniqueNames.add(s.toUpperCase());
         }

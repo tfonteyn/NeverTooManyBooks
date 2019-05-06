@@ -381,6 +381,16 @@
         <item name="android:padding">@dimen/border_double</item>
     </style>
 
+    <style name="progressOverlay">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border</item>
+        <item name="android:layout_margin">@dimen/border_double</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:background">?attr/colorBackgroundFloating</item>
+    </style>
+
     <!-- Style for keys on the isbn search keyboard -->
     <style name="isbnSearchKey">
         <item name="android:layout_width">0dp</item>
@@ -437,7 +447,13 @@
         <item name="android:inputType">numberDecimal</item>
     </style>
 
-
+    <style name="floatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:visibility">gone</item>
+    </style>
 
     <!-- *************************************************************************************** -->
 

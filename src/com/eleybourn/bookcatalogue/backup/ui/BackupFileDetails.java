@@ -44,9 +44,6 @@ public class BackupFileDetails
                 }
             };
 
-    /** @see #isArchive(File) */
-    public static final String ARCHIVE_EXTENSION = ".bcbk";
-
     /** File for this item. */
     @NonNull
     private final File mFile;
@@ -73,18 +70,6 @@ public class BackupFileDetails
         } else {
             mInfo = null;
         }
-    }
-
-    /**
-     * Simple check on the file being an archive.
-     *
-     * @param file to check
-     *
-     * @return {@code true} if it's an archive
-     */
-    public static boolean isArchive(@NonNull final File file) {
-        return file.getName().toLowerCase(LocaleUtils.getSystemLocale())
-                   .endsWith(ARCHIVE_EXTENSION);
     }
 
     public void setInfo(@NonNull final BackupInfo info) {

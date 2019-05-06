@@ -89,7 +89,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
  * <p>
  * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
- * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}, otherwise add a new holder.
+ * then use a {@link BooksMultiTypeListHandler} .GenericStringHolder}, otherwise add a new holder.
  * Need to at least modify {@link BooksMultiTypeListHandler} #createHolder
  *
  * @author Philip Warner

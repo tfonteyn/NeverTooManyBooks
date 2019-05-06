@@ -82,7 +82,7 @@ public class EventQueueListActivity
                                 final int position,
                                 final long id) {
 
-        final Event event = (Event) v.getTag(R.id.TAG_EVENT);
+        final Event event = (Event) v.getTag(R.id.TAG_GR_EVENT);
 
         // If it owns a hint, display it first
         if (event instanceof HintOwner) {
@@ -119,7 +119,7 @@ public class EventQueueListActivity
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final View convertView,
                          @NonNull final BindableItemCursorAdapter.BindableItem item) {
-        convertView.setTag(R.id.TAG_EVENT, item);
+        convertView.setTag(R.id.TAG_GR_EVENT, item);
         item.bindView(convertView, context, cursor, mDb);
     }
 

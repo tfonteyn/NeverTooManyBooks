@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.searches;
+package com.eleybourn.bookcatalogue.settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
@@ -30,11 +32,11 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallba
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted
  * to a Fragment first.
  */
-public class AdminSearchOrderFragment
+public class SearchOrderFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
+    public static final String TAG = SearchOrderFragment.class.getSimpleName();
 
     private ArrayList<Site> mList;
     @SuppressWarnings("FieldCanBeLocal")

@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.entities;
+package com.eleybourn.bookcatalogue.viewmodels;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,21 +13,24 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * This is the (obvious) replacement of the homegrown BookManager in previous commits.
- *
+ * <p>
  * Used by the set of fragments that allow viewing and editing a Book.
- *
+ * <p>
  * Holds the {@link Book} and whether it's dirty or not.
  */
-public class BookModel
+public class BookBaseFragmentModel
         extends ViewModel {
+
+    private DBA mDb;
 
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
-    private Book book;
+    private Book mBook;
 
     /**
      * Field drop down lists.
@@ -48,30 +51,38 @@ public class BookModel
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
 
+    @Override
+    protected void onCleared() {
+        if (mDb != null) {
+            mDb.close();
+        }
+    }
+
     /**
      * Conditional constructor.
      * If we already have been initialized, return silently.
      * Otherwise use the passed data to construct a Book.
      */
-    public void init(@Nullable final Bundle args,
-                     @NonNull final DBA db) {
-        if (book == null) {
+    public void init(@Nullable final Bundle args) {
+        if (mBook == null) {
+            mDb = new DBA();
+
             if (args != null) {
                 // load the book data
                 Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
-                    setBook(new Book(bookData));
+                    mBook = new Book(bookData);
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
                     long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
                     // If the id is valid, load from database.
                     // or if it's 0, create a new 'empty' book. Because paranoia.
-                    setBook(new Book(bookId, db));
+                    mBook = new Book(bookId, mDb);
                 }
             } else {
                 // no args, we want a new book (e.g. user wants to add one manually).
-                setBook(new Book());
+                mBook = new Book();
             }
         }
     }
@@ -91,13 +102,43 @@ public class BookModel
     }
 
     public Book getBook() {
-        return book;
+        return mBook;
     }
 
-    public void setBook(@NonNull final Book book) {
-        this.book = book;
+    public void setBook(final long bookId) {
+        mBook = new Book(bookId, mDb);
     }
 
+    public void reload() {
+        mBook.reload(mDb);
+    }
+
+    public void reload(final long bookId) {
+        mBook.reload(mDb, bookId);
+    }
+
+    /**
+     * The book was returned, remove the loanee.
+     */
+    public void deleteLoan() {
+        mDb.deleteLoan(mBook.getId());
+    }
+
+    /**
+     * @return {@code true} if the book is available for lending.
+     */
+    public boolean isAvailable() {
+        return mDb.getLoaneeByBookId(mBook.getId()) == null;
+    }
+
+    /**
+     * Toggle the 'read' status of the book.
+     *
+     * @return the current/new 'read' status.
+     */
+    public boolean toggleRead() {
+        return (mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ)));
+    }
 
     /**
      * Load a publisher list; reloading this list every time a tab changes is slow.
@@ -106,9 +147,9 @@ public class BookModel
      * @return List of publishers
      */
     @NonNull
-    public List<String> getPublishers(@NonNull final DBA db) {
+    public List<String> getPublishers() {
         if (mPublishers == null) {
-            mPublishers = db.getPublisherNames();
+            mPublishers = mDb.getPublisherNames();
         }
         return mPublishers;
     }
@@ -116,7 +157,7 @@ public class BookModel
     /**
      * Load a language list; reloading this list every time a tab changes is slow.
      * So we cache it.
-     *
+     * <p>
      * Returns a unique list of all languages in the database.
      *
      * @param desiredContext the DESIRED context; e.g. get the names in a different language.
@@ -124,11 +165,11 @@ public class BookModel
      * @return The list; expanded full displayName's in the desiredContext Locale
      */
     @NonNull
-    public List<String> getLanguages(@NonNull final DBA db,
-                                      @NonNull final Context desiredContext) {
+    public List<String> getLanguages(@NonNull final Context desiredContext) {
         if (mLanguages == null) {
-            mLanguages = new ArrayList<>();
-            for (String code : db.getLanguageCodes()) {
+            List<String> languageCodes = mDb.getLanguageCodes();
+            mLanguages = new ArrayList<>(languageCodes.size());
+            for (String code : languageCodes) {
                 mLanguages.add(LocaleUtils.getDisplayName(desiredContext, code));
             }
         }
@@ -142,9 +183,9 @@ public class BookModel
      * @return List of formats
      */
     @NonNull
-    public List<String> getFormats(@NonNull final DBA db) {
+    public List<String> getFormats() {
         if (mFormats == null) {
-            mFormats = db.getFormats();
+            mFormats = mDb.getFormats();
         }
         return mFormats;
     }
@@ -156,9 +197,9 @@ public class BookModel
      * @return List of ISO currency codes
      */
     @NonNull
-    public List<String> getListPriceCurrencyCodes(@NonNull final DBA db) {
+    public List<String> getListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = db.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         }
         return mListPriceCurrencies;
     }
@@ -170,9 +211,9 @@ public class BookModel
      * @return List of genres
      */
     @NonNull
-    public List<String> getGenres(@NonNull final DBA db) {
+    public List<String> getGenres() {
         if (mGenres == null) {
-            mGenres = db.getGenres();
+            mGenres = mDb.getGenres();
         }
         return mGenres;
     }
@@ -184,9 +225,9 @@ public class BookModel
      * @return List of locations
      */
     @NonNull
-    public List<String> getLocations(@NonNull final DBA db) {
+    public List<String> getLocations() {
         if (mLocations == null) {
-            mLocations = db.getLocations();
+            mLocations = mDb.getLocations();
         }
         return mLocations;
     }
@@ -198,12 +239,22 @@ public class BookModel
      * @return List of ISO currency codes
      */
     @NonNull
-    public List<String> getPricePaidCurrencyCodes(@NonNull final DBA db) {
+    public List<String> getPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = db.getCurrencyCodes(
-                    DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }
 
+    public void refreshAuthorList() {
+        mBook.refreshAuthorList(mDb);
+    }
+
+    public void refreshSeriesList() {
+        mBook.refreshSeriesList(mDb);
+    }
+
+    public String getLoanee() {
+        return mBook.getLoanee(mDb);
+    }
 }

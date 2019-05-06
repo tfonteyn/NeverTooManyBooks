@@ -320,8 +320,8 @@ public class CoverHandler {
 
         if (ISBN.isValid(isbn)) {
             // we must use the same fragment manager as the hosting fragment.
-            mCoverBrowserFragment = (CoverBrowser) mFragmentManager.findFragmentByTag(
-                    CoverBrowser.TAG);
+            mCoverBrowserFragment = (CoverBrowser)
+                    mFragmentManager.findFragmentByTag(CoverBrowser.TAG);
             if (mCoverBrowserFragment == null) {
                 mCoverBrowserFragment = CoverBrowser.newInstance(isbn, Site.SEARCH_ALL);
                 mCoverBrowserFragment.show(mFragmentManager, CoverBrowser.TAG);
@@ -536,7 +536,9 @@ public class CoverHandler {
 
     /**
      * Crop the image using the standard crop action intent (the device may not support it).
-     * FIXME: Google search says that "com.android.camera.action.CROP" is from Android 1.x/2.x and should not be used today.
+     *
+     * "com.android.camera.action.CROP" is from the Camera2 application in Android 1.x/2.x.
+     * It's no longer officially supported, but has been implemented by several other apps.
      * <p>
      * Code using hardcoded string on purpose as they are part of the Intent api.
      *

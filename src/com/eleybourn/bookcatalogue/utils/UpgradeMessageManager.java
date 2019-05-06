@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -120,7 +121,21 @@ public final class UpgradeMessageManager {
     public static void setUpgradeAcknowledged() {
         App.getPrefs()
            .edit()
-           .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, App.getVersion())
+           .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
            .apply();
+    }
+
+    /**
+     * Reads the application version from the manifest.
+     *
+     * @return the versionCode.
+     */
+    public static long getVersion() {
+        // versionCode deprecated and new method in API: 28, till then ignore...
+        PackageInfo packageInfo = App.getPackageInfo(0);
+        if (packageInfo != null) {
+            return (long) packageInfo.versionCode;
+        }
+        return 0;
     }
 }

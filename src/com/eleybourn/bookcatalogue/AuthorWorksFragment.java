@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -18,9 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
 
 /**
@@ -36,8 +37,6 @@ public class AuthorWorksFragment
     /** Optional. Also show the authors book. Defaults to {@code true}. */
     @SuppressWarnings("WeakerAccess")
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
-
-    private DBA mDb;
 
     private AuthorWorksModel mModel;
 
@@ -58,10 +57,8 @@ public class AuthorWorksFragment
         long authorId = getArguments().getLong(DBDefinitions.KEY_ID, 0);
         boolean withBooks = getArguments().getBoolean(BKEY_WITH_BOOKS, true);
 
-        mDb = new DBA();
-
         mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
-        mModel.init(mDb, authorId, withBooks);
+        mModel.init(authorId, withBooks);
 
         String title = mModel.getAuthor().getLabel() + '[' + mModel.getTocEntries().size() + ']';
         //noinspection ConstantConditions
@@ -71,7 +68,8 @@ public class AuthorWorksFragment
         RecyclerView listView = getView().findViewById(android.R.id.list);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
-        TocAdapter adapter = new TocAdapter();
+        //noinspection ConstantConditions
+        TocAdapter adapter = new TocAdapter(getContext(), mModel);
         listView.setAdapter(adapter);
     }
 
@@ -83,7 +81,7 @@ public class AuthorWorksFragment
         switch (item.getTocType()) {
             case 'T':
                 // see note on dba method about Integer vs. Long
-                final ArrayList<Integer> books = mDb.getBookIdsByTocEntry(item.getId());
+                final ArrayList<Integer> books = mModel.getBookIds(item);
                 intent = new Intent(getContext(), BooksOnBookshelf.class)
                         // clear the back-stack. We want to keep BooksOnBookshelf on top
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -112,11 +110,6 @@ public class AuthorWorksFragment
     private static class Holder
             extends RecyclerView.ViewHolder {
 
-        /** Icon to show for a book. */
-        private static Drawable sBookIndicator;
-        /** Icon to show for not a book. e.g. a short story... */
-        private static Drawable sStoryIndicator;
-
         @NonNull
         final TextView titleView;
         @Nullable
@@ -131,47 +124,6 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
-
-            // static initializer
-            if (sBookIndicator == null) {
-                sBookIndicator = itemView.getContext().getDrawable(R.drawable.ic_book);
-                sStoryIndicator = itemView.getContext().getDrawable(R.drawable.ic_lens);
-            }
-        }
-
-        void bind(@NonNull final TocEntry item) {
-            // decorate the row depending on toc entry or actual book
-            switch (item.getTocType()) {
-                case 'T':
-                    titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            sStoryIndicator, null, null, null);
-                    break;
-
-                case 'B':
-                    titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            sBookIndicator, null, null, null);
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("type=" + item.getTocType());
-            }
-
-            titleView.setText(item.getTitle());
-            // optional
-            if (authorView != null) {
-                authorView.setText(item.getAuthor().getLabel());
-            }
-            // optional
-            if (firstPublicationView != null) {
-                String date = item.getFirstPublication();
-                if (date.isEmpty()) {
-                    firstPublicationView.setVisibility(View.GONE);
-                } else {
-                    firstPublicationView.setVisibility(View.VISIBLE);
-                    firstPublicationView.setText(
-                            firstPublicationView.getContext().getString(R.string.brackets, date));
-                }
-            }
         }
     }
 
@@ -179,12 +131,31 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements SectionIndexerV2 {
 
+        /** Icon to show for a book. */
+        private final Drawable sBookIndicator;
+        /** Icon to show for not a book. e.g. a short story... */
+        private final Drawable sStoryIndicator;
+
+        private final LayoutInflater mInflater;
+
+        private final AuthorWorksModel mModel;
+
+        TocAdapter(@NonNull final Context context,
+                   @NonNull final AuthorWorksModel model) {
+
+            mModel = model;
+
+            sBookIndicator = context.getDrawable(R.drawable.ic_book);
+            sStoryIndicator = context.getDrawable(R.drawable.ic_lens);
+            mInflater = LayoutInflater.from(context);
+        }
+
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View itemView = getLayoutInflater().inflate(R.layout.row_toc_entry, parent, false);
+            View itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
             return new Holder(itemView);
         }
 
@@ -192,10 +163,43 @@ public class AuthorWorksFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            TocEntry tocEntry = mModel.getTocEntries().get(position);
-            holder.bind(tocEntry);
-            // click -> open book details.
-            holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
+            TocEntry item = mModel.getTocEntries().get(position);
+            // decorate the row depending on toc entry or actual book
+            switch (item.getTocType()) {
+                case 'T':
+                    holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            sStoryIndicator, null, null, null);
+                    break;
+
+                case 'B':
+                    holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            sBookIndicator, null, null, null);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("type=" + item.getTocType());
+            }
+
+            holder.titleView.setText(item.getTitle());
+            // optional
+            if (holder.authorView != null) {
+                holder.authorView.setText(item.getAuthor().getLabel());
+            }
+            // optional
+            if (holder.firstPublicationView != null) {
+                String date = item.getFirstPublication();
+                if (date.isEmpty()) {
+                    holder.firstPublicationView.setVisibility(View.GONE);
+                } else {
+                    String fp = holder.firstPublicationView
+                            .getContext().getString(R.string.brackets, date);
+                    holder.firstPublicationView.setText(fp);
+                    holder.firstPublicationView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            // click -> get the book(s) for that entry and display.
+            holder.itemView.setOnClickListener(v -> gotoBook(item));
         }
 
         @Override
@@ -209,8 +213,8 @@ public class AuthorWorksFragment
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
 
-            return new String[]{mModel.getTocEntries().get(index).getTitle().substring(0,
-                                                                                       1).toUpperCase()};
+            return new String[]{mModel.getTocEntries().get(index)
+                                      .getTitle().substring(0, 1).toUpperCase()};
         }
     }
 }

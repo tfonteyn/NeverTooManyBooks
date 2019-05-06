@@ -93,7 +93,9 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity> <!-- Admin pages -->
+        </activity>
+
+        <!-- Admin pages -->
         <activity android:name=".Help" />
         <activity android:name=".About" />
         <activity android:name=".AdminActivity" />
@@ -108,7 +110,8 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity> <!-- Data Import/Export -->
+        </activity>
+        <!-- Data Import/Export -->
         <activity android:name=".backup.ui.RestoreActivity" />
         <!-- Update book Fields from the internet -->
         <activity android:name=".UpdateFieldsFromInternetActivity" />
@@ -135,7 +138,7 @@
         <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
         <!-- Search Sites configuration -->
         <activity
-            android:name=".searches.SearchAdminActivity"
+            android:name=".settings.SearchAdminActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <intent-filter>
                 <action android:name="search.website.order.EDIT" />
@@ -145,7 +148,7 @@
         </activity>
         <!-- Local Search -->
         <activity
-            android:name=".searches.FTSSearchActivity"
+            android:name=".FTSSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- View a book -->
         <activity android:name=".BookDetailsActivity" />

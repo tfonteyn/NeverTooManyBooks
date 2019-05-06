@@ -71,15 +71,20 @@ public class TocEntry
     private static final char FIELD_SEPARATOR = '*';
 
     /**
-     * Find the publication year in a string like "some title (1960)".
+     * Find the publication year in a string like "some title (1978-04-22)".
      * <p>
-     * The pattern finds (1960), group 1 will then contain the pure 1960.
+     * The pattern finds (1987), (1978-04) or (1987-04-22)
+     * Result is found in group 1.
      * <p>
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
+     *
+     * TODO: simplify pattern
      */
-    private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
+    private static final Pattern DATE_PATTERN =
+            Pattern.compile("\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
+
     private long mId;
     private Author mAuthor;
     private String mTitle;
@@ -152,23 +157,34 @@ public class TocEntry
 
     /**
      * Constructor that will attempt to parse a single string into an TocEntry.
+     * <br>The date *must* match a patter of a (partial) SQL date string:
+     * <ul>
+     *     <li>(YYYY)</li>
+     *     <li>(YYYY-MM)</li>
+     *     <li>(YYYY-MM-DD)</li>
+     *     <li>(YYYY-DD-MM) might work depending on the user's locale. Not tested.</li>
+     * </ul>
+     * <br>V82 had no dates: Giants In The Sky * Blish, James
+     *  <br>V200 accepts:
+     * <ul>
+     *     <li>Giants In The Sky (1952) * Blish, James</li>
+     *     <li>Giants In The Sky (1952-03) * Blish, James</li>
+     *     <li>Giants In The Sky (1952-03-22) * Blish, James</li>
+     * </ul>
      */
     public static TocEntry fromString(@NonNull final String encodedString) {
-        // V82: Giants In The Sky * Blish, James
-        // V83: Giants In The Sky (1952) * Blish, James
+
         List<String> list = new StringList<String>()
                 .decode(FIELD_SEPARATOR, encodedString, false);
 
         Author author = Author.fromString(list.get(1));
         String title = list.get(0);
 
-        //FIXME: fine for now, but should be made foolproof for full dates
-        // (via DateUtils) instead of just the 4 digit year
-        Matcher matcher = TocEntry.YEAR_FROM_STRING.matcher(title);
+        Matcher matcher = TocEntry.DATE_PATTERN.matcher(title);
         if (matcher.find()) {
-            return new TocEntry(author,
-                                title.replace(matcher.group(0), "").trim(),
-                                matcher.group(1));
+            // strip out the found pattern (including the brackets)
+            title = title.replace(matcher.group(0), "").trim();
+            return new TocEntry(author, title, matcher.group(1));
         } else {
             return new TocEntry(author, title, "");
         }
@@ -432,7 +448,7 @@ public class TocEntry
                     return multipleAuthorsCollection;
 
                 default:
-                    throw new IllegalTypeException("" + bitmask);
+                    throw new IllegalTypeException(String.valueOf(bitmask));
             }
         }
     }

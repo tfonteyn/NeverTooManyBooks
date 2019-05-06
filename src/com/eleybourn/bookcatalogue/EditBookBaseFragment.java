@@ -36,8 +36,8 @@ public abstract class EditBookBaseFragment
         super.onLoadFieldsFromBook(setAllFrom);
 
         // new book ?
-        if (mBookModel.getBook().getId() == 0) {
-            populateNewBookFieldsFromBundle(requireArguments());
+        if (mBookBaseFragmentModel.getBook().getId() == 0) {
+            populateNewBookFieldsFromBundle(getArguments());
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class EditBookBaseFragment
     /**
      * Trigger the Fragment to save its Fields to the Book.
      * <p>
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -95,7 +95,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      * <p>
      * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
      */
@@ -112,6 +112,6 @@ public abstract class EditBookBaseFragment
      */
     @CallSuper
     protected void onSaveFieldsToBook() {
-        mFields.putAllInto(mBookModel.getBook());
+        mFields.putAllInto(mBookBaseFragmentModel.getBook());
     }
 }

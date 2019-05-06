@@ -27,7 +27,7 @@ public final class SearchSites {
     public static final String TAG = SearchSites.class.getSimpleName();
 
     /** */
-    static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
+    public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -107,7 +107,7 @@ public final class SearchSites {
     }
 
     @NonNull
-    static ArrayList<Site> getSites() {
+    public static ArrayList<Site> getSites() {
         return sPreferredSearchOrder;
     }
 
@@ -116,7 +116,7 @@ public final class SearchSites {
      *
      * @param newList to use
      */
-    static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
+    public static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
         sPreferredSearchOrder = newList;
         SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {
@@ -135,7 +135,7 @@ public final class SearchSites {
      *
      * @param newList to use
      */
-    static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
+    public static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
         sPreferredCoverSearchOrder = newList;
         SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {

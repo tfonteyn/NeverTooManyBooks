@@ -23,11 +23,16 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Provides the {@link #open(Activity, String, String)} api.
+ * This class is used by the (sub) menu "Search Amazon" to look for authors, series.
+ * <p>
+ * It is NOT used by the ISBN lookup/search engine,
+ * see {@link AmazonManager#search(String, String, String, boolean)}
+ * <p>
  * <p>
  * Either opening a link via the Amazon API (if we have a key) or open a web page.
  * <p>
  * NOTE: The project manifest must contain the app key granted by Amazon.
- * For testing purposes this key can be empty.
+ * For testing purposes this key can be empty; it'll always use the web site directly in this case.
  *
  * @author pjw
  */

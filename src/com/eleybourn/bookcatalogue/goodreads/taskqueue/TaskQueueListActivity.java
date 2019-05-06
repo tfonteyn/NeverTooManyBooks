@@ -82,7 +82,7 @@ public class TaskQueueListActivity
                     startActivity(intent);
                 }));
 
-        Task task = (Task) v.getTag(R.id.TAG_TASK);
+        Task task = (Task) v.getTag(R.id.TAG_GR_TASK);
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
         ContextDialogItem.showContextDialog(this, items);
     }
@@ -95,7 +95,7 @@ public class TaskQueueListActivity
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final View convertView,
                          @NonNull final BindableItemCursorAdapter.BindableItem item) {
-        convertView.setTag(R.id.TAG_TASK, item);
+        convertView.setTag(R.id.TAG_GR_TASK, item);
         item.bindView(convertView, context, cursor, mDb);
     }
 

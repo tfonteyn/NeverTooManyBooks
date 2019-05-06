@@ -72,7 +72,7 @@ public class ExportOptionsDialogFragment
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     updateOptions();
                     OnOptionsListener
-                            .onOptionsResult(this, mExportSettings);
+                            .onOptionsSet(this, mExportSettings);
                 })
                 .create();
 
@@ -137,27 +137,29 @@ public class ExportOptionsDialogFragment
 
         /**
          * Convenience method. Try in order:
+         * <ul>
          * <li>getTargetFragment()</li>
          * <li>getParentFragment()</li>
          * <li>getActivity()</li>
+         * </ul>
          */
-        static void onOptionsResult(@NonNull final Fragment sourceFragment,
-                                    @NonNull ExportSettings settings) {
+        static void onOptionsSet(@NonNull final Fragment sourceFragment,
+                                 @NonNull final ExportSettings settings) {
 
             if (sourceFragment.getTargetFragment() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getTargetFragment())
-                        .onOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else if (sourceFragment.getParentFragment() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getParentFragment())
-                        .onOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else if (sourceFragment.getActivity() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getActivity())
-                        .onOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else {
                 throw new MustImplementException(OnOptionsListener.class);
             }
         }
 
-        void onOptionsResult(@NonNull ExportSettings settings);
+        void onOptionsSet(@NonNull ExportSettings settings);
     }
 }

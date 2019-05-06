@@ -30,7 +30,7 @@ public class ImportOptionsDialogFragment
     /** Fragment manager tag. */
     private static final String TAG = ImportOptionsDialogFragment.class.getSimpleName();
 
-    private ImportSettings mImportSettings;
+    private ImportSettings mSettings;
 
     /**
      * (syntax sugar for newInstance)
@@ -65,7 +65,7 @@ public class ImportOptionsDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mImportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
+        mSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_options, null);
@@ -85,7 +85,7 @@ public class ImportOptionsDialogFragment
                 .setPositiveButton(android.R.string.ok, ((d, which) -> {
                     updateOptions();
                     OnOptionsListener
-                            .opOptionsResult(this, mImportSettings);
+                            .onOptionsSet(this, mSettings);
                 }))
                 .create();
         dialog.setCanceledOnTouchOutside(false);
@@ -97,18 +97,18 @@ public class ImportOptionsDialogFragment
         // what to import. All three checked == ImportSettings.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
-            mImportSettings.what |= ImportSettings.BOOK_CSV;
+            mSettings.what |= ImportSettings.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
-            mImportSettings.what |= ImportSettings.COVERS;
+            mSettings.what |= ImportSettings.COVERS;
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
-            mImportSettings.what |= ImportSettings.PREFERENCES | ImportSettings.BOOK_LIST_STYLES;
+            mSettings.what |= ImportSettings.PREFERENCES | ImportSettings.BOOK_LIST_STYLES;
         }
 
         Checkable radioNewAndUpdatedBooks = dialog.findViewById(R.id.radioNewAndUpdatedBooks);
         if (radioNewAndUpdatedBooks.isChecked()) {
-            mImportSettings.what |= ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED;
+            mSettings.what |= ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED;
         }
     }
 
@@ -118,7 +118,7 @@ public class ImportOptionsDialogFragment
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(mImportSettings.file)) {
+        try (BackupReader reader = BackupManager.getReader(mSettings.file)) {
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
@@ -138,7 +138,7 @@ public class ImportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, mImportSettings);
+        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, mSettings);
     }
 
     /**
@@ -148,28 +148,30 @@ public class ImportOptionsDialogFragment
 
         /**
          * Convenience method. Try in order:
+         * <ul>
          * <li>getTargetFragment()</li>
          * <li>getParentFragment()</li>
          * <li>getActivity()</li>
+         * </ul>
          */
-        static void opOptionsResult(@NonNull final Fragment sourceFragment,
-                                    @NonNull ImportSettings settings) {
+        static void onOptionsSet(@NonNull final Fragment sourceFragment,
+                                 @NonNull final ImportSettings settings) {
 
             if (sourceFragment.getTargetFragment() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getTargetFragment())
-                        .opOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else if (sourceFragment.getParentFragment() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getParentFragment())
-                        .opOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else if (sourceFragment.getActivity() instanceof OnOptionsListener) {
                 ((OnOptionsListener) sourceFragment.getActivity())
-                        .opOptionsResult(settings);
+                        .onOptionsSet(settings);
             } else {
                 throw new MustImplementException(OnOptionsListener.class);
             }
         }
 
-        void opOptionsResult(@NonNull ImportSettings settings);
+        void onOptionsSet(@NonNull ImportSettings settings);
     }
 
 }

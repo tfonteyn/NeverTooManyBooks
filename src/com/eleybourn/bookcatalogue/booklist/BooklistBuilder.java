@@ -1496,7 +1496,7 @@ public class BooklistBuilder
                 break;
 
             default:
-                throw new IllegalTypeException("" + booklistGroup.getKind());
+                throw new IllegalTypeException(String.valueOf(booklistGroup.getKind()));
         }
     }
 
@@ -1999,7 +1999,7 @@ public class BooklistBuilder
                 + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
-            ArrayList<BookRowInfo> rows = new ArrayList<>();
+            ArrayList<BookRowInfo> rows = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
                     int absPos = cursor.getInt(0) - 1;

@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.entities.FieldUsage;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTaskListener;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
@@ -63,7 +64,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask
-        implements SearchCoordinator.SearchCoordinatorListener {
+        implements SearchCoordinator.OnSearchFinishedListener {
 
     /** The fields that the user requested to update. */
     @NonNull
@@ -130,7 +131,7 @@ public class UpdateFieldsFromInternetTask
 
         mSearchCoordinator = new SearchCoordinator(mTaskManager, this);
         mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
-        getMessageSwitch().addListener(getSenderId(), listener, false);
+        MESSAGE_SWITCH.addListener(getSenderId(), listener, false);
     }
 
     /**
@@ -255,16 +256,14 @@ public class UpdateFieldsFromInternetTask
                     continue;
                 }
 
-                // at this point we do want a search.
+                // at this point we know we want a search.
 
-                // Update the progress appropriately
+                // Update the progress with a new base message.
                 if (!title.isEmpty()) {
                     mTaskManager.sendHeaderUpdate(title);
                 } else {
                     mTaskManager.sendHeaderUpdate(isbn);
                 }
-                // update the counter
-                mTaskManager.sendProgress(this, 0, progressCounter);
 
                 // Start searching, then wait...
                 mSearchCoordinator.search(mSearchSites, author, title, isbn,
@@ -283,6 +282,9 @@ public class UpdateFieldsFromInternetTask
                 } finally {
                     mSearchLock.unlock();
                 }
+
+                // update the counter, another one done.
+                mTaskManager.sendProgress(this, 0, progressCounter);
 
             }
         } finally {

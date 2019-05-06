@@ -49,7 +49,7 @@ public abstract class CheckListItemBase<T>
     }
 
     /**
-     * <p>{@inheritDoc}
+     * <br>{@inheritDoc}
      * <p>
      * <p>Subclass must handle the {@link #item}.
      */

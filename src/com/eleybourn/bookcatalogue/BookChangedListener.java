@@ -36,9 +36,11 @@ public interface BookChangedListener {
 
     /**
      * Convenience method. Try in order:
+     * <ul>
      * <li>getTargetFragment()</li>
      * <li>getParentFragment()</li>
      * <li>getActivity()</li>
+     * </ul>
      */
     static void onBookChanged(@NonNull final Fragment sourceFragment,
                               final long bookId,

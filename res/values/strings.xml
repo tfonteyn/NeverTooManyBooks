@@ -716,6 +716,8 @@ TODO: uniform quotes in all string:
 
     <string name="menu_internet_update_fields">Update Fields</string>
 
+    <string name="menu_hide_keyboard">Hide keyboard</string>
+
     <!-- ####################################################################################### -->
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
@@ -1246,12 +1248,5 @@ TODO: uniform quotes in all string:
     <string name="books_found">%1$d books found</string>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="menu_hide_keyboard">Hide keyboard</string>
-
-
-    <!-- contentDescription -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <!-- contentDescription -->
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>

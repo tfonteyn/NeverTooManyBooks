@@ -966,4 +966,5 @@
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
+    <string name="menu_hide_keyboard">Toetsenbord verbergen</string>
 </resources>

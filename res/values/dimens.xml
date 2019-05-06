@@ -14,6 +14,14 @@
     <dimen name="border_triple">16dp</dimen>
     <dimen name="border_quad">20dp</dimen>
 
+    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
+    <dimen name="text_size_small">14sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
+    <dimen name="text_size_medium">18sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
+    <dimen name="text_size_large">22sp</dimen>
+
+
     <!-- dividers -->
     <dimen name="margin_div">2dp</dimen>
 

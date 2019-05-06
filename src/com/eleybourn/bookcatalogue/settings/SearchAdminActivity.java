@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.searches;
+package com.eleybourn.bookcatalogue.settings;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,13 +20,15 @@ import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.Site;
 import com.google.android.material.tabs.TabLayout;
 
 public class SearchAdminActivity
         extends BaseActivity {
 
     /**
-     * Optional: set to one of the {@link AdminSearchOrderFragment} tabs,
+     * Optional: set to one of the {@link SearchOrderFragment} tabs,
      * if we should *only* show that tab, and NOT save the new setting (i.e. the "use" scenario).
      */
     public static final String REQUEST_BKEY_TAB = "tab";
@@ -66,14 +68,14 @@ public class SearchAdminActivity
         switch (requestedTab) {
             case TAB_ORDER:
                 tabLayout.setVisibility(View.GONE);
-                initSingleTab(AdminSearchOrderFragment.TAG + TAB_ORDER,
+                initSingleTab(SearchOrderFragment.TAG + TAB_ORDER,
                               R.string.lbl_books,
                               SearchSites.getSites());
                 break;
 
             case TAB_COVER_ORDER:
                 tabLayout.setVisibility(View.GONE);
-                initSingleTab(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
+                initSingleTab(SearchOrderFragment.TAG + TAB_COVER_ORDER,
                               R.string.lbl_cover,
                               SearchSites.getSitesForCoverSearches());
                 break;
@@ -119,10 +121,10 @@ public class SearchAdminActivity
 
         FragmentManager fm = getSupportFragmentManager();
         // add them in order! i.e. in the order the TAB_* constants are defined.
-        mAdapter.add(new FragmentHolder(fm, AdminSearchOrderFragment.TAG + TAB_ORDER,
+        mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
                                         getString(R.string.lbl_books)));
 
-        mAdapter.add(new FragmentHolder(fm, AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
+        mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
                                         getString(R.string.lbl_cover)));
 
         findViewById(R.id.confirm).setOnClickListener(v -> {
@@ -132,12 +134,12 @@ public class SearchAdminActivity
                 // Decide later...
 
                 ArrayList<Site> list;
-                list = ((AdminSearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
+                list = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
                 if (list != null) {
                     SearchSites.setSearchOrder(list);
                 }
 
-                list = ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
+                list = ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
                 if (list != null) {
                     SearchSites.setCoverSearchOrder(list);
                 }
@@ -162,7 +164,7 @@ public class SearchAdminActivity
          * @param fm FragmentManager
          */
         ViewPagerAdapter(@NonNull final FragmentManager fm) {
-            super(fm);
+            super(fm, RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override
@@ -208,15 +210,15 @@ public class SearchAdminActivity
             if (fragment == null) {
 
                 ArrayList<Site> list;
-                if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
+                if (tag.equals(SearchOrderFragment.TAG + TAB_ORDER)) {
                     list = SearchSites.getSites();
-                } else /* if (t.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
+                } else /* if (t.equals(SearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
                     list = SearchSites.getSitesForCoverSearches();
                 }
 
                 Bundle args = new Bundle();
                 args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, list);
-                fragment = new AdminSearchOrderFragment();
+                fragment = new SearchOrderFragment();
                 fragment.setArguments(args);
             }
         }

@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:fillViewport="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,8 +34,6 @@
         <CheckBox
             android:id="@+id/read"
             style="@style/read_only_cbx"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
             app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"
             tools:checked="true"

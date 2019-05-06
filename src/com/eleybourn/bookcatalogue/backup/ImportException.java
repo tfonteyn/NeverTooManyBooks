@@ -33,5 +33,4 @@ public class ImportException
     public String getFormattedMessage(@NonNull final Resources res) {
         return res.getString(mStringId, mArgs);
     }
-
 }

@@ -24,7 +24,6 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
@@ -43,9 +42,9 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlExporter;
-import com.eleybourn.bookcatalogue.backup.xml.XmlUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -62,6 +61,8 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public abstract class BackupWriterAbstract
         implements BackupWriter {
 
+    private static final int BUFFER_SIZE = 32768;
+
     @NonNull
     private final DBA mDb;
     /** progress message. */
@@ -70,7 +71,7 @@ public abstract class BackupWriterAbstract
     private final String mProgress_msg_covers_skip;
 
     private ExportSettings mSettings;
-    private BackupWriter.BackupWriterListener mProgressListener;
+    private ProgressListener mProgressListener;
 
     /**
      * Constructor.
@@ -93,7 +94,7 @@ public abstract class BackupWriterAbstract
     @Override
     @WorkerThread
     public void backup(@NonNull final ExportSettings settings,
-                       @NonNull final BackupWriter.BackupWriterListener listener)
+                       @NonNull final ProgressListener listener)
             throws IOException {
         mSettings = settings;
         mProgressListener = listener;
@@ -119,7 +120,7 @@ public abstract class BackupWriterAbstract
 
                 Exporter mExporter = new CsvExporter(mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
-                    infoValues.bookCount = mExporter.doBooks(output, new ForwardingListener());
+                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener);
                 }
             }
 
@@ -185,10 +186,10 @@ public abstract class BackupWriterAbstract
 
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doBackupInfoBlock(out, new ForwardingListener(),
+            xmlExporter.doBackupInfoBlock(out, mProgressListener,
                                           BackupInfo.newInstance(getContainer(), infoValues));
         }
 
@@ -204,7 +205,7 @@ public abstract class BackupWriterAbstract
 
         try (OutputStream output = new FileOutputStream(tempXmlBackupFile)) {
             XmlExporter exporter = new XmlExporter(mSettings);
-            exporter.doAll(output, new ForwardingListener());
+            exporter.doAll(output, mProgressListener);
             putXmlData(tempXmlBackupFile);
         } finally {
             StorageUtils.deleteFile(tempXmlBackupFile);
@@ -216,10 +217,10 @@ public abstract class BackupWriterAbstract
         // Turn the preferences into an XML file in a byte array
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doPreferences(out, new ForwardingListener());
+            xmlExporter.doPreferences(out, mProgressListener);
         }
         out.close();
         putPreferences(data.toByteArray());
@@ -233,10 +234,10 @@ public abstract class BackupWriterAbstract
             // Turn the styles into an XML file in a byte array
             final ByteArrayOutputStream data = new ByteArrayOutputStream();
             final BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
+                    new OutputStreamWriter(data, StandardCharsets.UTF_8), BUFFER_SIZE);
 
             try (XmlExporter xmlExporter = new XmlExporter()) {
-                xmlExporter.doStyles(out, new ForwardingListener());
+                xmlExporter.doStyles(out, mProgressListener);
             }
             out.close();
             putBooklistStyles(data.toByteArray());
@@ -307,40 +308,5 @@ public abstract class BackupWriterAbstract
     public void close()
             throws IOException {
         mDb.close();
-    }
-
-    /**
-     * Listener that just passes on the progress to our own listener.
-     * <p>
-     * It basically translates between 'delta' and 'absolute' positions for the progress counter
-     */
-    private class ForwardingListener
-            implements Exporter.ExportListener {
-
-        private int mLastPos;
-
-        @Override
-        public void setMax(final int max) {
-            mProgressListener.setMax(max);
-        }
-
-        @Override
-        public void onProgress(@NonNull final String message,
-                               final int position) {
-            mProgressListener.onProgressStep(position - mLastPos, message);
-            mLastPos = position;
-        }
-
-        @Override
-        public void onProgress(@StringRes int messageId,
-                               int position) {
-            mProgressListener.onProgressStep(position - mLastPos, messageId);
-            mLastPos = position;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return mProgressListener.isCancelled();
-        }
     }
 }

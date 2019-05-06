@@ -1,445 +1,48 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.view.View;
+import android.widget.Toast;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
+import java.io.IOException;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
- * TOMF: reverse logic on tasks/progress-fragment. Also note the use of context!
+ * AsyncTask classes that run an authorization check first.
+ * If successful, a GoodReadsTasks is kicked of.
  */
 public final class GoodreadsUtils {
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
-
-    /** task progress fragment tag. */
-    private static final String TAG_GOODREADS_IMPORT_ALL = "grImportAll";
-    private static final String TAG_GOODREADS_SEND_BOOKS = "grSendBooks";
-    private static final String TAG_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";
-    private static final String TAG_GOODREADS_SEND_ONE_BOOK = "grSendOneBook";
-
     /** can be part of an image 'name' from Goodreads indicating there is no cover image. */
-    private static final String NO_COVER = "nocover";
+    public static final String NO_COVER = "nocover";
+
+    /** Task Integer 'Results' code. */
+    public static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
+    /** Task Integer 'Results' code. */
+    public static final int GR_RESULT_CODE_AUTHORIZED_FAILED = -2;
+    /** Task Integer 'Results' code. */
+    private static final int GR_RESULT_CODE_AUTHORIZED = 0;
 
     private GoodreadsUtils() {
-    }
-
-    /**
-     * @param imageName to check
-     *
-     * @return {@code true} if the name does NOT contain the string 'nocover'
-     */
-    @SuppressWarnings("WeakerAccess")
-    @AnyThread
-    public static boolean hasCover(final String imageName) {
-        return imageName != null
-                && !imageName.toLowerCase(LocaleUtils.getSystemLocale()).contains(NO_COVER);
-    }
-
-    /**
-     * @param imageName to check
-     *
-     * @return {@code true} if the name DOES contain the string 'nocover'
-     */
-    @AnyThread
-    public static boolean hasNoCover(final String imageName) {
-        return imageName != null
-                && imageName.toLowerCase(LocaleUtils.getSystemLocale()).contains(NO_COVER);
-    }
-
-    /**
-     * Show the goodreads options list.
-     */
-    @SuppressWarnings("unused")
-    @UiThread
-    public static void showGoodreadsOptions(@NonNull final Fragment fragment) {
-        @SuppressLint("InflateParams")
-        View root = fragment.getLayoutInflater().inflate(R.layout.goodreads_options_list, null);
-
-        //noinspection ConstantConditions
-        final AlertDialog dialog = new AlertDialog.Builder(fragment.getContext())
-                .setView(root)
-                .setTitle(R.string.title_select_an_action)
-                .create();
-
-        // Goodreads SYNC Link
-        root.findViewById(R.id.lbl_sync_with_goodreads)
-            .setOnClickListener(v -> {
-                importAll(fragment, true);
-                dialog.dismiss();
-            });
-
-        // Goodreads IMPORT Link
-        root.findViewById(R.id.lbl_import_all_from_goodreads)
-            .setOnClickListener(v -> {
-                importAll(fragment, false);
-                dialog.dismiss();
-            });
-
-        // Goodreads EXPORT Link
-        root.findViewById(R.id.lbl_send_books_to_goodreads)
-            .setOnClickListener(v -> {
-                sendBooks(fragment);
-                dialog.dismiss();
-            });
-
-        dialog.show();
-    }
-
-    /**
-     * Ask the user which books to send, then send them.
-     * <p>
-     * Optionally, display a dialog warning the user that goodreads authentication is required;
-     * gives them the options: 'request now', 'more info' or 'cancel'.
-     */
-    public static void sendBooks(@NonNull final Fragment fragment) {
-
-        final Context context = fragment.getContext();
-        final FragmentManager fm = fragment.getFragmentManager();
-        final View userView = fragment.getView();
-
-        new AsyncTask<Void, Object, Integer>() {
-            ProgressDialogFragment<Integer> mProgressDialog;
-            /**
-             * {@link #doInBackground} should catch exceptions, and set this field.
-             * {@link #onPostExecute} can then check it.
-             */
-            @Nullable
-            private Exception mException;
-
-            @Override
-            protected void onPreExecute() {
-                //noinspection unchecked,ConstantConditions
-                mProgressDialog = (ProgressDialogFragment)
-                        fm.findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
-                if (mProgressDialog == null) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mProgressDialog.setTask(R.id.TASK_ID_GR_SEND_BOOKS, this);
-                    mProgressDialog.show(fm, TAG_GOODREADS_SEND_BOOKS);
-                }
-            }
-
-            @Override
-            @NonNull
-            @WorkerThread
-            protected Integer doInBackground(final Void... params) {
-                try {
-                    return checkWeCanExport();
-                } catch (RuntimeException e) {
-                    Logger.error(this, e);
-                    mException = e;
-                    return R.string.error_unexpected_error;
-                }
-            }
-
-            @Override
-            @UiThread
-            protected void onPostExecute(@NonNull final Integer result) {
-                // cleanup the progress first
-                mProgressDialog.onTaskFinished(mException == null, result, mException);
-                switch (result) {
-                    case 0:
-                        // let the user choose which books to send
-                        showConfirmationDialog(fragment);
-                        break;
-
-                    case -1:
-                        // ask to register
-                        goodreadsAuthAlert(context, fm);
-                        break;
-
-                    default:
-                        // specific response.
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(userView, result);
-                        break;
-                }
-            }
-        }.execute();
-    }
-
-    /**
-     * Called from {@link #sendBooks} to let the user confirm which books to send.
-     *
-     * @param fragment the caller context
-     */
-    @UiThread
-    private static void showConfirmationDialog(@NonNull final Fragment fragment) {
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(fragment.getContext())
-                .setTitle(R.string.gr_title_send_book)
-                .setMessage(R.string.gr_send_books_to_goodreads_blurb)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.gr_btn_send_all, (d, which) -> {
-                    d.dismiss();
-                    sendAllBooks(fragment, false);
-                })
-                .setPositiveButton(R.string.gr_btn_send_updated, (d, which) -> {
-                    d.dismiss();
-                    sendAllBooks(fragment, true);
-                })
-                .create()
-                .show();
-    }
-
-    /**
-     * Start a background task that exports all books to goodreads.
-     *
-     * @param fragment    the caller context
-     * @param updatesOnly {@code true} if you only want to send updated book,
-     *                    {@code false} to send ALL books.
-     */
-    private static void sendAllBooks(@NonNull final Fragment fragment,
-                                     final boolean updatesOnly) {
-
-        final Context context = fragment.getContext();
-        final FragmentManager fm = fragment.getFragmentManager();
-        final View userView = fragment.getView();
-        //noinspection ConstantConditions
-        final String taskDescription = context.getString(R.string.gr_title_send_book);
-
-        new AsyncTask<Void, Object, Integer>() {
-            ProgressDialogFragment<Integer> mProgressDialog;
-            /**
-             * {@link #doInBackground} should catch exceptions, and set this field.
-             * {@link #onPostExecute} can then check it.
-             */
-            @Nullable
-            private Exception mException;
-
-            @Override
-            protected void onPreExecute() {
-                //noinspection unchecked,ConstantConditions
-                mProgressDialog = (ProgressDialogFragment<Integer>) fm.findFragmentByTag(
-                        TAG_GOODREADS_SEND_ALL_BOOKS);
-                if (mProgressDialog == null) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mProgressDialog.setTask(R.id.TASK_ID_GR_SEND_ALL_BOOKS, this);
-                    mProgressDialog.show(fm, TAG_GOODREADS_SEND_ALL_BOOKS);
-                }
-            }
-
-            @Override
-            @WorkerThread
-            @NonNull
-            protected Integer doInBackground(final Void... params) {
-                try {
-                    int msg = checkWeCanExport();
-                    if (msg == 0) {
-                        if (isCancelled()) {
-                            return R.string.progress_end_cancelled;
-                        }
-                        QueueManager.getQueueManager().enqueueTask(
-                                new SendAllBooksTask(taskDescription, updatesOnly),
-                                QueueManager.Q_MAIN);
-                        return R.string.gr_tq_task_has_been_queued_in_background;
-                    }
-                    return msg;
-                } catch (RuntimeException e) {
-                    Logger.error(this, e);
-                    mException = e;
-                    return R.string.error_unexpected_error;
-                }
-            }
-
-            @Override
-            @UiThread
-            protected void onPostExecute(@NonNull final Integer result) {
-                mProgressDialog.onTaskFinished(mException == null, result, mException);
-                if (result == -1) {
-                    goodreadsAuthAlert(context, fm);
-                } else {
-                    //noinspection ConstantConditions
-                    UserMessage.showUserMessage(userView, result);
-                }
-            }
-        }.execute();
-    }
-
-    /**
-     * Start a background task that exports a single books to goodreads.
-     * <p>
-     * * @param context  caller context
-     *
-     * @param bookId the book to send
-     */
-    public static void sendOneBook(@NonNull final FragmentActivity activity,
-                                   final long bookId) {
-
-        FragmentManager fm = activity.getSupportFragmentManager();
-        final String taskDescription = activity.getString(R.string.gr_send_book_to_goodreads,
-                                                          bookId);
-
-        new AsyncTask<Void, Object, Integer>() {
-            ProgressDialogFragment<Integer> mProgressDialog;
-            /**
-             * {@link #doInBackground} should catch exceptions, and set this field.
-             * {@link #onPostExecute} can then check it.
-             */
-            @Nullable
-            private Exception mException;
-
-            @Override
-            protected void onPreExecute() {
-
-                //noinspection unchecked
-                mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(
-                        TAG_GOODREADS_SEND_ONE_BOOK);
-                if (mProgressDialog == null) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mProgressDialog.setTask(R.id.TASK_ID_GR_SEND_ONE_BOOK, this);
-                    mProgressDialog.show(fm, TAG_GOODREADS_SEND_ONE_BOOK);
-                }
-            }
-
-            @Override
-            @NonNull
-            @WorkerThread
-            protected Integer doInBackground(final Void... params) {
-                try {
-                    int msg = checkWeCanExport();
-                    if (isCancelled()) {
-                        return R.string.progress_end_cancelled;
-                    }
-                    if (msg == 0) {
-                        QueueManager.getQueueManager().enqueueTask(
-                                new SendOneBookTask(taskDescription, bookId),
-                                QueueManager.Q_SMALL_JOBS);
-                        return R.string.gr_tq_task_has_been_queued_in_background;
-                    }
-                    return msg;
-                } catch (RuntimeException e) {
-                    Logger.error(this, e);
-                    mException = e;
-                    return R.string.error_unexpected_error;
-                }
-            }
-
-            @Override
-            @UiThread
-            protected void onPostExecute(@NonNull final Integer result) {
-                mProgressDialog.onTaskFinished(mException == null, result, mException);
-                if (result == -1) {
-                    goodreadsAuthAlert(activity, fm);
-                } else {
-                    UserMessage.showUserMessage(activity, result);
-                }
-            }
-        }.execute();
-    }
-
-    /**
-     * Start a background task that imports books from goodreads.
-     * <p>
-     * The AsyncTask does the "can we connect" check.
-     * The actual work is done by a {@link GoodreadsTask}.
-     */
-    public static void importAll(@NonNull final Fragment fragment,
-                                 final boolean isSync) {
-
-        final Context context = fragment.getContext();
-        final FragmentManager fm = fragment.getFragmentManager();
-        final View userView = fragment.getView();
-        //noinspection ConstantConditions
-        final String taskDescription = context.getString(R.string.gr_import_all_from_goodreads);
-
-        new AsyncTask<Void, Object, Integer>() {
-
-            ProgressDialogFragment<Integer> mProgressDialog;
-
-            /**
-             * {@link #doInBackground} should catch exceptions, and set this field.
-             * {@link #onPostExecute} can then check it.
-             */
-            @Nullable
-            private Exception mException;
-
-            @Override
-            protected void onPreExecute() {
-                //noinspection unchecked,ConstantConditions
-                mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(
-                        TAG_GOODREADS_IMPORT_ALL);
-                if (mProgressDialog == null) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mProgressDialog.setTask(R.id.TASK_ID_GR_IMPORT_ALL, this);
-                    mProgressDialog.show(fm, TAG_GOODREADS_IMPORT_ALL);
-                }
-            }
-
-            @Override
-            @NonNull
-            @WorkerThread
-            protected Integer doInBackground(final Void... params) {
-                try {
-                    int msg = checkWeCanImport();
-                    if (msg == 0) {
-                        if (isCancelled()) {
-                            return R.string.progress_end_cancelled;
-                        }
-
-                        QueueManager.getQueueManager().enqueueTask(
-                                new ImportAllTask(taskDescription, isSync),
-                                QueueManager.Q_MAIN);
-                        return R.string.gr_tq_task_has_been_queued_in_background;
-                    }
-                    return msg;
-                } catch (RuntimeException e) {
-                    Logger.error(this, e);
-                    mException = e;
-                    return R.string.error_unexpected_error;
-                }
-            }
-
-            @Override
-            @UiThread
-            protected void onPostExecute(@NonNull final Integer result) {
-                // cleanup the progress first
-                mProgressDialog.onTaskFinished(mException == null, result, mException);
-                //noinspection SwitchStatementWithTooFewBranches
-                switch (result) {
-                    case -1:
-                        // ask to register
-                        goodreadsAuthAlert(context, fm);
-                        break;
-
-                    default:
-                        // specific response.
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(userView, result);
-                        break;
-                }
-            }
-
-        }.execute();
     }
 
     /**
@@ -448,7 +51,9 @@ public final class GoodreadsUtils {
      * <p>
      * This does network access and should not be called in the UI thread.
      *
-     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     * @return StringRes id of message for user,
+     * or {@link #GR_RESULT_CODE_AUTHORIZED}
+     * or {@link #GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
      */
     @WorkerThread
     @StringRes
@@ -469,7 +74,9 @@ public final class GoodreadsUtils {
      * <p>
      * This does network access and should not be called in the UI thread.
      *
-     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     * @return StringRes id of message for user,
+     * or {@link #GR_RESULT_CODE_AUTHORIZED}
+     * or {@link #GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
      */
     @WorkerThread
     @StringRes
@@ -492,7 +99,9 @@ public final class GoodreadsUtils {
      * <p>
      * This does network access and should not be called in the UI thread.
      *
-     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     * @return StringRes id of message for user,
+     * or {@link #GR_RESULT_CODE_AUTHORIZED}
+     * or {@link #GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
      */
     @WorkerThread
     @StringRes
@@ -500,45 +109,225 @@ public final class GoodreadsUtils {
         // Make sure GR is authorized for this app
         GoodreadsManager grMgr = new GoodreadsManager();
         if (!GoodreadsManager.hasCredentials() || !grMgr.hasValidCredentials()) {
-            return -1;
+            return GR_RESULT_CODE_AUTHORIZATION_NEEDED;
         }
-        return 0;
+        return GR_RESULT_CODE_AUTHORIZED;
+    }
+
+    public static class RequestAuthTask
+            extends TaskWithProgress<Object, Integer> {
+
+        /**
+         * Constructor.
+         *
+         * @param progressDialog ProgressDialogFragment
+         */
+        @UiThread
+        public RequestAuthTask(@NonNull ProgressDialogFragment<Object, Integer> progressDialog) {
+            super(progressDialog);
+        }
+
+        protected int getId() {
+            return R.id.TASK_ID_GR_REQUEST_AUTH;
+        }
+
+        @Override
+        @NonNull
+        @WorkerThread
+        protected Integer doInBackground(final Void... params) {
+            GoodreadsManager grMgr = new GoodreadsManager();
+            // should only happen if the developer forgot to add the Goodreads keys.... (me)
+            if (grMgr.noKey()) {
+                return R.string.gr_auth_error;
+            }
+
+            // This next step can take several seconds....
+            if (!grMgr.hasValidCredentials()) {
+                try {
+                    grMgr.requestAuthorization();
+                } catch (IOException e) {
+                    Logger.error(this, e);
+                    return R.string.gr_access_error;
+                } catch (AuthorizationException e) {
+                    return GR_RESULT_CODE_AUTHORIZED_FAILED;
+                }
+            } else {
+                return R.string.gr_auth_access_already_auth;
+            }
+            if (isCancelled()) {
+                // return value not used as onPostExecute is not called
+                return R.string.progress_end_cancelled;
+            }
+            return R.string.info_authorized;
+        }
     }
 
     /**
-     * Display a dialog warning the user that Goodreads authentication is required.
-     * Gives the options: 'request now', 'more info' or 'cancel'.
-     *
-     * @param context         caller context
-     * @param fragmentManager fm
+     * Start a background task that exports a single books to goodreads.
      */
-    @UiThread
-    private static void goodreadsAuthAlert(final Context context,
-                                           final FragmentManager fragmentManager) {
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.gr_title_auth_access)
-                .setMessage(R.string.gr_action_cannot_be_completed)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
+    public static class SendOneBookTask
+            extends AsyncTask<Void, Void, Integer> {
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                         (d, which) -> {
-                             d.dismiss();
-                             RequestAuthTask.start(fragmentManager);
-                         });
+        @NonNull
+        private final String mTaskDescription;
+        private final long mBookId;
+        @Nullable
+        protected Exception mException;
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         context.getString(R.string.btn_tell_me_more),
-                         (d, which) -> {
-                             d.dismiss();
-                             Intent intent = new Intent(context, GoodreadsRegisterActivity.class);
-                             context.startActivity(intent);
-                         });
+        public SendOneBookTask(@NonNull final Context context,
+                               final long bookId) {
+            mBookId = bookId;
+            mTaskDescription = context.getString(R.string.gr_send_book_to_goodreads,
+                                                 bookId);
+        }
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
-                         (d, which) -> d.dismiss());
+        protected int getId() {
+            return R.id.TASK_ID_GR_SEND_ONE_BOOK;
+        }
 
-        dialog.show();
+        @Override
+        @NonNull
+        @WorkerThread
+        protected Integer doInBackground(final Void... params) {
+            try {
+                int msg = checkWeCanExport();
+                if (isCancelled()) {
+                    return R.string.progress_end_cancelled;
+                }
+                if (msg == GR_RESULT_CODE_AUTHORIZED) {
+                    QueueManager.getQueueManager().enqueueTask(
+                            new GrSendOneBookTask(mTaskDescription, mBookId),
+                            QueueManager.Q_SMALL_JOBS);
+                    return R.string.gr_tq_task_has_been_queued_in_background;
+                }
+                return msg;
+            } catch (RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return R.string.error_unexpected_error;
+            }
+        }
+
+        @Override
+        @UiThread
+        protected void onPostExecute(@NonNull final Integer result) {
+            Context c = App.getAppContext();
+            //TODO: quick and dirty using toast and app context. Revisit at a late date.
+            if (mException == null) {
+                Toast.makeText(c, result, Toast.LENGTH_SHORT).show();
+            } else {
+                String msg;
+                if (mException instanceof FormattedMessageException) {
+                    msg = ((FormattedMessageException) mException).getFormattedMessage(
+                            c.getResources());
+                } else {
+                    msg = mException.getLocalizedMessage();
+                }
+                msg = c.getString(result) + ' ' + msg;
+                Toast.makeText(c, msg, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * Start a background task that export books to goodreads.
+     * It can either send 'all' or 'updated-only' books.
+     * <p>
+     * The AsyncTask does the "can we connect" check.
+     * The actual work is done by a {@link GoodreadsTask}.
+     */
+    public static class SendBooksTask
+            extends TaskWithProgress<Object, Integer> {
+
+        @NonNull
+        private final String mTaskDescription;
+        private final boolean mUpdatesOnly;
+
+        public SendBooksTask(@NonNull final ProgressDialogFragment<Object, Integer> progressDialog,
+                             final boolean updatesOnly) {
+            super(progressDialog);
+
+            mUpdatesOnly = updatesOnly;
+            mTaskDescription = mProgressDialog.getString(R.string.gr_title_send_book);
+        }
+
+        protected int getId() {
+            return R.id.TASK_ID_GR_SEND_BOOKS;
+        }
+
+        @Override
+        @NonNull
+        @WorkerThread
+        protected Integer doInBackground(final Void... params) {
+            try {
+                int msg = checkWeCanExport();
+                if (msg == GR_RESULT_CODE_AUTHORIZED) {
+                    if (isCancelled()) {
+                        return R.string.progress_end_cancelled;
+                    }
+
+                    QueueManager.getQueueManager().enqueueTask(
+                            new GrSendAllBooksTask(mTaskDescription, mUpdatesOnly),
+                            QueueManager.Q_MAIN);
+                    return R.string.gr_tq_task_has_been_queued_in_background;
+                }
+                return msg;
+            } catch (RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return R.string.error_unexpected_error;
+            }
+        }
+    }
+
+    /**
+     * Start a background task that imports books from goodreads.
+     * It can either import 'all' or 'sync' books.
+     * <p>
+     * The AsyncTask does the "can we connect" check.
+     * The actual work is done by a {@link GoodreadsTask}.
+     */
+    public static class ImportTask
+            extends TaskWithProgress<Object, Integer> {
+
+        @NonNull
+        private final String mTaskDescription;
+        private final boolean mIsSync;
+
+        public ImportTask(@NonNull final ProgressDialogFragment<Object, Integer> progressDialog,
+                          final boolean isSync) {
+            super(progressDialog);
+
+            mIsSync = isSync;
+            mTaskDescription = mProgressDialog.getString(R.string.gr_import_all_from_goodreads);
+        }
+
+        protected int getId() {
+            return R.id.TASK_ID_GR_IMPORT;
+        }
+
+        @Override
+        @NonNull
+        @WorkerThread
+        protected Integer doInBackground(final Void... params) {
+            try {
+                int msg = checkWeCanImport();
+                if (msg == GR_RESULT_CODE_AUTHORIZED) {
+                    if (isCancelled()) {
+                        return R.string.progress_end_cancelled;
+                    }
+
+                    QueueManager.getQueueManager().enqueueTask(
+                            new GrImportAllTask(mTaskDescription, mIsSync),
+                            QueueManager.Q_MAIN);
+                    return R.string.gr_tq_task_has_been_queued_in_background;
+                }
+                return msg;
+            } catch (RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return R.string.error_unexpected_error;
+            }
+        }
     }
 }

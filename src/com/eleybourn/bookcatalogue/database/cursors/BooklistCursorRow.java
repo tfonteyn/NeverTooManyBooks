@@ -33,7 +33,6 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -94,11 +93,6 @@ public class BooklistCursorRow
                            DOM_BL_ABSOLUTE_POSITION,
                            DOM_BL_NODE_ROW_KIND,
                            DOM_BL_NODE_LEVEL);
-    }
-
-    @NonNull
-    public BooklistStyle getStyle() {
-        return mBuilder.getStyle();
     }
 
     public long getBookId() {

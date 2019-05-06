@@ -43,6 +43,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -121,7 +122,7 @@ public class CsvImporter
     @WorkerThread
     public int doBooks(@NonNull final InputStream importStream,
                        @Nullable final CoverFinder coverFinder,
-                       @NonNull final ImportListener listener)
+                       @NonNull final ProgressListener listener)
             throws IOException, ImportException {
 
         final List<String> importedList = new ArrayList<>();
