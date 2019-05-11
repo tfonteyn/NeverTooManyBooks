@@ -280,7 +280,7 @@ public class EditBookFragment
          * @param fm FragmentManager
          */
         ViewPagerAdapter(@NonNull final FragmentManager fm) {
-            super(fm, RESUME_ONLY_CURRENT_FRAGMENT);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override

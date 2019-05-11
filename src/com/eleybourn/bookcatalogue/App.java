@@ -50,8 +50,11 @@ import java.util.Set;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
+import org.acra.annotation.AcraCore;
+import org.acra.annotation.AcraDialog;
+import org.acra.annotation.AcraMailSender;
+import org.acra.annotation.AcraNotification;
+import org.acra.annotation.AcraToast;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
@@ -68,47 +71,46 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  *
  * @author Philip Warner
  */
-@ReportsCrashes(
+@AcraCore(reportContent = {
+        ReportField.APP_VERSION_CODE,
+        ReportField.APP_VERSION_NAME,
+        ReportField.PACKAGE_NAME,
+        ReportField.PHONE_MODEL,
+        ReportField.ANDROID_VERSION,
+        ReportField.BUILD,
+        ReportField.BRAND,
+        ReportField.PRODUCT,
+        ReportField.TOTAL_MEM_SIZE,
+        ReportField.AVAILABLE_MEM_SIZE,
+
+        ReportField.CUSTOM_DATA,
+        ReportField.STACK_TRACE,
+        ReportField.STACK_TRACE_HASH,
+        ReportField.DISPLAY,
+
+        ReportField.USER_COMMENT,
+        ReportField.USER_APP_START_DATE,
+        ReportField.USER_CRASH_DATE,
+        ReportField.THREAD_DETAILS
+})
+@AcraMailSender(
         //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
-        mailTo = "test@local.net",
-        mode = ReportingInteractionMode.DIALOG,
-        customReportContent = {
-                ReportField.APP_VERSION_CODE,
-                ReportField.APP_VERSION_NAME,
-                ReportField.PACKAGE_NAME,
-                ReportField.PHONE_MODEL,
-                ReportField.ANDROID_VERSION,
-                ReportField.BUILD,
-                ReportField.PRODUCT,
-                ReportField.TOTAL_MEM_SIZE,
-                ReportField.AVAILABLE_MEM_SIZE,
-
-                ReportField.CUSTOM_DATA,
-                ReportField.STACK_TRACE,
-                ReportField.DISPLAY,
-
-                ReportField.USER_COMMENT,
-                ReportField.USER_APP_START_DATE,
-                ReportField.USER_CRASH_DATE,
-                ReportField.THREAD_DETAILS
-//                ReportField.APPLICATION_LOG,
-        },
+        mailTo = "test@local.net")
+@AcraNotification(resTitle = R.string.acra_resNotifTitle,
+        resText = R.string.acra_resNotifText,
+        resTickerText = R.string.acra_resNotifTickerText,
+        resChannelName = R.string.app_name)
+@AcraDialog(
+        resText = R.string.acra_resDialogText,
+        // optional. default is your application name
+        resTitle = R.string.acra_resNotifTitle,
+        resIcon = R.drawable.ic_warning,
+        // optional. when defined, adds a user text field input with this text resource as a label
+        resCommentPrompt = R.string.acra_resDialogCommentPrompt)
+@AcraToast(
         //optional, displayed as soon as the crash occurs,
         // before collecting data which can take a few seconds
-        resToastText = R.string.acra_resToastText,
-        resNotifTickerText = R.string.acra_resNotifTickerText,
-        resNotifTitle = R.string.acra_resNotifTitle,
-        resNotifText = R.string.acra_resNotifText,
-        resDialogText = R.string.acra_resDialogText,
-        // optional. default is your application name
-        resDialogTitle = R.string.acra_resDialogTitle,
-        // optional. when defined, adds a user text field input with this text resource as a label
-        resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt,
-        // optional. displays a message when the user accepts to send a report.
-        resDialogOkToast = R.string.acra_resDialogOkToast
-//        ,applicationLogFile = ""
-//        ,applicationLogFileLines = 1000
-)
+        resText = R.string.acra_resToastText)
 public class App
         extends Application {
 
@@ -123,18 +125,10 @@ public class App
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
-
-    /**
-     * internal; check if an Activity should do a 'recreate()'.
-     * See {@link BaseActivity} in the onResume method.
-     */
-    private static int sActivityRecreateStatus;
     /** Activity is in need of recreating. */
     private static final int ACTIVITY_NEEDS_RECREATING = 1;
     /** Checked in onResume() so not to start tasks etc. */
     private static final int ACTIVITY_IS_RECREATING = 2;
-
-
     /**
      * NEWKIND: APP THEME.
      * <ol>
@@ -151,7 +145,11 @@ public class App
             R.style.AppTheme_Light_Blue,
             R.style.AppTheme_Light_Red,
             };
-
+    /**
+     * internal; check if an Activity should do a 'recreate()'.
+     * See {@link BaseActivity} in the onResume method.
+     */
+    private static int sActivityRecreateStatus;
     /**
      * Give static methods access to our singleton.
      * Note: never store a context in a static, use the instance instead
@@ -166,62 +164,6 @@ public class App
     @SuppressWarnings("unused")
     public App() {
         sInstance = this;
-    }
-
-    /**
-     * Initialize ACRA for a given Application.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(base);
-
-        ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
-        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
-    }
-
-    @Override
-    @CallSuper
-    public void onCreate() {
-        // Get the preferred locale as soon as possible
-        setSystemLocale();
-
-        // cache the preferred theme.
-        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-
-        // Create the notifier
-        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        // create the singleton QueueManager
-        QueueManager.init();
-
-        super.onCreate();
-    }
-
-    /**
-     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
-     *
-     * @param newConfig The new device configuration.
-     */
-    @Override
-    @CallSuper
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        // same as in onCreate
-        setSystemLocale();
-
-        // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocal());
-        // propagate to registered callbacks.
-        super.onConfigurationChanged(newConfig);
-
-        if (BuildConfig.DEBUG /* always */) {
-            //API 24: newConfig.getLocales().get(0)
-            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
-        }
-
     }
 
     /**
@@ -342,16 +284,6 @@ public class App
         return result.trim();
     }
 
-    private void setSystemLocale() {
-        try {
-            LocaleUtils.init(Locale.getDefault());
-            LocaleUtils.applyPreferred(this);
-        } catch (RuntimeException e) {
-            // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.error(this, e);
-        }
-    }
-
     /**
      * @return the global SharedPreference
      */
@@ -456,8 +388,6 @@ public class App
         sActivityRecreateStatus = 0;
     }
 
-
-
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
@@ -469,5 +399,70 @@ public class App
         return getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
+    /**
+     * Initialize ACRA for a given Application.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    protected void attachBaseContext(@NonNull final Context base) {
+        super.attachBaseContext(base);
+
+        ACRA.init(this);
+        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
+        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+    }
+
+    @Override
+    @CallSuper
+    public void onCreate() {
+        // Get the preferred locale as soon as possible
+        setSystemLocale();
+
+        // cache the preferred theme.
+        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+
+        // Create the notifier
+        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // create the singleton QueueManager
+        QueueManager.init();
+
+        super.onCreate();
+    }
+
+    /**
+     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
+     *
+     * @param newConfig The new device configuration.
+     */
+    @Override
+    @CallSuper
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
+        // same as in onCreate
+        setSystemLocale();
+
+        // override in the new config
+        newConfig.setLocale(LocaleUtils.getPreferredLocal());
+        // propagate to registered callbacks.
+        super.onConfigurationChanged(newConfig);
+
+        if (BuildConfig.DEBUG /* always */) {
+            //API 24: newConfig.getLocales().get(0)
+            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
+        }
+
+    }
+
+    private void setSystemLocale() {
+        try {
+            LocaleUtils.init(Locale.getDefault());
+            LocaleUtils.applyPreferred(this);
+        } catch (RuntimeException e) {
+            // Not much we can do...we want locale set early, but not fatal if it fails.
+            Logger.error(this, e);
+        }
+    }
 
 }
