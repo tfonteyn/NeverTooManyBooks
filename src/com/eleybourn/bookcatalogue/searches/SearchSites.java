@@ -12,14 +12,16 @@ import com.eleybourn.bookcatalogue.App;
 /**
  * Manages the setup of search engines/sites.
  * <p>
- * NEWKIND: adding a new search engine:
+ * <br>NEWKIND: adding a new search engine:
  * A search engine for a particular site should implement {@link SearchSiteManager}.
  * Configure in this class here below:
- * 1. Add an identifier (bit) + add it to {@link Site#SEARCH_ALL}.
- * 2. Add your new engine to {@link Site#getSearchSiteManager};
- * 3. create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
- * and {@link #COVER_SEARCH_ORDER_DEFAULTS}
- * 4. Optional: add to res/xml/preferences.xml if the url should be editable.
+ * <ol>
+ * <li>Add an identifier (bit) + add it to {@link Site#SEARCH_ALL}.</li>
+ * <li>Add your new engine to {@link Site#getSearchSiteManager};</li>
+ * <li>Create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
+ * and {@link #COVER_SEARCH_ORDER_DEFAULTS}</li>
+ * <li>Optional: add to res/xml/preferences.xml if the url should be editable.</li>
+ * </ol>
  */
 public final class SearchSites {
 
@@ -99,6 +101,14 @@ public final class SearchSites {
     }
 
     private SearchSites() {
+    }
+
+    /**
+     * Reset all back to the hardcoded defaults.
+     */
+    public static void reset() {
+        setSearchOrder(SEARCH_ORDER_DEFAULTS);
+        setCoverSearchOrder(COVER_SEARCH_ORDER_DEFAULTS);
     }
 
     @NonNull

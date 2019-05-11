@@ -21,7 +21,11 @@ public class ISFDBManager
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "ISFDB.";
 
+    /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+
+    /** Type: {@code boolean}. */
+    private static final String PREFS_SERIES_FROM_TOC = PREF_PREFIX + "seriesFromToc";
 
     /**
      * Constructor.
@@ -33,6 +37,10 @@ public class ISFDBManager
     public static String getBaseURL() {
         //noinspection ConstantConditions
         return App.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
+    }
+
+    public static boolean isCollectSeriesInfoFromToc() {
+        return App.getPrefs().getBoolean(PREFS_SERIES_FROM_TOC, false);
     }
 
     @Override
@@ -63,13 +71,6 @@ public class ISFDBManager
         return R.string.searching_isfdb;
     }
 
-    /**
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data
-     *
-     * @throws IOException on failure
-     */
     @NonNull
     @Override
     @WorkerThread
@@ -84,7 +85,7 @@ public class ISFDBManager
         if (ISBN.isValid(isbn)) {
             List<Editions.Edition> editions = new Editions().fetch(isbn);
             if (!editions.isEmpty()) {
-                new ISFDBBook().fetch(editions, bookData, fetchThumbnail);
+                new ISFDBBook().fetch(editions, bookData, isCollectSeriesInfoFromToc(), fetchThumbnail);
             }
         } else {
             //replace spaces in author/title with %20

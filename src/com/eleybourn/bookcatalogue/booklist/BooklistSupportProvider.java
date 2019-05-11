@@ -26,7 +26,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 
 /**
  * Interface for objects that can provide long-lived instances of Booklist-related items.
- * Typically this interface is implemented by objects that have a close() method (eg. cursors)
+ * Typically this interface is implemented by objects that have a close() method (e.g. cursors)
  * so that resource-hungry objects can be cleaned up eventually.
  *
  * @author Philip Warner

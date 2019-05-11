@@ -14,7 +14,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StringList;
@@ -66,7 +66,7 @@ public class Bookshelf
 
     /**
      * the style id. Should never be exposed as it's not validated on its own.
-     * Always call {@link #getStyle(DBA)}}
+     * Always call {@link #getStyle(DAO)}}
      */
     private long mStyleId;
 
@@ -166,7 +166,7 @@ public class Bookshelf
      */
     @NonNull
     public static String toDisplayString(@NonNull final List<Bookshelf> list) {
-        return Csv.toDisplayString(list, Bookshelf::getName);
+        return Csv.join(", ", list, Bookshelf::getName);
     }
 
     /**
@@ -175,7 +175,7 @@ public class Bookshelf
      * @return the preferred bookshelf.
      */
     public static Bookshelf getPreferred(@NonNull final Context context,
-                                         @NonNull final DBA db) {
+                                         @NonNull final DAO db) {
         String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
         if (bookshelfName != null && !bookshelfName.isEmpty()) {
             // try to get the preferred shelf
@@ -200,7 +200,7 @@ public class Bookshelf
      * @return shelf
      */
     public static Bookshelf getDefaultBookshelf(@NonNull final Context context,
-                                                @NonNull final DBA db) {
+                                                @NonNull final DAO db) {
         return new Bookshelf(DEFAULT_ID,
                              context.getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db).getId());
@@ -214,7 +214,7 @@ public class Bookshelf
      * @return shelf
      */
     public static Bookshelf getAllBooksBookshelf(@NonNull final Context context,
-                                                 @NonNull final DBA db) {
+                                                 @NonNull final DAO db) {
         return new Bookshelf(ALL_BOOKS,
                              context.getString(R.string.bookshelf_all_books),
                              BooklistStyles.getDefaultStyle(db).getId());
@@ -252,7 +252,7 @@ public class Bookshelf
      * @param db    the database used to update the bookshelf
      * @param style to set
      */
-    public void setStyle(@NonNull final DBA db,
+    public void setStyle(@NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
         style.setDefault();
 
@@ -269,7 +269,7 @@ public class Bookshelf
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public BooklistStyle getStyle(@NonNull final DBA db) {
+    public BooklistStyle getStyle(@NonNull final DAO db) {
 
         if (mStyleId == 0) {
             // the value 0 == undefined. User styles: 1+; system style -1..
@@ -341,7 +341,7 @@ public class Bookshelf
 
 
     @Override
-    public long fixupId(@NonNull final DBA db) {
+    public long fixupId(@NonNull final DAO db) {
         mId = db.getBookshelfIdByName(mName);
         return mId;
     }

@@ -26,44 +26,32 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.text.Html;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
 
 import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.DBHelper;
-import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.viewmodels.StartupViewModel;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -72,8 +60,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author Philip Warner
  */
 public class StartupActivity
-        extends AppCompatActivity
-        implements OnTaskFinishedListener<Void> {
+        extends AppCompatActivity {
 
     /** the 'LastVersion' i.e. the version which was installed before the current one. */
     public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
@@ -86,27 +73,22 @@ public class StartupActivity
     /** Number of app startup's between displaying the Amazon hint. */
     private static final int PROMPT_WAIT_AMAZON = 70;
 
-
-    private static final Handler HANDLER = new Handler();
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
     /** Flag indicating Amazon hint should be shown. */
     private static boolean sShowAmazonHint;
-    /** Flag to ensure tasks are only ever started once (at real startup). */
-    private static boolean sStartupTasksShouldBeStarted = true;
+
     /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
-    /** TaskId holder. Added when started. Removed when stopped. */
-    private final Set<Integer> mAllTasks = new HashSet<>(6);
-    /** Progress Dialog for startup tasks. */
-    @Nullable
-    private ProgressDialogFragment<Object, Void> mProgressDialog;
+
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
     /** stage the startup is at. */
     private int mStartupStage;
-    /** database used by startup tasks. */
-    private DBA mDb;
+
+    private TextView mProgressMessageView;
+
+    private StartupViewModel mModel;
 
     /**
      * Kludge to allow the {@link DBHelper} to get a reference to the currently running
@@ -130,7 +112,11 @@ public class StartupActivity
 
         LocaleUtils.applyPreferred(this);
 
-        // create self-reference for startup tasks and DBHelper callbacks.
+        // the UI
+        setContentView(R.layout.activity_startup);
+        mProgressMessageView = findViewById(R.id.progressMessage);
+
+        // create self-reference for DBHelper callbacks.
         sStartupActivity = new WeakReference<>(this);
 
         // https://developer.android.com/reference/android/os/StrictMode
@@ -140,6 +126,9 @@ public class StartupActivity
                                                .penaltyLog()
                                                .build());
         }
+
+        // get our ViewModel; we init in mStartupStage == 1.
+        mModel = ViewModelProviders.of(this).get(StartupViewModel.class);
 
         // running on Android 6+ -> request Permissions
         if (Build.VERSION.SDK_INT >= 23) {
@@ -167,56 +156,62 @@ public class StartupActivity
      * Startup stages.
      */
     private void startNextStage() {
-        // Using post guarantees the progress dialog is fully available before it is used.
-        // Consistency... so using for all stages.
-        HANDLER.post(new Runnable() {
-            @Override
-            public void run() {
-                // onCreate being stage 0
-                mStartupStage++;
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this, "startNextStage", "stage=" + mStartupStage);
+        // onCreate being stage 0
+        mStartupStage++;
+
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.debug(this, "startNextStage", "stage=" + mStartupStage);
+        }
+
+        switch (mStartupStage) {
+            case 1:
+                startTasks();
+                break;
+
+            case 2:
+                checkForUpgrades();
+                break;
+
+            case 3:
+                backupRequired();
+                break;
+
+            case 4:
+                gotoMainScreen();
+                break;
+
+            default:
+                throw new IllegalStateException("stage=" + mStartupStage);
+        }
+    }
+
+    private void startTasks() {
+        if (mModel.isStartupTasksShouldBeStarted()) {
+            // listen for progress messages
+            mModel.getTaskProgressMessage().observe(this, message ->
+                    mProgressMessageView.setText(message));
+
+            // when tasks are done, move on to next startup-stage
+            mModel.getTaskFinished().observe(this, finished -> {
+                if (finished) {
+                    startNextStage();
                 }
+            });
 
-                switch (mStartupStage) {
-                    case 1:
-                        // create the singleton QueueManager
-                        QueueManager.init();
-                        // Create a progress dialog for (potential) use by the tasks
-                        openProgressDialog();
-                        startNextStage();
-                        break;
-
-                    case 2:
-                        openDBA();
-                        startTasks();
-                        break;
-
-                    case 3:
-                        // tasks are done.
-                        closeDBA();
-                        // Get rid of the progress dialog
-                        closeProgressDialog();
-                        // Remove the weak self-reference.
-                        sStartupActivity.clear();
-
-                        // actual next step:
-                        checkForUpgrades();
-                        break;
-
-                    case 4:
-                        backupRequired();
-                        break;
-
-                    case 5:
-                        gotoMainScreen();
-                        break;
-
-                    default:
-                        throw new IllegalStateException("stage=" + mStartupStage);
+            // any error, notify user and die.
+            mModel.getTaskException().observe(this, e -> {
+                if (e != null) {
+                    App.showNotification(this, R.string.error_unknown,
+                                         e.getLocalizedMessage());
+                    finish();
                 }
-            }
-        });
+            });
+
+            mModel.startTasks();
+
+        } else {
+            startNextStage();
+        }
     }
 
     /**
@@ -258,23 +253,18 @@ public class StartupActivity
         mBackupRequired = false;
 
         if (decreaseStartupCounters()) {
-            final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage(R.string.warning_backup_request)
-                    .setTitle(R.string.lbl_backup_dialog)
+            new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_help_outline)
-                    .create();
-
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                             getString(android.R.string.cancel),
-                             (d, which) -> d.dismiss());
-            dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                             getString(android.R.string.ok),
-                             (d, which) -> {
-                                 mBackupRequired = true;
-                                 d.dismiss();
-                             });
-            dialog.setOnDismissListener(d -> startNextStage());
-            dialog.show();
+                    .setTitle(R.string.lbl_backup_dialog)
+                    .setMessage(R.string.warning_backup_request)
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        d.dismiss();
+                        mBackupRequired = true;
+                    })
+                    .setOnDismissListener(d -> startNextStage())
+                    .create()
+                    .show();
         } else {
             startNextStage();
         }
@@ -294,48 +284,9 @@ public class StartupActivity
         }
 
         // We are done here.
+        // Remove the weak self-reference and finish.
+        sStartupActivity.clear();
         finish();
-    }
-
-    private void openProgressDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, Void>)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.lbl_application_startup, true, 0);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-        }
-        mProgressDialog.setOnTaskFinishedListener(this);
-    }
-
-    /**
-     * Update the progress dialog, if it has not been dismissed.
-     *
-     * @param stringId string to display
-     */
-    public void updateProgress(@StringRes final int stringId) {
-        String message = getString(stringId);
-
-        // There is a small chance that this message could be set to display
-        // *after* the activity is finished,
-        // so we check and we also trap, log and ignore errors.
-        // See http://code.google.com/p/android/issues/detail?id=3953
-        if (!isFinishing() && !isDestroyed() && (mProgressDialog != null)) {
-            try {
-                mProgressDialog.onMessage(message);
-            } catch (RuntimeException e) {
-                Logger.error(this, e);
-            }
-        }
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
     }
 
     /**
@@ -354,10 +305,12 @@ public class StartupActivity
         } else {
             ed.putInt(PREFS_STARTUP_COUNTDOWN, opened - 1);
         }
-        ed.putInt(PREF_STARTUP_COUNT, startCount);
-        ed.apply();
+        ed.putInt(PREF_STARTUP_COUNT, startCount)
+          .apply();
 
+        // every so often, let the Amazon hint show.
         sShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
+
         return opened == 0;
     }
 
@@ -384,23 +337,6 @@ public class StartupActivity
         }
 
         return true;
-    }
-
-    private void openDBA() {
-        try {
-            mDb = new DBA();
-        } catch (DBHelper.UpgradeException e) {
-            Logger.warn(this, "openDBA", e.getLocalizedMessage());
-            App.showNotification(this, R.string.error_unknown, getString(e.messageId));
-            finish();
-        }
-    }
-
-    private void closeDBA() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
-        }
     }
 
     @Override
@@ -433,256 +369,11 @@ public class StartupActivity
     }
 
     /**
-     * We use the standard AsyncTask execute, so tasks are run serially.
-     */
-    private void startTasks() {
-        if (sStartupTasksShouldBeStarted) {
-            //noinspection ConstantConditions
-            mProgressDialog.onMessage(R.string.progress_msg_starting_up);
-
-            int taskId = 0;
-            new BuildLanguageMappingsTask(++taskId, mProgressDialog).execute();
-            mAllTasks.add(taskId);
-
-            // cleaner must be started after the language mapper task.
-            new DBCleanerTask(++taskId, mDb, mProgressDialog).execute();
-            mAllTasks.add(taskId);
-
-            if (App.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                          false)) {
-                new RebuildFtsTask(++taskId, mDb, mProgressDialog).execute();
-                mAllTasks.add(taskId);
-            }
-
-            // analyse db should always be started as the last task.
-            new AnalyzeDbTask(++taskId, mDb, mProgressDialog).execute();
-            mAllTasks.add(taskId);
-
-            // Remove old logs
-            Logger.clearLog();
-            // Clear the flag
-            sStartupTasksShouldBeStarted = false;
-
-            // ENHANCE: add checks for new Events/crashes
-        }
-
-        // If no tasks were queued, then move on to next stage. Otherwise, the completed
-        // tasks will cause the next stage to start.
-        if (mAllTasks.isEmpty()) {
-            startNextStage();
-        }
-    }
-
-    /**
-     * Called in the UI thread when any startup task completes. If no more tasks, start next stage.
-     * Because it is in the UI thread, it is not possible for this code to be called until after
-     * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
-     * be queued in onCreate().
+     * Use by the DB upgrade procedure.
      *
-     * @param taskId a task identifier.
+     * @param messageId to display
      */
-    @UiThread
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @Nullable final Void result,
-                               @Nullable final Exception e) {
-        synchronized (mAllTasks) {
-            mAllTasks.remove(taskId);
-            if (mAllTasks.isEmpty()) {
-                startNextStage();
-            }
-        }
-    }
-
-    /**
-     * The tasks here are doing a bit of a special hack.
-     * Instead of communicating back via listeners...
-     */
-    private abstract static class StartupTask
-            extends TaskWithProgress<Object, Void> {
-
-        private final int mTaskId;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         */
-        @UiThread
-        StartupTask(final int taskId,
-                    @NonNull final ProgressDialogFragment<Object, Void> progressDialog) {
-            super(progressDialog);
-
-            mTaskId = taskId;
-        }
-
-        protected int getId() {
-            return mTaskId;
-        }
-
-        @Override
-        protected void onProgressUpdate(@NonNull final Object... values) {
-            mProgressDialog.onMessage((Integer) values[0]);
-        }
-    }
-
-    /**
-     * Build the dedicated SharedPreferences file with the language mappings.
-     * Only build once per Locale.
-     */
-    static class BuildLanguageMappingsTask
-            extends StartupTask {
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         */
-        @UiThread
-        BuildLanguageMappingsTask(final int taskId,
-                                  @NonNull final ProgressDialogFragment<Object, Void> progressDialog) {
-            super(taskId, progressDialog);
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_optimizing);
-            LocaleUtils.createLanguageMappingCache();
-            return null;
-        }
-    }
-
-    /**
-     * Data cleaning. Done on each startup.
-     */
-    static class DBCleanerTask
-            extends StartupTask {
-
-        @NonNull
-        private final DBA mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         * @param db     the database
-         */
-        @UiThread
-        DBCleanerTask(final int taskId,
-                      @NonNull final DBA db,
-                      @NonNull final ProgressDialogFragment<Object, Void> progressDialog) {
-            super(taskId, progressDialog);
-            mDb = db;
-        }
-
-        @WorkerThread
-        @Override
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_optimizing);
-            DBCleaner cleaner = new DBCleaner(mDb);
-
-            // do a mass update of any languages not yet converted to ISO3 codes
-            cleaner.updateLanguages();
-
-            // check & log, but don't update yet... need more testing
-            cleaner.maybeUpdate(true);
-
-            return null;
-        }
-    }
-
-    /**
-     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
-     *
-     * @author Philip Warner
-     */
-    static class RebuildFtsTask
-            extends StartupTask {
-
-        @NonNull
-        private final DBA mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         * @param db     the database
-         */
-        @UiThread
-        RebuildFtsTask(final int taskId,
-                       @NonNull final DBA db,
-                       @NonNull final ProgressDialogFragment<Object, Void> progressDialog) {
-            super(taskId, progressDialog);
-            mDb = db;
-        }
-
-        @Override
-        @WorkerThread
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_rebuilding_search_index);
-
-            mDb.rebuildFts();
-
-            App.getPrefs()
-               .edit()
-               .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
-               .apply();
-
-            return null;
-        }
-    }
-
-    /**
-     * Run 'analyse' on our databases.
-     */
-    static class AnalyzeDbTask
-            extends StartupTask {
-
-        @NonNull
-        private final DBA mDb;
-
-        /**
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         * @param db     the database
-         */
-        @UiThread
-        AnalyzeDbTask(final int taskId,
-                      @NonNull final DBA db,
-                      @NonNull final ProgressDialogFragment<Object, Void> progressDialog) {
-            super(taskId, progressDialog);
-            mDb = db;
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_optimizing);
-
-            // small hack to make sure we always update the triggers.
-            // Makes creating/modifying triggers MUCH easier.
-            if (BuildConfig.DEBUG /* always */) {
-                mDb.recreateTriggers();
-            }
-
-            if (App.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
-                                          false)) {
-                UpgradeDatabase.v74_fixupAuthorsAndSeries(mDb);
-                App.getPrefs()
-                   .edit()
-                   .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
-                   .apply();
-            }
-
-            // do the actual work we came here for
-            mDb.analyze();
-
-            if (BooklistBuilder.imagesAreCached()) {
-                try (CoversDBA cdb = CoversDBA.getInstance()) {
-                    cdb.analyze();
-                }
-            }
-
-            return null;
-        }
+    public void onProgress(@StringRes final int messageId) {
+        mProgressMessageView.setText(messageId);
     }
 }

@@ -42,7 +42,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -64,8 +64,8 @@ public class FTSSearchActivity
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
     private final Handler mSCHandler = new Handler();
-    /** the database connection. */
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     private String mAuthorSearchText = null;
     private String mTitleSearchText = null;
@@ -124,6 +124,16 @@ public class FTSSearchActivity
         mGenericSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
+    // reminder: when converting to a fragment, don't forget this:
+//    @Override
+//    @CallSuper
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        // make sure {@link #onCreateOptionsMenu} is called
+//        setHasOptionsMenu(true);
+//    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
@@ -152,7 +162,7 @@ public class FTSSearchActivity
             mCSearchView.setText(mGenericSearchText);
         }
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         mBooksFound = findViewById(R.id.books_found);
 
@@ -222,7 +232,8 @@ public class FTSSearchActivity
                                            mGenericSearchText)) {
             // Null return means searchFts thought parameters were effectively blank
             if (cursor != null) {
-                tmpMsg = getString(R.string.books_found, cursor.getCount());
+                int count = cursor.getCount();
+                tmpMsg = getResources().getQuantityString(R.plurals.n_books_found, count, count);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     tmpMsg += "\n in " + (System.nanoTime() - t0) + "nano)";

@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 
 /**
  * @author evan
@@ -51,8 +51,10 @@ public class SearchSuggestionProvider
 
     private static final int MODE = DATABASE_MODE_QUERIES;
 
+    /** Database access. */
     @Nullable
-    private DBA mDb;
+    private DAO mDb;
+
     @Nullable
     private Cursor mSSCursor;
 
@@ -74,7 +76,7 @@ public class SearchSuggestionProvider
             return null;
         }
         if (mDb == null) {
-            mDb = new DBA();
+            mDb = new DAO();
         }
         mSSCursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
         return mSSCursor;

@@ -11,14 +11,13 @@
  * {@link androidx.preference.EditTextPreference}
  * => String
  * <p>
- * But, Preferences that support Lists in some way or form, are stored as Set<String>.
+ * But, Preferences that support Lists in some way or form, are stored as {@code Set<String>}
  * Example:
  * {@link androidx.preference.ListPreference}
  * -> store 1 value as String
  * <p>
  * {@link androidx.preference.MultiSelectListPreference}
- * => stores a Set<String> for the selected values.
- * <p>
+ * => stores a {@code Set<String>} for the selected values.
  * <p>
  * At the same time, application code is easier to write/understand if it uses the actual types
  * it needs.
@@ -41,13 +40,13 @@
  * => an integer used as a bitmask, used by {@link androidx.preference.MultiSelectListPreference}
  * <p>
  * PInt
- * => Interface implemented by PInteger, PBitmask to 'set' their values as 'Integer'
+ * => Interface implemented by PInteger, PBitmask to 'set' their values as {@code Integer}
  * <p>
  * PIntList
- * => List<Integer> : an ordered list of Integer values. Stored as a CSV String
+ * => {@code List<Integer>}: an ordered list of Integer values. Stored as a CSV String
  * <p>
  * PCollection
  * => Interface implemented by PIntList (and potentially future List/Set classes) to 'set'
- * the value as 'Set<String>'
+ * the value as {@code Set<String>}
  */
 package com.eleybourn.bookcatalogue.booklist.prefs;

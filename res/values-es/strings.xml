@@ -67,10 +67,12 @@
     <string name="about_lbl_sourcecode">Código fuente</string>
     <string name="about_lbl_contacts">Contacto</string>
     <string name="about_lbl_donate">Contribuir</string>
-    <string name="lbl_about">Acerca de esta App</string>
+    <string name="menu_about">Acerca de esta App</string>
     <string name="lbl_price_listed">Precio</string>
     <string name="lbl_update_fields">Actualización automática de campos</string>
-    <string name="lbl_update_fields_to_update">Seleccione campos para actualizar</string>
+    <string name="lbl_select_fields_to_update">Seleccione campos para actualizar</string>
+    <string name="lbl_select_fields">Seleccione campos</string>
+
     <string name="info_select_fields_to_update">Los campos seleccionados se actualizarán con datos de internet. Los campos no marcados no se modificarán.</string>
     <string name="confirm_overwrite_thumbnail">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
     <string name="yes">Sí</string>
@@ -161,7 +163,7 @@
     <string name="menu_edit_author">Modificar autor…</string>
     <string name="menu_edit_series">Modificar serie…</string>
     <string name="title_delete_series">Eliminar serie</string>
-    <string name="confirm_really_delete_series">Confirme la eliminación de la serie \‘%1$s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
+    <string name="confirm_delete_series">Confirme la eliminación de la serie \‘%1$s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
     <string name="X_title_edit_series">Modificar serie</string>
     <string name="X_title_select_cover">Seleccionar portada</string>
     <string name="X_warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
@@ -173,7 +175,7 @@
     <string name="confirm_apply_series_changed">Ha cambiado la serie de:\n  \‘%1$s\’ a \n  \‘%2$s\’\n¿Cómo quiere aplicar este cambio?\nNota: La opción \‘%3$s\’ se aplicará de manera inmediata.</string>
     <string name="warning_unable_to_find_book">No se ha encontrado el libro especificado</string>
     <string name="list_and">y</string>
-    <string name="confirm_really_delete_book">Se dispone a eliminar el libro con el título \‘%1$s\’ de %2$s. ¿Está seguro de que desea continuar?</string>
+    <string name="confirm_delete_book">Se dispone a eliminar el libro con el título \‘%1$s\’ de %2$s. ¿Está seguro de que desea continuar?</string>
     <string name="warning_editions_require_isbn">Para obtener otras ediciones es necesario el ISBN</string>
     <string name="warning_no_editions">No hay información adicional de edición disponible</string>
     <string name="progress_msg_finding_editions">Buscando ediciones…</string>
@@ -344,9 +346,9 @@
         \n\nTambién puede editar desde aquí el menú de estilos, y los propios estilos.
     </string>
     <string name="lbl_preferred_styles">Estilos preferidos</string>
-    <string name="title_edit_style_colon_name">Editar estilo: %1$s</string>
+    <string name="title_edit_style">Editar estilo</string>
     <string name="X_menu_add_style">Añadir estilo</string>
-    <string name="title_clone_style_colon_name">Duplicar estilo: %1$s</string>
+    <string name="title_clone_style">Duplicar estilo</string>
     <string name="pg_filters">Filtros adicionales</string>
     <string name="X_title_add_style">Nuevo estilo</string>
     <string name="X_pt_bob_filter_read">Seleccionar en función del estado \‘Leído\’</string>
@@ -518,7 +520,7 @@
     \n\nAl eliminar las credenciales se eliminará la opción Goodreads del menú principal de la aplicación.</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Conectando con el sitio web…</string>
+    <string name="progress_msg_connecting">Conectando con el sitio web…</string>
 
     <!-- Admin option to import -->
     <string name="lbl_backup">Backup a fichero</string>
@@ -634,28 +636,29 @@
     <string name="export_option_books_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">ningún libro mostrado</item>-->
         <item quantity="one">1 libro mostrado</item>
         <item quantity="other">Se muestran %1$d libros</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">1 libro encontrado</item>
+        <item quantity="other">%1$d libros encontrados</item>
+    </plurals>
+
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <!--<item quantity="zero">ningún libro</item>-->
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libros</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">ninguna portada</item>-->
         <item quantity="one">1 portada</item>
         <item quantity="other">%1$s portadas</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">%1$s estrellas</item>-->
         <item quantity="one">%1$s estrella</item>
         <item quantity="other">%1$s estrellas</item>
     </plurals>
@@ -704,7 +707,7 @@
     <string name="done">Hecho</string>
     <string name="lbl_edition">Edición</string>
     <string name="lbl_currency">Moneda</string>
-    <string name="btn_use">Utilizar</string>
+    <string name="btn_confirm_use">Utilizar</string>
     <string name="lbl_edition_first_edition">Primera edición</string>
     <string name="lbl_edition_limited">Edición limitada</string>
     <string name="lbl_signed">Firmado</string>
@@ -752,7 +755,6 @@
     <string name="book_format_hardcover">Rústica cosida</string>
     <string name="book_format_paperback">Rústica fresada</string>
     <string name="book_format_trade_paperback">Rústica PUR</string>
-    <string name="books_found">%1$d libros encontrados</string>
     <string name="book_format_ebook">Libro electronico</string>
     <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 4.0.0</string>

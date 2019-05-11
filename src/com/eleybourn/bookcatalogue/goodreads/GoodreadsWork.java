@@ -77,7 +77,7 @@ public class GoodreadsWork {
                 imageView.setImageBitmap(null);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
-                // run task to get the image
+                // run task to get the image. Use parallel executor.
                 new GetImageTask(getBestUrl(), this)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification

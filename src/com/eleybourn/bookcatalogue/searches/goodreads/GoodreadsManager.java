@@ -70,7 +70,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -628,7 +628,7 @@ public class GoodreadsManager
      * @return Disposition of book
      */
     @NonNull
-    public ExportDisposition sendOneBook(@NonNull final DBA db,
+    public ExportDisposition sendOneBook(@NonNull final DAO db,
                                          @NonNull final BookCursorRow bookCursorRow)
             throws AuthorizationException,
                    IOException,
@@ -815,14 +815,6 @@ public class GoodreadsManager
         }
     }
 
-    /**
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data
-     *
-     * @throws IOException            on failure
-     * @throws AuthorizationException if the site rejects our credentials (if any)
-     */
     @NonNull
     @Override
     @WorkerThread

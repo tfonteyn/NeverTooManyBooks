@@ -460,9 +460,9 @@ public class ListReviewsApiHandler
     /**
      * Field names we add to the bundle based on parsed XML data.
      * <p>
-     * We duplicate the DBA names (and give them a DBA_ prefix) so that
+     * We duplicate the DAO names (and give them a DBA_ prefix) so that
      * (a) it is clear which fields are provided by this call, and
-     * (b) it is clear which fields directly relate to DBA fields.
+     * (b) it is clear which fields directly relate to DAO fields.
      *
      * @author Philip Warner
      */

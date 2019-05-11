@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlExporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -63,8 +63,10 @@ public abstract class BackupWriterAbstract
 
     private static final int BUFFER_SIZE = 32768;
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     /** progress message. */
     private final String mProgress_msg_covers;
     /** progress message. */
@@ -77,7 +79,7 @@ public abstract class BackupWriterAbstract
      * Constructor.
      */
     protected BackupWriterAbstract() {
-        mDb = new DBA();
+        mDb = new DAO();
 
         //TODO: do not use Application Context for String resources
         Context context = App.getAppContext();

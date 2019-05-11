@@ -66,10 +66,12 @@
     <string name="about_lbl_sourcecode">Исходный код:</string>
     <string name="about_lbl_contacts">Контакты разработчиков:</string>
     <string name="about_lbl_donate">Пожертвовать</string>
-    <string name="lbl_about">О приложении…</string>
+    <string name="menu_about">О приложении…</string>
     <string name="lbl_price_listed">Список цен</string>
     <string name="lbl_update_fields">Автоматическое обновление полей</string>
-    <string name="lbl_update_fields_to_update">Выберите поля для обновления</string>
+    <string name="lbl_select_fields_to_update">Выберите поля для обновления</string>
+    <string name="lbl_select_fields">Выберите поля</string>
+
     <string name="info_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>
     <string name="confirm_overwrite_thumbnail">Выбранные поля будут обновлены как показано, но миниатюры при желании можно загрузить для ВСЕХ книг.\n\nВы хотите перезаписать все миниатюры? Предупреждение: это может занять много времени. </string>
     <string name="yes">Да</string>
@@ -159,7 +161,7 @@
     <string name="menu_edit_author">Редактирование автора…</string>
     <string name="menu_edit_series">Редактирование серии…</string>
     <string name="title_delete_series">Удаление серии</string>
-    <string name="confirm_really_delete_series">Действительно удалить серию \‘%1$s\’?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
+    <string name="confirm_delete_series">Действительно удалить серию \‘%1$s\’?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
     <string name="X_title_edit_series">Редактировать информацию о серии</string>
     <string name="X_title_select_cover">Выбрать обложку</string>
     <string name="X_warning_no_isbn_no_editions">Нельзя получить издание книги без ISBN</string>
@@ -171,7 +173,7 @@
     <string name="confirm_apply_series_changed">Вы изменили название серии с:\n  \‘%1$s\’ на \n  \‘%2$s\’\nКак вы хотите применить это изменение?\nЗамечание: выбор \‘%3$s\’ будет применён немедленно.</string>
     <string name="warning_unable_to_find_book">Поиск указанной книги не удался</string>
     <string name="list_and">и</string>
-    <string name="confirm_really_delete_book">Книга с названием \‘%1$s\’ будет полностью удалена %2$s. Вы уверены?</string>
+    <string name="confirm_delete_book">Книга с названием \‘%1$s\’ будет полностью удалена %2$s. Вы уверены?</string>
     <string name="warning_editions_require_isbn">Для получения других изданий требуется ISBN</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
@@ -321,9 +323,9 @@
         Вы можете изменить фон, изменить как списки отображаются при запускеи отрегулировать множестов других настроек, которые будут применены ко всем стилям, если возможно.\n\n
         Также вы можете редактировать меню стилей и сами стили отсюда.</string>
     <string name="lbl_preferred_styles">Предпочитаемые стили</string>
-    <string name="title_edit_style_colon_name">Редактировать стиль: %1$s</string>
+    <string name="title_edit_style">Редактировать стиль</string>
     <string name="X_menu_add_style">Добавить стиль</string>
-    <string name="title_clone_style_colon_name">Клонировать стиль: %1$s</string>
+    <string name="title_clone_style">Клонировать стиль</string>
     <string name="pg_filters">Фильтры книг</string>
     <string name="X_title_add_style">Новый стиль</string>
     <string name="X_pt_bob_filter_read">Выбор основан на статусе \‘Прочитана\’</string>
@@ -471,7 +473,7 @@
     <string name="gr_auth_blurb_part4">Похоже, что Вы уже авторизовали приложение. Если Вы хотите удалить
     credentials с этого телефона, то воспользуйтесь кнопкой ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
     \n\nПосле сброса credentials пункт меню Goodreads пропадет из главного меню.</string>
-    <string name="progress_msg_connecting_to_web_site">Соединение с сайтом…</string>
+    <string name="progress_msg_connecting">Соединение с сайтом…</string>
     <string name="lbl_backup">Бэкап в архив</string>
     <string name="lbl_import_from_archive">Импорт из архива</string>
     <string name="export_info_success_archive_details">
@@ -533,8 +535,14 @@
         <item quantity="other">Книг на полке: %1$d</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d книга найдена</item>
+        <item quantity="few">%1$d книги найдено</item>
+        <item quantity="many">%1$d книги найдено</item>
+        <item quantity="other">%1$d книги найдено</item>
+    </plurals>
+
     <plurals name="n_books">
-        <!--<item quantity="zero">Нет книг</item>-->
         <item quantity="one">%1$s книга</item>
         <item quantity="few">%1$s книги</item>
         <item quantity="many">%1$s книг</item>
@@ -542,7 +550,6 @@
     </plurals>
 
     <plurals name="n_covers">
-        <!--<item quantity="zero">Нет обложек</item>-->
         <item quantity="one">%1$s обложка</item>
         <item quantity="few">%1$s обложки</item>
         <item quantity="many">%1$s обложек</item>
@@ -599,7 +606,7 @@
     <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>
     <string name="import_export_option_xml">Все данные в формате XML</string>
     <string name="info_tap_to_edit">Нажмите здесь, чтобы изменить имя.</string>
-    <string name="btn_use">использование</string>
+    <string name="btn_confirm_use">использование</string>
     <string name="confirm_merge_bookshelves">Книжная полка, которую вы переименовываете, уже существует. Вы хотите объединить их?</string>
     <string name="warning_required_title_and_author">Название и / или автор отсутствует.</string>
     <string name="warning_required_at_least_one">Хотя бы одно поле не должно быть пустым.</string>
@@ -613,7 +620,6 @@
     <string name="btn_options">опции</string>
     <string name="done">сделанный</string>
     <string name="error_database_upgrade_failed">Невозможно обновить версию старше 4.0.0</string>
-    <string name="books_found">%1$d книги найдено</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_search_configuration">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
     <string name="lbl_date_acquired">Дата покупки</string>

@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -83,8 +83,10 @@ public class CsvImporter
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     @NonNull
     private final ImportSettings mSettings;
     private final String mProgress_msg_n_created_m_updated;
@@ -114,7 +116,7 @@ public class CsvImporter
         mUnknownString = context.getString(R.string.unknown);
         mProgress_msg_n_created_m_updated = context.getString(R.string.progress_msg_n_created_m_updated);
 
-        mDb = new DBA();
+        mDb = new DAO();
         mSettings = settings;
     }
 
@@ -161,7 +163,7 @@ public class CsvImporter
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
         // For now we require complete data.
         // ENHANCE: Do a search if mandatory columns missing
-        // (eg. allow 'import' of a list of ISBNs).
+        // (e.g. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
         // (i.e. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
@@ -345,7 +347,7 @@ public class CsvImporter
 
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                mDb.updateBook(bids.bookId, book, DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                mDb.updateBook(bids.bookId, book, DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                 mUpdated++;
             }
         } else {
@@ -356,7 +358,7 @@ public class CsvImporter
         return bids.bookId;
     }
 
-    private boolean updateOnlyIfNewer(@NonNull final DBA db,
+    private boolean updateOnlyIfNewer(@NonNull final DAO db,
                                       @NonNull final Book book,
                                       final long bookId) {
 
@@ -371,7 +373,7 @@ public class CsvImporter
      * <p>
      * Get the list of bookshelves.
      */
-    private void handleBookshelves(@NonNull final DBA db,
+    private void handleBookshelves(@NonNull final DAO db,
                                    @NonNull final Book book) {
         String encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
@@ -390,7 +392,7 @@ public class CsvImporter
      * Ignore the actual value of the UniqueId.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
-    private void handleAnthology(@NonNull final DBA db,
+    private void handleAnthology(@NonNull final DAO db,
                                  @NonNull final Book book) {
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
@@ -412,7 +414,7 @@ public class CsvImporter
      * <p>
      * Get the list of series from whatever source is available.
      */
-    private void handleSeries(@NonNull final DBA db,
+    private void handleSeries(@NonNull final DAO db,
                               @NonNull final Book book) {
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
@@ -441,7 +443,7 @@ public class CsvImporter
      * <p>
      * Get the list of authors from whatever source is available.
      */
-    private void handleAuthors(@NonNull final DBA db,
+    private void handleAuthors(@NonNull final DAO db,
                                @NonNull final Book book) {
         // preferred & used in latest versions
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);

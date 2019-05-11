@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Activity to handle searching Goodreads for books that did not automatically convert.
- * These are typically books with no ISBN.
+ * These are typically books without an ISBN.
  * <p>
  * The search criteria is setup to contain the book author, title and ISBN.
  * The user can edit these, search Goodreads, and then review the results.
@@ -51,7 +51,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class GoodreadsSearchCriteriaActivity
         extends BaseActivity {
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     private TextView mCriteriaView;
 
@@ -65,7 +66,7 @@ public class GoodreadsSearchCriteriaActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         mCriteriaView = findViewById(R.id.search_text);
 
@@ -80,7 +81,7 @@ public class GoodreadsSearchCriteriaActivity
 
             try (BookCursor cursor = mDb.fetchBookById(bookId)) {
                 if (!cursor.moveToFirst()) {
-                    UserMessage.showUserMessage(this,
+                    UserMessage.showUserMessage(mCriteriaView,
                                                 R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
@@ -117,7 +118,7 @@ public class GoodreadsSearchCriteriaActivity
     private void doSearch() {
         String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
-            UserMessage.showUserMessage(this, R.string.search_please_enter_criteria);
+            UserMessage.showUserMessage(mCriteriaView, R.string.search_please_enter_criteria);
             return;
         }
 

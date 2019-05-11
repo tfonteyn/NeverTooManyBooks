@@ -42,6 +42,7 @@ import android.widget.ExpandableListView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+import android.widget.WrapperListAdapter;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -56,7 +57,6 @@ import com.eleybourn.bookcatalogue.R;
  * 2019-04-10: still in use in BoB, mainly for the {@link SectionIndexerV2} use.
  * Not sure if any of the other old reasons to use it are still valid.
  * Review once better understood/tested.
- * <p>
  * <p>
  * Subclass of ListView that uses a local implementation of FastScroller to bypass
  * the deficiencies in the original Android version. See {@link FastScroller} for a discussion.
@@ -464,10 +464,6 @@ public class FastScrollListView
             onSizeChanged(w, h);
         }
 
-        private int getState() {
-            return mState;
-        }
-
         private void setState(final int state) {
             switch (state) {
                 case STATE_NONE:
@@ -662,7 +658,7 @@ public class FastScrollListView
             Adapter adapter = mList.getAdapter();
             if (adapter instanceof HeaderViewListAdapter) {
                 mHeaderCount = ((HeaderViewListAdapter) adapter).getHeadersCount();
-                adapter = ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+                adapter = ((WrapperListAdapter) adapter).getWrappedAdapter();
             }
             if (mList instanceof ExpandableListView) {
                 ExpandableListAdapter expAdapter = ((ExpandableListView) mList).getExpandableListAdapter();
@@ -822,7 +818,7 @@ public class FastScrollListView
             }
 
             int getAlpha() {
-                if (getState() != STATE_EXIT) {
+                if (mState != STATE_EXIT) {
                     return ALPHA_MAX;
                 }
                 int alpha;
@@ -837,7 +833,7 @@ public class FastScrollListView
 
             @Override
             public void run() {
-                if (getState() != STATE_EXIT) {
+                if (mState != STATE_EXIT) {
                     startFade();
                     return;
                 }

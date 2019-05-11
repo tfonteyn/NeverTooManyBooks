@@ -255,13 +255,13 @@ TODO: uniform quotes in all string:
         You have unsaved changes. Are you sure you want to continue?
     </string>
 
-    <string name="confirm_really_delete_series">
+    <string name="confirm_delete_series">
         Really delete series “%1$s”?\n
         \nThe books themselves will not be deleted.\n
         \nConsider editing the series and changing the series name to that of another series
         to preserve this data.
     </string>
-    <string name="confirm_really_delete_book">
+    <string name="confirm_delete_book">
         This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
@@ -315,7 +315,7 @@ TODO: uniform quotes in all string:
     <string name="progress_msg_cancelling">Cancelling…</string>
     <string name="progress_msg_getting_books">Getting books…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Connecting to web site…</string>
+    <string name="progress_msg_connecting">Connecting to web site…</string>
     <string name="progress_msg_saving_image">Saving image…</string>
     <string name="progress_msg_process_cover">Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
@@ -606,6 +606,7 @@ TODO: uniform quotes in all string:
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
+    <string name="none">None</string>
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -615,7 +616,6 @@ TODO: uniform quotes in all string:
 
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
-
 
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
@@ -632,6 +632,9 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
     <!-- == Menu strings. If a Dialog title is identical, we use the menu string as title == -->
     <!-- ####################################################################################### -->
+
+    <string name="menu_hide_keyboard">Hide keyboard</string>
+    <string name="menu_about">About</string>
 
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="menu_duplicate">Duplicate</string>
@@ -678,6 +681,7 @@ TODO: uniform quotes in all string:
 
     <string name="menu_search">Search…</string>
     <string name="menu_search_internet">Search Internet</string>
+    <string name="menu_internet_update_fields">Update Fields</string>
 
     <string name="menu_share_this">Share</string>
     <string name="menu_sort_and_style_ellipsis">Sort &amp; Style…</string>
@@ -712,11 +716,7 @@ TODO: uniform quotes in all string:
     <!-- Admin advanced - make a copy of the internal database on the sdcard -->
     <string name="menu_copy_database">Export Database</string>
 
-    <string name="lbl_about">About</string>
 
-    <string name="menu_internet_update_fields">Update Fields</string>
-
-    <string name="menu_hide_keyboard">Hide keyboard</string>
 
     <!-- ####################################################################################### -->
     <!-- == Dialog, Activity and other "window" titles == -->
@@ -729,8 +729,8 @@ TODO: uniform quotes in all string:
 
     <string name="title_edit_book_series">Edit Book Series</string>
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
-    <string name="title_edit_style_colon_name">Edit style: %1$s</string>
-    <string name="title_clone_style_colon_name">Clone style: %1$s</string>
+    <string name="title_edit_style">Edit style</string>
+    <string name="title_clone_style">Clone style</string>
 
     <string name="title_import_book_data">Import Books</string>
     <string name="title_install_scan">Install Barcode Scanner</string>
@@ -747,12 +747,14 @@ TODO: uniform quotes in all string:
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
 
-    <!-- positive response button texts -->
+    <!-- positive response button texts; must be short. -->
     <string name="btn_confirm_add_book">Add Book</string>
     <string name="btn_confirm_save_book">Save Book</string>
+
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_add">Add</string>
     <string name="btn_confirm_update">Update</string>
+
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Open</string>
     <!-- merging two bookshelves -->
@@ -771,7 +773,7 @@ TODO: uniform quotes in all string:
     <string name="btn_options">Options</string>
 
     <!-- 'use' the preferences/settings, but do not save them. -->
-    <string name="btn_use">Use</string>
+    <string name="btn_confirm_use">Use</string>
 
     <!-- generic response button texts -->
     <string name="btn_more_info">More Info.</string>
@@ -848,7 +850,8 @@ TODO: uniform quotes in all string:
 
     <!-- Update Fields from internet choices -->
     <string name="lbl_update_fields">Automatically Update Fields</string>
-    <string name="lbl_update_fields_to_update">Select Fields to Update</string>
+    <string name="lbl_select_fields_to_update">Select Fields to Update</string>
+    <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_add_extra">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
@@ -1080,21 +1083,27 @@ TODO: uniform quotes in all string:
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
         <item quantity="zero">no books</item>
-        <item quantity="one">1 book</item>
+        <item quantity="one">one book</item>
         <item quantity="other">displaying %1$d books</item>
+    </plurals>
+
+    <plurals name="n_books_found">
+        <item quantity="zero">no books found</item>
+        <item quantity="one">one book found</item>
+        <item quantity="other">%1$d books found</item>
     </plurals>
 
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
         <item quantity="zero">no books</item>
-        <item quantity="one">1 book</item>
+        <item quantity="one">one book</item>
         <item quantity="other">%1$s books</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
         <item quantity="zero">no covers</item>
-        <item quantity="one">1 cover</item>
+        <item quantity="one">one cover</item>
         <item quantity="other">%1$s covers</item>
     </plurals>
 
@@ -1189,6 +1198,7 @@ TODO: uniform quotes in all string:
 
     <!-- e.g. "in a folder" -->
     <string name="X_in">In</string>
+
     <string name="X_updated">Updated</string>
     <string name="X_file_size">Size</string>
     <string name="X_anthology_titles">Anthology Titles</string>
@@ -1245,7 +1255,6 @@ TODO: uniform quotes in all string:
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="info_tap_to_edit">Tap here to edit the name</string>
-    <string name="books_found">%1$d books found</string>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
 

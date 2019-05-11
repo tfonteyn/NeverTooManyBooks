@@ -1,16 +1,19 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
@@ -20,9 +23,9 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * AsyncTask classes that run an authorization check first.
@@ -36,11 +39,12 @@ public final class GoodreadsUtils {
     public static final String NO_COVER = "nocover";
 
     /** Task Integer 'Results' code. */
-    public static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
-    /** Task Integer 'Results' code. */
-    public static final int GR_RESULT_CODE_AUTHORIZED_FAILED = -2;
-    /** Task Integer 'Results' code. */
     private static final int GR_RESULT_CODE_AUTHORIZED = 0;
+    /** Task Integer 'Results' code. */
+    private static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
+    /** Task Integer 'Results' code. */
+    private static final int GR_RESULT_CODE_AUTHORIZED_FAILED = -2;
+
 
     private GoodreadsUtils() {
     }
@@ -114,21 +118,90 @@ public final class GoodreadsUtils {
         return GR_RESULT_CODE_AUTHORIZED;
     }
 
+    /**
+     * When a typical Goodreads AsynTask finishes, the 'result' will be a {@code StringRes}
+     * to display to the user (or an exception),
+     * or a specific code indicating issues authentication.
+     *
+     * This method provides handling for these outcomes.
+     *
+     * @param view     to tie user messages to
+     * @param listener used if authorization needs to be requested.
+     *                 Handles a recursive "auth needed" safely.
+     */
+    public static void handleGoodreadsTaskResult(final int taskId,
+                                                 final boolean success,
+                                                 @StringRes final Integer result,
+                                                 @Nullable final Exception e,
+                                                 @NonNull final View view,
+                                                 @NonNull final OnTaskListener<Object, Integer> listener) {
+        //Reminder:  'success' only means the call itself was successful.
+        // It still depends on the 'result' code what the next step is.
+
+        Context context = view.getContext();
+
+        // if auth failed, either first or second time, complain and bail out.
+        if (result == GR_RESULT_CODE_AUTHORIZED_FAILED
+                || (result == GR_RESULT_CODE_AUTHORIZATION_NEEDED && taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
+            UserMessage.showUserMessage(
+                    view, context.getString(R.string.error_authorization_failed,
+                                            context.getString(R.string.goodreads)));
+            return;
+        }
+
+        // ask to register
+        if (result == GR_RESULT_CODE_AUTHORIZATION_NEEDED) {
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.gr_title_auth_access)
+                    .setMessage(R.string.gr_action_cannot_be_completed)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setNegativeButton(android.R.string.cancel,
+                                       (d, which) -> d.dismiss())
+                    .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
+                        Intent intent = new Intent(context, GoodreadsRegisterActivity.class);
+                        context.startActivity(intent);
+                    })
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        UserMessage.showUserMessage(view, R.string.progress_msg_connecting);
+                        new RequestAuthTask(listener).execute();
+                    })
+                    .create()
+                    .show();
+        } else {
+            // authenticated fine, just show info results.
+            if (success) {
+                UserMessage.showUserMessage(view, result);
+
+            } else {
+                // some non-auth related error occurred.
+                String msg = context.getString(result);
+                if (e instanceof FormattedMessageException) {
+                    msg += ' ' +((FormattedMessageException) e)
+                            .getFormattedMessage(context.getResources());
+                } else if (e != null) {
+                    msg += ' ' + e.getLocalizedMessage();
+                }
+                UserMessage.showUserMessage(view, msg);
+            }
+        }
+    }
+
     public static class RequestAuthTask
-            extends TaskWithProgress<Object, Integer> {
+            extends AsyncTask<Void, Object, Integer> {
+
+        private final int mTaskId = R.id.TASK_ID_GR_REQUEST_AUTH;
+
+        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+
+        @Nullable
+        protected Exception mException;
 
         /**
          * Constructor.
-         *
-         * @param progressDialog ProgressDialogFragment
          */
         @UiThread
-        public RequestAuthTask(@NonNull ProgressDialogFragment<Object, Integer> progressDialog) {
-            super(progressDialog);
-        }
-
-        protected int getId() {
-            return R.id.TASK_ID_GR_REQUEST_AUTH;
+        RequestAuthTask(@NonNull OnTaskListener<Object, Integer> listener) {
+            mListener = new WeakReference<>(listener);
         }
 
         @Override
@@ -160,6 +233,22 @@ public final class GoodreadsUtils {
             }
             return R.string.info_authorized;
         }
+
+        /**
+         * If the task was cancelled (by the user cancelling the progress dialog) then
+         * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+         *
+         * @param result of the task
+         */
+        @Override
+        @UiThread
+        protected void onPostExecute(@Nullable final Integer result) {
+            if (mListener.get() != null) {
+                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            } else {
+                throw new RuntimeException("WeakReference to listener was dead");
+            }
+        }
     }
 
     /**
@@ -169,20 +258,22 @@ public final class GoodreadsUtils {
             extends AsyncTask<Void, Void, Integer> {
 
         @NonNull
+        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+
+        @NonNull
         private final String mTaskDescription;
+        private final int mTaskId = R.id.TASK_ID_GR_SEND_ONE_BOOK;
         private final long mBookId;
         @Nullable
         protected Exception mException;
 
         public SendOneBookTask(@NonNull final Context context,
-                               final long bookId) {
-            mBookId = bookId;
-            mTaskDescription = context.getString(R.string.gr_send_book_to_goodreads,
-                                                 bookId);
-        }
+                               final long bookId,
+                               @NonNull final OnTaskListener<Object, Integer> listener) {
 
-        protected int getId() {
-            return R.id.TASK_ID_GR_SEND_ONE_BOOK;
+            mListener = new WeakReference<>(listener);
+            mBookId = bookId;
+            mTaskDescription = context.getString(R.string.gr_send_book_to_goodreads, bookId);
         }
 
         @Override
@@ -211,20 +302,10 @@ public final class GoodreadsUtils {
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final Integer result) {
-            Context c = App.getAppContext();
-            //TODO: quick and dirty using toast and app context. Revisit at a late date.
-            if (mException == null) {
-                Toast.makeText(c, result, Toast.LENGTH_SHORT).show();
+            if (mListener.get() != null) {
+                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                String msg;
-                if (mException instanceof FormattedMessageException) {
-                    msg = ((FormattedMessageException) mException).getFormattedMessage(
-                            c.getResources());
-                } else {
-                    msg = mException.getLocalizedMessage();
-                }
-                msg = c.getString(result) + ' ' + msg;
-                Toast.makeText(c, msg, Toast.LENGTH_LONG).show();
+                throw new RuntimeException("WeakReference to listener was dead");
             }
         }
     }
@@ -237,22 +318,25 @@ public final class GoodreadsUtils {
      * The actual work is done by a {@link GoodreadsTask}.
      */
     public static class SendBooksTask
-            extends TaskWithProgress<Object, Integer> {
+            extends AsyncTask<Void, Object, Integer> {
 
         @NonNull
+        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        @NonNull
         private final String mTaskDescription;
+        private final int mTaskId = R.id.TASK_ID_GR_SEND_BOOKS;
+
         private final boolean mUpdatesOnly;
 
-        public SendBooksTask(@NonNull final ProgressDialogFragment<Object, Integer> progressDialog,
-                             final boolean updatesOnly) {
-            super(progressDialog);
+        @Nullable
+        protected Exception mException;
 
+        public SendBooksTask(final boolean updatesOnly,
+                             @NonNull final OnTaskListener<Object, Integer> listener) {
+
+            mListener = new WeakReference<>(listener);
             mUpdatesOnly = updatesOnly;
-            mTaskDescription = mProgressDialog.getString(R.string.gr_title_send_book);
-        }
-
-        protected int getId() {
-            return R.id.TASK_ID_GR_SEND_BOOKS;
+            mTaskDescription = App.getAppContext().getString(R.string.gr_title_send_book);
         }
 
         @Override
@@ -278,6 +362,16 @@ public final class GoodreadsUtils {
                 return R.string.error_unexpected_error;
             }
         }
+
+        @Override
+        @UiThread
+        protected void onPostExecute(@Nullable final Integer result) {
+            if (mListener.get() != null) {
+                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            } else {
+                throw new RuntimeException("WeakReference to listener was dead");
+            }
+        }
     }
 
     /**
@@ -288,22 +382,25 @@ public final class GoodreadsUtils {
      * The actual work is done by a {@link GoodreadsTask}.
      */
     public static class ImportTask
-            extends TaskWithProgress<Object, Integer> {
+            extends AsyncTask<Void, Object, Integer> {
 
         @NonNull
+        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        @NonNull
         private final String mTaskDescription;
+        private final int mTaskId = R.id.TASK_ID_GR_IMPORT;
+
         private final boolean mIsSync;
 
-        public ImportTask(@NonNull final ProgressDialogFragment<Object, Integer> progressDialog,
-                          final boolean isSync) {
-            super(progressDialog);
+        @Nullable
+        protected Exception mException;
 
+        public ImportTask(final boolean isSync,
+                          @NonNull final OnTaskListener<Object, Integer> listener) {
+
+            mListener = new WeakReference<>(listener);
             mIsSync = isSync;
-            mTaskDescription = mProgressDialog.getString(R.string.gr_import_all_from_goodreads);
-        }
-
-        protected int getId() {
-            return R.id.TASK_ID_GR_IMPORT;
+            mTaskDescription = App.getAppContext().getString(R.string.gr_import_all_from_goodreads);
         }
 
         @Override
@@ -327,6 +424,16 @@ public final class GoodreadsUtils {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;
+            }
+        }
+
+        @Override
+        @UiThread
+        protected void onPostExecute(@Nullable final Integer result) {
+            if (mListener.get() != null) {
+                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            } else {
+                throw new RuntimeException("WeakReference to listener was dead");
             }
         }
     }

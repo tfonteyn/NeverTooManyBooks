@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
@@ -42,7 +42,7 @@ public class EditLanguageDialog
         extends EditStringBaseDialog {
 
     public EditLanguageDialog(@NonNull final Activity activity,
-                              @NonNull final DBA db,
+                              @NonNull final DAO db,
                               @NonNull final Runnable onChanged) {
         super(activity, db, onChanged);
     }

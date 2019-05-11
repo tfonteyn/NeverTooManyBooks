@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
@@ -100,7 +101,8 @@ public class CheckListEditorDialogFragment<T>
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
         Objects.requireNonNull(mList);
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
+        @SuppressLint("InflateParams")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
 
         // Takes the list of items and create a list of checkboxes in the display.

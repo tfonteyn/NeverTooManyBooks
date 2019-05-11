@@ -1,184 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- top view must be scroller to work with AppBarLayout. -->
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/border"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:fillViewport="true"
+    tools:context=".BookSearchActivity"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/isbn"
+        style="@style/isbnEntry"
+        android:layout_margin="@dimen/border_double"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:windowSoftInputMode="stateAlwaysHidden"
+        app:layout_constraintEnd_toStartOf="@id/btn_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill,LabelFor"
+        />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border"
-        >
+        android:text="@string/menu_search"
+        app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/isbn"
+        />
 
-        <EditText
-            android:id="@+id/isbn"
-            style="@style/isbnEntry"
-            android:layout_margin="@dimen/border_double"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor"
-            />
+    <Button
+        android:id="@+id/isbn_1"
+        style="@style/isbnSearchKey"
+        android:text="1"
+        app:layout_constraintEnd_toStartOf="@id/isbn_2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_search"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/btn_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/menu_search"
-            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/isbn"
-            />
+    <Button
+        android:id="@+id/isbn_2"
+        style="@style/isbnSearchKey"
+        android:text="2"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_1"
+        app:layout_constraintEnd_toStartOf="@id/isbn_3"
+        app:layout_constraintStart_toEndOf="@id/isbn_1"
+        app:layout_constraintTop_toBottomOf="@id/btn_search"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_1"
-            style="@style/isbnSearchKey"
-            android:text="1"
-            app:layout_constraintEnd_toStartOf="@id/isbn_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_3"
+        style="@style/isbnSearchKey"
+        android:text="3"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/isbn_2"
+        app:layout_constraintTop_toBottomOf="@id/btn_search"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_2"
-            style="@style/isbnSearchKey"
-            android:text="2"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
-            app:layout_constraintEnd_toStartOf="@id/isbn_3"
-            app:layout_constraintStart_toEndOf="@id/isbn_1"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_4"
+        style="@style/isbnSearchKey"
+        android:text="4"
+        app:layout_constraintEnd_toEndOf="@id/isbn_1"
+        app:layout_constraintStart_toStartOf="@id/isbn_1"
+        app:layout_constraintTop_toBottomOf="@id/isbn_1"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_3"
-            style="@style/isbnSearchKey"
-            android:text="3"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/isbn_2"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_5"
+        style="@style/isbnSearchKey"
+        android:text="5"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_4"
+        app:layout_constraintEnd_toEndOf="@id/isbn_2"
+        app:layout_constraintStart_toStartOf="@id/isbn_2"
+        app:layout_constraintTop_toBottomOf="@id/isbn_2"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_4"
-            style="@style/isbnSearchKey"
-            android:text="4"
-            app:layout_constraintEnd_toEndOf="@id/isbn_1"
-            app:layout_constraintStart_toStartOf="@id/isbn_1"
-            app:layout_constraintTop_toBottomOf="@id/isbn_1"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_6"
+        style="@style/isbnSearchKey"
+        android:text="6"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_4"
+        app:layout_constraintEnd_toEndOf="@id/isbn_3"
+        app:layout_constraintStart_toStartOf="@id/isbn_3"
+        app:layout_constraintTop_toBottomOf="@id/isbn_3"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_5"
-            style="@style/isbnSearchKey"
-            android:text="5"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
-            app:layout_constraintEnd_toEndOf="@id/isbn_2"
-            app:layout_constraintStart_toStartOf="@id/isbn_2"
-            app:layout_constraintTop_toBottomOf="@id/isbn_2"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_7"
+        style="@style/isbnSearchKey"
+        android:text="7"
+        app:layout_constraintEnd_toEndOf="@id/isbn_4"
+        app:layout_constraintStart_toStartOf="@id/isbn_4"
+        app:layout_constraintTop_toBottomOf="@id/isbn_4"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_6"
-            style="@style/isbnSearchKey"
-            android:text="6"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
-            app:layout_constraintEnd_toEndOf="@id/isbn_3"
-            app:layout_constraintStart_toStartOf="@id/isbn_3"
-            app:layout_constraintTop_toBottomOf="@id/isbn_3"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_8"
+        style="@style/isbnSearchKey"
+        android:text="8"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_7"
+        app:layout_constraintEnd_toEndOf="@id/isbn_5"
+        app:layout_constraintStart_toStartOf="@id/isbn_5"
+        app:layout_constraintTop_toBottomOf="@id/isbn_5"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_7"
-            style="@style/isbnSearchKey"
-            android:text="7"
-            app:layout_constraintEnd_toEndOf="@id/isbn_4"
-            app:layout_constraintStart_toStartOf="@id/isbn_4"
-            app:layout_constraintTop_toBottomOf="@id/isbn_4"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_9"
+        style="@style/isbnSearchKey"
+        android:text="9"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_7"
+        app:layout_constraintEnd_toEndOf="@id/isbn_6"
+        app:layout_constraintStart_toStartOf="@id/isbn_6"
+        app:layout_constraintTop_toBottomOf="@id/isbn_6"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_8"
-            style="@style/isbnSearchKey"
-            android:text="8"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
-            app:layout_constraintEnd_toEndOf="@id/isbn_5"
-            app:layout_constraintStart_toStartOf="@id/isbn_5"
-            app:layout_constraintTop_toBottomOf="@id/isbn_5"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_X"
+        style="@style/isbnSearchKey"
+        android:text="X"
+        app:layout_constraintEnd_toEndOf="@id/isbn_7"
+        app:layout_constraintStart_toStartOf="@id/isbn_7"
+        app:layout_constraintTop_toBottomOf="@id/isbn_7"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_9"
-            style="@style/isbnSearchKey"
-            android:text="9"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
-            app:layout_constraintEnd_toEndOf="@id/isbn_6"
-            app:layout_constraintStart_toStartOf="@id/isbn_6"
-            app:layout_constraintTop_toBottomOf="@id/isbn_6"
-            tools:ignore="HardcodedText"
-            />
+    <Button
+        android:id="@+id/isbn_0"
+        style="@style/isbnSearchKey"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_X"
+        app:layout_constraintEnd_toEndOf="@id/isbn_8"
+        app:layout_constraintStart_toStartOf="@id/isbn_8"
+        app:layout_constraintTop_toBottomOf="@id/isbn_8"
+        tools:ignore="HardcodedText"
+        />
 
-        <Button
-            android:id="@+id/isbn_X"
-            style="@style/isbnSearchKey"
-            android:text="X"
-            app:layout_constraintEnd_toEndOf="@id/isbn_7"
-            app:layout_constraintStart_toStartOf="@id/isbn_7"
-            app:layout_constraintTop_toBottomOf="@id/isbn_7"
-            tools:ignore="HardcodedText"
-            />
+    <ImageButton
+        android:id="@+id/isbn_del"
+        style="@style/isbnSearchKey"
+        android:src="@drawable/ic_backspace"
+        app:layout_constraintBottom_toBottomOf="@id/isbn_X"
+        app:layout_constraintEnd_toEndOf="@id/isbn_9"
+        app:layout_constraintStart_toStartOf="@id/isbn_9"
+        app:layout_constraintTop_toBottomOf="@id/isbn_9"
+        tools:ignore="ContentDescription"
+        />
 
-        <Button
-            android:id="@+id/isbn_0"
-            style="@style/isbnSearchKey"
-            android:text="0"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
-            app:layout_constraintEnd_toEndOf="@id/isbn_8"
-            app:layout_constraintStart_toStartOf="@id/isbn_8"
-            app:layout_constraintTop_toBottomOf="@id/isbn_8"
-            tools:ignore="HardcodedText"
-            />
+    <!-- an ASIN for a book is the ISBN10 code. Re-enable this if we ever support non-books? -->
+    <CheckBox
+        android:id="@+id/allow_asin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/border_double"
+        android:text="@string/lbl_allow_asin"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/isbn_0"
+        />
 
-        <ImageButton
-            android:id="@+id/isbn_del"
-            style="@style/isbnSearchKey"
-            android:src="@drawable/ic_backspace"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
-            app:layout_constraintEnd_toEndOf="@id/isbn_9"
-            app:layout_constraintStart_toStartOf="@id/isbn_9"
-            app:layout_constraintTop_toBottomOf="@id/isbn_9"
-            tools:ignore="ContentDescription"
-            />
-
-        <!-- an ASIN for a book is the ISBN10 code. Re-enable this if we ever support non-books? -->
-        <CheckBox
-            android:id="@+id/allow_asin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border_double"
-            android:text="@string/lbl_allow_asin"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn_0"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

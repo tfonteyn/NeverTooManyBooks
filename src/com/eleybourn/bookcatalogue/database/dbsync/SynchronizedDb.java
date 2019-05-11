@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -383,7 +383,7 @@ public class SynchronizedDb {
      * <p>
      * Runs the provided SQL and returns a cursor over the result set.
      *
-     * @param cursorFactory the cursor factory to use, or null for the default factory
+     * @param cursorFactory the cursor factory to use, or {@code null} for the default factory
      * @param sql           the SQL query. The SQL string must not be ; terminated
      * @param selectionArgs You may include ?s in where clause in the query,
      *                      which will be replaced by the values from selectionArgs. The
@@ -629,7 +629,7 @@ public class SynchronizedDb {
 
             String s;
             try (Cursor c = mSqlDb.rawQuery("SELECT t,i FROM collation_cs_check"
-                                                    + " ORDER BY t " + DBA.COLLATION + ",i",
+                                                    + " ORDER BY t " + DAO.COLLATION + ",i",
                                             null)) {
                 c.moveToFirst();
                 s = c.getString(0);

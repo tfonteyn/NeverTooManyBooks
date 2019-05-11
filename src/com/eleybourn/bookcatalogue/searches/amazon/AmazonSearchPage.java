@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * <p>
  * It is NOT used by the ISBN lookup/search engine,
  * see {@link AmazonManager#search(String, String, String, boolean)}
- * <p>
+ * <br>
  * <p>
  * Either opening a link via the Amazon API (if we have a key) or open a web page.
  * <p>

@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
@@ -44,8 +44,8 @@ public abstract class BookSearchBaseFragment
     /** hosting activity. */
     BookSearchActivity mActivity;
 
-    /** Database instance. */
-    protected DBA mDb;
+    /** Database access. */
+    protected DAO mDb;
     /** Objects managing current search. */
     long mSearchManagerId;
     /** The last Intent returned as a result of creating a book. */
@@ -67,7 +67,7 @@ public abstract class BookSearchBaseFragment
         mActivity = (BookSearchActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);

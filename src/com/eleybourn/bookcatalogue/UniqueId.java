@@ -3,7 +3,7 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
+import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -74,11 +74,11 @@ public final class UniqueId {
     /** {@link PreferredStylesActivity}. The preferred styles were modified somehow. */
     public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES = 10_101;
 
-    /** {@link BooklistStyleSettingsFragment}. A style was modified. */
+    /** {@link StyleSettingsFragment}. A style was modified. */
     public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE = 10_102;
 
     /**
-     * Bundle keys for ParcelableArrayList<Entity>.
+     * Bundle keys for {@code ParcelableArrayList<Entity>}.
      */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     public static final String BKEY_SERIES_ARRAY = "series_array";
@@ -108,7 +108,7 @@ public final class UniqueId {
     /**
      * List of fileSpecs or uri.
      * <p>
-     * <br>type: ArrayList<String>
+     * <br>type: {@code ArrayList<String>}
      */
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
@@ -174,6 +174,13 @@ public final class UniqueId {
      * <br>type: boolean
      */
     public static final String BKEY_COVER_IMAGE = "thumbnail";
+
+    /**
+     * A BooklistStyle.
+     * <p>
+     * <br>type: {@link com.eleybourn.bookcatalogue.booklist.BooklistStyle}
+     */
+    public static final String BKEY_STYLE = "style";
 
     /**
      * tag of fragment to display if an Activity supports multiple.

@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 
 /**
@@ -21,7 +21,8 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
  */
 public final class DEBUG_SWITCHES {
 
-
+    /** to be removed soon. */
+    public static final boolean TMP_ANTHOLOGY = true;
 
     /* ****************************************************************************************** */
 
@@ -34,9 +35,6 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
 
-    /** to be removed soon. */
-    public static final boolean TMP_ANTHOLOGY = true;
-
 
     /** Global replace author/series/... */
     public static final boolean DBA_GLOBAL_REPLACE = false;
@@ -44,22 +42,20 @@ public final class DEBUG_SWITCHES {
     /** Log the full flow of {@link Activity#recreate()}. */
     public static final boolean RECREATE_ACTIVITY = false;
 
-    /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
-    public static final boolean MANAGED_TASKS = false;
+    /** track the flow & values on startActivityForResult & onActivityResult. */
+    public static final boolean ON_ACTIVITY_RESULT = false;
+
 
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
 
-    /** everything related to Dates/Timezone. */
-    public static final boolean DATETIME = false;
+    /* ****************************************************************************************** */
 
-    /** track the flow & values on startActivityForResult & onActivityResult. */
-    public static final boolean ON_ACTIVITY_RESULT = false;
+    /** {@link com.eleybourn.bookcatalogue.viewmodels.StartupViewModel}. */
+    public static final boolean STARTUP_TASKS = false;
 
-    /** all things XML related. */
-    public static final boolean XML = false;
-
-
+    /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
+    public static final boolean MANAGED_TASKS = false;
 
     /* ****************************************************************************************** */
 
@@ -72,6 +68,12 @@ public final class DEBUG_SWITCHES {
     /** {@link BooksOnBookshelf}. */
     public static final boolean BOOKS_ON_BOOKSHELF = false;
 
+    /** {@link BooksOnBookshelf}. Inserting into the link tables between a Book and X. */
+    public static final boolean BOB_INSERT_BOOK_LINKS = false;
+
+    /** {@link com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel#initBookList}. */
+    public static final boolean BOB_INIT_BOOK_LIST = true;
+
     /** {@link CoverBrowser}. */
     public static final boolean COVER_BROWSER = false;
 
@@ -81,12 +83,17 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils}. */
     public static final boolean STORAGE_UTILS = false;
 
+    /** everything related to Dates/Timezone. */
+    public static final boolean DATETIME = false;
+
+    /** all things XML related. */
+    public static final boolean XML = false;
+
     /**
      * {@link com.eleybourn.bookcatalogue.utils.NetworkUtils}.
      * {@link com.eleybourn.bookcatalogue.tasks.TerminatorConnection}.
      */
     public static final boolean NETWORK = false;
-
 
     /* ****************************************************************************************** */
 
@@ -114,7 +121,7 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
 
-    /** {@link DBA}. */
+    /** {@link DAO}. */
     public static final boolean DB_ADAPTER = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
@@ -125,16 +132,11 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
     /**
-     * Dump SQL CREATE TABLE strings to the log.
+     * Dump SQL CREATE strings to the log.
      * {@link com.eleybourn.bookcatalogue.database.definitions.TableDefinition}
-     */
-    public static final boolean SQL_CREATE_TABLE = false;
-
-    /**
-     * Dump SQL CREATE INDEX strings to the log.
      * {@link com.eleybourn.bookcatalogue.database.definitions.IndexDefinition}
      */
-    public static final boolean SQL_CREATE_INDEX = false;
+    public static final boolean SQL_CREATE = false;
 
     /**
      * Dump execSQL strings to the log.
@@ -173,13 +175,13 @@ public final class DEBUG_SWITCHES {
 
     /**
      * Dump the raw Bundle at insert time of a book - LARGE! , not recommended during imports.
-     * {@link DBA#insertBook}.
+     * {@link DAO#insertBook}.
      */
     public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
 
     /**
      * Dump the raw Bundle at update time of a book - LARGE!
-     * {@link DBA#updateBook}
+     * {@link DAO#updateBook}
      */
     public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;
 

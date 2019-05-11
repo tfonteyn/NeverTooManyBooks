@@ -39,7 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
@@ -51,9 +51,9 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallba
  * {@link #createListAdapter} needs to be implemented returning a suitable RecyclerView adapter.
  * <p>
  * Main View buttons:
- * - R.id.cancel         calls {@link #onSave(Intent)}
- * - R.id.confirm        calls {@link #onCancel()}
- * - R.id.add (OPTIONAL) calls {@link #onAdd}
+ * - R.id.confirm       calls {@link #onSave(Intent)}
+ * - R.id.cancel        calls {@link #onCancel()}
+ * - R.id.add           calls {@link #onAdd}
  * <p>
  * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
  * So if your list supports adding to the list, you must implement {@link #onAdd}.
@@ -65,21 +65,15 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallba
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
 
-    /** tag. */
-    private static final String TAG = EditObjectListActivity.class.getSimpleName();
-
-    /** if there was no key passed in, use this one for the savedInstance and return value */
-    private static final String BKEY_LIST = TAG + ":tmpList";
-
     /** The key to use in the Bundle to get the array. */
-    @Nullable
+    @NonNull
     private final String mBKey;
 
-    protected DBA mDb;
+    /** Database access. */
+    protected DAO mDb;
 
     /** the rows. */
     protected ArrayList<T> mList;
-
 
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
@@ -97,13 +91,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
-
     /**
      * Constructor.
      *
      * @param bkey The key to use in the Bundle to get the list
      */
-    protected EditObjectListActivity(@Nullable final String bkey) {
+    protected EditObjectListActivity(@NonNull final String bkey) {
         mBKey = bkey;
     }
 
@@ -112,17 +105,16 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         // Look for id and title
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         if (args != null) {
             mRowId = args.getLong(DBDefinitions.KEY_ID);
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-        }
 
-        // see getList for full details as to where we "get" the list from
-        mList = getList(savedInstanceState);
+            mList = args.getParcelableArrayList(mBKey);
+        }
 
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
@@ -143,7 +135,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
         setOnClickListener(R.id.confirm, v -> {
-            Intent data = new Intent().putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
+            Intent data = new Intent().putExtra(mBKey, mList);
             if (onSave(data)) {
                 finish();
             }
@@ -157,73 +149,18 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     }
 
     /**
-     * Load the list.
-     *
-     * 1. use the key we got in the constructor, or if none, try the default one.
-     * 2. check in savedInstanceState using that key
-     * 3. check the intent extras using that key
-     * 4. call {@link #getList()} from subclass.
-     * 5. throw FATAL error in the default {@link #getList()} method. Blame the developer!
-     */
-    @NonNull
-    private ArrayList<T> getList(@Nullable final Bundle savedInstanceState) {
-        ArrayList<T> list = null;
-
-        String key = mBKey != null ? mBKey : BKEY_LIST;
-
-        if (savedInstanceState != null) {
-            list = savedInstanceState.getParcelableArrayList(key);
-        }
-
-        if (list == null) {
-            list = getIntent().getParcelableArrayListExtra(key);
-        }
-        // no list yet ? Then ask the subclass to setup the list
-        return list != null ? list : getList();
-    }
-
-    /**
-     * Called to get the list if it was not in the intent.
-     * Override to make it do something.
-     */
-    @NonNull
-    protected ArrayList<T> getList() {
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Replace the current list.
-     */
-    protected void setList(@NonNull final ArrayList<T> newList) {
-        View view = mListView.getChildAt(0);
-        final int savedTop = view != null ? view.getTop() : 0;
-        final int savedRow = mLayoutManager.findFirstVisibleItemPosition();
-
-        mList = newList;
-        // any observer needs to be set in the child class itself.
-        mListAdapter = createListAdapter(mList,
-                                         (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
-
-        mListView.setAdapter(mListAdapter);
-
-        mListView.post(() -> mLayoutManager.scrollToPositionWithOffset(savedRow, savedTop));
-    }
-
-    /**
      * get the specific list adapter from the child class.
      */
     protected abstract RecyclerViewAdapterBase
     createListAdapter(@NonNull ArrayList<T> list,
-                      @NonNull final OnStartDragListener dragStartListener);
+                      @NonNull OnStartDragListener dragStartListener);
 
     /**
      * Called when user clicks the 'Add' button (if present).
      *
      * @param target The view that was clicked ('add' button).
      */
-    protected void onAdd(@NonNull final View target) {
-        throw new UnsupportedOperationException("Must be overridden");
-    }
+    protected abstract void onAdd(@NonNull final View target);
 
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
@@ -302,7 +239,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(mBKey != null ? mBKey : BKEY_LIST, mList);
+        outState.putParcelableArrayList(mBKey, mList);
         outState.putLong(DBDefinitions.KEY_ID, mRowId);
         outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
     }

@@ -53,6 +53,7 @@ public class SqlStatementManager
             // not sure sync is needed. But this used to be a HashTable.
             Collections.synchronizedMap(new HashMap<>());
 
+    /** The underlying database. */
     @Nullable
     private final SynchronizedDb mSyncedDb;
 

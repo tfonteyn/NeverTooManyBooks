@@ -40,12 +40,10 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
  */
 public class EditBookPublicationFragment
         extends EditBookBaseFragment
-        implements
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+        implements PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookPublicationFragment.class.getSimpleName();
-
 
     //<editor-fold desc="Fragment startup">
 
@@ -70,6 +68,10 @@ public class EditBookPublicationFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // do other stuff here that might affect the view.
+
+        // Fix up the views
         //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
     }
@@ -121,7 +123,6 @@ public class EditBookPublicationFragment
     }
 
     @Override
-    @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         super.onLoadFieldsFromBook(setAllFrom);
 

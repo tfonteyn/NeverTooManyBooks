@@ -1405,7 +1405,7 @@ public class Fields {
                     list.add(context.getString(Book.EDITIONS.get(edition)));
                 }
             }
-            return Csv.toDisplayString(list, null);
+            return Csv.join(", ", list, null);
         }
     }
 
@@ -1443,7 +1443,7 @@ public class Fields {
          */
         @NonNull
         private final String mColumn;
-        /** FieldFormatter to use (can be null). */
+        /** FieldFormatter to use (can be {@code null}). */
         @Nullable
         FieldFormatter formatter;
         /** The view for this field; looked up on first use, then cached. */
@@ -1457,7 +1457,7 @@ public class Fields {
          * into the {@link DataManager} (or Bundle).
          */
         private boolean mDoNoFetch;
-        /** FieldValidator to use (can be null). */
+        /** FieldValidator to use (can be {@code null}). */
         @Nullable
         private FieldValidator mFieldValidator;
         /** Accessor to use (automatically defined). */
@@ -1493,7 +1493,7 @@ public class Fields {
             } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
-                //TOMF: this actually emphasizes the need for having an actual type for the field.
+                //TOMF: this emphasizes the need for having an actual type for the field.
                 mFieldDataAccessor = new CheckableAccessor();
                 addTouchSignalsDirty(view);
 

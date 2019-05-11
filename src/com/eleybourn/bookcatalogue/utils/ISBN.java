@@ -178,7 +178,7 @@ public class ISBN {
         // if it's a UPC, convert to 10 and return
         try {
             return new ISBN(input).to10();
-        } catch (NumberFormatException ignore) {
+        } catch (NumberFormatException | StringIndexOutOfBoundsException ignore) {
         }
 
         // might be invalid, but let the caller deal with that.
@@ -458,10 +458,14 @@ public class ISBN {
      *            will be discarded to construct the isbn.
      *
      * @return list of digits or empty on failure
+     *
+     * @throws NumberFormatException on failure to analyse the string
+     * @throws StringIndexOutOfBoundsException theoretically we should not get this, as we *should*
+     * not pass a string which is to short. But...
      */
     @NonNull
     private List<Integer> upcToDigits(@NonNull final String upc)
-            throws NumberFormatException {
+            throws NumberFormatException, StringIndexOutOfBoundsException {
         String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
         if (isbnPrefix == null) {
             return new ArrayList<>();

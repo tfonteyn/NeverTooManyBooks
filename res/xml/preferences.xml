@@ -15,7 +15,7 @@
             android:title="@string/pt_ui_language" />
 
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="1"
             android:entries="@array/pe_ui_theme"
             android:entryValues="@array/pv_ui_theme"
             android:icon="@drawable/ic_settings_brightness"
@@ -255,7 +255,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_thumbnails_rotate_auto"
             android:entryValues="@array/pv_thumbnails_rotate_auto"
-            android:icon="@android:drawable/ic_menu_camera"
+            android:icon="@drawable/ic_rotate_right"
             android:key="Image.Camera.Autorotate"
             android:title="@string/pt_thumbnails_rotate_auto" />
 
@@ -293,6 +293,15 @@
             android:title="@string/lbl_search_site_order">
             <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
+
+        <!-- key hardcoded to ISFDB as no other site has TOC support for now -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_cloud_download"
+            android:key="ISFDB.seriesFromToc"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_collect_series_info_from_toc" />
 
         <EditTextPreference
             android:defaultValue="https://books.google.com"

@@ -32,10 +32,10 @@
             android:value="" />
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"
@@ -73,8 +73,7 @@
             android:name=".StartupActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
-            android:noHistory="true"
-            android:theme="@style/StartupActivity">
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -104,7 +103,8 @@
         <activity android:name=".EditBookshelfListActivity" />
         <!-- Edit the user preferred book list styles -->
         <activity android:name=".settings.PreferredStylesActivity" />
-        <activity android:name=".booklist.EditBooklistStyleGroupsActivity">
+        <!-- Edit the groups for a style. -->
+        <activity android:name=".settings.StyleGroupsActivity">
             <intent-filter>
                 <action android:name="BooklistStyleGroups.EDIT" />
 

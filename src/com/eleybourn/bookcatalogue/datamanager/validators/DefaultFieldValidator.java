@@ -46,7 +46,8 @@ public class DefaultFieldValidator
     }
 
     /**
-     * Gets the current value, and if null or empty, replaces it with the mDefaultValue value.
+     * Gets the current value, and if {@code null} or empty,
+     * replaces it with the mDefaultValue value.
      *
      * @param dataManager     The DataManager object containing the Datum being validated
      * @param datum           The Datum to validate

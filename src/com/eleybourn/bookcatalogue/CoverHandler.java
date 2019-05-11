@@ -33,8 +33,8 @@ import java.util.List;
 
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.CoversDAO;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
@@ -79,8 +79,10 @@ public class CoverHandler {
     @NonNull
     private final Context mContext;
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     @NonNull
     private final Book mBook;
     private final ImageView mCoverView;
@@ -104,7 +106,7 @@ public class CoverHandler {
      */
     CoverHandler(@NonNull final FragmentManager fragmentManager,
                  @NonNull final Fragment fragment,
-                 @NonNull final DBA db,
+                 @NonNull final DAO db,
                  @NonNull final Book book,
                  @NonNull final TextView isbnView,
                  @NonNull final ImageView coverView,
@@ -430,8 +432,8 @@ public class CoverHandler {
                 UserMessage.showUserMessage(mCoverView, msg);
             }
         } else {
-            /* Deal with the case where the chooser returns a null intent. This seems to happen
-             * when the filename is not properly understood by the chooser (eg. an apostrophe in
+            /* Deal with the case where the chooser returns a {@code null} intent. This seems to happen
+             * when the filename is not properly understood by the chooser (e.g. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
             UserMessage.showUserMessage(mCoverView, R.string.warning_cover_copy_failed);
         }
@@ -515,9 +517,7 @@ public class CoverHandler {
      * @param imageFile to crop
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
-        boolean cropFrameWholeImage = App.getPrefs().getBoolean(
-                Prefs.pk_thumbnails_crop_frame_is_whole_image,
-                false);
+        boolean wholeImage = App.getPrefs().getBoolean(Prefs.pk_thumbnails_crop_whole_image, false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = getCroppedTempCoverFile();
@@ -528,15 +528,14 @@ public class CoverHandler {
                           imageFile.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
                           cropped.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_SCALE, true)
-                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
+                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
         mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
     }
 
     /**
      * Crop the image using the standard crop action intent (the device may not support it).
-     *
+     * <p>
      * "com.android.camera.action.CROP" is from the Camera2 application in Android 1.x/2.x.
      * It's no longer officially supported, but has been implemented by several other apps.
      * <p>
@@ -619,7 +618,7 @@ public class CoverHandler {
      */
     private void invalidateCachedImages() {
         if (mBook.getId() != 0) {
-            try (CoversDBA db = CoversDBA.getInstance()) {
+            try (CoversDAO db = CoversDAO.getInstance()) {
                 db.delete(getUuid());
             } catch (SQLiteDoneException e) {
                 Logger.error(this, e, "SQLiteDoneException cleaning up cached cover images");

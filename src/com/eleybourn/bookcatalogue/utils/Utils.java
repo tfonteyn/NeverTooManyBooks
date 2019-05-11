@@ -27,7 +27,10 @@ import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 
@@ -37,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -55,9 +58,9 @@ public final class Utils {
      * (case insensitive + trimmed)
      * <p>
      * ENHANCE: Add {@link Author} aliases table to allow further pruning
-     * (eg. Joe Haldeman == Joe W Haldeman).
+     * (e.g. Joe Haldeman == Joe W Haldeman).
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
-     * (eg. 'Amber Series' <==> 'Amber').
+     * (e.g. 'Amber Series' <==> 'Amber').
      *
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
@@ -65,7 +68,7 @@ public final class Utils {
      *
      * @return {@code true} if the list was modified.
      */
-    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DBA db,
+    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DAO db,
                                                                 @NonNull final List<T> list) {
         // weeding out duplicate ids
         Set<Long> ids = new HashSet<>();
@@ -215,10 +218,40 @@ public final class Utils {
         return set;
     }
 
+    /**
+     * Hide the keyboard.
+     */
     public static void hideKeyboard(@NonNull final View view) {
         InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Gets the total number of rows from the ListAdapter, then use that to set
+     * the ListView to the full height so all rows are visible (no scrolling).
+     * <p>
+     * Does nothing if the ListAdapter is {@code null}, or if the ListView is not visible.
+     */
+    @SuppressWarnings("unused")
+    static void adjustListViewHeightBasedOnChildren(@NonNull final ListView listView) {
+        ListAdapter adapter = listView.getAdapter();
+        if (adapter == null || listView.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View listItem = adapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams layoutParams = listView.getLayoutParams();
+        layoutParams.height = totalHeight
+                + (listView.getDividerHeight() * (adapter.getCount()));
+        listView.setLayoutParams(layoutParams);
+        listView.requestLayout();
     }
 
     /**
@@ -237,7 +270,7 @@ public final class Utils {
          *
          * @return the item id (also set on the item).
          */
-        long fixupId(@NonNull DBA db);
+        long fixupId(@NonNull DAO db);
 
         /**
          * @return a unique name for this object, representing all it's data (except id).

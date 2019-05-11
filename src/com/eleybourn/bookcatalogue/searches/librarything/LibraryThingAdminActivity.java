@@ -21,7 +21,9 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.EditText;
 
@@ -30,17 +32,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -53,11 +55,10 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public class LibraryThingAdminActivity
         extends BaseActivity
-        implements OnTaskFinishedListener<Integer> {
-
-    private ProgressDialogFragment<Object, Integer> mProgressDialog;
+        implements OnTaskListener<Object, Integer> {
 
     private EditText mDevKeyView;
+
 
     @Override
     protected int getLayoutId() {
@@ -69,15 +70,6 @@ public class LibraryThingAdminActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
-
-        FragmentManager fm = getSupportFragmentManager();
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
-        }
 
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(
@@ -94,6 +86,8 @@ public class LibraryThingAdminActivity
         String key = App.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
         mDevKeyView.setText(key);
 
+        findViewById(R.id.reset_messages).setOnClickListener(v -> resetHints());
+
         findViewById(R.id.confirm).setOnClickListener(v -> {
             String devKey = mDevKeyView.getText().toString().trim();
             App.getPrefs()
@@ -102,22 +96,23 @@ public class LibraryThingAdminActivity
                .apply();
 
             if (!devKey.isEmpty()) {
-                //noinspection unchecked
-                mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                        fm.findFragmentByTag(ProgressDialogFragment.TAG);
-                if (mProgressDialog == null) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            R.string.progress_msg_connecting_to_web_site, true, 0);
-                    ValidateKey task = new ValidateKey(mProgressDialog);
-                    mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                    task.execute();
-                }
-                mProgressDialog.setOnTaskFinishedListener(this);
-//                mProgressDialog.setOnProgressCancelledListener(this);
+                UserMessage.showUserMessage(mDevKeyView, R.string.progress_msg_connecting);
+                new ValidateKey(this).execute();
             }
         });
+    }
 
-        findViewById(R.id.reset_messages).setOnClickListener(v -> LibraryThingManager.resetHints());
+    private void resetHints() {
+        SharedPreferences prefs = App.getPrefs();
+        SharedPreferences.Editor ed = prefs.edit();
+        for (String key : prefs.getAll().keySet()) {
+            if (key.toLowerCase(LocaleUtils.getSystemLocale())
+                   .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase(
+                           LocaleUtils.getSystemLocale()))) {
+                ed.remove(key);
+            }
+        }
+        ed.apply();
     }
 
     @Override
@@ -125,52 +120,73 @@ public class LibraryThingAdminActivity
                                final boolean success,
                                @NonNull final Integer result,
                                @Nullable final Exception e) {
-        UserMessage.showUserMessage(this, result);
+        UserMessage.showUserMessage(mDevKeyView, result);
     }
 
     /**
      * Request a known valid ISBN from LT to see if the user key is valid.
      */
     private static class ValidateKey
-            extends TaskWithProgress<Object, Integer> {
+            extends AsyncTask<Void, Object, Integer> {
+
+        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+
+        private final int mTaskId;
+        /**
+         * {@link #doInBackground} should catch exceptions, and set this field.
+         * {@link #onPostExecute} can then check it.
+         */
+        @Nullable
+        protected Exception mException;
 
         /**
          * Constructor.
-         *
-         * @param progressDialog ProgressDialogFragment
          */
         @UiThread
-        private ValidateKey(@NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
-            super(progressDialog);
-        }
-
-        protected int getId() {
-            return R.id.TASK_ID_LT_VALIDATE_KEY;
+        private ValidateKey(@NonNull final OnTaskListener<Object, Integer> listener) {
+            mTaskId = R.id.TASK_ID_LT_VALIDATE_KEY;
+            mListener = new WeakReference<>(listener);
         }
 
         @Override
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
-            LibraryThingManager ltm = new LibraryThingManager();
-            File tmpFile = ltm.getCoverImage("0451451783", SearchSiteManager.ImageSizes.SMALL);
-            if (tmpFile != null) {
-                tmpFile.deleteOnExit();
-                long length = tmpFile.length();
-                StorageUtils.deleteFile(tmpFile);
+            try {
+                LibraryThingManager ltm = new LibraryThingManager();
+                File tmpFile = ltm.getCoverImage("0451451783", SearchSiteManager.ImageSizes.SMALL);
+                if (tmpFile != null) {
+                    tmpFile.deleteOnExit();
+                    long length = tmpFile.length();
+                    StorageUtils.deleteFile(tmpFile);
 
-                if (length < 100) {
-                    return R.string.lt_incorrect_key;
-                } else {
-                    // all ok
-                    return R.string.lt_correct_key;
+                    if (length < 100) {
+                        return R.string.lt_incorrect_key;
+                    } else {
+                        // all ok
+                        return R.string.lt_correct_key;
+                    }
                 }
+                if (isCancelled()) {
+                    // return value not used as onPostExecute is not called
+                    return R.string.progress_end_cancelled;
+                }
+                return R.string.warning_cover_not_found;
+            } catch (RuntimeException e) {
+                Logger.error(this, e);
+                mException = e;
+                return R.string.error_unexpected_error;
             }
-            if (isCancelled()) {
-                // return value not used as onPostExecute is not called
-                return R.string.progress_end_cancelled;
+        }
+
+        @Override
+        @UiThread
+        protected void onPostExecute(@NonNull final Integer result) {
+            if (mListener.get() != null) {
+                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            } else {
+                throw new RuntimeException("WeakReference to listener was dead");
             }
-            return R.string.warning_cover_not_found;
         }
     }
 }

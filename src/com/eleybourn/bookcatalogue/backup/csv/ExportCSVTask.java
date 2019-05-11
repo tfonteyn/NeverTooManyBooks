@@ -37,14 +37,10 @@ public class ExportCSVTask
     @UiThread
     public ExportCSVTask(@NonNull final ExportSettings settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
-        super(progressDialog);
+        super(R.id.TASK_ID_CSV_EXPORT, progressDialog);
 
         mExporter = new CsvExporter(settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
-    }
-
-    protected int getId() {
-        return R.id.TASK_ID_CSV_EXPORT;
     }
 
     @Override

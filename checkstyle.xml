@@ -169,8 +169,12 @@
 
     <!-- Checks that each Java package has a package-info.java file -->
     <module name="JavadocPackage" />
+
     <!-- Require files to end with newline characters -->
-    <module name="NewlineAtEndOfFile" />
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+    </module>
+
     <!-- Checks for long source files. (default 2000 lines) -->
     <module name="FileLength" />
     <!-- Checks that there are no tab characters -->

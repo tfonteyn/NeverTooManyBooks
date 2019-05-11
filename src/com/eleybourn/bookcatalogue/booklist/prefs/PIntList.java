@@ -10,7 +10,7 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.App;
 
 /**
- * An List<Integer> is stored as a CSV String.
+ * An {@code List<Integer>} is stored as a CSV String.
  * <p>
  * No equivalent Preference widget
  */

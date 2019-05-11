@@ -54,7 +54,8 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 
 /**
- * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
+ * Activity to edit a list of series provided in an {@code ArrayList<Series>}
+ * and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditSeriesDialogFragment} for list
  *
@@ -140,13 +141,11 @@ public class EditSeriesListActivity
             return super.onSave(data);
         }
 
-        StandardDialogs.showConfirmUnsavedEditsDialog(
-                this,
-                /* run when user clicks 'exit' */
-                () -> {
-                    mSeriesNameView.setText("");
-                    findViewById(R.id.confirm).performClick();
-                });
+        StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+            // runs when user clicks 'exit'
+            mSeriesNameView.setText("");
+            findViewById(R.id.confirm).performClick();
+        });
 
         return false;
     }

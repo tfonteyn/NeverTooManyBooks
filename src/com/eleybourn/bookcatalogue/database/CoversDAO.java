@@ -65,7 +65,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  *
  * @author Philip Warner
  */
-public final class CoversDBA
+public final class CoversDAO
         implements AutoCloseable {
 
     /** Compresses images to 70%. */
@@ -134,11 +134,11 @@ public final class CoversDBA
     /**
      * We *try* to connect in the Constructor. But this can fail.
      * This is ok, as this class/db is for caching only.
-     * So before using it, every method in this class MUST test on != null
+     * So before using it, every method in this class MUST test on != {@code null}
      */
     private static SynchronizedDb sSyncedDb;
     /** singleton. */
-    private static CoversDBA sInstance;
+    private static CoversDAO sInstance;
 
     /* table indexes. */
     static {
@@ -154,7 +154,7 @@ public final class CoversDBA
     private final SqlStatementManager mStatements = new SqlStatementManager();
 
     /** singleton. */
-    private CoversDBA() {
+    private CoversDAO() {
     }
 
     /**
@@ -162,9 +162,9 @@ public final class CoversDBA
      * <p>
      * Reminder: we always use the *application* context for the database connection.
      */
-    public static CoversDBA getInstance() {
+    public static CoversDAO getInstance() {
         if (sInstance == null) {
-            sInstance = new CoversDBA();
+            sInstance = new CoversDAO();
         }
         // check each time, as it might have failed last time but might work now.
         if (sSyncedDb == null) {
@@ -326,7 +326,7 @@ public final class CoversDBA
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
      * // bad UUIDs...this has happened.
-     * // String whereClause = DOM_CACHE_ID + " glob '" + DBA.encodeString(uuid) + ".*'";
+     * // String whereClause = DOM_CACHE_ID + " glob '" + DAO.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
     public void delete(@NonNull final String uuid) {

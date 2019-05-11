@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -319,7 +319,7 @@ public class TocEntry
     }
 
     @Override
-    public long fixupId(@NonNull final DBA db) {
+    public long fixupId(@NonNull final DAO db) {
         mAuthor.fixupId(db);
         mId = db.getTocEntryId(getLocale(), mAuthor.getId(), mTitle);
         return mId;

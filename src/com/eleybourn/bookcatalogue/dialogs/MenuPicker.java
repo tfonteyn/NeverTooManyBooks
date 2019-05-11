@@ -90,11 +90,11 @@ public class MenuPicker<T>
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final OnClickListener<MenuItem> mListener;
+        private final OnPickListener<MenuItem> mListener;
 
         MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu,
-                            @NonNull final OnClickListener<MenuItem> listener) {
+                            @NonNull final OnPickListener<MenuItem> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
@@ -136,7 +136,7 @@ public class MenuPicker<T>
             }
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onClick(item));
+            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
         }
 
         @Override

@@ -19,6 +19,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -49,8 +50,6 @@ public class ProgressDialogFragment<Progress, Result>
     @Nullable
     private ProgressBar mProgressBar;
 
-    private boolean mIsIndeterminate;
-
     private boolean mWasCancelled;
 
     /** intermediate storage, as we'll only update this when progress is updated. */
@@ -68,9 +67,9 @@ public class ProgressDialogFragment<Progress, Result>
     private Integer mTaskId;
 
     @Nullable
-    private WeakReference<OnTaskFinishedListener<Result>> mOnTaskFinishedListenerWR;
+    private WeakReference<OnTaskListener<Progress, Result>> mOnTaskFinishedListener;
     @Nullable
-    private WeakReference<OnUserCancelledListener> mOnProgressCancelledListenerWR;
+    private WeakReference<OnUserCancelledListener> mOnProgressCancelledListener;
 
     /**
      * @param titelId         Titel for the dialog, can be 0 for no title.
@@ -130,12 +129,12 @@ public class ProgressDialogFragment<Progress, Result>
         return frag;
     }
 
-    public void setOnTaskFinishedListener(@Nullable final OnTaskFinishedListener<Result> listener) {
-        mOnTaskFinishedListenerWR = new WeakReference<>(listener);
+    public void setOnTaskListener(@Nullable final OnTaskListener<Progress, Result> listener) {
+        mOnTaskFinishedListener = new WeakReference<>(listener);
     }
 
-    public void setOnProgressCancelledListener(@Nullable final OnUserCancelledListener listener) {
-        mOnProgressCancelledListenerWR = new WeakReference<>(listener);
+    public void setOnUserCancelledListener(@Nullable final OnUserCancelledListener listener) {
+        mOnProgressCancelledListener = new WeakReference<>(listener);
     }
 
     @Override
@@ -165,9 +164,9 @@ public class ProgressDialogFragment<Progress, Result>
         // these are fixed
         @StringRes
         int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.progress_msg_please_wait);
-        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+        boolean isIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
         //noinspection ConstantConditions
-        mProgressBar.setIndeterminate(mIsIndeterminate);
+        mProgressBar.setIndeterminate(isIndeterminate);
 
         // the other settings can live in the savedInstance
         args = savedInstanceState == null ? args : savedInstanceState;
@@ -179,7 +178,7 @@ public class ProgressDialogFragment<Progress, Result>
             mMessageView.setText(mMessage);
         }
         // current and max values for a 'determinate' progress bar.
-        if (!mIsIndeterminate) {
+        if (!isIndeterminate) {
             mProgressBar.setProgress(args.getInt(BKEY_CURRENT_VALUE));
             mMax = args.getInt(BKEY_MAX);
             if (mMax > 0) {
@@ -208,8 +207,8 @@ public class ProgressDialogFragment<Progress, Result>
      * @param taskId id of task
      * @param task   that will use us for progress updates.
      */
-    public void setTask(final int taskId,
-                        @Nullable final AsyncTask<Void, Progress, Result> task) {
+    void setTask(final int taskId,
+                 @Nullable final AsyncTask<Void, Progress, Result> task) {
         mTaskId = taskId;
         if (mTask != null) {
             mTask.cancel(true);
@@ -222,15 +221,18 @@ public class ProgressDialogFragment<Progress, Result>
      *
      * @param success {@code true} if the task finished successfully
      * @param result  task result object
-     * @param e       if the task finished with an exception, or null.
+     * @param e       if the task finished with an exception, or {@code null}.
      */
     @UiThread
     public void onTaskFinished(final boolean success,
                                @Nullable final Result result,
                                @Nullable final Exception e) {
-        // Make sure we check if it is resumed because we will crash if trying to dismiss
+        // Make sure we check if it is resumed (running) because we will crash if trying to dismiss
         // the dialog after the user has switched to another app.
         if (isResumed()) {
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this,"onTaskFinished", "calling dismiss()");
+            }
             dismiss();
         }
 
@@ -246,15 +248,15 @@ public class ProgressDialogFragment<Progress, Result>
         mTask = null;
 
         // Tell the caller we're done.
-        if (mOnTaskFinishedListenerWR != null) {
-            OnTaskFinishedListener<Result> listener = mOnTaskFinishedListenerWR.get();
+        if (mOnTaskFinishedListener != null) {
+            OnTaskListener<Progress, Result> listener = mOnTaskFinishedListener.get();
             if (listener != null) {
                 listener.onTaskFinished(tmpTaskId, success, result, e);
             } else {
-                Logger.warn(this, "onTaskFinished", "reference to listener was dead");
+                throw new RuntimeException("WeakReference to listener was dead");
             }
         } else {
-            Logger.warn(this, "onTaskFinished", "no OnTaskFinishedListener set.");
+            throw new IllegalStateException("no OnTaskListener set.");
         }
 
     }
@@ -262,15 +264,15 @@ public class ProgressDialogFragment<Progress, Result>
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
         // Tell the caller we're done. mTaskId will be null if there is no task.
-        if (mOnProgressCancelledListenerWR != null) {
-            OnUserCancelledListener listener = mOnProgressCancelledListenerWR.get();
+        if (mOnProgressCancelledListener != null) {
+            OnUserCancelledListener listener = mOnProgressCancelledListener.get();
             if (listener != null) {
                 listener.onProgressDialogCancelled(mTaskId);
             } else {
-                Logger.warn(this, "onCancel", "reference to listener was dead");
+                throw new RuntimeException("WeakReference to listener was dead");
             }
         } else {
-            Logger.warn(this, "onCancel", "no OnUserCancelledListener set.");
+            throw new IllegalStateException("no OnUserCancelledListener set.");
         }
     }
 
@@ -284,11 +286,6 @@ public class ProgressDialogFragment<Progress, Result>
         if (mProgressBar != null) {
             outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
         }
-    }
-
-    public boolean isIndeterminate() {
-        //don't get it from the actual progressbar as that might be null.
-        return mIsIndeterminate;
     }
 
     /**
@@ -308,40 +305,13 @@ public class ProgressDialogFragment<Progress, Result>
      * <p>
      * Typically called from {@link AsyncTask} #onProgressUpdate
      *
-     * @param absPosition absolute position
-     * @param messageId   to display
+     * @param absPosition absolute position, can be {@code null}
+     * @param message to display, can be either {@code String}, {@code StringRes} or {@code null}.
      */
     @UiThread
     public void onProgress(@Nullable final Integer absPosition,
-                           @Nullable final Integer messageId) {
+                           @Nullable final Object message) {
         synchronized (this) {
-
-            setAbsPosition(absPosition);
-
-
-            if (messageId != null) {
-                //noinspection ConstantConditions
-                setMessage(getContext().getString(messageId));
-            } else {
-                setMessage("");
-            }
-
-        }
-    }
-
-    /**
-     * Update the message and progress value.
-     * <p>
-     * Typically called from {@link AsyncTask} #onProgressUpdate
-     *
-     * @param absPosition absolute position
-     * @param message     to display
-     */
-    @UiThread
-    public void onProgress(@Nullable final Integer absPosition,
-                           @Nullable final String message) {
-        synchronized (this) {
-
             setAbsPosition(absPosition);
             setMessage(message);
         }
@@ -350,51 +320,31 @@ public class ProgressDialogFragment<Progress, Result>
     /**
      * Update the message on the progress dialog.
      *
-     * @param message to display
+     * @param message to display, can be either {@code String}, {@code StringRes} or {@code null}.
+     *                The latter gets morphed into an empty string.
      */
     @UiThread
-    public void onMessage(@Nullable final String message) {
-        synchronized (this) {
-            setMessage(message);
+    private void setMessage(@Nullable final Object message) {
+        String newMessage;
+        if (message instanceof String) {
+            newMessage = (String) message;
+        } else if (message instanceof Integer) {
+            //noinspection ConstantConditions
+            newMessage = getContext().getString((Integer)message);
+        } else {
+            newMessage = "";
+        }
+
+        if (mMessageView != null  && !newMessage.equals(mMessage)) {
+            mMessage = newMessage;
+            mMessageView.setText(mMessage);
+        } else {
+            Logger.warnWithStackTrace(this, "mMessageView was NULL",
+                                      "newMessage=" + newMessage);
         }
     }
 
-    /**
-     * Update the message on the progress dialog.
-     *
-     * @param messageId to display
-     */
-    @UiThread
-    public void onMessage(@StringRes final int messageId) {
-        synchronized (this) {
-            setMessage(getString(messageId));
-        }
-    }
-
-    /**
-     * Update the counter (bar) on the progress dialog.
-     *
-     * @param absPosition absolute position
-     */
-    @UiThread
-    public void onProgress(final Integer absPosition) {
-        synchronized (this) {
-            setAbsPosition(absPosition);
-        }
-    }
-
-    private void setMessage(@Nullable final String message) {
-        if (message != null && !message.equals(mMessage)) {
-            mMessage = message;
-            if (mMessageView != null) {
-                mMessageView.setText(mMessage);
-            } else {
-                Logger.warnWithStackTrace(this, "mMessageView was NULL");
-            }
-        }
-    }
-
-    private void setAbsPosition(final Integer absPosition) {
+    private void setAbsPosition(@Nullable final Integer absPosition) {
         if (mProgressBar != null) {
             if (mUpdateMax && (mMax != mProgressBar.getMax())) {
                 mProgressBar.setMax(mMax);
@@ -434,7 +384,7 @@ public class ProgressDialogFragment<Progress, Result>
     public interface OnUserCancelledListener {
 
         /**
-         * @param taskId for the task; null if there was no embedded task.
+         * @param taskId for the task; {@code null} if there was no embedded task.
          */
         void onProgressDialogCancelled(@Nullable Integer taskId);
     }

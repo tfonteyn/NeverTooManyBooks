@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
@@ -64,7 +65,7 @@ public class UpdateFieldsFromInternetFragment
     private long mBookId;
 
     /** the ViewGroup where we'll add the list of fields. */
-    private ViewGroup mListContainer;
+    private ViewGroup mFieldListView;
 
     /** senderId of the update task. */
     private long mUpdateSenderId;
@@ -75,6 +76,15 @@ public class UpdateFieldsFromInternetFragment
     private String mTitle;
 
     private BaseActivityWithTasks mActivity;
+
+    @Override
+    @CallSuper
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // make sure {@link #onCreateOptionsMenu} is called
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -103,7 +113,7 @@ public class UpdateFieldsFromInternetFragment
         View root = getView();
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_update_fields_to_update);
+        getActivity().setTitle(R.string.lbl_select_fields);
 
         //noinspection ConstantConditions
         TextView authorView = root.findViewById(R.id.author);
@@ -119,13 +129,16 @@ public class UpdateFieldsFromInternetFragment
             titleView.setVisibility(View.GONE);
         }
 
-        mListContainer = root.findViewById(R.id.manage_fields_scrollview);
+        mFieldListView = root.findViewById(R.id.manage_fields_scrollview);
+
+        // FAB lives in Activity layout.
+        FloatingActionButton fab = mActivity.findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_cloud_download);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> handleConfirm());
 
         initFields();
         populateFields();
-
-        // start the update
-        root.findViewById(R.id.confirm).setOnClickListener(v -> handleConfirm());
 
         if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
             //noinspection ConstantConditions
@@ -218,13 +231,13 @@ public class UpdateFieldsFromInternetFragment
     }
 
     /**
-     * Display the list of fields, dynamically adding them in a loop.
+     * Display the list of fields.
      */
     private void populateFields() {
 
         for (FieldUsage usage : mFieldUsages.values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                   mListContainer, false);
+                                                   mFieldListView, false);
 
             TextView fieldLabel = row.findViewById(R.id.field);
             //noinspection ConstantConditions
@@ -242,45 +255,7 @@ public class UpdateFieldsFromInternetFragment
                 cb.setText(fieldUsage.getUsageInfo(getContext()));
             });
 
-            mListContainer.addView(row);
-        }
-    }
-
-    /**
-     * After confirmation, start the process.
-     */
-    private void handleConfirm() {
-        // sanity check
-        if (!hasSelections()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_select_min_1_field);
-            return;
-        }
-
-        // If the user has selected thumbnails, check if they want to download ALL
-        final FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
-        // but don't ask if its a single book only; just download it.
-        //noinspection ConstantConditions
-        if (mBookId == 0 && coversWanted.isSelected()) {
-            // Verify - this can be a dangerous operation
-            //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.lbl_update_fields)
-                    .setMessage(R.string.confirm_overwrite_thumbnail)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setNeutralButton(R.string.no, (d, which) -> {
-                        coversWanted.usage = FieldUsage.Usage.CopyIfBlank;
-                        startUpdate(mBookId);
-                    })
-                    .setPositiveButton(R.string.yes, (d, which) -> {
-                        coversWanted.usage = FieldUsage.Usage.Overwrite;
-                        startUpdate(mBookId);
-                    })
-                    .create()
-                    .show();
-        } else {
-            startUpdate(mBookId);
+            mFieldListView.addView(row);
         }
     }
 
@@ -288,9 +263,14 @@ public class UpdateFieldsFromInternetFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+
+//        menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.btn_confirm_update)
+//            .setIcon(R.drawable.ic_cloud_download)
+//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -300,6 +280,11 @@ public class UpdateFieldsFromInternetFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
+
+//            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+//                handleConfirm();
+//                return true;
+
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
@@ -343,9 +328,9 @@ public class UpdateFieldsFromInternetFragment
      * @return {@code true} if at least one field is selected
      */
     private boolean hasSelections() {
-        int nChildren = mListContainer.getChildCount();
+        int nChildren = mFieldListView.getChildCount();
         for (int i = 0; i < nChildren; i++) {
-            View view = mListContainer.getChildAt(i);
+            View view = mFieldListView.getChildAt(i);
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
                 FieldUsage usage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
@@ -355,6 +340,44 @@ public class UpdateFieldsFromInternetFragment
             }
         }
         return false;
+    }
+
+    /**
+     * After confirmation, start the process.
+     */
+    private void handleConfirm() {
+        // sanity check
+        if (!hasSelections()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.warning_select_min_1_field);
+            return;
+        }
+
+        // If the user has selected thumbnails, check if they want to download ALL
+        final FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
+        // but don't ask if its a single book only; just download it.
+        //noinspection ConstantConditions
+        if (mBookId == 0 && coversWanted.isSelected()) {
+            // Verify - this can be a dangerous operation
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.lbl_update_fields)
+                    .setMessage(R.string.confirm_overwrite_thumbnail)
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                    .setNeutralButton(R.string.no, (d, which) -> {
+                        coversWanted.usage = FieldUsage.Usage.CopyIfBlank;
+                        startUpdate(mBookId);
+                    })
+                    .setPositiveButton(R.string.yes, (d, which) -> {
+                        coversWanted.usage = FieldUsage.Usage.Overwrite;
+                        startUpdate(mBookId);
+                    })
+                    .create()
+                    .show();
+        } else {
+            startUpdate(mBookId);
+        }
     }
 
     /**

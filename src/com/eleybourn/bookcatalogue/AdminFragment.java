@@ -28,16 +28,15 @@ import com.eleybourn.bookcatalogue.backup.csv.ExportCSVTask;
 import com.eleybourn.bookcatalogue.backup.csv.ImportCSVTask;
 import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
 import com.eleybourn.bookcatalogue.backup.ui.RestoreActivity;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -45,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public class AdminFragment
         extends Fragment
-        implements OnTaskFinishedListener<Integer> {
+        implements OnTaskListener<Object, Integer> {
 
     /** Fragment manager tag. */
     public static final String TAG = AdminFragment.class.getSimpleName();
@@ -80,8 +79,8 @@ public class AdminFragment
         mProgressDialog = (ProgressDialogFragment<Object, Integer>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
+            mProgressDialog.setOnTaskListener(this);
+//            mProgressDialog.setOnUserCancelledListener(this);
         }
 
         View root = getView();
@@ -125,78 +124,32 @@ public class AdminFragment
         // Goodreads Import Synchronize
         v = root.findViewById(R.id.lbl_sync_with_goodreads);
         v.setOnClickListener(v1 -> {
-            //noinspection unchecked
-            mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_msg_connecting_to_web_site, true, 0);
-                GoodreadsUtils.ImportTask task = new GoodreadsUtils.ImportTask(
-                        mProgressDialog, true);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                task.execute();
-            }
-            mProgressDialog.setOnTaskFinishedListener(this);
-//        mProgressDialog.setOnProgressCancelledListener(this);
+            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
+            new GoodreadsUtils.ImportTask(true, this).execute();
         });
 
         // Goodreads Import All
         v = root.findViewById(R.id.lbl_import_all_from_goodreads);
         v.setOnClickListener(v1 -> {
-            //noinspection unchecked
-            mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_msg_connecting_to_web_site, true, 0);
-                GoodreadsUtils.ImportTask task = new GoodreadsUtils.ImportTask(
-                        mProgressDialog, false);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                task.execute();
-            }
-            mProgressDialog.setOnTaskFinishedListener(this);
-//        mProgressDialog.setOnProgressCancelledListener(this);
+            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
+            new GoodreadsUtils.ImportTask(false, this).execute();
         });
 
         // Goodreads Export Updated
         v = root.findViewById(R.id.lbl_send_updated_books_to_goodreads);
         v.setOnClickListener(v1 -> {
-
-            //noinspection unchecked
-            mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_msg_connecting_to_web_site, true, 0);
-                GoodreadsUtils.SendBooksTask task =
-                        new GoodreadsUtils.SendBooksTask(mProgressDialog, true);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                task.execute();
-            }
-            mProgressDialog.setOnTaskFinishedListener(this);
-            //  mProgressDialog.setOnProgressCancelledListener(this);
-
+            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
+            new GoodreadsUtils.SendBooksTask(true, this).execute();
         });
 
         // Goodreads Export All
         v = root.findViewById(R.id.lbl_send_all_books_to_goodreads);
         v.setOnClickListener(v1 -> {
-            //noinspection unchecked
-            mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_msg_connecting_to_web_site, true, 0);
-                GoodreadsUtils.SendBooksTask task =
-                        new GoodreadsUtils.SendBooksTask(mProgressDialog, false);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                task.execute();
-            }
-            mProgressDialog.setOnTaskFinishedListener(this);
-            // mProgressDialog.setOnProgressCancelledListener(this);
+            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
+            new GoodreadsUtils.SendBooksTask(false, this).execute();
         });
 
-        /* Start the activity that shows the basic details of GoodReads tasks. */
+        /* Start the activity that shows the active GoodReads tasks. */
         v = root.findViewById(R.id.lbl_background_tasks);
         v.setOnClickListener(v1 -> {
             Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
@@ -222,7 +175,7 @@ public class AdminFragment
         /* Erase cover cache */
         v = root.findViewById(R.id.lbl_erase_cover_cache);
         v.setOnClickListener(v1 -> {
-            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                 coversDBAdapter.deleteAll();
             }
         });
@@ -234,7 +187,6 @@ public class AdminFragment
             UserMessage.showUserMessage(v1, R.string.progress_end_backup_success);
         });
     }
-
 
     /**
      * Export all data to a CSV file.
@@ -255,8 +207,8 @@ public class AdminFragment
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskFinishedListener(this);
-        //mProgressDialog.setOnProgressCancelledListener(this);
+        mProgressDialog.setOnTaskListener(this);
+        //mProgressDialog.setOnUserCancelledListener(this);
     }
 
     /**
@@ -307,8 +259,8 @@ public class AdminFragment
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskFinishedListener(this);
-        //mProgressDialog.setOnProgressCancelledListener(this);
+        mProgressDialog.setOnTaskListener(this);
+        //mProgressDialog.setOnUserCancelledListener(this);
     }
 
     @Override
@@ -378,52 +330,9 @@ public class AdminFragment
             case R.id.TASK_ID_GR_SEND_BOOKS:
             case R.id.TASK_ID_GR_REQUEST_AUTH:
                 //noinspection ConstantConditions
-                switch (result) {
-                    case GoodreadsUtils.GR_RESULT_CODE_AUTHORIZATION_NEEDED:
-                        // ask to register
-                        final FragmentManager fm = getFragmentManager();
-                        //noinspection ConstantConditions
-                        new AlertDialog.Builder(getContext())
-                                .setTitle(R.string.gr_title_auth_access)
-                                .setMessage(R.string.gr_action_cannot_be_completed)
-                                .setIconAttribute(android.R.attr.alertDialogIcon)
-                                .setNegativeButton(android.R.string.cancel,
-                                                   (d, which) -> d.dismiss())
-                                .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
-                                    Intent intent = new Intent(getContext(),
-                                                               GoodreadsRegisterActivity.class);
-                                    getContext().startActivity(intent);
-                                })
-                                .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                    //noinspection ConstantConditions,unchecked
-                                    mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                                            fm.findFragmentByTag(ProgressDialogFragment.TAG);
-                                    if (mProgressDialog == null) {
-                                        mProgressDialog = ProgressDialogFragment.newInstance(
-                                                R.string.progress_msg_connecting_to_web_site,
-                                                true, 0);
-                                        GoodreadsUtils.RequestAuthTask task = new GoodreadsUtils.RequestAuthTask(mProgressDialog);
-                                        mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-                                        task.execute();
-                                    }
-                                    mProgressDialog.setOnTaskFinishedListener(this);
-                                })
-                                .create()
-                                .show();
-                        break;
-
-                    case GoodreadsUtils.GR_RESULT_CODE_AUTHORIZED_FAILED:
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(getView(),
-                                                    getString(R.string.error_authorization_failed,
-                                                              getString(R.string.goodreads)));
-                        break;
-
-                    default:
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(getView(), result);
-                        break;
-                }
+                GoodreadsUtils.handleGoodreadsTaskResult(taskId, success, result, e,
+                                                         getView(), this);
+                break;
         }
     }
 

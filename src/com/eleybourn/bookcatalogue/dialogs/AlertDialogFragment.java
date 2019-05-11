@@ -12,9 +12,6 @@ import androidx.fragment.app.DialogFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 
-/**
- * Fragment wrapper for an AlertDialog with simple OK/Cancel.
- */
 public class AlertDialogFragment
         extends DialogFragment {
 
@@ -73,12 +70,9 @@ public class AlertDialogFragment
         }
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_warning)
-                .setPositiveButton(android.R.string.ok,
-                                   (d, which) -> listener.onPositiveButton()
-                )
-                .setNegativeButton(android.R.string.cancel,
-                                   (d, which) -> listener.onNegativeButton()
-                )
+                .setNegativeButton(android.R.string.cancel, (d, w) -> listener.onNegativeButton())
+                .setNeutralButton(android.R.string.untitled, (d, w) -> listener.onNeutralButton())
+                .setPositiveButton(android.R.string.ok, (d, w) -> listener.onPositiveButton())
                 .create();
 
         if (titleId != 0) {
@@ -90,4 +84,20 @@ public class AlertDialogFragment
         return dialog;
     }
 
+    /**
+     * A simple interface to combine 3 callbacks in one easy to pass object with optional
+     * negative/neutral implementations.
+     */
+    public interface AlertDialogListener {
+
+        void onPositiveButton();
+
+        default void onNeutralButton() {
+            // do nothing
+        }
+
+        default void onNegativeButton() {
+            // do nothing
+        }
+    }
 }

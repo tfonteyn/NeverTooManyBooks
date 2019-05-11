@@ -93,10 +93,12 @@
     <string name="about_lbl_sourcecode">Broncode:</string>
     <string name="about_lbl_contacts">Contacten:</string>
     <string name="about_lbl_donate">Doneren</string>
-    <string name="lbl_about">Over deze App</string>
+    <string name="menu_about">Over deze App</string>
     <string name="lbl_price_listed">Prijs</string>
     <string name="lbl_update_fields">Automatisch Velden bijwerken</string>
-    <string name="lbl_update_fields_to_update">Selecteer bij te werken velden</string>
+    <string name="lbl_select_fields_to_update">Selecteer bij te werken velden</string>
+    <string name="lbl_select_fields">Selecteer velden</string>
+
     <string name="info_select_fields_to_update">
         De geselecteerde velden zullen worden bijgewerkt vanaf het internet.
         Niet geselecteerde velden blijven onveranderd.
@@ -228,7 +230,7 @@
     <string name="menu_edit_author">Bewerken auteur…</string>
     <string name="menu_edit_series">Serie bewerken…</string>
     <string name="title_delete_series">Verwijderen serie</string>
-    <string name="confirm_really_delete_series">
+    <string name="confirm_delete_series">
         Wilt u werkelijk de serie ‘%1$s’ verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n
         \nOverweeg de serie te bewerken en de serienaam te veranderen om deze gegevens te behouden
     </string>
@@ -256,7 +258,7 @@
     </string>
     <string name="warning_unable_to_find_book">Kan gespecificeerd boek niet vinden</string>
     <string name="list_and">en</string>
-    <string name="confirm_really_delete_book">
+    <string name="confirm_delete_book">
         Dit zal het boek met de titel ‘%1$s’ door %2$s compleet verwijderen.
         Weet u zeker dat u door wilt gaan?
     </string>
@@ -496,9 +498,9 @@
         \nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
     </string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
-    <string name="title_edit_style_colon_name">Bewerk stijl: %1$s</string>
+    <string name="title_edit_style">Stijl bewerken</string>
     <string name="X_menu_add_style">Stijl toevoegen</string>
-    <string name="title_clone_style_colon_name">Klonen van Stijl: %1$s</string>
+    <string name="title_clone_style">Stijl klonen</string>
     <string name="pg_filters">Boekfilters</string>
     <string name="X_title_add_style">Nieuwe stijl</string>
     <string name="title_select_style">Selecteer een stijl</string>
@@ -697,7 +699,7 @@
         \n\nWissen van de inloggegevens hier zal de goodread optie uit het hoofdmenu verwijderen.
     </string>
 
-    <string name="progress_msg_connecting_to_web_site">Verbinding maken met website…</string>
+    <string name="progress_msg_connecting">Verbinding maken met website…</string>
 
     <string name="lbl_backup">Back-up naar archief</string>
     <string name="lbl_import_from_archive">Importeren vanuit archief</string>
@@ -818,16 +820,19 @@
         <item quantity="other">%1$d boeken op deze plank</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">1 boek gevonden</item>
+        <item quantity="other">%1$d boeken gevonden</item>
+    </plurals>
+
     <!-- Short text for ‘n books’ -->
     <plurals name="n_books">
-        <!--<item quantity="zero">geen boeken</item>-->
         <item quantity="one">1 boek</item>
         <item quantity="other">%1$s boeken</item>
     </plurals>
 
     <!-- Short text for ‘n covers’ -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">geen omslagen</item>-->
         <item quantity="one">1 omslag</item>
         <item quantity="other">%1$s omslagen</item>
     </plurals>
@@ -902,7 +907,7 @@
     <string name="lbl_edition_limited">Gelimiteerd</string>
     <string name="lbl_price_paid">Betaald</string>
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
-    <string name="btn_use">Gebruik</string>
+    <string name="btn_confirm_use">Gebruik</string>
     <string name="usage_skip">Overslaan</string>
     <string name="info_share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
     <string name="error_search_configuration">
@@ -953,7 +958,6 @@
     <string name="book_format_paperback">Pocket</string>
     <string name="book_format_trade_paperback">Paperback</string>
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
-    <string name="books_found">%1$d boeken gevonden</string>
     <string name="lbl_style">Stijl</string>
     <string name="progress_msg_please_wait">Even geduld…</string>
     <string name="error_not_available">niet beschikbaar</string>

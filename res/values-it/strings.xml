@@ -66,10 +66,12 @@
     <string name="about_lbl_sourcecode">Codice sorgente:</string>
     <string name="about_lbl_contacts">Contatti:</string>
     <string name="about_lbl_donate">Dona</string>
-    <string name="lbl_about">Riguardo questa app</string>
+    <string name="menu_about">Riguardo questa app</string>
     <string name="lbl_price_listed">Prezzo di listino</string>
     <string name="lbl_update_fields">Aggiorna i campi automaticamente</string>
-    <string name="lbl_update_fields_to_update">Seleziona i campi da aggiornare</string>
+    <string name="lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
+    <string name="lbl_select_fields">Seleziona i campi</string>
+
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="confirm_overwrite_thumbnail">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
     <string name="yes">Sì</string>
@@ -159,7 +161,7 @@
     <string name="menu_edit_author">Modifica autore…</string>
     <string name="menu_edit_series">Modifica serie…</string>
     <string name="title_delete_series">Cancella serie</string>
-    <string name="confirm_really_delete_series">Cancellare la serie ‘%1$s’?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
+    <string name="confirm_delete_series">Cancellare la serie ‘%1$s’?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
     <string name="X_title_edit_series">Modifica dettagli serie</string>
     <string name="X_title_select_cover">Seleziona copertina</string>
     <string name="X_warning_no_isbn_no_editions">Impossibile ottenere le edizioni di un libro senza codice ISBN</string>
@@ -171,7 +173,7 @@
     <string name="confirm_apply_series_changed">Hai modificato le serie da:\n  ‘%1$s’ a \n  ‘%2$s’\nCome desideri applicare questa modifica?\nNota: La scelta \‘%3$s\’ sarà applicata immediatamente.</string>
     <string name="warning_unable_to_find_book">Impossibile trovare il libro specificato</string>
     <string name="list_and">e</string>
-    <string name="confirm_really_delete_book">Il libro intitolato ‘%1$s’ verrà completamente cancellato da %2$s. Procedere?</string>
+    <string name="confirm_delete_book">Il libro intitolato ‘%1$s’ verrà completamente cancellato da %2$s. Procedere?</string>
     <string name="warning_editions_require_isbn">Il recupero di altre edizioni richiede l codice ISBN</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
@@ -339,9 +341,9 @@
         \n\nDa questa schermata è anche possibile modificare il menu degli stili e gli stili stessi.
     </string>
     <string name="lbl_preferred_styles">Stili preferiti</string>
-    <string name="title_edit_style_colon_name">Modifica stile: %1$s</string>
+    <string name="title_edit_style">Modifica stile</string>
     <string name="X_menu_add_style">Aggiungi stile</string>
-    <string name="title_clone_style_colon_name">Duplica stile: %1$s</string>
+    <string name="title_clone_style">Duplica stile</string>
     <string name="pg_filters">Filtra libri</string>
     <string name="X_title_add_style">Nuovo stile</string>
     <string name="X_pt_bob_filter_read">Seleziona in base allo stato \‘Letto\’</string>
@@ -508,7 +510,7 @@
     </string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Collegamento al sito web…</string>
+    <string name="progress_msg_connecting">Collegamento al sito web…</string>
 
     <!-- Admin option to import -->
     <string name="lbl_backup">Crea Backup</string>
@@ -610,28 +612,29 @@
     <string name="export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">visualizzati nessun libro</item>-->
         <item quantity="one">visualizzati 1 libro</item>
         <item quantity="other">visualizzati %1$d libri</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">1 libro trovato</item>
+        <item quantity="other">%1$d libri trovati</item>
+    </plurals>
+
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <!--<item quantity="zero">nessun libro</item>-->
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libri</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">nessuna copertina</item>-->
         <item quantity="one">1 copertina</item>
         <item quantity="other">%1$s copertine</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">%1$s stelle</item>-->
         <item quantity="one">%1$s stella</item>
         <item quantity="other">%1$s stelle</item>
     </plurals>
@@ -679,7 +682,7 @@
     <string name="done">Fatto</string>
     <string name="lbl_edition">Edizione</string>
     <string name="lbl_currency">Moneta</string>
-    <string name="btn_use">Uso</string>
+    <string name="btn_confirm_use">Uso</string>
     <string name="lbl_edition_first_edition">Prima edizione</string>
     <string name="lbl_edition_limited">Edizione limitata</string>
     <string name="lbl_signed">Firmato</string>
@@ -748,7 +751,6 @@
     <string name="warning_required_title_and_author">Manca il titolo e / o l\'autore.</string>
     <string name="X_events_found">%1$d trovati</string>
     <string name="error_database_upgrade_failed">Impossibile eseguire l\'aggiornamento da una versione precedente alla 4.0.0</string>
-    <string name="books_found">%1$d libri trovati</string>
     <string name="book_format_hardcover">Rilegato</string>
     <string name="book_format_paperback">Paperback</string>
     <string name="book_format_ebook">eBook</string>

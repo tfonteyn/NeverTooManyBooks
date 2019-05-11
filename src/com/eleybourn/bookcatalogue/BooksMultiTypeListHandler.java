@@ -41,6 +41,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
@@ -50,7 +51,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
@@ -87,8 +88,9 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLIS
 public class BooksMultiTypeListHandler
         implements MultiTypeListCursorAdapter.MultiTypeListHandler {
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
 
     @NonNull
     private final BooklistStyle mStyle;
@@ -102,7 +104,7 @@ public class BooksMultiTypeListHandler
      * @param db the database
      */
     public BooksMultiTypeListHandler(@NonNull final Context context,
-                                     @NonNull final DBA db,
+                                     @NonNull final DAO db,
                                      @NonNull final BooklistStyle style) {
         mDb = db;
         mStyle = style;
@@ -178,7 +180,6 @@ public class BooksMultiTypeListHandler
         return new String[]{row.getLevelText(context, 1),
                             row.getLevelText(context, 2)};
     }
-
 
 
     /**
@@ -297,6 +298,8 @@ public class BooksMultiTypeListHandler
     }
 
     /**
+     * TOMF: this really needs performance testing
+     * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.
      * Used by {@link BookHolder}.
@@ -304,30 +307,33 @@ public class BooksMultiTypeListHandler
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
 
-        // bitmask to '&' with covering all bits in use.
-        static final int HANDLED = BooklistStyle.EXTRAS_AUTHOR
-                | BooklistStyle.EXTRAS_LOCATION
-                | BooklistStyle.EXTRAS_PUBLISHER
-                | BooklistStyle.EXTRAS_FORMAT
-                | BooklistStyle.EXTRAS_BOOKSHELVES;
-
         /** Format string (not allowed to cache the context, so get in constructor). */
         @NonNull
         private final String mA_bracket_b_bracket;
 
-
         /** The listener for the tasks result. */
         @NonNull
-        private final OnGetBookExtrasTaskFinishedListener mListener;
+        private final WeakReference<OnGetBookExtrasTaskFinishedListener> mListener;
 
-        private final DBA mDb;
+        /** Database access. */
+        @NonNull
+        private final DAO mDb;
+
+        /** Locale to use for formatting. */
+        @NonNull
+        private final Locale mLocale;
 
         /** The book ID to fetch. */
         private final long mBookId;
-        /** Bitmask indicating which extras to get. */
-        private final int mExtras;
-        /** Locale to use for formatting. */
-        private final Locale mLocale;
+
+        @NonNull
+        private final BooklistStyle mStyle;
+        private final boolean mWithBookshelves;
+        private final boolean mWithLocation;
+        private final boolean mWithFormat;
+        private final boolean mWithAuthor;
+        private final boolean mWithPublisher;
+
         /** Resulting location data. */
         private String mLocation;
         /** Resulting publisher data. */
@@ -345,23 +351,25 @@ public class BooksMultiTypeListHandler
          * @param context  caller context
          * @param bookId   Book to fetch
          * @param listener View holder for the book, used as callback for task results.
-         * @param extras   bitmap flags indicating which extras to get.
          */
         @UiThread
         GetBookExtrasTask(@NonNull final Context context,
-                          @NonNull final DBA db,
+                          @NonNull final DAO db,
                           final long bookId,
                           @NonNull final OnGetBookExtrasTaskFinishedListener listener,
-                          final int extras) {
-            if ((extras & HANDLED) == 0) {
-                throw new IllegalArgumentException("GetBookExtrasTask called for unhandled extras");
-            }
-            mDb = db;
+                          @NonNull final BooklistStyle style) {
 
-            mListener = listener;
-            mBookId = bookId;
-            mExtras = extras;
             mLocale = context.getResources().getConfiguration().locale;
+            mDb = db;
+            mBookId = bookId;
+            mListener = new WeakReference<>(listener);
+            mStyle = style;
+
+            mWithBookshelves = mStyle.getExtraField(BooklistStyle.EXTRAS_BOOKSHELVES).isRequested();
+            mWithLocation = mStyle.getExtraField(BooklistStyle.EXTRAS_LOCATION).isRequested();
+            mWithFormat = mStyle.getExtraField(BooklistStyle.EXTRAS_FORMAT).isRequested();
+            mWithAuthor = mStyle.getExtraField(BooklistStyle.EXTRAS_AUTHOR).isRequested();
+            mWithPublisher = mStyle.getExtraField(BooklistStyle.EXTRAS_PUBLISHER).isRequested();
 
             mA_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
         }
@@ -378,7 +386,7 @@ public class BooksMultiTypeListHandler
             // so nothing too spectacular between 1/2,
             // but avoiding the extra fetch of option 3. is worth it.
 
-            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mExtras)) {
+            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mWithBookshelves)) {
                 // Bail out if we don't have a book.
                 if (!cursor.moveToFirst()) {
                     return false;
@@ -392,23 +400,23 @@ public class BooksMultiTypeListHandler
                                                        DOM_BOOK_DATE_PUBLISHED,
                                                        DOM_BOOKSHELF);
 
-                if ((mExtras & BooklistStyle.EXTRAS_AUTHOR) != 0) {
+                if (mWithAuthor) {
                     mAuthor = mapper.getString(DOM_AUTHOR_FORMATTED);
                 }
 
-                if ((mExtras & BooklistStyle.EXTRAS_LOCATION) != 0) {
+                if (mWithLocation) {
                     mLocation = mapper.getString(DOM_BOOK_LOCATION);
                 }
 
-                if ((mExtras & BooklistStyle.EXTRAS_FORMAT) != 0) {
+                if (mWithFormat) {
                     mFormat = mapper.getString(DOM_BOOK_FORMAT);
                 }
 
-                if ((mExtras & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
+                if (mWithBookshelves) {
                     mShelves = mapper.getString(DOM_BOOKSHELF);
                 }
 
-                if ((mExtras & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+                if (mWithPublisher) {
                     mPublisher = mapper.getString(DOM_BOOK_PUBLISHER);
                     String tmpPubDate = mapper.getString(DOM_BOOK_DATE_PUBLISHED);
                     // over optimisation ?
@@ -435,15 +443,17 @@ public class BooksMultiTypeListHandler
                 return;
             }
             // Fields not used will be null.
-            mListener.onGetBookExtrasTaskFinished(mAuthor, mPublisher, mFormat, mShelves,
-                                                  mLocation);
+            if (mListener.get() != null) {
+                mListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher,
+                                                            mFormat, mShelves, mLocation);
+            }
         }
 
         interface OnGetBookExtrasTaskFinishedListener {
 
             /**
-             * Results from fetching the extras. Fields not used/fetched will be null.
-             * Theoretically they could also be null when fetched (but shouldn't).
+             * Results from fetching the extras. Fields not used/fetched will be {@code null}.
+             * Theoretically they could also be {@code null} when fetched (but shouldn't).
              */
             void onGetBookExtrasTaskFinished(@Nullable String author,
                                              @Nullable String publisher,
@@ -470,9 +480,9 @@ public class BooksMultiTypeListHandler
             extends RowViewHolder
             implements GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener {
 
-        /** Database, needed to fetch the Extra fields. */
+        /** Database access. */
         @NonNull
-        private final DBA mDb;
+        private final DAO mDb;
 
         @NonNull
         private final BooklistStyle mStyle;
@@ -515,7 +525,7 @@ public class BooksMultiTypeListHandler
          * @param db      the database.
          */
         BookHolder(@NonNull final Context context,
-                   @NonNull final DBA db,
+                   @NonNull final DAO db,
                    @NonNull final BooklistStyle style) {
             mDb = db;
             mStyle = style;
@@ -538,7 +548,6 @@ public class BooksMultiTypeListHandler
         @Override
         public void onCreateViewHolder(@NonNull final BooklistCursorRow rowData,
                                        @NonNull final View view) {
-            final int extraFields = mStyle.getExtraFieldsStatus();
 
             // always visible
             titleView = view.findViewById(R.id.title);
@@ -551,7 +560,7 @@ public class BooksMultiTypeListHandler
             // visibility is independent from actual data, so set here.
             coverView = view.findViewById(R.id.coverImage);
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
-                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
+                    && mStyle.getExtraField(BooklistStyle.EXTRAS_THUMBNAIL).isRequested()) {
                 coverView.setVisibility(View.VISIBLE);
             } else {
                 coverView.setVisibility(View.GONE);
@@ -567,24 +576,29 @@ public class BooksMultiTypeListHandler
             // iow: they are (and stay) hidden when not in use;
             // and we'll hide the used ones if empty.
             bookshelvesView = view.findViewById(R.id.shelves);
-            bookshelvesView.setVisibility((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0
-                                          ? View.VISIBLE : View.GONE);
+            bookshelvesView.setVisibility(
+                    mStyle.getExtraField(BooklistStyle.EXTRAS_BOOKSHELVES).isRequested()
+                    ? View.VISIBLE : View.GONE);
 
             authorView = view.findViewById(R.id.author);
-            authorView.setVisibility((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0
-                                     ? View.VISIBLE : View.GONE);
+            authorView.setVisibility(
+                    mStyle.getExtraField(BooklistStyle.EXTRAS_AUTHOR).isRequested()
+                    ? View.VISIBLE : View.GONE);
 
             locationView = view.findViewById(R.id.location);
-            locationView.setVisibility((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0
-                                       ? View.VISIBLE : View.GONE);
+            locationView.setVisibility(
+                    mStyle.getExtraField(BooklistStyle.EXTRAS_LOCATION).isRequested()
+                    ? View.VISIBLE : View.GONE);
 
             publisherView = view.findViewById(R.id.publisher);
-            publisherView.setVisibility((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0
-                                        ? View.VISIBLE : View.GONE);
+            publisherView.setVisibility(
+                    mStyle.getExtraField(BooklistStyle.EXTRAS_PUBLISHER).isRequested()
+                    ? View.VISIBLE : View.GONE);
 
             formatView = view.findViewById(R.id.format);
-            formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
-                                     ? View.VISIBLE : View.GONE);
+            formatView.setVisibility(
+                    mStyle.getExtraField(BooklistStyle.EXTRAS_FORMAT).isRequested()
+                    ? View.VISIBLE : View.GONE);
 
             // The default is to indent all views based on the level, but with book covers on
             // the far left, it looks better if we 'out-dent' one step.
@@ -599,7 +613,6 @@ public class BooksMultiTypeListHandler
         public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
                                      @NonNull final View view) {
 
-            final int extraFields = mStyle.getExtraFieldsStatus();
             final int imageMaxSize = mStyle.getScaledCoverImageMaxSize(view.getContext());
 
             // Title
@@ -636,7 +649,7 @@ public class BooksMultiTypeListHandler
             }
 
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
-                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
+                    && mStyle.getExtraField(BooklistStyle.EXTRAS_THUMBNAIL).isRequested()) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getBookUuid());
 
@@ -652,11 +665,8 @@ public class BooksMultiTypeListHandler
                 });
             }
 
-            // Build the flags indicating which extras to get.
-            int extras = extraFields & GetBookExtrasTask.HANDLED;
-
             // If there are extras to get, start a background task.
-            if (extras != 0) {
+            if (mStyle.hasExtraDetailFields()) {
                 // Fill in the extras field as blank initially.
                 bookshelvesView.setText("");
                 locationView.setText("");
@@ -664,7 +674,7 @@ public class BooksMultiTypeListHandler
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.
-                new GetBookExtrasTask(view.getContext(), mDb, rowData.getBookId(), this, extras)
+                new GetBookExtrasTask(view.getContext(), mDb, rowData.getBookId(), this, mStyle)
                         .execute();
             }
         }
@@ -767,7 +777,7 @@ public class BooksMultiTypeListHandler
                     // second level uses a smaller font
                     return R.layout.booksonbookshelf_row_level_2;
                 default:
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                         Logger.debug(this, "getDefaultLayoutId",
                                      "level=" + level);
                     }
@@ -822,7 +832,7 @@ public class BooksMultiTypeListHandler
         /**
          * For a simple row, just set the text (or hide it).
          *
-         * @param text  String to display; can be null or empty
+         * @param text  String to display; can be {@code null} or empty
          * @param level for this row
          */
         public void setText(@Nullable final String text,

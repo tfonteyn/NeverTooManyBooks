@@ -53,7 +53,7 @@ public class Datum {
     @Nullable
     private DataValidator mValidator;
     /**
-     * Accessor for this Datum (eg. the datum might be a bit in a bitmask field,
+     * Accessor for this Datum (e.g. the datum might be a bit in a bitmask field,
      * or a composite read-only value.
      */
     private DataAccessor mAccessor;
@@ -75,7 +75,7 @@ public class Datum {
      *
      * @param o Object
      *
-     * @return Resulting value (null or empty becomes 0)
+     * @return Resulting value ({@code null} or empty becomes 0)
      */
     @SuppressWarnings("WeakerAccess")
     public static long toLong(@Nullable final Object o) {
@@ -102,7 +102,7 @@ public class Datum {
      *
      * @param o Object
      *
-     * @return Resulting value (null or empty becomes 0)
+     * @return Resulting value ({@code null} or empty becomes 0)
      */
     private static double toDouble(@Nullable final Object o) {
         if (o == null) {
@@ -147,18 +147,6 @@ public class Datum {
     }
 
     /**
-     * Translate the passed Object to a String value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value (null becomes empty)
-     */
-    @NonNull
-    public static String toString(@Nullable final Object o) {
-        return o == null ? "" : o.toString().trim();
-    }
-
-    /**
      * Translate the passed Object to a boolean value.
      *
      * @param o Object
@@ -186,7 +174,8 @@ public class Datum {
      * Converts a String to a boolean value.
      *
      * @param s            String to convert
-     * @param emptyIsFalse if true, null and empty string are handled as false
+     * @param emptyIsFalse if {@code true}, {@code null} and empty string
+     *                     are handled as {@code false}
      *
      * @return boolean value
      *
@@ -492,7 +481,7 @@ public class Datum {
             o = mAccessor.get(data, rawData, this);
         }
         // any null gets turned into ""
-        return toString(o);
+        return o == null ? "" : o.toString().trim();
     }
 
     /**

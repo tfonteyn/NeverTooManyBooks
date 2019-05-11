@@ -43,6 +43,12 @@
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
 
+    <!-- SwitchPreference - search engines can collect series information from the toc.
+        This is not always desirable, and by default switched off.
+        -->
+    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
+
+
     <!-- ListPreference
          Implementation to use for
          {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage}.
@@ -146,9 +152,9 @@
     <!-- Preference - Book list state-related preferences -->
     <string name="pt_bob_list_state">Book list state</string>
     <string-array name="pe_bob_list_state">
+        <item>Preserve book list state</item>
         <item>Always start book lists expanded</item>
         <item>Always start book lists collapsed</item>
-        <item>Preserve book list state</item>
     </string-array>
     <string-array name="pv_bob_list_state">
         <item translatable="false">0</item>
@@ -231,8 +237,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format of author names</string>
-    <string name="pv_bob_format_author_name_given_first">Given name first eg. \‘Bill Smith\’</string>
-    <string name="pv_bob_format_author_name_family_first">Family name first eg. \‘Smith, Bill\’</string>
+    <string name="pv_bob_format_author_name_given_first">Given name first e.g. \‘Bill Smith\’</string>
+    <string name="pv_bob_format_author_name_family_first">Family name first e.g. \‘Smith, Bill\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Sorting of author names</string>

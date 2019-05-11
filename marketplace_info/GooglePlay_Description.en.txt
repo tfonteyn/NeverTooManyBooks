@@ -82,7 +82,7 @@ Blame Grunthos for all bugs and errors. And send us bug reports.
 New in 4.1-4.1.5
 
 * New style options: location and date read
-* Sharing can now send via any app that advertises the interface (eg. mail) (filipeximenes)
+* Sharing can now send via any app that advertises the interface (e.g. mail) (filipeximenes)
 * French translation updates (Djiko)
 * If fields have been edited, and 'back' is pressed, ask the user for confirmation (filipeximenes)
 * Assume book is read when importing from goodreads if the user has rated it

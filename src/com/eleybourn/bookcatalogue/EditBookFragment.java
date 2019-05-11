@@ -26,40 +26,38 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
-import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.Utils;
 import com.google.android.material.tabs.TabLayout;
 
 /**
  * Fragment that hosts child fragments to edit a book.
- * 1. Details
- * 2. Notes
- * 3. Anthology titles
+ * <p>
+ * Note that this class does not (need to) extend {@link EditBookBaseFragment}
+ * but merely {@link BookBaseFragment}.
  */
 public class EditBookFragment
-        extends EditBookBaseFragment
-        implements DataEditor {
+        extends BookBaseFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookFragment.class.getSimpleName();
@@ -146,15 +144,6 @@ public class EditBookFragment
 
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(showTab);
-
-        boolean isExistingBook = mBookBaseFragmentModel.getBook().getId() > 0;
-        Button confirmButton = getView().findViewById(R.id.confirm);
-        confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
-                                             : R.string.btn_confirm_add_book);
-
-        confirmButton.setOnClickListener(v -> doSave());
-
-        getView().findViewById(R.id.cancel).setOnClickListener(v -> doCancel());
     }
 
     /**
@@ -172,7 +161,35 @@ public class EditBookFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        // do nothing here. Child fragments will add their own menus
+
+        int saveOrAddText = mBookBaseFragmentModel.isExistingBook() ? R.string.btn_confirm_save
+                                                                    : R.string.btn_confirm_add;
+        menu.add(Menu.NONE, R.id.MENU_BOOK_SAVE, 1, saveOrAddText)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 2, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        // do NOT call super here. Actual edit fragments will do that.
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_BOOK_SAVE:
+                doSave();
+                return true;
+
+            case R.id.MENU_HIDE_KEYBOARD:
+                //noinspection ConstantConditions
+                Utils.hideKeyboard(getView());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -188,6 +205,7 @@ public class EditBookFragment
      * this method may return after displaying a dialogue.
      */
     private void doSave() {
+        Book book = mBookBaseFragmentModel.getBook();
 
         // ask any page that has not gone into 'onPause' to add its fields.
         for (int p = 0; p < mPagerAdapter.getCount(); p++) {
@@ -198,90 +216,57 @@ public class EditBookFragment
         }
 
         // Ignore validation failures; but we still validate to get the current values updated.
-        mBookBaseFragmentModel.getBook().validate();
+        book.validate();
         // if (!book.validate()) {
         //      StandardDialogs.sendTaskUserMessage(this,
         //      book.getValidationExceptionMessage(getResources()));
         // }
         // However, there is some data that we really do require...
-        if (mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
             return;
         }
-        if (!mBookBaseFragmentModel.getBook().containsKey(
-                DBDefinitions.KEY_TITLE) || mBookBaseFragmentModel.getBook().getString(
-                DBDefinitions.KEY_TITLE).isEmpty()) {
+
+        if (!book.containsKey(DBDefinitions.KEY_TITLE)
+                || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_title);
             return;
         }
 
-        AlertDialogListener nextStep = new AlertDialogListener() {
-            @Override
-            public void onPositiveButton() {
-                saveBook();
-                Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
-                                                    mBookBaseFragmentModel.getBook().getId());
-                mActivity.setResult(Activity.RESULT_OK, data);
-                mActivity.finish();
-            }
-
-            @Override
-            public void onNegativeButton() {
-                doCancel();
-            }
-        };
-
-        if (mBookBaseFragmentModel.getBook().getId() == 0) {
-            String isbn = mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_ISBN);
-            /* Check if the book currently exists */
+        if (book.getId() == 0) {
+            String isbn = book.getString(DBDefinitions.KEY_ISBN);
+            /* Check if the book already exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 //noinspection ConstantConditions
-                StandardDialogs.confirmSaveDuplicateBook(getContext(), nextStep);
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.title_duplicate_book)
+                        .setMessage(R.string.confirm_duplicate_book_message)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setCancelable(false)
+                        .setNegativeButton(android.R.string.cancel, (d, which) ->
+                                mActivity.finish())
+                        .setPositiveButton(android.R.string.ok, (d, which) -> saveBook())
+                        .create()
+                        .show();
                 return;
             }
         }
 
         // No special actions required...just do it.
-        nextStep.onPositiveButton();
-    }
-
-    /**
-     * Note that when the user clicks 'cancel' we still put all the fields into the book.
-     * So if they subsequently cancel the cancel in {@link BaseActivity#finishIfClean(boolean)}
-     * we can resume with the latest data.
-     */
-    private void doCancel() {
-        // delete any leftover temporary thumbnails
-        StorageUtils.deleteTempCoverFile();
-
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId());
-        //ENHANCE: global changes not detected, so assume they happened.
-        mActivity.setResult(Activity.RESULT_OK, data);
-        mActivity.finishIfClean(mBookBaseFragmentModel.isDirty());
+        saveBook();
     }
 
     /**
      * Save the collected book details.
      */
     private void saveBook() {
-        if (mBookBaseFragmentModel.getBook().getId() == 0) {
-            long id = mDb.insertBook(mBookBaseFragmentModel.getBook());
-            if (id > 0) {
-                // if we got a cover while searching the internet, make it permanent
-                if (mBookBaseFragmentModel.getBook().getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
-                    String uuid = mDb.getBookUuid(id);
-                    // get the temporary downloaded file
-                    File source = StorageUtils.getTempCoverFile();
-                    File destination = StorageUtils.getCoverFile(uuid);
-                    // and rename it to the permanent UUID one.
-                    StorageUtils.renameFile(source, destination);
-                }
-            }
-        } else {
-            mDb.updateBook(mBookBaseFragmentModel.getBook().getId(), mBookBaseFragmentModel.getBook(), 0);
-        }
+        Book book = mBookBaseFragmentModel.saveBook();
+
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, book.getId());
+        mActivity.setResult(Activity.RESULT_OK, data);
+        mActivity.finish();
     }
 
     private static class ViewPagerAdapter

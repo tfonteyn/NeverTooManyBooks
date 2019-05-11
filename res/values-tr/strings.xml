@@ -66,10 +66,12 @@
     <string name="about_lbl_sourcecode">Kaynak kodu</string>
     <string name="about_lbl_contacts">İletişim</string>
     <string name="about_lbl_donate">Bağış yap</string>
-    <string name="lbl_about">Uygulama hakkında</string>
+    <string name="menu_about">Uygulama hakkında</string>
     <string name="lbl_price_listed">Fiyatı</string>
     <string name="lbl_update_fields">Alanları kendiliğinden doldur</string>
-    <string name="lbl_update_fields_to_update">Güncellenecek alanları seçin</string>
+    <string name="lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
+    <string name="lbl_select_fields">Alanları seçin</string>
+
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="confirm_overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="yes">Evet</string>
@@ -157,7 +159,7 @@
     <string name="menu_edit_author">Yazarı düzenle…</string>
     <string name="menu_edit_series">Serileri düzenle…</string>
     <string name="title_delete_series">Serileri sil</string>
-    <string name="confirm_really_delete_series">\‘%1$s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
+    <string name="confirm_delete_series">\‘%1$s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="X_title_edit_series">Seri ayrıntılarını düzenle</string>
     <string name="X_title_select_cover">Kapak seç</string>
     <string name="X_warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
@@ -169,7 +171,7 @@
     <string name="confirm_apply_series_changed">Seriyi şundan:\n  \‘%1$s\’ şuna: \n  \‘%2$s\’ değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \‘%3$s\’ seçimi anında uygulanacaktır.</string>
     <string name="warning_unable_to_find_book">Belirtilen kitap bulunamıyor</string>
     <string name="list_and">and</string>
-    <string name="confirm_really_delete_book">Bu işlem bu kitabı tümüyle silecektir: \‘%1$s\’ - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: \‘%1$s\’ - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_editions_require_isbn">Diğer sürümlere ulaşmak bir ISBN gerektirir</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
@@ -337,9 +339,9 @@
         \nAynı zamanda biçemler seçkesini ve biçemlerin kendisini dedüzenleyebilirsiniz.
     </string>
     <string name="lbl_preferred_styles">Yeğlenen biçemler</string>
-    <string name="title_edit_style_colon_name">Biçemi düzenle: %1$s</string>
+    <string name="title_edit_style">Biçemi düzenle</string>
     <string name="X_menu_add_style">Biçem ekle</string>
-    <string name="title_clone_style_colon_name">Biçemi çoğalt: %1$s</string>
+    <string name="title_clone_style">Biçemi çoğalt</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="X_title_add_style">Yeni biçem</string>
     <string name="X_pt_bob_filter_read">\‘Okunma\’ durumuna göre seç</string>
@@ -501,7 +503,7 @@
     <string name="X_tab_lbl_loan">Ödünç ver</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Ağ sayfasına bağlanılıyor…</string>
+    <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
 
     <!-- Admin option to import -->
     <string name="lbl_backup">Arşive yedekle</string>
@@ -607,28 +609,29 @@
         Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">kitap yok görüntüleniyor</item>-->
         <item quantity="one">1 kitap görüntüleniyor</item>
         <item quantity="other">%1$d kitap görüntüleniyor</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">1 kitap bulundu</item>
+        <item quantity="other">%1$d kitap bulundu</item>
+    </plurals>
+
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <!--<item quantity="zero">kitap yok</item>-->
         <item quantity="one">1 kitap</item>
         <item quantity="other">%1$s kitap</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">kapak yok</item>-->
         <item quantity="one">1 kapak</item>
         <item quantity="other">%1$s kapak</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">%1$s yıldız</item>-->
         <item quantity="one">%1$s yıldız</item>
         <item quantity="other">%1$s yıldız</item>
     </plurals>

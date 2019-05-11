@@ -60,8 +60,8 @@ public class SettingsActivity
     private Fragment createFragment(@NonNull final String tag) {
         if (GlobalSettingsFragment.TAG.equals(tag)) {
             return new GlobalSettingsFragment();
-        } else if (BooklistStyleSettingsFragment.TAG.equals(tag)) {
-            return new BooklistStyleSettingsFragment();
+        } else if (StyleSettingsFragment.TAG.equals(tag)) {
+            return new StyleSettingsFragment();
         } else {
             throw new IllegalArgumentException("tag=" + tag);
         }

@@ -57,6 +57,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -111,8 +112,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 public class App
         extends Application {
 
-    /** Legacy preferences name, pre-v200. */
-    public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
     /**
      * Users can select which fields they use / don't want to use.
      * <p>
@@ -129,17 +128,20 @@ public class App
      * internal; check if an Activity should do a 'recreate()'.
      * See {@link BaseActivity} in the onResume method.
      */
-    private static final String PREF_ACTIVITY_RECREATE_STATUS = "App.RecreateActivityStatus";
+    private static int sActivityRecreateStatus;
     /** Activity is in need of recreating. */
     private static final int ACTIVITY_NEEDS_RECREATING = 1;
     /** Checked in onResume() so not to start tasks etc. */
     private static final int ACTIVITY_IS_RECREATING = 2;
 
+
     /**
      * NEWKIND: APP THEME.
-     * 1. add it to themes.xml
-     * 2. add it to R.array.pv_ui_theme,
-     * the string-array order must match the APP_THEMES order
+     * <ol>
+     * <li>add it to themes.xml</li>
+     * <li>add it to R.array.pv_ui_theme, the string-array order must match the APP_THEMES order</li>
+     * <li>The DEFAULT_THEME must be set in res/xml/preferences.xml on the App.Theme element.</li>
+     * </ol>
      * The preferences choice will be build according to the string-array list/order.
      */
     private static final int DEFAULT_THEME = 1;
@@ -164,6 +166,62 @@ public class App
     @SuppressWarnings("unused")
     public App() {
         sInstance = this;
+    }
+
+    /**
+     * Initialize ACRA for a given Application.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    protected void attachBaseContext(@NonNull final Context base) {
+        super.attachBaseContext(base);
+
+        ACRA.init(this);
+        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
+        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+    }
+
+    @Override
+    @CallSuper
+    public void onCreate() {
+        // Get the preferred locale as soon as possible
+        setSystemLocale();
+
+        // cache the preferred theme.
+        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+
+        // Create the notifier
+        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // create the singleton QueueManager
+        QueueManager.init();
+
+        super.onCreate();
+    }
+
+    /**
+     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
+     *
+     * @param newConfig The new device configuration.
+     */
+    @Override
+    @CallSuper
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
+        // same as in onCreate
+        setSystemLocale();
+
+        // override in the new config
+        newConfig.setLocale(LocaleUtils.getPreferredLocal());
+        // propagate to registered callbacks.
+        super.onConfigurationChanged(newConfig);
+
+        if (BuildConfig.DEBUG /* always */) {
+            //API 24: newConfig.getLocales().get(0)
+            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
+        }
+
     }
 
     /**
@@ -284,6 +342,16 @@ public class App
         return result.trim();
     }
 
+    private void setSystemLocale() {
+        try {
+            LocaleUtils.init(Locale.getDefault());
+            LocaleUtils.applyPreferred(this);
+        } catch (RuntimeException e) {
+            // Not much we can do...we want locale set early, but not fatal if it fails.
+            Logger.error(this, e);
+        }
+    }
+
     /**
      * @return the global SharedPreference
      */
@@ -369,24 +437,26 @@ public class App
     }
 
     public static void setNeedsRecreating() {
-        getPrefs().edit().putInt(PREF_ACTIVITY_RECREATE_STATUS, ACTIVITY_NEEDS_RECREATING).apply();
+        sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
     }
 
     public static boolean isInNeedOfRecreating() {
-        return getPrefs().getInt(PREF_ACTIVITY_RECREATE_STATUS, 0) == ACTIVITY_NEEDS_RECREATING;
+        return sActivityRecreateStatus == ACTIVITY_NEEDS_RECREATING;
     }
 
     public static void setIsRecreating() {
-        getPrefs().edit().putInt(PREF_ACTIVITY_RECREATE_STATUS, ACTIVITY_IS_RECREATING).apply();
+        sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
     }
 
     public static boolean isRecreating() {
-        return getPrefs().getInt(PREF_ACTIVITY_RECREATE_STATUS, 0) == ACTIVITY_IS_RECREATING;
+        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
     }
 
     public static void clearRecreateFlag() {
-        getPrefs().edit().remove(PREF_ACTIVITY_RECREATE_STATUS).apply();
+        sActivityRecreateStatus = 0;
     }
+
+
 
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
@@ -399,66 +469,5 @@ public class App
         return getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
-    /**
-     * Initialize ACRA for a given Application.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(base);
 
-        ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
-        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
-    }
-
-    @Override
-    @CallSuper
-    public void onCreate() {
-        // Get the preferred locale as soon as possible
-        setSystemLocale();
-
-        // cache the preferred theme.
-        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-
-        // Create the notifier
-        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        super.onCreate();
-    }
-
-    private void setSystemLocale() {
-        try {
-            LocaleUtils.init(Locale.getDefault());
-            LocaleUtils.applyPreferred(this);
-        } catch (RuntimeException e) {
-            // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.error(this, e);
-        }
-    }
-
-    /**
-     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
-     *
-     * @param newConfig The new device configuration.
-     */
-    @Override
-    @CallSuper
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        // same as in onCreate
-        setSystemLocale();
-
-        // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocal());
-        // propagate to registered callbacks.
-        super.onConfigurationChanged(newConfig);
-
-        if (BuildConfig.DEBUG /* always */) {
-            //API 24: newConfig.getLocales().get(0)
-            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
-        }
-
-    }
 }

@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
@@ -78,7 +78,7 @@ public class GrSendAllBooksTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DBA db = new DBA();
+        try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
             final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;

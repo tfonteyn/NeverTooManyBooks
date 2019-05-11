@@ -7,12 +7,17 @@ import androidx.lifecycle.ViewModel;
 
 import com.eleybourn.bookcatalogue.BookFragment;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 
+/**
+ * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened book list
+ * for sweeping left/right.
+ */
 public class BookFragmentModel
         extends ViewModel {
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     @Nullable
     private FlattenedBooklist mFlattenedBooklist;
@@ -31,7 +36,7 @@ public class BookFragmentModel
     public void init(@Nullable final Bundle args,
                      final long bookId) {
         if (mFlattenedBooklist == null) {
-            mDb = new DBA();
+            mDb = new DAO();
 
             // no arguments ? -> no list!
             if (args == null) {

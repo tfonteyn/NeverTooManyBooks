@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 
 public class BindableItemCursorAdapter
         extends CursorAdapter {
@@ -247,7 +247,7 @@ public class BindableItemCursorAdapter
         void bindView(@NonNull View view,
                       @NonNull Context context,
                       @NonNull BindableItemCursor cursor,
-                      @NonNull DBA db);
+                      @NonNull DAO db);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed
@@ -268,6 +268,6 @@ public class BindableItemCursorAdapter
                                  int position,
                                  long id,
                                  @NonNull List<ContextDialogItem> items,
-                                 @NonNull DBA db);
+                                 @NonNull DAO db);
     }
 }

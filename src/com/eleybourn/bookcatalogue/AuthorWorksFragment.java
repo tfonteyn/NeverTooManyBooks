@@ -40,6 +40,15 @@ public class AuthorWorksFragment
 
     private AuthorWorksModel mModel;
 
+//    @Override
+//    @CallSuper
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        // make sure {@link #onCreateOptionsMenu} is called
+//        setHasOptionsMenu(true);
+//    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,

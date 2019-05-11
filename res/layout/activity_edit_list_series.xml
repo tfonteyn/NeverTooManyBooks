@@ -68,7 +68,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"
-        style="@style/rvr_ListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

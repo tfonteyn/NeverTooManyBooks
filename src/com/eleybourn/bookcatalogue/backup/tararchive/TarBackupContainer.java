@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * So we:
  * <p>
- * - use "file names" to encode special meaning (eg. "books*.csv" is always an export file).
+ * - use "file names" to encode special meaning (e.g. "books*.csv" is always an export file).
  * - use intermediate temp files so we can figure out sizes
  * <p>
  * {@link #getVersion()}

@@ -129,7 +129,7 @@ public class IndexDefinition {
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
            .append('(').append(Csv.join(",", mDomains)).append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_INDEX) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE) {
             Logger.debugExit(this, "getSqlCreateStatement",
                              sql.toString());
         }

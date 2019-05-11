@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -79,8 +79,8 @@ public class UpdateFieldsFromInternetTask
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
 
-    /** DB connection. */
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     // Data related to current row being processed
     /** Original row data. */
@@ -125,7 +125,7 @@ public class UpdateFieldsFromInternetTask
                                         @NonNull final ManagedTaskListener listener) {
         super(taskManager, "UpdateFieldsFromInternetTask");
 
-        mDb = new DBA();
+        mDb = new DAO();
         mFields = fields;
         mSearchSites = searchSites;
 

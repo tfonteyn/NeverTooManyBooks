@@ -335,30 +335,33 @@ class SearchLibraryThingHandler
 
     /**
      * LibraryThing extra field "placesmentioned".
-     * <p>
-     * * <fact>Mercury</fact>
-     * * <fact>New York, New York, USA</fact>
-     * * <fact>Roosevelt Building</fact>
+     * {@code
+     *  <fact>Mercury</fact>
+     *  <fact>New York, New York, USA</fact>
+     *  <fact>Roosevelt Building</fact>
+     * }
      */
     private static final String LT_PLACES = "__places";
     /**
      * LibraryThing extra field "characternames".
-     * <p>
-     * * <fact>Susan Calvin</fact>
-     * * <fact>Cutie (QT1)</fact>
-     * * <fact>Gregory Powell</fact>
+     * {@code
+     *  <fact>Susan Calvin</fact>
+     *  <fact>Cutie (QT1)</fact>
+     *  <fact>Gregory Powell</fact>
+     * }
      */
     private static final String LT_CHARACTERS = "__characters";
     /**
      * LibraryThing extra field "originalpublicationdate".
      * <p>
      * The format of these entries is probably not a standard. TODO: get more examples first.
-     * <p>
-     * * <fact>1950 (Collection)</fact>
-     * * <fact>1944 (Catch that Rabbit)</fact>
-     * * <fact>1945 (Escape!)</fact>
-     * * <fact>1946 (Evidence)</fact>
-     * * <fact>1950 (The Evitable Conflict)</fact>
+     * {@code
+     *  <fact>1950 (Collection)</fact>
+     *  <fact>1944 (Catch that Rabbit)</fact>
+     *  <fact>1945 (Escape!)</fact>
+     *  <fact>1946 (Evidence)</fact>
+     *  <fact>1950 (The Evitable Conflict)</fact>
+     * }
      */
     private static final String LT_ORIG_PUB_DATE = "__originalpublicationdate";
 
@@ -370,7 +373,7 @@ class SearchLibraryThingHandler
     /** XML tags we look for. */
     //private static final String XML_RESPONSE = "response";
     private static final String XML_AUTHOR = "author";
-    /** <item id="5196084" type="work">. */
+    /** {@code <item id="5196084" type="work">}. */
     private static final String XML_ITEM = "item";
     /** a 'field' (see below). */
     private static final String XML_FIELD = "field";

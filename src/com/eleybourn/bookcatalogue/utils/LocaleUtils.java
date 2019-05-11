@@ -198,7 +198,7 @@ public final class LocaleUtils {
     /**
      * Creates a Locale from a concatenated locale string.
      *
-     * @param code Locale name (eg. 'de', 'en_AU')
+     * @param code Locale name (e.g. 'de', 'en_AU')
      *
      * @return Locale corresponding to passed name
      */

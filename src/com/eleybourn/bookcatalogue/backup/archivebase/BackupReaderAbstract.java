@@ -39,8 +39,9 @@ import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -53,9 +54,10 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public abstract class BackupReaderAbstract
         implements BackupReader {
 
-
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     /** progress message. */
     private final String mProcessPreferences;
     /** progress message. */
@@ -64,6 +66,7 @@ public abstract class BackupReaderAbstract
     private final String mProcessBooklistStyles;
     /** progress and cancellation listener. */
     private ProgressListener mProgressListener;
+
     /** what and how to import. */
     private ImportSettings mSettings;
 
@@ -72,7 +75,7 @@ public abstract class BackupReaderAbstract
      *
      */
     protected BackupReaderAbstract() {
-        mDb = new DBA();
+        mDb = new DAO();
 
         //TODO: do not use Application Context for String resources
         Context context = App.getAppContext();
@@ -177,7 +180,7 @@ public abstract class BackupReaderAbstract
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, mProgressListener,
                                                        App.getPrefs(
-                                                               App.PREF_LEGACY_BOOK_CATALOGUE));
+                                                               Prefs.PREF_LEGACY_BOOK_CATALOGUE));
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }

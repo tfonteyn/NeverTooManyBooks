@@ -17,32 +17,38 @@ import com.google.android.material.snackbar.Snackbar;
  */
 public final class UserMessage {
 
+    private static final int TOAST = 0;
+    private static final int SNACKBAR = 1;
+
+    // the default value; rex/xml/preferences.xml must be set to the same
+    private static final int DEFAULT = SNACKBAR;
+
     private UserMessage() {
     }
 
     public static void showUserMessage(@NonNull final Activity activity,
                                        @StringRes final int message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message,
-                          Snackbar.LENGTH_LONG).show();
+            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
     public static void showUserMessage(@NonNull final Activity activity,
                                        @NonNull final String message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message,
-                          Snackbar.LENGTH_LONG).show();
+            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
     public static void showUserMessage(@NonNull final View view,
                                        @StringRes final int message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
@@ -51,7 +57,7 @@ public final class UserMessage {
 
     public static void showUserMessage(@NonNull final View view,
                                        @NonNull final String message) {
-        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();

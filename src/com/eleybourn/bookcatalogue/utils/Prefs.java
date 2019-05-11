@@ -42,7 +42,7 @@ public final class Prefs {
     public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";
     public static final String pk_thumbnail_cropper_layer_type = "Image.ViewLayerType";
     public static final String pk_thumbnails_external_cropper = "Image.Cropper.UseExternalApp";
-    public static final String pk_thumbnails_crop_frame_is_whole_image = "Image.Cropper.FrameIsWholeImage";
+    public static final String pk_thumbnails_crop_whole_image = "Image.Cropper.FrameIsWholeImage";
 
     public static final String pk_scanning_beep_if_isbn_valid = "SoundManager.BeepIfScannedIsbnValid";
     public static final String pk_scanning_beep_if_isbn_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
@@ -87,6 +87,9 @@ public final class Prefs {
     public static final String pk_bob_filter_signed = "BookList.Style.Filter.Signed";
     public static final String pk_bob_filter_loaned = "BookList.Style.Filter.Loaned";
     public static final String pk_bob_filter_anthology = "BookList.Style.Filter.Anthology";
+
+    /** Legacy preferences name, pre-v200. */
+    public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
 
     private Prefs() {
     }
@@ -197,7 +200,7 @@ public final class Prefs {
                         break;
 
                     case "App.CropFrameWholeImage":
-                        ed.putBoolean(pk_thumbnails_crop_frame_is_whole_image,
+                        ed.putBoolean(pk_thumbnails_crop_whole_image,
                                       (Boolean) oldValue);
                         break;
 

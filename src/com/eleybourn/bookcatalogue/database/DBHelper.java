@@ -107,15 +107,15 @@ public class DBHelper
     private static final String[] DATABASE_CREATE_INDICES = {
             // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DBA.COLLATION + ')',
+                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
             // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_FAMILY_NAME + DBA.COLLATION + ')',
+                    + " (" + DOM_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
 
             // for now, there is no API to add an index with a collation suffix.
             // TOMF: is this needed after adding the _lc column?
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
-                    + " (" + DOM_TITLE + DBA.COLLATION + ')',
+                    + " (" + DOM_TITLE + DAO.COLLATION + ')',
             };
 
 
@@ -167,8 +167,8 @@ public class DBHelper
      * Provide a safe table copy method that is insulated from risks associated with
      * column reordering. This method will copy ALL columns from the source to the destination;
      * if columns do not exist in the destination, an error will occur. Columns in the
-     * destination that are not in the source will be defaulted or set to NULL if no default
-     * is defined.
+     * destination that are not in the source will be defaulted or set to {@code null}
+     * if no default is defined.
      *
      * @param sdb         the database
      * @param source      from table
@@ -607,7 +607,7 @@ public class DBHelper
 
         StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
-            startup.updateProgress(R.string.progress_msg_upgrading);
+            startup.onProgress(R.string.progress_msg_upgrading);
         }
 
         if (oldVersion != newVersion) {
@@ -633,7 +633,7 @@ public class DBHelper
                                                      + File.separator + "tmp_images"));
 
             // migrate old properties.
-            Prefs.migratePreV200preferences(App.PREF_LEGACY_BOOK_CATALOGUE);
+            Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
             // this trigger was replaced.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
@@ -727,7 +727,7 @@ public class DBHelper
             db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
 
             // add the 'order by' lower-case columns
-            // Note this is a lazy approach as compared to the DBA code where we take the book's
+            // Note this is a lazy approach as compared to the DAO code where we take the book's
             // language/locale into account! The overhead here would be huge.
             // If the user has any specific book issue, a simple update of the book will fix it.
             db.execSQL("ALTER TABLE " + TBL_BOOKS

@@ -4,7 +4,6 @@
  * <p>
  * The below was for archiver version 1. Things have changed... TODO: update this description
  * <p>
- * <p>
  * Assumed to have multiple 'entries', processed sequentially. Could be zip, tar, or any other
  * amenable stream
  * <p>
@@ -39,7 +38,7 @@
  * A CSV export appropriate for the archiver that created the archive. i.e. the most recent
  * archiver version for the app version that is installed.
  * <p>
- * Optional Data Entries: "books<ArchVersion>.csv"
+ * Optional Data Entries: books{ArchVersion}.csv"
  * -----------------------------------------------
  * <p>
  * For backwards compatibility, there may be alternate CSV files for older versions.
@@ -49,9 +48,9 @@
  * -------------------------
  * <p>
  * The basic rule is to scan the file until the last BOOKS*.csv is found and use the version that
- * has an ArchVersion >= the current archiver version, or BOOKS.CSV if none match. eg.
+ * has an ArchVersion >= the current archiver version, or BOOKS.CSV if none match.
  * <p>
- * Suppose the archive contains:
+ * e.g. suppose the archive contains:
  * <p>
  * BOOKS.csv
  * BOOKS_3.csv
@@ -71,7 +70,7 @@
  * ------------------------------------
  * <p>
  * Note: future versions may drop this entry when writing and instead write
- * into an extendable xml file, for example "config.xml", section "<preferences>"
+ * into an extendable xml file, for example "config.xml", section {@code <preferences>}
  * Reading legacy file *should* be preserved.
  * <p>
  * Optional Data Entries: "style.blob.[0-9]*"
@@ -84,7 +83,6 @@
  * Optional Data Entries: "*.xml"
  * ------------------------------
  * Definition added 2018-11-10, for future expansion.
- * <p>
  * <p>
  * Remaining Data Entries: *.*
  * ---------------------------

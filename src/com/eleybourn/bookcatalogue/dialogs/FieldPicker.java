@@ -57,13 +57,13 @@ public class FieldPicker<T>
         @NonNull
         private final Fields.Field mField;
         @NonNull
-        private final OnClickListener<T> mListener;
+        private final OnPickListener<T> mListener;
         private int mPreSelectedPosition = -1;
 
         FieldListAdapter(@NonNull final Context context,
                          @NonNull final Fields.Field field,
                          @NonNull final List<T> items,
-                         @NonNull final OnClickListener<T> listener) {
+                         @NonNull final OnPickListener<T> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
@@ -104,7 +104,7 @@ public class FieldPicker<T>
             holder.textView.setText(mField.format(item.toString()));
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onClick(item));
+            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
         }
 
         @Override

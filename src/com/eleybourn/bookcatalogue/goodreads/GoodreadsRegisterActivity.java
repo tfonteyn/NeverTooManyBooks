@@ -29,14 +29,11 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -47,9 +44,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public class GoodreadsRegisterActivity
         extends BaseActivity
-        implements OnTaskFinishedListener<Integer> {
-
-    private ProgressDialogFragment<Object, Integer> mProgressDialog;
+        implements OnTaskListener<Object, Integer> {
 
     @Override
     protected int getLayoutId() {
@@ -61,16 +56,6 @@ public class GoodreadsRegisterActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FragmentManager fm = getSupportFragmentManager();
-
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
-        }
-
         setTitle(R.string.goodreads);
 
         // GR Reg Link
@@ -80,7 +65,11 @@ public class GoodreadsRegisterActivity
                 new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE))));
 
         // Auth button
-        findViewById(R.id.authorize).setOnClickListener(v -> authorize());
+        View authButton = findViewById(R.id.authorize);
+        authButton.setOnClickListener(v -> {
+            UserMessage.showUserMessage(authButton, R.string.progress_msg_connecting);
+            new GoodreadsUtils.RequestAuthTask(this).execute();
+        });
 
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
@@ -95,27 +84,13 @@ public class GoodreadsRegisterActivity
         }
     }
 
+
+    @Override
     public void onTaskFinished(final int taskId,
                                final boolean success,
                                @NonNull final Integer result,
                                @Nullable final Exception e) {
-        UserMessage.showUserMessage(this, result);
-    }
-
-    @UiThread
-    public void authorize() {
-        FragmentManager fm = getSupportFragmentManager();
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.progress_msg_connecting_to_web_site, true, 0);
-            GoodreadsUtils.RequestAuthTask task = new GoodreadsUtils.RequestAuthTask(mProgressDialog);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-            task.execute();
-        }
-        mProgressDialog.setOnTaskFinishedListener(this);
-//        progressDialog.setOnProgressCancelledListener(this);
+        GoodreadsUtils.handleGoodreadsTaskResult(taskId, success, result, e,
+                                                 getWindow().getDecorView(), this);
     }
 }

@@ -59,8 +59,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSH
  * <p>
  * book_uuid text default (lower(hex(randomblob(16)))) not null
  * <p>
- * <p>
- * <p>
  * - anthology, no '2' entries, so seems ok
  * <p>
  * - notes: null, ''
@@ -73,23 +71,25 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSH
  * <p>
  * - signed: 0,1,false,true
  * <p>
- * <p>
  * BOOK_BOOKSHELF
  * - book: null  with bookshelf != 0
  */
 public class DBCleaner {
 
-    private final DBA mDb;
+    /** Database access. */
+    @NonNull
+    private final DAO mDb;
 
-    /** The database. */
-    private final SynchronizedDb mSyncDb;
+    /** The underlying database. */
+    @NonNull
+    private final SynchronizedDb mSyncedDb;
 
     /**
      * Constructor.
      */
-    public DBCleaner(@NonNull final DBA db) {
+    public DBCleaner(@NonNull final DAO db) {
         mDb = db;
-        mSyncDb = db.getUnderlyingDatabase();
+        mSyncedDb = db.getUnderlyingDatabase();
     }
 
     public void maybeUpdate(final boolean dryRun) {
@@ -146,7 +146,7 @@ public class DBCleaner {
         if (!dryRun) {
             String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=2"
                     + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)";
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog(Tracker.State.Exit, select);
@@ -154,7 +154,7 @@ public class DBCleaner {
     }
 
     /**
-     * Remove rows where books are sitting on a 'null' bookshelf.
+     * Remove rows where books are sitting on a {@code null} bookshelf.
      *
      * @param dryRun {@code true} to run the update.
      */
@@ -165,7 +165,7 @@ public class DBCleaner {
         if (!dryRun) {
             String sql = "DELETE " + TBL_BOOK_BOOKSHELF
                     + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog(Tracker.State.Exit, select);
@@ -192,12 +192,12 @@ public class DBCleaner {
         if (!dryRun) {
             String sql = "UPDATE " + table + " SET " + column + "=1"
                     + " WHERE lower(" + column + ") IN ('true','t')";
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             sql = "UPDATE " + table + " SET " + column + "=0"
                     + " WHERE lower(" + column + ") IN ('false','f')";
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog(Tracker.State.Exit, select);
@@ -205,7 +205,7 @@ public class DBCleaner {
     }
 
     /**
-     * Convert any null values to an empty string.
+     * Convert any {@code null} values to an empty string.
      * <p>
      * Used to correct data in columns which have "string default ''"
      *
@@ -222,7 +222,7 @@ public class DBCleaner {
         if (!dryRun) {
             String sql = "UPDATE " + table + " SET " + column + "=''"
                     + " WHERE " + column + "=NULL";
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog(Tracker.State.Exit, select);
@@ -238,7 +238,7 @@ public class DBCleaner {
      */
     private void toLog(@NonNull final Tracker.State state,
                        @NonNull final String query) {
-        try (SynchronizedCursor cursor = mSyncDb.rawQuery(query, null)) {
+        try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
             while (cursor.moveToNext()) {
                 String field = cursor.getColumnName(0);
                 String value = cursor.getString(0);

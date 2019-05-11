@@ -33,6 +33,10 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -40,40 +44,42 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.viewmodels.PreferredStylesViewModel;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
  * Activity to edit the list of styles.
  * - enable/disable their presence in the styles menu.
  * - Individual context menus allow cloning/editing/deleting of styles.
  *
- * @author Philip Warner
+ * All changes are saved immediately.
  */
 public class PreferredStylesActivity
-        extends EditObjectListActivity<BooklistStyle> {
+        extends BaseActivity {
 
     private static final int REQ_EDIT_STYLE = 0;
 
-    /** The row being edited. Set when an individual style is edited. */
-    private int mEditedRow;
+    /** The adapter for the list. */
+    protected RecyclerViewAdapterBase mListAdapter;
+    /** The View for the list. */
+    protected RecyclerView mListView;
+    protected LinearLayoutManager mLayoutManager;
 
-    /**
-     * Constructor.
-     */
-    public PreferredStylesActivity() {
-        super(null);
-    }
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
+
+    private PreferredStylesViewModel mModel;
 
     @Override
     protected int getLayoutId() {
@@ -84,21 +90,41 @@ public class PreferredStylesActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mModel = ViewModelProviders.of(this).get(PreferredStylesViewModel.class);
+        mModel.init();
+
+        mListView = findViewById(android.R.id.list);
+        mLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(mLayoutManager);
+        mListView.setHasFixedSize(true);
+
+        // setup the adapter
+        mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
+                                                 viewHolder -> mItemTouchHelper.startDrag(
+                                                         viewHolder));
+        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                // we save the order after each change.
+                mModel.saveMenuOrder();
+                // and make sure the results flags up we changed something.
+                setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
+            }
+        });
+        mListView.setAdapter(mListAdapter);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
+
         setTitle(R.string.lbl_preferred_styles);
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_styles_editor, null);
         }
-    }
-
-    /**
-     * Required by parent class since we do not pass a key for the intent to get the list.
-     */
-    @Override
-    @NonNull
-    protected ArrayList<BooklistStyle> getList() {
-        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
     }
 
     /**
@@ -109,7 +135,7 @@ public class PreferredStylesActivity
      */
     private void onCreateContextMenu(final int position) {
 
-        BooklistStyle style = mList.get(position);
+        BooklistStyle style = mModel.getList().get(position);
 
         Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
@@ -134,30 +160,27 @@ public class PreferredStylesActivity
      */
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                          @NonNull final Integer position) {
-
         // Save the current row
-        mEditedRow = position;
+        mModel.setEditedRow(position);
 
-        BooklistStyle style = mList.get(position);
+        BooklistStyle style = mModel.getList().get(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:
-                // clone any style
-                style = style.getClone(this, mDb);
-                editStyle(style);
+                editStyle(style.clone(this));
                 return true;
 
             case R.id.MENU_EDIT:
                 // editing a system style -> clone it first.
                 if (!style.isUserDefined()) {
-                    style = style.getClone(this, mDb);
+                    style = style.clone(this);
                 }
                 editStyle(style);
                 return true;
 
             case R.id.MENU_DELETE:
-                // the delete menu is only brought up for user defined styles.
-                style.delete(mDb);
-                handleStyleChange(null);
+                mModel.deleteStyle(style);
+                mListAdapter.notifyDataSetChanged();
+
                 setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                 return true;
 
@@ -167,17 +190,16 @@ public class PreferredStylesActivity
     }
 
     /**
-     * Edit the style.
-     *
      * @param style to edit
      */
     private void editStyle(@NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debugEnter(this, "editStyle", style.toString());
+            Logger.debugEnter(this, "editStyle", style);
         }
+
         Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
-                .putExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE, (Parcelable) style);
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
+                .putExtra(UniqueId.BKEY_STYLE, (Parcelable) style);
         startActivityForResult(intent, REQ_EDIT_STYLE);
     }
 
@@ -187,15 +209,17 @@ public class PreferredStylesActivity
                                  final int resultCode,
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
                 // need to send up the chain as-is
                 if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
                     //noinspection ConstantConditions
-                    BooklistStyle style = data.getParcelableExtra(
-                            BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
-                    handleStyleChange(style);
+                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    mModel.handleStyleChange(style);
+                    mListAdapter.notifyDataSetChanged();
+
                     setResult(resultCode, data);
                 }
                 break;
@@ -206,79 +230,6 @@ public class PreferredStylesActivity
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Called after a style has been edited.
-     */
-    private void handleStyleChange(@Nullable final BooklistStyle style) {
-        try {
-            if (style == null) {
-                // Style was deleted. Refresh.
-                mList = getList();
-
-            } else if (mEditedRow < 0) {
-                // New Style added. So put at top and set as preferred
-                mList.add(0, style);
-                style.setPreferred(true);
-
-            } else {
-                // Existing Style edited.
-                BooklistStyle origStyle = mList.get(mEditedRow);
-                if (origStyle.getId() != style.getId()) {
-                    if (!origStyle.isUserDefined()) {
-                        // Working on a clone of a builtin style
-                        if (origStyle.isPreferred()) {
-                            // Replace the original row with the new one
-                            mList.set(mEditedRow, style);
-                            // Make the new one preferred
-                            style.setPreferred(true);
-                            // And demote the original
-                            origStyle.setPreferred(false);
-                            mList.add(origStyle);
-                        } else {
-                            // Try to put it directly after original
-                            mList.add(mEditedRow, style);
-                        }
-                    } else {
-                        // A clone of an user-defined. Put it directly after the user-defined
-                        mList.add(mEditedRow, style);
-                    }
-                } else {
-                    mList.set(mEditedRow, style);
-                }
-            }
-            if (style != null) {
-                // add to the db if new.
-                if (style.getId() == 0) {
-                    mDb.insertBooklistStyle(style);
-                }
-            }
-
-            setList(mList);
-            mListAdapter.notifyDataSetChanged();
-
-        } catch (RuntimeException e) {
-            Logger.error(this, e);
-            // Do our best to recover
-            setList(getList());
-        }
-    }
-
-    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<BooklistStyle> list,
-                                                        @NonNull final OnStartDragListener dragStartListener) {
-        BooklistStyleListAdapter adapter =
-                new BooklistStyleListAdapter(this, list, dragStartListener);
-        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                // we save the order after each change.
-                BooklistStyles.savePreferredStyleMenuOrder(mList);
-                // and make sure the results flags up we changed something.
-                setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
-            }
-        });
-        return adapter;
     }
 
     /**
@@ -303,12 +254,12 @@ public class PreferredStylesActivity
         }
     }
 
-    private class BooklistStyleListAdapter
+    private class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        BooklistStyleListAdapter(@NonNull final Context context,
-                                 @NonNull final ArrayList<BooklistStyle> items,
-                                 @NonNull final OnStartDragListener dragStartListener) {
+        BooklistStylesAdapter(@NonNull final Context context,
+                              @NonNull final ArrayList<BooklistStyle> items,
+                              @NonNull final OnStartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 
@@ -340,7 +291,7 @@ public class PreferredStylesActivity
                 notifyItemChanged(position);
             });
 
-            holder.groupsView.setText(style.getGroupListDisplayNames(getContext()));
+            holder.groupsView.setText(style.getGroupLabels(getContext()));
             if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {

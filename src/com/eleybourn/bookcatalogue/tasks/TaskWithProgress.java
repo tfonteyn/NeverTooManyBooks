@@ -18,6 +18,8 @@ public abstract class TaskWithProgress<Progress, Result>
     @NonNull
     protected final ProgressDialogFragment<Progress, Result> mProgressDialog;
 
+    private final int mTaskId;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -25,15 +27,20 @@ public abstract class TaskWithProgress<Progress, Result>
     @Nullable
     protected Exception mException;
 
-    public TaskWithProgress(@NonNull final ProgressDialogFragment<Progress, Result> progressDialog) {
+    public TaskWithProgress(final int taskId,
+                            @NonNull final ProgressDialogFragment<Progress, Result> progressDialog) {
+        mTaskId = taskId;
         mProgressDialog = progressDialog;
     }
 
-    protected abstract int getId();
+    public int getId() {
+        return mTaskId;
+    }
 
     @Override
     protected void onPreExecute() {
-        mProgressDialog.setTask(getId(), this);
+        mProgressDialog.setTask(mTaskId, this);
+//        Logger.debug(this, "onPreExecute", "taskId=" + mTaskId);
     }
 
     /**
@@ -43,11 +50,11 @@ public abstract class TaskWithProgress<Progress, Result>
     @Override
     @UiThread
     protected void onProgressUpdate(@NonNull final Object... values) {
-        if (values[1] instanceof String) {
-            mProgressDialog.onProgress((Integer) values[0], (String) values[1]);
-        } else {
-            mProgressDialog.onProgress((Integer) values[0], (Integer) values[1]);
-        }
+//        Logger.debug(this, "onProgressUpdate", "taskId=" + mTaskId,
+//                     "values[0]=" + values[0],
+//                     "values[1]=" + values[1]);
+
+        mProgressDialog.onProgress((Integer) values[0], values[1]);
     }
 
     /**
@@ -58,7 +65,8 @@ public abstract class TaskWithProgress<Progress, Result>
      */
     @Override
     @UiThread
-    protected void onPostExecute(@NonNull final Result result) {
+    protected void onPostExecute(@Nullable final Result result) {
+//        Logger.debug(this, "onPostExecute", "taskId=" + mTaskId);
         mProgressDialog.onTaskFinished(mException == null, result, mException);
     }
 }

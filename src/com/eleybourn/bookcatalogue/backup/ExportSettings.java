@@ -39,7 +39,8 @@ public class ExportSettings
      * fields should be exported.
      * <p>
      * 0: all books
-     * 1: books added/updated since {@link #dateFrom}. If latter is null, then since last backup.
+     * 1: books added/updated since {@link #dateFrom}.
+     * If the latter is {@code null}, then since last backup.
      */
     public static final int EXPORT_SINCE = 1 << 16;
 

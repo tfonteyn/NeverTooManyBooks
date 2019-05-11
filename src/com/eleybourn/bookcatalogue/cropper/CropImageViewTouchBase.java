@@ -40,7 +40,7 @@ public abstract class CropImageViewTouchBase
         extends AppCompatImageView {
 
     private static final float SCALE_RATE = 1.25F;
-    /** Maximum upscaling for a viewed image */
+    /** Maximum upscaling for a viewed image. */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
     /** The current bitmap being displayed. */
     final CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
@@ -124,6 +124,11 @@ public abstract class CropImageViewTouchBase
      * see {@link View#setLayerType(int, Paint)}
      */
     private void initRenderer() {
+        // specific for Android Studio so the view can render in the layout editor.
+        if (isInEditMode()) {
+            return;
+        }
+
         int type = App.getListPreference(Prefs.pk_thumbnail_cropper_layer_type, -1);
         if (type == -1) {
             return;
@@ -401,13 +406,10 @@ public abstract class CropImageViewTouchBase
         zoomIn(SCALE_RATE);
     }
 
-    void zoomOut() {
-        zoomOut(SCALE_RATE);
-    }
-
     private void zoomIn(@SuppressWarnings("SameParameterValue") final float rate) {
         if (getScale() >= mMaxZoom) {
-            return; // Don't let the user zoom into the molecular level.
+            // Don't let the user zoom into the molecular level.
+            return;
         }
         if (mBitmapDisplayed.getBitmap() == null) {
             return;
@@ -418,6 +420,10 @@ public abstract class CropImageViewTouchBase
 
         mSuppMatrix.postScale(rate, rate, cx, cy);
         setImageMatrix(getImageViewMatrix());
+    }
+
+    void zoomOut() {
+        zoomOut(SCALE_RATE);
     }
 
     private void zoomOut(@SuppressWarnings("SameParameterValue") final float rate) {
@@ -458,6 +464,6 @@ public abstract class CropImageViewTouchBase
      */
     interface Recycler {
 
-        void recycle(@NonNull final Bitmap b);
+        void recycle(@NonNull Bitmap bm);
     }
 }

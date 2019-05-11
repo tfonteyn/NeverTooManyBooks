@@ -54,7 +54,20 @@ public class ISFDBBook
     private static final String ISFDB_BKEY_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
     private static final String ISFDB_BKEY_ISBN_2 = "__ISFDB_ISBN2";
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
+
     private static final Pattern YEAR_FROM_LI = Pattern.compile("&#x2022; \\(([1|2]\\d\\d\\d)\\)");
+
+    /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
+    private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
+
+    /**
+     * Prices are split into currency and actual amount.
+     * Split on first digit, but leave it in the second part.
+     */
+    private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
+
+    /** Character between the series name and the number. */
+    private static final Pattern SPLIT_SERIES_NUMBER_PATTERN = Pattern.compile("&#x2022;");
 
     /*
      * http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
@@ -85,11 +98,13 @@ public class ISFDBBook
 
         // multiple works, multiple authors
         TYPE_MAP.put("anth", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
-        TYPE_MAP.put("ANTHOLOGY", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("ANTHOLOGY",
+                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
         TYPE_MAP.put("omni", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
-        TYPE_MAP.put("OMNIBUS", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("OMNIBUS",
+                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         TYPE_MAP.put("MAGAZINE", TocEntry.Authors.MULTIPLE_WORKS);
 
@@ -173,11 +188,14 @@ public class ISFDBBook
      * }
      * </pre>
      *
-     * @param editions List of ISFDB native book id
+     * @param editions         List of ISFDB native book id
+     * @param addSeriesFromToc whether to add any series found in the TOC to the book series.
+     * @param fetchThumbnail   whether to get thumbnails as well
      */
     @Nullable
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
                         @NonNull final Bundle /* out */ bookData,
+                        final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
@@ -247,8 +265,8 @@ public class ISFDBBook
                     // dates are in fact displayed as YYYY-MM-DD which is very nice.
                     tmp = li.childNode(2).toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
-                    // so lets arbitrarily change that to 01
-                    tmp = tmp.replace("-00", "-01");
+                    // Cut that part out.
+                    tmp = UNKNOWN_M_D_PATTERN.matcher(tmp).replaceAll(Matcher.quoteReplacement(""));
                     // and we're paranoid...
                     Date d = DateUtils.parseDate(tmp);
                     if (d != null) {
@@ -284,8 +302,8 @@ public class ISFDBBook
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
-                    // split on first digit, but leave it in the second part
-                    String[] data = tmp.split("(?=\\d)", 2);
+
+                    String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(tmp, 2);
                     if (data.length == 1) {
                         bookData.putString(DBDefinitions.KEY_PRICE_LISTED, tmp);
                         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, "");
@@ -388,8 +406,10 @@ public class ISFDBBook
         ArrayList<TocEntry> toc = getTableOfContentList();
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
-        // store accumulated Series, do this *after* we go the TOC
-        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        // store accumulated Series, do this *after* we got the TOC
+        if (addSeriesFromToc) {
+            bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+        }
 
         // set Anthology type
         if (!toc.isEmpty()) {
@@ -580,7 +600,7 @@ public class ISFDBBook
                         String tmp = liAsString.substring(start, end);
                         // yes, hex... despite browser view-source shows &#8226;
                         // (see comment section above)
-                        String[] data = tmp.split("&#x2022;");
+                        String[] data = SPLIT_SERIES_NUMBER_PATTERN.split(tmp);
                         // check if there really was a series number
                         if (data.length > 1) {
                             seriesNum = Series.cleanupSeriesPosition(data[1]);

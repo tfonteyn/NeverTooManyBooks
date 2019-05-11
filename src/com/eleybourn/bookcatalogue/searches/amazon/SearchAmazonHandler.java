@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Currency;
@@ -46,6 +47,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * <p>
  * An example response looks like;
  * <pre>
+ *     {@code
  * <ItemSearchResponse xmlns="http://webservices.amazon.com/AWSECommerceService/2005-10-05">
  *   <OperationRequest>
  *     <HTTPHeaders>
@@ -179,14 +181,33 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  *     </Item>
  *   </Items>
  * </ItemSearchResponse>
- *
+ * }
  * </pre>
+ * <p>
+ * An error response:
+ * <pre>
+ *     {@code
+ *  <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
+ *      <Error>
+ *          <Code>RequestThrottled</Code>
+ *          <Message>
+ *              AWS Access Key ID: xxxxxx. You are submitting requests too quickly.
+ *              Please retry your requests at a slower rate.
+ *          </Message>
+ *      </Error>
+ *      <RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
+ *   </ItemSearchErrorResponse>
+ *  }
+ * </pre>
+ * <p>
+ * IMPORTANT: error detection has in fact not been tested.
  * <p>
  * "ItemAttributes" section:
  * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
  *
  * @author evan
  */
+@SuppressWarnings("HtmlTagCanBeJavadocTag")
 public class SearchAmazonHandler
         extends DefaultHandler {
 
@@ -197,9 +218,13 @@ public class SearchAmazonHandler
      * XML tags we look for.
      * They are mixed-case, hence we use .equalsIgnoreCase and not a switch
      */
-//    private static final String XML_ID = "id";
+    private static final String XML_ERROR = "Error";
+    private static final String XML_CODE = "Code";
+    private static final String XML_CODE_RequestThrottled = "RequestThrottled";
+
+    //    private static final String XML_ID = "id";
 //    private static final String XML_TOTAL_RESULTS = "TotalResults";
-    private static final String XML_ENTRY = "Item";
+    private static final String XML_ITEM = "Item";
 
     private static final String XML_AUTHOR = "Author";
     private static final String XML_TITLE = "Title";
@@ -271,9 +296,13 @@ public class SearchAmazonHandler
     private boolean mInImage;
 
     /** starting an entry. */
-    private boolean mInEntry;
+    private boolean mInItem;
     /** and finishing an entry. */
     private boolean mEntryDone;
+
+    /** error instead of entry. */
+    private boolean mInError;
+    private String mError;
 
     /**
      * Constructor.
@@ -285,6 +314,11 @@ public class SearchAmazonHandler
                         final boolean fetchThumbnail) {
         mBookData = bookData;
         sFetchThumbnail = fetchThumbnail;
+    }
+
+    @Nullable
+    public String getError() {
+        return mError;
     }
 
     /**
@@ -305,8 +339,10 @@ public class SearchAmazonHandler
 
     /**
      * Amount is in the lowest denomination, so for USD, cents, GBP pennies.. etc.
+     * {@code
      * <Amount>1234</Amount>
      * <CurrencyCode>USD</CurrencyCode>
+     * }
      * is $12.34
      */
     private void handleListPrice() {
@@ -352,8 +388,11 @@ public class SearchAmazonHandler
             throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
-        if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
-            mInEntry = true;
+        if (!mEntryDone && localName.equalsIgnoreCase(XML_ERROR)) {
+            mInError = true;
+
+        } else if (!mEntryDone && localName.equalsIgnoreCase(XML_ITEM)) {
+            mInItem = true;
 
         } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {
             mInLanguage = true;
@@ -397,18 +436,30 @@ public class SearchAmazonHandler
         if (mInImage && localName.equalsIgnoreCase(XML_THUMBNAIL)) {
             mThumbnailUrl = mBuilder.toString();
             mInImage = false;
+
         } else if (localName.equalsIgnoreCase(XML_LANGUAGE)) {
             mInLanguage = false;
+
         } else if (localName.equalsIgnoreCase(XML_LIST_PRICE)) {
             handleListPrice();
             mCurrencyCode = "";
             mCurrencyAmount = "";
             mInListPrice = false;
-        } else if (localName.equalsIgnoreCase(XML_ENTRY)) {
-            mEntryDone = true;
-            mInEntry = false;
 
-        } else if (mInEntry) {
+        } else if (localName.equalsIgnoreCase(XML_ITEM)) {
+            mEntryDone = true;
+            mInItem = false;
+
+        } else if (localName.equalsIgnoreCase(XML_ERROR)) {
+            mEntryDone = true;
+            mInError = false;
+
+        } else if (mInError) {
+            if (localName.equalsIgnoreCase(XML_CODE)) {
+                mError = mBuilder.toString();
+            }
+
+        } else if (mInItem) {
             if (localName.equalsIgnoreCase(XML_AUTHOR)) {
                 mAuthors.add(Author.fromString(mBuilder.toString()));
 

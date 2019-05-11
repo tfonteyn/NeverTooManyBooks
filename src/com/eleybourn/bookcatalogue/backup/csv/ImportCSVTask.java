@@ -33,14 +33,10 @@ public class ImportCSVTask
     @UiThread
     public ImportCSVTask(@NonNull final ImportSettings settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
-        super(progressDialog);
+        super(R.id.TASK_ID_CSV_IMPORT, progressDialog);
 
         mSettings = settings;
         mImporter = new CsvImporter(settings);
-    }
-
-    protected int getId() {
-        return R.id.TASK_ID_CSV_IMPORT;
     }
 
     @Override

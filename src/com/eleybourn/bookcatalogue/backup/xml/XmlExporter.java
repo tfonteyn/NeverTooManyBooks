@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
@@ -136,13 +136,15 @@ public class XmlExporter
 
     private static final int BUFFER_SIZE = 32768;
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     @NonNull
     private final ExportSettings mSettings;
 
     public XmlExporter() {
-        mDb = new DBA();
+        mDb = new DAO();
         mSettings = new ExportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -155,7 +157,7 @@ public class XmlExporter
      */
     @UiThread
     public XmlExporter(@NonNull final ExportSettings settings) {
-        mDb = new DBA();
+        mDb = new DAO();
         settings.validate();
         mSettings = settings;
     }
@@ -920,7 +922,7 @@ public class XmlExporter
 
         /**
          * @return The name attribute to be set on the {@link #getElementRoot()}.
-         * Can be null.
+         * Can be {@code null}.
          */
         @Nullable
         String getNameAttribute();

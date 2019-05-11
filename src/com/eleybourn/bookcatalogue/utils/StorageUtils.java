@@ -54,7 +54,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -576,7 +576,7 @@ public final class StorageUtils {
      */
     public static void exportDatabaseFiles() {
         exportFile(DBHelper.getDatabasePath(), "DbExport.db");
-        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(), "DbExport-covers.db");
+        exportFile(CoversDAO.CoversDbHelper.getDatabasePath(), "DbExport-covers.db");
     }
 
     /**

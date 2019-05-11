@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
@@ -61,6 +62,7 @@ public class BookFragment
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
+    /** Handle next/previous paging in the flattened booklist. */
     private GestureDetector mGestureDetector;
 
     /** Contains the flattened book list for next/previous paging. */
@@ -98,20 +100,6 @@ public class BookFragment
                                     R.string.hint_view_only_help,
                                     null);
         }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void initFlattenedBookList(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mBookFragmentModel = ViewModelProviders.of(getActivity()).get(BookFragmentModel.class);
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
-
-        //ENHANCE: could probably be replaced by a ViewPager
-        // finally, enable the listener for flings
-        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        //noinspection ConstantConditions
-        getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
     }
 
     @Override
@@ -204,6 +192,22 @@ public class BookFragment
         mFields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void initFlattenedBookList(@Nullable final Bundle savedInstanceState) {
+        //noinspection ConstantConditions
+        mBookFragmentModel = ViewModelProviders.of(getActivity()).get(BookFragmentModel.class);
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
+
+        // ENHANCE: could probably be replaced by a ViewPager
+        // finally, enable the listener for flings
+        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
+        //noinspection ConstantConditions
+        getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
+    }
+
+
+
     @CallSuper
     @Override
     public void onResume() {
@@ -225,7 +229,6 @@ public class BookFragment
      * <br>{@inheritDoc}
      */
     @Override
-    @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         Book book = mBookBaseFragmentModel.getBook();
 
@@ -281,11 +284,10 @@ public class BookFragment
      */
     private void populateAuthorListField() {
         Field field = mFields.getField(R.id.author);
-        ArrayList<Author> list = mBookBaseFragmentModel.getBook()
-                                                       .getParcelableArrayList(
-                                                               UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = mBookBaseFragmentModel
+                .getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         int authorsCount = list.size();
-        // yes, there should not be a book without authors. But let's keep this 'proper'
+        // yes, there should not be a book without authors. But let's keep this 'universal'
         boolean visible = authorsCount != 0;
         if (visible) {
             field.setValue(Csv.join(", ", list, Author::getLabel));
@@ -301,9 +303,8 @@ public class BookFragment
      */
     private void populateSeriesListField() {
         Field field = mFields.getField(R.id.series);
-        ArrayList<Series> list = mBookBaseFragmentModel.getBook()
-                                                       .getParcelableArrayList(
-                                                               UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = mBookBaseFragmentModel
+                .getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
 
         boolean visible = seriesCount != 0 && App.isUsed(DBDefinitions.KEY_SERIES);
@@ -331,7 +332,7 @@ public class BookFragment
             field.getView().setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /**
                  * yes, icons are not supported here, but:
-                 * TODO: convert to SimpleDialog context menu.... if I can be bothered.
+                 * TODO: convert to MenuPicker context menu.... if I can be bothered.
                  */
                 @Override
                 @CallSuper
@@ -353,16 +354,14 @@ public class BookFragment
      * Show or hide the Table Of Content section.
      */
     private void populateToc() {
-        ArrayList<TocEntry> tocList = mBookBaseFragmentModel.getBook()
-                                                            .getParcelableArrayList(
-                                                                    UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        Book book = mBookBaseFragmentModel.getBook();
+
+        ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean hasToc =
-                App.isUsed(DBDefinitions.KEY_TOC_BITMASK)
-                        && mBookBaseFragmentModel.getBook().isBitSet(DBDefinitions.KEY_TOC_BITMASK,
-                                                                     TocEntry.Authors.MULTIPLE_WORKS)
-                        && !tocList.isEmpty();
+        boolean hasToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK)
+                && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Authors.MULTIPLE_WORKS)
+                && !tocList.isEmpty();
 
         View view = getView();
         //noinspection ConstantConditions
@@ -438,32 +437,17 @@ public class BookFragment
         if (fbl != null) {
             // release resources (statements)
             fbl.close();
-//            //noinspection ConstantConditions
-//            if (getActivity().isFinishing()) {
-//                fbl.deleteData();
-//            }
         }
 
         mCoverHandler.dismissCoverBrowser();
 
         //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
-                                            mBookBaseFragmentModel.getBook().getId());
+        Intent data = new Intent()
+                .putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId());
         //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, data);
         super.onPause();
     }
-
-//    @Override
-//    @CallSuper
-//    public void onSaveInstanceState(@NonNull final Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        FlattenedBooklist fbl = mBookFragmentModel.getFlattenedBooklist();
-//        if (fbl != null) {
-//            outState.putInt(REQUEST_BKEY_FLAT_BOOKLIST_POSITION, (int) fbl.getPosition());
-//        }
-//    }
 
     //</editor-fold>
 
@@ -501,6 +485,7 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            // Only one of these two is made visible.
             menu.add(R.id.MENU_BOOK_EDIT_LOAN,
                      R.id.MENU_BOOK_EDIT_LOAN, MenuHandler.MENU_ORDER_LENDING,
                      R.string.menu_loan_lend_book);
@@ -519,19 +504,21 @@ public class BookFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        boolean bookExists = mBookBaseFragmentModel.getBook().getId() != 0;
+        Book book = mBookBaseFragmentModel.getBook();
 
-        boolean isRead = mBookBaseFragmentModel.getBook().getBoolean(Book.IS_READ);
-        menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
-        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
+        boolean isExistingBook = mBookBaseFragmentModel.isExistingBook();
+        boolean isRead = book.getBoolean(Book.IS_READ);
+
+        menu.setGroupVisible(R.id.MENU_BOOK_READ, isExistingBook && !isRead);
+        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, isExistingBook && isRead);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = mBookBaseFragmentModel.isAvailable();
-            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, isExistingBook && isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, isExistingBook && !isAvailable);
         }
 
-        MenuHandler.prepareAmazonSearchSubMenu(menu, mBookBaseFragmentModel.getBook());
+        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -554,14 +541,14 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_DELETE:
+                String title = book.getString(DBDefinitions.KEY_TITLE);
+                List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
-                StandardDialogs.deleteBookAlert(
-                        getContext(), mDb, book.getId(), book.getString(DBDefinitions.KEY_TITLE),
-                        () -> {
-                            mDb.deleteBook(book.getId());
-                            activity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                            activity.finish();
-                        });
+                StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
+                    mDb.deleteBook(book.getId());
+                    activity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                    activity.finish();
+                });
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
@@ -643,7 +630,7 @@ public class BookFragment
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
      * <p>
-     * ENHANCE: use ViewPager?
+     * ENHANCE: use ViewPager instead
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {

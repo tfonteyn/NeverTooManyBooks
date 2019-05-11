@@ -16,6 +16,7 @@
 
 package com.eleybourn.bookcatalogue.cropper;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -82,19 +83,18 @@ class CropHighlightView {
         mImageView = imageView;
     }
 
-    public void setup(@NonNull final Matrix matrix,
+    public void setup(@NonNull final Context context,
+                      @NonNull final Matrix matrix,
                       @NonNull final Rect imageRect,
                       @NonNull final RectF cropRect,
                       final boolean circle,
-                      boolean maintainAspectRatio) {
-        if (circle) {
-            maintainAspectRatio = true;
-        }
+                      final boolean maintainAspectRatio) {
+
         mMatrix = new Matrix(matrix);
 
         mCropRect = cropRect;
         mImageRect = new RectF(imageRect);
-        mMaintainAspectRatio = maintainAspectRatio;
+        mMaintainAspectRatio = circle || maintainAspectRatio;
         mCircle = circle;
 
         mInitialAspectRatio = mCropRect.width() / mCropRect.height();
@@ -108,14 +108,12 @@ class CropHighlightView {
 
         mMode = ModifyMode.None;
 
-        // ApplicationContext so the Theme gets picked up
-//        Resources res = App.getAppContext().getResources();
-        Resources res = mImageView.getResources();
+        // use the context so the theme is used: getResources().getDrawable(id, getTheme());
+        mResizeDrawableWidth = context.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableHeight = context.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableDiagonal = context.getDrawable(R.drawable.ic_crop);
 
-        mResizeDrawableWidth = res.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableHeight = res.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableDiagonal = res.getDrawable(R.drawable.ic_crop);
-
+        Resources res = context.getResources();
         mOutlinePaintNoFocus = res.getColor(R.color.CropHighlightView_outlinePaint_noFocus);
         mOutlinePaintCircle = res.getColor(R.color.CropHighlightView_outlinePaint_circle);
         mOutlinePaintRectangle = res.getColor(R.color.CropHighlightView_outlinePaint_rectangle);
@@ -142,22 +140,26 @@ class CropHighlightView {
         if (!hasFocus()) {
             mOutlinePaint.setColor(mOutlinePaintNoFocus);
             canvas.drawRect(mDrawRect, mOutlinePaint);
+
         } else {
             Rect viewDrawingRect = new Rect();
             mImageView.getDrawingRect(viewDrawingRect);
             if (mCircle) {
                 float width = mDrawRect.width();
                 float height = mDrawRect.height();
-                path.addCircle(mDrawRect.left + (width / 2), mDrawRect.top
-                        + (height / 2), width / 2, Path.Direction.CW);
+                path.addCircle(mDrawRect.left + (width / 2),
+                               mDrawRect.top + (height / 2),
+                               width / 2,
+                               Path.Direction.CW);
                 mOutlinePaint.setColor(mOutlinePaintCircle);
+
             } else {
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
                 mOutlinePaint.setColor(mOutlinePaintRectangle);
             }
+
             canvas.clipPath(path, Region.Op.DIFFERENCE);
             canvas.drawRect(viewDrawingRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-
             canvas.restore();
             canvas.drawPath(path, mOutlinePaint);
 
@@ -166,50 +168,53 @@ class CropHighlightView {
                     int width = mResizeDrawableDiagonal.getIntrinsicWidth();
                     int height = mResizeDrawableDiagonal.getIntrinsicHeight();
 
-                    int d = (int) Math.round(Math.cos(/* 45deg */Math.PI / 4D)
-                                                     * (mDrawRect.width() / 2D));
-                    int x = mDrawRect.left + (mDrawRect.width() / 2) + d
-                            - width / 2;
-                    int y = mDrawRect.top + (mDrawRect.height() / 2) - d
-                            - height / 2;
-                    mResizeDrawableDiagonal.setBounds(x, y, x
-                            + mResizeDrawableDiagonal.getIntrinsicWidth(), y
-                                                              + mResizeDrawableDiagonal.getIntrinsicHeight());
+                    // Math.cos(Math.PI / 4D)  ==>  45deg
+                    int d = (int) Math.round(Math.cos(Math.PI / 4D) * (mDrawRect.width() / 2D));
+
+                    int left = mDrawRect.left + (mDrawRect.width() / 2) + d - width / 2;
+                    int top = mDrawRect.top + (mDrawRect.height() / 2) - d - height / 2;
+                    int right = left + width;
+                    int bottom = top + height;
+
+                    mResizeDrawableDiagonal.setBounds(left, top, right, bottom);
                     mResizeDrawableDiagonal.draw(canvas);
+
                 } else {
+
                     int left = mDrawRect.left + 1;
                     int right = mDrawRect.right + 1;
-                    int top = mDrawRect.top + 4;
-                    int bottom = mDrawRect.bottom + 3;
-
                     int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
                     int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-                    int heightHeight = mResizeDrawableHeight
-                            .getIntrinsicHeight() / 2;
+                    int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
+
+                    mResizeDrawableWidth.setBounds(left - widthWidth,
+                                                   yMiddle - widthHeight,
+                                                   left + widthWidth,
+                                                   yMiddle + widthHeight);
+                    mResizeDrawableWidth.draw(canvas);
+
+                    mResizeDrawableWidth.setBounds(right - widthWidth,
+                                                   yMiddle - widthHeight,
+                                                   right + widthWidth,
+                                                   yMiddle + widthHeight);
+                    mResizeDrawableWidth.draw(canvas);
+
+
+                    int top = mDrawRect.top + 4;
+                    int bottom = mDrawRect.bottom + 3;
+                    int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
                     int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
+                    int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
 
-                    int xMiddle = mDrawRect.left
-                            + ((mDrawRect.right - mDrawRect.left) / 2);
-                    int yMiddle = mDrawRect.top
-                            + ((mDrawRect.bottom - mDrawRect.top) / 2);
-
-                    mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle
-                            - widthHeight, left + widthWidth, yMiddle
-                                                           + widthHeight);
-                    mResizeDrawableWidth.draw(canvas);
-
-                    mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle
-                            - widthHeight, right + widthWidth, yMiddle
-                                                           + widthHeight);
-                    mResizeDrawableWidth.draw(canvas);
-
-                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top
-                            - heightHeight, xMiddle + heightWidth, top
-                                                            + heightHeight);
+                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth,
+                                                    top - heightHeight,
+                                                    xMiddle + heightWidth,
+                                                    top + heightHeight);
                     mResizeDrawableHeight.draw(canvas);
 
                     mResizeDrawableHeight.setBounds(xMiddle - heightWidth,
-                                                    bottom - heightHeight, xMiddle + heightWidth,
+                                                    bottom - heightHeight,
+                                                    xMiddle + heightWidth,
                                                     bottom + heightHeight);
                     mResizeDrawableHeight.draw(canvas);
                 }
@@ -227,6 +232,7 @@ class CropHighlightView {
     /** Determines which edges are hit by touching at (x, y). */
     int getHit(final float x,
                final float y) {
+
         Rect r = computeLayout();
         final float hysteresis = 20F;
         int hitValue = GROW_NONE;
@@ -259,10 +265,8 @@ class CropHighlightView {
         } else {
             // verticalCheck makes sure the position is between the top and
             // the bottom edge (with some tolerance). Similar for horizontalCheck.
-            boolean verticalCheck = (y >= r.top - hysteresis)
-                    && (y < r.bottom + hysteresis);
-            boolean horizontalCheck = (x >= r.left - hysteresis)
-                    && (x < r.right + hysteresis);
+            boolean verticalCheck = (y >= r.top - hysteresis) && (y < r.bottom + hysteresis);
+            boolean horizontalCheck = (x >= r.left - hysteresis) && (x < r.right + hysteresis);
 
             // Check whether the position is near some edge(s).
             if ((Math.abs(r.left - x) < hysteresis) && verticalCheck) {
@@ -297,11 +301,13 @@ class CropHighlightView {
         switch (edge) {
             case GROW_NONE:
                 return;
+
             case MOVE:
                 // Convert to image space before sending to moveBy().
                 moveBy(dx * (mCropRect.width() / r.width()),
                        dy * (mCropRect.height() / r.height()));
                 break;
+
             default:
                 if (((GROW_LEFT_EDGE | GROW_RIGHT_EDGE) & edge) == 0) {
                     dx = 0;
@@ -323,6 +329,7 @@ class CropHighlightView {
     /** Grows the cropping rectangle by (dx, dy) in image space. */
     private void moveBy(final float dx,
                         final float dy) {
+
         Rect rect = new Rect(mDrawRect);
 
         mCropRect.offset(dx, dy);
@@ -343,6 +350,7 @@ class CropHighlightView {
     /** Grows the cropping rectangle by (dx, dy) in image space. */
     private void growBy(float dx,
                         float dy) {
+
         if (mMaintainAspectRatio) {
             if (dx != 0) {
                 dy = dx / mInitialAspectRatio;
@@ -354,46 +362,47 @@ class CropHighlightView {
         // Don't let the cropping rectangle grow too fast.
         // Grow at most half of the difference between the image rectangle and
         // the cropping rectangle.
-        RectF r = new RectF(mCropRect);
-        if (dx > 0F && r.width() + 2 * dx > mImageRect.width()) {
-            dx = (mImageRect.width() - r.width()) / 2F; // adjustment
+        RectF rect = new RectF(mCropRect);
+        if (dx > 0F && rect.width() + 2 * dx > mImageRect.width()) {
+            dx = (mImageRect.width() - rect.width()) / 2F; // adjustment
             if (mMaintainAspectRatio) {
                 dy = dx / mInitialAspectRatio;
             }
         }
-        if (dy > 0F && r.height() + 2 * dy > mImageRect.height()) {
-            dy = (mImageRect.height() - r.height()) / 2F; // adjustment
+        if (dy > 0F && rect.height() + 2 * dy > mImageRect.height()) {
+            dy = (mImageRect.height() - rect.height()) / 2F; // adjustment
             if (mMaintainAspectRatio) {
                 dx = dy * mInitialAspectRatio;
             }
         }
 
-        r.inset(-dx, -dy);
+        rect.inset(-dx, -dy);
 
         // Don't let the cropping rectangle shrink too fast.
         final float widthCap = 25F;
-        if (r.width() < widthCap) {
-            r.inset(-(widthCap - r.width()) / 2F, 0F);
+        if (rect.width() < widthCap) {
+            rect.inset(-(widthCap - rect.width()) / 2F, 0F);
         }
         float heightCap = mMaintainAspectRatio ? (widthCap / mInitialAspectRatio)
                                                : widthCap;
-        if (r.height() < heightCap) {
-            r.inset(0F, -(heightCap - r.height()) / 2F);
+        if (rect.height() < heightCap) {
+            rect.inset(0F, -(heightCap - rect.height()) / 2F);
         }
 
         // Put the cropping rectangle inside the image rectangle.
-        if (r.left < mImageRect.left) {
-            r.offset(mImageRect.left - r.left, 0F);
-        } else if (r.right > mImageRect.right) {
-            r.offset(-(r.right - mImageRect.right), 0);
-        }
-        if (r.top < mImageRect.top) {
-            r.offset(0F, mImageRect.top - r.top);
-        } else if (r.bottom > mImageRect.bottom) {
-            r.offset(0F, -(r.bottom - mImageRect.bottom));
+        if (rect.left < mImageRect.left) {
+            rect.offset(mImageRect.left - rect.left, 0F);
+        } else if (rect.right > mImageRect.right) {
+            rect.offset(-(rect.right - mImageRect.right), 0);
         }
 
-        mCropRect.set(r);
+        if (rect.top < mImageRect.top) {
+            rect.offset(0F, mImageRect.top - rect.top);
+        } else if (rect.bottom > mImageRect.bottom) {
+            rect.offset(0F, -(rect.bottom - mImageRect.bottom));
+        }
+
+        mCropRect.set(rect);
         mDrawRect = computeLayout();
         mImageView.invalidate();
     }

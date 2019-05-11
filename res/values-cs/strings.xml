@@ -67,10 +67,13 @@
     <string name="about_lbl_sourcecode">Zdrojový kód:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
     <string name="about_lbl_donate">Podpořit</string>
-    <string name="lbl_about">O této aplikaci</string>
+    <string name="menu_about">O této aplikaci</string>
     <string name="lbl_price_listed">Seznam cen</string>
     <string name="lbl_update_fields">Automaticky aktualizovat pole</string>
-    <string name="lbl_update_fields_to_update">Zvolit pole k aktualizaci</string>
+
+    <string name="lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
+    <string name="lbl_select_fields">Zvolit pole</string>
+
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="confirm_overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="yes">Ano</string>
@@ -160,7 +163,7 @@
     <string name="menu_edit_author">Upravit autory…</string>
     <string name="menu_edit_series">Upravit série…</string>
     <string name="title_delete_series">Smazat série</string>
-    <string name="confirm_really_delete_series">Opravdu chcete smazat série \‘%1$s\’?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
+    <string name="confirm_delete_series">Opravdu chcete smazat série \‘%1$s\’?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="X_title_edit_series">Upravit detaily série</string>
     <string name="X_title_select_cover">Vybrat obálku</string>
     <string name="X_warning_no_isbn_no_editions">Nelze získat edici pro knihu bez ISBN kódu</string>
@@ -172,7 +175,7 @@
     <string name="confirm_apply_series_changed">Změnil jste sérii z:\n  \‘%1$s\’ na \n  \‘%2$s\’\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba \‘%3$s\’ bude aplikována okamžitě.</string>
     <string name="warning_unable_to_find_book">Nepodařilo se nalézt zadanou knihu</string>
     <string name="list_and">a</string>
-    <string name="confirm_really_delete_book">Tímto kompletně odstraníte knihu \‘%1$s\’ od %2$s. Určitě chcete pokračovat?</string>
+    <string name="confirm_delete_book">Tímto kompletně odstraníte knihu \‘%1$s\’ od %2$s. Určitě chcete pokračovat?</string>
     <string name="warning_editions_require_isbn">Pro získání dalších edicí je vyžadován ISBN kód</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="progress_msg_finding_editions">Hledání edicí…</string>
@@ -333,9 +336,9 @@
         \nMůžete zde rovněž upravit podobu menu stylů.
     </string>
     <string name="lbl_preferred_styles">Preferované styly</string>
-    <string name="title_edit_style_colon_name">Upravit styl: %1$s</string>
+    <string name="title_edit_style">Upravit styl</string>
     <string name="X_menu_add_style">Přidat styl</string>
-    <string name="title_clone_style_colon_name">Klonovat styl: %1$s</string>
+    <string name="title_clone_style">Klonovat styl</string>
     <string name="pg_filters">Filtry knih</string>
     <string name="X_title_add_style">Nový styl</string>
     <string name="X_pt_bob_filter_read">Výběr založený na statusu \‘Přečtení\’</string>

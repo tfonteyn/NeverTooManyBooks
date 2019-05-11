@@ -236,13 +236,6 @@
         <item name="android:src">@drawable/ic_reorder</item>
     </style>
 
-    <!-- the actual list view -->
-    <style name="rvr_ListView">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:fadingEdge">none</item>
-    </style>
-
     <!-- the details part of the row in a RecyclerView row. -->
     <style name="rvr_details_row">
         <item name="android:layout_width">0dp</item>
@@ -296,10 +289,10 @@
 
     <!-- Clickable row in a ListView. Flashes when clicked. -->
     <style name="row_in_ListView">
-        <item name="android:background">@android:drawable/list_selector_background</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border</item>
+        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Menu label for options in a list -->
@@ -310,13 +303,8 @@
     </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
-    <style name="row_option_checkable">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border</item>
-        <item name="android:layout_marginBottom">@dimen/border</item>
+    <style name="row_option_checkable" parent="@style/row_in_ListView">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:background">@android:drawable/list_selector_background</item>
     </style>
 
     <!-- Used for a dedicated 'help' TextView associated with an option -->
@@ -391,6 +379,13 @@
         <item name="android:background">?attr/colorBackgroundFloating</item>
     </style>
 
+    <style name="floatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+    </style>
+
     <!-- Style for keys on the isbn search keyboard -->
     <style name="isbnSearchKey">
         <item name="android:layout_width">0dp</item>
@@ -445,14 +440,6 @@
     <!-- The price (listed, paid, ... ) fields. -->
     <style name="priceTextEntry" parent="@style/base_localeTextEntry">
         <item name="android:inputType">numberDecimal</item>
-    </style>
-
-    <style name="floatingActionButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|end</item>
-        <item name="android:layout_margin">@dimen/fab_margin</item>
-        <item name="android:visibility">gone</item>
     </style>
 
     <!-- *************************************************************************************** -->

@@ -26,13 +26,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 
 public class EditFormatDialog
         extends EditStringBaseDialog {
 
     public EditFormatDialog(@NonNull final Activity activity,
-                            @NonNull final DBA db,
+                            @NonNull final DAO db,
                             @NonNull final Runnable onChanged) {
         super(activity, db, db.getFormats(), onChanged);
     }

@@ -137,13 +137,11 @@ public class EditAuthorListActivity
             return super.onSave(data);
         }
 
-        StandardDialogs.showConfirmUnsavedEditsDialog(
-                this,
-                /* run when user clicks 'exit' */
-                () -> {
-                    view.setText("");
-                    findViewById(R.id.confirm).performClick();
-                });
+        StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+            // runs when user clicks 'exit'
+            view.setText("");
+            findViewById(R.id.confirm).performClick();
+        });
         return false;
     }
 
@@ -180,7 +178,7 @@ public class EditAuthorListActivity
             /*
              * Use the original author, but update its fields
              *
-             * see below and {@link DBA#insertBookDependents} where an *insert* will be done
+             * see below and {@link DAO#insertBookDependents} where an *insert* will be done
              * The 'old' author will be orphaned.
              * TODO: simplify / don't orphan?
              */
@@ -206,8 +204,8 @@ public class EditAuthorListActivity
          * Copy the data fields (name,..) from the holder to the 'old' author.
          * and remove any duplicates.
          *
-         * When the actual book is saved, {@link DBA#updateBook} will call
-         * {@link DBA#insertBookDependents} which when updating TBL_BOOK_AUTHORS
+         * When the actual book is saved, {@link DAO#updateBook} will call
+         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
          * will first try and find the author based on name.
          * If its names differ -> new Author -> inserts the new author.
          * Result: *this* book now uses the modified/new author,
@@ -241,8 +239,8 @@ public class EditAuthorListActivity
          * Copy the data fields (name,..) from the holder to the 'old' author.
          * and remove any duplicates.
          *
-         * When the actual book is saved, {@link DBA#updateBook} will call
-         * {@link DBA#insertBookDependents} which when updating TBL_BOOK_AUTHORS
+         * When the actual book is saved, {@link DAO#updateBook} will call
+         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
          * will first try and find the author (with the old id) based on name.
          * => it will find the NEW author, and update the id in memory (old becomes new)
          * Result:

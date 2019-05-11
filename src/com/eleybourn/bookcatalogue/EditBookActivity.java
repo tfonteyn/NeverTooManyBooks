@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -30,6 +32,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
@@ -44,7 +48,7 @@ public class EditBookActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main_nav_tabbar;
+        return R.layout.activity_edit_book;
     }
 
     @Override
@@ -75,8 +79,21 @@ public class EditBookActivity
 
         BookBaseFragmentModel bookBaseFragmentModel = ViewModelProviders.of(this).get(
                 BookBaseFragmentModel.class);
-        finishIfClean(bookBaseFragmentModel.isDirty());
 
-        super.onBackPressed();
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
+                                            bookBaseFragmentModel.getBook().getId());
+        //ENHANCE: global changes not detected, so assume they happened.
+        setResult(Activity.RESULT_OK, data);
+
+        if (bookBaseFragmentModel.isDirty()) {
+            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+                // runs when user clicks 'exit'
+                setResult(Activity.RESULT_CANCELED);
+                super.onBackPressed();
+            });
+        } else {
+            setResult(Activity.RESULT_CANCELED);
+            super.onBackPressed();
+        }
     }
 }

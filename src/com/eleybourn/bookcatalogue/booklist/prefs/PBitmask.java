@@ -14,7 +14,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * Used for {@link androidx.preference.MultiSelectListPreference}
  * <p>
  * We basically want a bitmask/int.
- * But the Preference insists on a Set<String>
+ * But the Preference insists on a {@code Set<String>}
  */
 public class PBitmask
         extends PPrefBase<Integer>
@@ -35,7 +35,7 @@ public class PBitmask
     }
 
     /**
-     * converts the Integer bitmask and stores it as a Set<String>
+     * converts the Integer bitmask and stores it as a {@code Set<String>]
      */
     @Override
     public void set(@Nullable final Integer value) {
@@ -50,7 +50,7 @@ public class PBitmask
     }
 
     /**
-     * converts the Integer bitmask and stores it as a Set<String>
+     * converts the Integer bitmask and stores it as a {@code Set<String>}
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
@@ -63,7 +63,7 @@ public class PBitmask
     }
 
     /**
-     * Reads a Set<String> from storage, and converts it to an Integer bitmask.
+     * Reads a {@code Set<String>} from storage, and converts it to an Integer bitmask.
      */
     @NonNull
     @Override

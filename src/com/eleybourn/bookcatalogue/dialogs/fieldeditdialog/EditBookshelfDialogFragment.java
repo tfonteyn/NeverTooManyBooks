@@ -34,7 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.MustImplementException;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -55,7 +55,10 @@ public class EditBookshelfDialogFragment
     private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";
-    private DBA mDb;
+
+    /** Database access. */
+    private DAO mDb;
+
     private Bookshelf mBookshelf;
 
     private EditText mNameView;
@@ -98,7 +101,7 @@ public class EditBookshelfDialogFragment
             mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);
         }
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
@@ -187,9 +190,8 @@ public class EditBookshelfDialogFragment
 
                     // move all books from bookshelf to existingShelf
                     int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
-                    OnBookshelfChangedListener
-                            .onBookshelfChanged(this, destination.getId(), booksMoved);
-
+                    OnBookshelfChangedListener.onBookshelfChanged(this,
+                                                                  destination.getId(), booksMoved);
                 })
                 .create()
                 .show();
@@ -205,6 +207,16 @@ public class EditBookshelfDialogFragment
 
     public interface OnBookshelfChangedListener {
 
+        /**
+         *  BAD idea... to be removed
+         *
+         * Convenience method. Try in order:
+         * <ul>
+         * <li>getTargetFragment()</li>
+         * <li>getParentFragment()</li>
+         * <li>getActivity()</li>
+         * </ul>
+         */
         static void onBookshelfChanged(@NonNull final Fragment sourceFragment,
                                        long bookshelfId,
                                        int booksMoved) {

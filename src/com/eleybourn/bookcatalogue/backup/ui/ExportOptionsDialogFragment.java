@@ -71,8 +71,7 @@ public class ExportOptionsDialogFragment
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     updateOptions();
-                    OnOptionsListener
-                            .onOptionsSet(this, mExportSettings);
+                    OnOptionsListener.onOptionsSet(this, mExportSettings);
                 })
                 .create();
 
@@ -136,6 +135,8 @@ public class ExportOptionsDialogFragment
     public interface OnOptionsListener {
 
         /**
+         *  BAD idea... to be removed
+         *
          * Convenience method. Try in order:
          * <ul>
          * <li>getTargetFragment()</li>

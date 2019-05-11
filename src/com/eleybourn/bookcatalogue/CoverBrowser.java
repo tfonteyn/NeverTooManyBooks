@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -569,7 +570,7 @@ public class CoverBrowser
         }
 
         /**
-         * Get the requested file, if available, otherwise return null.
+         * Get the requested file, if available, otherwise return {@code null}.
          *
          * @param isbn  to search
          * @param sizes required sizes in order to look for. First found is used.
@@ -619,7 +620,7 @@ public class CoverBrowser
         @NonNull
         private final String mIsbn;
         @NonNull
-        private final CoverBrowser mCallback;
+        private final WeakReference<CoverBrowser> mCallback;
 
         /**
          * Constructor.
@@ -631,7 +632,7 @@ public class CoverBrowser
         GetEditionsTask(@NonNull final CoverBrowser coverBrowser,
                         @NonNull final String isbn) {
             mIsbn = isbn;
-            mCallback = coverBrowser;
+            mCallback = new WeakReference<>(coverBrowser);
         }
 
         @Override
@@ -652,7 +653,9 @@ public class CoverBrowser
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final ArrayList<String> result) {
-            mCallback.showGallery(this, result);
+            if (mCallback.get() != null) {
+                mCallback.get().showGallery(this, result);
+            }
         }
     }
 
@@ -663,7 +666,7 @@ public class CoverBrowser
             extends AsyncTask<Void, Void, String> {
 
         @NonNull
-        private final GalleryAdapter mGalleryAdapter;
+        private final WeakReference<GalleryAdapter> mGalleryAdapter;
         private final int mPosition;
 
         @NonNull
@@ -684,7 +687,7 @@ public class CoverBrowser
                             final int position,
                             @NonNull final String isbn,
                             @NonNull final FileManager fileManager) {
-            mGalleryAdapter = galleryAdapter;
+            mGalleryAdapter = new WeakReference<>(galleryAdapter);
             mPosition = position;
             mIsbn = isbn;
             mFileManager = fileManager;
@@ -710,14 +713,18 @@ public class CoverBrowser
         @Override
         protected void onCancelled(@Nullable final String result) {
             // let the caller clean up.
-            mGalleryAdapter.updateGallery(this, mPosition, result);
+            if (mGalleryAdapter.get() != null) {
+                mGalleryAdapter.get().updateGallery(this, mPosition, result);
+            }
         }
 
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final String result) {
             // always callback; even with a bad result.
-            mGalleryAdapter.updateGallery(this, mPosition, result);
+            if (mGalleryAdapter.get() != null) {
+                mGalleryAdapter.get().updateGallery(this, mPosition, result);
+            }
         }
     }
 
@@ -728,7 +735,7 @@ public class CoverBrowser
             extends AsyncTask<Void, Void, String> {
 
         @NonNull
-        private final CoverBrowser mCoverBrowser;
+        private final WeakReference<CoverBrowser> mCoverBrowser;
         @NonNull
         private final FileManager mFileManager;
         @NonNull
@@ -745,7 +752,7 @@ public class CoverBrowser
         GetSwitcherImageTask(@NonNull final CoverBrowser coverBrowser,
                              @NonNull final String isbn,
                              @NonNull final FileManager fileManager) {
-            mCoverBrowser = coverBrowser;
+            mCoverBrowser = new WeakReference<>(coverBrowser);
 
             mFileManager = fileManager;
             mIsbn = isbn;
@@ -770,14 +777,18 @@ public class CoverBrowser
         @Override
         protected void onCancelled(final String result) {
             // let the caller clean up.
-            mCoverBrowser.setSwitcherImage(this, result);
+            if (mCoverBrowser.get() != null) {
+                mCoverBrowser.get().setSwitcherImage(this, result);
+            }
         }
 
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final String result) {
             // always callback; even with a bad result.
-            mCoverBrowser.setSwitcherImage(this, result);
+            if (mCoverBrowser.get() != null) {
+                mCoverBrowser.get().setSwitcherImage(this, result);
+            }
         }
     }
 
@@ -877,7 +888,7 @@ public class CoverBrowser
          *
          * @param task     the task that finished
          * @param position for which we got an image (or can confirm no image was available)
-         * @param fileSpec the file we got, or null.
+         * @param fileSpec the file we got, or {@code null}.
          */
         void updateGallery(@NonNull final AsyncTask task,
                            final int position,
@@ -909,8 +920,7 @@ public class CoverBrowser
 
             // and if none left, dismiss.
             if (getItemCount() == 0) {
-                //noinspection ConstantConditions
-                UserMessage.showUserMessage(getActivity(), R.string.warning_cover_not_found);
+                UserMessage.showUserMessage(mStatusTextView, R.string.warning_cover_not_found);
                 dismiss();
             }
         }

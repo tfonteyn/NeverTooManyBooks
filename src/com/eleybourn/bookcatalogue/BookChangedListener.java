@@ -66,7 +66,7 @@ public interface BookChangedListener {
      *
      * @param bookId        the book that was changed, or 0 if the change was global
      * @param fieldsChanged a bitmask build from the flags of {@link BookChangedListener}
-     * @param data          bundle with custom data, can be null
+     * @param data          bundle with custom data, can be {@code null}
      */
     void onBookChanged(long bookId,
                        int fieldsChanged,

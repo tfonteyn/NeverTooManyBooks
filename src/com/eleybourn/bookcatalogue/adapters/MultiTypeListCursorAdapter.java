@@ -89,7 +89,7 @@ public class MultiTypeListCursorAdapter
 
     /**
      * Provide the text for the fast-scroller overlay of ListView
-     * and {@link com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
+     * and {@link com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS}
      * <p>
      * The actual text comes from {@link MultiTypeListHandler#getSectionText}}.
      */

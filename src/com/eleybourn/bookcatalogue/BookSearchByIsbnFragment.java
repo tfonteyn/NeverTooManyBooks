@@ -282,16 +282,18 @@ public class BookSearchByIsbnFragment
 
     /**
      * Search with ISBN.
+     *
+     * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
     private void prepareSearch() {
         // sanity check
-        if (mIsbnSearchText.isEmpty()) {
+        if (mIsbnSearchText.length() < 10) {
             return;
         }
 
         // intercept UPC numbers
         mIsbnSearchText = ISBN.upc2isbn(mIsbnSearchText);
-        if (mIsbnSearchText.isEmpty()) {
+        if (mIsbnSearchText.length() < 10) {
             return;
         }
 

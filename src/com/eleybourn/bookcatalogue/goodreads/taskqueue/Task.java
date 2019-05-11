@@ -123,7 +123,7 @@ public abstract class Task
     }
 
     void setRetryDelay() {
-        setRetryDelay((int) Math.pow(2, mRetries + 1));
+        mRetryDelay = (int) Math.pow(2, mRetries + 1);
     }
 
     int getRetries() {

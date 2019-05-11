@@ -16,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -28,7 +28,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public abstract class EditAuthorBaseDialogFragment
         extends DialogFragment {
 
-    protected DBA mDb;
+    /** Database access. */
+    protected DAO mDb;
 
     private AutoCompleteTextView mFamilyNameView;
     private AutoCompleteTextView mGivenNamesView;
@@ -42,7 +43,7 @@ public abstract class EditAuthorBaseDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Context context = getContext();
-        mDb = new DBA();
+        mDb = new DAO();
 
         Bundle args = requireArguments();
 

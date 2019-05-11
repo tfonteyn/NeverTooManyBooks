@@ -55,19 +55,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * ENHANCE: maybe update the crop code ?
- * The original was in Android itself but was deprecated long time ago.
- * <p>
- * http://www.java2s.com/Open-Source/Android_Free_Code/Image/crop/index.htm
- * https://github.com/biokys/cropimage
- * that one seems to be newer; there are also non-committed pull requests.
- * To be investigated perhaps.
- * <p>
- * The external cropper also worked fine on my device.
- * <p>
- * Another one which seems very active
- * https://github.com/ArthurHub/Android-Image-Cropper
- * <p>
  * The activity can crop specific region of interest from an image.
  */
 public class CropImageActivity
@@ -80,6 +67,7 @@ public class CropImageActivity
     public static final String BKEY_IMAGE_ABSOLUTE_PATH = TAG + ":image-path";
     public static final String BKEY_OUTPUT_ABSOLUTE_PATH = TAG + ":output";
     public static final String BKEY_WHOLE_IMAGE = TAG + ":whole-image";
+
     private static final String BKEY_OUTPUT_X = TAG + ":outputX";
     private static final String BKEY_OUTPUT_Y = TAG + ":outputY";
     private static final String BKEY_SCALE_UP_IF_NEEDED = TAG + ":scaleUpIfNeeded";
@@ -96,7 +84,7 @@ public class CropImageActivity
     private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG;
     private final Handler mHandler = new Handler();
     /** Whether the "save" button is already clicked. */
-    boolean mSaving;
+    boolean mIsSaving;
     CropHighlightView mCrop;
     /** Whether we are wait the user to pick a face. */
     boolean mWaitingToPickFace;
@@ -127,22 +115,17 @@ public class CropImageActivity
 
         // For each face, we create a CropHighlightView for it.
         private void handleFace(@NonNull final FaceDetector.Face face) {
-            PointF midPoint = new PointF();
 
-            int r = ((int) (face.eyesDistance() * mScale)) * 2;
+            PointF midPoint = new PointF();
             face.getMidPoint(midPoint);
             midPoint.x *= mScale;
             midPoint.y *= mScale;
 
+            Rect imageRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+
+            int r = ((int) (face.eyesDistance() * mScale)) * 2;
             int midX = (int) midPoint.x;
             int midY = (int) midPoint.y;
-
-            CropHighlightView hv = new CropHighlightView(mImageView);
-            int width = mBitmap.getWidth();
-            int height = mBitmap.getHeight();
-
-            Rect imageRect = new Rect(0, 0, width, height);
-
             RectF faceRect = new RectF(midX, midY, midX, midY);
             faceRect.inset(-r, -r);
             if (faceRect.left < 0) {
@@ -163,7 +146,9 @@ public class CropImageActivity
                                faceRect.bottom - imageRect.bottom);
             }
 
-            hv.setup(mImageMatrix, imageRect, faceRect, mOptionCircleCrop,
+            CropHighlightView hv = new CropHighlightView(mImageView);
+            hv.setup(CropImageActivity.this, mImageMatrix, imageRect, faceRect,
+                     mOptionCircleCrop,
                      mOptionAspectX != 0 && mOptionAspectY != 0);
 
             mImageView.add(hv);
@@ -171,7 +156,6 @@ public class CropImageActivity
 
         // Create a default HighlightView if we found no face in the picture.
         private void makeDefault() {
-            CropHighlightView hv = new CropHighlightView(mImageView);
 
             int width = mBitmap.getWidth();
             int height = mBitmap.getHeight();
@@ -198,11 +182,14 @@ public class CropImageActivity
                 }
             }
 
-            int x = (width - cropWidth) / 2;
-            int y = (height - cropHeight) / 2;
+            int left = (width - cropWidth) / 2;
+            int top = (height - cropHeight) / 2;
 
-            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-            hv.setup(mImageMatrix, imageRect, cropRect, mOptionCircleCrop,
+            RectF cropRect = new RectF(left, top, left + cropWidth, top + cropHeight);
+
+            CropHighlightView hv = new CropHighlightView(mImageView);
+            hv.setup(CropImageActivity.this, mImageMatrix, imageRect, cropRect,
+                     mOptionCircleCrop,
                      mOptionAspectX != 0 && mOptionAspectY != 0);
             mImageView.add(hv);
         }
@@ -255,7 +242,7 @@ public class CropImageActivity
                 }
 
                 if (mNumFaces > 1) {
-                    UserMessage.showUserMessage(CropImageActivity.this,
+                    UserMessage.showUserMessage(mImageView,
                                                 "Multi face crop help not available.");
                 }
             });
@@ -286,48 +273,46 @@ public class CropImageActivity
 
         mImageView = findViewById(R.id.coverImage);
 
-        warnUserAboutStorageIfNeeded();
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            if (extras.getString(BKEY_CIRCLE_CROP) != null) {
+        int msgId = checkStorage();
+        // tell user if needed.
+        if (msgId != 0) {
+            UserMessage.showUserMessage(mImageView, msgId);
+        }
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            if (args.getString(BKEY_CIRCLE_CROP) != null) {
                 mOptionCircleCrop = true;
                 mOptionAspectX = 1;
                 mOptionAspectY = 1;
             }
 
-            String imagePath = extras.getString(BKEY_IMAGE_ABSOLUTE_PATH);
+            String imagePath = args.getString(BKEY_IMAGE_ABSOLUTE_PATH);
             Objects.requireNonNull(imagePath);
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
-            String imgUri = extras.getString(BKEY_OUTPUT_ABSOLUTE_PATH);
+            String imgUri = args.getString(BKEY_OUTPUT_ABSOLUTE_PATH);
             if (imgUri == null) {
                 imgUri = imagePath;
             }
             mOptionSaveUri = Uri.fromFile(new File(imgUri));
 
-            mOptionAspectX = extras.getInt(BKEY_ASPECT_X);
-            mOptionAspectY = extras.getInt(BKEY_ASPECT_Y);
-            mOptionOutputX = extras.getInt(BKEY_OUTPUT_X);
-            mOptionOutputY = extras.getInt(BKEY_OUTPUT_Y);
-            mOptionScale = extras.getBoolean(BKEY_SCALE, true);
-            mOptionScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
-            mOptionCropWholeImage = extras.getBoolean(BKEY_WHOLE_IMAGE, false);
-            mOptionNoFaceDetection = extras.getBoolean(BKEY_NO_FACE_DETECTION, true);
+            mOptionAspectX = args.getInt(BKEY_ASPECT_X);
+            mOptionAspectY = args.getInt(BKEY_ASPECT_Y);
+            mOptionOutputX = args.getInt(BKEY_OUTPUT_X);
+            mOptionOutputY = args.getInt(BKEY_OUTPUT_Y);
+
+            mOptionScale = args.getBoolean(BKEY_SCALE, true);
+            mOptionScaleUp = args.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
+            mOptionCropWholeImage = args.getBoolean(BKEY_WHOLE_IMAGE, false);
+            mOptionNoFaceDetection = args.getBoolean(BKEY_NO_FACE_DETECTION, true);
         }
 
         if (mBitmap != null) {
             // Make UI fullscreen.
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-            findViewById(R.id.cancel).setOnClickListener(
-                    v -> {
-                        setResult(Activity.RESULT_CANCELED);
-                        finish();
-                    });
-
-            findViewById(R.id.confirm).setOnClickListener(v -> onSaveClicked());
+            // the FAB button saves the image, use 'back' to cancel.
+            findViewById(R.id.fab).setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {
             setResult(Activity.RESULT_CANCELED);
@@ -386,11 +371,13 @@ public class CropImageActivity
                 }, mHandler);
     }
 
+    /**
+     * TODO: this code needs to change to use the decode/crop/encode single
+     * step api so that we don't require that the whole (possibly large)
+     * bitmap doesn't have to be read into memory
+     */
     private void onSaveClicked() {
-        // TODO: this code needs to change to use the decode/crop/encode single
-        // step api so that we don't require that the whole (possibly large)
-        // bitmap doesn't have to be read into memory
-        if (mSaving) {
+        if (mIsSaving) {
             return;
         }
 
@@ -398,7 +385,7 @@ public class CropImageActivity
             return;
         }
 
-        mSaving = true;
+        mIsSaving = true;
 
         Rect cropRect = mCrop.getCropRect();
         int width = cropRect.width();
@@ -489,12 +476,12 @@ public class CropImageActivity
     }
 
     private void saveOutput(@NonNull final Bitmap croppedImage) {
-        Bundle extras = new Bundle();
+        Bundle data = new Bundle();
         if (mOptionSaveUri == null) {
             // we were not asked to save anything, but we're ok with that
             setResult(Activity.RESULT_OK);
         } else {
-            Intent intent = new Intent(mOptionSaveUri.toString()).putExtras(extras);
+            Intent intent = new Intent(mOptionSaveUri.toString()).putExtras(data);
             try (OutputStream outputStream = getContentResolver().openOutputStream(
                     mOptionSaveUri)) {
                 if (outputStream != null) {
@@ -515,14 +502,6 @@ public class CropImageActivity
 
     @Override
     @CallSuper
-    protected void onPause() {
-        // DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
-        // mBitmap.recycle();
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
     protected void onDestroy() {
         if (mBitmap != null && !mBitmap.isRecycled()) {
             mBitmap.recycle();
@@ -530,7 +509,8 @@ public class CropImageActivity
         super.onDestroy();
     }
 
-    private void warnUserAboutStorageIfNeeded() {
+    @StringRes
+    private int checkStorage() {
         @StringRes
         int msgId = StorageUtils.getMediaStateMessageId();
         if (msgId == 0) {
@@ -546,9 +526,6 @@ public class CropImageActivity
             }
         }
 
-        // tell user if needed.
-        if (msgId != 0) {
-            UserMessage.showUserMessage(this, msgId);
-        }
+    return msgId;
     }
 }

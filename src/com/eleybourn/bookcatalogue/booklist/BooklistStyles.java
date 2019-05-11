@@ -34,7 +34,7 @@ import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
@@ -99,7 +99,7 @@ public final class BooklistStyles {
      *
      * @return the style.
      */
-    public static BooklistStyle getDefaultStyle(@NonNull final DBA db) {
+    public static BooklistStyle getDefaultStyle(@NonNull final DAO db) {
         // read the global user default, or if not present the hardcoded default.
         long id = App.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE_ID);
         if (id == DEFAULT_STYLE_ID) {
@@ -122,7 +122,7 @@ public final class BooklistStyles {
      *
      * @return the style, or if not found, some default.
      */
-    public static BooklistStyle getStyle(@NonNull final DBA db,
+    public static BooklistStyle getStyle(@NonNull final DAO db,
                                          final long id) {
         BooklistStyle style = getStyles(db, true).get(id);
         if (style == null) {
@@ -311,7 +311,7 @@ public final class BooklistStyles {
      * @return list of BooklistStyle
      */
     @NonNull
-    public static Map<Long, BooklistStyle> getUserStyles(@NonNull final DBA db) {
+    public static Map<Long, BooklistStyle> getUserStyles(@NonNull final DAO db) {
         return db.getBooklistStyles();
     }
 
@@ -322,7 +322,7 @@ public final class BooklistStyles {
      * @return all styles, with the preferred styles at the front of the list.
      */
     @NonNull
-    public static Map<Long, BooklistStyle> getStyles(@NonNull final DBA db,
+    public static Map<Long, BooklistStyle> getStyles(@NonNull final DAO db,
                                                      final boolean getAll) {
         // Get all styles: user
         Map<Long, BooklistStyle> allStyles = getUserStyles(db);
@@ -464,7 +464,7 @@ public final class BooklistStyles {
         }
 
         // try user-defined
-        try (DBA db = new DBA()) {
+        try (DAO db = new DAO()) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
                 if (style.getLabel(context).equals(name)) {
                     return style.getId();

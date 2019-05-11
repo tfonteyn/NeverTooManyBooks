@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -41,13 +39,11 @@ public abstract class BaseActivity
         extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    @Nullable
+    FloatingActionButton mFloatingActionButton;
     /** The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
-
-    @Nullable
-    FloatingActionButton mFloatingActionButton;
-
 
     /**
      * Override this and return the id you need.
@@ -89,9 +85,7 @@ public abstract class BaseActivity
             }
         }
 
-
 //        mFloatingActionButton = findViewById(R.id.fab);
-
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
 //        if (mDrawerLayout != null) {
@@ -144,6 +138,10 @@ public abstract class BaseActivity
         }
     }
 
+    /**
+     * If the drawer is open and the user click the back-button, close the drawer
+     * and ignore the back-press.
+     */
     @Override
     @CallSuper
     public void onBackPressed() {
@@ -281,27 +279,6 @@ public abstract class BaseActivity
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * Check if edits need saving.
-     * If they don't, simply finish the activity, otherwise ask the user.
-     *
-     * @param isDirty if {@code true} ask the user if it's ok to exit this activity.
-     *                Otherwise, just finish.
-     */
-    public void finishIfClean(final boolean isDirty) {
-        if (isDirty) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this,
-                                                          () -> {
-                                                              /* only runs if user clicks 'exit' */
-                                                              setResult(Activity.RESULT_CANCELED);
-                                                              finish();
-                                                          });
-        } else {
-            setResult(Activity.RESULT_CANCELED);
-            finish();
-        }
     }
 
     /**

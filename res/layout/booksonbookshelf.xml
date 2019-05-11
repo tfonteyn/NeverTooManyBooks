@@ -54,7 +54,7 @@
             />
 
         <TextView
-            android:id="@+id/bookshelf_count"
+            android:id="@+id/book_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/border"
@@ -72,7 +72,7 @@
             style="@style/bobSpinnerLevelText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookshelf_count"
+            app:layout_constraintTop_toBottomOf="@id/book_count"
             tools:ignore="SelectableText"
             tools:text="level 1 text"
             />
@@ -109,7 +109,21 @@
             >
 
             <requestFocus />
+
         </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

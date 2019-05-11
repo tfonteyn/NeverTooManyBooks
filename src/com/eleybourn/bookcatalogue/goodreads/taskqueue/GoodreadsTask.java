@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
@@ -94,7 +94,7 @@ public abstract class GoodreadsTask
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
-                         @NonNull final DBA db) {
+                         @NonNull final DAO db) {
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
@@ -156,7 +156,7 @@ public abstract class GoodreadsTask
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final DBA db) {
+                                    @NonNull final DAO db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
                                         () -> QueueManager.getQueueManager().deleteTask(id))

@@ -2,12 +2,8 @@ package com.eleybourn.bookcatalogue;
 
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
@@ -15,10 +11,9 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * Base class for all fragments that appear in {@link EditBookActivity}.
+ * Base class for all fragments that appear in {@link EditBookFragment}.
  * <p>
  * Full list:
  * {@link EditBookFieldsFragment}
@@ -31,12 +26,11 @@ public abstract class EditBookBaseFragment
         implements DataEditor {
 
     @Override
-    @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         super.onLoadFieldsFromBook(setAllFrom);
 
         // new book ?
-        if (mBookBaseFragmentModel.getBook().getId() == 0) {
+        if (!mBookBaseFragmentModel.isExistingBook()) {
             populateNewBookFieldsFromBundle(getArguments());
         }
     }
@@ -59,29 +53,12 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 0, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_HIDE_KEYBOARD) {
-            //noinspection ConstantConditions
-            Utils.hideKeyboard(getView());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * Trigger the Fragment to save its Fields to the Book.
+     * <p>
+     * This is always done, even when the user 'cancel's the edit.
+     * The latter will then result in a "are you sure" where they can 'cancel the cancel'
+     * and continue with all data present.
      * <p>
      * <br>{@inheritDoc}
      */
@@ -96,7 +73,7 @@ public abstract class EditBookBaseFragment
 
     /**
      * <br>{@inheritDoc}
-     * <p>
+     * <br>
      * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
      */
     @Override

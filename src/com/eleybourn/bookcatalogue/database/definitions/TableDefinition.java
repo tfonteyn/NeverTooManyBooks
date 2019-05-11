@@ -733,7 +733,7 @@ public class TableDefinition
 
         if (withValues) {
             sql.append(" VALUES (")
-             .append(Csv.join(",", domains.length, "?"))
+             .append(Csv.join(",", "?", domains.length))
              .append(')');
         }
         return sql.toString();
@@ -816,7 +816,7 @@ public class TableDefinition
         // end of column/constraint list
         sql.append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_TABLE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE) {
             Logger.debugExit(this, "getSqlCreateStatement",
                              sql.toString());
         }
@@ -865,7 +865,7 @@ public class TableDefinition
      * <p>
      * format: [table-name] [table-alias]
      * <p>
-     * eg. 'books b'.
+     * e.g. 'books b'.
      *
      * @return SQL Fragment
      */

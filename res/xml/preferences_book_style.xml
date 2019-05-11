@@ -160,7 +160,6 @@
     <PreferenceCategory
         android:key="@string/lbl_series"
         android:title="@string/lbl_series"
-        android:visibility="gone"
         >
 
     </PreferenceCategory>

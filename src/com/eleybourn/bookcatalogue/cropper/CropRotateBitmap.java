@@ -44,7 +44,7 @@ class CropRotateBitmap {
     }
 
     /**
-     * Can return null
+     * Can return {@code null}
      *
      * @see #recycle()
      */

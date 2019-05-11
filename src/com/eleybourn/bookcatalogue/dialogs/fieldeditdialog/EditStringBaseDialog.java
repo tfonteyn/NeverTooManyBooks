@@ -15,13 +15,15 @@ import androidx.appcompat.app.AlertDialog;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public abstract class EditStringBaseDialog {
 
+    /** Database access. */
     @NonNull
-    protected final DBA mDb;
+    protected final DAO mDb;
+
     @NonNull
     private final Activity mActivity;
     @Nullable
@@ -39,7 +41,7 @@ public abstract class EditStringBaseDialog {
      * @param onChanged Runnable to be started after user confirming
      */
     EditStringBaseDialog(@NonNull final Activity activity,
-                         @NonNull final DBA db,
+                         @NonNull final DAO db,
                          @Nullable final Runnable onChanged) {
         mActivity = activity;
         mDb = db;
@@ -54,7 +56,7 @@ public abstract class EditStringBaseDialog {
      * @param onChanged Runnable to be started after user confirming
      */
     EditStringBaseDialog(@NonNull final Activity activity,
-                         @NonNull final DBA db,
+                         @NonNull final DAO db,
                          @NonNull final List<String> list,
                          @Nullable final Runnable onChanged) {
         mActivity = activity;

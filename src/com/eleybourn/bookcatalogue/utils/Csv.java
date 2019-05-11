@@ -13,35 +13,23 @@ public final class Csv {
     private Csv() {
     }
 
-    /**
-     * Convert a Collection of objects to a csv string fit for user displaying.
-     *
-     * @param collection with items. toString() will be used to make the item displayable,
-     *                   or you can provide a {@link Formatter}.
-     * @param formatter  (optional) formatter to use on each element, or null for none.
-     *
-     * @return Resulting string
-     */
-    @NonNull
-    public static <E> String toDisplayString(@NonNull final Collection<E> collection,
-                                             @Nullable final Formatter<E> formatter) {
-        return join(", ", collection, formatter);
-    }
-
     @NonNull
     public static <E> String join(@NonNull final CharSequence delim,
                                   @NonNull final Collection<E> collection) {
-        return join(delim, collection, null);
+        if (collection.isEmpty()) {
+            return "";
+        }
+        return join(delim, collection, true, null);
     }
 
     /**
      * Create a CSV list String from the passed collection.
-     * A null element is morphed into "".
+     * A {@code null} element is morphed into "".
      * This can be avoided by providing a {@link Formatter}.
      *
      * @param delim      delimiter, e.g. "," or ", " etc...
      * @param collection collection
-     * @param formatter  (optional) formatter to use on each element, or null for none.
+     * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
      *
      * @return csv string
      */
@@ -52,20 +40,20 @@ public final class Csv {
         if (collection.isEmpty()) {
             return "";
         }
-        return join(delim, collection,true,formatter);
+        return join(delim, collection, true, formatter);
     }
 
     /**
      * Create a CSV list String from the passed collection.
      * Uses String.valueOf(element).trim()
-     * This means that the "null" string is used for null elements.
+     * This means that the "null" string is used for {@code null} elements.
      * (but no exceptions thrown). This can be avoided by providing a {@link Formatter}.
      *
      * @param delim      delimiter, e.g. "," or ", " etc...
      * @param collection collection
-     * @param formatter  (optional) formatter to use on each element, or null for none.
+     * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
      *
-     * @return csv string, can be empty, never null.
+     * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delim,
@@ -102,14 +90,14 @@ public final class Csv {
      * Create a CSV List String by replicating the 'element' length'd times.
      *
      * @param delim   delimiter, e.g. "," or ", " etc...
-     * @param length  nr of elements to generate
      * @param element for the list
+     * @param length  nr of elements to generate
      *
      * @return csv string
      */
-    public static String join(final CharSequence delim,
-                              final int length,
-                              final String element) {
+    public static String join(@NonNull final CharSequence delim,
+                              @NonNull final String element,
+                              final int length) {
         StringBuilder sb = new StringBuilder(element);
         for (int i = 1; i < length; i++) {
             sb.append(delim).append(element);

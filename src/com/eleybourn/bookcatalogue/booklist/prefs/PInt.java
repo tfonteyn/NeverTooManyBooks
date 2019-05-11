@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Allows us to cast any PPref<Integer> as needed.
+ * Allows us to cast any {@code PPref<Integer>} as needed.
  */
 public interface PInt {
 

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * A Set or a List is always represented by a Set<String> in the SharedPreferences
+ * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
  * due to limitations of {@link android.preference.ListPreference}
  * and {@link android.preference.MultiSelectListPreference}
  * <p>

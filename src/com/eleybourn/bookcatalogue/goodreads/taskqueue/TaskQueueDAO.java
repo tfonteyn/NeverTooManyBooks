@@ -61,7 +61,7 @@ import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.
  *
  * @author Philip Warner
  */
-class TaskQueueDBAdapter {
+class TaskQueueDAO {
 
     private static final String SQL_GET_QUEUE_ID =
             "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
@@ -82,7 +82,7 @@ class TaskQueueDBAdapter {
     /**
      * Constructor.
      */
-    TaskQueueDBAdapter() {
+    TaskQueueDAO() {
         mTaskQueueDBHelper = new TaskQueueDBHelper(App.getAppContext());
     }
 
@@ -129,7 +129,7 @@ class TaskQueueDBAdapter {
 
     /**
      * Return a ScheduledTask object for the next task that should be run from the passed
-     * queue. Return NULL if no more entries.
+     * queue. Return {@code null} if no more entries.
      * <p>
      * This method will find the highest priority RUNNABLE task, and failing that the
      * next available task.

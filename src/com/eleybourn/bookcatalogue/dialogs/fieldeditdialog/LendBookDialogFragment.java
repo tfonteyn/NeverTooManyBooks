@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -69,7 +69,9 @@ public class LendBookDialogFragment
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
             };
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
+
     private AutoCompleteTextView mLoaneeView;
     private String mAuthorName;
     private String mLoanee;
@@ -143,7 +145,7 @@ public class LendBookDialogFragment
         Context context = getContext();
         Bundle args = requireArguments();
 
-        mDb = new DBA();
+        mDb = new DAO();
         final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {

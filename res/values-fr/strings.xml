@@ -77,10 +77,12 @@
     <string name="about_lbl_website">Site web :</string>
     <string name="about_lbl_sourcecode">Code source :</string>
     <string name="about_lbl_donate">Don</string>
-    <string name="lbl_about">À propos de cette application</string>
+    <string name="menu_about">À propos de cette application</string>
     <string name="lbl_price_listed">Liste de prix</string>
     <string name="lbl_update_fields">Mise à jour automatique des champs</string>
-    <string name="lbl_update_fields_to_update">Sélection des champs à mettre à jour</string>
+    <string name="lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
+    <string name="lbl_select_fields">Sélection des champs</string>
+
     <string name="info_select_fields_to_update">
         Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non
         sélectionnés ne seront pas modifiés.
@@ -181,7 +183,7 @@
     <string name="menu_edit_author">Modifier l\'auteur…</string>
     <string name="menu_edit_series">Modifier les séries…</string>
     <string name="title_delete_series">Supprimer la série</string>
-    <string name="confirm_really_delete_series">
+    <string name="confirm_delete_series">
         Supprimer la série ‘%1$s’ ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
         Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.
     </string>
@@ -204,7 +206,7 @@
     </string>
     <string name="warning_unable_to_find_book">Impossible de trouver le livre demandé</string>
     <string name="list_and">et</string>
-    <string name="confirm_really_delete_book">
+    <string name="confirm_delete_book">
         Cela effacera totalement le livre intitulé ‘%1$s’ par %2$s.
         Êtes vous sûr de vouloir poursuivre ?
     </string>
@@ -382,9 +384,9 @@
     <string name="hint_reset_all_hints">Réinitialiser les astuces</string>
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
     <string name="lbl_preferred_styles">Styles favoris</string>
-    <string name="title_edit_style_colon_name">Modifier le style : %1$s</string>
+    <string name="title_edit_style">Modifier le style</string>
     <string name="X_menu_add_style">Ajouter le style</string>
-    <string name="title_clone_style_colon_name">Cloner le style: %1$s</string>
+    <string name="title_clone_style">Cloner le style</string>
     <string name="hint_booklist_styles_editor">
         Vous pouvez utiliser cet écran pour personnaliser la liste de styles affichés dans le
         menu par défaut des styles.\n
@@ -590,7 +592,7 @@
         \nSupprimer les données de connection enlevera l\'option Goodreads du menu principal.
     </string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Connection au site…</string>
+    <string name="progress_msg_connecting">Connection au site…</string>
     <!-- Admin option to import -->
     <string name="lbl_backup">Sauvegarde des données</string>
     <!-- Admin option to import -->
@@ -688,28 +690,29 @@
     <string name="export_option_books_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">Affichage aucun livre</item>-->
         <item quantity="one">Affichage de %1$s livre</item>
         <item quantity="other">Affichage de %1$d livres</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">%1$d livre trouvé</item>
+        <item quantity="other">%1$d livres trouvés</item>
+    </plurals>
+
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <!--<item quantity="zero">Aucun livre</item>-->
         <item quantity="one">%1$s livre</item>
         <item quantity="other">%1$s livres</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">Aucune couverture</item>-->
         <item quantity="one">%1$s couverture</item>
         <item quantity="other">%1$s couvertures</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">Aucune étoile</item>-->
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
     </plurals>
@@ -770,7 +773,7 @@
     <string name="done">Terminé</string>
     <string name="lbl_edition">Édition</string>
     <string name="lbl_currency">Devise</string>
-    <string name="btn_use">Utiliser</string>
+    <string name="btn_confirm_use">Utiliser</string>
     <string name="lbl_edition_first_edition">Première édition</string>
     <string name="lbl_edition_limited">Édition limitée</string>
     <string name="lbl_x_pages">%1$d pages</string>
@@ -835,7 +838,6 @@
     <string name="searching_isfdb">Recherche en cours sur ISFDB</string>
     <string name="searching_open_library">Recherche en cours sur OpenLibrary</string>
     <string name="lbl_edition_first_impression">Première impression</string>
-    <string name="books_found">%1$d livres trouvés</string>
     <string name="gr_tq_events_recorded">(%1$d événements enregistrés)</string>
     <string name="gr_tq_generic_task_info">ID de tâche %1$d, en file d\'attente à %2$s</string>
     <string name="X_events_found">%1$d événements trouvés</string>

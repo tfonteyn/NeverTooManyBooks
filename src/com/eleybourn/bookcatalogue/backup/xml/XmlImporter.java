@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PCollection;
 import com.eleybourn.bookcatalogue.booklist.prefs.PInt;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
@@ -62,10 +62,12 @@ public class XmlImporter
     private static final String UNABLE_TO_PROCESS_XML_ENTITY_ERROR =
             "Unable to process XML entity ";
 
-    public static final int BUFFER_SIZE = 32768;
+    private static final int BUFFER_SIZE = 32768;
 
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
+    private final DAO mDb;
+
     @NonNull
     private final ImportSettings mSettings;
 
@@ -82,7 +84,7 @@ public class XmlImporter
      * Constructor.
      */
     public XmlImporter() {
-        mDb = new DBA();
+        mDb = new DAO();
         mSettings = new ImportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -93,7 +95,7 @@ public class XmlImporter
      * @param settings the import settings
      */
     public XmlImporter(@NonNull final ImportSettings settings) {
-        mDb = new DBA();
+        mDb = new DAO();
         settings.validate();
         mSettings = settings;
     }
@@ -839,7 +841,9 @@ public class XmlImporter
     static class StylesReader
             implements EntityReader<String> {
 
-        private final DBA mDb;
+        /** Database access. */
+        @NonNull
+        private final DAO mDb;
 
         private BooklistStyle mStyle;
 
@@ -851,7 +855,7 @@ public class XmlImporter
          *
          * @param db the database
          */
-        StylesReader(@NonNull final DBA db) {
+        StylesReader(@NonNull final DAO db) {
             mDb = db;
         }
 

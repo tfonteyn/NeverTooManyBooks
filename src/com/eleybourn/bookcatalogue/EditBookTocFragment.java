@@ -51,6 +51,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
@@ -112,6 +114,10 @@ public class EditBookTocFragment
      * We'll try them one by one if the user asks for a re-try.
      */
     private ArrayList<Editions.Edition> mISFDBEditions;
+
+    private boolean mIsCollectSeriesInfoFromToc;
+
+
     private Integer mEditPosition;
 
     //<editor-fold desc="Fragment startup">
@@ -138,14 +144,21 @@ public class EditBookTocFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Book book = mBookBaseFragmentModel.getBook();
+
         // Author to use if mMultipleAuthorsView is set to false
-        List<Author> authorList = mBookBaseFragmentModel.getBook().getParcelableArrayList(
-                UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         mBookAuthor = authorList.get(0);
 
-        // used to call Search sites to populate the TOC
-        mIsbn = mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_ISBN);
+        // use the preferences
+        mIsCollectSeriesInfoFromToc = ISFDBManager.isCollectSeriesInfoFromToc();
 
+        // used to call Search sites to populate the TOC
+        mIsbn = book.getString(DBDefinitions.KEY_ISBN);
+
+        // do other stuff here that might affect the view.
+
+        // Fix up the views
         //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
     }
@@ -180,14 +193,15 @@ public class EditBookTocFragment
     }
 
     @Override
-    @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         super.onLoadFieldsFromBook(setAllFrom);
 
-        mMultipleAuthorsView.setEnabled(mBookBaseFragmentModel.getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
+        Book book = mBookBaseFragmentModel.getBook();
+
+        mMultipleAuthorsView.setEnabled(book.getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // Populate the list view with the book content table.
-        mList = mBookBaseFragmentModel.getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new TocListAdapterForEditing(
@@ -219,7 +233,8 @@ public class EditBookTocFragment
     @Override
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
-        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
+                                                                mList);
     }
 
     //</editor-fold>
@@ -242,8 +257,7 @@ public class EditBookTocFragment
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 //noinspection ConstantConditions
-                UserMessage.showUserMessage(getView(),
-                                            R.string.progress_msg_connecting_to_web_site);
+                UserMessage.showUserMessage(getView(), R.string.progress_msg_connecting);
                 new ISFDBGetEditionsTask(mIsbn, this).execute();
                 return true;
 
@@ -305,10 +319,10 @@ public class EditBookTocFragment
     private void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
         mISFDBEditions = editions != null ? editions : new ArrayList<>();
         if (!mISFDBEditions.isEmpty()) {
-            new ISFDBGetBookTask(mISFDBEditions, this).execute();
+            new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,this).execute();
         } else {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(getActivity(), R.string.warning_no_editions);
+            UserMessage.showUserMessage(getView(), R.string.warning_no_editions);
         }
     }
 
@@ -320,31 +334,31 @@ public class EditBookTocFragment
     private void onGotISFDBBook(@Nullable final Bundle bookData) {
         if (bookData == null) {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(getActivity(), R.string.warning_book_not_found);
+            UserMessage.showUserMessage(getView(), R.string.warning_book_not_found);
             return;
         }
+
+        Book book = mBookBaseFragmentModel.getBook();
 
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = mBookBaseFragmentModel.getBook().getParcelableArrayList(
-                    UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> inBook = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
                 }
             }
-            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication =
                 bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
-            if (mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                mBookBaseFragmentModel.getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                                                           bookFirstPublication);
+            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED, bookFirstPublication);
             }
         }
 
@@ -358,8 +372,10 @@ public class EditBookTocFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            mBookBaseFragmentModel.getBook().putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-            mFields.getField(R.id.multiple_authors).setValueFrom(mBookBaseFragmentModel.getBook());
+            Book book = mBookBaseFragmentModel.getBook();
+
+            book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            mFields.getField(R.id.multiple_authors).setValueFrom(book);
         }
 
         mList.addAll(tocEntries);
@@ -372,7 +388,7 @@ public class EditBookTocFragment
     private void getNextEdition() {
         // remove the top one, and try again
         mISFDBEditions.remove(0);
-        new ISFDBGetBookTask(mISFDBEditions, this).execute();
+        new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,this).execute();
     }
 
     //</editor-fold>
@@ -637,19 +653,19 @@ public class EditBookTocFragment
         @NonNull
         private final String mIsbn;
         @NonNull
-        private final EditBookTocFragment mCallback;
+        private final WeakReference<EditBookTocFragment> mListener;
 
         /**
          * Constructor.
          *
          * @param isbn     to search for
-         * @param callback to send results to
+         * @param listener to send results to
          */
         @UiThread
         ISFDBGetEditionsTask(@NonNull final String isbn,
-                             @NonNull final EditBookTocFragment callback) {
+                             @NonNull final EditBookTocFragment listener) {
             mIsbn = isbn;
-            mCallback = callback;
+            mListener = new WeakReference<>(listener);
         }
 
         @Override
@@ -670,15 +686,18 @@ public class EditBookTocFragment
         @UiThread
         protected void onPostExecute(final ArrayList<Editions.Edition> result) {
             // always send result, even if empty
-            mCallback.onGotISFDBEditions(result);
+            if (mListener.get() != null) {
+                mListener.get().onGotISFDBEditions(result);
+            }
         }
     }
 
     private static class ISFDBGetBookTask
             extends AsyncTask<Void, Void, Bundle> {
 
+        private final boolean mAddSeriesFromToc;
         @NonNull
-        private final EditBookTocFragment mCallback;
+        private final WeakReference<EditBookTocFragment> mListener;
 
         @NonNull
         private final List<Editions.Edition> mEditions;
@@ -687,13 +706,15 @@ public class EditBookTocFragment
          * Constructor.
          *
          * @param editions List of ISFDB native ids
-         * @param callback where to send the results to
+         * @param listener where to send the results to
          */
         @UiThread
         ISFDBGetBookTask(@NonNull final List<Editions.Edition> editions,
-                         @NonNull final EditBookTocFragment callback) {
+                         final boolean addSeriesFromToc,
+                         @NonNull final EditBookTocFragment listener) {
             mEditions = editions;
-            mCallback = callback;
+            mAddSeriesFromToc = addSeriesFromToc;
+            mListener = new WeakReference<>(listener);
         }
 
         @Override
@@ -701,7 +722,7 @@ public class EditBookTocFragment
         @WorkerThread
         protected Bundle doInBackground(final Void... params) {
             try {
-                return new ISFDBBook().fetch(mEditions, new Bundle(), false);
+                return new ISFDBBook().fetch(mEditions, new Bundle(), mAddSeriesFromToc,false);
             } catch (SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
@@ -714,7 +735,9 @@ public class EditBookTocFragment
         @UiThread
         protected void onPostExecute(@Nullable final Bundle result) {
             // always send result, even if empty
-            mCallback.onGotISFDBBook(result);
+            if (mListener.get() != null) {
+                mListener.get().onGotISFDBBook(result);
+            }
         }
     }
 
@@ -779,8 +802,7 @@ public class EditBookTocFragment
                 holder.firstPublicationView.setVisibility(View.GONE);
             } else {
                 holder.firstPublicationView.setVisibility(View.VISIBLE);
-                holder.firstPublicationView.setText(
-                        getContext().getString(R.string.brackets, year));
+                holder.firstPublicationView.setText(getString(R.string.brackets, year));
             }
 
             // click -> edit

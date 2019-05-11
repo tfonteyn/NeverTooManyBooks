@@ -10,7 +10,7 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
  *
  * @author Philip Warner
  */
-public class JoinContext {
+public class Joiner {
 
     /** Text of join statement. */
     @NonNull
@@ -23,7 +23,7 @@ public class JoinContext {
      *
      * @param table Table that starts join
      */
-    public JoinContext(@NonNull final TableDefinition table) {
+    public Joiner(@NonNull final TableDefinition table) {
         mCurrentTable = table;
         mSql = new StringBuilder(mCurrentTable.getName())
                 .append(' ')
@@ -38,7 +38,7 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @NonNull
-    public JoinContext join(@NonNull final TableDefinition to) {
+    public Joiner join(@NonNull final TableDefinition to) {
         mSql.append(mCurrentTable.join(to))
             .append('\n');
         mCurrentTable = to;
@@ -54,8 +54,8 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @NonNull
-    public JoinContext join(@NonNull final TableDefinition from,
-                            @NonNull final TableDefinition to) {
+    public Joiner join(@NonNull final TableDefinition from,
+                       @NonNull final TableDefinition to) {
         mSql.append(from.join(to))
             .append('\n');
         mCurrentTable = to;
@@ -71,7 +71,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext leftOuterJoin(@NonNull final TableDefinition to) {
+    public Joiner leftOuterJoin(@NonNull final TableDefinition to) {
         mSql.append(" LEFT OUTER");
         return join(to);
     }
@@ -86,8 +86,8 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext leftOuterJoin(@NonNull final TableDefinition from,
-                                     @NonNull final TableDefinition to) {
+    public Joiner leftOuterJoin(@NonNull final TableDefinition from,
+                                @NonNull final TableDefinition to) {
         mSql.append(" LEFT OUTER");
         return join(from, to);
     }
@@ -102,7 +102,7 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext append(@NonNull final String sql) {
+    public Joiner append(@NonNull final String sql) {
         mSql.append(sql);
         return this;
     }

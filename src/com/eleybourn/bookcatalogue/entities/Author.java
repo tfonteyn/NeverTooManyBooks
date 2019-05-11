@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -180,17 +180,6 @@ public class Author
         mIsComplete = in.readByte() != 0;
     }
 
-    public static boolean setComplete(@NonNull final DBA db,
-                                      final long id,
-                                      final boolean isComplete) {
-        // load from database
-        Author author = db.getAuthor(id);
-        //noinspection ConstantConditions
-        author.setComplete(isComplete);
-        int rowsAffected = db.updateAuthor(author);
-        return rowsAffected == 1;
-    }
-
     /**
      * Parse a string into a family/given name pair.
      * The name can be in either "family, given" or "given family" format.
@@ -316,9 +305,9 @@ public class Author
     }
 
     /**
-     * Return the 'human readable' version of the name (eg. 'Isaac Asimov').
+     * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
-     * @return formatted name
+     * @return formatted Author name
      */
     @NonNull
     public String getLabel() {
@@ -330,7 +319,7 @@ public class Author
     }
 
     /**
-     * Return the name in a sortable form (eg. 'Asimov, Isaac').
+     * Return the name in a sortable form (e.g. 'Asimov, Isaac').
      *
      * @return formatted name
      */
@@ -364,7 +353,7 @@ public class Author
      */
     public String stringEncoded() {
         // Always use givenNames even if blank because we need to KNOW they are blank.
-        // There is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
+        // There is a slim chance that family name may contain spaces (e.g. 'Anonymous Anarchists').
         return StringList.escapeListItem(FIELD_SEPARATOR, mFamilyName)
                 + FIELD_SEPARATOR + ' '
                 + StringList.escapeListItem(FIELD_SEPARATOR, mGivenNames);
@@ -390,7 +379,7 @@ public class Author
      * @return the id.
      */
     @Override
-    public long fixupId(@NonNull final DBA db) {
+    public long fixupId(@NonNull final DAO db) {
         mId = db.getAuthorIdByName(mFamilyName, mGivenNames);
         return mId;
     }

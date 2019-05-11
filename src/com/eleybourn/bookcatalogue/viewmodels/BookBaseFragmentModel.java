@@ -7,26 +7,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * This is the (obvious) replacement of the homegrown BookManager in previous commits.
  * <p>
  * Used by the set of fragments that allow viewing and editing a Book.
  * <p>
- * Holds the {@link Book} and whether it's dirty or not.
+ * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
  */
 public class BookBaseFragmentModel
         extends ViewModel {
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
@@ -65,7 +68,7 @@ public class BookBaseFragmentModel
      */
     public void init(@Nullable final Bundle args) {
         if (mBook == null) {
-            mDb = new DBA();
+            mDb = new DAO();
 
             if (args != null) {
                 // load the book data
@@ -117,11 +120,29 @@ public class BookBaseFragmentModel
         mBook.reload(mDb, bookId);
     }
 
-    /**
-     * The book was returned, remove the loanee.
-     */
-    public void deleteLoan() {
-        mDb.deleteLoan(mBook.getId());
+    public boolean isExistingBook() {
+        return mBook.getId() > 0;
+    }
+
+    public Book saveBook() {
+        if (mBook.getId() == 0) {
+            long id = mDb.insertBook(mBook);
+            if (id > 0) {
+                // if we got a cover while searching the internet, make it permanent
+                if (mBook.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
+                    String uuid = mDb.getBookUuid(id);
+                    // get the temporary downloaded file
+                    File source = StorageUtils.getTempCoverFile();
+                    File destination = StorageUtils.getCoverFile(uuid);
+                    // and rename it to the permanent UUID one.
+                    StorageUtils.renameFile(source, destination);
+                }
+            }
+        } else {
+            mDb.updateBook(mBook.getId(), mBook, 0);
+        }
+
+        return mBook;
     }
 
     /**
@@ -129,6 +150,17 @@ public class BookBaseFragmentModel
      */
     public boolean isAvailable() {
         return mDb.getLoaneeByBookId(mBook.getId()) == null;
+    }
+
+    public String getLoanee() {
+        return mBook.getLoanee(mDb);
+    }
+
+    /**
+     * The book was returned, remove the loanee.
+     */
+    public void deleteLoan() {
+        mDb.deleteLoan(mBook.getId());
     }
 
     /**
@@ -140,9 +172,16 @@ public class BookBaseFragmentModel
         return (mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ)));
     }
 
+    public void refreshAuthorList() {
+        mBook.refreshAuthorList(mDb);
+    }
+
+    public void refreshSeriesList() {
+        mBook.refreshSeriesList(mDb);
+    }
+
     /**
-     * Load a publisher list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a publisher list.
      *
      * @return List of publishers
      */
@@ -155,8 +194,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a language list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a language list.
      * <p>
      * Returns a unique list of all languages in the database.
      *
@@ -177,8 +215,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a format list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a format list.
      *
      * @return List of formats
      */
@@ -191,8 +228,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a currency list.
      *
      * @return List of ISO currency codes
      */
@@ -205,8 +241,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a genre list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a genre list.
      *
      * @return List of genres
      */
@@ -219,8 +254,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a location list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a location list.
      *
      * @return List of locations
      */
@@ -233,8 +267,7 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
+     * Load a currency list.
      *
      * @return List of ISO currency codes
      */
@@ -244,17 +277,5 @@ public class BookBaseFragmentModel
             mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
-    }
-
-    public void refreshAuthorList() {
-        mBook.refreshAuthorList(mDb);
-    }
-
-    public void refreshSeriesList() {
-        mBook.refreshSeriesList(mDb);
-    }
-
-    public String getLoanee() {
-        return mBook.getLoanee(mDb);
     }
 }

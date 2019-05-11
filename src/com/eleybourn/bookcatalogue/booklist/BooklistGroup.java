@@ -209,7 +209,7 @@ public class BooklistGroup
     }
 
 
-    String getName(@NonNull final Context context) {
+    public String getName(@NonNull final Context context) {
         return RowKind.get(kind).getName(context);
     }
 
@@ -750,7 +750,7 @@ public class BooklistGroup
         /**
          * Hardcoded constructor for a BOOK
          * <p>
-         * Note we suppress the 'null' use.
+         * Note we suppress the {@code null} use.
          */
         @SuppressWarnings("ConstantConditions")
         private RowKind() {
@@ -800,7 +800,7 @@ public class BooklistGroup
         }
 
         /**
-         * The display domain will never be null, except for a BOOK!
+         * The display domain will never be {@code null}, except for a BOOK!
          */
         @NonNull
         public DomainDefinition getDisplayDomain() {
@@ -815,7 +815,7 @@ public class BooklistGroup
          * Compound key of this RowKind ({@link BooklistGroup}).
          * <p>
          * The name will be of the form 'prefix/<n>' where 'prefix' is the prefix specific
-         * to the RowKind, and <n> the id of the row, eg. 's/18' for Series with id=18
+         * to the RowKind, and <n> the id of the row, e.g. 's/18' for Series with id=18
          */
         @NonNull
         CompoundKey getCompoundKey() {
@@ -879,7 +879,7 @@ public class BooklistGroup
         }
 
         /**
-         * Never null but can be empty (for a BOOK).
+         * Never {@code null} but can be empty (for a BOOK).
          *
          * @return Unique prefix used to represent a key in the hierarchy.
          */

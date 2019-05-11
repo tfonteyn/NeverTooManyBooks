@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 /**
  * Base class for all Goodreads API handler classes.
  * <p>
- * The job of an API handler is to implement a method to run the API (eg. 'search' in
+ * The job of an API handler is to implement a method to run the API (e.g. 'search' in
  * {@link SearchBooksApiHandler} and to process the output.
  *
  * @author Philip Warner

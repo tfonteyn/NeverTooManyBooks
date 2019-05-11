@@ -39,7 +39,7 @@ import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -64,7 +64,8 @@ public class GoodreadsSearchResultsActivity
 
     public static final String BKEY_SEARCH_CRITERIA = TAG + ":criteria";
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     /** The View for the list. */
     private RecyclerView mListView;
@@ -79,21 +80,18 @@ public class GoodreadsSearchResultsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         mListView = findViewById(android.R.id.list);
         mListView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Look for search criteria
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
 
         // If we have criteria, do a search. Otherwise complain and finish.
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            UserMessage.showUserMessage(this, R.string.search_please_enter_criteria);
-            setResult(Activity.RESULT_CANCELED);
-            finish();
+            throw new IllegalArgumentException("criteria were null/empty.");
         }
     }
 
@@ -125,7 +123,7 @@ public class GoodreadsSearchResultsActivity
             Logger.error(this, e, "Failed when searching Goodreads");
             String msg = getString(R.string.gr_error_while_searching)
                     + ' ' + getString(R.string.error_if_the_problem_persists);
-            UserMessage.showUserMessage(this, msg);
+            UserMessage.showUserMessage(mListView, msg);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -133,7 +131,7 @@ public class GoodreadsSearchResultsActivity
 
         // Finish if no results, otherwise display them
         if (works.isEmpty()) {
-            UserMessage.showUserMessage(this, R.string.warning_no_matching_book_found);
+            UserMessage.showUserMessage(mListView, R.string.warning_no_matching_book_found);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -152,7 +150,7 @@ public class GoodreadsSearchResultsActivity
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
         Logger.debugWithStackTrace(this, "doItemClick", msg);
-        UserMessage.showUserMessage(this, msg);
+        UserMessage.showUserMessage(mListView, msg);
     }
 
     /**

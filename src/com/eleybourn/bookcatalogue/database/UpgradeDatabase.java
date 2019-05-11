@@ -14,7 +14,7 @@ import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.dbsync.TransactionException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import static com.eleybourn.bookcatalogue.database.DBA.COLLATION;
+import static com.eleybourn.bookcatalogue.database.DAO.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 
@@ -218,7 +218,7 @@ public final class UpgradeDatabase {
      * by earlier merge code that could have left the first author or series for a book having
      * a position number > 1.
      */
-    public static void v74_fixupAuthorsAndSeries(@NonNull final DBA db) {
+    public static void v74_fixupAuthorsAndSeries(@NonNull final DAO db) {
         SynchronizedDb syncDb = db.getUnderlyingDatabase();
 
         if (syncDb.inTransaction()) {

@@ -31,8 +31,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -50,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
@@ -62,7 +60,6 @@ import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
@@ -77,8 +74,8 @@ public abstract class BookBaseFragment
         extends Fragment
         implements DataViewer {
 
-    /** Database instance. */
-    protected DBA mDb;
+    /** Database access. */
+    protected DAO mDb;
 
     /** The book. */
     BookBaseFragmentModel mBookBaseFragmentModel;
@@ -90,7 +87,7 @@ public abstract class BookBaseFragment
         Book book = mBookBaseFragmentModel.getBook();
 
         //noinspection ConstantConditions
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (book.getId() > 0) {
                 // EDIT existing book
@@ -126,10 +123,11 @@ public abstract class BookBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new DBA();
+        mDb = new DAO();
 
         //noinspection ConstantConditions
-        mBookBaseFragmentModel = ViewModelProviders.of(getActivity()).get(BookBaseFragmentModel.class);
+        mBookBaseFragmentModel = ViewModelProviders.of(getActivity()).get(
+                BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookBaseFragmentModel.init(args);
 
@@ -186,7 +184,8 @@ public abstract class BookBaseFragment
         onLoadFieldsFromBook(false);
 
         mBookBaseFragmentModel.setDirty(wasDirty);
-        mFields.setAfterFieldChangeListener((field, newValue) -> mBookBaseFragmentModel.setDirty(true));
+        mFields.setAfterFieldChangeListener(
+                (field, newValue) -> mBookBaseFragmentModel.setDirty(true));
 
         // this is a good place to do this, as we use data from the book for the title.
         setActivityTitle();
@@ -229,7 +228,9 @@ public abstract class BookBaseFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
+                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 MenuHandler.MENU_ORDER_UPDATE_FIELDS,
+                 R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -244,8 +245,8 @@ public abstract class BookBaseFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        boolean bookExists = mBookBaseFragmentModel.getBook().getId() != 0;
-        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, bookExists);
+        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                             mBookBaseFragmentModel.isExistingBook());
     }
 
     @Override
@@ -283,7 +284,7 @@ public abstract class BookBaseFragment
      *
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
-     * @param fieldButtonId field/button to bind the OnClickListener to (can be same as fieldId)
+     * @param fieldButtonId field/button to bind the OnPickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
      */
     void initValuePicker(@NonNull final Field field,
@@ -303,46 +304,11 @@ public abstract class BookBaseFragment
 
         // Get the drop-down button for the list and setup dialog
         //noinspection ConstantConditions
-        getView().findViewById(fieldButtonId).setOnClickListener(
-                v -> {
-                    FieldPicker<String> picker = new FieldPicker<>(getContext(),
-                                                                   getString(dialogTitleId),
-                                                                   field, list);
-                    picker.show();
-                });
-    }
-
-    /**
-     * bind a field (button) to bring up a text editor in an overlapping dialog.
-     * <p>
-     * TODO: not in use right now (remove?) / FIXME: cancel/ok buttons are hidden by soft keyboard.
-     *
-     * @param callerTag     the fragment class that is calling the editor
-     * @param field         {@link Field} to edit
-     * @param dialogTitleId title of the dialog box.
-     * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
-     * @param multiLine     {@code true} if the dialog box should offer a multi-line input.
-     */
-    @SuppressWarnings({"SameParameterValue", "unused"})
-    void initTextFieldEditor(@NonNull final String callerTag,
-                             @NonNull final Field field,
-                             @StringRes final int dialogTitleId,
-                             @IdRes final int fieldButtonId,
-                             final boolean multiLine) {
-        // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
-        }
-
-        //noinspection ConstantConditions
         getView().findViewById(fieldButtonId).setOnClickListener(v -> {
-            FragmentManager fm = requireFragmentManager();
-            if (fm.findFragmentByTag(TextFieldEditorDialogFragment.TAG) == null) {
-                TextFieldEditorDialogFragment
-                        .newInstance(callerTag, field.id, field.getValue().toString(),
-                                     dialogTitleId, multiLine)
-                        .show(fm, TextFieldEditorDialogFragment.TAG);
-            }
+            FieldPicker<String> picker = new FieldPicker<>(getContext(),
+                                                           getString(dialogTitleId),
+                                                           field, list);
+            picker.show();
         });
     }
 
@@ -611,33 +577,6 @@ public abstract class BookBaseFragment
     static final class ViewUtils {
 
         private ViewUtils() {
-        }
-
-        /**
-         * Gets the total number of rows from the ListAdapter, then use that to set
-         * the ListView to the full height so all rows are visible (no scrolling).
-         * <p>
-         * Does nothing if the ListAdapter is null, or if the ListView is not visible.
-         */
-        @SuppressWarnings("unused")
-        static void adjustListViewHeightBasedOnChildren(@NonNull final ListView listView) {
-            ListAdapter adapter = listView.getAdapter();
-            if (adapter == null || listView.getVisibility() != View.VISIBLE) {
-                return;
-            }
-
-            int totalHeight = 0;
-            for (int i = 0; i < adapter.getCount(); i++) {
-                View listItem = adapter.getView(i, null, listView);
-                listItem.measure(0, 0);
-                totalHeight += listItem.getMeasuredHeight();
-            }
-
-            ViewGroup.LayoutParams layoutParams = listView.getLayoutParams();
-            layoutParams.height = totalHeight
-                    + (listView.getDividerHeight() * (adapter.getCount()));
-            listView.setLayoutParams(layoutParams);
-            listView.requestLayout();
         }
 
         /**

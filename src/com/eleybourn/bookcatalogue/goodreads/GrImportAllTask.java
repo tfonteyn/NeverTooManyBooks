@@ -41,7 +41,7 @@ import java.util.Map;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
@@ -84,7 +84,7 @@ public class GrImportAllTask
     private static final int BOOKS_PER_PAGE = 50;
     /**
      * Date before which updates are irrelevant.
-     * Can be null, which implies all dates are included.
+     * Can be {@code null}, which implies all dates are included.
      */
     @Nullable
     private final String mUpdatesAfter;
@@ -147,7 +147,7 @@ public class GrImportAllTask
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
 
-        try (DBA db = new DBA()) {
+        try (DAO db = new DAO()) {
             // Load the goodreads reviews
             boolean ok = processReviews(queueManager, db);
             // If it's a sync job, then start the 'send' part and save last syn date
@@ -169,7 +169,7 @@ public class GrImportAllTask
      * Repeatedly request review pages until we are done.
      */
     private boolean processReviews(@NonNull final QueueManager queueManager,
-                                   @NonNull final DBA db)
+                                   @NonNull final DAO db)
             throws AuthorizationException {
 
         GoodreadsManager gr = new GoodreadsManager();
@@ -259,7 +259,7 @@ public class GrImportAllTask
     /**
      * Process one review (book).
      */
-    private void processReview(@NonNull final DBA db,
+    private void processReview(@NonNull final DAO db,
                                @NonNull final Bundle review) {
 
         long grId = review.getLong(ReviewFields.DBA_GR_BOOK_ID);
@@ -312,7 +312,7 @@ public class GrImportAllTask
      * @return Local name, or goodreads name if no match
      */
     @Nullable
-    private String translateBookshelf(@NonNull final DBA db,
+    private String translateBookshelf(@NonNull final DAO db,
                                       @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
@@ -348,7 +348,7 @@ public class GrImportAllTask
     /**
      * Update the book using the GR data.
      */
-    private void updateBook(@NonNull final DBA db,
+    private void updateBook(@NonNull final DAO db,
                             @NonNull final BookCursorRow bookCursorRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
@@ -367,13 +367,13 @@ public class GrImportAllTask
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
         db.updateBook(bookCursorRow.getId(), book,
-                      DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                      DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
      * Create a new book.
      */
-    private void insertBook(@NonNull final DBA db,
+    private void insertBook(@NonNull final DAO db,
                             @NonNull final Bundle review) {
 
         Book book = new Book(buildBundle(db, null, review));
@@ -392,10 +392,10 @@ public class GrImportAllTask
 
     /**
      * Build a book bundle based on the goodreads 'review' data. Some data is just copied
-     * while other data is processed (eg. dates) and other are combined (authors & series).
+     * while other data is processed (e.g. dates) and other are combined (authors & series).
      */
     @NonNull
-    private Bundle buildBundle(@NonNull final DBA db,
+    private Bundle buildBundle(@NonNull final DAO db,
                                @Nullable final BookCursorRow bookCursorRow,
                                @NonNull final Bundle review) {
 

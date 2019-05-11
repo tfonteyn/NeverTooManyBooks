@@ -79,6 +79,10 @@ public class EditBookNotesFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // do other stuff here that might affect the view.
+
+        // Fix up the views
         //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
     }
@@ -165,7 +169,6 @@ public class EditBookNotesFragment
     }
 
     @Override
-    @CallSuper
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
         super.onLoadFieldsFromBook(setAllFrom);
 
@@ -180,10 +183,12 @@ public class EditBookNotesFragment
     public void onCheckListEditorSave(final int destinationFieldId,
                                       @NonNull final List<CheckListItem<Integer>> list) {
 
+        Book book = mBookBaseFragmentModel.getBook();
+
         if (destinationFieldId == R.id.edition) {
-            mBookBaseFragmentModel.getBook().putEditions(new Book.EditionCheckListItem().extractList(list));
+            book.putEditions(new Book.EditionCheckListItem().extractList(list));
             mFields.getField(destinationFieldId)
-                   .setValue(mBookBaseFragmentModel.getBook().getString(DBDefinitions.KEY_EDITION_BITMASK));
+                   .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
         }
     }
 

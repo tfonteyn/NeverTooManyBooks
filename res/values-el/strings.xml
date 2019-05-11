@@ -67,10 +67,12 @@
     <string name="about_lbl_sourcecode">Πηγαίος Κώδικας:</string>
     <string name="about_lbl_contacts">Επαφές:</string>
     <string name="about_lbl_donate">Δωρεά</string>
-    <string name="lbl_about">Σχετικά με την εφαρμογή</string>
+    <string name="menu_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_update_fields">Αυτόματη ενημέρωση πεδίων</string>
-    <string name="lbl_update_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
+    <string name="lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
+    <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
+
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
     <string name="confirm_overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
     <string name="yes">Ναι</string>
@@ -172,7 +174,7 @@
     <string name="menu_edit_author">Επεξεργασία Συγγραφέα…</string>
     <string name="menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
-    <string name="confirm_really_delete_series">Θέλετε να διαγραφεί η σειρά \‘%1$s\’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
+    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά \‘%1$s\’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="X_title_edit_series">Επεξεργασία λεπτομερειών Σειράς</string>
     <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="X_warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
@@ -184,7 +186,7 @@
     <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n  \‘%1$s\’ σε \n  \‘%2$s\’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \‘%3$s\’ θα εφαρμοστεί στιγμιαία.</string>
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="list_and">και</string>
-    <string name="confirm_really_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \‘%1$s\’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
+    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \‘%1$s\’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="warning_editions_require_isbn">Η ανάκτηση άλλων εκδόσεων απαιτεί ISBN</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
@@ -352,9 +354,9 @@
         \n\nΕπίσης μπορείτε να επεξεργαστείτε το μενου στυλ και τα διάφορα στυλ από εδώ.
     </string>
     <string name="lbl_preferred_styles">Προτιμώμενα στυλ</string>
-    <string name="title_edit_style_colon_name">Επεξεργασία στυλ: %1$s</string>
+    <string name="title_edit_style">Επεξεργασία στυλ</string>
     <string name="X_menu_add_style">Προσθήκη στυλ</string>
-    <string name="title_clone_style_colon_name">Αντιγραφή στυλ: %1$s</string>
+    <string name="title_clone_style">Αντιγραφή στυλ</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="X_title_add_style">Νέο στυλ</string>
     <string name="X_pt_bob_filter_read">Επιλογή με βάση την κατάσταση του πεδίου \‘Αναγνωσμένο\’</string>
@@ -512,7 +514,7 @@
     \n\nΑν ξεχαστούν τα διαπιστευτήρια από εδώ θα διαγραφεί η επιλογή Goodreads από το κεντρικό μενού της εφαρμογής.</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
-    <string name="progress_msg_connecting_to_web_site">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
+    <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
 
     <!-- Admin option to import -->
     <string name="lbl_backup">Αντίγραφο ασφαλείας στο Αρχείο</string>
@@ -609,28 +611,24 @@
     <string name="export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">εμφανίζονται κανένα βιβλίο</item>-->
         <item quantity="one">εμφανίζονται ένα βιβλίο</item>
         <item quantity="other">εμφανίζονται %1$d βιβλία</item>
     </plurals>
 
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
-        <!--<item quantity="zero">κανένα βιβλίο</item>-->
         <item quantity="one">1 βιβλίο</item>
         <item quantity="other">%1$s βιβλία</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">κανένα εξώφυλλο</item>-->
         <item quantity="one">1 εξώφυλλο</item>
         <item quantity="other">%1$s εξώφυλλα</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">%1$s αστέρια</item>-->
         <item quantity="one">%1$s αστέρι</item>
         <item quantity="other">%1$s αστέρια</item>
     </plurals>

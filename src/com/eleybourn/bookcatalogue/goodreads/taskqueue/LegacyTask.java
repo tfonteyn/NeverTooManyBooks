@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 
 public class LegacyTask
         extends Task {
@@ -80,7 +80,7 @@ public class LegacyTask
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
-                         @NonNull final DBA db) {
+                         @NonNull final DAO db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Placeholder for Task #" + getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
@@ -95,7 +95,7 @@ public class LegacyTask
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final DBA db) {
+                                    @NonNull final DAO db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
                                         () -> QueueManager.getQueueManager().deleteTask(getId())));

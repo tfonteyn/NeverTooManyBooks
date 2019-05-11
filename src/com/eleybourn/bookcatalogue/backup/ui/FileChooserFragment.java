@@ -35,7 +35,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,13 +45,13 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Fragment to display a simple directory/file browser.
- *
+ * <p>
  * IMPORTANT: the {@link ProgressDialogFragment} here uses {@link FileListerTask#TAG}
  * to avoid clashes with the hosting Activity/Fragment.
  *
@@ -60,7 +59,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public class FileChooserFragment
         extends Fragment
-        implements OnTaskFinishedListener<FileChooserFragment.DirectoryContent> {
+        implements OnTaskListener<Object, FileChooserFragment.DirectoryContent> {
 
     /** Fragment manager tag. */
     public static final String TAG = FileChooserFragment.class.getSimpleName();
@@ -68,7 +67,6 @@ public class FileChooserFragment
     private static final String BKEY_ROOT_PATH = TAG + ":root";
     private static final String BKEY_FILE_LIST = TAG + ":list";
 
-    private ProgressDialogFragment<Object, DirectoryContent> mProgressDialog;
     /** Value holder for the root and its content. */
     @Nullable
     private FileChooserFragment.DirectoryContent mDir;
@@ -128,16 +126,6 @@ public class FileChooserFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        FragmentManager fm = getFragmentManager();
-
-        //noinspection unchecked,ConstantConditions
-        mProgressDialog = (ProgressDialogFragment<Object, DirectoryContent>)
-                fm.findFragmentByTag(FileListerTask.TAG);
-        if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
-        }
-
         View view = getView();
         //noinspection ConstantConditions
         mCurrentFolderView = view.findViewById(R.id.current_folder);
@@ -195,24 +183,9 @@ public class FileChooserFragment
             return;
         }
 
-        // create/get the progress dialog
-        FragmentManager fm = getChildFragmentManager();
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, DirectoryContent>)
-                fm.findFragmentByTag(FileListerTask.TAG);
-
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.progress_msg_reading_directory, true, 0);
-            mProgressDialog.show(fm, FileListerTask.TAG);
-        }
-
-        mProgressDialog.setOnTaskFinishedListener(this);
-//        mProgressDialog.setOnProgressCancelledListener(this);
-
-        // always start a new task. Any running one will get cancelled.
-        FileListerTask task = new FileListerTask(mProgressDialog, root);
-        task.execute();
+        //noinspection ConstantConditions
+        UserMessage.showUserMessage(getView(), R.string.progress_msg_reading_directory);
+        new FileListerTask(root, this).execute();
     }
 
     /**

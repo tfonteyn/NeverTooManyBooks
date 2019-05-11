@@ -242,7 +242,7 @@ final class CropUtil {
 //	}
 
 //	/**
-//	 * Create a video thumbnail for a video. May return null if the video is
+//	 * Create a video thumbnail for a video. May return {@code null} if the video is
 //	 * corrupt.
 //	 *
 //	 * @param filePath

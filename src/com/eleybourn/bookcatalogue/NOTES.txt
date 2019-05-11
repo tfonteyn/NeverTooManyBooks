@@ -23,8 +23,6 @@ TODO: Review database stuff
  * - bind variables versus string concat
  * could global replace of author/series be optimized ? For now it's cumbersome and long-winded.
 
-TODO: AuthorWorksActivity and similar are just place holders until there is a general hosting activity.
-
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * Performance? Better 'Collation' setting?'. LIKE operator ?
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
@@ -32,16 +30,11 @@ ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
 
 ENHANCE: move Publisher, Location, Format ... to separate tables ?
 
-TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
-
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags
         not easy to get 'others' to create import files
         importing id's is dangerous
-
-TODO: decide and implement ONE way of binding a holder in a RecyclerView.
- i.e. bind in the adapter or bind in the holder.
 
 TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android

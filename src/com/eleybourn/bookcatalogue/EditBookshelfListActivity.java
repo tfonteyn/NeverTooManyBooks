@@ -42,7 +42,7 @@ import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
@@ -57,7 +57,8 @@ public class EditBookshelfListActivity
         extends BaseActivity
         implements EditBookshelfDialogFragment.OnBookshelfChangedListener {
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
@@ -75,9 +76,12 @@ public class EditBookshelfListActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
-        mDb = new DBA();
+        mDb = new DAO();
         mList = mDb.getBookshelves();
         mAdapter = new BookshelfAdapter(this, mList);
+
+        findViewById(R.id.fab).setOnClickListener(
+                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId())));
 
         RecyclerView listView = findViewById(android.R.id.list);
         listView.setLayoutManager(new LinearLayoutManager(this));
@@ -110,30 +114,6 @@ public class EditBookshelfListActivity
 
             default:
                 return false;
-        }
-    }
-
-    @Override
-    @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
-            .setIcon(R.drawable.ic_add)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_INSERT:
-                editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId()));
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 

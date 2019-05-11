@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -53,7 +52,6 @@ import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -61,15 +59,15 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <p>
  * The basic URLs are:
  * <p>
- * Covers via ISBN: http://covers.librarything.com/devkey/<DEVKEY>/<SIZE>/isbn/<ISBN>
+ * Covers via ISBN: http://covers.librarything.com/devkey/{DEVKEY}/{SIZE}/isbn/{ISBN}
  * with size: large,medium,small
- * <p>
+ * <br>
  * <p>
  * REST api: http://www.librarything.com/services/rest/documentation/1.1/
  * <p>
  * Details via ISBN:
  * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork
- * &apikey=<DEVKEY>&isbn=<ISBN>
+ * &apikey={DEVKEY}&isbn={ISBN}
  *
  * <p>
  * xml see {@link #search} header
@@ -218,18 +216,16 @@ public class LibraryThingManager
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(msgId)
-                .setTitle(R.string.lt_registration_title)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
-
-        dialog.setButton(
-                DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
-                (d, which) -> {
+                .setTitle(R.string.lt_registration_title)
+                .setMessage(msgId)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_more_info, (d, which) -> {
                     Intent intent = new Intent(context, LibraryThingAdminActivity.class);
                     context.startActivity(intent);
                     d.dismiss();
-                });
+                })
+                .create();
 
         if (!required) {
             dialog.setButton(
@@ -240,11 +236,6 @@ public class LibraryThingManager
                         d.dismiss();
                     });
         }
-
-        dialog.setButton(
-                DialogInterface.BUTTON_NEGATIVE,
-                context.getString(android.R.string.cancel),
-                (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -317,7 +308,7 @@ public class LibraryThingManager
     }
 
     /**
-     * @return the dev key, CAN BE EMPTY but won't be null
+     * @return the dev key, CAN BE EMPTY but won't be {@code null}
      */
     @NonNull
     private static String getDevKey() {
@@ -326,18 +317,6 @@ public class LibraryThingManager
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }
         return "";
-    }
-
-    static void resetHints() {
-        SharedPreferences prefs = App.getPrefs();
-        SharedPreferences.Editor ed = prefs.edit();
-        for (String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(LocaleUtils.getSystemLocale())
-                   .startsWith(PREFS_HIDE_ALERT.toLowerCase(LocaleUtils.getSystemLocale()))) {
-                ed.remove(key);
-            }
-        }
-        ed.apply();
     }
 
     /**
@@ -395,14 +374,14 @@ public class LibraryThingManager
     }
 
     /**
-     * dev-key needed for this call.
+     * Dev-key needed for this call.
+     * <br>Only the ISBN is supported.
      *
-     * @param isbn           to lookup. Must be a valid ISBN
-     * @param author         unused
-     * @param title          unused
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @throws IOException on failure
+     * @param isbn   to lookup. Must be a valid ISBN
+     * @param author unused
+     * @param title  unused
+     *               <br>
+     *               <br>{@inheritDoc}
      */
     @NonNull
     @Override

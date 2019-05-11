@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -115,7 +115,6 @@ public class CsvExporter
      * <p>
      * The fields CSV_COLUMN_* are {@link StringList} encoded
      */
-    @SuppressWarnings("NonConstantFieldWithUpperCaseName")
     private static final String EXPORT_FIELD_HEADERS =
             "\"" + DOM_PK_ID + "\","
                     + '"' + CSV_COLUMN_AUTHORS + "\","
@@ -209,7 +208,7 @@ public class CsvExporter
         int numberOfBooksExported = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (DBA mDb = new DBA();
+        try (DAO mDb = new DAO();
              BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom);
              BufferedWriter out = new BufferedWriter(
                      new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {

@@ -35,28 +35,29 @@ import com.eleybourn.bookcatalogue.utils.Throttler;
  * &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
  * &Timestamp=2019-04-08T11:10:15.000Z
  * &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
- *
+ * <p>
  * failed to open stream: HTTP request failed!
  * HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
- *
- *  When executing the actual url:
- *
- *  <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
+ * <p>
+ * When executing the actual url:
+ * {@code
+ * <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
  * <Error>
  * <Code>RequestThrottled</Code>
  * <Message>
- * AWS Access Key ID: AKIAIHF2BM6OTOA23JEQ. You are submitting requests too quickly.
- *  Please retry your requests at a slower rate.
+ * AWS Access Key ID: xxxxxxxxx. You are submitting requests too quickly.
+ * Please retry your requests at a slower rate.
  * </Message>
  * </Error>
  * <RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
  * </ItemSearchErrorResponse>
  * <p>
- *
+ * }
  * 2019-04-20: it's the actual 'theagiledirector'.
  * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
  * but how.... seems AWS is dependent/linked to have a website.
  */
+@SuppressWarnings("HtmlTagCanBeJavadocTag")
 public final class AmazonManager
         implements SearchSiteManager {
 
@@ -101,17 +102,13 @@ public final class AmazonManager
 
     /**
      * This searches the amazon REST site based on a specific isbn.
-     *
+     * <p>
      * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/EX_LookupbyISBN.html
      * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/becomingAssociate.html#locale
-     *
+     * <p>
      * Search proxies through theagiledirector.com - the service does not support mobile devices...
-     *
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data
-     *
-     * @throws IOException on failure
+     * <br>
+     * <br>{@inheritDoc}
      */
     @Override
     @NonNull
@@ -159,6 +156,11 @@ public final class AmazonManager
             }
         }
 
+        //TEST: due to the proxy, we don't get actual XML error entities, so this is not tested.
+        String error = handler.getError();
+        if (error != null) {
+            throw new IOException(error);
+        }
         return bookData;
     }
 }

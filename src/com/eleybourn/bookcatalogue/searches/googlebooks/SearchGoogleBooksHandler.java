@@ -35,6 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * <p>
  * An example response looks like;
  * <pre>
+ *     {@code
  * <?xml version='1.0' encoding='UTF-8'?>
  * <feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
  * 		<id>http://www.google.com/books/feeds/volumes</id>
@@ -123,6 +124,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 			<dc:title>Be Afraid, Beautiful People</dc:title>
  * 		</entry>
  * </feed>
+ * }
  * </pre>
  */
 class SearchGoogleBooksHandler

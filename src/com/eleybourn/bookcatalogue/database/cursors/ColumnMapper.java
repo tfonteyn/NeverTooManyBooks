@@ -41,7 +41,7 @@ public class ColumnMapper {
      * No errors or Exception thrown at construction time.
      *
      * @param cursor  to read from
-     * @param table   for which to map all registered columns, can be null.
+     * @param table   for which to map all registered columns, can be {@code null}.
      * @param domains a list of domains (e.g. from other tables)
      *
      * @see TableDefinition#addDomain(DomainDefinition) we don't always register a full set.
@@ -148,7 +148,7 @@ public class ColumnMapper {
     /**
      * @param domain to get
      *
-     * @return the boolean value of the column (null comes back as false).
+     * @return the boolean value of the column ({@code null} comes back as false).
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -169,7 +169,7 @@ public class ColumnMapper {
     /**
      * @param domain to get
      *
-     * @return the int value of the column (null comes back as 0)
+     * @return the int value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -190,7 +190,7 @@ public class ColumnMapper {
     /**
      * @param domain to get
      *
-     * @return the long value of the column (null comes back as 0)
+     * @return the long value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -211,7 +211,7 @@ public class ColumnMapper {
     /**
      * @param domain to get
      *
-     * @return the double value of the column (null comes back as 0)
+     * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -251,7 +251,7 @@ public class ColumnMapper {
     }
 
     /**
-     * @return a bundle with all the columns present (null values are dropped).
+     * @return a bundle with all the columns present ({@code null} values are dropped).
      */
     @SuppressWarnings("unused")
     @NonNull

@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
@@ -263,8 +263,8 @@ public class Series
 
     /**
      * Remove series from the list where the names are the same, but one entry has a
-     * null or empty position.
-     * eg. the following list should be processed as indicated:
+     * {@code null} or empty position.
+     * e.g. the following list should be processed as indicated:
      * <p>
      * fred(5)
      * fred <-- delete
@@ -328,26 +328,6 @@ public class Series
             }
         }
         return modified;
-    }
-
-    /**
-     * Sets the 'complete' status of the series.
-     *
-     * @param db         database
-     * @param id         series id
-     * @param isComplete Flag indicating the user considers this series to be 'complete'
-     *
-     * @return {@code true} for success
-     */
-    public static boolean setComplete(@NonNull final DBA db,
-                                      final long id,
-                                      final boolean isComplete) {
-        // load from database
-        Series series = db.getSeries(id);
-        //noinspection ConstantConditions
-        series.setComplete(isComplete);
-        int rowsAffected = db.updateSeries(series);
-        return rowsAffected == 1;
     }
 
     /**
@@ -433,7 +413,7 @@ public class Series
     /**
      * Set the unformatted number; as entered manually by the user.
      *
-     * @param number to use, cannot be null.
+     * @param number to use, cannot be {@code null}.
      */
     public void setNumber(@NonNull final String number) {
         mNumber = number;
@@ -498,7 +478,7 @@ public class Series
     }
 
     @Override
-    public long fixupId(@NonNull final DBA db) {
+    public long fixupId(@NonNull final DAO db) {
         mId = db.getSeriesId(this);
         return mId;
     }
@@ -588,7 +568,7 @@ public class Series
         /**
          * Clean and store the position of a book.
          *
-         * @param position the position/number of a book in this series; can be null
+         * @param position the position/number of a book in this series; can be {@code null}
          */
         public void setPosition(@Nullable final String position) {
             mPosition = cleanupSeriesPosition(position);

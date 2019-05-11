@@ -30,8 +30,8 @@ class CropImageView
     private float mLastY;
     private int mMotionEdge;
 
-    public CropImageView(@NonNull Context context,
-                         @NonNull AttributeSet attrs) {
+    public CropImageView(@NonNull final Context context,
+                         @NonNull final AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
@@ -128,7 +128,7 @@ class CropImageView
     @Override
     public boolean onTouchEvent(@NonNull final MotionEvent event) {
         CropImageActivity cropImage = (CropImageActivity) mContext;
-        if (cropImage.mSaving) {
+        if (cropImage.mIsSaving) {
             return false;
         }
 
@@ -183,8 +183,9 @@ class CropImageView
                 if (cropImage.mWaitingToPickFace) {
                     recomputeFocus(event);
                 } else if (mMotionHighlightView != null) {
-                    mMotionHighlightView.handleMotion(mMotionEdge, event.getX()
-                            - mLastX, event.getY() - mLastY);
+                    mMotionHighlightView.handleMotion(mMotionEdge,
+                                                      event.getX() - mLastX,
+                                                      event.getY() - mLastY);
                     mLastX = event.getX();
                     mLastY = event.getY();
 
@@ -246,8 +247,7 @@ class CropImageView
         zoom = zoom * getScale();
         zoom = Math.max(1F, zoom);
         if ((Math.abs(zoom - getScale()) / zoom) > .1) {
-            float[] coordinates = new float[]{hv.mCropRect.centerX(),
-                                              hv.mCropRect.centerY()};
+            float[] coordinates = new float[]{hv.mCropRect.centerX(), hv.mCropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             zoomTo(zoom, coordinates[0], coordinates[1], 300F);
         }

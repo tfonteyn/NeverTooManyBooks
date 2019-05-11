@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.backup.BackupTask;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -54,7 +54,7 @@ public class BackupActivity
         extends BRBaseActivity
         implements
         ExportOptionsDialogFragment.OnOptionsListener,
-        OnTaskFinishedListener<ExportSettings> {
+        OnTaskListener<Object, ExportSettings> {
 
     private ProgressDialogFragment<Object, ExportSettings> mProgressDialog;
 
@@ -68,8 +68,8 @@ public class BackupActivity
         mProgressDialog = (ProgressDialogFragment<Object, ExportSettings>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
+            mProgressDialog.setOnTaskListener(this);
+//            mProgressDialog.setOnUserCancelledListener(this);
         }
 
         if (fm.findFragmentByTag(FileChooserFragment.TAG) == null) {
@@ -112,7 +112,7 @@ public class BackupActivity
                     .setMessage(R.string.export_info_backup_all)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.btn_options, (d, which) ->
-                            // ask user what options he they want
+                            // ask user what options they want
                             ExportOptionsDialogFragment.show(getSupportFragmentManager(), settings))
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // User wants to backup all.
@@ -160,8 +160,8 @@ public class BackupActivity
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskFinishedListener(this);
-//        mProgressDialog.setOnProgressCancelledListener(this);
+        mProgressDialog.setOnTaskListener(this);
+//        mProgressDialog.setOnUserCancelledListener(this);
     }
 
     /**

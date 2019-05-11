@@ -12,17 +12,7 @@
     way to close. Often also simply to big to fit where they are.
 
     - check-mark for 'read' in the BoB list is much larger
-
     -->
-    <!-- ============================================================ -->
-    <!-- Exclusive use by the startup activity, hiding it completely. -->
-    <!-- Parent should become: Theme.MaterialComponents.NoActionBar -->
-    <!-- ============================================================ -->
-    <style name="StartupActivity" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:background">@android:color/transparent</item>
-    </style>
 
     <!-- =========== -->
     <!-- Dark theme. -->

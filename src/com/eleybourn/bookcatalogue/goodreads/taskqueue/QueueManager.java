@@ -47,14 +47,18 @@ public final class QueueManager {
 
     /*
      * Queues we need.
-     * main: long-running tasks, or tasks that can just wait
-     * small_jobs: trivial background tasks that will only take a few seconds.
      */
+    /**  main: long-running tasks, or tasks that can just wait. */
     public static final String Q_MAIN = "main";
+    /** small_jobs: trivial background tasks that will only take a few seconds. */
     public static final String Q_SMALL_JOBS = "small_jobs";
+
+    /** For internal message sending. */
     private static final String INTERNAL = "__internal";
-    private static final String MESSAGE = "message";
+    /** Type of INTERNAL message. */
     private static final String TOAST = "toast";
+    /** Key for actual (text) message. */
+    private static final String MESSAGE = "message";
     /**
      * Static reference to the active QueueManager - singleton.
      */
@@ -62,7 +66,7 @@ public final class QueueManager {
 
     /** Database access layer. */
     @NonNull
-    private final TaskQueueDBAdapter mTQdba;
+    private final TaskQueueDAO mTaskQueueDAO;
     /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new HashMap<>();
     /** The UI thread. */
@@ -95,11 +99,11 @@ public final class QueueManager {
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mTQdba = new TaskQueueDBAdapter();
+        mTaskQueueDAO = new TaskQueueDAO();
 
         // Get active queues.
         synchronized (this) {
-            mTQdba.getAllQueues(this);
+            mTaskQueueDAO.getAllQueues(this);
         }
         mTaskChangeListeners = new ArrayList<>();
 
@@ -237,8 +241,10 @@ public final class QueueManager {
                             @NonNull final String queueName) {
         synchronized (this) {
             // Save it
-            mTQdba.enqueueTask(task, queueName);
+            mTaskQueueDAO.enqueueTask(task, queueName);
+
             if (mActiveQueues.containsKey(queueName)) {
+                // notify the queue there is work to do
                 synchronized (mActiveQueues) {
                     //noinspection ConstantConditions
                     mActiveQueues.get(queueName).notify();
@@ -257,7 +263,7 @@ public final class QueueManager {
      * @param name Name of the queue
      */
     private void initializeQueue(@NonNull final String name) {
-        mTQdba.createQueue(name);
+        mTaskQueueDAO.createQueue(name);
     }
 
     /**
@@ -313,15 +319,15 @@ public final class QueueManager {
      * @param task The task to be updated. Must exist in database.
      */
     public void updateTask(@NonNull final Task task) {
-        mTQdba.updateTask(task);
+        mTaskQueueDAO.updateTask(task);
         notifyTaskChange();
     }
 
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
      * <p>
-     * Hardwired to use the application context as there is no way to get an activity or view
-     * for using SnackBar
+     * Hardwired to use {@link Toast} as there is no way to get an activity or view
+     * for using SnackBar.
      */
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
@@ -348,7 +354,7 @@ public final class QueueManager {
      */
     void storeTaskEvent(@NonNull final Task task,
                         @NonNull final Event event) {
-        mTQdba.storeTaskEvent(task, event);
+        mTaskQueueDAO.storeTaskEvent(task, event);
         notifyEventChange();
     }
 
@@ -359,7 +365,7 @@ public final class QueueManager {
      */
     @NonNull
     EventsCursor getAllEvents() {
-        return mTQdba.getAllEvents();
+        return mTaskQueueDAO.getAllEvents();
     }
 
     /**
@@ -371,7 +377,7 @@ public final class QueueManager {
      */
     @NonNull
     EventsCursor getTaskEvents(final long taskId) {
-        return mTQdba.getTaskEvents(taskId);
+        return mTaskQueueDAO.getTaskEvents(taskId);
     }
 
     /**
@@ -381,7 +387,7 @@ public final class QueueManager {
      */
     @NonNull
     TasksCursor getTasks() {
-        return mTQdba.getTasks();
+        return mTaskQueueDAO.getTasks();
     }
 
     /**
@@ -392,7 +398,7 @@ public final class QueueManager {
      * @return Cursor of exceptions
      */
     public boolean hasActiveTasks(final long category) {
-        try (TasksCursor c = mTQdba.getTasks(category)) {
+        try (TasksCursor c = mTaskQueueDAO.getTasks(category)) {
             return c.moveToFirst();
         }
     }
@@ -416,7 +422,7 @@ public final class QueueManager {
                 }
             }
             if (!isActive) {
-                mTQdba.deleteTask(id);
+                mTaskQueueDAO.deleteTask(id);
             }
         }
         if (isActive) {
@@ -438,7 +444,7 @@ public final class QueueManager {
      * @param eventId ID of TaskException to delete.
      */
     public void deleteEvent(final long eventId) {
-        mTQdba.deleteEvent(eventId);
+        mTaskQueueDAO.deleteEvent(eventId);
         notifyEventChange();
         // This is non-optimal, but ... it's easy and clear.
         // Deleting an event MAY result in an orphan task being deleted.
@@ -449,8 +455,8 @@ public final class QueueManager {
      * Delete Event records more than 7 days old.
      */
     void cleanupOldEvents() {
-        mTQdba.cleanupOldEvents();
-        mTQdba.cleanupOrphans();
+        mTaskQueueDAO.cleanupOldEvents();
+        mTaskQueueDAO.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();
@@ -460,8 +466,8 @@ public final class QueueManager {
      * Delete Task records more than 7 days old.
      */
     void cleanupOldTasks() {
-        mTQdba.cleanupOldTasks();
-        mTQdba.cleanupOrphans();
+        mTaskQueueDAO.cleanupOldTasks();
+        mTaskQueueDAO.cleanupOrphans();
         // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();

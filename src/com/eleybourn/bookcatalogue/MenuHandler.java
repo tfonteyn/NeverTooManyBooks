@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
  */
 final class MenuHandler {
 
+    public static final int MENU_ORDER_UPDATE_FIELDS = 80;
     public static final int MENU_ORDER_LENDING = 90;
     public static final int MENU_ORDER_SHARE = 95;
     private static final int MENU_ORDER_AMAZON = 99;

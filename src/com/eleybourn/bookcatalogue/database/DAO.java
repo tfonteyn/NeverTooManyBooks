@@ -177,7 +177,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_TOC_ENTRIES
  * TODO: caching of statements forces synchronisation (2019-03-15: finally updated all lines where needed)... is it worth it ?
  * TODO: there is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
-public class DBA
+public class DAO
         implements AutoCloseable {
 
     /**
@@ -298,7 +298,7 @@ public class DBA
      * Note: don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dba which is).
      */
-    public DBA() {
+    public DAO() {
         // initialise static if not done yet
         if (sDbHelper == null) {
             sDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
@@ -327,7 +327,7 @@ public class DBA
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
             Logger.debug(this,
-                         "DBA",
+                         "DAO",
                          "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
             //debugAddInstance(this);
         }
@@ -350,7 +350,7 @@ public class DBA
      * @param value to encode
      *
      * @return escaped value.
-     *
+     * <p>
      * Note: Using the compiled pattern is theoretically faster than using
      * {@link String#replace(CharSequence, CharSequence)}.
      */
@@ -425,7 +425,7 @@ public class DBA
      * DEBUG only.
      */
     @SuppressWarnings("unused")
-    private static void debugAddInstance(@NonNull final DBA db) {
+    private static void debugAddInstance(@NonNull final DAO db) {
         INSTANCES.add(new InstanceRefDebug(db));
     }
 
@@ -433,13 +433,13 @@ public class DBA
      * DEBUG only.
      */
     @SuppressWarnings("unused")
-    private static void debugRemoveInstance(@NonNull final DBA db) {
+    private static void debugRemoveInstance(@NonNull final DAO db) {
         Iterator<InstanceRefDebug> it = INSTANCES.iterator();
         while (it.hasNext()) {
             InstanceRefDebug ref = it.next();
-            DBA refDb = ref.get();
+            DAO refDb = ref.get();
             if (refDb == null) {
-                Logger.debug(DBA.class, "debugRemoveInstance",
+                Logger.debug(DAO.class, "debugRemoveInstance",
                              "**** Missing ref (not closed?) ****",
                              ref.getCreationException());
             } else {
@@ -457,11 +457,11 @@ public class DBA
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : INSTANCES) {
             if (ref.get() == null) {
-                Logger.debug(DBA.class, "debugDumpInstances",
+                Logger.debug(DAO.class, "debugDumpInstances",
                              "**** Missing ref (not closed?) ****",
                              ref.getCreationException());
             } else {
-                Logger.debug(DBA.class, "debugDumpInstances",
+                Logger.debug(DAO.class, "debugDumpInstances",
                              ref.getCreationException());
             }
         }
@@ -1128,8 +1128,8 @@ public class DBA
 
             Author author = Author.fromString(book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
             if (author.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "preprocessBook",
+                if (BuildConfig.DEBUG /* always. */) {
+                    Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FORMATTED|inserting author: "
                                          + author.stringEncoded());
                 }
@@ -1148,8 +1148,8 @@ public class DBA
 
             Author author = new Author(family, given);
             if (author.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "preprocessBook",
+                if (BuildConfig.DEBUG /* always. */) {
+                    Logger.debug(this, "preprocessLegacyAuthor",
                                  "KEY_AUTHOR_FAMILY_NAME|inserting author: "
                                          + author.stringEncoded());
                 }
@@ -1349,7 +1349,7 @@ public class DBA
             StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
-                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                     coversDBAdapter.delete(uuid);
                 }
             }
@@ -1532,13 +1532,13 @@ public class DBA
     /**
      * Update the 'read' status of the book.
      *
-     * @param id   book id
+     * @param id   book to update
      * @param read the status to set
      *
      * @return {@code true} for success.
      */
-    public boolean updateBookRead(final long id,
-                                  final boolean read) {
+    public boolean setBookRead(final long id,
+                               final boolean read) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_READ_STATUS.name, read);
         if (read) {
@@ -1549,6 +1549,40 @@ public class DBA
 
         return 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
                                     new String[]{String.valueOf(id)});
+    }
+
+    /**
+     * Update the 'complete' status of an Author.
+     *
+     * @param authorId   to update
+     * @param isComplete Flag indicating the user considers this item to be 'complete'
+     *
+     * @return {@code true} for success.
+     */
+    public boolean setAuthorComplete(final long authorId,
+                                     final boolean isComplete) {
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_AUTHOR_IS_COMPLETE.name, isComplete);
+
+        return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv, DOM_PK_ID + "=?",
+                                    new String[]{String.valueOf(authorId)});
+    }
+
+    /**
+     * Update the 'complete' status of a Series.
+     *
+     * @param seriesId   to update
+     * @param isComplete Flag indicating the user considers this item to be 'complete'
+     *
+     * @return {@code true} for success.
+     */
+    public boolean setSeriesComplete(final long seriesId,
+                                     final boolean isComplete) {
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_SERIES_IS_COMPLETE.name, isComplete);
+
+        return 0 < sSyncedDb.update(TBL_SERIES.getName(), cv, DOM_PK_ID + "=?",
+                                    new String[]{String.valueOf(seriesId)});
     }
 
     /**
@@ -1683,13 +1717,13 @@ public class DBA
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
-            // The list MAY contain duplicates (eg. from Internet lookups of multiple
+            // The list MAY contain duplicates (e.g. from Internet lookups of multiple
             // sources), so we track them in a hash map
             final Map<String, Boolean> idHash = new HashMap<>();
             int position = 0;
             for (Series series : list) {
                 if (series.fixupId(this) == 0) {
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
                         Logger.debug(this,
                                      "insertBookSeries",
                                      "inserting series: " + series.stringEncoded());
@@ -1881,14 +1915,14 @@ public class DBA
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
-            // The list MAY contain duplicates (eg. from Internet lookups of multiple
+            // The list MAY contain duplicates (e.g. from Internet lookups of multiple
             // sources), so we track them in a hash table
             final Map<String, Boolean> idHash = new HashMap<>();
             int position = 0;
             for (Author author : list) {
                 // find/insert the author
                 if (author.fixupId(this) == 0) {
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookAuthors",
                                      "inserting author: " + author.stringEncoded());
                     }
@@ -1973,7 +2007,7 @@ public class DBA
             }
 
             if (bookshelf.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
                     Logger.debug(this,
                                  "insertBookBookshelf",
                                  "inserting bookshelf: " + bookshelf.stringEncoded());
@@ -2292,7 +2326,7 @@ public class DBA
 
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
-     * So you never get a null object!
+     * So you never get a {@code null} object!
      *
      * Leaving commented as a reminder
      *
@@ -2465,7 +2499,7 @@ public class DBA
      * A complete export of all tables (flattened) in the database.
      *
      * @param sinceDate to select all books added/modified since that date.
-     *                  Set to null for *ALL* books.
+     *                  Set to {@code null} for *ALL* books.
      *
      * @return BookCursor over all books, authors, etc
      */
@@ -2498,19 +2532,17 @@ public class DBA
      * The columns fetched are limited to what is needed for the
      * {@link BooksOnBookshelf} so called "extras" fields.
      *
-     * @param bookId      to retrieve
-     * @param extrasToGet which extra fields need fetching. (Allows optimizing the fetch)
+     * @param bookId          to retrieve
+     * @param withBookshelves if we need bookshelves (which is a table join) or not.
      *
      * @return {@link Cursor} containing all records, if any
      */
     @NonNull
     public Cursor fetchBookExtrasById(final long bookId,
-                                      final int extrasToGet) {
+                                      final boolean withBookshelves) {
 
         // for now, we only optimize on fetching bookshelves or not.
         // and honestly, it's almost not worth bothering.
-        boolean withBookshelves = ((extrasToGet & BooklistStyle.EXTRAS_BOOKSHELVES) != 0);
-
         if (withBookshelves) {
             return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITH_BOOKSHELVES,
                                       new String[]{String.valueOf(bookId)});
@@ -3641,7 +3673,7 @@ public class DBA
     }
 
     /**
-     * Bind a string or NULL value to a parameter since binding a NULL
+     * Bind a string or {@code null} value to a parameter since binding a {@code null}
      * in bindString produces an error.
      * <p>
      * NOTE: We specifically want to use the default locale for this.
@@ -3830,12 +3862,12 @@ public class DBA
      * DEBUG only.
      */
     private static class InstanceRefDebug
-            extends WeakReference<DBA> {
+            extends WeakReference<DAO> {
 
         @NonNull
         private final Exception mCreationException;
 
-        InstanceRefDebug(@NonNull final DBA db) {
+        InstanceRefDebug(@NonNull final DAO db) {
             super(db);
             mCreationException = new RuntimeException();
         }
@@ -4021,7 +4053,7 @@ public class DBA
         /**
          * Columns from {@link DBDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
          * <p>
-         * See {@link GoodreadsManager#sendOneBook(DBA, BookCursorRow)}
+         * See {@link GoodreadsManager#sendOneBook(DAO, BookCursorRow)}
          * -> notes column disabled for now.
          */
         private static final String GOODREADS_FIELDS_FOR_SENDING =

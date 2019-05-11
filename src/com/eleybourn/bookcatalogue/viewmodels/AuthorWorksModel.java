@@ -5,14 +5,15 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 
 public class AuthorWorksModel
         extends ViewModel {
 
-    private DBA mDb;
+    /** Database access. */
+    private DAO mDb;
 
     private Author author;
     private ArrayList<TocEntry> mTocEntries;
@@ -28,7 +29,7 @@ public class AuthorWorksModel
                      @SuppressWarnings("SameParameterValue") final boolean withBooks) {
         if (author == null || authorId != author.getId()) {
 
-            mDb = new DBA();
+            mDb = new DAO();
             author = mDb.getAuthor(authorId);
             if (author != null) {
                 mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);

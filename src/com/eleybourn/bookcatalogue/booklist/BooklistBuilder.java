@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -44,9 +44,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.filters.ListOfValuesFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.WildcardFilter;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.database.JoinContext;
+import com.eleybourn.bookcatalogue.database.Joiner;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
@@ -131,9 +131,9 @@ public class BooklistBuilder
         implements AutoCloseable {
 
     /** ID values for state preservation property. */
-    public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 0;
-    public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 1;
-    public static final int PREF_LIST_REBUILD_STATE_PRESERVED = 2;
+    public static final int PREF_LIST_REBUILD_STATE_PRESERVED = 0;
+    public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
+    public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
 
     /**
      * SQL column: which gets formatted author names in 'Last, Given' form.
@@ -218,12 +218,14 @@ public class BooklistBuilder
     @NonNull
     private final SqlStatementManager mStatements;
 
-    /** Database to use. */
+    /** Database access. */
     @NonNull
-    private final DBA mDb;
-    /** Database to use. */
+    private final DAO mDb;
+
+    /** The underlying database. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
+
     /** Internal ID. */
     private final int mBooklistBuilderId;
     /** Collection of 'extra' domains requested by caller. */
@@ -239,12 +241,12 @@ public class BooklistBuilder
      * guarantees we get all the info we need downstream.
      */
     private final CursorFactory mBooklistCursorFactory = (db, masterQuery, editTable, query) ->
-            new BooklistCursor(masterQuery, editTable, query, DBA.getSynchronizer(),
+            new BooklistCursor(masterQuery, editTable, query, DAO.getSynchronizer(),
                                BooklistBuilder.this);
 
     /** The word 'UNKNOWN', used for year/month if those are (doh) unknown. */
     private final String mUnknown;
-    /** the list of Filters; both active and non-active. */
+    /** the list of Filters. */
     private final transient ArrayList<Filter> mFilters = new ArrayList<>();
     /** used in debug. */
     private boolean mDebugReferenceDecremented;
@@ -279,10 +281,10 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param context caller context
-     * @param style   Book list style to use
+     * @param resources (NOT cached, just used in the constructor)
+     * @param style     Book list style to use
      */
-    public BooklistBuilder(@NonNull final Context context,
+    public BooklistBuilder(@NonNull final Resources resources,
                            @NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "BooklistBuilder",
@@ -291,10 +293,10 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mUnknown = context.getString(R.string.unknown).toUpperCase();
+        mUnknown = resources.getString(R.string.unknown).toUpperCase();
 
         // Get the database and create a statements collection
-        mDb = new DBA();
+        mDb = new DAO();
         mSyncedDb = mDb.getUnderlyingDatabase();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
@@ -305,7 +307,7 @@ public class BooklistBuilder
      * @return the current preferred rebuild state for the list.
      */
     public static int getListRebuildState() {
-        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
+        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
     }
 
     public static boolean imagesAreCached() {
@@ -545,7 +547,7 @@ public class BooklistBuilder
             mFilters.add(() -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                     + " WHERE "
                     + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
-                    + "='" + DBA.encodeString(filter) + '\''
+                    + "='" + DAO.encodeString(filter) + '\''
                     + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')');
         }
     }
@@ -560,10 +562,10 @@ public class BooklistBuilder
     public void setFilterOnAuthorName(@Nullable final String filter) {
         if (isNonBlank(filter)) {
             mFilters.add(() -> '(' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                    + " LIKE '%" + DBA.encodeString(filter) + "%'"
+                    + " LIKE '%" + DAO.encodeString(filter) + "%'"
                     + " OR "
                     + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                    + " LIKE '%" + DBA.encodeString(filter) + "%')");
+                    + " LIKE '%" + DAO.encodeString(filter) + "%')");
         }
     }
 
@@ -621,7 +623,7 @@ public class BooklistBuilder
             mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
                     + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
                     + " WHERE " + TBL_BOOKS_FTS + " match '"
-                    + DBA.encodeString(DBA.cleanupFtsCriterion(cleanCriteria)) + "'))");
+                    + DAO.encodeString(DAO.cleanupFtsCriterion(cleanCriteria)) + "'))");
         }
     }
 
@@ -736,7 +738,7 @@ public class BooklistBuilder
 
             summary.addDomain(DOM_BL_NODE_LEVEL, null, SummaryBuilder.FLAG_SORTED);
 
-            // Finished. Ensure any caller-specified extras (eg. title) are added at the end.
+            // Finished. Ensure any caller-specified extras (e.g. title) are added at the end.
             for (Entry<String, ExtraDomainDetails> d : mExtraDomains.entrySet()) {
                 ExtraDomainDetails info = d.getValue();
                 int flags = info.isSorted ? SummaryBuilder.FLAG_SORTED
@@ -785,7 +787,7 @@ public class BooklistBuilder
 //                final StringBuilder groupCols = new StringBuilder();
 //                for (DomainDefinition d : summary.cloneGroups()) {
 //                    groupCols.append(d.name);
-//                    groupCols.append(DBA.COLLATION);
+//                    groupCols.append(DAO.COLLATION);
 //                    groupCols.append(", ");
 //                }
 //                groupCols.append(DOM_BL_NODE_LEVEL.name);
@@ -1039,7 +1041,7 @@ public class BooklistBuilder
         for (SortedDomainInfo sdi : sortedColumns) {
             indexCols.append(sdi.domain.name);
             if (sdi.domain.isText()) {
-                indexCols.append(DBA.COLLATION);
+                indexCols.append(DAO.COLLATION);
 
                 // *If* collations is case-sensitive, handle it.
                 if (collationIsCs) {
@@ -1047,7 +1049,7 @@ public class BooklistBuilder
                 } else {
                     sortCols.append(sdi.domain.name);
                 }
-                sortCols.append(DBA.COLLATION);
+                sortCols.append(DAO.COLLATION);
             } else {
                 sortCols.append(sdi.domain.name);
             }
@@ -1097,7 +1099,7 @@ public class BooklistBuilder
                 }
                 cols.append(',').append(d.name);
 
-                collatedCols.append(' ').append(d.name).append(DBA.COLLATION);
+                collatedCols.append(' ').append(d.name).append(DAO.COLLATION);
             }
 
             // Construct the sum statement for this group
@@ -1109,7 +1111,7 @@ public class BooklistBuilder
                     + ',' + group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols
                     + ',' + DOM_BL_ROOT_KEY
                     + " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1)
-                    + " GROUP BY " + collatedCols + ',' + DOM_BL_ROOT_KEY + DBA.COLLATION;
+                    + " GROUP BY " + collatedCols + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION;
             //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
@@ -1145,7 +1147,7 @@ public class BooklistBuilder
 //                    + '(' + sqlCmp.sortIndexColumnList + ',' + DOM_BL_NODE_LEVEL + ')';
 //            String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
 //                    + '(' + sqlCmp.sortIndexColumnList
-//                    + ',' + DOM_BL_ROOT_KEY + DBA.COLLATION + ')';
+//                    + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION + ')';
 //            String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
 //                    + '(' + DOM_BL_NODE_LEVEL + ',' + sqlCmp.sortIndexColumnList
 //                    + ',' + DOM_BL_ROOT_KEY + ')';
@@ -1506,16 +1508,16 @@ public class BooklistBuilder
     @NonNull
     private String buildJoin(@NonNull final BuildInfoHolder buildInfoHolder) {
 
-        JoinContext join;
+        Joiner join;
 
         // If there is a bookshelf specified, start the join there.
         // Otherwise, start with the BOOKS table.
         if (buildInfoHolder.hasGroupBOOKSHELF || (mFilterOnBookshelfId > 0)) {
-            join = new JoinContext(TBL_BOOKSHELF)
+            join = new Joiner(TBL_BOOKSHELF)
                     .join(TBL_BOOK_BOOKSHELF)
                     .join(TBL_BOOKS);
         } else {
-            join = new JoinContext(TBL_BOOKS);
+            join = new Joiner(TBL_BOOKS);
         }
 
         // If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
@@ -1559,7 +1561,7 @@ public class BooklistBuilder
     private String buildWhereClause() {
         StringBuilder where = new StringBuilder();
 
-        // Add local Filters
+        // Add local Filters which are always active
         for (Filter filter : mFilters) {
             if (where.length() != 0) {
                 where.append(" AND ");
@@ -1567,14 +1569,13 @@ public class BooklistBuilder
             where.append(' ').append(filter.getExpression());
         }
 
-        // Add BooklistStyle Filters
+        // Add BooklistStyle Filters but check if they are active
         for (Filter filter : mStyle.getFilters().values()) {
-            String filterSql = filter.getExpression();
-            if (filterSql != null) {
+            if (filter.isActive()) {
                 if (where.length() != 0) {
                     where.append(" AND ");
                 }
-                where.append(' ').append(filterSql);
+                where.append(' ').append(filter.getExpression());
             }
         }
 
@@ -1669,7 +1670,7 @@ public class BooklistBuilder
                     }
                     conditionSql.append("Coalesce(" + currentTableAlias + '.').append(groupDomain)
                                 .append(",'')=Coalesce(New.").append(groupDomain).append(",'')")
-                                .append(DBA.COLLATION);
+                                .append(DAO.COLLATION);
                 }
             }
             insertSql.append(")\n")
@@ -1840,7 +1841,7 @@ public class BooklistBuilder
                     conditionSql.append("Coalesce(l.").append(d)
                                 .append(",'') = Coalesce(new.").append(d)
                                 .append(",'')")
-                                .append(DBA.COLLATION).append('\n');
+                                .append(DAO.COLLATION).append('\n');
                 }
             }
             //insertSql += ")\n	SELECT " + valuesSql
@@ -1989,7 +1990,7 @@ public class BooklistBuilder
      * Get all positions at which the specified book appears.
      *
      * @return Array of row details, including absolute positions and visibility or
-     * null if not present.
+     * {@code null} if not present.
      */
     @Nullable
     public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
@@ -2929,7 +2930,7 @@ public class BooklistBuilder
 //			summary.addDomain(DOM_BL_SELECTED, TBL_BOOKS.dot(DOM_PK_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
 //		}
 //
-//		// Ensure any caller-specified extras (eg. title) are added at the end.
+//		// Ensure any caller-specified extras (e.g. title) are added at the end.
 //		for(Entry<String,ExtraDomainInfo> d : mExtraDomains.entrySet()) {
 //			ExtraDomainInfo info = d.get();
 //			int flags;
@@ -2956,15 +2957,15 @@ public class BooklistBuilder
 //
 //		final long t0d = System.nanoTime();
 //
-//		JoinContext join;
+//		Joiner join;
 //
 //		if (!bookshelf.isEmpty()) {
-//			join = new JoinContext(TBL_BOOKSHELF)
+//			join = new Joiner(TBL_BOOKSHELF)
 //				.start()
 //				.join(TBL_BOOK_BOOKSHELF)
 //				.join(TBL_BOOKS);
 //		} else {
-//			join = new JoinContext(TBL_BOOKS).start();
+//			join = new Joiner(TBL_BOOKS).start();
 //		}
 //			/*
 //			if (!bookshelf.isEmpty()) {
@@ -3017,7 +3018,7 @@ public class BooklistBuilder
 //		if (!bookshelf.equals("")) {
 //			if (!where.equals(""))
 //				where += " and ";
-//			where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + " = '" + DBA.encodeString(bookshelf) + "')";
+//			where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + " = '" + DAO.encodeString(bookshelf) + "')";
 //		}
 //		if (!authorWhere.equals("")) {
 //			if (!where.equals(""))
@@ -3058,7 +3059,7 @@ public class BooklistBuilder
 //			final StringBuilder sortCols = new StringBuilder();
 //			for (DomainDefinition d: sort) {
 //				sortCols.append(d.name);
-//				sortCols.append(DBA.COLLATION + ", ");
+//				sortCols.append(DAO.COLLATION + ", ");
 //			}
 //			sortCols.append(DOM_BL_NODE_LEVEL.name);
 //			mSortColumnList = sortCols.toString();
@@ -3069,7 +3070,7 @@ public class BooklistBuilder
 //			final StringBuilder groupCols = new StringBuilder();;
 //			for (DomainDefinition d: group) {
 //				groupCols.append(d.name);
-//				groupCols.append(DBA.COLLATION + ", ");
+//				groupCols.append(DAO.COLLATION + ", ");
 //			}
 //			groupCols.append( DOM_BL_NODE_LEVEL.name );
 //			mGroupColumnList = groupCols.toString();
@@ -3080,7 +3081,7 @@ public class BooklistBuilder
 //			final StringBuilder keyCols = new StringBuilder();;
 //			for (DomainDefinition d: keys) {
 //				keyCols.append(d.name);
-//				keyCols.append(DBA.COLLATION + ", ");
+//				keyCols.append(DAO.COLLATION + ", ");
 //			}
 //			keyCols.append( DOM_BL_NODE_LEVEL.name );
 //			mKeyColumnList = keyCols.toString();
@@ -3157,7 +3158,7 @@ public class BooklistBuilder
 //				insertSql += ", " + d;
 //				valuesSql += ", new." + d;
 //				if (summary.getKeys().contains(d))
-//					conditionSql += "	and l." + d + " = new." + d + DBA.COLLATION + "\n";
+//					conditionSql += "	and l." + d + " = new." + d + DAO.COLLATION + "\n";
 //			}
 //			//insertSql += ")\n	SELECT " + valuesSql + " WHERE NOT EXISTS (SELECT 1 FROM " + mListTable + " l WHERE " + conditionSql + ")";
 //			//tgLines[i] = insertSql;
@@ -3239,8 +3240,8 @@ public class BooklistBuilder
 //					if (!collatedCols.equals(""))
 //						collatedCols += ",";
 //					cols += ",\n	" + d.name;
-//					//collatedCols += ",\n	" + d.name + DBA.COLLATION;
-//					collatedCols += "\n	" + d.name + DBA.COLLATION;
+//					//collatedCols += ",\n	" + d.name + DAO.COLLATION;
+//					collatedCols += "\n	" + d.name + DAO.COLLATION;
 //				}
 //				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_BL_NODE_LEVEL + ",\n	" + DOM_BL_NODE_ROW_KIND +
 //						//",\n	" + DOM_PARENT_KEY +
@@ -3250,7 +3251,7 @@ public class BooklistBuilder
 //						//l.getKeyExpression() +
 //						cols + "," + DOM_BL_ROOT_KEY +
 //						"\n FROM " + mListTable + "\n " + " WHERE level = " + (levelId+1) +
-//						"\n GROUP BY " + collatedCols + "," + DOM_BL_ROOT_KEY + DBA.COLLATION;
+//						"\n GROUP BY " + collatedCols + "," + DOM_BL_ROOT_KEY + DAO.COLLATION;
 //						//"\n GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 //
 //				SQLiteStatement stmt = mStatements.add("L" + i, sql);

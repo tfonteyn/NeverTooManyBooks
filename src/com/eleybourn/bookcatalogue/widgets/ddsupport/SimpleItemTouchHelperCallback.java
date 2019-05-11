@@ -26,8 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * An implementation of {@link ItemTouchHelper.Callback} that enables basic drag & drop and
- * swipe-to-dismiss. Drag events are automatically started by an item long-press.<br/>
- * </br/>
+ * swipe-to-dismiss. Drag events are automatically started by an item long-press.<br><br>
  * Expects the {@code RecyclerView.Adapter<} to listen for {@link ItemTouchHelperAdapter}
  * callbacks and the {@code RecyclerView.ViewHolder} to implement {@link ItemTouchHelperViewHolder}.
  *

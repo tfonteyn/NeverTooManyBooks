@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- top view must be scroller to work with AppBarLayout. -->
 <com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:csf="http://schemas.android.com/apk/res-auto"

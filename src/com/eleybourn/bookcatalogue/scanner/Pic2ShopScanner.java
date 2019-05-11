@@ -59,7 +59,7 @@ public class Pic2ShopScanner
 
     /**
      * <br>{@inheritDoc}
-     * <p>
+     * <br>
      * <p>Note that we always send an intent; the caller should have checked that
      * one of the intents is valid, or catch the resulting errors.
      */

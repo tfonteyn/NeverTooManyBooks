@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 
@@ -62,7 +62,7 @@ public final class ImageUtils {
         if (BooklistBuilder.imagesAreCached()
                 && !GetImageTask.hasActiveTasks()
                 && !ImageCacheWriterTask.hasActiveTasks()) {
-            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                 final Bitmap bm = coversDBAdapter.getImage(uuid, maxWidth, maxHeight);
                 if (bm != null) {
                     // Remove any tasks that may be getting the image because they may overwrite
@@ -638,7 +638,7 @@ public final class ImageUtils {
 
                 // try cache
                 if (!mCacheWasChecked) {
-                    try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                    try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                         mBitmap = coversDBAdapter.getImage(mUuid, mWidth, mHeight);
                     }
                     mWasInCache = (mBitmap != null);
@@ -704,12 +704,10 @@ public final class ImageUtils {
                     mBitmap = null;
                 }
             } else {
-                if (imageView != null) {
+                if (viewIsValid) {
                     imageView.setImageResource(R.drawable.ic_broken_image);
                 }
             }
-
-            mView.clear();
         }
     }
 
@@ -748,7 +746,7 @@ public final class ImageUtils {
                                      final int maxHeight,
                                      @NonNull final Bitmap source,
                                      final boolean canRecycle) {
-            mCacheId = CoversDBA.constructCacheId(uuid, maxWidth, maxHeight);
+            mCacheId = CoversDAO.constructCacheId(uuid, maxWidth, maxHeight);
             mBitmap = source;
             mCanRecycle = canRecycle;
         }
@@ -770,7 +768,7 @@ public final class ImageUtils {
                 // Was probably recycled by rapid scrolling of view
                 mBitmap = null;
             } else {
-                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                     coversDBAdapter.saveFile(mBitmap, mCacheId);
                 }
 

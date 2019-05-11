@@ -20,7 +20,7 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -110,7 +110,7 @@ public abstract class GrSendBooksTaskBase
     boolean sendOneBook(@NonNull final QueueManager queueManager,
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
-                        @NonNull final DBA db,
+                        @NonNull final DAO db,
                         @NonNull final BookCursorRow bookCursorRow) {
 
         GoodreadsManager.ExportDisposition disposition;
@@ -231,7 +231,7 @@ public abstract class GrSendBooksTaskBase
         public void bindView(@NonNull final View view,
                              @NonNull final Context context,
                              @NonNull final BindableItemCursor cursor,
-                             @NonNull final DBA db) {
+                             @NonNull final DAO db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
             // Update event info binding; the Views in the holder are unchanged,
@@ -301,7 +301,7 @@ public abstract class GrSendBooksTaskBase
                                         final int position,
                                         final long id,
                                         @NonNull final List<ContextDialogItem> items,
-                                        @NonNull final DBA db) {
+                                        @NonNull final DAO db) {
 
             // EDIT BOOK
             items.add(new ContextDialogItem(

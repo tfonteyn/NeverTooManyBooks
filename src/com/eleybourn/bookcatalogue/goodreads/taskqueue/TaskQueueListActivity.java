@@ -102,7 +102,7 @@ public class TaskQueueListActivity
     /**
      * Get a cursor returning the tasks we are interested in (in this case all tasks).
      * <p>
-     * Reads from {@link TaskQueueDBAdapter}
+     * Reads from {@link TaskQueueDAO}
      */
     @NonNull
     @Override

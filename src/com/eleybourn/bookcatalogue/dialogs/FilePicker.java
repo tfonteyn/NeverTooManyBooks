@@ -39,12 +39,12 @@ public class FilePicker
                       @Nullable final String title,
                       @Nullable final String message,
                       @NonNull final List<File> files,
-                      @NonNull final OnClickListener<File> handler) {
+                      @NonNull final OnPickListener<File> handler) {
         super(context, title, message);
 
         final FileItemListAdapter adapter = new FileItemListAdapter(context, files, (item) -> {
             dismiss();
-            handler.onClick(item);
+            handler.onPicked(item);
         });
         setAdapter(adapter, 0);
     }
@@ -60,11 +60,11 @@ public class FilePicker
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final OnClickListener<File> mListener;
+        private final OnPickListener<File> mListener;
 
         FileItemListAdapter(@NonNull final Context context,
                             @NonNull final List<File> objects,
-                            @NonNull final OnClickListener<File> listener) {
+                            @NonNull final OnPickListener<File> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
@@ -94,7 +94,7 @@ public class FilePicker
                                                                   new Date(item.lastModified())));
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onClick(item));
+            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
         }
 
         @Override

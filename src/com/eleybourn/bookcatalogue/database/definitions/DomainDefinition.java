@@ -35,7 +35,7 @@ public class DomainDefinition
 
     private static final long serialVersionUID = 3405337543505961871L;
 
-    /** not null constraint string. */
+    /** Constraint string. */
     private static final String NOT_NULL = "NOT NULL";
     @NonNull
     public final String name;
@@ -78,7 +78,7 @@ public class DomainDefinition
      *
      * @param name    column name
      * @param type    column type (text, int, float, ...)
-     * @param notNull {@code true} if this column should never be null
+     * @param notNull {@code true} if this column should never be {@code null}
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
@@ -93,7 +93,7 @@ public class DomainDefinition
     /**
      * @param name        column name
      * @param type        column type (text, int, float, ...)
-     * @param notNull     {@code true} if this column should never be null
+     * @param notNull     {@code true} if this column should never be {@code null}
      * @param constraints (optional) a list of generic constraints
      */
     public DomainDefinition(@NonNull final String name,

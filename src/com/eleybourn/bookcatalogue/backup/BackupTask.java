@@ -40,7 +40,7 @@ public class BackupTask
     @UiThread
     public BackupTask(@NonNull final ProgressDialogFragment<Object, ExportSettings> progressDialog,
                       @NonNull final ExportSettings /* in/out */ settings) {
-        super(progressDialog);
+        super(R.id.TASK_ID_WRITE_TO_ARCHIVE, progressDialog);
 
         mSettings = settings;
         // sanity checks
@@ -56,10 +56,6 @@ public class BackupTask
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
         mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
-    }
-
-    protected int getId() {
-        return R.id.TASK_ID_WRITE_TO_ARCHIVE;
     }
 
     @UiThread

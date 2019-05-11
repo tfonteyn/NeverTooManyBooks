@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.booklist;
+package com.eleybourn.bookcatalogue.settings;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,6 +33,10 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,35 +46,39 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity.GroupWrapper;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
- * Activity to edit the groups associated with a style (include/exclude and/or move up/down).
- *
- * @author Philip Warner
+ * Activity to edit the groups associated with a style (include/exclude + move up/down).
  */
-public class EditBooklistStyleGroupsActivity
-        extends EditObjectListActivity<GroupWrapper> {
+public class StyleGroupsActivity
+        extends BaseActivity {
 
-    /** Preferences setup. */
-    private static final String REQUEST_BKEY_STYLE = "Style";
+    private static final String BKEY_LIST = "list";
+
+    /** the rows. */
+    protected ArrayList<GroupWrapper> mList;
+
+    /** The adapter for the list. */
+    protected RecyclerViewAdapterBase mListAdapter;
+    /** The View for the list. */
+    protected RecyclerView mListView;
+    protected LinearLayoutManager mLayoutManager;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
 
     /** Copy of the style we are editing. */
     private BooklistStyle mStyle;
-
-    /**
-     * Constructor.
-     */
-    public EditBooklistStyleGroupsActivity() {
-        super(null);
-    }
 
     @Override
     protected int getLayoutId() {
@@ -80,15 +88,41 @@ public class EditBooklistStyleGroupsActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Intent intent = getIntent();
-        mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
-        Objects.requireNonNull(mStyle);
-
-        // Init the subclass now that we have the style
         super.onCreate(savedInstanceState);
 
-        setTitle(getString(R.string.name_colon_value,
-                           getString(R.string.pg_groupings), mStyle.getLabel(this)));
+        Intent intent = getIntent();
+        mStyle = intent.getParcelableExtra(UniqueId.BKEY_STYLE);
+        Objects.requireNonNull(mStyle);
+
+        // Get the list
+        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+        if (args != null) {
+            mList = args.getParcelableArrayList(BKEY_LIST);
+        }
+        if (mList == null) {
+            mList = getList();
+        }
+
+        mListView = findViewById(android.R.id.list);
+        mLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(mLayoutManager);
+        mListView.setHasFixedSize(true);
+
+        // setup the adapter
+        mListAdapter = new GroupWrapperListAdapter(this, mList,
+                                                   vh -> mItemTouchHelper.startDrag(vh));
+        mListView.setAdapter(mListAdapter);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
+
+        ActionBar bar = getSupportActionBar();
+        //noinspection ConstantConditions
+        bar.setTitle(R.string.title_edit_style);
+        bar.setSubtitle(getString(R.string.name_colon_value,
+                                  getString(R.string.pg_groupings), mStyle.getLabel(this)));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -97,13 +131,12 @@ public class EditBooklistStyleGroupsActivity
     }
 
     /**
-     * Required by parent class since we do not pass a key for the intent to get the list.
+     * Construct the list by wrapping each group individually.
      */
     @NonNull
-    @Override
     protected ArrayList<GroupWrapper> getList() {
         // Build an array list with the groups from the style
-        ArrayList<GroupWrapper> groupWrappers = new ArrayList<>();
+        ArrayList<GroupWrapper> groupWrappers = new ArrayList<>(mStyle.groupCount());
         for (BooklistGroup group : mStyle.getGroups()) {
             groupWrappers.add(new GroupWrapper(group, mStyle.getUuid(), true));
         }
@@ -120,18 +153,30 @@ public class EditBooklistStyleGroupsActivity
     }
 
     /**
-     * Adds the style to the resulting data
+     * Saves the new order/settings of the groups to the style.
      * <p>
-     * <br>{@inheritDoc}
+     * This is unconditional in line with how Android preferences/settings screens work.
      */
     @Override
-    protected boolean onSave(@NonNull final Intent data) {
-        //Note: right now, we don't have any updated preferences other then the groups.
-        // Save the properties of this style
+    public void onBackPressed() {
+        saveStyleSettings();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
+            Logger.debug(this, "onBackPressed", mStyle);
+        }
+
+        // send the modified style back.
+        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
+        setResult(Activity.RESULT_OK, data);
+
+        super.onBackPressed();
+    }
+
+    public void saveStyleSettings() {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
         // Loop through ALL groups
-        for (GroupWrapper wrapper : mList) {
+        for (StyleGroupsActivity.GroupWrapper wrapper : mList) {
             // Remove its kind from style
             mStyle.removeGroup(wrapper.group.getKind());
             // If required, add the group back; this also takes care of the order.
@@ -141,25 +186,18 @@ public class EditBooklistStyleGroupsActivity
         }
 
         // Apply any saved properties.
+        // Note: right now, we don't have any updated preferences other then the groups.
         mStyle.updatePreferences(allPreferences);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.debug(this, "onSave", mStyle);
-        }
-
-        data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-        setResult(Activity.RESULT_OK, data);
-        return true;
     }
 
-    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<GroupWrapper> list,
-                                                        @NonNull final OnStartDragListener dragStartListener) {
-        //        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-//            @Override
-//            public void onChanged() {
-//            }
-//        });
-        return new GroupWrapperListAdapter(this, list, dragStartListener);
+    /**
+     * Ensure that the list is saved.
+     */
+    @Override
+    @CallSuper
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(BKEY_LIST, mList);
     }
 
     /**
@@ -187,16 +225,16 @@ public class EditBooklistStyleGroupsActivity
 
         /** The actual group. */
         @NonNull
-        final BooklistGroup group;
+        public final BooklistGroup group;
         @NonNull
         final String uuid;
         /** Whether this groups is present in the style. */
-        boolean present;
+        public boolean present;
 
         /** Constructor. */
-        GroupWrapper(@NonNull final BooklistGroup group,
-                     @NonNull final String uuid,
-                     final boolean present) {
+        public GroupWrapper(@NonNull final BooklistGroup group,
+                            @NonNull final String uuid,
+                            final boolean present) {
             this.group = group;
             this.uuid = uuid;
             this.present = present;

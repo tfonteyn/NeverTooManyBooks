@@ -39,28 +39,28 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 /**
  * https://openlibrary.org/developers/api
  * <p>
- * <p>
  * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
  * <p>
  * https://openlibrary.org/dev/docs/api/books
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
- * <p>
- * - response format: jscmd=data:
+ * <ul>
+ * <li> response format: jscmd=data:<br>
  * Does not return all the info that is known to be present. (use the website itself to look up an isbn)
- * Example: "physical_format": "Paperback" is NOT part of the response.
- * <p>
- * - response format: jscmd=detail:
+ * Example: "physical_format": "Paperback" is NOT part of the response.</li>
+ * <li>response format: jscmd=detail:<br>
  * The docs state: "It is advised to use jscmd=data instead of this as that is more stable format."
  * The response seems to (mostly?) contain the same info as from 'data' but with additional fields.
- * Some fields have a different schema: "identifiers" with "data" has sub object with ALL identifiers (including isbn).
- * But "identifiers" with "detail" has no isbn's. Instead isbn's are on the same level as "identifiers" itself.
- * <p>
- * Problem:
- * - "data" does not contain all information that the site has.
- * - "details" seems, by their own admission, not to be stable yet.
- * - both: dates are not structured, but {@link DateUtils#parseDate(String)} can work around that.
- * - last update dates on the website & api docs are sometimes from years ago. Is this still developed ?
- * <p>
+ * Some fields have a different schema: "identifiers" with "data" has sub object with ALL
+ * identifiers (including isbn). But "identifiers" with "detail" has no isbn's.
+ * Instead isbn's are on the same level as "identifiers" itself.</li>
+ * </ul>
+ * Problems:
+ * <ul>
+ * <li>"data" does not contain all information that the site has.</li>
+ * <li>"details" seems, by their own admission, not to be stable yet.</li>
+ * <li>both: dates are not structured, but {@link DateUtils#parseDate(String)} can work around that.</li>
+ * <li>last update dates on the website & api docs are sometimes from years ago. Is this still developed ?</li>
+ * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
 public class OpenLibraryManager
@@ -172,11 +172,8 @@ public class OpenLibraryManager
     /**
      * https://openlibrary.org/dev/docs/api/books
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data
-     *
-     * @throws IOException on failure
+     * <br>
+     * <br>{@inheritDoc}
      */
     @NonNull
     @Override

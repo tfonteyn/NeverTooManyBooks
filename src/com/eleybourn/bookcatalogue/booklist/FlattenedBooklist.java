@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
@@ -33,7 +33,7 @@ public class FlattenedBooklist
 
     /** Underlying temporary table definition. */
     private TableDefinition mTable;
-    /** Connection to db; we need this to keep the table alive. */
+    /** The underlying database. We need this to keep the table alive. */
     private SynchronizedDb mSyncedDb;
     /** Default position (before start). */
     private long mPosition = -1;
@@ -59,7 +59,7 @@ public class FlattenedBooklist
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(@NonNull final DBA db,
+    public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
         TableDefinition flat = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);

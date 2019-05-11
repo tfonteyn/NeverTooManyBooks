@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 /**
  * Interface implemented for custom data access.
  * <p>
- * <p>
  * Usage:
  * Extends your object from DataManager.
  * During initialisation, call setAccessor(key, new DataAccessor(...))

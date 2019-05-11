@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
+import android.os.AsyncTask;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -8,6 +10,7 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -16,8 +19,8 @@ import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
@@ -26,7 +29,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * @author pjw
  */
 public class FileListerTask
-        extends TaskWithProgress<Object, FileChooserFragment.DirectoryContent> {
+        extends AsyncTask<Void, Object, FileChooserFragment.DirectoryContent> {
 
     /** Used by the {@link ProgressDialogFragment} for this task. */
     public static final String TAG = FileListerTask.class.getSimpleName();
@@ -40,24 +43,29 @@ public class FileListerTask
                                   LocaleUtils.getSystemLocale()));
 
     @NonNull
+    private final WeakReference<OnTaskListener<Object, FileChooserFragment.DirectoryContent>> mListener;
+
+    @NonNull
     private final FileChooserFragment.DirectoryContent mDir;
+    private final int mTaskId = R.id.TASK_ID_FILE_LISTER;
+    /**
+     * {@link #doInBackground} should catch exceptions, and set this field.
+     * {@link #onPostExecute} can then check it.
+     */
+    @Nullable
+    protected Exception mException;
 
     /**
      * Constructor.
      *
-     * @param progressDialog ProgressDialogFragment
-     * @param root           folder to list
+     * @param root folder to list
      */
     @UiThread
-    FileListerTask(@NonNull final ProgressDialogFragment<Object, FileChooserFragment.DirectoryContent> progressDialog,
-                   @NonNull final File root) {
-        super(progressDialog);
+    FileListerTask(@NonNull final File root,
+                   @NonNull final OnTaskListener<Object, FileChooserFragment.DirectoryContent> listener) {
+        mListener = new WeakReference<>(listener);
 
         mDir = new FileChooserFragment.DirectoryContent(root);
-    }
-
-    protected int getId() {
-        return R.id.TASK_ID_FILE_LISTER;
     }
 
     @Override
@@ -90,5 +98,21 @@ public class FileListerTask
 
         Collections.sort(mDir.files, FILE_DETAILS_COMPARATOR);
         return mDir;
+    }
+
+    /**
+     * If the task was cancelled (by the user cancelling the progress dialog) then
+     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+     *
+     * @param result of the task
+     */
+    @Override
+    @UiThread
+    protected void onPostExecute(@Nullable final FileChooserFragment.DirectoryContent result) {
+        if (mListener.get() != null) {
+            mListener.get().onTaskFinished(mTaskId,mException == null, result, mException);
+        } else {
+            throw new RuntimeException("WeakReference to listener was dead");
+        }
     }
 }

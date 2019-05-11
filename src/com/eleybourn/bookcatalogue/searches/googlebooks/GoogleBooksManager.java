@@ -67,13 +67,6 @@ public final class GoogleBooksManager
         return R.string.searching_google_books;
     }
 
-    /**
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
-     *
-     * @return bundle with book data
-     *
-     * @throws IOException on failure
-     */
     @NonNull
     @Override
     @WorkerThread

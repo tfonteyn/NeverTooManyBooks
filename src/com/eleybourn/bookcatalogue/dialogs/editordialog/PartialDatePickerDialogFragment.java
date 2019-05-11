@@ -78,7 +78,7 @@ public class PartialDatePickerDialogFragment
     private static final String UNKNOWN_DAY = "--";
 
     /**
-     * Currently displayed; null if empty/invalid.
+     * Currently displayed; {@code null} if empty/invalid.
      * The value is automatically updated by the dialog after every change.
      */
     @Nullable
@@ -191,7 +191,7 @@ public class PartialDatePickerDialogFragment
      * yyyy-mm
      * yyyy
      *
-     * @param dateString SQL formatted (partial) date, may be null
+     * @param dateString SQL formatted (partial) date, may be {@code null}
      */
     private void setDate(@NonNull final String dateString) {
         Integer yyyy = null;
@@ -308,7 +308,7 @@ public class PartialDatePickerDialogFragment
 
             // Get a calendar for locale-related info
             Calendar cal = Calendar.getInstance();
-            // Set the day to 1...so avoid wrap on short months (default to current date)
+            // Set the day to 1... so avoid wrap on short months (default to current date)
             cal.set(Calendar.DAY_OF_MONTH, 1);
             // Add all month names (abbreviated)
             for (int i = 0; i < 12; i++) {

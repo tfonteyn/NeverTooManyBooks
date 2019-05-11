@@ -170,7 +170,7 @@ public final class DateUtils {
      *
      * @param dateString String to parse
      *
-     * @return Resulting date if parsed, otherwise null
+     * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
     public static Date parseDate(@Nullable final String dateString) {
@@ -194,7 +194,7 @@ public final class DateUtils {
      * @param dateString String to parse
      * @param lenient    {@code true} if parsing should be lenient
      *
-     * @return Resulting date if successfully parsed, otherwise null
+     * @return Resulting date if successfully parsed, otherwise {@code null}
      */
     @Nullable
     private static Date parseDate(@NonNull final String dateString,
@@ -371,7 +371,7 @@ public final class DateUtils {
      * Passed date components build a (partial) SQL format date string.
      * Locale independent.
      *
-     * @return Formatted date, eg. '2011-11-01' or '2011-11'
+     * @return Formatted date, e.g. '2011-11-01' or '2011-11'
      */
     @SuppressLint("DefaultLocale")
     @NonNull

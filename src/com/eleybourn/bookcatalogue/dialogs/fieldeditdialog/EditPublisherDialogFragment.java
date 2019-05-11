@@ -35,7 +35,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -50,7 +50,10 @@ public class EditPublisherDialogFragment
 
     /** Fragment manager tag. */
     private static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
-    private DBA mDb;
+
+    /** Database access. */
+    private DAO mDb;
+
     private String mName;
 
     private AutoCompleteTextView mNameView;
@@ -81,7 +84,7 @@ public class EditPublisherDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Context context = getContext();
-        mDb = new DBA();
+        mDb = new DAO();
 
         Bundle args = requireArguments();
 

@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
 
 /**
@@ -42,7 +42,8 @@ abstract class BindableItemListActivity
         extends BaseActivity
         implements BindableItemBinder {
 
-    protected DBA mDb;
+    /** Database access. */
+    protected DAO mDb;
 
     /** Cursor for list. */
     private BindableItemCursor mBindableItems;
@@ -71,7 +72,7 @@ abstract class BindableItemListActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new DBA();
+        mDb = new DAO();
         super.onCreate(savedInstanceState);
 
         // The View for the list.
@@ -93,7 +94,7 @@ abstract class BindableItemListActivity
     }
 
     /**
-     * Refresh data; some other activity may have changed relevant data (eg. a book)
+     * Refresh data; some other activity may have changed relevant data (e.g. a book)
      */
     @Override
     @CallSuper

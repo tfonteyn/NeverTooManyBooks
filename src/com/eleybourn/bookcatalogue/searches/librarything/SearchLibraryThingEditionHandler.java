@@ -11,7 +11,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Parser Handler to collect the edition data.
  * <p>
- * http://www.librarything.com/api/thingISBN/<ISBN>
+ * http://www.librarything.com/api/thingISBN/{ISBN}
  * <p>
  * Typical request output:
  * <pre>

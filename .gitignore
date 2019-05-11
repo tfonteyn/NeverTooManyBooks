@@ -14,9 +14,6 @@
 .externalNativeBuild
 
 
-
-
-
 # Eclipse specific
 
 /wrapper

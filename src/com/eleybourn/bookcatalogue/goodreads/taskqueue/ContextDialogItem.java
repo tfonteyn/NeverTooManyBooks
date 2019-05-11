@@ -61,13 +61,12 @@ public class ContextDialogItem
         if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
-            final AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle(R.string.title_select_an_action)
+            new AlertDialog.Builder(context)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setItems(itemArray,
-                              (d, which) -> itemArray[which].mHandler.run()).create();
-
-            dialog.show();
+                    .setTitle(R.string.title_select_an_action)
+                    .setItems(itemArray, (d, which) -> itemArray[which].mHandler.run())
+                    .create()
+                    .show();
         }
     }
 

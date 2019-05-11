@@ -29,6 +29,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
@@ -76,6 +78,7 @@ public abstract class BaseActivityWithTasks
     @Nullable
     private TaskManager mTaskManager;
 
+    /** A cheaper progress dialog. */
     private View mProgressOverlayView;
 
     private TextView mProgressMessageView;
@@ -92,7 +95,7 @@ public abstract class BaseActivityWithTasks
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main_nav;
+        return R.layout.activity_main_with_legacy_tasks;
     }
 
     @Override
@@ -101,6 +104,8 @@ public abstract class BaseActivityWithTasks
         super.onCreate(savedInstanceState);
 
         mProgressOverlayView = findViewById(R.id.progressOverlay);
+        Objects.requireNonNull(mProgressOverlayView);
+
         mProgressBar = findViewById(R.id.progressBar);
         mProgressMessageView = findViewById(R.id.progressMessage);
 
@@ -116,7 +121,7 @@ public abstract class BaseActivityWithTasks
         super.onResume();
         // If we are finishing, we don't care about active tasks.
         if (!isFinishing()) {
-            // Restore mTaskManager if present
+            // Restore/create mTaskManager.
             getTaskManager();
             TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, this, true);
         }
@@ -164,6 +169,8 @@ public abstract class BaseActivityWithTasks
      * If we had a TaskManager before we took a nap, try to get it back using the mTaskManagerId
      * we saved in onSaveInstanceState.
      * Creates one if we don't yet have one.
+     *
+     * @return the TaskManager
      */
     @NonNull
     public TaskManager getTaskManager() {
@@ -203,7 +210,7 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * Display a progress message
+     * Display a progress message.
      *
      * @param absPosition the new value to set
      * @param max         the (potentially) new estimate maximum value
@@ -248,7 +255,7 @@ public abstract class BaseActivityWithTasks
             mProgressMessage = getString(R.string.progress_msg_cancelling);
         }
 
-        boolean wantInDeterminate = (mProgressMax == 0);
+        boolean wantInDeterminate = mProgressMax == 0;
 
         // check if the required type has changed
         if (wantInDeterminate != mProgressBar.isIndeterminate()) {
@@ -266,7 +273,7 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * Dismiss the Progress Dialog, and null it so we can recreate when needed.
+     * Dismiss the Progress Dialog, and {@code null} it so we can recreate when needed.
      */
     private void closeProgressDialog() {
         if (mProgressOverlayView != null) {
@@ -277,7 +284,7 @@ public abstract class BaseActivityWithTasks
     /**
      * Called when the progress dialog was cancelled.
      *
-     * @param taskId for the task; null if there was no embedded task.
+     * @param taskId for the task; {@code null} if there was no embedded task.
      */
     @Override
     public void onProgressDialogCancelled(@Nullable final Integer taskId) {

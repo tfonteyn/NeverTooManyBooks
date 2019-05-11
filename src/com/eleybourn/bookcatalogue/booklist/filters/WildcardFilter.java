@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue.booklist.filters;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
@@ -32,6 +32,6 @@ public class WildcardFilter
     @Override
     @NonNull
     public String getExpression() {
-        return '(' + mTable.dot(mDomain) + " LIKE '%" + DBA.encodeString(mCriteria) + "%'" + ')';
+        return '(' + mTable.dot(mDomain) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
     }
 }

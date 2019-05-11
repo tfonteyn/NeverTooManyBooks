@@ -27,16 +27,12 @@ public class RestoreTask
     @UiThread
     public RestoreTask(@NonNull final ProgressDialogFragment<Object, ImportSettings> progressDialog,
                        @NonNull final ImportSettings /* in/out */ settings) {
-        super(progressDialog);
+        super(R.id.TASK_ID_READ_FROM_ARCHIVE, progressDialog);
 
         mSettings = settings;
         if (((mSettings.what & ImportSettings.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
-    }
-
-    protected int getId() {
-        return R.id.TASK_ID_READ_FROM_ARCHIVE;
     }
 
     @Override

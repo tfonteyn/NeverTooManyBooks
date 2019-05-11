@@ -31,13 +31,12 @@ import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.RestoreTask;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskFinishedListener;
+import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -51,7 +50,7 @@ public class RestoreActivity
         extends BRBaseActivity
         implements
         ImportOptionsDialogFragment.OnOptionsListener,
-        OnTaskFinishedListener<ImportSettings> {
+        OnTaskListener<Object, ImportSettings> {
 
     private ProgressDialogFragment<Object, ImportSettings> mProgressDialog;
 
@@ -65,8 +64,8 @@ public class RestoreActivity
         mProgressDialog = (ProgressDialogFragment<Object, ImportSettings>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskFinishedListener(this);
-//            mProgressDialog.setOnProgressCancelledListener(this);
+            mProgressDialog.setOnTaskListener(this);
+//            mProgressDialog.setOnUserCancelledListener(this);
         }
 
         if (fm.findFragmentByTag(FileChooserFragment.TAG) == null) {
@@ -103,7 +102,7 @@ public class RestoreActivity
                     .setMessage(R.string.import_option_info_all_books)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.btn_options, (d, which) ->
-                            // ask user what options he they want
+                            // ask user what options they want
                             ImportOptionsDialogFragment.show(getSupportFragmentManager(), settings))
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // User wants to import all.
@@ -136,8 +135,8 @@ public class RestoreActivity
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskFinishedListener(this);
-//        mProgressDialog.setOnProgressCancelledListener(this);
+        mProgressDialog.setOnTaskListener(this);
+//        mProgressDialog.setOnUserCancelledListener(this);
     }
 
     /**
@@ -159,7 +158,7 @@ public class RestoreActivity
                 if (success) {
                     // see if there are any pre-200 preferences that need migrating.
                     if ((result.what & ImportSettings.PREFERENCES) != 0) {
-                        Prefs.migratePreV200preferences(App.PREF_LEGACY_BOOK_CATALOGUE);
+                        Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                     }
 
                     new AlertDialog.Builder(this)

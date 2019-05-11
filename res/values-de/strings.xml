@@ -87,10 +87,12 @@
     <string name="about_lbl_sourcecode">Quellcode:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
     <string name="about_lbl_donate">Spenden</string>
-    <string name="lbl_about">Über diese App</string>
+    <string name="menu_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
-    <string name="lbl_update_fields_to_update">Felder für Aktualisierung auswählen</string>
+    <string name="lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
+    <string name="lbl_select_fields">Felder auswählen</string>
+
     <string name="info_select_fields_to_update">
         Die ausgewählten Felder werden aus dem Internet
         aktualisiert. Nicht ausgewählte Felder werden nicht geändert.
@@ -227,7 +229,7 @@
     <string name="menu_edit_author">Autor bearbeiten…</string>
     <string name="menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
-    <string name="confirm_really_delete_series">
+    <string name="confirm_delete_series">
         Soll die Serie ‘%1$s’ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
@@ -253,7 +255,7 @@
     </string>
     <string name="warning_unable_to_find_book">Das angegebene Buch wurde nicht gefunden</string>
     <string name="list_and">und</string>
-    <string name="confirm_really_delete_book">
+    <string name="confirm_delete_book">
         Dieser Vorgang löscht das Buch mit dem Titel ‘%1$s’ von ‘%2$s’ vollständig.
         Wollen Sie das Buch löschen?
     </string>
@@ -496,9 +498,9 @@
         \nEbenso können Sie hier das Stilmenü und die Stile selbst bearbeiten.
     </string>
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
-    <string name="title_edit_style_colon_name">Bearbeite Stil: %1$s</string>
+    <string name="title_edit_style">Bearbeite Stil</string>
     <string name="X_menu_add_style">Stil hinzufügen</string>
-    <string name="title_clone_style_colon_name">Stil klonen: %1$s</string>
+    <string name="title_clone_style">Stil klonen</string>
     <string name="pg_filters">Buchfilter</string>
     <string name="X_title_add_style">Neuer Stil</string>
     <string name="X_pt_bob_filter_read">Auswahl auf Basis des Status \‘Gelesen\’</string>
@@ -703,7 +705,7 @@
         nicht, diese App auch auf der Goodreads-Website zu de-autorisieren.\n
         Das Löschen der Zugangsdaten entfernt die Goodreads-Option aus dem  Hauptmenü.
     </string>
-    <string name="progress_msg_connecting_to_web_site">Verbinde mit der Website…</string>
+    <string name="progress_msg_connecting">Verbinde mit der Website…</string>
     <string name="lbl_backup">Sichern ins Archiv</string>
     <string name="lbl_import_from_archive">Import vom Archiv</string>
     <!--  Hint displayed when a Backup is done -->
@@ -820,28 +822,29 @@
     </string>
 
     <plurals name="displaying_n_books">
-        <!--<item quantity="zero">Kein Buch angezeigt</item>-->
         <item quantity="one">Ein Buch angezeigt</item>
         <item quantity="other">%1$d Bücher werden angezeigt</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">Ein Buch gefunden</item>
+        <item quantity="other">%1$d Bücher gefunden</item>
+    </plurals>
+
     <!-- Short text for ‘n books’ -->
     <plurals name="n_books">
-        <!--<item quantity="zero">Kein Buch</item>-->
         <item quantity="one">Ein Buch</item>
         <item quantity="other">%1$s Bücher</item>
     </plurals>
 
     <!-- Short text for ‘n covers’ -->
     <plurals name="n_covers">
-        <!--<item quantity="zero">Kein Cover</item>-->
         <item quantity="one">Ein Cover</item>
         <item quantity="other">%1$s Cover</item>
     </plurals>
 
     <!-- Short text for ‘n stars’ -->
     <plurals name="n_stars">
-        <!--<item quantity="zero">%1$s Sterne</item>-->
         <item quantity="one">%1$s Stern</item>
         <item quantity="other">%1$s Sterne</item>
     </plurals>
@@ -904,7 +907,7 @@
     <string name="done">Erledigt</string>
     <string name="lbl_edition">Auflage</string>
     <string name="lbl_currency">Devisen</string>
-    <string name="btn_use">Benutzen</string>
+    <string name="btn_confirm_use">Benutzen</string>
     <string name="lbl_edition_first_edition">Erstausgabe</string>
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_x_pages">%1$d seiten</string>
@@ -973,7 +976,6 @@
     <string name="import_export_option_xml_info">XML ist nur Export, kein Import.</string>
     <string name="import_export_option_xml">Alle Daten im XML-Format</string>
     <string name="lbl_covers">Buchumschläge</string>
-    <string name="books_found">%1$d Bücher gefunden</string>
     <string name="X_events_found">%1$d Ereignisse gefunden</string>
     <string name="gr_tq_events_recorded">(%1$d Ereignisse aufgezeichnet)</string>
     <string name="lbl_first_publication_month">Erstveröffentlichungsmonat</string>

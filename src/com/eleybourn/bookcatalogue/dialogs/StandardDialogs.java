@@ -21,7 +21,6 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +29,6 @@ import androidx.appcompat.app.AlertDialog;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -48,123 +46,78 @@ public final class StandardDialogs {
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
                                                      @Nullable final Runnable onConfirm) {
-        final AlertDialog dialog = new AlertDialog.Builder(activity)
+        new AlertDialog.Builder(activity)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         activity.getString(R.string.btn_confirm_exit),
-                         (d, which) -> {
-                             d.dismiss();
-                             if (onConfirm != null) {
-                                 onConfirm.run();
-                             } else {
-                                 activity.setResult(Activity.RESULT_CANCELED);
-                                 activity.finish();
-                             }
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         activity.getString(R.string.btn_continue_editing),
-                         (d, which) -> d.dismiss());
-
-        dialog.show();
+                .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
+                .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> {
+                    d.dismiss();
+                    if (onConfirm != null) {
+                        onConfirm.run();
+                    } else {
+                        activity.setResult(Activity.RESULT_CANCELED);
+                        activity.finish();
+                    }
+                })
+                .create()
+                .show();
     }
 
     public static void deleteSeriesAlert(@NonNull final Context context,
-                                         @NonNull final DBA db,
                                          @NonNull final Series series,
                                          @NonNull final Runnable onDoDelete) {
 
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(context.getString(R.string.confirm_really_delete_series,
-                                              series.getName()))
-                .setTitle(R.string.title_delete_series)
+        new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_delete_series)
+                .setMessage(context.getString(R.string.confirm_delete_series, series.getName()))
                 .setCancelable(false)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         context.getString(android.R.string.ok),
-                         (d, which) -> {
-                             d.dismiss();
-                             onDoDelete.run();
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
-                         (d, which) -> d.dismiss());
-
-        dialog.show();
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    onDoDelete.run();
+                })
+                .create()
+                .show();
     }
 
     public static void deleteBookAlert(@NonNull final Context context,
-                                       @NonNull final DBA db,
-                                       final long bookId,
                                        @NonNull final String title,
+                                       @NonNull final List<Author> authorList,
                                        @NonNull final Runnable onDoDelete) {
-
-        String UNKNOWN = '<' + context.getString(R.string.unknown).toUpperCase() + '>';
-        List<Author> authorList = db.getAuthorsByBookId(bookId);
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
-            authors.append(UNKNOWN);
+            authors.append('<').append(context.getString(R.string.unknown).toUpperCase())
+                   .append('>');
         } else {
+            // "a1, a2 and a3"
             authors.append(authorList.get(0).getLabel());
             for (int i = 1; i < authorList.size() - 1; i++) {
                 authors.append(", ").append(authorList.get(i).getLabel());
             }
+
             if (authorList.size() > 1) {
-                authors.append(' ').append(context.getString(R.string.list_and)).append(' ').append(
-                        authorList.get(authorList.size() - 1).getLabel());
+                authors.append(' ').append(context.getString(R.string.list_and)).append(' ')
+                       .append(authorList.get(authorList.size() - 1).getLabel());
             }
         }
 
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(
-                        (context.getString(R.string.confirm_really_delete_book, title, authors)))
+        new AlertDialog.Builder(context)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.menu_delete_book)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
                 .setCancelable(false)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                         (d, which) -> {
-                             d.dismiss();
-                             onDoDelete.run();
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
-                         (d, which) -> d.dismiss());
-
-        dialog.show();
-    }
-
-    public static void confirmSaveDuplicateBook(@NonNull final Context context,
-                                                @NonNull final AlertDialogListener nextStep) {
-        /*
-         * If it exists, show a dialog and use it to perform the
-         * next action, according to the users choice.
-         */
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.title_duplicate_book)
-                .setMessage(context.getString(R.string.confirm_duplicate_book_message))
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setCancelable(false)
-                .create();
-
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                         context.getString(android.R.string.ok),
-                         (d, which) -> nextStep.onPositiveButton());
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
-                         (d, which) -> nextStep.onNegativeButton());
-        dialog.show();
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    onDoDelete.run();
+                })
+                .create()
+                .show();
     }
 }

@@ -25,22 +25,16 @@ public class ValuePicker {
     @NonNull
     private final RecyclerView mListView;
     @NonNull
-    private final AlertDialog dialog;
+    private final AlertDialog mDialog;
 
     ValuePicker(@NonNull final Context context,
                 @Nullable final String title,
                 @Nullable final String message) {
+
         // Build the base dialog
         final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
-        dialog = new AlertDialog.Builder(context)
-                .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .create();
 
-        if (title != null && !title.isEmpty()) {
-            dialog.setTitle(title);
-        }
-
+        // Optional message
         TextView messageView = root.findViewById(R.id.message);
         if (message != null && !message.isEmpty()) {
             messageView.setText(message);
@@ -49,16 +43,28 @@ public class ValuePicker {
             messageView.setVisibility(View.GONE);
         }
 
+        // list of options
         mListView = root.findViewById(android.R.id.list);
         mListView.setLayoutManager(new LinearLayoutManager(context));
+
+        // there is no 'positive' button. The user chooses one of the list options instead.
+        mDialog = new AlertDialog.Builder(context)
+                .setView(root)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .create();
+
+        // optional title
+        if (title != null && !title.isEmpty()) {
+            mDialog.setTitle(title);
+        }
     }
 
     public void show() {
-        dialog.show();
+        mDialog.show();
     }
 
     public void dismiss() {
-        dialog.dismiss();
+        mDialog.dismiss();
     }
 
     /**
@@ -72,14 +78,14 @@ public class ValuePicker {
     }
 
     void setTitle(@NonNull final CharSequence title) {
-        dialog.setTitle(title);
+        mDialog.setTitle(title);
     }
 
     /**
      * Interface to listen for item selection in a custom dialog list.
      */
-    public interface OnClickListener<T> {
+    public interface OnPickListener<T> {
 
-        void onClick(@NonNull T item);
+        void onPicked(@NonNull T item);
     }
 }

@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBAdapter.ScheduledTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDAO.ScheduledTask;
 
 /**
  * Represents a thread that runs tasks from a related named queue.
@@ -42,8 +42,8 @@ class Queue
     /** Name of this Queue. */
     @NonNull
     private final String mName;
-    /** TaskQueueDBAdapter used internally. */
-    private TaskQueueDBAdapter mTQdba;
+    /** TaskQueueDAO used internally. */
+    private TaskQueueDAO mTaskQueueDAO;
 
     /** Currently running task. */
     private WeakReference<Task> mTask;
@@ -93,14 +93,14 @@ class Queue
      */
     public void run() {
         try {
-            mTQdba = new TaskQueueDBAdapter();
+            mTaskQueueDAO = new TaskQueueDAO();
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
-                    scheduledTask = mTQdba.getNextTask(mName);
+                    scheduledTask = mTaskQueueDAO.getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
@@ -133,8 +133,8 @@ class Queue
             Logger.error(this, e);
         } finally {
             try {
-                if (mTQdba != null) {
-                    mTQdba.getDb().close();
+                if (mTaskQueueDAO != null) {
+                    mTaskQueueDAO.getDb().close();
                 }
                 // Just in case (the queue manager does check the queue before doing the delete).
                 synchronized (mManager) {
@@ -180,18 +180,18 @@ class Queue
         synchronized (mManager) {
 
             if (task.isAborting()) {
-                mTQdba.deleteTask(task.getId());
+                mTaskQueueDAO.deleteTask(task.getId());
             } else if (result) {
-                mTQdba.setTaskOk(task);
+                mTaskQueueDAO.setTaskOk(task);
             } else if (requeue) {
-                mTQdba.setTaskRequeue(task);
+                mTaskQueueDAO.setTaskRequeue(task);
             } else {
                 Exception e = task.getException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();
                 }
-                mTQdba.setTaskFail(task, "Unhandled exception while running task: " + msg);
+                mTaskQueueDAO.setTaskFail(task, "Unhandled exception while running task: " + msg);
             }
             mTask.clear();
             mTask = null;

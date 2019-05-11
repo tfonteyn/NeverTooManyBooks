@@ -32,7 +32,7 @@ public interface SearchSiteManager {
      * <p>
      * A search for the book is done, with the 'fetchThumbnail' flag set to true.
      * Any {@link IOException} or {@link AuthorizationException} thrown are ignored and
-     * 'null' returned.
+     * {@code null} returned.
      *
      * @param isbn to search for
      *
@@ -97,7 +97,7 @@ public interface SearchSiteManager {
      * <p>
      * A search for the book is done, with the 'fetchThumbnail' flag set to true.
      * Any {@link IOException} or {@link AuthorizationException} thrown are ignored and
-     * 'null' returned.
+     * {@code null} returned.
      */
     @Nullable
     @WorkerThread

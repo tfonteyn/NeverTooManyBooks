@@ -38,23 +38,27 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
+import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBitmask;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PIntList;
 import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Entity;
 import com.eleybourn.bookcatalogue.utils.Csv;
@@ -62,7 +66,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 
 
 /**
- * Represents a specific style of book list (eg. authors/series).
+ * Represents a specific style of book list (e.g. authors/series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
@@ -170,7 +174,7 @@ public class BooklistStyle
 
     /**
      * The unique uuid based SharedPreference name.
-     * Will be empty (but not null) for builtin styles
+     * Will be empty (but not {@code null}) for builtin styles
      */
     @NonNull
     private String mUuid = "";
@@ -187,7 +191,7 @@ public class BooklistStyle
      * Display name of this style.
      * <p>
      * Used for user-defined styles.
-     * encapsulated value always null for a builtin style.
+     * encapsulated value always {@code null} for a builtin style.
      */
     private transient PString mDisplayName;
 
@@ -242,6 +246,34 @@ public class BooklistStyle
     private transient PBoolean mExtraShowPublisher;
     private transient PBoolean mExtraShowFormat;
 
+    public static class ExtraDetail {
+        @NonNull
+        private final PBoolean mField;
+        @StringRes
+        private final int mLabel;
+
+        public ExtraDetail(final int label,
+                          @NonNull final PBoolean field) {
+            mLabel = label;
+            mField = field;
+        }
+
+        public boolean isRequested() {
+            return mField.isTrue();
+        }
+
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(mLabel);
+        }
+    }
+
+    /**
+     * All extra details for a row.
+     *
+     * The key in the Map is one of {@link #EXTRAS_BOOKSHELVES} etc.
+     */
+    private transient Map<Integer, ExtraDetail> mExtraDetail;
+
     /**
      * All groups in this style.
      */
@@ -249,6 +281,8 @@ public class BooklistStyle
 
     /**
      * All filters.
+     *
+     * The key in the Map is the actual preference key.
      */
     private transient Map<String, BooleanFilter> mFilters;
 
@@ -302,7 +336,7 @@ public class BooklistStyle
      * @param in      Parcel to read the object from
      * @param doNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
-     * @param context caller context, will be null when doNew==false !
+     * @param context caller context, will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
                             final boolean doNew,
@@ -374,9 +408,9 @@ public class BooklistStyle
     }
 
     /**
-     * Only ever init the Preferences if you have a valid UUID (null is valid).
+     * Only ever init the Preferences if you have a valid UUID ({@code null} is valid).
      */
-    private void initPrefs() {
+    public void initPrefs() {
 
         mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid);
 
@@ -388,33 +422,62 @@ public class BooklistStyle
 
         mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid);
 
+        // all extra details
+
+        mExtraDetail = new LinkedHashMap<>();
+
         mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, true);
+        mExtraDetail.put(EXTRAS_THUMBNAIL,
+                         new ExtraDetail(R.string.pt_bob_thumbnails_show, mExtraShowThumbnails));
 
         mExtraLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid);
+        mExtraDetail.put(EXTRAS_THUMBNAIL_LARGE,
+                         new ExtraDetail(R.string.pt_bob_thumbnails_show_large, mExtraLargeThumbnails));
+
         mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid);
+        mExtraDetail.put(EXTRAS_BOOKSHELVES,
+                         new ExtraDetail(R.string.lbl_bookshelves, mExtraShowBookshelves));
+
         mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid);
+        mExtraDetail.put(EXTRAS_LOCATION,
+                         new ExtraDetail(R.string.lbl_location, mExtraShowLocation));
+
         mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid);
+        mExtraDetail.put(EXTRAS_AUTHOR,
+                         new ExtraDetail(R.string.lbl_author, mExtraShowAuthor));
+
         mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid);
+        mExtraDetail.put(EXTRAS_PUBLISHER,
+                         new ExtraDetail(R.string.lbl_publisher, mExtraShowPublisher));
+
         mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid);
+        mExtraDetail.put(EXTRAS_FORMAT,
+                         new ExtraDetail(R.string.lbl_format, mExtraShowFormat));
+
+        // all filters
 
         mFilters = new LinkedHashMap<>();
 
-        mFilterRead = new BooleanFilter(Prefs.pk_bob_filter_read, mUuid,
+        mFilterRead = new BooleanFilter(R.string.lbl_read,
+                                        Prefs.pk_bob_filter_read, mUuid,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
-        mFilterSigned = new BooleanFilter(Prefs.pk_bob_filter_signed, mUuid,
+        mFilterSigned = new BooleanFilter(R.string.lbl_signed,
+                                          Prefs.pk_bob_filter_signed, mUuid,
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
-        mFilterAnthology = new BooleanFilter(Prefs.pk_bob_filter_anthology, mUuid,
+        mFilterAnthology = new BooleanFilter(R.string.lbl_anthology,
+                                             Prefs.pk_bob_filter_anthology, mUuid,
                                              DBDefinitions.TBL_BOOKS,
                                              DBDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
-        mFilterLoaned = new BooleanFilter(Prefs.pk_bob_filter_loaned, mUuid,
+        mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
+                                          Prefs.pk_bob_filter_loaned, mUuid,
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_BOOK_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
@@ -597,18 +660,15 @@ public class BooklistStyle
      *
      * @return {@code true} if this style can show the desired level
      */
-    public boolean hasSummaryForLevel(@IntRange(from = 1, to = 3) final int level) {
+    public boolean hasSummaryForLevel(@IntRange(from = 1, to = 2) final int level) {
         switch (level) {
-            case 3:
-                // we might have 3 groups, but we do not support more then 2 summary levels.
-                return false;
-            case 2:
-                return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0;
             case 1:
                 return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0;
+            case 2:
+                return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0;
 
             default:
-                // sanity catch
+                // paranoia
                 return false;
         }
     }
@@ -667,7 +727,10 @@ public class BooklistStyle
      * individual getters for each.
      *
      * @return bitmask with the 'extra' fields that are in use (visible) for this style.
+     *
+     * @deprecated use {link #getExtraFields} instead.
      */
+    @Deprecated
     public int getExtraFieldsStatus() {
         int extras = 0;
 
@@ -700,6 +763,45 @@ public class BooklistStyle
         }
 
         return extras;
+    }
+
+    /**
+     *
+     * @return {@code true} if this style has extra details enabled.
+     */
+    public boolean hasExtraDetailFields() {
+        for (ExtraDetail detail : mExtraDetail.values()) {
+            if (detail.isRequested()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    public ExtraDetail getExtraField(final Integer key) {
+        return Objects.requireNonNull(mExtraDetail.get(key));
+    }
+
+    @NonNull
+    public Map<Integer, ExtraDetail> getExtraFields() {
+        return mExtraDetail;
+    }
+    /**
+     * @param all {@code true} to get all, {@code false} for only the enabled fields
+     *
+     * @return the list of in-use extra-field names in a human readable format.
+     */
+    public List<String> getExtraFieldsLabels(@NonNull final Context context,
+                                             final boolean all) {
+        List<String> labels = new ArrayList<>();
+        for (ExtraDetail detail : mExtraDetail.values()) {
+            if (detail.mField.isTrue() || all) {
+                labels.add(detail.getLabel(context));
+            }
+        }
+        Collections.sort(labels);
+        return labels;
     }
 
     /**
@@ -766,7 +868,7 @@ public class BooklistStyle
      *
      * @param group to add
      */
-    void addGroup(@NonNull final BooklistGroup group) {
+    public void addGroup(@NonNull final BooklistGroup group) {
         mStyleGroups.add(group);
     }
 
@@ -775,22 +877,22 @@ public class BooklistStyle
      *
      * @param group kind to remove.
      */
-    void removeGroup(final int group) {
+    public void removeGroup(final int group) {
         mStyleGroups.remove(group);
     }
 
     /**
-     * Convenience function to return a list of group names in a human readable format.
+     * @return a list of in-use group names in a human readable format.
      */
     @NonNull
-    public String getGroupListDisplayNames(@NonNull final Context context) {
-        return Csv.toDisplayString(mStyleGroups.getGroups(), element -> element.getName(context));
+    public String getGroupLabels(@NonNull final Context context) {
+        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getName(context));
     }
 
     /**
      * @return {@code true} if this style has the specified group.
      */
-    boolean hasGroupKind(@IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) final int kind) {
+    public boolean hasGroupKind(@IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) final int kind) {
         return mStyleGroups.getGroupKinds().contains(kind);
     }
 
@@ -822,6 +924,23 @@ public class BooklistStyle
     @NonNull
     public Map<String, BooleanFilter> getFilters() {
         return mFilters;
+    }
+
+    /**
+     * @param all {@code true} to get all, {@code false} for only the active filters
+     *
+     * @return the list of in-use filter names in a human readable format.
+     */
+    public List<String> getFilterLabels(@NonNull final Context context,
+                                        final boolean all) {
+        List<String> labels = new ArrayList<>();
+        for (Filter filter : mFilters.values()) {
+            if (filter.isActive() ||all ) {
+                labels.add(filter.getLabel(context));
+            }
+        }
+        Collections.sort(labels);
+        return labels;
     }
 
     /**
@@ -928,13 +1047,14 @@ public class BooklistStyle
 
     /**
      * Construct a clone of this object.
-     * The clone is committed! (written to a new pref file, and stored in the database)
+     * The id is set to 0! (aka 'new')
      *
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
+     *
+     * @param context caller context, needed for the 'name' of the style.
      */
     @NonNull
-    public BooklistStyle getClone(@NonNull final Context context,
-                                  @NonNull final DBA db) {
+    public BooklistStyle clone(@NonNull final Context context) {
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -946,7 +1066,7 @@ public class BooklistStyle
         BooklistStyle clone = new BooklistStyle(parcel, true, context);
         parcel.recycle();
 
-        clone.setId(db.insertBooklistStyle(clone));
+        clone.setId(0);
         return clone;
     }
 
@@ -955,7 +1075,7 @@ public class BooklistStyle
      * <p>
      * if an insert fails, the style retains id==0.
      */
-    public void save(@NonNull final DBA db) {
+    public void save(@NonNull final DAO db) {
         // negative id == builtin style
         if (mId < 0) {
             throw new IllegalStateException("Builtin Style cannot be saved to database");
@@ -977,7 +1097,7 @@ public class BooklistStyle
     /**
      * Delete this style.
      */
-    public void delete(@NonNull final DBA db) {
+    public void delete(@NonNull final DAO db) {
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId <= 0 || mUuid.isEmpty()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");

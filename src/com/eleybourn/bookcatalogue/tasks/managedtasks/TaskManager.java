@@ -94,8 +94,8 @@ public class TaskManager
 
     /**
      * Current progress message to display, even if no tasks running.
-     * Setting to null or blank will remove the Progress Dialog if no tasks are left running.
-     * If this is not done, the dialog WILL STAY OPEN
+     * Setting to {@code null} or blank will remove the Progress Dialog if no tasks are left
+     * running. If this is not done, the dialog WILL STAY OPEN
      */
     @Nullable
     private String mBaseMessage;
@@ -213,7 +213,7 @@ public class TaskManager
     /**
      * Creates and send a {@link TaskProgressMessage} with the base/header message.
      * Used (generally) by {@link BaseActivityWithTasks} to display some text above
-     * the task info. Set to null to ensure Progress Dialog will be removed.
+     * the task info. Set to {@code null} to ensure Progress Dialog will be removed.
      */
     public void sendHeaderUpdate(@Nullable final String message) {
         mBaseMessage = message;

@@ -25,6 +25,9 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
     Use 'CompoundButton' and/or 'Checkable' where possible.
     This leaves the layout flexible to choose a different type without code changes
 
+* Switch() with a single case/default
+  Yes, I prefer the uniformity.
+
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's
   (Android itself uses a lot of 'v' ... so who am I to talk...)

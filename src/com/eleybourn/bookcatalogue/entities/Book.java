@@ -43,7 +43,7 @@ import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -145,7 +145,7 @@ public class Book
      * @param db     database, used to load the book data IF the bookId is valid.
      */
     public Book(final long bookId,
-                @NonNull final DBA db) {
+                @NonNull final DAO db) {
         initValidatorsAndAccessors();
         if (bookId > 0) {
             reload(db, bookId);
@@ -220,7 +220,7 @@ public class Book
      *
      * @return bundle with book data
      * <p>
-     * Dev note: keep in sync with {@link DBA} .SqlColumns#BOOK
+     * Dev note: keep in sync with {@link DAO} .SqlColumns#BOOK
      */
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();
@@ -317,11 +317,11 @@ public class Book
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    public boolean setRead(@NonNull final DBA db,
+    public boolean setRead(@NonNull final DAO db,
                            final boolean isRead) {
         boolean old = getBoolean(Book.IS_READ);
 
-        if (db.updateBookRead(getId(), isRead)) {
+        if (db.setBookRead(getId(), isRead)) {
             putBoolean(Book.IS_READ, isRead);
             if (isRead) {
                 putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
@@ -359,7 +359,7 @@ public class Book
      * @param db the database
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Book reload(@NonNull final DBA db) {
+    public Book reload(@NonNull final DAO db) {
         return reload(db, getId());
     }
 
@@ -368,7 +368,7 @@ public class Book
      *
      * @param bookId of book (may be 0 for new, in which case we do nothing)
      */
-    public Book reload(@NonNull final DBA db,
+    public Book reload(@NonNull final DAO db,
                        final long bookId) {
         // If ID = 0, no details in DB
         if (bookId == 0) {
@@ -397,7 +397,7 @@ public class Book
     /**
      * @return a complete list of Bookshelves each reflecting the book being on that shelf or not
      */
-    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DBA db) {
+    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DAO db) {
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
@@ -472,7 +472,7 @@ public class Book
      *
      * @param db Database connection
      */
-    public void refreshAuthorList(@NonNull final DBA db) {
+    public void refreshAuthorList(@NonNull final DAO db) {
         ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
             db.refreshAuthor(author);
@@ -543,7 +543,7 @@ public class Book
      *
      * @param db Database connection
      */
-    public void refreshSeriesList(@NonNull final DBA db) {
+    public void refreshSeriesList(@NonNull final DAO db) {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
             db.refreshSeries(series);
@@ -583,7 +583,7 @@ public class Book
                                             TocEntry.Authors.MULTIPLE_AUTHORS));
     }
 
-    public String getLoanee(final DBA db) {
+    public String getLoanee(final DAO db) {
         return db.getLoaneeByBookId(getId());
     }
 
