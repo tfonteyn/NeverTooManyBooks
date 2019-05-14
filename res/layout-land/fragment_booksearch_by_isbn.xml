@@ -10,19 +10,6 @@
     tools:context=".BookSearchActivity"
     >
 
-    <EditText
-        android:id="@+id/isbn"
-        style="@style/isbnEntry"
-        android:layout_margin="@dimen/border_double"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:windowSoftInputMode="stateAlwaysHidden"
-        app:layout_constraintEnd_toStartOf="@id/btn_search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill,LabelFor"
-        />
-
-    <!-- an ASIN for a book is the ISBN10 code. Re-enable this if we ever support non-books? -->
     <CheckBox
         android:id="@+id/allow_asin"
         android:layout_width="wrap_content"
@@ -30,10 +17,22 @@
         android:layout_marginStart="@dimen/border"
         android:layout_marginEnd="@dimen/border_double"
         android:text="@string/lbl_allow_asin"
-        android:visibility="gone"
         app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+        app:layout_constraintEnd_toStartOf="@id/isbn"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/isbn"
+        style="@style/isbnEntry"
+        android:layout_width="0dp"
+        android:layout_margin="@dimen/border_double"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:windowSoftInputMode="stateAlwaysHidden"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
-        app:layout_constraintStart_toEndOf="@id/isbn"
+        app:layout_constraintStart_toEndOf="@id/allow_asin"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill,LabelFor"
         />
 
     <Button

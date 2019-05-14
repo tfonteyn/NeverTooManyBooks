@@ -1,7 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
@@ -13,55 +13,59 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public final class UniqueId {
 
 
-    /** request code: navigation panel. */
+    /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_001;
-    /** request code: navigation panel. */
-    public static final int REQ_NAV_PANEL_EDIT_PREFERRED_STYLES = 1_002;
-    /** request code: navigation panel. */
+    /** Request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_EDIT_STYLES = 1_002;
+    /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_ADMIN = 1_003;
-    /** request code: navigation panel. */
+    /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_SETTINGS = 1_004;
 
+    /** Request code: edit a Style. */
+    public static final int REQ_EDIT_STYLE = 1_100;
+    /** Request code: edit the Groups of a Style. */
+    public static final int REQ_EDIT_STYLE_GROUPS = 1_101;
 
     /** request code: open the book view screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_VIEW = 2_001;
-    /** request code: open the book edit screen. */
+    /** Request code: open the book edit screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_EDIT = 2_002;
-    /** request code: open the book edit screen with a new, duplicate, book. */
+    /** Request code: open the book edit screen with a new, duplicate, book. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_DUPLICATE = 2_003;
-    /** request code: open the book 'update-from-internet' screen. */
+    /** Request code: open the book 'update-from-internet' screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 2_004;
 
-    /** request code: open the book internet-search screen. */
+    /** Request code: open the book internet-search screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_SEARCH = 2_101;
-    /** request code: open the advanced (FTS) local search screen. */
+    /** Request code: open the advanced (FTS) local search screen. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
 
 
-    /** request code: ask the CoverBrowser to get an alternative edition cover. */
+    /** Request code: ask the CoverBrowser to get an alternative edition cover. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ALT_EDITION = 3_001;
-    /** request code: use internal routines for cropping images. */
+    /** Request code: use internal routines for cropping images. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_CROP_IMAGE_INTERNAL = 3_002;
-    /** request code: start an intent for an external application to do the cropping. */
+    /** Request code: start an intent for an external application to do the cropping. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_CROP_IMAGE_EXTERNAL = 3_003;
-    /** request code: start an intent to get an image from the Camera. */
+    /** Request code: start an intent to get an image from the Camera. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ACTION_IMAGE_CAPTURE = 3_004;
-    /** request code: start an intent to get an image from the an app that provides content. */
+    /** Request code: start an intent to get an image from the an app that provides content. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ACTION_GET_CONTENT = 3_005;
 
 
-    /** request code: system request to ask the user for permissions. */
+    /** Request code: system request to ask the user for permissions. */
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
 
 
@@ -190,7 +194,7 @@ public final class UniqueId {
     public static final String BKEY_FRAGMENT_TAG = "fragment";
 
     /**
-     * The resulting {@link ImportSettings#what} flags after an import.
+     * The resulting {@link ImportOptions#what} flags after an import.
      * <p>
      * <br>type: int (bitmask)
      * setResult
@@ -198,7 +202,7 @@ public final class UniqueId {
     public static final String BKEY_IMPORT_RESULT = "importResult";
 
     /**
-     * The resulting {@link ExportSettings#what} flags after an export.
+     * The resulting {@link ExportOptions#what} flags after an export.
      * <p>
      * <br>type: int (bitmask)
      * setResult
@@ -206,11 +210,11 @@ public final class UniqueId {
     public static final String BKEY_EXPORT_RESULT = "exportResult";
 
     /**
-     * {@link ExportSettings} or {@link ImportSettings}.
+     * {@link ExportOptions} or {@link ImportOptions}.
      * <p>
      * <br>type: Parcel
      */
-    public static final String BKEY_IMPORT_EXPORT_SETTINGS = "importExportSettings";
+    public static final String BKEY_IMPORT_EXPORT_OPTIONS = "importExportSettings";
 
     /**
      * Indicate the called activity made global changes.

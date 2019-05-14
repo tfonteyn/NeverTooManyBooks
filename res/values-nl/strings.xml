@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -30,10 +27,7 @@
         U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.
     </string>
     <string name="menu_add_bookshelf">Boekenplank maken</string>
-    <string name="X_btn_confirm_add_bs">Toevoegen Boekenplank</string>
     <string name="menu_bookshelves">Boekenplanken…</string>
-    <string name="X_btn_confirm_save_bs">Boekenplank opslaan</string>
-    <string name="X_menu_delete_bookshelf">Boekenplank verwijderen</string>
     <string name="warning_cannot_delete_1st_bs">
         De eerste boekenplank kan niet verwijderd worden
     </string>
@@ -117,7 +111,7 @@
     <string name="error_search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
     <string name="menu_delete">Verwijder</string>
     <string name="help">Help</string>
-    <string name="X_info_manage_fields">
+    <string name="info_manage_fields">
         Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen.
         Ongeselecteerde velden zijn verborgen.
     </string>
@@ -217,7 +211,6 @@
     <string name="title_edit_book_series">Series bewerken</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_given_names">Voornamen</string>
-    <string name="X_title_edit_author">Bewerken auteurdetails</string>
     <string name="warning_immediate_global_changes">
         Let op: Veranderingen worden direct en globaal toegepast!
     </string>
@@ -234,7 +227,6 @@
         Wilt u werkelijk de serie ‘%1$s’ verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n
         \nOverweeg de serie te bewerken en de serienaam te veranderen om deze gegevens te behouden
     </string>
-    <string name="X_title_edit_series">Serie details bewerken</string>
     <string name="X_title_select_cover">Selecteer omslagafbeelding</string>
     <string name="X_warning_no_isbn_no_editions">
         Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN
@@ -415,7 +407,6 @@
     <string name="acra_resNotifTickerText">&APP_NAME; is gecrasht</string>
     <string name="acra_resNotifTitle">&APP_NAME; crash</string>
     <string name="acra_resNotifText">Tik hier voor details</string>
-    <string name="acra_resDialogTitle">&APP_NAME; crash</string>
     <string name="acra_resDialogText">
         Het lijkt er op dat &APP_NAME; is gecrasht.
         Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op “OK” om ons
@@ -423,7 +414,7 @@
         verzonden.
     </string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
-    <string name="acra_resDialogOkToast">Dank u!</string>
+    <string name="acra_resReportSendSuccessToast">Dank u!</string>
     <string name="lbl_read">Gelezen</string>
     <string name="lbl_unread">Ongelezen</string>
     <string name="warning_date_not_set">(geen datum)</string>
@@ -437,7 +428,6 @@
     <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
     <string name="field_not_set_with_brackets">(leeg)</string>
-    <string name="X_menu_preferences_booklist">Boekenlijst Voorkeuren</string>
     <string name="lbl_bookshelves_long">Boekenplanken</string>
     <string name="lbl_bookshelves">Planken</string>
     <string name="lbl_location">Locatie</string>
@@ -447,7 +437,6 @@
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
-    <string name="lbl_application_startup">&APP_NAME; Opstart</string>
     <string name="searching_goodreads">Goodreads doorzoeken</string>
     <string name="menu_booklist_styles">Boekenlijst Stijlen…</string>
     <string name="menu_show_more_ellipsis">Toon meer…</string>
@@ -499,10 +488,8 @@
     </string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
     <string name="title_edit_style">Stijl bewerken</string>
-    <string name="X_menu_add_style">Stijl toevoegen</string>
     <string name="title_clone_style">Stijl klonen</string>
     <string name="pg_filters">Boekfilters</string>
-    <string name="X_title_add_style">Nieuwe stijl</string>
     <string name="title_select_style">Selecteer een stijl</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>
@@ -511,8 +498,6 @@
         Er is een onverwachte fout opgetreden.
         Zend ons aub de details via de ‘Help’ optie in het hoofdmenu.
     </string>
-    <string name="X_menu_delete_style">Stijl verwijderen</string>
-    <string name="X_menu_edit_booklist_style">Stijl bewerken</string>
     <string name="menu_duplicate">Dupliceer</string>
     <string name="about_dash_or_dash">- Of -</string>
     <string name="about_donate_paypal">PayPal Donatie</string>
@@ -623,8 +608,6 @@
         U kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op
         ‘Aanpassen’ onderaan de lijst.
     </string>
-    <string name="X_menu_edit_format">Formaat bewerken…</string>
-    <string name="X_title_edit_format">Formaat bewerken</string>
     <string name="warning_required_name">Naamveld mag niet leeg zijn</string>
     <string name="progress_msg_export_starting">Starten van Export…</string>
     <string name="menu_sort_and_style_ellipsis">Sorteren &amp; Stijlen…</string>
@@ -634,9 +617,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s is geen geldige ISBN</string>
     <string name="X_warning_cover_not_found2">Geen afbeelding gevonden</string>
     <string name="warning_cover_copy_failed">Kon afbeelding niet kopiëren</string>
-    <string name="X_info_option_not_available_until_book_saved">
-        Deze optie is niet aanwezig voordat het boek is opgeslagen
-    </string>
     <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
     <string name="lbl_allow_asin">Toestaan ASIN</string>
@@ -960,7 +940,7 @@
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
     <string name="lbl_style">Stijl</string>
     <string name="progress_msg_please_wait">Even geduld…</string>
-    <string name="error_not_available">niet beschikbaar</string>
+    <string name="error_not_available">%1$s niet beschikbaar</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="error_database_upgrade_failed">

@@ -31,7 +31,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
@@ -141,22 +141,22 @@ public class XmlExporter
     private final DAO mDb;
 
     @NonNull
-    private final ExportSettings mSettings;
+    private final ExportOptions mSettings;
 
     public XmlExporter() {
         mDb = new DAO();
-        mSettings = new ExportSettings();
-        mSettings.what = ExportSettings.ALL;
+        mSettings = new ExportOptions();
+        mSettings.what = ExportOptions.ALL;
     }
 
     /**
      * Constructor.
      *
-     * @param settings exporting books respects {@link ExportSettings#dateFrom}
+     * @param settings exporting books respects {@link ExportOptions#dateFrom}
      *                 All other flags are ignored.
      */
     @UiThread
-    public XmlExporter(@NonNull final ExportSettings settings) {
+    public XmlExporter(@NonNull final ExportOptions settings) {
         mDb = new DAO();
         settings.validate();
         mSettings = settings;
@@ -446,34 +446,34 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(R.string.lbl_bookshelves, pos++);
+                listener.onProgress(pos++, R.string.lbl_bookshelves);
                 pos += doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(R.string.lbl_author, pos++);
+                listener.onProgress(pos++, R.string.lbl_author);
                 pos += doAuthors(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(R.string.lbl_series, pos++);
+                listener.onProgress(pos++, R.string.lbl_series);
                 pos += doSeries(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(R.string.lbl_book, pos++);
+                listener.onProgress(pos++, R.string.lbl_book);
                 pos += doBooks(out, listener);
             }
 
             if (!listener.isCancelled()
-                    && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
-                listener.onProgress(R.string.lbl_styles, pos++);
+                    && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
+                listener.onProgress(pos++, R.string.lbl_styles);
                 pos += doStyles(out, listener);
             }
 
             if (!listener.isCancelled()
-                    && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                listener.onProgress(R.string.lbl_settings, pos++);
+                    && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
+                listener.onProgress(pos++, R.string.lbl_settings);
                 pos += doPreferences(out, listener);
             }
 

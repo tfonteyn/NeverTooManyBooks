@@ -32,13 +32,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
+
+import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -51,7 +54,7 @@ public class EditSeriesDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     /** Database access. */
     private DAO mDb;
@@ -61,16 +64,7 @@ public class EditSeriesDialogFragment
 
     private String mName;
     private boolean mIsComplete;
-
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final Series series) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(series).show(fm, TAG);
-        }
-    }
+    private WeakReference<BookChangedListener> mBookChangedListener;
 
     /**
      * Constructor.
@@ -140,9 +134,27 @@ public class EditSeriesDialogFragment
                     series.setComplete(mIsComplete);
 
                     mDb.updateOrInsertSeries(series);
-                    BookChangedListener.onBookChanged(this, 0, BookChangedListener.SERIES, null);
+
+                    Bundle data = new Bundle();
+                    data.putLong(DBDefinitions.KEY_SERIES, series.getId());
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.SERIES, data);
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onBookChanged", "WeakReference to listener was dead");
+                        }
+                    }
                 })
                 .create();
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final BookChangedListener listener) {
+        mBookChangedListener = new WeakReference<>(listener);
     }
 
     @Override

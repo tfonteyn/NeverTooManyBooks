@@ -27,7 +27,7 @@
 
     <CheckBox
         android:id="@+id/read"
-        style="@style/read_only_cbx"
+        style="@style/book_read"
         app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         tools:checked="true"
@@ -72,7 +72,7 @@
 
     <RatingBar
         android:id="@+id/rating"
-        style="?attr/ratingBarStyleIndicator"
+        style="?android:attr/ratingBarStyleIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/border"

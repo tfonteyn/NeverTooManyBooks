@@ -53,7 +53,6 @@ import org.acra.ReportField;
 import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
-import org.acra.annotation.AcraNotification;
 import org.acra.annotation.AcraToast;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -71,6 +70,19 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  *
  * @author Philip Warner
  */
+@AcraMailSender(
+        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
+        mailTo = "test@local.net")
+@AcraToast(
+        //optional, displayed as soon as the crash occurs,
+        // before collecting data which can take a few seconds
+        resText = R.string.acra_resToastText)
+@AcraDialog(
+        resText = R.string.acra_resDialogText,
+        resTitle = R.string.app_name,
+        resTheme = R.style.AppTheme_Light_Blue,
+        resIcon = R.drawable.ic_warning,
+        resCommentPrompt = R.string.acra_resDialogCommentPrompt)
 @AcraCore(reportContent = {
         ReportField.APP_VERSION_CODE,
         ReportField.APP_VERSION_NAME,
@@ -91,26 +103,10 @@ import com.eleybourn.bookcatalogue.utils.Utils;
         ReportField.USER_COMMENT,
         ReportField.USER_APP_START_DATE,
         ReportField.USER_CRASH_DATE,
-        ReportField.THREAD_DETAILS
-})
-@AcraMailSender(
-        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
-        mailTo = "test@local.net")
-@AcraNotification(resTitle = R.string.acra_resNotifTitle,
-        resText = R.string.acra_resNotifText,
-        resTickerText = R.string.acra_resNotifTickerText,
-        resChannelName = R.string.app_name)
-@AcraDialog(
-        resText = R.string.acra_resDialogText,
-        // optional. default is your application name
-        resTitle = R.string.acra_resNotifTitle,
-        resIcon = R.drawable.ic_warning,
-        // optional. when defined, adds a user text field input with this text resource as a label
-        resCommentPrompt = R.string.acra_resDialogCommentPrompt)
-@AcraToast(
-        //optional, displayed as soon as the crash occurs,
-        // before collecting data which can take a few seconds
-        resText = R.string.acra_resToastText)
+        ReportField.THREAD_DETAILS},
+
+        resReportSendSuccessToast = R.string.acra_resReportSendSuccessToast,
+        resReportSendFailureToast = R.string.error_email_failed)
 public class App
         extends Application {
 
@@ -458,7 +454,7 @@ public class App
     private void setSystemLocale() {
         try {
             LocaleUtils.init(Locale.getDefault());
-            LocaleUtils.applyPreferred(this);
+            LocaleUtils.applyPreferred(getResources());
         } catch (RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(this, e);

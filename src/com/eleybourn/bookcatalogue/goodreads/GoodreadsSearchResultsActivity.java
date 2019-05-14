@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
@@ -53,7 +54,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
  * Use background tasks to get thumbnails and update when retrieved.
  * <p>
  * Used by {@link GoodreadsSearchCriteriaActivity} which is currently
- * commented out in {@link GrSendBooksTaskBase}
+ * commented out in @link GrSendBooksTaskBase
  *
  * @author Philip Warner
  */
@@ -107,7 +108,7 @@ public class GoodreadsSearchResultsActivity
     /**
      * Perform the search.
      */
-    private void doSearch(@NonNull final String criteria) {
+    private void doSearch(@NonNull final String query) {
         // Get the GR stuff we need
         GoodreadsManager grMgr = new GoodreadsManager();
         SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
@@ -115,7 +116,7 @@ public class GoodreadsSearchResultsActivity
         // Run the search
         List<GoodreadsWork> works;
         try {
-            works = searcher.search(criteria.trim());
+            works = searcher.search(query);
         } catch (BookNotFoundException
                 | AuthorizationException
                 | IOException

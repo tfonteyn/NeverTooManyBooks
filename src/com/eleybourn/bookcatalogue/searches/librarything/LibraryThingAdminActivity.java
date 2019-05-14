@@ -37,11 +37,12 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -54,11 +55,19 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author Philip Warner
  */
 public class LibraryThingAdminActivity
-        extends BaseActivity
-        implements OnTaskListener<Object, Integer> {
+        extends BaseActivity {
 
     private EditText mDevKeyView;
 
+    private final TaskListener<Object, Integer> mListener = new TaskListener<Object, Integer>() {
+        @Override
+        public void onTaskFinished(final int taskId,
+                                   final boolean success,
+                                   final Integer result,
+                                   @Nullable final Exception e) {
+            UserMessage.showUserMessage(mDevKeyView, result);
+        }
+    };
 
     @Override
     protected int getLayoutId() {
@@ -97,7 +106,7 @@ public class LibraryThingAdminActivity
 
             if (!devKey.isEmpty()) {
                 UserMessage.showUserMessage(mDevKeyView, R.string.progress_msg_connecting);
-                new ValidateKey(this).execute();
+                new ValidateKey(mListener).execute();
             }
         });
     }
@@ -115,21 +124,13 @@ public class LibraryThingAdminActivity
         ed.apply();
     }
 
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @NonNull final Integer result,
-                               @Nullable final Exception e) {
-        UserMessage.showUserMessage(mDevKeyView, result);
-    }
-
     /**
      * Request a known valid ISBN from LT to see if the user key is valid.
      */
     private static class ValidateKey
             extends AsyncTask<Void, Object, Integer> {
 
-        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
 
         private final int mTaskId;
         /**
@@ -143,9 +144,9 @@ public class LibraryThingAdminActivity
          * Constructor.
          */
         @UiThread
-        private ValidateKey(@NonNull final OnTaskListener<Object, Integer> listener) {
+        private ValidateKey(@NonNull final TaskListener<Object, Integer> taskListener) {
             mTaskId = R.id.TASK_ID_LT_VALIDATE_KEY;
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -182,10 +183,12 @@ public class LibraryThingAdminActivity
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final Integer result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }

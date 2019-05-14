@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.tasks;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,11 +26,12 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
@@ -42,8 +43,8 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class GrSendBooksTaskBase
-        extends GoodreadsTask {
+abstract class GrSendBooksTaskBase
+        extends BaseTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
     /** wait time before declaring network failure. */
@@ -74,8 +75,7 @@ public abstract class GrSendBooksTaskBase
                        @NonNull final Context context) {
         boolean result = false;
 
-        if (NetworkUtils.isNetworkAvailable(context)
-                && NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
+        if (NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
             GoodreadsManager grManager = new GoodreadsManager();
             // Ensure we are allowed
             if (grManager.hasValidCredentials()) {
@@ -260,7 +260,7 @@ public abstract class GrSendBooksTaskBase
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
+            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context.getResources()),
                                                      eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 

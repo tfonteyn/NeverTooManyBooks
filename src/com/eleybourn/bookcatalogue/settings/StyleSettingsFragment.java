@@ -39,8 +39,6 @@ public class StyleSettingsFragment
     /** Fragment manager tag. */
     public static final String TAG = StyleSettingsFragment.class.getSimpleName();
 
-    /** Request code for calling the Activity to edit the Groups of the style. */
-    private static final int REQ_EDIT_GROUPS = 0;
     /** Style we are editing. */
     private BooklistStyle mStyle;
 
@@ -83,7 +81,7 @@ public class StyleSettingsFragment
         Activity activity = getActivity();
         ActionBar bar = ((AppCompatActivity)activity).getSupportActionBar();
         //noinspection ConstantConditions
-        bar.setSubtitle(mStyle.getLabel(activity));
+        bar.setSubtitle(mStyle.getLabel(getResources()));
         if (mStyle.getId() == 0) {
             bar.setTitle(R.string.title_clone_style);
         } else {
@@ -99,6 +97,8 @@ public class StyleSettingsFragment
         // Set the summaries reflecting the current values for all basic Preferences.
         setSummary(screen);
         updateLocalSummaries();
+        // set the default response
+        prepareResult();
     }
 
     /**
@@ -122,17 +122,19 @@ public class StyleSettingsFragment
         updateLocalSummaries();
     }
 
+    /**
+     * Put the style into the activity result.
+     *
+     * Reminder: do NOT call this in onPause... as onBackPressed is called before (and does finish).
+     */
     @Override
-    public void onPause() {
-
-        // set the default response
+    void prepareResult() {
         Intent data = new Intent()
                 .putExtra(DBDefinitions.KEY_ID, mStyle.getId())
                 .putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
         //noinspection ConstantConditions
         getActivity().setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE, data);
 
-        super.onPause();
     }
 
     /**
@@ -155,8 +157,7 @@ public class StyleSettingsFragment
         // the 'extra' fields in use.
         preference = findPreference(getString(R.string.pg_bob_extra_book_details));
         if (preference != null) {
-            //noinspection ConstantConditions
-            labels = mStyle.getExtraFieldsLabels(getContext(), false);
+            labels = mStyle.getExtraFieldsLabels(getResources(), false);
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
@@ -167,8 +168,7 @@ public class StyleSettingsFragment
         // the 'filters' in use
         preference = findPreference(getString(R.string.pg_filters));
         if (preference != null) {
-            //noinspection ConstantConditions
-            labels = mStyle.getFilterLabels(getContext(), false);
+            labels = mStyle.getFilterLabels(getResources(), false);
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
@@ -179,11 +179,10 @@ public class StyleSettingsFragment
         // the 'groups' in use.
         preference = findPreference(getString(R.string.pg_groupings));
         if (preference != null) {
-            //noinspection ConstantConditions
-            preference.setSummary(mStyle.getGroupLabels(getContext()));
+            preference.setSummary(mStyle.getGroupLabels(getResources()));
             preference.getIntent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
             preference.setOnPreferenceClickListener(p -> {
-                startActivityForResult(p.getIntent(), REQ_EDIT_GROUPS);
+                startActivityForResult(p.getIntent(), UniqueId.REQ_EDIT_STYLE_GROUPS);
                 return true;
             });
         }
@@ -202,7 +201,7 @@ public class StyleSettingsFragment
                                  @Nullable final Intent data) {
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case REQ_EDIT_GROUPS:
+            case UniqueId.REQ_EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
                     // replace the current style with the edited copy
                     //noinspection ConstantConditions
@@ -211,6 +210,8 @@ public class StyleSettingsFragment
                     Objects.requireNonNull(mStyle);
                     // refresh summaries on screen
                     updateLocalSummaries();
+                    // and set the activity result with the new style object
+                    prepareResult();
                 }
                 break;
 

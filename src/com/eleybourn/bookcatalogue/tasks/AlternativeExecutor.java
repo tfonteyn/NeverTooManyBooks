@@ -16,11 +16,12 @@ import com.eleybourn.bookcatalogue.CoverBrowser;
 
 /**
  * A copy of {@link AsyncTask#THREAD_POOL_EXECUTOR} with lower configuration numbers.
- * Main (only?) purpose is to provide a second Executor.
+ * <p>
+ * Main (only?) purpose is to provide a <strong>second</strong> Executor.
  * This allows to run specific tasks that we don't want to submit (and wait on) the
  * shared one in AsyncTask.
  * <p>
- * Example: {@link CoverBrowser} uses the default one to get thumbnails, but uses this
+ * <br>Example: {@link CoverBrowser} uses the default one to get thumbnails, but uses this
  * alternative one to get the larger preview image without waiting in the shared queue.
  */
 public final class AlternativeExecutor {

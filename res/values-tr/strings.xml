@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Kitabı kaydet</string>
     <string name="X_info_no_bookshelves_yet">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
     <string name="menu_add_bookshelf">Kitaplık oluştur</string>
-    <string name="X_btn_confirm_add_bs">Kitaplık ekle</string>
     <string name="menu_bookshelves">Kitaplıkları…</string>
-    <string name="X_btn_confirm_save_bs">Kitaplığı kaydet</string>
-    <string name="X_menu_delete_bookshelf">Kitaplığı sil</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="lbl_bookshelf">Kitaplık</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
@@ -80,7 +74,7 @@
     <string name="error_search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
     <string name="menu_delete">Silmek</string>
     <string name="help">Yardım</string>
-    <string name="X_info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
+    <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Bu antolojinin çok sayıda yazarı vardır.</string>
@@ -149,7 +143,6 @@
     <string name="title_edit_book_series">Kitap serisi düzenle</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_given_names">Adı</string>
-    <string name="X_title_edit_author">Yazar ayrıntılarını düzenle</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
     <string name="menu_cover_replace">Değiştir…</string>
     <string name="menu_cover_search_alt_editions">Diğer sürümlerden…</string>
@@ -160,7 +153,6 @@
     <string name="menu_edit_series">Serileri düzenle…</string>
     <string name="title_delete_series">Serileri sil</string>
     <string name="confirm_delete_series">\‘%1$s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
-    <string name="X_title_edit_series">Seri ayrıntılarını düzenle</string>
     <string name="X_title_select_cover">Kapak seç</string>
     <string name="X_warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
     <string name="warning_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
@@ -272,10 +264,9 @@
     <string name="acra_resNotifTickerText">&APP_NAME; çöktü</string>
     <string name="acra_resNotifTitle">&APP_NAME; çöktü</string>
     <string name="acra_resNotifText">Ayrıntılar için buraya basın</string>
-    <string name="acra_resDialogTitle">&APP_NAME; çöktü</string>
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
-    <string name="acra_resDialogOkToast">Sağ olun!</string>
+    <string name="acra_resReportSendSuccessToast">Sağ olun!</string>
     <string name="lbl_read">Okunmuş</string>
     <string name="lbl_unread">Okunmamış</string>
     <string name="warning_date_not_set">(günay yok)</string>
@@ -289,7 +280,6 @@
     <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
     <string name="field_not_set_with_brackets">(boş)</string>
-    <string name="X_menu_preferences_booklist">Kitap dizelgesi yeğlenenleri</string>
     <string name="lbl_bookshelves_long">Kitap rafları</string>
     <string name="lbl_bookshelves">Raflar</string>
     <string name="lbl_location">Konum</string>
@@ -299,7 +289,6 @@
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
-    <string name="lbl_application_startup">&APP_NAME; başlangıç</string>
     <string name="searching_goodreads">Goodreads\'te aranıyor</string>
     <string name="menu_booklist_styles">Kitap listesi stilleri…</string>
     <string name="menu_show_more_ellipsis">Daha fazla göster…</string>
@@ -340,18 +329,14 @@
     </string>
     <string name="lbl_preferred_styles">Yeğlenen biçemler</string>
     <string name="title_edit_style">Biçemi düzenle</string>
-    <string name="X_menu_add_style">Biçem ekle</string>
     <string name="title_clone_style">Biçemi çoğalt</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
-    <string name="X_title_add_style">Yeni biçem</string>
     <string name="X_pt_bob_filter_read">\‘Okunma\’ durumuna göre seç</string>
     <string name="title_select_style">Biçem seç</string>
     <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
     <string name="lbl_settings">Yeğlenenler</string>
     <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \‘Yardım\’ seçeneğinden bize gönderin</string>
-    <string name="X_menu_delete_style">Biçemi sil</string>
-    <string name="X_menu_edit_booklist_style">Biçemi düzenle</string>
     <string name="menu_duplicate">Çift</string>
     <string name="about_dash_or_dash">- Veya -</string>
     <string name="about_donate_paypal">PayPal bağışı</string>
@@ -435,8 +420,6 @@
         \nEk olarak dizelgenin sonundaki \'Kişiselleştir\' düğmesini kullanarak bu seçkeyi
         kişiselleştirebilir ve hatta kendi dizelge biçemlerinizi oluşturabilirsiniz.
     </string>
-    <string name="X_menu_edit_format">Biçimi düzenle…</string>
-    <string name="X_title_edit_format">Biçim adını düzenle</string>
     <string name="warning_required_name">Ad kısmı boş olamaz</string>
     <string name="progress_msg_export_starting">Dışa aktarma başlıyor…</string>
     <string name="menu_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
@@ -445,7 +428,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s geçerli birISBN değil</string>
     <string name="X_warning_cover_not_found2">Resim bulunamadı</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
-    <string name="X_info_option_not_available_until_book_saved">Bu özellik kitap saklanana kadar kullanılamaz</string>
     <string name="menu_add_book_by_barcode_scan">Barkod/ISBN tara</string>
     <string name="menu_add_book_by_isbn">ISBN gir</string>
     <string name="lbl_allow_asin">ASIN\'e izin ver</string>

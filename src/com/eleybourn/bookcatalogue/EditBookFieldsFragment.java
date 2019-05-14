@@ -32,13 +32,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -50,9 +47,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
  */
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment
-        implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Bookshelf> {
+        extends EditBookBaseFragment<Bookshelf> {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookFieldsFragment.class.getSimpleName();
@@ -62,8 +57,6 @@ public class EditBookFieldsFragment
 
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -119,8 +112,7 @@ public class EditBookFieldsFragment
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getActivity());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
-        //noinspection ConstantConditions
-        mCoverHandler = new CoverHandler(getFragmentManager(), this, mDb, book,
+        mCoverHandler = new CoverHandler(this, mDb, book,
                                          mFields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
                                          displaySizes.small, displaySizes.small);
@@ -158,14 +150,12 @@ public class EditBookFieldsFragment
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre,
                         mBookBaseFragmentModel.getGenres());
 
-
         // Personal fields
 
         // defined, but handled manually (reminder: storing the list back into the book
         // is handled by onCheckListEditorSave)
         field = mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
-        //noinspection ConstantConditions
-        initCheckListEditor(getTag(), field, R.string.lbl_bookshelves_long, () ->
+        initCheckListEditor(field, R.string.lbl_bookshelves_long, () ->
                 book.getEditableBookshelvesList(mDb));
     }
 
@@ -191,10 +181,6 @@ public class EditBookFieldsFragment
         showHideFields(false);
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Populate">
-
     /**
      * Handle the Bookshelf default.
      * <p>
@@ -219,8 +205,7 @@ public class EditBookFieldsFragment
             }
             if (bookshelf == null) /* || name.isEmpty() */ {
                 // unlikely to be true, but use default just in case
-                //noinspection ConstantConditions
-                bookshelf = Bookshelf.getDefaultBookshelf(getContext(), mDb);
+                bookshelf = Bookshelf.getDefaultBookshelf(getResources(), mDb);
             }
 
             mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());
@@ -272,34 +257,12 @@ public class EditBookFieldsFragment
         }
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Fragment shutdown">
-
     @Override
     @CallSuper
     public void onPause() {
         mCoverHandler.dismissCoverBrowser();
         super.onPause();
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Field editors callbacks">
-
-    @Override
-    public void onCheckListEditorSave(final int destinationFieldId,
-                                      @NonNull final List<CheckListItem<Bookshelf>> list) {
-
-        if (destinationFieldId == R.id.bookshelves) {
-            ArrayList<Bookshelf> bsList = new Book.BookshelfCheckListItem().extractList(list);
-            mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
-                                                                    bsList);
-            mFields.getField(destinationFieldId).setValue(Bookshelf.toDisplayString(bsList));
-        }
-    }
-
-    //</editor-fold>
 
     @Override
     @CallSuper

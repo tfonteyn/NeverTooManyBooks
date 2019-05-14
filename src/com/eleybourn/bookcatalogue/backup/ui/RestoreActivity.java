@@ -27,17 +27,18 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.RestoreTask;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -47,12 +48,80 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author pjw
  */
 public class RestoreActivity
-        extends BRBaseActivity
-        implements
-        ImportOptionsDialogFragment.OnOptionsListener,
-        OnTaskListener<Object, ImportSettings> {
+        extends BRBaseActivity {
 
-    private ProgressDialogFragment<Object, ImportSettings> mProgressDialog;
+    private final TaskListener<Object, ImportOptions> mTaskListener =
+            new TaskListener<Object, ImportOptions>() {
+                /**
+                 * Listener for tasks.
+                 *
+                 * @param taskId  a task identifier
+                 * @param success {@code true} for success.
+                 * @param result  {@link ImportOptions}
+                 */
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           @NonNull final ImportOptions result,
+                                           @Nullable final Exception e) {
+
+                    //noinspection SwitchStatementWithTooFewBranches
+                    switch (taskId) {
+                        case R.id.TASK_ID_READ_FROM_ARCHIVE:
+                            if (success) {
+                                // see if there are any pre-200 preferences that need migrating.
+                                if ((result.what & ImportOptions.PREFERENCES) != 0) {
+                                    Prefs.migratePreV200preferences(
+                                            Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+                                }
+
+                                new AlertDialog.Builder(RestoreActivity.this)
+                                        .setTitle(R.string.lbl_import_from_archive)
+                                        .setMessage(R.string.progress_end_import_complete)
+                                        .setPositiveButton(android.R.string.ok, (d, which) -> {
+                                            d.dismiss();
+                                            Intent data = new Intent().putExtra(
+                                                    UniqueId.BKEY_IMPORT_RESULT,
+                                                    result.what);
+                                            setResult(Activity.RESULT_OK, data);
+                                            finish();
+                                        })
+                                        .create()
+                                        .show();
+                            } else {
+                                String msg = getString(R.string.error_import_failed)
+                                        + ' ' + getString(R.string.error_storage_not_readable)
+                                        + "\n\n" + getString(
+                                        R.string.error_if_the_problem_persists);
+
+                                new AlertDialog.Builder(RestoreActivity.this)
+                                        .setTitle(R.string.lbl_import_from_archive)
+                                        .setMessage(msg)
+                                        .setPositiveButton(android.R.string.ok,
+                                                           (d, which) -> d.dismiss())
+                                        .create()
+                                        .show();
+                            }
+                            break;
+
+                        default:
+                            Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
+                            break;
+                    }
+                }
+            };
+
+    private final ImportOptionsDialogFragment.OptionsListener mOptionsListener =
+            RestoreActivity.this::onOptionsSet;
+
+    private ProgressDialogFragment<Object, ImportOptions> mProgressDialog;
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ImportOptionsDialogFragment)fragment).setListener(mOptionsListener);
+        }
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -61,10 +130,10 @@ public class RestoreActivity
         FragmentManager fm = getSupportFragmentManager();
 
         //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, ImportSettings>)
+        mProgressDialog = (ProgressDialogFragment<Object, ImportOptions>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskListener(this);
+            mProgressDialog.setTaskListener(mTaskListener);
 //            mProgressDialog.setOnUserCancelledListener(this);
         }
 
@@ -94,20 +163,24 @@ public class RestoreActivity
                 return;
             }
 
-            final ImportSettings settings = new ImportSettings();
-            settings.file = file;
+            final ImportOptions options = new ImportOptions();
+            options.file = file;
 
             new AlertDialog.Builder(this)
                     .setTitle(R.string.lbl_import_from_archive)
                     .setMessage(R.string.import_option_info_all_books)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setNeutralButton(R.string.btn_options, (d, which) ->
-                            // ask user what options they want
-                            ImportOptionsDialogFragment.show(getSupportFragmentManager(), settings))
+                    .setNeutralButton(R.string.btn_options, (d, which) -> {
+                        // ask user what options they want
+                        FragmentManager fm = getSupportFragmentManager();
+                        if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
+                            ImportOptionsDialogFragment.newInstance(options).show(fm, ImportOptionsDialogFragment.TAG);
+                        }
+                    })
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
                         // User wants to import all.
-                        settings.what = ImportSettings.ALL;
-                        onOptionsSet(settings);
+                        options.what = ImportOptions.ALL;
+                        onOptionsSet(options);
                     })
                     .create()
                     .show();
@@ -117,79 +190,24 @@ public class RestoreActivity
     /**
      * kick of the restore task.
      */
-    @Override
-    public void onOptionsSet(@NonNull final ImportSettings settings) {
+    public void onOptionsSet(@NonNull final ImportOptions options) {
         // sanity check
-        if (settings.what == ImportSettings.NOTHING) {
+        if (options.what == ImportOptions.NOTHING) {
             return;
         }
 
         FragmentManager fm = getSupportFragmentManager();
         //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, ImportSettings>)
+        mProgressDialog = (ProgressDialogFragment<Object, ImportOptions>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment.newInstance(
                     R.string.progress_msg_importing, false, 0);
-            RestoreTask task = new RestoreTask(mProgressDialog, settings);
+            RestoreTask task = new RestoreTask(mProgressDialog, options);
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskListener(this);
+        mProgressDialog.setTaskListener(mTaskListener);
 //        mProgressDialog.setOnUserCancelledListener(this);
-    }
-
-    /**
-     * Listener for tasks.
-     *
-     * @param taskId  a task identifier
-     * @param success {@code true} for success.
-     * @param result  {@link ImportSettings}
-     */
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @NonNull final ImportSettings result,
-                               @Nullable final Exception e) {
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (taskId) {
-            case R.id.TASK_ID_READ_FROM_ARCHIVE:
-                if (success) {
-                    // see if there are any pre-200 preferences that need migrating.
-                    if ((result.what & ImportSettings.PREFERENCES) != 0) {
-                        Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-                    }
-
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(R.string.progress_end_import_complete)
-                            .setPositiveButton(android.R.string.ok, (d, which) -> {
-                                d.dismiss();
-                                Intent data = new Intent().putExtra(UniqueId.BKEY_IMPORT_RESULT,
-                                                                    result.what);
-                                setResult(Activity.RESULT_OK, data);
-                                finish();
-                            })
-                            .create()
-                            .show();
-                } else {
-                    String msg = getString(R.string.error_import_failed)
-                            + ' ' + getString(R.string.error_storage_not_readable)
-                            + "\n\n" + getString(R.string.error_if_the_problem_persists);
-
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.lbl_import_from_archive)
-                            .setMessage(msg)
-                            .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
-                            .create()
-                            .show();
-                }
-                break;
-
-            default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
-                break;
-        }
     }
 }

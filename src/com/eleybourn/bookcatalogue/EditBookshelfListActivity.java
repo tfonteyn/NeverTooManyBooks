@@ -34,6 +34,8 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,8 +56,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  */
 public class EditBookshelfListActivity
-        extends BaseActivity
-        implements EditBookshelfDialogFragment.OnBookshelfChangedListener {
+        extends BaseActivity {
 
     /** Database access. */
     private DAO mDb;
@@ -65,6 +66,17 @@ public class EditBookshelfListActivity
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
 
+    private final EditBookshelfDialogFragment.OnBookshelfChangedListener mListener =
+            new EditBookshelfDialogFragment.OnBookshelfChangedListener() {
+                @Override
+                public void onBookshelfChanged(final long bookshelfId,
+                                               final int booksMoved) {
+                    mList = mDb.getBookshelves();
+                    mAdapter.notifyDataSetChanged();
+                    Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
+                    setResult(Activity.RESULT_OK, data);
+                }
+            };
 
     @Override
     protected int getLayoutId() {
@@ -121,16 +133,18 @@ public class EditBookshelfListActivity
      * @param bookshelf to edit
      */
     private void editItem(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialogFragment.show(getSupportFragmentManager(), bookshelf);
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
+            EditBookshelfDialogFragment.newInstance(bookshelf)
+                                       .show(fm, EditBookshelfDialogFragment.TAG);
+        }
     }
 
     @Override
-    public void onBookshelfChanged(final long bookshelfId,
-                                   final int booksMoved) {
-        mList = mDb.getBookshelves();
-        mAdapter.notifyDataSetChanged();
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
-        setResult(Activity.RESULT_OK, data);
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (EditBookshelfDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditBookshelfDialogFragment) fragment).setListener(mListener);
+        }
     }
 
     @Override

@@ -57,7 +57,7 @@ import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.
 import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.TBL_TASK;
 
 /**
- * Database layer. Implements all direct database access.
+ * Database layer. Provides all direct database access.
  *
  * @author Philip Warner
  */

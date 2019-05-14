@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-public class ImportSettings
+public class ImportOptions
         implements Parcelable {
 
     /*
@@ -34,15 +34,15 @@ public class ImportSettings
      * 1: only new books and books with more recent update_date fields should be imported.
      */
     public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
-    public static final Creator<ImportSettings> CREATOR = new Creator<ImportSettings>() {
+    public static final Creator<ImportOptions> CREATOR = new Creator<ImportOptions>() {
         @Override
-        public ImportSettings createFromParcel(@NonNull final Parcel source) {
-            return new ImportSettings(source);
+        public ImportOptions createFromParcel(@NonNull final Parcel source) {
+            return new ImportOptions(source);
         }
 
         @Override
-        public ImportSettings[] newArray(final int size) {
-            return new ImportSettings[size];
+        public ImportOptions[] newArray(final int size) {
+            return new ImportOptions[size];
         }
     };
     /**
@@ -59,14 +59,14 @@ public class ImportSettings
     @Nullable
     public File file;
 
-    public ImportSettings() {
+    public ImportOptions() {
     }
 
-    public ImportSettings(@NonNull final File file) {
+    public ImportOptions(@NonNull final File file) {
         this.file = file;
     }
 
-    protected ImportSettings(@NonNull final Parcel in) {
+    protected ImportOptions(@NonNull final Parcel in) {
         what = in.readInt();
         if (in.readInt() == 1) {
             file = new File(in.readString());
@@ -97,7 +97,7 @@ public class ImportSettings
     @Override
     @NonNull
     public String toString() {
-        return "ImportSettings{"
+        return "ImportOptions{"
                 + "file=`" + file + '`'
                 + "what=0%" + Integer.toBinaryString(what)
                 + '}';

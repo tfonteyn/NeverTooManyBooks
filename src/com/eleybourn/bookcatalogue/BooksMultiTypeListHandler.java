@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -103,12 +104,12 @@ public class BooksMultiTypeListHandler
      *
      * @param db the database
      */
-    public BooksMultiTypeListHandler(@NonNull final Context context,
+    public BooksMultiTypeListHandler(@NonNull final LayoutInflater layoutInflater,
                                      @NonNull final DAO db,
                                      @NonNull final BooklistStyle style) {
         mDb = db;
         mStyle = style;
-        mInflater = LayoutInflater.from(context);
+        mInflater = layoutInflater;
     }
 
     @Override
@@ -129,7 +130,7 @@ public class BooksMultiTypeListHandler
                         @NonNull final ViewGroup parent) {
         BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
 
-        RowViewHolder holder = createHolder(context, row);
+        RowViewHolder holder = createHolder(context.getResources(), row);
         View view = holder.onCreateView(row, mInflater, parent);
         holder.onCreateViewHolder(row, view);
         view.setTag(R.id.TAG_VIEW_HOLDER, holder);
@@ -174,11 +175,11 @@ public class BooksMultiTypeListHandler
      */
     @Nullable
     @Override
-    public String[] getSectionText(@NonNull final Context context,
+    public String[] getSectionText(@NonNull final Resources resources,
                                    @NonNull final Cursor cursor) {
         BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
-        return new String[]{row.getLevelText(context, 1),
-                            row.getLevelText(context, 2)};
+        return new String[]{row.getLevelText(resources, 1),
+                            row.getLevelText(resources, 2)};
     }
 
 
@@ -224,7 +225,7 @@ public class BooksMultiTypeListHandler
      *
      * @return the holder
      */
-    private RowViewHolder createHolder(@NonNull final Context context,
+    private RowViewHolder createHolder(@NonNull final Resources resources,
                                        @NonNull final BooklistCursorRow row) {
 
         RowKind rowKind = RowKind.get(row.getRowKind());
@@ -232,7 +233,7 @@ public class BooksMultiTypeListHandler
 
         // a BookHolder is based on multiple columns, the holder itself will sort them out.
         if (rowKindId == RowKind.BOOK) {
-            return new BookHolder(context, mDb, mStyle);
+            return new BookHolder(resources, mDb, mStyle);
         }
 
         // other rows are based on a single column (except CheckableStringHolder).
@@ -313,7 +314,7 @@ public class BooksMultiTypeListHandler
 
         /** The listener for the tasks result. */
         @NonNull
-        private final WeakReference<OnGetBookExtrasTaskFinishedListener> mListener;
+        private final WeakReference<OnGetBookExtrasTaskFinishedListener> mTaskListener;
 
         /** Database access. */
         @NonNull
@@ -348,21 +349,20 @@ public class BooksMultiTypeListHandler
         /**
          * Constructor.
          *
-         * @param context  caller context
-         * @param bookId   Book to fetch
-         * @param listener View holder for the book, used as callback for task results.
+         * @param bookId       Book to fetch
+         * @param taskListener View holder for the book, used as callback for task results.
          */
         @UiThread
-        GetBookExtrasTask(@NonNull final Context context,
+        GetBookExtrasTask(@NonNull final Resources resources,
                           @NonNull final DAO db,
                           final long bookId,
-                          @NonNull final OnGetBookExtrasTaskFinishedListener listener,
+                          @NonNull final OnGetBookExtrasTaskFinishedListener taskListener,
                           @NonNull final BooklistStyle style) {
 
-            mLocale = context.getResources().getConfiguration().locale;
+            mLocale = resources.getConfiguration().locale;
             mDb = db;
             mBookId = bookId;
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
             mStyle = style;
 
             mWithBookshelves = mStyle.getExtraField(BooklistStyle.EXTRAS_BOOKSHELVES).isRequested();
@@ -371,7 +371,7 @@ public class BooksMultiTypeListHandler
             mWithAuthor = mStyle.getExtraField(BooklistStyle.EXTRAS_AUTHOR).isRequested();
             mWithPublisher = mStyle.getExtraField(BooklistStyle.EXTRAS_PUBLISHER).isRequested();
 
-            mA_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
+            mA_bracket_b_bracket = resources.getString(R.string.a_bracket_b_bracket);
         }
 
         @Override
@@ -443,9 +443,13 @@ public class BooksMultiTypeListHandler
                 return;
             }
             // Fields not used will be null.
-            if (mListener.get() != null) {
-                mListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher,
-                                                            mFormat, mShelves, mLocation);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher,
+                                                                mFormat, mShelves, mLocation);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
 
@@ -477,8 +481,7 @@ public class BooksMultiTypeListHandler
      * Holder for a {@link RowKind#BOOK} row.
      */
     private static class BookHolder
-            extends RowViewHolder
-            implements GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener {
+            extends RowViewHolder {
 
         /** Database access. */
         @NonNull
@@ -508,6 +511,21 @@ public class BooksMultiTypeListHandler
         TextView publisherView;
         /** Pointer to the view that stores the related book field. */
         TextView formatView;
+        private final GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener mTaskListener =
+                new GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener() {
+                    @Override
+                    public void onGetBookExtrasTaskFinished(@Nullable final String author,
+                                                            @Nullable final String publisher,
+                                                            @Nullable final String format,
+                                                            @Nullable final String shelves,
+                                                            @Nullable final String location) {
+                        showOrHide(authorView, author);
+                        showOrHide(publisherView, publisher);
+                        showOrHide(formatView, format);
+                        showOrHide(bookshelvesView, mShelvesLabel, shelves);
+                        showOrHide(locationView, mLocationLabel, location);
+                    }
+                };
         /** Pointer to the view that stores the series number when it is a short piece of text. */
         TextView seriesNumView;
         /** Pointer to the view that stores the series number when it is a long piece of text. */
@@ -517,23 +535,22 @@ public class BooksMultiTypeListHandler
         /** Pointer to the view that stores the related book field. */
         private ImageView coverView;
 
-
         /**
          * Constructor.
          *
-         * @param context for resource strings; not cached, only used in constructor.
-         * @param db      the database.
+         * @param resources for strings; not cached, only used in constructor.
+         * @param db        the database.
          */
-        BookHolder(@NonNull final Context context,
+        BookHolder(@NonNull final Resources resources,
                    @NonNull final DAO db,
                    @NonNull final BooklistStyle style) {
             mDb = db;
             mStyle = style;
 
             // fetch once and re-use later.
-            mName_colon_value = context.getString(R.string.name_colon_value);
-            mShelvesLabel = context.getString(R.string.lbl_bookshelves);
-            mLocationLabel = context.getString(R.string.lbl_location);
+            mName_colon_value = resources.getString(R.string.name_colon_value);
+            mShelvesLabel = resources.getString(R.string.lbl_bookshelves);
+            mLocationLabel = resources.getString(R.string.lbl_location);
         }
 
         @Override
@@ -674,22 +691,10 @@ public class BooksMultiTypeListHandler
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.
-                new GetBookExtrasTask(view.getContext(), mDb, rowData.getBookId(), this, mStyle)
+                new GetBookExtrasTask(view.getContext().getResources(),
+                                      mDb, rowData.getBookId(), mTaskListener, mStyle)
                         .execute();
             }
-        }
-
-        @Override
-        public void onGetBookExtrasTaskFinished(@Nullable final String author,
-                                                @Nullable final String publisher,
-                                                @Nullable final String format,
-                                                @Nullable final String shelves,
-                                                @Nullable final String location) {
-            showOrHide(authorView, author);
-            showOrHide(publisherView, publisher);
-            showOrHide(formatView, format);
-            showOrHide(bookshelvesView, mShelvesLabel, shelves);
-            showOrHide(locationView, mLocationLabel, location);
         }
 
         /**
@@ -923,7 +928,7 @@ public class BooksMultiTypeListHandler
                                      @NonNull final View view) {
             String s = rowData.getString(mSourceCol);
             if (s != null && !s.isEmpty()) {
-                s = LocaleUtils.getDisplayName(view.getContext(), s);
+                s = LocaleUtils.getDisplayName(view.getContext().getResources(), s);
             }
             setText(s, rowData.getLevel());
         }
@@ -980,7 +985,7 @@ public class BooksMultiTypeListHandler
                                      @NonNull final View view) {
             String s = rowData.getString(mSourceCol);
             if (s != null) {
-                Locale locale = LocaleUtils.from(view.getContext());
+                Locale locale = LocaleUtils.from(view.getContext().getResources());
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the short name
@@ -1026,6 +1031,8 @@ public class BooksMultiTypeListHandler
                 Drawable lock = null;
                 if (rowData.getBoolean(mIsLockedSourceCol)) {
                     lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
+                    //noinspection ConstantConditions
+                    lock.setTint(App.getAttr(R.attr.completed_icon_tint));
                 }
                 mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         null, null, lock, null);

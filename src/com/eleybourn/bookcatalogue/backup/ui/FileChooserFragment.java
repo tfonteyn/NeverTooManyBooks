@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -45,21 +46,16 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Fragment to display a simple directory/file browser.
- * <p>
- * IMPORTANT: the {@link ProgressDialogFragment} here uses {@link FileListerTask#TAG}
- * to avoid clashes with the hosting Activity/Fragment.
  *
  * @author pjw
  */
 public class FileChooserFragment
-        extends Fragment
-        implements OnTaskListener<Object, FileChooserFragment.DirectoryContent> {
+        extends Fragment {
 
     /** Fragment manager tag. */
     public static final String TAG = FileChooserFragment.class.getSimpleName();
@@ -70,9 +66,8 @@ public class FileChooserFragment
     /** Value holder for the root and its content. */
     @Nullable
     private FileChooserFragment.DirectoryContent mDir;
-
     /** User clicks on the 'up' button. */
-    private final OnClickListener onPathUpClickListener = (v) -> {
+    private final OnClickListener onPathUpClickListener = v -> {
         String parent = mDir.root.getParent();
         if (parent == null) {
             UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
@@ -84,7 +79,28 @@ public class FileChooserFragment
 
     private EditText mFilenameView;
     private TextView mCurrentFolderView;
+    private final TaskListener<Object, FileChooserFragment.DirectoryContent> mListener =
+            new TaskListener<Object, DirectoryContent>() {
 
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           @Nullable final FileChooserFragment.DirectoryContent result,
+                                           @Nullable final Exception e) {
+
+                    //noinspection SwitchStatementWithTooFewBranches
+                    switch (taskId) {
+                        case R.id.TASK_ID_FILE_LISTER:
+                            //noinspection ConstantConditions
+                            onGotFileList(result);
+                            break;
+
+                        default:
+                            Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
+                            break;
+                    }
+                }
+            };
 
     /**
      * Constructor.
@@ -185,32 +201,7 @@ public class FileChooserFragment
 
         //noinspection ConstantConditions
         UserMessage.showUserMessage(getView(), R.string.progress_msg_reading_directory);
-        new FileListerTask(root, this).execute();
-    }
-
-    /**
-     * Listener for tasks.
-     *
-     * @param taskId  a task identifier
-     * @param success {@code true} for success.
-     */
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @Nullable final FileChooserFragment.DirectoryContent result,
-                               @Nullable final Exception e) {
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (taskId) {
-            case R.id.TASK_ID_FILE_LISTER:
-                //noinspection ConstantConditions
-                onGotFileList(result);
-                break;
-
-            default:
-                Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
-                break;
-        }
+        new FileListerTask(root, mListener).execute();
     }
 
     /**
@@ -256,7 +247,7 @@ public class FileChooserFragment
         File getFile();
 
         void onBindViewHolder(@NonNull final Holder holder,
-                              @NonNull Context context);
+                              @NonNull Resources resources);
     }
 
     /**
@@ -343,8 +334,7 @@ public class FileChooserFragment
 
             final FileDetails item = mItems.files.get(position);
 
-            //noinspection ConstantConditions
-            item.onBindViewHolder(holder, getContext());
+            item.onBindViewHolder(holder, getResources());
 
             holder.itemView.setOnClickListener(v -> {
                 if (item.getFile().isDirectory()) {

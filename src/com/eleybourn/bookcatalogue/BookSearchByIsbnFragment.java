@@ -103,6 +103,46 @@ public class BookSearchByIsbnFragment
     private Scanner mScanner;
     @Nullable
     private EditText mIsbnView;
+
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
+            new SearchCoordinator.OnSearchFinishedListener() {
+                /**
+                 * results of search.
+                 * <p>
+                 * The details will get sent to {@link EditBookActivity}
+                 * <p>
+                 * <br>{@inheritDoc}
+                 */
+                public void onSearchFinished(final boolean wasCancelled,
+                                             @NonNull final Bundle bookData) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                        Logger.debugEnter(this, "onSearchFinished",
+                                          "SearchManagerId=" + mSearchManagerId);
+                    }
+                    try {
+                        if (!wasCancelled) {
+                            Intent intent = new Intent(mActivity, EditBookActivity.class)
+                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+                            // Clear the data entry fields ready for the next one (mScanMode has no view)
+                            if (mIsbnView != null) {
+                                mIsbnView.setText("");
+                            }
+                        } else {
+                            if (mScanMode) {
+                                startScannerActivity();
+                            }
+                        }
+                    } finally {
+                        // Clean up
+                        mSearchManagerId = 0;
+                        // Make sure the base message will be empty.
+                        mActivity.getTaskManager().sendHeaderUpdate(null);
+                    }
+                }
+            };
+
     @NonNull
     private String mIsbnSearchText = "";
     @Nullable
@@ -137,7 +177,7 @@ public class BookSearchByIsbnFragment
         }
 
         //noinspection ConstantConditions
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.search_isbn);
             actionBar.setSubtitle(null);
@@ -282,7 +322,7 @@ public class BookSearchByIsbnFragment
 
     /**
      * Search with ISBN.
-     *
+     * <p>
      * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
     private void prepareSearch() {
@@ -378,8 +418,6 @@ public class BookSearchByIsbnFragment
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * Or restart the scanner if applicable.
-     * <p>
-     * The results will arrive in {@link #onSearchFinished}
      */
     private void startSearch() {
         // check if we have an active search, if so, quit.
@@ -400,39 +438,9 @@ public class BookSearchByIsbnFragment
         }
     }
 
-    /**
-     * results of search started by {@link #startSearch}.
-     * <p>
-     * The details will get sent to {@link EditBookActivity}
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    public void onSearchFinished(final boolean wasCancelled,
-                                 @NonNull final Bundle bookData) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debugEnter(this, "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
-        }
-        try {
-            if (!wasCancelled) {
-                Intent intent = new Intent(mActivity, EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                // Clear the data entry fields ready for the next one (mScanMode has no view)
-                if (mIsbnView != null) {
-                    mIsbnView.setText("");
-                }
-            } else {
-                if (mScanMode) {
-                    startScannerActivity();
-                }
-            }
-        } finally {
-            // Clean up
-            mSearchManagerId = 0;
-            // Make sure the base message will be empty.
-            mActivity.getTaskManager().sendHeaderUpdate(null);
-        }
+    @Override
+    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
+        return mOnSearchFinishedListener;
     }
 
     /**

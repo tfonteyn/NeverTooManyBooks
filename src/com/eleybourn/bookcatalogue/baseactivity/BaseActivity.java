@@ -58,7 +58,7 @@ public abstract class BaseActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Locale to the configuration before super.onCreate
-        LocaleUtils.applyPreferred(this);
+        LocaleUtils.applyPreferred(getResources());
         // apply the Theme before super.onCreate
         setTheme(App.getThemeResId());
 
@@ -88,14 +88,6 @@ public abstract class BaseActivity
 //        mFloatingActionButton = findViewById(R.id.fab);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
-//        if (mDrawerLayout != null) {
-//            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                    this, mDrawerLayout, toolbar,
-//                    R.string.navigation_drawer_open,
-//                    R.string.navigation_drawer_close);
-//            mDrawerLayout.addDrawerListener(toggle);
-//            toggle.syncState();
-//        }
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -111,7 +103,7 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(this));
+            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(getResources()));
         }
 
         if (App.isInNeedOfRecreating()) {
@@ -170,7 +162,7 @@ public abstract class BaseActivity
 
             case R.id.nav_edit_list_styles:
                 startActivityForResult(new Intent(this, PreferredStylesActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
+                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
 
             case R.id.nav_settings:
@@ -196,6 +188,9 @@ public abstract class BaseActivity
         }
     }
 
+    /**
+     * TODO:  https://developer.android.com/training/appbar/up-action
+     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -210,7 +205,7 @@ public abstract class BaseActivity
                         return true;
                     }
                 }
-                // otherwise, home is an 'up' event.
+                // otherwise, home is an 'up' event. Simulate the user pressing the 'back' key.
                 onBackPressed();
                 return true;
 
@@ -251,10 +246,10 @@ public abstract class BaseActivity
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
+            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "onActivityResult",
-                                 "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
+                                 "REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
 
@@ -304,7 +299,7 @@ public abstract class BaseActivity
                 break;
 
             case Prefs.pk_ui_language:
-                if (LocaleUtils.isChanged(this)) {
+                if (LocaleUtils.isChanged(getResources())) {
                     recreate();
                     App.setIsRecreating();
                 }

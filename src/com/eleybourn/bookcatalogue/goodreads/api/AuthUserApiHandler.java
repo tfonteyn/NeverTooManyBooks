@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import org.apache.http.client.methods.HttpPost;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;

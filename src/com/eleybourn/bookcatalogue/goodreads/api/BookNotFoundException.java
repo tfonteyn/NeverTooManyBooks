@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.api;
 
 public class BookNotFoundException
         extends Exception {

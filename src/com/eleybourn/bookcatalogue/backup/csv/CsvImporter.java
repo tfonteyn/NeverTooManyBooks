@@ -43,8 +43,8 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -88,7 +88,7 @@ public class CsvImporter
     private final DAO mDb;
 
     @NonNull
-    private final ImportSettings mSettings;
+    private final ImportOptions mSettings;
     private final String mProgress_msg_n_created_m_updated;
 
     private final String mUnknownString;
@@ -101,15 +101,15 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param settings      {@link ImportSettings#file} is not used, as we must support
+     * @param settings      {@link ImportOptions#file} is not used, as we must support
      *                      reading from a stream.
-     *                      {@link ImportSettings##dateFrom} is not applicable
-     *                      {@link ImportSettings#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                      {@link ImportOptions##dateFrom} is not applicable
+     *                      {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
      *                      Other flags are ignored, as this class only
-     *                      handles {@link ImportSettings#BOOK_CSV} anyhow.
+     *                      handles {@link ImportOptions#BOOK_CSV} anyhow.
      */
     @UiThread
-    public CsvImporter(@NonNull final ImportSettings settings) {
+    public CsvImporter(@NonNull final ImportOptions settings) {
 
         //TODO: do not use Application Context for String resources
         Context context = App.getAppContext();
@@ -182,7 +182,7 @@ public class CsvImporter
         );
 
         final boolean updateOnlyIfNewer;
-        if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (!book.containsKey(DBDefinitions.KEY_DATE_LAST_UPDATED)) {
                 throw new IllegalArgumentException(
                         "Imported data does not contain " + DBDefinitions.KEY_DATE_LAST_UPDATED);

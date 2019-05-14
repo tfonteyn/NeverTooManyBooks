@@ -30,13 +30,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import java.lang.ref.WeakReference;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.debug.MustImplementException;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -52,7 +53,7 @@ public class EditBookshelfDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
+    public static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";
 
@@ -64,16 +65,7 @@ public class EditBookshelfDialogFragment
     private EditText mNameView;
 
     private String mName;
-
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final Bookshelf bookshelf) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(bookshelf).show(fm, TAG);
-        }
-    }
+    private WeakReference<OnBookshelfChangedListener> mListener;
 
     /**
      *
@@ -156,8 +148,14 @@ public class EditBookshelfDialogFragment
             mergeShelves(mBookshelf, existingShelf);
         } else {
             if (mDb.updateOrInsertBookshelf(mBookshelf)) {
-                OnBookshelfChangedListener
-                        .onBookshelfChanged(this, mBookshelf.getId(), 0);
+                if (mListener.get() != null) {
+                    mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Logger.debug(this, "onBookshelfChanged",
+                                     "WeakReference to listener was dead");
+                    }
+                }
             }
         }
     }
@@ -190,8 +188,14 @@ public class EditBookshelfDialogFragment
 
                     // move all books from bookshelf to existingShelf
                     int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
-                    OnBookshelfChangedListener.onBookshelfChanged(this,
-                                                                  destination.getId(), booksMoved);
+                    if (mListener.get() != null) {
+                        mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onBookshelfChanged",
+                                         "WeakReference to listener was dead");
+                        }
+                    }
                 })
                 .create()
                 .show();
@@ -205,35 +209,16 @@ public class EditBookshelfDialogFragment
         super.onDestroy();
     }
 
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final OnBookshelfChangedListener listener) {
+        mListener = new WeakReference<>(listener);
+    }
+
     public interface OnBookshelfChangedListener {
-
-        /**
-         *  BAD idea... to be removed
-         *
-         * Convenience method. Try in order:
-         * <ul>
-         * <li>getTargetFragment()</li>
-         * <li>getParentFragment()</li>
-         * <li>getActivity()</li>
-         * </ul>
-         */
-        static void onBookshelfChanged(@NonNull final Fragment sourceFragment,
-                                       long bookshelfId,
-                                       int booksMoved) {
-
-            if (sourceFragment.getTargetFragment() instanceof OnBookshelfChangedListener) {
-                ((OnBookshelfChangedListener) sourceFragment.getTargetFragment())
-                        .onBookshelfChanged(bookshelfId, booksMoved);
-            } else if (sourceFragment.getParentFragment() instanceof OnBookshelfChangedListener) {
-                ((OnBookshelfChangedListener) sourceFragment.getParentFragment())
-                        .onBookshelfChanged(bookshelfId, booksMoved);
-            } else if (sourceFragment.getActivity() instanceof OnBookshelfChangedListener) {
-                ((OnBookshelfChangedListener) sourceFragment.getActivity())
-                        .onBookshelfChanged(bookshelfId, booksMoved);
-            } else {
-                throw new MustImplementException(OnBookshelfChangedListener.class);
-            }
-        }
 
         /**
          * Called after the user confirms a change.

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Salva libro</string>
     <string name="X_info_no_bookshelves_yet">Non hai creato ancora nessuna libreria. Per crearne utilizza il menù nella parte inferiore dello schermo.</string>
     <string name="menu_add_bookshelf">Crea libreria</string>
-    <string name="X_btn_confirm_add_bs">Aggiungi libreria</string>
     <string name="menu_bookshelves">Librerie…</string>
-    <string name="X_btn_confirm_save_bs">Salva libreria</string>
-    <string name="X_menu_delete_bookshelf">Cancella libreria</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria</string>
     <string name="lbl_bookshelf">Libreria</string>
     <string name="bookshelf_all_books">Tutti i libri</string>
@@ -80,7 +74,7 @@
     <string name="error_search_exception">Ricerca di %1$s: %2$s fallita</string>
     <string name="menu_delete">Cancellare</string>
     <string name="help">Aiuto</string>
-    <string name="X_info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
+    <string name="info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="X_anthology_titles">Antologia titoli</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Questa antologia ha più autori.</string>
@@ -151,7 +145,6 @@
     <string name="title_edit_book_series">Modifica serie libri</string>
     <string name="lbl_family_name">Cognome</string>
     <string name="lbl_given_names">Nome</string>
-    <string name="X_title_edit_author">Modifica dettagli autore</string>
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
     <string name="menu_cover_replace">Rimpiazza…</string>
     <string name="menu_cover_search_alt_editions">Da altre edizioni…</string>
@@ -162,7 +155,6 @@
     <string name="menu_edit_series">Modifica serie…</string>
     <string name="title_delete_series">Cancella serie</string>
     <string name="confirm_delete_series">Cancellare la serie ‘%1$s’?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
-    <string name="X_title_edit_series">Modifica dettagli serie</string>
     <string name="X_title_select_cover">Seleziona copertina</string>
     <string name="X_warning_no_isbn_no_editions">Impossibile ottenere le edizioni di un libro senza codice ISBN</string>
     <string name="warning_unsaved_edits2">Non hai salvato le modifiche. Vuoi continuare comunque?</string>
@@ -274,10 +266,9 @@
     <string name="acra_resNotifTickerText">&APP_NAME; si è bloccato</string>
     <string name="acra_resNotifTitle">Blocco di &APP_NAME;</string>
     <string name="acra_resNotifText">Cliccare qui per i dettagli</string>
-    <string name="acra_resDialogTitle">Blocco di &APP_NAME;</string>
     <string name="acra_resDialogText">&APP_NAME; sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca \“OK\” per inviarci un\'email relativa al blocco. Potrai verificare l\'email prima dell\'invio.</string>
     <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
-    <string name="acra_resDialogOkToast">Grazie!</string>
+    <string name="acra_resReportSendSuccessToast">Grazie!</string>
     <string name="lbl_read">Letto</string>
     <string name="lbl_unread">Non letto</string>
     <string name="warning_date_not_set">(data non indicata)</string>
@@ -291,7 +282,6 @@
     <string name="style_builtin_added_date">Data di inserimento</string>
     <string name="style_builtin_author_year">Autore ed Anno</string>
     <string name="field_not_set_with_brackets">(vuoto)</string>
-    <string name="X_menu_preferences_booklist">Preferenze Elenchi Libri</string>
     <string name="lbl_bookshelves_long">Librerie</string>
     <string name="lbl_bookshelves">Librerie</string>
     <string name="lbl_location">Locazione</string>
@@ -301,7 +291,6 @@
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
     <string name="progress_msg_starting_up">Avvio…</string>
-    <string name="lbl_application_startup">Avvio &APP_NAME;</string>
     <string name="searching_goodreads">Ricerca in Goodreads</string>
     <string name="menu_booklist_styles">Stili elenco libri…</string>
     <string name="menu_show_more_ellipsis">Mostra di più…</string>
@@ -342,18 +331,14 @@
     </string>
     <string name="lbl_preferred_styles">Stili preferiti</string>
     <string name="title_edit_style">Modifica stile</string>
-    <string name="X_menu_add_style">Aggiungi stile</string>
     <string name="title_clone_style">Duplica stile</string>
     <string name="pg_filters">Filtra libri</string>
-    <string name="X_title_add_style">Nuovo stile</string>
     <string name="X_pt_bob_filter_read">Seleziona in base allo stato \‘Letto\’</string>
     <string name="title_select_style">Seleziona Stile</string>
     <string name="X_warning_required_field_x">%1$s deve contenere un valore</string>
     <string name="edit">Modifica</string>
     <string name="lbl_settings">Preferenze</string>
     <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\‘Assistenza usando l\’opzione \‘Aiuto\’ nel menu principale</string>
-    <string name="X_menu_delete_style">Elimina stile</string>
-    <string name="X_menu_edit_booklist_style">Modifica stile</string>
     <string name="menu_duplicate">Duplicare</string>
     <string name="about_dash_or_dash">- Oppure -</string>
     <string name="about_donate_paypal">Donazione con PayPal</string>
@@ -433,8 +418,6 @@
         Questo menu permette di scegliere lo stile dell\'elenco.\n
         \nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su \'Personalizza\' in fondo dell\'elenco.
     </string>
-    <string name="X_menu_edit_format">Modifica Formato…</string>
-    <string name="X_title_edit_format">Modifica Nome Formato</string>
     <string name="warning_required_name">Il nome non può essere vuoto</string>
     <string name="progress_msg_export_starting">Inizio esportazione…</string>
     <string name="menu_sort_and_style_ellipsis">Ordina &amp; Stile…</string>
@@ -444,7 +427,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s non è un codice ISBN valido</string>
     <string name="X_warning_cover_not_found2">Nessuna immagine trovata</string>
     <string name="warning_cover_copy_failed">Impossibile copiare l\'immagine</string>
-    <string name="X_info_option_not_available_until_book_saved">Opzione disponibile dopo aver salvato il libro</string>
     <string name="menu_add_book_by_barcode_scan">Acquisisci codice a barre/ISBN</string>
     <string name="menu_add_book_by_isbn">Inserisci codice ISBN</string>
     <string name="lbl_allow_asin">Consenti codice ASIN</string>
@@ -731,7 +713,7 @@
     <string name="lbl_style">Stile</string>
     <string name="searching_isfdb">Ricerca in ISFDB</string>
     <string name="searching_open_library">Ricerca in OpenLibrary</string>
-    <string name="error_not_available">non disponibile</string>
+    <string name="error_not_available">%1$s non disponibile</string>
     <string name="error_storage_no_access">Impossibile accedere alla scheda SD</string>
     <string name="error_storage_no_space_left">Spazio insufficiente sulla SD</string>
     <string name="error_storage_not_available">La scheda SD non è disponibile</string>

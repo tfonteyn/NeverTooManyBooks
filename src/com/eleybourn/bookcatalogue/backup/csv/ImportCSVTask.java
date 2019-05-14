@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ImportException;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 public class ImportCSVTask
         extends TaskWithProgress<Object, Integer> {
 
-    private final ImportSettings mSettings;
+    private final ImportOptions mSettings;
     private final Importer mImporter;
 
     /**
@@ -31,7 +31,7 @@ public class ImportCSVTask
      * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    public ImportCSVTask(@NonNull final ImportSettings settings,
+    public ImportCSVTask(@NonNull final ImportOptions settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
         super(R.id.TASK_ID_CSV_IMPORT, progressDialog);
 

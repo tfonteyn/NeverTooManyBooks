@@ -25,6 +25,11 @@ public class GlobalSettingsFragment
         PreferenceScreen screen = getPreferenceScreen();
         setSummary(screen);
 
+        prepareResult();
+    }
+
+    @Override
+    void prepareResult() {
         // ENHANCE: make the response conditional, not all changes warrant a recreate!
         //noinspection ConstantConditions
         getActivity().setResult(UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED);

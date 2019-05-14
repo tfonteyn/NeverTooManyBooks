@@ -22,12 +22,12 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class BackupTask
-        extends TaskWithProgress<Object, ExportSettings> {
+        extends TaskWithProgress<Object, ExportOptions> {
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
     @NonNull
-    private final ExportSettings mSettings;
+    private final ExportOptions mSettings;
     @NonNull
     private final File mTmpFile;
 
@@ -38,13 +38,13 @@ public class BackupTask
      * @param settings       the export settings
      */
     @UiThread
-    public BackupTask(@NonNull final ProgressDialogFragment<Object, ExportSettings> progressDialog,
-                      @NonNull final ExportSettings /* in/out */ settings) {
+    public BackupTask(@NonNull final ProgressDialogFragment<Object, ExportOptions> progressDialog,
+                      @NonNull final ExportOptions /* in/out */ settings) {
         super(R.id.TASK_ID_WRITE_TO_ARCHIVE, progressDialog);
 
         mSettings = settings;
         // sanity checks
-        if ((mSettings.file == null) || ((mSettings.what & ExportSettings.MASK) == 0)) {
+        if ((mSettings.file == null) || ((mSettings.what & ExportOptions.MASK) == 0)) {
             throw new IllegalArgumentException("Options must be specified: " + mSettings);
         }
 
@@ -60,7 +60,7 @@ public class BackupTask
 
     @UiThread
     @Override
-    protected void onCancelled(final ExportSettings result) {
+    protected void onCancelled(final ExportOptions result) {
         cleanup();
     }
 
@@ -72,7 +72,7 @@ public class BackupTask
     @Override
     @NonNull
     @WorkerThread
-    protected ExportSettings doInBackground(final Void... params) {
+    protected ExportOptions doInBackground(final Void... params) {
 
         try (BackupWriter writer = BackupManager.getWriter(mTmpFile)) {
 
@@ -123,7 +123,7 @@ public class BackupTask
 
             SharedPreferences.Editor ed = App.getPrefs().edit();
             // if the backup was a full one (not a 'since') remember that.
-            if ((mSettings.what & ExportSettings.ALL) != 0) {
+            if ((mSettings.what & ExportOptions.ALL) != 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
             }
             ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());

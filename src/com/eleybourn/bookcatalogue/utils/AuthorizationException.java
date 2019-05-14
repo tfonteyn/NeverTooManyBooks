@@ -45,7 +45,7 @@ public class AuthorizationException
      */
     @NonNull
     @Override
-    public String getFormattedMessage(@NonNull final Resources res) {
-        return res.getString(R.string.error_authorization_failed, res.getString(mSite));
+    public String getFormattedMessage(@NonNull final Resources resources) {
+        return resources.getString(R.string.error_authorization_failed, resources.getString(mSite));
     }
 }

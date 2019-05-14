@@ -2,15 +2,32 @@ package com.eleybourn.bookcatalogue;
 
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
@@ -20,10 +37,47 @@ import com.eleybourn.bookcatalogue.entities.Book;
  * {@link EditBookPublicationFragment}
  * {@link EditBookNotesFragment}
  * {@link EditBookTocFragment}
+ *
+ * @param <T> type of the {@link CheckListItem}
  */
-public abstract class EditBookBaseFragment
+public abstract class EditBookBaseFragment<T>
         extends BookBaseFragment
         implements DataEditor {
+
+    private final CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>
+            mOnCheckListEditorResultsListener = (destinationFieldId, list) -> {
+        Book book = mBookBaseFragmentModel.getBook();
+
+        if (destinationFieldId == R.id.bookshelves) {
+            ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
+            book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            mFields.getField(destinationFieldId)
+                   .setValue(Bookshelf.toDisplayString(bsList));
+
+        } else if (destinationFieldId == R.id.edition) {
+            book.putEditions((ArrayList<Integer>) list);
+            mFields.getField(destinationFieldId)
+                   .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
+        }
+    };
+
+    private final PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener
+            mOnPartialDatePickerResultsListener = (destinationFieldId, year, month, day) ->
+            mFields.getField(destinationFieldId)
+                   .setValue(DateUtils.buildPartialDate(year, month, day));
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((PartialDatePickerDialogFragment) childFragment)
+                    .setListener(mOnPartialDatePickerResultsListener);
+
+        } else if (CheckListEditorDialogFragment.TAG.equals(childFragment.getTag())) {
+            //noinspection unchecked
+            ((CheckListEditorDialogFragment<T>) childFragment)
+                    .setListener(mOnCheckListEditorResultsListener);
+        }
+    }
 
     @Override
     protected void onLoadFieldsFromBook(final boolean setAllFrom) {
@@ -91,4 +145,93 @@ public abstract class EditBookBaseFragment
     protected void onSaveFieldsToBook() {
         mFields.putAllInto(mBookBaseFragmentModel.getBook());
     }
+
+    //<editor-fold desc="Field editors">
+
+    /**
+     * The 'drop-down' menu button next to an AutoCompleteTextView field.
+     * Allows us to show a {@link FieldPicker#FieldPicker} with a list of strings
+     * to choose from.
+     * <p>
+     * Note that a {@link ValuePicker} uses a plain AlertDialog.
+     *
+     * @param field         {@link Fields.Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param fieldButtonId field/button to bind the OnPickListener to (can be same as fieldId)
+     * @param list          list of strings to choose from.
+     */
+    void initValuePicker(@NonNull final Fields.Field field,
+                         @StringRes final int dialogTitleId,
+                         @IdRes final int fieldButtonId,
+                         @NonNull final List<String> list) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
+            return;
+        }
+
+        // Get the list to use in the AutoCompleteTextView
+        //noinspection ConstantConditions
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
+        mFields.setAdapter(field.id, adapter);
+
+        // Get the drop-down button for the list and setup dialog
+        //noinspection ConstantConditions
+        getView().findViewById(fieldButtonId).setOnClickListener(v -> {
+            FieldPicker<String> picker = new FieldPicker<>(getContext(),
+                                                           getString(dialogTitleId),
+                                                           field, list);
+            picker.show();
+        });
+    }
+
+    /**
+     * @param field         {@link Fields.Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
+     */
+    void initPartialDatePicker(@NonNull final Fields.Field field,
+                               @StringRes final int dialogTitleId,
+                               final boolean todayIfNone) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
+            return;
+        }
+
+        field.getView().setOnClickListener(v -> {
+            FragmentManager fm = getChildFragmentManager();
+            if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
+                PartialDatePickerDialogFragment
+                        .newInstance(field.id, field.getValue().toString(),
+                                     dialogTitleId, todayIfNone)
+                        .show(fm, PartialDatePickerDialogFragment.TAG);
+            }
+        });
+    }
+
+    /**
+     * @param field         {@link Fields.Field} to edit
+     * @param dialogTitleId title of the dialog box.
+     * @param listGetter    {@link CheckListEditorDialogFragment.CheckListEditorListGetter <T>}
+     *                      interface to get the *current* list
+     */
+    void initCheckListEditor(@NonNull final Fields.Field field,
+                             @StringRes final int dialogTitleId,
+                             @NonNull final CheckListEditorDialogFragment.CheckListEditorListGetter<T> listGetter) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
+            return;
+        }
+
+        field.getView().setOnClickListener(v -> {
+            FragmentManager fm = getChildFragmentManager();
+            if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
+                CheckListEditorDialogFragment
+                        .newInstance(field.id, dialogTitleId, listGetter)
+                        .show(fm, CheckListEditorDialogFragment.TAG);
+            }
+        });
+    }
+
+    //</editor-fold>
 }

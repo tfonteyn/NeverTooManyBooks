@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * The search criteria is setup to contain the book author, title and ISBN.
  * The user can edit these, search Goodreads, and then review the results.
  * <p>
- * See {@link GrSendBooksTaskBase} where the use of this activity is commented out.
+ * See @link GrSendBooksTaskBase where the use of this activity is commented out.
  *
  * @author Philip Warner
  */

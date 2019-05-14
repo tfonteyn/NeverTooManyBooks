@@ -40,7 +40,6 @@ TODO: uniform quotes in all string:
         delete it from the mail attachments before sending.
     </string>
 
-    <string name="acra_resDialogTitle">&APP_NAME; Crash</string>
     <string name="acra_resDialogText">
         It looks like &APP_NAME; has crashed. If possible describe anything you think may be
         relevant below and press “OK” to send us an email about the crash.
@@ -56,7 +55,7 @@ TODO: uniform quotes in all string:
     <string name="acra_resNotifText">Please tap here for details</string>
 
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
-    <string name="acra_resDialogOkToast">Thank you!</string>
+    <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== ValidatorException error messages; currently never shown. ========== -->
@@ -111,7 +110,7 @@ TODO: uniform quotes in all string:
     <!-- you're out of Shared Storage space... buy a bigger SDCard -->
     <string name="error_storage_no_space_left">Not enough space on the SD Card</string>
 
-    <string name="error_not_available">not available</string>
+    <string name="error_not_available">%1$s not available</string>
 
     <string name="error_no_external_crop_app">Could not find an image-cropping application</string>
     <string name="error_network_timeout">No response, please try again</string>
@@ -161,6 +160,10 @@ TODO: uniform quotes in all string:
     <string name="info_install_scanner">
         To scan your books via the ISBN barcode, you must install
         one of the Zxing or pic2shop barcode scanner applications.
+    </string>
+
+    <string name="info_manage_fields">
+        Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
     </string>
 
     <string name="info_authorized">Authorized</string>
@@ -834,7 +837,7 @@ TODO: uniform quotes in all string:
     <string name="lbl_location">Location</string>
     <string name="lbl_location_long">Location of the book</string>
 
-    <!-- non-database field labels, like choices on a dialog box -->
+    <!-- checkbox on the 'search by isbn' dialog. Must be short. -->
     <string name="lbl_allow_asin">Allow ASIN</string>
 
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
@@ -893,8 +896,6 @@ TODO: uniform quotes in all string:
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
-    <!-- displayed during startup of the application -->
-    <string name="lbl_application_startup">&APP_NAME; Startup</string>
     <!-- displayed during startup of the application -->
     <string name="lbl_backup_dialog">Backup?</string>
 
@@ -1136,9 +1137,7 @@ TODO: uniform quotes in all string:
     <string name="X_warning_no_isbn_no_editions">
         Can not get editions for a book without a valid ISBN
     </string>
-    <string name="X_info_option_not_available_until_book_saved">
-        This option is not available until the book is saved
-    </string>
+
     <string name="X_info_no_bookshelves_yet">
         You have not created any bookshelves yet.
         Please add some using the menu at the bottom of this screen.
@@ -1147,26 +1146,12 @@ TODO: uniform quotes in all string:
         There are no books on this Bookshelf.
         Please add some using the menu at the bottom of this screen.
     </string>
-    <string name="X_info_manage_fields">
-        Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
-    </string>
 
-    <string name="X_menu_add_style">Add style</string>
-    <string name="X_menu_edit_format">Edit Format…</string>
     <string name="X_menu_cover_options">Cover Options…</string>
     <string name="X_menu_search_books">Search Books</string>
-    <string name="X_menu_preferences_booklist">Book List Preferences</string>
     <string name="X_menu_sort_by">Sort By</string>
-    <string name="X_menu_edit_booklist_style">Edit style</string>
-    <string name="X_menu_delete_bookshelf">Delete Bookshelf</string>
-    <string name="X_menu_delete_style">Delete style</string>
     <string name="X_menu_delete_toc_entry">Delete Title from TOC</string>
-
-    <string name="X_title_edit_author">Edit Author Details</string>
-    <string name="X_title_edit_series">Edit Series Details</string>
-    <string name="X_title_edit_format">Edit Format</string>
     <string name="X_title_select_cover">Select Cover</string>
-    <string name="X_title_add_style">New style</string>
     <string name="X_title_cover_detail">Cover Detail</string>
     <string name="X_title_export_books">
         The books in your catalogue will be exported. Select on one of two options to start
@@ -1176,8 +1161,6 @@ TODO: uniform quotes in all string:
         import, or press “back” to cancel:
     </string>
 
-    <string name="X_btn_confirm_add_bs">Add Bookshelf</string>
-    <string name="X_btn_confirm_save_bs">Save Bookshelf</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->

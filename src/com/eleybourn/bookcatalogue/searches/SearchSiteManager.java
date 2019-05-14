@@ -48,6 +48,7 @@ public interface SearchSiteManager {
         }
 
         try {
+            // ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
             Bundle bookData = site.search(isbn, "", "", true);
 
             ArrayList<String> imageList =
@@ -68,18 +69,22 @@ public interface SearchSiteManager {
     /**
      * Start a search using the passed criteria.
      *
+     * Checking the arguments should really be done inside the implementation,
+     * as they generally will depend on what the object can do with them.
+     *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data. Can be empty, but never {@code null}.
+     * ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
      *
      * @throws IOException            on failure
      * @throws AuthorizationException if the site rejects our credentials (if any)
      */
     @WorkerThread
     @NonNull
-    Bundle search(@NonNull String isbn,
-                  @NonNull String author,
-                  @NonNull String title,
+    Bundle search(@Nullable String isbn,
+                  @Nullable String author,
+                  @Nullable String title,
                   boolean fetchThumbnail)
             throws IOException, AuthorizationException;
 
@@ -153,6 +158,14 @@ public interface SearchSiteManager {
     @AnyThread
     @StringRes
     int getSearchingResId();
+
+    /**
+     * @return the resource id for the human-readable name of the site
+     */
+    @AnyThread
+    @StringRes
+    int getNameResId();
+
 
     /**
      * Sizes of thumbnails.

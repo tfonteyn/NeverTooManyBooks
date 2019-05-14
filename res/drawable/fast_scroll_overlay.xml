@@ -3,8 +3,8 @@
     <solid android:color="?android:attr/colorBackground" />
     <stroke
         android:width="@dimen/border"
-        android:color="?attr/color_border" />
-    <corners android:radius="@dimen/border_quad" />
+        android:color="?attr/border_color" />
+    <corners android:radius="@dimen/border_double" />
     <padding
         android:bottom="@dimen/margin_div"
         android:left="@dimen/margin_div"

@@ -20,7 +20,9 @@
         app:constraint_referenced_ids="name"
         />
 
-    <!-- Large text -->
+    <!-- Large text
+        Note that the 'drawableEnd' is done from code. Only here 'tools'.
+    -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"

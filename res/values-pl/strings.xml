@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Zapisz książkę</string>
     <string name="X_info_no_bookshelves_yet">Nie utworzyłeś jeszcze żadnej półki. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="menu_add_bookshelf">Utwórz półkę</string>
-    <string name="X_btn_confirm_add_bs">Dodaj półkę</string>
     <string name="menu_bookshelves">Półkami…</string>
-    <string name="X_btn_confirm_save_bs">Zapisz półkę</string>
-    <string name="X_menu_delete_bookshelf">Usuń półkę</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki</string>
     <string name="lbl_bookshelf">Półka</string>
     <string name="bookshelf_all_books">Wszystkie książki</string>
@@ -82,7 +76,7 @@
     <string name="menu_delete">Usuń</string>
     <string name="help">Pomoc</string>
     <string name="pt_ui_field_visibility">Dostosuj widoczność pól</string>
-    <string name="X_info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
+    <string name="info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Ta antologia ma wielu autorów.</string>
@@ -153,7 +147,6 @@
     <string name="title_edit_book_series">Edytuj serię</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_given_names">Imiona</string>
-    <string name="X_title_edit_author">Edytuj dane autora</string>
     <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne!</string>
     <string name="menu_cover_replace">Zmieniać…</string>
     <string name="menu_cover_search_alt_editions">Z innego wydania…</string>
@@ -164,7 +157,6 @@
     <string name="menu_edit_series">Edytuj serię…</string>
     <string name="title_delete_series">Usuń serię</string>
     <string name="confirm_delete_series">Czy na pewno usunąć serię \‘%1$s\’?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
-    <string name="X_title_edit_series">Edytuj szczegóły serii</string>
     <string name="X_title_select_cover">Wybierz okładkę</string>
     <string name="X_warning_no_isbn_no_editions">Nie można pobrać danych o wydaniach dla książki bez ISBN</string>
     <string name="warning_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
@@ -225,7 +217,6 @@
     <string name="lbl_update_day">Dzień aktualizacji</string>
     <string name="lbl_unread">Nepřečtený</string>
     <string name="X_lbl_loan_book_available">Dostępny</string>
-    <string name="X_menu_add_style">Dodaj styl</string>
     <string name="lbl_credentials">Kwalifikacje</string>
     <string name="menu_customize_ellipsis">Dostosuj…</string>
     <string name="menu_edit">Edytować…</string>

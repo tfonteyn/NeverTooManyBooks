@@ -33,7 +33,6 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
@@ -64,9 +63,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author Philip Warner
  */
 public abstract class BaseActivityWithTasks
-        extends BaseActivity
-        implements ProgressDialogFragment.OnUserCancelledListener,
-                   TaskManagerListener {
+        extends BaseActivity {
 
     private static final String TAG = BaseActivityWithTasks.class.getSimpleName();
 
@@ -92,6 +89,53 @@ public abstract class BaseActivityWithTasks
     /** Message for Progress. */
     @NonNull
     private String mProgressMessage = "";
+    private final TaskManagerListener mTaskManagerListener = new TaskManagerListener() {
+
+        /**
+         * @param taskManager TaskManager
+         * @param task        task which is finishing.
+         */
+        @Override
+        public void onTaskFinished(@NonNull final TaskManager taskManager,
+                                   @NonNull final ManagedTask task) {
+            String msg = task.getFinalMessage();
+            if (msg != null && !msg.isEmpty()) {
+                UserMessage.showUserMessage(BaseActivityWithTasks.this, msg);
+            }
+        }
+
+        /**
+         * Display a progress message.
+         *
+         * @param absPosition the new value to set
+         * @param max         the (potentially) new estimate maximum value
+         * @param message     to display. Set to "" to close the ProgressDialog
+         */
+        @Override
+        public void onTaskProgress(final int absPosition,
+                                   final int max,
+                                   @NonNull final String message) {
+            // Save the details
+            mProgressCount = absPosition;
+            mProgressMax = max;
+            mProgressMessage = message.trim();
+
+            // If empty and we reached the end, close any dialog
+            if ((mProgressMessage.isEmpty()) && max == absPosition) {
+                closeProgressDialog();
+            } else {
+                runOnUiThread(() -> updateProgressDialog());
+            }
+        }
+
+        /**
+         * Display an interactive message.
+         */
+        @Override
+        public void onTaskUserMessage(@NonNull final String message) {
+            UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
+        }
+    };
 
     @Override
     protected int getLayoutId() {
@@ -123,7 +167,7 @@ public abstract class BaseActivityWithTasks
         if (!isFinishing()) {
             // Restore/create mTaskManager.
             getTaskManager();
-            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, this, true);
+            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, mTaskManagerListener, true);
         }
     }
 
@@ -132,7 +176,7 @@ public abstract class BaseActivityWithTasks
     protected void onPause() {
         // Stop listening
         if (mTaskManagerId != 0) {
-            TaskManager.MESSAGE_SWITCH.removeListener(mTaskManagerId, this);
+            TaskManager.MESSAGE_SWITCH.removeListener(mTaskManagerId, mTaskManagerListener);
             // If the Activity is finishing, tell the TaskManager to cancel all active
             // tasks and reject new ones.
             if (isFinishing()) {
@@ -197,51 +241,6 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * @param taskManager TaskManager
-     * @param task        task which is finishing.
-     */
-    @Override
-    public void onTaskFinished(@NonNull final TaskManager taskManager,
-                               @NonNull final ManagedTask task) {
-        String msg = task.getFinalMessage();
-        if (msg != null && !msg.isEmpty()) {
-            UserMessage.showUserMessage(this, msg);
-        }
-    }
-
-    /**
-     * Display a progress message.
-     *
-     * @param absPosition the new value to set
-     * @param max         the (potentially) new estimate maximum value
-     * @param message     to display. Set to "" to close the ProgressDialog
-     */
-    @Override
-    public void onTaskProgress(final int absPosition,
-                               final int max,
-                               @NonNull final String message) {
-        // Save the details
-        mProgressCount = absPosition;
-        mProgressMax = max;
-        mProgressMessage = message.trim();
-
-        // If empty and we reached the end, close any dialog
-        if ((mProgressMessage.isEmpty()) && max == absPosition) {
-            closeProgressDialog();
-        } else {
-            runOnUiThread(this::updateProgressDialog);
-        }
-    }
-
-    /**
-     * Display an interactive message.
-     */
-    @Override
-    public void onTaskUserMessage(@NonNull final String message) {
-        UserMessage.showUserMessage(this, message);
-    }
-
-    /**
      * Update/init the ProgressDialog.
      * <ul>
      * <li>If already showing but wrong type -> force a recreation</li>
@@ -273,22 +272,12 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
-     * Dismiss the Progress Dialog, and {@code null} it so we can recreate when needed.
+     * Dismiss the Progress Dialog.
      */
     private void closeProgressDialog() {
         if (mProgressOverlayView != null) {
             mProgressOverlayView.setVisibility(View.GONE);
         }
-    }
-
-    /**
-     * Called when the progress dialog was cancelled.
-     *
-     * @param taskId for the task; {@code null} if there was no embedded task.
-     */
-    @Override
-    public void onProgressDialogCancelled(@Nullable final Integer taskId) {
-        cancelTasksAndUpdateProgress(false);
     }
 
     /**

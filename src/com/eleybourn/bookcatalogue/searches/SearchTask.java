@@ -20,14 +20,17 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -35,6 +38,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -65,10 +69,13 @@ public class SearchTask
     /** whether to fetch thumbnails. */
     private boolean mFetchThumbnail;
     /** search criteria. */
+    @Nullable
     private String mAuthor;
     /** search criteria. */
+    @Nullable
     private String mTitle;
     /** search criteria. */
+    @Nullable
     private String mIsbn;
 
     /**
@@ -155,18 +162,20 @@ public class SearchTask
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
             Logger.debugEnter(this, "runTask",
-                              getContext().getString(mProgressTitleResId));
+                              getResources().getString(mProgressTitleResId));
         }
         // keys? site up? etc...
         if (!mSearchSiteManager.isAvailable()) {
-            setFinalError(mProgressTitleResId, R.string.error_not_available);
+            setFinalError(R.string.error_not_available, mSearchSiteManager.getNameResId());
             return;
         }
 
         mTaskManager.sendProgress(this, mProgressTitleResId, 0);
 
         try {
+            // SEARCH!
             // manager checks the arguments
+            //ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
             mBookData = mSearchSiteManager.search(mIsbn, mAuthor, mTitle, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
                 // Look for series name in the book title and clean KEY_TITLE
@@ -175,28 +184,27 @@ public class SearchTask
 
         } catch (AuthorizationException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
-            // authorization exception has a user suitable message
-            setFinalError(mProgressTitleResId, e.getLocalizedMessage());
+            setFinalError(e);
 
-        } catch (java.net.SocketTimeoutException e) {
+        } catch (SocketTimeoutException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(mProgressTitleResId, R.string.error_network_timeout);
+            setFinalError(R.string.error_network_timeout);
 
         } catch (MalformedURLException e) {
-            Logger.error(this, e);
-            setFinalError(mProgressTitleResId, R.string.error_search_configuration);
+            Logger.warn(this, "runTask", e.getLocalizedMessage());
+            setFinalError(R.string.error_search_configuration);
 
         } catch (UnknownHostException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(mProgressTitleResId, R.string.error_search_configuration);
+            setFinalError(R.string.error_search_configuration);
 
         } catch (IOException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(mProgressTitleResId, R.string.error_search_failed);
+            setFinalError(R.string.error_search_failed);
 
         } catch (RuntimeException e) {
             Logger.error(this, e);
-            setFinalError(mProgressTitleResId, e);
+            setFinalError(e);
         }
     }
 
@@ -232,37 +240,35 @@ public class SearchTask
     }
 
     /**
-     * Show a 'known' error after task finish, without the dreaded exception message.
+     * Show a 'known' error after task finish.
      */
-    private void setFinalError(@StringRes final int id,
-                               @NonNull final String error) {
-        mFinalMessage = getContext().getString(R.string.error_search_exception,
-                                               getContext().getString(id), error);
-    }
-
-    /**
-     * Show a 'known' error after task finish, without the dreaded exception message.
-     */
-    private void setFinalError(@StringRes final int id,
-                               @StringRes final int error) {
-        mFinalMessage = getContext().getString(R.string.error_search_exception,
-                                               getContext().getString(id),
-                                               getContext().getString(error));
+    private void setFinalError(@StringRes final int error,
+                               @NonNull final Object... args) {
+        Resources res = getResources();
+        mFinalMessage = res.getString(R.string.error_search_exception,
+                                      res.getString(mProgressTitleResId),
+                                      res.getString(error, args));
     }
 
     /**
      * Show an unexpected exception message after task finish.
      */
-    private void setFinalError(@StringRes final int id,
-                               @NonNull final Exception e) {
+    private void setFinalError(@NonNull final Exception e) {
+        Resources res = getResources();
         String s;
         try {
-            s = e.getLocalizedMessage();
+            if (e instanceof FormattedMessageException) {
+                // we have a clean user message.
+                s = ((FormattedMessageException) e).getFormattedMessage(res);
+            } else {
+                // best shot
+                s = e.getLocalizedMessage();
+            }
         } catch (RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
-        mFinalMessage = getContext().getString(R.string.error_search_exception,
-                                               getContext().getString(id), s);
+        mFinalMessage = res.getString(R.string.error_search_exception,
+                                      res.getString(mProgressTitleResId), s);
     }
 
 }

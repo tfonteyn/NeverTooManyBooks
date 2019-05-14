@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.entities;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -59,7 +60,7 @@ public class Bookshelf
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
-    private static final int DEFAULT_ID = 1;
+    public static final int DEFAULT_ID = 1;
     private long mId;
     @NonNull
     private String mName;
@@ -174,7 +175,7 @@ public class Bookshelf
      *
      * @return the preferred bookshelf.
      */
-    public static Bookshelf getPreferred(@NonNull final Context context,
+    public static Bookshelf getPreferred(@NonNull final Resources resources,
                                          @NonNull final DAO db) {
         String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
         if (bookshelfName != null && !bookshelfName.isEmpty()) {
@@ -184,11 +185,11 @@ public class Bookshelf
                 return bookshelf;
             }
             // shelf must have been deleted, switch to 'all book'
-            return getAllBooksBookshelf(context, db);
+            return getAllBooksBookshelf(resources, db);
 
         } else {
             // no current shelf, start with initial shelf
-            return getDefaultBookshelf(context, db);
+            return getDefaultBookshelf(resources, db);
         }
     }
 
@@ -199,10 +200,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getDefaultBookshelf(@NonNull final Context context,
+    public static Bookshelf getDefaultBookshelf(@NonNull final Resources resources,
                                                 @NonNull final DAO db) {
         return new Bookshelf(DEFAULT_ID,
-                             context.getString(R.string.bookshelf_my_books),
+                             resources.getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 
@@ -213,10 +214,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getAllBooksBookshelf(@NonNull final Context context,
+    public static Bookshelf getAllBooksBookshelf(@NonNull final Resources resources,
                                                  @NonNull final DAO db) {
         return new Bookshelf(ALL_BOOKS,
-                             context.getString(R.string.bookshelf_all_books),
+                             resources.getString(R.string.bookshelf_all_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 
@@ -242,7 +243,7 @@ public class Bookshelf
     }
 
     @Override
-    public String getLabel(@NonNull final Context context) {
+    public String getLabel(@NonNull final Resources resources) {
         return mName;
     }
 

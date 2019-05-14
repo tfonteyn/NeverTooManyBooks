@@ -270,7 +270,6 @@ public class LibraryThingManager
         // Base path for an Editions search
         String url = String.format(EDITIONS_URL, isbn);
 
-        // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchLibraryThingEditionHandler handler = new SearchLibraryThingEditionHandler(editions);
 
@@ -386,23 +385,22 @@ public class LibraryThingManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final /* not supported */ String author,
+                         @Nullable final /* not supported */ String title,
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Bundle bookData = new Bundle();
-
         // sanity check
         if (!ISBN.isValid(isbn)) {
-            return bookData;
+            return new Bundle();
         }
 
         // Base path for an ISBN search
         String url = String.format(DETAIL_URL, getDevKey(), isbn);
 
-        // Setup the parser
+        Bundle bookData = new Bundle();
+
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchLibraryThingHandler handler = new SearchLibraryThingHandler(bookData);
 
@@ -413,11 +411,12 @@ public class LibraryThingManager
         try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-            // only catch exceptions related to the parsing, others will be caught by the caller.
+            // wrap parser exceptions in an IOException
         } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
+            throw new IOException(e);
         }
 
         if (fetchThumbnail) {
@@ -463,5 +462,11 @@ public class LibraryThingManager
     @Override
     public int getSearchingResId() {
         return R.string.searching_library_thing;
+    }
+
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.library_thing;
     }
 }

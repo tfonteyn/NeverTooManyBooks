@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Сохранить книгу</string>
     <string name="X_info_no_bookshelves_yet">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
     <string name="menu_add_bookshelf">Создать полку</string>
-    <string name="X_btn_confirm_add_bs">Добавить полку</string>
     <string name="menu_bookshelves">Полки…</string>
-    <string name="X_btn_confirm_save_bs">Сохранить полку</string>
-    <string name="X_menu_delete_bookshelf">Удалить полку</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="bookshelf_all_books">Все книги</string>
@@ -80,7 +74,7 @@
     <string name="error_search_exception">Поиск во время %1$s: %2$s не удался</string>
     <string name="menu_delete">Удалить</string>
     <string name="help">Помощь</string>
-    <string name="X_info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
+    <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Эта антология имеет несколько авторов.</string>
@@ -151,7 +145,6 @@
     <string name="title_edit_book_series">Редактировать серию книги</string>
     <string name="lbl_family_name">Фамилия</string>
     <string name="lbl_given_names">Имя</string>
-    <string name="X_title_edit_author">Редактировать информацию об авторе</string>
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="menu_cover_replace">Заменить…</string>
     <string name="menu_cover_search_alt_editions">Из других изданий…</string>
@@ -162,7 +155,6 @@
     <string name="menu_edit_series">Редактирование серии…</string>
     <string name="title_delete_series">Удаление серии</string>
     <string name="confirm_delete_series">Действительно удалить серию \‘%1$s\’?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
-    <string name="X_title_edit_series">Редактировать информацию о серии</string>
     <string name="X_title_select_cover">Выбрать обложку</string>
     <string name="X_warning_no_isbn_no_editions">Нельзя получить издание книги без ISBN</string>
     <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
@@ -271,10 +263,9 @@
     <string name="acra_resNotifTickerText">&APP_NAME;" завершилось с ошибкой"</string>
     <string name="acra_resNotifTitle">Ошибка &APP_NAME;</string>
     <string name="acra_resNotifText">Пожайлуйста, нажмите сюда для подробностей</string>
-    <string name="acra_resDialogTitle">Ошибка &APP_NAME;</string>
     <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите “ОК”, чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
     <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
-    <string name="acra_resDialogOkToast">Спасибо!</string>
+    <string name="acra_resReportSendSuccessToast">Спасибо!</string>
     <string name="lbl_read">Прочитана</string>
     <string name="lbl_unread">Не прочитана</string>
     <string name="warning_date_not_set">(без даты)</string>
@@ -288,7 +279,6 @@
     <string name="style_builtin_added_date">Дата добавления</string>
     <string name="style_builtin_author_year">Автор и год</string>
     <string name="field_not_set_with_brackets">(пусто)</string>
-    <string name="X_menu_preferences_booklist">Список книг</string>
     <string name="lbl_bookshelves_long">Книжные полки</string>
     <string name="lbl_bookshelves">Полки</string>
     <string name="lbl_location">Местоположение</string>
@@ -298,7 +288,6 @@
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_starting_up">Запуск…</string>
-    <string name="lbl_application_startup">Запуск &APP_NAME;</string>
     <string name="searching_goodreads">Поиск Goodreads</string>
     <string name="menu_booklist_styles">Cтили списка книг…</string>
     <string name="menu_show_more_ellipsis">Показать больше…</string>
@@ -324,18 +313,14 @@
         Также вы можете редактировать меню стилей и сами стили отсюда.</string>
     <string name="lbl_preferred_styles">Предпочитаемые стили</string>
     <string name="title_edit_style">Редактировать стиль</string>
-    <string name="X_menu_add_style">Добавить стиль</string>
     <string name="title_clone_style">Клонировать стиль</string>
     <string name="pg_filters">Фильтры книг</string>
-    <string name="X_title_add_style">Новый стиль</string>
     <string name="X_pt_bob_filter_read">Выбор основан на статусе \‘Прочитана\’</string>
     <string name="title_select_style">Выбрать стиль</string>
     <string name="X_warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="edit">Редактировать</string>
     <string name="lbl_settings">Настройки</string>
     <string name="error_unexpected_error">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню \‘Помощь\’ из Главного меню</string>
-    <string name="X_menu_delete_style">Удалить стиль</string>
-    <string name="X_menu_edit_booklist_style">Редактировать стиль</string>
     <string name="menu_duplicate">копия</string>
     <string name="about_dash_or_dash">- Или -</string>
     <string name="about_donate_paypal">Пожертвование через PayPal</string>
@@ -414,8 +399,6 @@
     <string name="hint_booklist_style_menu">
         Это меню позволяет Вам выбрать стиль списка.\n
         \nВы можете также настроить это меню и создать свои стили списков нажатием на \‘Настроить\’ в конце списка.</string>
-    <string name="X_menu_edit_format">Редактировать формат…</string>
-    <string name="X_title_edit_format">Редактировать имя формата</string>
     <string name="warning_required_name">Имя не может быть пустым</string>
     <string name="progress_msg_export_starting">Начало экспорта…</string>
     <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
@@ -425,7 +408,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s не правльный ISBN</string>
     <string name="X_warning_cover_not_found2">Рисунок не найден</string>
     <string name="warning_cover_copy_failed">Не возможно скопировать изображение</string>
-    <string name="X_info_option_not_available_until_book_saved">Эта опция не доступна, пока книга не будет сохранена</string>
     <string name="menu_add_book_by_barcode_scan">Сканировать штрих-код/ISBN</string>
     <string name="menu_add_book_by_isbn">Ввести ISBN</string>
     <string name="lbl_allow_asin">Позволить ASIN</string>
@@ -599,7 +581,7 @@
     <string name="searching_open_library">Поиск в OpenLibrary</string>
     <string name="btn_merge">сливаться</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
-    <string name="error_not_available">недоступен</string>
+    <string name="error_not_available">%1$s недоступен</string>
     <string name="error_storage_no_access">Невозможно получить доступ к SD-карте</string>
     <string name="error_storage_no_space_left">Недостаточно места на SD-карте</string>
     <string name="error_storage_not_available">SD-карта недоступна</string>

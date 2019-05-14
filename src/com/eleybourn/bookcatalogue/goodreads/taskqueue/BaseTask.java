@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  *
  * @author Philip Warner
  */
-public abstract class GoodreadsTask
+public abstract class BaseTask
         extends Task
         implements Serializable {
 
@@ -60,7 +60,7 @@ public abstract class GoodreadsTask
      *
      * @param description for the task
      */
-    protected GoodreadsTask(@NonNull final String description) {
+    protected BaseTask(@NonNull final String description) {
         super(description);
     }
 
@@ -98,7 +98,7 @@ public abstract class GoodreadsTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
-        Locale locale = LocaleUtils.from(context);
+        Locale locale = LocaleUtils.from(context.getResources());
 
         // Update task info binding
         holder.description.setText(getDescription(context));

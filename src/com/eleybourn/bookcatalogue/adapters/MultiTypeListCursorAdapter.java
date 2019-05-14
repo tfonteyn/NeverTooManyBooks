@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +106,7 @@ public class MultiTypeListCursorAdapter
         // temporary move the cursor to the requested position, restore after we got the text.
         final int savedPos = listCursor.getPosition();
         listCursor.moveToPosition(position);
-        final String[] section = mListHandler.getSectionText(mContext, listCursor);
+        final String[] section = mListHandler.getSectionText(mContext.getResources(), listCursor);
         listCursor.moveToPosition(savedPos);
 
         return section;
@@ -145,12 +146,12 @@ public class MultiTypeListCursorAdapter
         /**
          * Get the text to display in ListView for row at current cursor position.
          *
-         * @param context caller context
+         * @param resources caller context
          * @param cursor  Cursor, correctly positioned.
          *
          * @return the section text as an array.
          */
-        String[] getSectionText(@NonNull Context context,
+        String[] getSectionText(@NonNull Resources resources,
                                 @NonNull Cursor cursor);
 
         /**

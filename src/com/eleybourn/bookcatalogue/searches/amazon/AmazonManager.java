@@ -3,10 +3,13 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -65,6 +68,7 @@ public final class AmazonManager
     private static final String PREF_PREFIX = "Amazon.";
 
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
     /** Can only send requests at a throttled speed. */
     @NonNull
@@ -100,6 +104,14 @@ public final class AmazonManager
         return R.string.searching_amazon;
     }
 
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.amazon;
+    }
+
+    private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
+
     /**
      * This searches the amazon REST site based on a specific isbn.
      * <p>
@@ -113,32 +125,26 @@ public final class AmazonManager
     @Override
     @NonNull
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final String author,
+                         @Nullable final String title,
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Bundle bookData = new Bundle();
+        String query;
 
-        String url = "https://bc.theagiledirector.com/getRest_v3.php";
-        if (!isbn.isEmpty()) {
-            // sanity check
-            if (!ISBN.isValid(isbn)) {
-                return bookData;
-            }
-            url += "?isbn=" + isbn;
+        if (ISBN.isValid(isbn)) {
+            query = "isbn=" + isbn;
+
+        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            query = "author=" + encodeSpaces(author) + "&title=" + encodeSpaces(title);
+
         } else {
-            // sanity check
-            if (author.isEmpty() && title.isEmpty()) {
-                return bookData;
-            }
-            //replace spaces in author/title with %20
-            url += "?author=" + author.replace(" ", "%20")
-                    + "&title=" + title.replace(" ", "%20");
+            return new Bundle();
         }
 
-        // Setup the parser
+        Bundle bookData = new Bundle();
+
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
 
@@ -146,14 +152,15 @@ public final class AmazonManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(PROXY_URL + query)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
-            // only catch exceptions related to the parsing, others will be caught by the caller.
+            // wrap parser exceptions in an IOException
         } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
+            throw new IOException(e);
         }
 
         //TEST: due to the proxy, we don't get actual XML error entities, so this is not tested.
@@ -162,5 +169,12 @@ public final class AmazonManager
             throw new IOException(error);
         }
         return bookData;
+    }
+
+    /**
+     * replace spaces with %20
+     */
+    public String encodeSpaces(@NonNull final String s) {
+        return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

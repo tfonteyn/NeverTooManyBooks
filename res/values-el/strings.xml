@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Αποθήκευση</string>
     <string name="X_info_no_bookshelves_yet">Δεν έχετε δημιουργήσει ακόμα ράφια. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_add_bookshelf">Δημιουργία Ραφιού</string>
-    <string name="X_btn_confirm_add_bs">Προσθήκη Ραφιού</string>
     <string name="menu_bookshelves">βιβλία Ράφια…</string>
-    <string name="X_btn_confirm_save_bs">Αποθήκευση Ραφιού</string>
-    <string name="X_menu_delete_bookshelf">Διαγραφή Ραφιού</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="lbl_bookshelf">Ράφι</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
@@ -83,7 +77,7 @@
     <string name="error_search_exception">Αναζήτηση απέτυχε όταν %1$s: %2$s</string>
     <string name="menu_delete">Διαγράφω</string>
     <string name="help">Βοήθεια</string>
-    <string name="X_info_manage_fields">
+    <string name="info_manage_fields">
         Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου.
         Τα μη επιλεγμένα πεδία είναι κρυφά.
     </string>
@@ -164,7 +158,6 @@
     <string name="title_edit_book_series">Επεξεργασία σειράς βιβλίων</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_given_names">Ονόματα</string>
-    <string name="X_title_edit_author">Επεξεργασία λεπτομερειών συγγραφέα</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
     <string name="menu_cover_replace">Αντικατάσταση…</string>
     <string name="menu_cover_search_alt_editions">Από άλλες εκδόσεις…</string>
@@ -175,7 +168,6 @@
     <string name="menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά \‘%1$s\’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
-    <string name="X_title_edit_series">Επεξεργασία λεπτομερειών Σειράς</string>
     <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="X_warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
@@ -287,10 +279,9 @@
     <string name="acra_resNotifTickerText">Το &APP_NAME; σταμάτησε να λειτουργεί</string>
     <string name="acra_resNotifTitle">Βλάβη του &APP_NAME;</string>
     <string name="acra_resNotifText">Παρακαλούμε πατήστε εδώ για λεπτομέρειες</string>
-    <string name="acra_resDialogTitle">Βλάβη του &APP_NAME;</string>
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το email πρωτού αποσταλεί.</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
-    <string name="acra_resDialogOkToast">Ευχαριστούμε!</string>
+    <string name="acra_resReportSendSuccessToast">Ευχαριστούμε!</string>
     <string name="lbl_read">Αναγνωσμένα</string>
     <string name="lbl_unread">Μη αναγνωσμένα</string>
     <string name="warning_date_not_set">(χωρίς ημερομηνία)</string>
@@ -304,7 +295,6 @@
     <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
     <string name="field_not_set_with_brackets">(άδειο)</string>
-    <string name="X_menu_preferences_booklist">Προτιμήσεις λίστας βιβλίων</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
     <string name="lbl_bookshelves">Ράφια</string>
     <string name="lbl_location">Τοποθεσία</string>
@@ -314,7 +304,6 @@
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
-    <string name="lbl_application_startup">Εκκίνηση &APP_NAME;</string>
  <string name="searching_goodreads">Αναζήτηση στο Goodreads</string>
     <string name="menu_booklist_styles">Στυλ λίστας βιβλίων…</string>
     <string name="menu_show_more_ellipsis">Εμφάνιση περισσότερων…</string>
@@ -355,18 +344,14 @@
     </string>
     <string name="lbl_preferred_styles">Προτιμώμενα στυλ</string>
     <string name="title_edit_style">Επεξεργασία στυλ</string>
-    <string name="X_menu_add_style">Προσθήκη στυλ</string>
     <string name="title_clone_style">Αντιγραφή στυλ</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
-    <string name="X_title_add_style">Νέο στυλ</string>
     <string name="X_pt_bob_filter_read">Επιλογή με βάση την κατάσταση του πεδίου \‘Αναγνωσμένο\’</string>
     <string name="title_select_style">Επιλογή Στυλ</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="lbl_settings">Επιλογές</string>
     <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής \‘Βοήθεια\’ από το κεντρικό μενού.</string>
-    <string name="X_menu_delete_style">Διαγραφή στυλ</string>
-    <string name="X_menu_edit_booklist_style">Επεξεργασία στυλ</string>
     <string name="menu_duplicate">Aντιγράφω</string>
     <string name="about_dash_or_dash">- Ή -</string>
     <string name="about_donate_paypal">Δωρεά μέσω PayPal</string>
@@ -447,8 +432,6 @@
         Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.
         \n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας \'Προσαρμογή\' στο τέλος της λίστας.
     </string>
-    <string name="X_menu_edit_format">Επεξεργασία Μορφής…</string>
-    <string name="X_title_edit_format">Επεξεργασία Ονόματος Μορφής</string>
     <string name="warning_required_name">Το όνομα δε μπορεί να είναι κενό</string>
     <string name="progress_msg_export_starting">Εκκίνηση εξαγωγής…</string>
     <string name="menu_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
@@ -457,7 +440,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s δεν είναι έγκυρος κωδικός ISBN</string>
     <string name="X_warning_cover_not_found2">Δε βρέθηκε εικόνα</string>
     <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας</string>
-    <string name="X_info_option_not_available_until_book_saved">Αυτή επιλογή δεν είναι διαθέσιμη μέχρι να αποθηκευτεί το βιβλίο</string>
     <string name="menu_add_book_by_barcode_scan">Σκανάρισμα Barcode/ISBN</string>
     <string name="menu_add_book_by_isbn">Εισαγωγή κωδικού ISBN</string>
     <string name="lbl_allow_asin">Να επιτρέπεται κωδικός ASIN</string>

@@ -35,11 +35,14 @@
 
     <!-- External sites / trademarks  -->
     <string name="amazon" translatable="false">Amazon</string>
-    <string name="amazon_ellipsis" translatable="false">Amazon…</string>
-
     <string name="goodreads" translatable="false">Goodreads</string>
     <string name="google_books" translatable="false">Google Books</string>
     <string name="library_thing" translatable="false">LibraryThing</string>
+    <string name="open_library">OpenLibrary</string>
+    <string name="isfdb">ISFDB</string>
+
+    <!-- specific for a submenu title -->
+    <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>
@@ -50,5 +53,6 @@
     <string name="debug" translatable="false">Debug</string>
     <string name="debug_history" translatable="false">History</string>
     <string name="debug_test" translatable="false">Test something</string>
+
 
 </resources>

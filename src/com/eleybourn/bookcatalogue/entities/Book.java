@@ -395,9 +395,10 @@ public class Book
     }
 
     /**
-     * @return a complete list of Bookshelves each reflecting the book being on that shelf or not
+     * @return a complete list of Bookshelves each reflecting the book being on that shelf or not.
      */
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DAO db) {
+
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
@@ -409,13 +410,9 @@ public class Book
     }
 
     /**
-     * Special Formatter.
-     *
-     * @return a complete list of Editions each reflecting the book being that edition
+     * @return a complete list of Editions each reflecting the book being that edition or not.
      */
     public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
-        //Logger.info(this,"edition: " +
-        // Integer.toBinaryString(getInt(UniqueId.KEY_EDITION_BITMASK)));
 
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
         for (Integer edition : EDITIONS.keySet()) {
@@ -608,13 +605,7 @@ public class Book
                     }
                 };
         @StringRes
-        private int mLabelId;
-
-        /**
-         * Constructor.
-         */
-        public EditionCheckListItem() {
-        }
+        private final int mLabelId;
 
         /**
          * Constructor.
@@ -677,12 +668,6 @@ public class Book
 
         /**
          * Constructor.
-         */
-        public BookshelfCheckListItem() {
-        }
-
-        /**
-         * Constructor.
          *
          * @param item     the item to encapsulate
          * @param selected the current status
@@ -713,5 +698,4 @@ public class Book
             return getItem().getName();
         }
     }
-
 }

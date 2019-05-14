@@ -1,30 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="FastScrollListView">
-        <attr name="scrollHandle" format="reference" />
-        <attr name="overlay" format="reference" />
-        <!-- Default: android:attr/textColorPrimary -->
-        <attr name="textColor" format="color" />
-    </declare-styleable>
+    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
+    <attr name="checked_icon_tint" format="reference|color" />
 
-    <!-- ripped from:
-    Android\sdk\platforms\android-27\data\res\drawable\gallery_item_background.xml
-    which points to PNG files:
-    Android\sdk\platforms\android-27\data\res\drawable-hdpi
-    -->
-    <declare-styleable name="CoverGallery">
-        <attr name="android:galleryItemBackground" />
-    </declare-styleable>
+    <!-- Color for a boolean status icon; true: this color; false: transparent. -->
+    <attr name="completed_icon_tint" format="reference|color" />
 
-    <!-- all vector xml files should use this for their color. -->
-    <attr name="fillColorVectorIcons" format="reference|color" />
-    <!-- the check mark for 'read' etc should standout. -->
-    <attr name="ic_check_fillColor" format="reference|color" />
-    <!-- the lock icon for 'complete' etc should standout. -->
-    <attr name="ic_lock_fillColor" format="reference|color" />
-
-    <!-- drawable border.xml uses this color. -->
-    <attr name="color_border" format="reference|color" />
+    <!-- drawable/border.xml uses this color. -->
+    <attr name="border_color" format="reference|color" />
 
 </resources>

@@ -48,6 +48,8 @@
         -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
+    <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
+    <string name="pt_allow_mobile_data">Allow mobile data usage</string>
 
     <!-- ListPreference
          Implementation to use for

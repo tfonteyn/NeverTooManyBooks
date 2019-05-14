@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
@@ -262,8 +263,8 @@ public class BooklistStyle
             return mField.isTrue();
         }
 
-        public String getLabel(@NonNull final Context context) {
-            return context.getString(mLabel);
+        public String getLabel(@NonNull final Resources resources) {
+            return resources.getString(mLabel);
         }
     }
 
@@ -336,11 +337,11 @@ public class BooklistStyle
      * @param in      Parcel to read the object from
      * @param doNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
-     * @param context caller context, will be {@code null} when doNew==false !
+     * @param resources caller context, will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
                             final boolean doNew,
-                            @Nullable final Context context) {
+                            @Nullable final Resources resources) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
@@ -359,7 +360,7 @@ public class BooklistStyle
         if (doNew) {
             // get a copy of the name first
             //noinspection ConstantConditions
-            setName(getLabel(context));
+            setName(getLabel(resources));
             // now reset the other identifiers.
             mId = 0;
             mNameResId = 0;
@@ -539,9 +540,9 @@ public class BooklistStyle
      * @return the system name or user-defined name based on kind of style this object defines.
      */
     @NonNull
-    public String getLabel(@NonNull final Context context) {
+    public String getLabel(@NonNull final Resources resources) {
         if (mNameResId != 0) {
-            return context.getString(mNameResId);
+            return resources.getString(mNameResId);
         } else {
             return mDisplayName.get();
         }
@@ -792,12 +793,12 @@ public class BooklistStyle
      *
      * @return the list of in-use extra-field names in a human readable format.
      */
-    public List<String> getExtraFieldsLabels(@NonNull final Context context,
+    public List<String> getExtraFieldsLabels(@NonNull final Resources resources,
                                              final boolean all) {
         List<String> labels = new ArrayList<>();
         for (ExtraDetail detail : mExtraDetail.values()) {
             if (detail.mField.isTrue() || all) {
-                labels.add(detail.getLabel(context));
+                labels.add(detail.getLabel(resources));
             }
         }
         Collections.sort(labels);
@@ -885,8 +886,8 @@ public class BooklistStyle
      * @return a list of in-use group names in a human readable format.
      */
     @NonNull
-    public String getGroupLabels(@NonNull final Context context) {
-        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getName(context));
+    public String getGroupLabels(@NonNull final Resources resources) {
+        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getName(resources));
     }
 
     /**
@@ -931,12 +932,12 @@ public class BooklistStyle
      *
      * @return the list of in-use filter names in a human readable format.
      */
-    public List<String> getFilterLabels(@NonNull final Context context,
+    public List<String> getFilterLabels(@NonNull final Resources resources,
                                         final boolean all) {
         List<String> labels = new ArrayList<>();
         for (Filter filter : mFilters.values()) {
             if (filter.isActive() ||all ) {
-                labels.add(filter.getLabel(context));
+                labels.add(filter.getLabel(resources));
             }
         }
         Collections.sort(labels);
@@ -1051,10 +1052,10 @@ public class BooklistStyle
      *
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param context caller context, needed for the 'name' of the style.
+     * @param resources caller context, needed for the 'name' of the style.
      */
     @NonNull
-    public BooklistStyle clone(@NonNull final Context context) {
+    public BooklistStyle clone(@NonNull final Resources resources) {
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -1063,7 +1064,7 @@ public class BooklistStyle
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(parcel, true, context);
+        BooklistStyle clone = new BooklistStyle(parcel, true, resources);
         parcel.recycle();
 
         clone.setId(0);

@@ -24,33 +24,59 @@ import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Note: yes, this is overkill for the startup. Call it an experiment.
  */
 public class StartupViewModel
-        extends ViewModel
-        implements OnTaskListener<String, Void> {
+        extends ViewModel {
 
-
-    /** Database access. */
-    private DAO mDb;
-
-    /** Flag to ensure tasks are only ever started once. */
-    private boolean startupTasksShouldBeStarted = true;
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Set<Integer> mAllTasks = new HashSet<>(6);
-
     private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
     private final MutableLiveData<String> mTaskProgressMessage = new MutableLiveData<>();
+    private final TaskListener<String, Void> mTaskListener = new TaskListener<String, Void>() {
+        /**
+         * Called in the UI thread when any startup task completes. If no more tasks, flag it up
+         * for the activity to continue.
+         *
+         * @param taskId a task identifier.
+         */
+        @UiThread
+        @Override
+        public void onTaskFinished(final int taskId,
+                                   final boolean success,
+                                   @Nullable final Void result,
+                                   @Nullable final Exception e) {
+            synchronized (mAllTasks) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
+                    Logger.debug(this, "onTaskFinished", "taskId=" + taskId);
+                }
+                mAllTasks.remove(taskId);
+                if (mAllTasks.isEmpty()) {
+                    mTaskFinished.setValue(true);
+                }
+            }
+        }
+
+        @UiThread
+        @Override
+        public void onTaskProgress(final int taskId,
+                                   final String... values) {
+            mTaskProgressMessage.setValue(values[0]);
+        }
+    };
+    /** Database access. */
+    private DAO mDb;
+    /** Flag to ensure tasks are only ever started once. */
+    private boolean startupTasksShouldBeStarted = true;
 
     /**
-     *
      * @return {@code true} if all tasks are finished.
      */
     public MutableLiveData<Boolean> getTaskFinished() {
@@ -107,18 +133,18 @@ public class StartupViewModel
 
         if (startupTasksShouldBeStarted) {
             int taskId = 0;
-            startTask(new BuildLanguageMappingsTask(++taskId, this));
+            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener));
 
             // cleaner must be started after the language mapper task.
-            startTask(new DBCleanerTask(++taskId, mDb, this));
+            startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
 
             if (App.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                           false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, this));
+                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
             }
 
             // analyse db should always be started as the last task.
-            startTask(new AnalyzeDbTask(++taskId, mDb, this));
+            startTask(new AnalyzeDbTask(++taskId, mDb, mTaskListener));
 
             // Clear the flag
             startupTasksShouldBeStarted = false;
@@ -142,35 +168,6 @@ public class StartupViewModel
         }
     }
 
-    /**
-     * Called in the UI thread when any startup task completes. If no more tasks, flag it up
-     * for the activity to continue.
-     *
-     * @param taskId a task identifier.
-     */
-    @UiThread
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @Nullable final Void result,
-                               @Nullable final Exception e) {
-        synchronized (mAllTasks) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.debug(this, "onTaskFinished", "taskId=" + taskId);
-            }
-            mAllTasks.remove(taskId);
-            if (mAllTasks.isEmpty()) {
-                mTaskFinished.setValue(true);
-            }
-        }
-    }
-
-    @UiThread
-    @Override
-    public void onTaskProgress(final int taskId,
-                               final String... values) {
-        mTaskProgressMessage.setValue(values[0]);
-    }
 
     /**
      * The tasks here are doing a bit of a special hack.
@@ -180,12 +177,10 @@ public class StartupViewModel
             extends AsyncTask<Void, String, Void> {
 
         private final int mTaskId;
-
+        @NonNull
+        private final WeakReference<TaskListener<String, Void>> mTaskListener;
         @Nullable
         protected Exception mException;
-
-        @NonNull
-        private final WeakReference<OnTaskListener<String, Void>> mListener;
 
         /**
          * Constructor.
@@ -194,9 +189,9 @@ public class StartupViewModel
          */
         @UiThread
         StartupTask(final int taskId,
-                    @NonNull final OnTaskListener<String, Void> listener) {
+                    @NonNull final TaskListener<String, Void> taskListener) {
             mTaskId = taskId;
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         protected int getId() {
@@ -205,18 +200,24 @@ public class StartupViewModel
 
         @Override
         protected void onProgressUpdate(final String... values) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskProgress(mTaskId, values);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskProgress(mTaskId, values);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onProgressUpdate", "WeakReference to listener was dead");
+                }
             }
         }
 
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final Void result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -235,7 +236,7 @@ public class StartupViewModel
          */
         @UiThread
         BuildLanguageMappingsTask(final int taskId,
-                                  @NonNull final OnTaskListener<String, Void> listener) {
+                                  @NonNull final TaskListener<String, Void> listener) {
             super(taskId, listener);
         }
 
@@ -274,7 +275,7 @@ public class StartupViewModel
         @UiThread
         DBCleanerTask(final int taskId,
                       @NonNull final DAO db,
-                      @NonNull final OnTaskListener<String, Void> listener) {
+                      @NonNull final TaskListener<String, Void> listener) {
             super(taskId, listener);
             mDb = db;
         }
@@ -333,7 +334,7 @@ public class StartupViewModel
         @UiThread
         RebuildFtsTask(final int taskId,
                        @NonNull final DAO db,
-                       @NonNull final OnTaskListener<String, Void> listener) {
+                       @NonNull final TaskListener<String, Void> listener) {
             super(taskId, listener);
             mDb = db;
         }
@@ -377,7 +378,7 @@ public class StartupViewModel
         @UiThread
         AnalyzeDbTask(final int taskId,
                       @NonNull final DAO db,
-                      @NonNull final OnTaskListener<String, Void> listener) {
+                      @NonNull final TaskListener<String, Void> listener) {
             super(taskId, listener);
             mDb = db;
         }

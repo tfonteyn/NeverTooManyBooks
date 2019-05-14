@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -29,10 +26,7 @@
         Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.
     </string>
     <string name="menu_add_bookshelf">Bücherregal erstellen</string>
-    <string name="X_btn_confirm_add_bs">Bücherregal hinzufügen</string>
     <string name="menu_bookshelves">Bücherregale…</string>
-    <string name="X_btn_confirm_save_bs">Bücherregal speichern</string>
-    <string name="X_menu_delete_bookshelf">Bücherregal löschen</string>
     <string name="warning_cannot_delete_1st_bs">
         Das erste Bücherregal kann nicht gelöscht werden
     </string>
@@ -111,7 +105,7 @@
     <string name="error_search_exception">Die Suche ist fehlgeschlagen während %1$s: %2$s</string>
     <string name="menu_delete">Löschen</string>
     <string name="help">Hilfe</string>
-    <string name="X_info_manage_fields">
+    <string name="info_manage_fields">
         Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt.
         Nicht ausgewählte Felder werden nicht angezeigt.
     </string>
@@ -215,7 +209,6 @@
     <string name="title_edit_book_series">Buchserie bearbeiten</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="lbl_given_names">Vornamen</string>
-    <string name="X_title_edit_author">Angaben über Autor bearbeiten</string>
     <string name="warning_immediate_global_changes">
         HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen
     </string>
@@ -234,7 +227,6 @@
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
     </string>
-    <string name="X_title_edit_series">Einzelheiten der Serie bearbeiten</string>
     <string name="X_title_select_cover">Cover auswählen</string>
     <string name="X_warning_no_isbn_no_editions">
         Für ein Buch ohne ISBN können keine Ausgaben ermittelt werden</string>
@@ -421,14 +413,13 @@
     <string name="acra_resNotifTickerText">&APP_NAME; ist abgestürzt</string>
     <string name="acra_resNotifTitle">&APP_NAME;-Absturz</string>
     <string name="acra_resNotifText">Bitte klicken Sie hier für Details</string>
-    <string name="acra_resDialogTitle">&APP_NAME;-Absturz</string>
     <string name="acra_resDialogText">
         Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten
         Hinweise und drücken Sie “OK”, um uns eine E-Mail zu diesem Absturz zu senden.
         Sie werden das E-Mail vor dem Versand sehen können.
     </string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
-    <string name="acra_resDialogOkToast">Danke!</string>
+    <string name="acra_resReportSendSuccessToast">Danke!</string>
     <string name="lbl_read">Gelesen</string>
     <string name="lbl_unread">Ungelesen</string>
     <string name="warning_date_not_set">(kein Datum)</string>
@@ -442,7 +433,6 @@
     <string name="style_builtin_added_date">Erfassungsdatum</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
     <string name="field_not_set_with_brackets">(leer)</string>
-    <string name="X_menu_preferences_booklist">Einstellungen der Bücherliste</string>
     <string name="lbl_bookshelves_long">Bücherregale</string>
     <string name="lbl_bookshelves">Regale</string>
     <string name="lbl_location">Standort</string>
@@ -452,7 +442,6 @@
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_starting_up">Gleich geht\'s los…</string>
-    <string name="lbl_application_startup">Beim Start von &APP_NAME;</string>
     <string name="searching_goodreads">Suche bei Goodreads</string>
     <string name="menu_booklist_styles">Stile der Bücherlisten…</string>
     <string name="menu_show_more_ellipsis">Mehr anzeigen…</string>
@@ -499,10 +488,8 @@
     </string>
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
     <string name="title_edit_style">Bearbeite Stil</string>
-    <string name="X_menu_add_style">Stil hinzufügen</string>
     <string name="title_clone_style">Stil klonen</string>
     <string name="pg_filters">Buchfilter</string>
-    <string name="X_title_add_style">Neuer Stil</string>
     <string name="X_pt_bob_filter_read">Auswahl auf Basis des Status \‘Gelesen\’</string>
 
     <string name="title_select_style">Stil wählen</string>
@@ -513,8 +500,6 @@
         Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support
         über den  Eintrag ‘Hilfe’ in Hauptmenü
     </string>
-    <string name="X_menu_delete_style">Stil löschen</string>
-    <string name="X_menu_edit_booklist_style">Stil bearbeiten</string>
     <string name="menu_duplicate">Vervielfältigen</string>
     <string name="about_dash_or_dash">- Oder -</string>
     <string name="about_donate_paypal">Spende über PayPal</string>
@@ -621,8 +606,6 @@
         \nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie
         dafür auf ‘Anpassen’ am Ende der Liste.
     </string>
-    <string name="X_menu_edit_format">Format bearbeiten…</string>
-    <string name="X_title_edit_format">Formatname bearbeiten</string>
     <string name="warning_required_name">Name darf nicht leer sein</string>
     <string name="progress_msg_export_starting">Export startet…</string>
     <string name="menu_sort_and_style_ellipsis">Sortierung und Stil…</string>
@@ -633,9 +616,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s ist keine gültige ISBN</string>
     <string name="X_warning_cover_not_found2">Kein Bild gefunden</string>
     <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren</string>
-    <string name="X_info_option_not_available_until_book_saved">
-        Diese Option ist erst verfügbar, wenn das Buch gespeichert wurde.
-    </string>
     <string name="menu_add_book_by_barcode_scan">Barcode/ISBN scannen</string>
     <string name="menu_add_book_by_isbn">ISBN eingeben</string>
     <string name="lbl_allow_asin">ASIN erlauben</string>
@@ -962,7 +942,7 @@
     <string name="confirm_merge_bookshelves">
         Das Regal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?
     </string>
-    <string name="error_not_available">Nicht verfügbar</string>
+    <string name="error_not_available">%1$s nicht verfügbar</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
     <string name="warning_required_title_and_author">Der Titel und / oder Autor fehlt.</string>
     <string name="error_storage_no_access">Kann nicht auf die SD-Karte zugreifen</string>

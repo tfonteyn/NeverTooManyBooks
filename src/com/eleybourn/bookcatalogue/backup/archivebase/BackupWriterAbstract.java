@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
@@ -72,7 +72,7 @@ public abstract class BackupWriterAbstract
     /** progress message. */
     private final String mProgress_msg_covers_skip;
 
-    private ExportSettings mSettings;
+    private ExportOptions mSettings;
     private ProgressListener mProgressListener;
 
     /**
@@ -95,7 +95,7 @@ public abstract class BackupWriterAbstract
      */
     @Override
     @WorkerThread
-    public void backup(@NonNull final ExportSettings settings,
+    public void backup(@NonNull final ExportOptions settings,
                        @NonNull final ProgressListener listener)
             throws IOException {
         mSettings = settings;
@@ -105,17 +105,17 @@ public abstract class BackupWriterAbstract
         mDb.purge();
 
         // keep track of what we wrote to the archive
-        int entitiesWritten = ExportSettings.NOTHING;
+        int entitiesWritten = ExportOptions.NOTHING;
 
         File tempBookCsvFile = null;
 
         BackupInfo.InfoUserValues infoValues = new BackupInfo.InfoUserValues();
-        infoValues.hasStyles = (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0;
-        infoValues.hasPrefs = (mSettings.what & ExportSettings.PREFERENCES) != 0;
+        infoValues.hasStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
+        infoValues.hasPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
 
         try {
             // If we are doing books, generate the CSV file, and set the number
-            if ((mSettings.what & ExportSettings.BOOK_CSV) != 0) {
+            if ((mSettings.what & ExportOptions.BOOK_CSV) != 0) {
                 // Get a temp file and set for delete
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
@@ -127,9 +127,9 @@ public abstract class BackupWriterAbstract
             }
 
             // If we are doing covers, get the exact number by counting them
-            if (!mProgressListener.isCancelled() && (mSettings.what & ExportSettings.COVERS) != 0) {
+            if (!mProgressListener.isCancelled() && (mSettings.what & ExportOptions.COVERS) != 0) {
                 // just count the covers, no exporting as yet
-                if ((mSettings.what & ExportSettings.COVERS) != 0) {
+                if ((mSettings.what & ExportOptions.COVERS) != 0) {
                     // we don't write here, only pretend, so we can count the covers.
                     infoValues.coverCount = doCovers(true);
                 }
@@ -145,11 +145,11 @@ public abstract class BackupWriterAbstract
             }
 
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportSettings.XML_TABLES) != 0) {
+                    && (mSettings.what & ExportOptions.XML_TABLES) != 0) {
                 doXmlTables();
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportSettings.BOOK_CSV) != 0) {
+                    && (mSettings.what & ExportOptions.BOOK_CSV) != 0) {
                 try {
                     //noinspection ConstantConditions
                     putBooks(tempBookCsvFile);
@@ -158,15 +158,15 @@ public abstract class BackupWriterAbstract
                 }
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportSettings.COVERS) != 0) {
+                    && (mSettings.what & ExportOptions.COVERS) != 0) {
                 doCovers(false);
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
+                    && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
                 doStyles();
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
+                    && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
                 doPreferences();
             }
         } finally {
@@ -255,7 +255,7 @@ public abstract class BackupWriterAbstract
     private int doCovers(final boolean dryRun)
             throws IOException {
         long sinceTime = 0;
-        if (mSettings.dateFrom != null && (mSettings.what & ExportSettings.EXPORT_SINCE) != 0) {
+        if (mSettings.dateFrom != null && (mSettings.what & ExportOptions.EXPORT_SINCE) != 0) {
             sinceTime = mSettings.dateFrom.getTime();
         }
 

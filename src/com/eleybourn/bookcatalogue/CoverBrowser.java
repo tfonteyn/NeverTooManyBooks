@@ -52,13 +52,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.EditorDialogFragment;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
 import com.eleybourn.bookcatalogue.searches.SearchSiteManager.ImageSizes;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -73,14 +72,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * Displays and manages a cover image browser in a dialog, allowing the user to select
  * an image from a list to use as the (new) book cover image.
  * <p>
- * To send the clicked image (fileSpec) back, the caller must use
- * {@link #setTargetFragment(Fragment, int)}.
- * <p>
- * This class then uses {@link #getTargetFragment()#onActivityResult(int, int, Intent)}.
- * <p>
- * The above is an alternative solution to {@link EditorDialogFragment} and its use of the
- * fragment manager/t. TODO: test & pick one solution of the two.
- *
+ * Will survive a rotation, but not a killed activity.
+ * Uses setTargetFragment/getTargetFragment that can handle a {@link Fragment#onActivityResult}.
  * <p>
  * ENHANCE: For each edition, try to get TWO images from a different site each.
  */
@@ -132,7 +125,8 @@ public class CoverBrowser
      * @return the instance
      */
     @NonNull
-    public static CoverBrowser newInstance(@NonNull final String isbn,
+    public static CoverBrowser newInstance(@NonNull final Fragment target,
+                                           @NonNull final String isbn,
                                            final int searchSites) {
         // dev sanity check
         if ((searchSites & Site.SEARCH_ALL) == 0) {
@@ -143,6 +137,8 @@ public class CoverBrowser
         }
 
         CoverBrowser frag = new CoverBrowser();
+        //TOMF: this call should be in an onResume.
+        frag.setTargetFragment(target, UniqueId.REQ_ALT_EDITION);
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_SEARCH_SITES, searchSites);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
@@ -153,6 +149,8 @@ public class CoverBrowser
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        final Fragment targetFragment = getTargetFragment();
+        Objects.requireNonNull(targetFragment);
 
         Bundle args = requireArguments();
 
@@ -200,16 +198,8 @@ public class CoverBrowser
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
-                // Was a target fragment set ?
-                Fragment targetFragment = getTargetFragment();
-                if (targetFragment != null) {
-                    targetFragment.onActivityResult(UniqueId.REQ_ALT_EDITION,
-                                                    Activity.RESULT_OK, data);
-                } else {
-                    // if no fragment, assume the activity wants us.
-                    ((BaseActivity) getActivity()).onActivityResult(UniqueId.REQ_ALT_EDITION,
-                                               Activity.RESULT_OK, data);
-                }
+                targetFragment.onActivityResult(getTargetRequestCode(),
+                                                Activity.RESULT_OK, data);
             }
             // close the CoverBrowser
             dismiss();
@@ -620,19 +610,19 @@ public class CoverBrowser
         @NonNull
         private final String mIsbn;
         @NonNull
-        private final WeakReference<CoverBrowser> mCallback;
+        private final WeakReference<CoverBrowser> mTaskListener;
 
         /**
          * Constructor.
          *
-         * @param coverBrowser to send results to
+         * @param taskListener to send results to
          * @param isbn         to search for
          */
         @UiThread
-        GetEditionsTask(@NonNull final CoverBrowser coverBrowser,
+        GetEditionsTask(@NonNull final CoverBrowser taskListener,
                         @NonNull final String isbn) {
             mIsbn = isbn;
-            mCallback = new WeakReference<>(coverBrowser);
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -653,8 +643,12 @@ public class CoverBrowser
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final ArrayList<String> result) {
-            if (mCallback.get() != null) {
-                mCallback.get().showGallery(this, result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().showGallery(this, result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -666,7 +660,7 @@ public class CoverBrowser
             extends AsyncTask<Void, Void, String> {
 
         @NonNull
-        private final WeakReference<GalleryAdapter> mGalleryAdapter;
+        private final WeakReference<GalleryAdapter> mTaskListener;
         private final int mPosition;
 
         @NonNull
@@ -678,16 +672,16 @@ public class CoverBrowser
         /**
          * Constructor.
          *
-         * @param galleryAdapter to send results to
-         * @param isbn           to get image for
-         * @param fileManager    for downloads
+         * @param taskListener to send results to
+         * @param isbn         to get image for
+         * @param fileManager  for downloads
          */
         @UiThread
-        GetGalleryImageTask(@NonNull final GalleryAdapter galleryAdapter,
+        GetGalleryImageTask(@NonNull final GalleryAdapter taskListener,
                             final int position,
                             @NonNull final String isbn,
                             @NonNull final FileManager fileManager) {
-            mGalleryAdapter = new WeakReference<>(galleryAdapter);
+            mTaskListener = new WeakReference<>(taskListener);
             mPosition = position;
             mIsbn = isbn;
             mFileManager = fileManager;
@@ -713,8 +707,12 @@ public class CoverBrowser
         @Override
         protected void onCancelled(@Nullable final String result) {
             // let the caller clean up.
-            if (mGalleryAdapter.get() != null) {
-                mGalleryAdapter.get().updateGallery(this, mPosition, result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().updateGallery(this, mPosition, result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onCancelled", "WeakReference to listener was dead");
+                }
             }
         }
 
@@ -722,8 +720,12 @@ public class CoverBrowser
         @UiThread
         protected void onPostExecute(@Nullable final String result) {
             // always callback; even with a bad result.
-            if (mGalleryAdapter.get() != null) {
-                mGalleryAdapter.get().updateGallery(this, mPosition, result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().updateGallery(this, mPosition, result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -735,7 +737,7 @@ public class CoverBrowser
             extends AsyncTask<Void, Void, String> {
 
         @NonNull
-        private final WeakReference<CoverBrowser> mCoverBrowser;
+        private final WeakReference<CoverBrowser> mTaskListener;
         @NonNull
         private final FileManager mFileManager;
         @NonNull
@@ -744,15 +746,15 @@ public class CoverBrowser
         /**
          * Constructor.
          *
-         * @param coverBrowser to send results to
+         * @param taskListener to send results to
          * @param isbn         book to search
          * @param fileManager  for downloads
          */
         @UiThread
-        GetSwitcherImageTask(@NonNull final CoverBrowser coverBrowser,
+        GetSwitcherImageTask(@NonNull final CoverBrowser taskListener,
                              @NonNull final String isbn,
                              @NonNull final FileManager fileManager) {
-            mCoverBrowser = new WeakReference<>(coverBrowser);
+            mTaskListener = new WeakReference<>(taskListener);
 
             mFileManager = fileManager;
             mIsbn = isbn;
@@ -777,8 +779,12 @@ public class CoverBrowser
         @Override
         protected void onCancelled(final String result) {
             // let the caller clean up.
-            if (mCoverBrowser.get() != null) {
-                mCoverBrowser.get().setSwitcherImage(this, result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().setSwitcherImage(this, result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onCancelled", "WeakReference to listener was dead");
+                }
             }
         }
 
@@ -786,8 +792,12 @@ public class CoverBrowser
         @UiThread
         protected void onPostExecute(@Nullable final String result) {
             // always callback; even with a bad result.
-            if (mCoverBrowser.get() != null) {
-                mCoverBrowser.get().setSwitcherImage(this, result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().setSwitcherImage(this, result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }

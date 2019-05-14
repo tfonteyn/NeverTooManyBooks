@@ -19,6 +19,8 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
@@ -50,8 +52,7 @@ import com.eleybourn.bookcatalogue.viewmodels.BookFragmentModel;
  * Do NOT assume they are empty by default when populating fields manually.
  */
 public class BookFragment
-        extends BookBaseFragment
-        implements BookChangedListener {
+        extends BookBaseFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = BookFragment.class.getSimpleName();
@@ -59,16 +60,26 @@ public class BookFragment
     public static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
     public static final String REQUEST_BKEY_FLAT_BOOKLIST = "FBL";
 
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+            } else {
+                // we don't expect/implement any others.
+                Logger.warnWithStackTrace(this, "bookId=" + bookId,
+                                          "fieldsChanged=" + fieldsChanged);
+            }
+        }
+    };
+
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
-
     /** Handle next/previous paging in the flattened booklist. */
     private GestureDetector mGestureDetector;
 
+    //<editor-fold desc="Fragment startup">
     /** Contains the flattened book list for next/previous paging. */
     private BookFragmentModel mBookFragmentModel;
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -157,8 +168,7 @@ public class BookFragment
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize(imageSize.standard, imageSize.standard);
-        //noinspection ConstantConditions
-        mCoverHandler = new CoverHandler(getFragmentManager(), this, mDb,
+        mCoverHandler = new CoverHandler(this, mDb,
                                          mBookBaseFragmentModel.getBook(),
                                          mFields.getField(R.id.isbn).getView(), field.getView(),
                                          displaySizes.standard, displaySizes.standard);
@@ -206,8 +216,6 @@ public class BookFragment
         getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
     }
 
-
-
     @CallSuper
     @Override
     public void onResume() {
@@ -221,6 +229,10 @@ public class BookFragment
         super.onResume();
         Tracker.exitOnResume(this);
     }
+
+    //</editor-fold>
+
+    //<editor-fold desc="Populate">
 
     /**
      * <p>
@@ -275,10 +287,6 @@ public class BookFragment
         }
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Populate">
-
     /**
      * The author field is a single csv String.
      */
@@ -317,7 +325,6 @@ public class BookFragment
         }
     }
 
-
     /**
      * Inflates 'Loaned' field showing a person the book loaned to.
      * Allows returning the book via a context menu.
@@ -349,6 +356,9 @@ public class BookFragment
             field.getView().setVisibility(View.GONE);
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Fragment shutdown">
 
     /**
      * Show or hide the Table Of Content section.
@@ -416,9 +426,10 @@ public class BookFragment
             tocView.setVisibility(View.GONE);
         }
     }
+
     //</editor-fold>
 
-    //<editor-fold desc="Fragment shutdown">
+    //<editor-fold desc="Menu handlers">
 
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
@@ -448,10 +459,6 @@ public class BookFragment
         getActivity().setResult(Activity.RESULT_OK, data);
         super.onPause();
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Menu handlers">
 
     @Override
     @CallSuper
@@ -522,6 +529,7 @@ public class BookFragment
 
         super.onPrepareOptionsMenu(menu);
     }
+    //</editor-fold>
 
     @Override
     @CallSuper
@@ -564,9 +572,13 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                //noinspection ConstantConditions
-                LendBookDialogFragment.show(getFragmentManager(), book)
-                                      .setTargetFragment(this, 0);
+                FragmentManager fm = getChildFragmentManager();
+                LendBookDialogFragment lendBookDialogFragment = (LendBookDialogFragment)
+                        fm.findFragmentByTag(LendBookDialogFragment.TAG);
+                if (lendBookDialogFragment == null) {
+                    lendBookDialogFragment = LendBookDialogFragment.newInstance(book);
+                    lendBookDialogFragment.show(fm, LendBookDialogFragment.TAG);
+                }
                 return true;
 
             case R.id.MENU_BOOK_LOAN_RETURNED:
@@ -586,9 +598,14 @@ public class BookFragment
                 }
                 return super.onOptionsItemSelected(item);
         }
-
     }
-    //</editor-fold>
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
+        }
+    }
 
     @Override
     public void onActivityResult(final int requestCode,
@@ -609,20 +626,6 @@ public class BookFragment
                     super.onActivityResult(requestCode, resultCode, data);
                 }
                 break;
-        }
-    }
-
-    @Override
-    public void onBookChanged(final long bookId,
-                              final int fieldsChanged,
-                              @Nullable final Bundle data) {
-        if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
-            } else {
-                Logger.warnWithStackTrace(this, "bookId=" + bookId,
-                                          "fieldsChanged=" + fieldsChanged);
-            }
         }
     }
 

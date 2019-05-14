@@ -76,7 +76,7 @@
 
             <Button
                 android:id="@+id/retry"
-                style="?attr/buttonStyleSmall"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDoneException;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -22,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,13 +71,16 @@ public class CoverHandler {
     private static int sTempImageCounter;
 
     @NonNull
-    private final FragmentManager mFragmentManager;
-
-    @NonNull
-    private final Fragment mFragment;
+    private final Fragment mCallerFragment;
 
     @NonNull
     private final Context mContext;
+    /**
+     * Sure, just use context instead. But limiting the use of context gives opportunity
+     * to run things in background. (I might be wrong obv.)
+     */
+    @NonNull
+    private final Resources mResources;
 
     /** Database access. */
     @NonNull
@@ -104,8 +107,7 @@ public class CoverHandler {
     /**
      * Constructor.
      */
-    CoverHandler(@NonNull final FragmentManager fragmentManager,
-                 @NonNull final Fragment fragment,
+    CoverHandler(@NonNull final Fragment callerFragment,
                  @NonNull final DAO db,
                  @NonNull final Book book,
                  @NonNull final TextView isbnView,
@@ -113,10 +115,11 @@ public class CoverHandler {
                  final int maxWidth,
                  final int maxHeight) {
 
-        mFragmentManager = fragmentManager;
-        mFragment = fragment;
+        mCallerFragment = callerFragment;
+        mResources = mCallerFragment.getResources();
+
         //noinspection ConstantConditions
-        mContext = mFragment.getContext();
+        mContext = mCallerFragment.getContext();
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
         mDb = db;
@@ -132,7 +135,8 @@ public class CoverHandler {
 
         //Allow zooming by clicking on the image
         mCoverView.setOnClickListener(
-                v -> ZoomedImageDialogFragment.show(mFragmentManager, getCoverFile()));
+                v -> ZoomedImageDialogFragment.show(mCallerFragment.getFragmentManager(),
+                                                    getCoverFile()));
     }
 
     /**
@@ -197,7 +201,7 @@ public class CoverHandler {
             .setIcon(R.drawable.ic_crop);
 
         // display
-        String menuTitle = mContext.getString(R.string.title_cover);
+        String menuTitle = mResources.getString(R.string.title_cover);
         final MenuPicker<Integer> picker = new MenuPicker<>(mContext, menuTitle, menu,
                                                             R.id.coverImage,
                                                             this::onViewContextItemSelected);
@@ -323,14 +327,12 @@ public class CoverHandler {
         if (ISBN.isValid(isbn)) {
             // we must use the same fragment manager as the hosting fragment.
             mCoverBrowserFragment = (CoverBrowser)
-                    mFragmentManager.findFragmentByTag(CoverBrowser.TAG);
+                    mCallerFragment.getFragmentManager().findFragmentByTag(CoverBrowser.TAG);
             if (mCoverBrowserFragment == null) {
-                mCoverBrowserFragment = CoverBrowser.newInstance(isbn, Site.SEARCH_ALL);
-                mCoverBrowserFragment.show(mFragmentManager, CoverBrowser.TAG);
+                mCoverBrowserFragment = CoverBrowser.newInstance(mCallerFragment, isbn,
+                                                                 Site.SEARCH_ALL);
+                mCoverBrowserFragment.show(mCallerFragment.getFragmentManager(), CoverBrowser.TAG);
             }
-            // allow a callback when the user clicks on the image they want to use.
-            // at least we don't need to travel round to the Activity this way.
-            mCoverBrowserFragment.setTargetFragment(mFragment, UniqueId.REQ_ALT_EDITION);
         } else {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
@@ -356,7 +358,7 @@ public class CoverHandler {
         StorageUtils.deleteFile(f);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         */
-        mFragment.startActivityForResult(intent, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
+        mCallerFragment.startActivityForResult(intent, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
 
     /**
@@ -401,8 +403,8 @@ public class CoverHandler {
     private void getCoverFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .setType("image/*");
-        mFragment.startActivityForResult(
-                Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
+        mCallerFragment.startActivityForResult(
+                Intent.createChooser(intent, mResources.getString(R.string.title_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
     }
 
@@ -427,8 +429,8 @@ public class CoverHandler {
                 // Update the ImageView with the new image
                 updateCoverView();
             } else {
-                String msg = mContext.getString(R.string.warning_cover_copy_failed) + ". "
-                        + mContext.getString(R.string.error_if_the_problem_persists);
+                String msg = mResources.getString(R.string.warning_cover_copy_failed) + ". "
+                        + mResources.getString(R.string.error_if_the_problem_persists);
                 UserMessage.showUserMessage(mCoverView, msg);
             }
         } else {
@@ -441,6 +443,7 @@ public class CoverHandler {
 
     /**
      * Rotate the image.
+     * TOMF: add a progress spinner
      *
      * @param angle rotate by the specified amount
      */
@@ -501,7 +504,6 @@ public class CoverHandler {
         }
     }
 
-
     private void cropCoverImage(@NonNull final File imageFile) {
         boolean external = App.getPrefs().getBoolean(Prefs.pk_thumbnails_external_cropper, false);
         if (external) {
@@ -530,7 +532,7 @@ public class CoverHandler {
                           cropped.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
-        mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
+        mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
     }
 
     /**
@@ -585,7 +587,7 @@ public class CoverHandler {
             UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
                                         R.string.error_no_external_crop_app);
         } else {
-            mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
+            mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }
 
     }

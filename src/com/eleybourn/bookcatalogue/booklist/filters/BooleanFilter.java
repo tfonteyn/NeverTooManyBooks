@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
-import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,8 +45,8 @@ public class BooleanFilter
 
     @NonNull
     @Override
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+    public String getLabel(@NonNull final Resources resources) {
+        return resources.getString(mLabelId);
     }
 
     public void set(final boolean value) {

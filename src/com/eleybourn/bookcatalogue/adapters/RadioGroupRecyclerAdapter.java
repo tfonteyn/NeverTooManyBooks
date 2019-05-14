@@ -68,7 +68,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         T item = mItems.get(position);
         holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
-        holder.buttonView.setText(item.getLabel(mContext));
+        holder.buttonView.setText(item.getLabel(mContext.getResources()));
         // only 'check' the pre-selected item.
         holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
         holder.buttonView.setOnClickListener(this::itemCheckChanged);

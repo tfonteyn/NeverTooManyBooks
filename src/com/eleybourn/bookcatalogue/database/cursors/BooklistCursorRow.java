@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -53,7 +54,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITL
 /**
  * CursorRow object for the BooklistCursor.
  * <p>
- * Implements methods to perform common tasks on the 'current' row of the cursor.
+ * Provides methods to perform common tasks on the 'current' row of the cursor.
  *
  * @author Philip Warner
  */
@@ -174,7 +175,7 @@ public class BooklistCursorRow
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(@NonNull final Context context,
+    public String getLevelText(@NonNull final Resources resources,
                                @IntRange(from = 1) final int level) {
         // bail out if there is no data on level
         if (mBuilder.getStyle().groupCount() < level) {
@@ -196,7 +197,7 @@ public class BooklistCursorRow
             }
         }
 
-        return formatRowGroup(context, level, mCursor.getString(mLevelCol[index]));
+        return formatRowGroup(resources, level, mCursor.getString(mLevelCol[index]));
     }
 
     /**
@@ -209,7 +210,7 @@ public class BooklistCursorRow
      * was needed or on any failure
      */
     @Nullable
-    private String formatRowGroup(@NonNull final Context context,
+    private String formatRowGroup(@NonNull final Resources resources,
                                   @IntRange(from = 1) final int level,
                                   @Nullable final String s) {
         if (s == null) {
@@ -222,7 +223,7 @@ public class BooklistCursorRow
                     "groupCount=" + mBuilder.getStyle().groupCount() + " < level=" + level);
         }
 
-        Locale locale = LocaleUtils.from(context);
+        Locale locale = LocaleUtils.from(resources);
 
         int index = level - 1;
 
@@ -230,9 +231,9 @@ public class BooklistCursorRow
             case BooklistGroup.RowKind.READ_STATUS:
                 switch (s) {
                     case "0":
-                        return context.getString(R.string.lbl_unread);
+                        return resources.getString(R.string.lbl_unread);
                     case "1":
-                        return context.getString(R.string.lbl_read);
+                        return resources.getString(R.string.lbl_read);
                     default:
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this,
@@ -268,7 +269,7 @@ public class BooklistCursorRow
                     int i = Integer.parseInt(s);
                     // If valid, get the name
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
+                        return resources.getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (NumberFormatException e) {
                     Logger.error(this, e);

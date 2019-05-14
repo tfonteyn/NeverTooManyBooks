@@ -27,7 +27,7 @@ public class AuthorWorksModel
 
     public void init(final long authorId,
                      @SuppressWarnings("SameParameterValue") final boolean withBooks) {
-        if (author == null || authorId != author.getId()) {
+        if (mDb == null || authorId != author.getId()) {
 
             mDb = new DAO();
             author = mDb.getAuthor(authorId);

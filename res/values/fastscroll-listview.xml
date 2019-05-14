@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    com.eleybourn.bookcatalogue.widgets.FastScrollListView
+    -->
+    <declare-styleable name="FastScrollListView">
+        <attr name="scrollHandle" format="reference" />
+        <attr name="overlay" format="reference" />
+        <!-- Default: android:attr/textColorPrimary -->
+        <attr name="textColor" format="color" />
+    </declare-styleable>
+</resources>

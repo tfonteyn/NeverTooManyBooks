@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.tasks;
 
 import android.content.Context;
 
@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  *
  * @author Philip Warner
  */
-public class GrSendOneBookTask
+class GrSendOneBookTask
         extends GrSendBooksTaskBase {
 
     private static final long serialVersionUID = 8585857100291691934L;

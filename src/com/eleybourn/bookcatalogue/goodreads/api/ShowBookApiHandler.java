@@ -36,8 +36,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -377,7 +376,7 @@ public abstract class ShowBookApiHandler
     private static boolean hasNoCover(final String imageName) {
         return imageName != null
                 && imageName.toLowerCase(LocaleUtils.getSystemLocale())
-                            .contains(GoodreadsUtils.NO_COVER);
+                            .contains(GoodreadsTasks.NO_COVER);
     }
 
     /**
@@ -436,7 +435,7 @@ public abstract class ShowBookApiHandler
                 }
             }
             if (bestImage != null) {
-                String fileSpec = ImageUtils.saveImage(bestImage, GoodreadsUtils.FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveImage(bestImage, GoodreadsTasks.FILENAME_SUFFIX);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = mBookData.getStringArrayList(
                             UniqueId.BKEY_FILE_SPEC_ARRAY);

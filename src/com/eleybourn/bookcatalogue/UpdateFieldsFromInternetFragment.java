@@ -27,12 +27,14 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.FieldUsage;
-import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTaskListener;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -43,8 +45,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
  * Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
 public class UpdateFieldsFromInternetFragment
-        extends Fragment
-        implements ManagedTaskListener {
+        extends Fragment {
 
     /** Fragment manager tag. */
     public static final String TAG = UpdateFieldsFromInternetFragment.class.getSimpleName();
@@ -75,7 +76,29 @@ public class UpdateFieldsFromInternetFragment
     /** display reminder only. */
     private String mTitle;
 
-    private BaseActivityWithTasks mActivity;
+    private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
+        @Override
+        public void onTaskFinished(@NonNull final ManagedTask task) {
+            mUpdateSenderId = 0;
+            Intent data = new Intent()
+                    .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
+                    // 0 if we did 'all books' or the id of the (hopefully) updated book.
+                    .putExtra(DBDefinitions.KEY_ID, mBookId);
+
+            Activity activity = getActivity();
+            if (mBookId == 0) {
+                // task cancelled does not mean that nothing was done.
+                // Books *will* be updated until the cancelling happened
+                //noinspection ConstantConditions
+                activity.setResult(Activity.RESULT_OK, data);
+            } else {
+                // but if a single book was cancelled, flag that up
+                //noinspection ConstantConditions
+                activity.setResult(Activity.RESULT_CANCELED, data);
+            }
+            activity.finish();
+        }
+    };
 
     @Override
     @CallSuper
@@ -98,8 +121,6 @@ public class UpdateFieldsFromInternetFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mActivity = (BaseActivityWithTasks) getActivity();
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
@@ -132,7 +153,7 @@ public class UpdateFieldsFromInternetFragment
         mFieldListView = root.findViewById(R.id.manage_fields_scrollview);
 
         // FAB lives in Activity layout.
-        FloatingActionButton fab = mActivity.findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_cloud_download);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> handleConfirm());
@@ -144,6 +165,12 @@ public class UpdateFieldsFromInternetFragment
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false,
                                                        "update_from_internet");
+        }
+
+        // Check general network connectivity. If none, WARN the user.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
         }
     }
 
@@ -386,43 +413,32 @@ public class UpdateFieldsFromInternetFragment
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {
+
+        // Don't start search if we have no approved network... FAIL.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(),R.string.error_no_internet_connection);
+            return;
+        }
+
+        //noinspection ConstantConditions
+        TaskManager taskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
         UpdateFieldsFromInternetTask updateTask =
-                new UpdateFieldsFromInternetTask(mActivity.getTaskManager(),
-                                                 mSearchSites, mFieldUsages, this);
+                new UpdateFieldsFromInternetTask(taskManager, mSearchSites, mFieldUsages, mManagedTaskListener);
         if (bookId > 0) {
             updateTask.setBookId(bookId);
         }
 
         mUpdateSenderId = updateTask.getSenderId();
-        UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                .addListener(mUpdateSenderId, this, false);
+        UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, mManagedTaskListener, false);
         updateTask.start();
-    }
-
-    @Override
-    public void onTaskFinished(@NonNull final ManagedTask task) {
-        mUpdateSenderId = 0;
-        Intent data = new Intent()
-                .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
-                // 0 if we did 'all books' or the id of the (hopefully) updated book.
-                .putExtra(DBDefinitions.KEY_ID, mBookId);
-        if (mBookId == 0) {
-            // task cancelled does not mean that nothing was done.
-            // Books *will* be updated until the cancelling happened
-            mActivity.setResult(Activity.RESULT_OK, data);
-        } else {
-            // but if a single book was cancelled, flag that up
-            mActivity.setResult(Activity.RESULT_CANCELED, data);
-        }
-        mActivity.finish();
     }
 
     @Override
     @CallSuper
     public void onPause() {
         if (mUpdateSenderId != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                    .removeListener(mUpdateSenderId, this);
+            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.removeListener(mUpdateSenderId, mManagedTaskListener);
         }
         super.onPause();
     }
@@ -432,8 +448,7 @@ public class UpdateFieldsFromInternetFragment
     public void onResume() {
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH
-                    .addListener(mUpdateSenderId, this, true);
+            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, mManagedTaskListener, true);
         }
     }
 }

@@ -116,6 +116,13 @@ public abstract class BaseSettingsFragment
     }
 
     /**
+     * Force children to adopt this pattern / to not forget to set a result.
+     * THEY STILL MUST CALL IT THEMSELVES!
+     *
+     */
+    abstract void prepareResult();
+
+    /**
      * Copy all preferences from source to destination.
      */
     @SuppressWarnings("unused")

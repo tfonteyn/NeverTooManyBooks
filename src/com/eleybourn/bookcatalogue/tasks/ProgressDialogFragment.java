@@ -67,7 +67,7 @@ public class ProgressDialogFragment<Progress, Result>
     private Integer mTaskId;
 
     @Nullable
-    private WeakReference<OnTaskListener<Progress, Result>> mOnTaskFinishedListener;
+    private WeakReference<TaskListener<Progress, Result>> mTaskListener;
     @Nullable
     private WeakReference<OnUserCancelledListener> mOnProgressCancelledListener;
 
@@ -129,11 +129,11 @@ public class ProgressDialogFragment<Progress, Result>
         return frag;
     }
 
-    public void setOnTaskListener(@Nullable final OnTaskListener<Progress, Result> listener) {
-        mOnTaskFinishedListener = new WeakReference<>(listener);
+    public void setTaskListener(@Nullable final TaskListener<Progress, Result> taskListener) {
+        mTaskListener = new WeakReference<>(taskListener);
     }
 
-    public void setOnUserCancelledListener(@Nullable final OnUserCancelledListener listener) {
+    public void setUserCancelledListener(@Nullable final OnUserCancelledListener listener) {
         mOnProgressCancelledListener = new WeakReference<>(listener);
     }
 
@@ -231,7 +231,7 @@ public class ProgressDialogFragment<Progress, Result>
         // the dialog after the user has switched to another app.
         if (isResumed()) {
             if (BuildConfig.DEBUG) {
-                Logger.debug(this,"onTaskFinished", "calling dismiss()");
+                Logger.debug(this, "onTaskFinished", "calling dismiss()");
             }
             dismiss();
         }
@@ -248,15 +248,15 @@ public class ProgressDialogFragment<Progress, Result>
         mTask = null;
 
         // Tell the caller we're done.
-        if (mOnTaskFinishedListener != null) {
-            OnTaskListener<Progress, Result> listener = mOnTaskFinishedListener.get();
+        if (mTaskListener != null) {
+            TaskListener<Progress, Result> listener = mTaskListener.get();
             if (listener != null) {
                 listener.onTaskFinished(tmpTaskId, success, result, e);
             } else {
                 throw new RuntimeException("WeakReference to listener was dead");
             }
         } else {
-            throw new IllegalStateException("no OnTaskListener set.");
+            throw new IllegalStateException("no TaskListener set.");
         }
 
     }
@@ -306,41 +306,47 @@ public class ProgressDialogFragment<Progress, Result>
      * Typically called from {@link AsyncTask} #onProgressUpdate
      *
      * @param absPosition absolute position, can be {@code null}
-     * @param message to display, can be either {@code String}, {@code StringRes} or {@code null}.
+     * @param message     to display, can be either {@code String}, {@code null} or
+     *                    {@code StringRes} or 0.
+     *                    The null/0 gets morphed into an empty string.
      */
     @UiThread
     public void onProgress(@Nullable final Integer absPosition,
                            @Nullable final Object message) {
         synchronized (this) {
             setAbsPosition(absPosition);
-            setMessage(message);
+
+            if (message instanceof String) {
+                setMessage((String) message);
+                return;
+
+            } else if (message instanceof Integer) {
+                @StringRes
+                int resId = (int) message;
+                // the id should never by 0, but future bugs and paranoia...
+                if (resId != 0) {
+                    setMessage(getResources().getString(resId));
+                    return;
+                }
+            }
+
+            setMessage("");
         }
     }
 
     /**
      * Update the message on the progress dialog.
      *
-     * @param message to display, can be either {@code String}, {@code StringRes} or {@code null}.
-     *                The latter gets morphed into an empty string.
+     * @param message to display.
      */
     @UiThread
-    private void setMessage(@Nullable final Object message) {
-        String newMessage;
-        if (message instanceof String) {
-            newMessage = (String) message;
-        } else if (message instanceof Integer) {
-            //noinspection ConstantConditions
-            newMessage = getContext().getString((Integer)message);
-        } else {
-            newMessage = "";
-        }
-
-        if (mMessageView != null  && !newMessage.equals(mMessage)) {
-            mMessage = newMessage;
+    private void setMessage(@NonNull final String message) {
+        if (mMessageView != null && !message.equals(mMessage)) {
+            mMessage = message;
             mMessageView.setText(mMessage);
         } else {
             Logger.warnWithStackTrace(this, "mMessageView was NULL",
-                                      "newMessage=" + newMessage);
+                                      "newMessage=" + message);
         }
     }
 

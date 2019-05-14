@@ -30,9 +30,9 @@ import org.xml.sax.SAXException;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
@@ -69,7 +69,7 @@ public class XmlImporter
     private final DAO mDb;
 
     @NonNull
-    private final ImportSettings mSettings;
+    private final ImportOptions mSettings;
 
     /**
      * Stack for popping tags on if we go into one.
@@ -85,8 +85,8 @@ public class XmlImporter
      */
     public XmlImporter() {
         mDb = new DAO();
-        mSettings = new ImportSettings();
-        mSettings.what = ExportSettings.ALL;
+        mSettings = new ImportOptions();
+        mSettings.what = ExportOptions.ALL;
     }
 
     /**
@@ -94,7 +94,7 @@ public class XmlImporter
      *
      * @param settings the import settings
      */
-    public XmlImporter(@NonNull final ImportSettings settings) {
+    public XmlImporter(@NonNull final ImportOptions settings) {
         mDb = new DAO();
         settings.validate();
         mSettings = settings;
@@ -150,7 +150,7 @@ public class XmlImporter
         //noinspection SwitchStatementWithTooFewBranches
         switch (entity.getType()) {
             case BooklistStyles:
-                if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                if ((mSettings.what & ImportOptions.BOOK_LIST_STYLES) != 0) {
                     fromXml(in, listener, new StylesReader(mDb));
                 }
                 break;
@@ -430,25 +430,20 @@ public class XmlImporter
 
 
         // Let the parsing quest begin.
-        final XmlResponseParser handler = new XmlResponseParser(rootFilter);
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final SAXParser parser;
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        XmlResponseParser handler = new XmlResponseParser(rootFilter);
+
         try {
-            parser = factory.newSAXParser();
-        } catch (SAXException | ParserConfigurationException e) {
+            SAXParser parser = factory.newSAXParser();
+            InputSource is = new InputSource();
+            is.setCharacterStream(in);
+            parser.parse(is, handler);
+            // wrap parser exceptions in an IOException
+        } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
-            throw new IOException("Unable to create XML parser", e);
-        }
-
-        final InputSource is = new InputSource();
-        is.setCharacterStream(in);
-        try {
-            parser.parse(is, handler);
-        } catch (SAXException e) {
-            Logger.error(this, e);
-            throw new IOException("Malformed XML");
+            throw new IOException(e);
         }
     }
 

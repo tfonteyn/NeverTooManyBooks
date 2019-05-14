@@ -117,7 +117,6 @@ public class EditBookTocFragment
 
     private boolean mIsCollectSeriesInfoFromToc;
 
-
     private Integer mEditPosition;
 
     //<editor-fold desc="Fragment startup">
@@ -174,7 +173,7 @@ public class EditBookTocFragment
         Fields.Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
         mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-               .getView().setOnClickListener((v) -> {
+               .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
@@ -225,8 +224,6 @@ public class EditBookTocFragment
 
     //</editor-fold>
 
-    //<editor-fold desc="Fragment shutdown">
-
     /**
      * The toc list is not a 'real' field. Hence the need to store it manually here.
      */
@@ -236,8 +233,6 @@ public class EditBookTocFragment
         mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
                                                                 mList);
     }
-
-    //</editor-fold>
 
     //<editor-fold desc="Menu Handlers">
 
@@ -319,7 +314,7 @@ public class EditBookTocFragment
     private void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
         mISFDBEditions = editions != null ? editions : new ArrayList<>();
         if (!mISFDBEditions.isEmpty()) {
-            new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,this).execute();
+            new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc, this).execute();
         } else {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_no_editions);
@@ -363,7 +358,12 @@ public class EditBookTocFragment
         }
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
-        ConfirmToc.show(this, bookData, mISFDBEditions.size() > 1);
+        FragmentManager fm = getChildFragmentManager();
+        if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
+            ConfirmToc.newInstance(bookData,  mISFDBEditions.size() > 1)
+                      .show(fm, ConfirmToc.TAG);
+        }
+
     }
 
     /**
@@ -388,7 +388,7 @@ public class EditBookTocFragment
     private void getNextEdition() {
         // remove the top one, and try again
         mISFDBEditions.remove(0);
-        new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,this).execute();
+        new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc, this).execute();
     }
 
     //</editor-fold>
@@ -399,8 +399,12 @@ public class EditBookTocFragment
     private void newItem() {
         mEditPosition = null;
 
-        EditTocEntry.show(this, mMultipleAuthorsView.isChecked(),
-                          new TocEntry(mBookAuthor, "", ""));
+        FragmentManager fm = getChildFragmentManager();
+        if (fm.findFragmentByTag(EditTocEntry.TAG) == null) {
+            TocEntry tocEntry = new TocEntry(mBookAuthor, "", "");
+            EditTocEntry.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
+                        .show(fm, EditTocEntry.TAG);
+        }
     }
 
     /**
@@ -410,7 +414,12 @@ public class EditBookTocFragment
     private void editItem(final int position) {
         mEditPosition = position;
 
-        EditTocEntry.show(this, mMultipleAuthorsView.isChecked(), mList.get(position));
+        FragmentManager fm = getChildFragmentManager();
+        if (fm.findFragmentByTag(EditTocEntry.TAG) == null) {
+            TocEntry tocEntry = mList.get(position);
+            EditTocEntry.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
+                        .show(fm, EditTocEntry.TAG);
+        }
     }
 
     /**
@@ -430,10 +439,18 @@ public class EditBookTocFragment
         mListAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (ConfirmToc.TAG.equals(childFragment.getTag())
+                || EditTocEntry.TAG.equals(childFragment.getTag())) {
+            childFragment.setTargetFragment(this, 0);
+        }
+    }
+
     /**
-     * Will survive a rotation, but not a killed activity.
+     * Dialog that shows the downloaded TOC titles for approval by the user.
      * <p>
-     * Uses setTargetFragment/getTargetFragment with type {@link EditBookTocFragment}.
+     * Uses {@link Fragment#getTargetFragment()} for sending results back.
      */
     public static class ConfirmToc
             extends DialogFragment {
@@ -444,28 +461,14 @@ public class EditBookTocFragment
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
         /**
-         * (syntax sugar for newInstance)
-         */
-        public static void show(@NonNull final Fragment target,
-                                @NonNull final Bundle bookData,
-                                final boolean hasOtherEditions) {
-            FragmentManager fm = target.requireFragmentManager();
-            if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, bookData, hasOtherEditions).show(fm, TAG);
-            }
-        }
-
-        /**
          * Constructor.
          *
          * @return the instance
          */
-        public static ConfirmToc newInstance(@NonNull final Fragment target,
-                                             @NonNull final Bundle bookData,
+        public static ConfirmToc newInstance(@NonNull final Bundle bookData,
                                              final boolean hasOtherEditions) {
             ConfirmToc frag = new ConfirmToc();
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
-            frag.setTargetFragment(target, 0);
             frag.setArguments(bookData);
             return frag;
         }
@@ -527,6 +530,8 @@ public class EditBookTocFragment
 
     /**
      * Dialog to add a new TOCEntry, or edit an existing one.
+     * <p>
+     * Uses {@link Fragment#getTargetFragment()} for sending results back.
      */
     public static class EditTocEntry
             extends DialogFragment {
@@ -545,29 +550,13 @@ public class EditBookTocFragment
         private TocEntry mTocEntry;
 
         /**
-         * (syntax sugar for newInstance)
-         * <p>
-         * Show dialog for an existing entry.
-         */
-        public static void show(@NonNull final Fragment target,
-                                final boolean hasMultipleAuthors,
-                                @NonNull final TocEntry tocEntry) {
-            FragmentManager fm = target.requireFragmentManager();
-            if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(target, hasMultipleAuthors, tocEntry).show(fm, TAG);
-            }
-        }
-
-        /**
          * Constructor.
          *
          * @return the instance
          */
-        public static EditTocEntry newInstance(@NonNull final Fragment target,
-                                               final boolean hasMultipleAuthors,
-                                               TocEntry tocEntry) {
+        public static EditTocEntry newInstance(TocEntry tocEntry,
+                                               final boolean hasMultipleAuthors) {
             EditTocEntry frag = new EditTocEntry();
-            frag.setTargetFragment(target, 0);
             Bundle args = new Bundle();
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
@@ -578,7 +567,6 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
             final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
             Objects.requireNonNull(targetFragment);
 
@@ -653,19 +641,19 @@ public class EditBookTocFragment
         @NonNull
         private final String mIsbn;
         @NonNull
-        private final WeakReference<EditBookTocFragment> mListener;
+        private final WeakReference<EditBookTocFragment> mTaskListener;
 
         /**
          * Constructor.
          *
-         * @param isbn     to search for
-         * @param listener to send results to
+         * @param isbn         to search for
+         * @param taskListener to send results to
          */
         @UiThread
         ISFDBGetEditionsTask(@NonNull final String isbn,
-                             @NonNull final EditBookTocFragment listener) {
+                             @NonNull final EditBookTocFragment taskListener) {
             mIsbn = isbn;
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -686,8 +674,12 @@ public class EditBookTocFragment
         @UiThread
         protected void onPostExecute(final ArrayList<Editions.Edition> result) {
             // always send result, even if empty
-            if (mListener.get() != null) {
-                mListener.get().onGotISFDBEditions(result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onGotISFDBEditions(result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -697,7 +689,7 @@ public class EditBookTocFragment
 
         private final boolean mAddSeriesFromToc;
         @NonNull
-        private final WeakReference<EditBookTocFragment> mListener;
+        private final WeakReference<EditBookTocFragment> mTaskListener;
 
         @NonNull
         private final List<Editions.Edition> mEditions;
@@ -705,16 +697,16 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param editions List of ISFDB native ids
-         * @param listener where to send the results to
+         * @param editions     List of ISFDB native ids
+         * @param taskListener where to send the results to
          */
         @UiThread
         ISFDBGetBookTask(@NonNull final List<Editions.Edition> editions,
                          final boolean addSeriesFromToc,
-                         @NonNull final EditBookTocFragment listener) {
+                         @NonNull final EditBookTocFragment taskListener) {
             mEditions = editions;
             mAddSeriesFromToc = addSeriesFromToc;
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -722,7 +714,7 @@ public class EditBookTocFragment
         @WorkerThread
         protected Bundle doInBackground(final Void... params) {
             try {
-                return new ISFDBBook().fetch(mEditions, new Bundle(), mAddSeriesFromToc,false);
+                return new ISFDBBook().fetch(mEditions, new Bundle(), mAddSeriesFromToc, false);
             } catch (SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
@@ -735,8 +727,12 @@ public class EditBookTocFragment
         @UiThread
         protected void onPostExecute(@Nullable final Bundle result) {
             // always send result, even if empty
-            if (mListener.get() != null) {
-                mListener.get().onGotISFDBBook(result);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onGotISFDBBook(result);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -806,11 +802,11 @@ public class EditBookTocFragment
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener((v) -> editItem(position));
+            holder.rowDetailsView.setOnClickListener(v -> editItem(position));
 
             // This is overkill.... user already has a delete button and can click-to-edit.
             // long-click -> menu
-            holder.rowDetailsView.setOnLongClickListener((v) -> {
+            holder.rowDetailsView.setOnLongClickListener(v -> {
                 onCreateContextMenu(position);
                 return true;
             });

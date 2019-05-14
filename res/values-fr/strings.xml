@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -31,10 +28,7 @@
     <string name="btn_confirm_save_book">Sauvegarder le livre</string>
     <string name="X_info_no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
     <string name="menu_add_bookshelf">Créer une bibliothèque</string>
-    <string name="X_btn_confirm_add_bs">Ajouter une bibliothèque</string>
     <string name="menu_bookshelves">Bibliothèques…</string>
-    <string name="X_btn_confirm_save_bs">Sauvegarder la bibliothèque</string>
-    <string name="X_menu_delete_bookshelf">Supprimer la bibliothèque</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
     <string name="lbl_bookshelf">Bibliothèque : </string>
     <string name="bookshelf_all_books">Tous les livres</string>
@@ -98,7 +92,7 @@
     <string name="error_search_exception">Recherche en échec pendant %1$s : %2$s</string>
     <string name="menu_delete">Supprimer</string>
     <string name="help">Aide</string>
-    <string name="X_info_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\‘ajout et d\’édition des livres. Les champs non sélectionnés sont cachés.</string>
+    <string name="info_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\‘ajout et d\’édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="about_donate_amazon">Idées cadeaux Amazon</string>
     <string name="lbl_toc_multiple_authors">Cette anthologie a plusieurs auteurs.</string>
@@ -173,7 +167,6 @@
     <string name="title_edit_book_series">Modifier les séries</string>
     <string name="lbl_family_name">Nom de famille</string>
     <string name="lbl_given_names">Prénoms</string>
-    <string name="X_title_edit_author">Modifier les détails de l\'auteur</string>
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
     <string name="menu_cover_replace">Remplacer…</string>
     <string name="menu_cover_search_alt_editions">À partir d\'autres éditions…</string>
@@ -187,7 +180,6 @@
         Supprimer la série ‘%1$s’ ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
         Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.
     </string>
-    <string name="X_title_edit_series">Modifier les détails de la série</string>
     <string name="X_title_select_cover">Choisissez une couverture</string>
     <string name="X_warning_no_isbn_no_editions">Impossible d\'obtenir les éditions d\'un livre sans ISBN</string>
     <string name="warning_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>
@@ -345,14 +337,13 @@
     <string name="acra_resNotifTickerText">&APP_NAME; a planté.</string>
     <string name="acra_resNotifTitle">Plantage de &APP_NAME;</string>
     <string name="acra_resNotifText">Merci de cliquer ici pour obtenir des détails</string>
-    <string name="acra_resDialogTitle">Plantage de &APP_NAME;</string>
     <string name="acra_resDialogText">
         &APP_NAME; a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez
         « OK » pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre
         courriel avant son envoi.
     </string>
     <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
-    <string name="acra_resDialogOkToast">Merci !</string>
+    <string name="acra_resReportSendSuccessToast">Merci !</string>
     <string name="lbl_read">Lu</string>
     <string name="lbl_unread">Non lu</string>
     <string name="warning_date_not_set">(Pas de date)</string>
@@ -366,7 +357,6 @@
     <string name="style_builtin_added_date">Ajouté le</string>
     <string name="style_builtin_author_year">Auteur et année</string>
     <string name="field_not_set_with_brackets">(vide)</string>
-    <string name="X_menu_preferences_booklist">Préférences de la liste de livres</string>
     <string name="lbl_bookshelves">Rayons</string>
     <string name="lbl_credentials">Certificats</string>
     <string name="lbl_data_import_export">Import ou export de données</string>
@@ -374,7 +364,6 @@
     <string name="progress_msg_rebuilding_search_index">Construction de l\'index de recherche en cours…</string>
     <string name="progress_msg_optimizing">Optimisation de bases de données en cours…</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
-    <string name="lbl_application_startup">Démarrage de &APP_NAME;</string>
     <string name="searching_goodreads">Recherche en cours sur Goodreads</string>
     <string name="menu_booklist_styles">Styles de liste de livres…</string>
     <string name="menu_show_more_ellipsis">Montrer plus…</string>
@@ -385,7 +374,6 @@
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
     <string name="lbl_preferred_styles">Styles favoris</string>
     <string name="title_edit_style">Modifier le style</string>
-    <string name="X_menu_add_style">Ajouter le style</string>
     <string name="title_clone_style">Cloner le style</string>
     <string name="hint_booklist_styles_editor">
         Vous pouvez utiliser cet écran pour personnaliser la liste de styles affichés dans le
@@ -424,15 +412,12 @@
         \nVous pouvez également modifier ici le menu des styles et les styles eux-mêmes.
     </string>
     <string name="pg_filters">Filtres de livres</string>
-    <string name="X_title_add_style">Nouveau style</string>
     <string name="X_pt_bob_filter_read">Sélectionner en utilisant le statut « lu »</string>
     <string name="title_select_style">Sélectionner un style</string>
     <string name="X_warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="edit">Modifier</string>
     <string name="lbl_settings">Préférences</string>
     <string name="error_unexpected_error">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option « aide » du menu principal.</string>
-    <string name="X_menu_delete_style">Supprimer le style</string>
-    <string name="X_menu_edit_booklist_style">Modifier le style</string>
     <string name="menu_duplicate">Dupliquer</string>
     <string name="about_dash_or_dash">- Ou -</string>
     <string name="about_donate_paypal">Donation PayPal</string>
@@ -524,8 +509,6 @@
         \nVous pouvez également personnaliser ce menu, ainsi que créer vos propres styles de liste,
         en cliquant sur « personnaliser » à la fin de la liste.
     </string>
-    <string name="X_menu_edit_format">Modifier le format…</string>
-    <string name="X_title_edit_format">Renommer le format</string>
     <string name="warning_required_name">Le nom ne peut pas être vide</string>
     <string name="progress_msg_export_starting">Démarrage de l\'export…</string>
     <string name="menu_sort_and_style_ellipsis">Tri &amp; style…</string>
@@ -535,7 +518,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s n\'est pas un ISBN valable</string>
     <string name="X_warning_cover_not_found2">Aucune image trouvée</string>
     <string name="warning_cover_copy_failed">Impossible de copier l\'image</string>
-    <string name="X_info_option_not_available_until_book_saved">Cette option n\'est pas valable avant la sauvegarde du livre</string>
     <string name="menu_add_book_by_barcode_scan">Scanner le code barre / ISBN</string>
     <string name="menu_add_book_by_isbn">Entrer l\'ISBN</string>
     <string name="lbl_allow_asin">Autoriser l\'ASIN</string>
@@ -814,7 +796,7 @@
     <string name="menu_loan_return_book">Le livre emprunté est de retour</string>
     <string name="error_google_play_missing">Google Play / Market n\'est pas installé</string>
     <string name="lbl_style">Style</string>
-    <string name="error_not_available">indisponible</string>
+    <string name="error_not_available">%1$s indisponible</string>
     <string name="error_storage_not_available">La carte SD n\'est pas disponible</string>
     <string name="error_storage_no_access">Impossible d\'accéder à la carte SD</string>
     <string name="error_storage_no_space_left">Pas assez d\'espace sur la carte SD</string>

@@ -91,14 +91,12 @@ public final class LocaleUtils {
     }
 
     /**
-     * Check if the user-preferred Locale is different from the currently in use Locale (context).
-     *
-     * @param context caller context
+     * Check if the user-preferred Locale is different from the currently in use Locale.
      *
      * @return {@code true} if there is a change (difference)
      */
-    public static boolean isChanged(@NonNull final Context context) {
-        boolean changed = !from(context).equals(getPreferredLocal());
+    public static boolean isChanged(@NonNull final Resources resources) {
+        boolean changed = !from(resources).equals(getPreferredLocal());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debug(LocaleUtils.class, "isChanged", "==false");
         }
@@ -108,14 +106,15 @@ public final class LocaleUtils {
     /**
      * Load the Locale setting from the users SharedPreference if needed.
      *
-     * @param context to apply the user-preferred locale to.
+     * @param resources to apply the user-preferred locale to.
      */
-    public static void applyPreferred(@NonNull final Context context) {
+    public static void applyPreferred(@NonNull final Resources resources) {
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(context, "applyPreferred", toDebugString(context));
+            Logger.debugEnter(LocaleUtils.class, "applyPreferred", toDebugString(resources));
         }
 
-        if (!isChanged(context)) {
+        if (!isChanged(resources)) {
             return;
         }
 
@@ -125,19 +124,20 @@ public final class LocaleUtils {
         // loaded resources. So.. this is for FUTURE use when new resources get initialised.
         Locale.setDefault(userLocale);
 
-        // Apply to the context as passed in.
+        // Apply to the resources as passed in.
         // create a delta-configuration; i.e. only to be used to modify the added items.
         Configuration deltaOnlyConfig = new Configuration();
         deltaOnlyConfig.setLocale(userLocale);
-        Resources res = context.getResources();
-        res.updateConfiguration(deltaOnlyConfig, res.getDisplayMetrics());
+
+        resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
 
 
         // see if we need to add mappings for the new/current locale
         createLanguageMappingCache(userLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugExit(context, "applyPreferred", "==true", toDebugString(context));
+            Logger.debugExit(LocaleUtils.class, "applyPreferred", "==true",
+                             toDebugString(resources));
         }
 
     }
@@ -154,7 +154,12 @@ public final class LocaleUtils {
             // NullPointerException can be thrown from within, when the ISO3Language fails.
             return locale.getISO3Language() != null && locale.getISO3Country() != null;
         } catch (MissingResourceException e) {
-            throw new IllegalStateException(e);
+            // log but ignore.
+            Logger.debug(LocaleUtils.class,"isValid",
+                        "e=" + e.getLocalizedMessage(),
+                        "locale=" + locale);
+            return false;
+
         } catch (RuntimeException ignore) {
             return false;
         }
@@ -188,11 +193,11 @@ public final class LocaleUtils {
     /**
      * syntax sugar...
      *
-     * @return the current Locale for the passed context.
+     * @return the current Locale for the passed resources.
      */
     @NonNull
-    public static Locale from(@NonNull final Context context) {
-        return context.getResources().getConfiguration().locale;
+    public static Locale from(@NonNull final Resources resources) {
+        return resources.getConfiguration().locale;
     }
 
     /**
@@ -260,21 +265,20 @@ public final class LocaleUtils {
     /**
      * Translate the Language ISO3 code to the display name.
      *
-     * @param context caller context
-     * @param iso     the iso3 code
+     * @param iso the iso3 code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO3 code
      */
     @NonNull
-    public static String getDisplayName(@NonNull final Context context,
+    public static String getDisplayName(@NonNull final Resources resources,
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugEnter(LocaleUtils.class,
-                         "getLabel",
-                         "iso=" + iso, toDebugString(context));
+                              "getLabel",
+                              "iso=" + iso, toDebugString(resources));
         }
-        return getDisplayName(from(context), iso);
+        return getDisplayName(from(resources), iso);
     }
 
     /**
@@ -350,12 +354,12 @@ public final class LocaleUtils {
         ed.apply();
     }
 
-    public static String toDebugString(@NonNull final Context context) {
-        Locale cur = from(context);
-        return  "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
+    public static String toDebugString(@NonNull final Resources resources) {
+        Locale cur = from(resources);
+        return "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
                 + "\nsSystemInitialLocale(cur)       : " + sSystemInitialLocale.getDisplayName(cur)
-                + "\nconfiguration.locale            : " + context.getResources().getConfiguration().locale.getDisplayName()
-                + "\nconfiguration.locale(cur)       : " + context.getResources().getConfiguration().locale.getDisplayName(
+                + "\nconfiguration.locale            : " + resources.getConfiguration().locale.getDisplayName()
+                + "\nconfiguration.locale(cur)       : " + resources.getConfiguration().locale.getDisplayName(
                 cur)
 
                 + "\nLocale.getDefault()             : " + Locale.getDefault().getDisplayName()

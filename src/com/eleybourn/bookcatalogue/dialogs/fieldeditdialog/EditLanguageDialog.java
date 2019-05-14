@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
+import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -43,8 +44,8 @@ public class EditLanguageDialog
 
     public EditLanguageDialog(@NonNull final Activity activity,
                               @NonNull final DAO db,
-                              @NonNull final Runnable onChanged) {
-        super(activity, db, onChanged);
+                              @NonNull final BookChangedListener listener) {
+        super(activity, db, listener);
     }
 
     @CallSuper
@@ -63,5 +64,8 @@ public class EditLanguageDialog
     protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
         mDb.updateLanguage(from, LocaleUtils.getISO3Language(to));
+        if (mListener != null) {
+            mListener.onBookChanged(0, BookChangedListener.LANGUAGE, null);
+        }
     }
 }

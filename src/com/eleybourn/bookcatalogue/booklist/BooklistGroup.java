@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -209,8 +210,8 @@ public class BooklistGroup
     }
 
 
-    public String getName(@NonNull final Context context) {
-        return RowKind.get(kind).getName(context);
+    public String getName(@NonNull final Resources resources) {
+        return RowKind.get(kind).getName(resources);
     }
 
     @NonNull
@@ -823,15 +824,15 @@ public class BooklistGroup
         }
 
         @NonNull
-        String getName(@NonNull final Context context) {
-            return context.getString(mLabelId);
+        String getName(@NonNull final Resources resources) {
+            return resources.getString(mLabelId);
         }
 
         @Override
         @NonNull
         public String toString() {
             return "RowKind{"
-                    + "name=" + getName(App.getAppContext())
+                    + "name=" + getName(App.getAppContext().getResources())
                     + '}';
         }
     }

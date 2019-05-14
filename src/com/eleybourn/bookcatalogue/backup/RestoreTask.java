@@ -15,22 +15,22 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 
 public class RestoreTask
-        extends TaskWithProgress<Object, ImportSettings> {
+        extends TaskWithProgress<Object, ImportOptions> {
 
     @NonNull
-    private final ImportSettings mSettings;
+    private final ImportOptions mSettings;
 
     /**
      * @param progressDialog ProgressDialogFragment
      * @param settings       the import settings
      */
     @UiThread
-    public RestoreTask(@NonNull final ProgressDialogFragment<Object, ImportSettings> progressDialog,
-                       @NonNull final ImportSettings /* in/out */ settings) {
+    public RestoreTask(@NonNull final ProgressDialogFragment<Object, ImportOptions> progressDialog,
+                       @NonNull final ImportOptions /* in/out */ settings) {
         super(R.id.TASK_ID_READ_FROM_ARCHIVE, progressDialog);
 
         mSettings = settings;
-        if (((mSettings.what & ImportSettings.MASK) == 0) || (mSettings.file == null)) {
+        if (((mSettings.what & ImportOptions.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
     }
@@ -38,7 +38,7 @@ public class RestoreTask
     @Override
     @NonNull
     @WorkerThread
-    protected ImportSettings doInBackground(final Void... params) {
+    protected ImportOptions doInBackground(final Void... params) {
 
         //noinspection ConstantConditions
         try (BackupReader reader = BackupManager.getReader(mSettings.file)) {

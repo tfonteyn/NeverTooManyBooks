@@ -24,7 +24,7 @@
         android:id="@+id/bullet"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:background="@drawable/ic_lens"
+        android:src="@drawable/ic_lens"
         android:backgroundTint="?android:attr/colorForeground"
         android:scaleX="0.4"
         android:scaleY="0.4"
@@ -34,7 +34,9 @@
         tools:ignore="ContentDescription"
         />
 
-    <!-- Medium text -->
+    <!-- Medium text
+        Note that the 'drawableEnd' is done from code. Only here 'tools'.
+    -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"

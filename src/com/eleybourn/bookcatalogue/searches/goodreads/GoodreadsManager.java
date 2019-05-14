@@ -74,11 +74,10 @@ import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.goodreads.AuthorizationResultCheckTask;
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.goodreads.api.AuthUserApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler.GrBookshelfFields;
 import com.eleybourn.bookcatalogue.goodreads.api.IsbnToIdHandler;
@@ -490,20 +489,19 @@ public class GoodreadsManager
      * @author Philip Warner
      */
     private void parseResponse(@NonNull final InputStream is,
-                               @Nullable final DefaultHandler requestHandler)
+                               @Nullable final DefaultHandler handler)
             throws IOException {
-        // Setup the parser
-        SAXParserFactory factory = SAXParserFactory.newInstance();
 
+        SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(is, requestHandler);
-
-            // only catch exceptions related to the parsing, others will be caught by the caller.
+            parser.parse(is, handler);
+            // wrap parser exceptions in an IOException
         } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
+            throw new IOException(e);
         }
     }
 
@@ -815,32 +813,44 @@ public class GoodreadsManager
         }
     }
 
+    /**
+     * Search for a book.
+     *
+     * The search will in fact search/find a list of 'works' but we only return the first one.
+     *
+     * @return first book found, or an empty bundle if none found.
+     */
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
-                         final boolean fetchThumbnail)
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final String author,
+                         @Nullable final String title,
+                         final /* not supported */ boolean fetchThumbnail)
             throws IOException, AuthorizationException {
 
         try {
             // getBookByIsbn will check on isbn being valid.
-            if (!isbn.isEmpty()) {
+            if (isbn != null && !isbn.isEmpty()) {
                 return getBookByIsbn(isbn);
-            } else {
-                // search will check on non-empty args
-                List<GoodreadsWork> list = search(author + ' ' + title);
-                if (!list.isEmpty()) {
-                    return getBookById(list.get(0).bookId);
+
+            } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+                List<GoodreadsWork> result = new SearchBooksApiHandler(this)
+                        .search(author + ' ' + title);
+
+                if (!result.isEmpty()) {
+                    return getBookById(result.get(0).bookId);
                 } else {
                     return new Bundle();
                 }
+
+            } else {
+                return new Bundle();
             }
         } catch (BookNotFoundException e) {
-            // ignore, to bad.
+            // to bad.
+            return new Bundle();
         }
-        return new Bundle();
     }
 
     /**
@@ -858,27 +868,6 @@ public class GoodreadsManager
             return null;
         }
         return SearchSiteManager.getCoverImageFallback(this, isbn);
-    }
-
-    /**
-     * Wrapper to search for a book.
-     *
-     * @param query String to search for
-     *
-     * @return List of GoodreadsWork objects
-     */
-    @NonNull
-    public List<GoodreadsWork> search(@NonNull final String query)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        if (!query.trim().isEmpty()) {
-            SearchBooksApiHandler searcher = new SearchBooksApiHandler(this);
-            return searcher.search(query);
-        } else {
-            throw new IllegalArgumentException("No search criteria");
-        }
     }
 
     /**
@@ -937,6 +926,12 @@ public class GoodreadsManager
     @Override
     public int getSearchingResId() {
         return R.string.searching_goodreads;
+    }
+
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.goodreads;
     }
 
     @AnyThread
@@ -1056,7 +1051,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Called by the callback activity, {@link AuthorizationResultCheckTask},
+     * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
      * @author Philip Warner

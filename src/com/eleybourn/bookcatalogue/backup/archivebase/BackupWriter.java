@@ -26,7 +26,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 
 /**
@@ -45,7 +45,7 @@ public interface BackupWriter
      * @throws IOException on failure
      */
     @WorkerThread
-    void backup(@NonNull ExportSettings settings,
+    void backup(@NonNull ExportOptions settings,
                 @NonNull ProgressListener listener)
             throws IOException;
 

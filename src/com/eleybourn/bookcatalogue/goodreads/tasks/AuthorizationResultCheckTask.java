@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;

@@ -1,49 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Intention from the start was to use the Material themes.
-    Due to snags postponed till better understood.
-    So... April 2019: re-tested with Material and ouch..
-    Issues seen:
-
-    - tabs: the selected tab title seems to use the same colour as the background
-    making it invisible.
-
-    - buttons: have a larger background. As we had no margins up to now, they hug each other
-    way to close. Often also simply to big to fit where they are.
-
-    - check-mark for 'read' in the BoB list is much larger
+    <!--
+    These are the standard attributes that make up a complete theme.
+    https://developer.android.com/reference/android/R.styleable.html#Theme
     -->
+
+    <style name="AppTheme.FullScreen" parent="AppTheme.Dark">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
     <!-- =========== -->
     <!-- Dark theme. -->
-    <!-- Parent should become: Theme.MaterialComponents.NoActionBar -->
     <!-- =========== -->
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+
+        <item name="border_color">@color/grey_200</item>
+        <item name="checked_icon_tint">@color/light_green_a700</item>
+        <item name="completed_icon_tint">@color/amber_a700</item>
+
+        <!-- =============== -->
+        <!-- Global defaults -->
+        <!-- =============== -->
 
         <!-- the default style attributes for a ListView using a native fast scroller. -->
         <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
         <item name="android:fastScrollTrackDrawable">@null</item>
         <item name="android:fastScrollOverlayPosition">floating</item>
-        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
-
-        <!-- rectangular border around an element -->
-        <item name="color_border">@color/grey_800</item>
-
-        <!-- ============ -->
-        <!-- Vector icons -->
-        <!-- ============ -->
-
-        <!-- ic_file_name.xml vector icons have their 'fillColor' set to this reference -->
-        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
-        <!-- ic_check.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_check_fillColor">?android:attr/colorControlActivated</item>
-        <!-- ic_lock.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_lock_fillColor">@color/amber_a700</item>
 
         <!--  =========================== -->
-        <!-- AppCompatTheme Color palette -->
+        <!-- Theme Color palette -->
         <!--  =========================== -->
 
         <!-- The primary branding color for the app. By default, this is the color applied to the
@@ -51,131 +41,82 @@
         <item name="colorPrimary">@color/blue_500</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
             the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/blue_900</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
              to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/blue_a700</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/black</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/green_a700</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/blue_300</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/blue_600</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <!--<item name="colorSwitchThumbNormal"></item>-->
-        <!-- Default color of background imagery for floating components, ex. dialogs, popups, and cards. -->
-        <!--<item name="colorBackgroundFloating"></item>-->
+        <item name="colorAccent">@color/blue_a200</item>
+
     </style>
 
     <!-- =================== -->
     <!-- Light theme - Blue. -->
-    <!-- Parent should become: Theme.MaterialComponents.Light.NoActionBar -->
     <!-- =================== -->
     <style name="AppTheme.Light.Blue" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+
+        <item name="border_color">@color/blue_grey_600</item>
+        <item name="checked_icon_tint">@color/green_a700</item>
+        <item name="completed_icon_tint">@color/amber_a700</item>
+
+        <!-- =============== -->
+        <!-- Global defaults -->
+        <!-- =============== -->
 
         <!-- the default style attributes for a ListView using a native fast scroller. -->
         <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
         <item name="android:fastScrollTrackDrawable">@null</item>
         <item name="android:fastScrollOverlayPosition">floating</item>
-        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
-
-
-        <!-- rectangular border around an element -->
-        <item name="color_border">@color/grey_400</item>
-
-        <!-- ============ -->
-        <!-- Vector icons -->
-        <!-- ============ -->
-
-        <!-- ic_file_name.xml vector icons have their 'fillColor' set to this reference -->
-        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
-        <!-- ic_check.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_check_fillColor">?attr/colorControlActivated</item>
-        <!-- ic_lock.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_lock_fillColor">@color/amber_a700</item>
 
         <!-- ============================ -->
-        <!-- AppCompatTheme Color palette -->
+        <!-- Theme Color palette -->
         <!-- ============================ -->
 
         <item name="colorPrimary">@color/blue_500</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
             the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/blue_900</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
           to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/blue_a700</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/black</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/green_a700</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/blue_300</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/blue_600</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <!--<item name="colorSwitchThumbNormal"></item>-->
-        <!-- Default color of background imagery for floating components, ex. dialogs, popups, and cards. -->
-        <!--<item name="colorBackgroundFloating"></item>-->
+        <item name="colorAccent">@color/blue_a200</item>
 
     </style>
 
     <!-- ================== -->
     <!-- Light theme - Red. -->
-    <!-- Parent should become: Theme.MaterialComponents.Light.NoActionBar -->
     <!-- ================== -->
     <style name="AppTheme.Light.Red" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+
+        <item name="border_color">@color/grey_500</item>
+        <item name="checked_icon_tint">@color/green_a700</item>
+        <item name="completed_icon_tint">@color/amber_a700</item>
+
+        <!-- =============== -->
+        <!-- Global defaults -->
+        <!-- =============== -->
 
         <!-- the default style attributes for a ListView using a native fast scroller. -->
         <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
         <item name="android:fastScrollTrackDrawable">@null</item>
         <item name="android:fastScrollOverlayPosition">floating</item>
-        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
-        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
-
-        <!-- rectangular border around an element -->
-        <item name="color_border">@color/grey_400</item>
-
-        <!-- ============ -->
-        <!-- Vector icons -->
-        <!-- ============ -->
-
-        <!-- ic_file_name.xml vector icons have their 'fillColor' set to this reference -->
-        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
-        <!-- ic_check.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_check_fillColor">?attr/colorControlActivated</item>
-        <!-- ic_lock.xml vector icon uses 'fillColor' set to this reference -->
-        <item name="ic_lock_fillColor">@color/amber_a700</item>
 
         <!-- ============================ -->
-        <!-- AppCompatTheme Color palette -->
+        <!-- Theme Color palette -->
         <!-- ============================ -->
 
         <item name="colorPrimary">@color/red_500</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
             the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/red_900</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
           to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/red_a700</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/black</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/green_a700</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/red_300</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/red_600</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <!--<item name="colorSwitchThumbNormal"></item>-->
-        <!-- Default color of background imagery for floating components, ex. dialogs, popups, and cards. -->
-        <!--<item name="colorBackgroundFloating"></item>-->
-
+        <item name="colorAccent">@color/red_a200</item>
     </style>
 
 </resources>

@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
@@ -25,11 +26,13 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 
 /**
  * First attempt to split of into a model for BoB.
@@ -52,38 +55,68 @@ public class BooksOnBookshelfModel
      * Holder for all (semi)supported search criteria.
      * See {@link SearchCriteria} for more info.
      */
-    private SearchCriteria mSearchCriteria;
+    private final SearchCriteria mSearchCriteria = new SearchCriteria();
+    private final List<String> mBookshelfNameList = new ArrayList<>();
+    /** Database access. */
+    private DAO mDb;
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf}#onActivityResult}.
      * Indicates if list rebuild is needed.
      */
     @Nullable
     private Boolean mAfterOnActivityResultDoFullRebuild;
-
     /** Flag to indicate that a list has been successfully loaded. Affects the way we save state. */
     private boolean mListHasBeenLoaded;
-
     /** Stores the book id for the current list position, e.g. while a book is viewed/edited. */
     private long mCurrentPositionedBookId;
-
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTopRow = -1;
-
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
-
     /** Current displayed list cursor. */
+    @Nullable
     private BooklistPseudoCursor mListCursor;
-
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int mTotalBooks;
-
     /** Total number of unique books in current list. */
     private int mUniqueBooks;
+    /**
+     * Listener for {@link GetBookListTask} results.
+     */
+    private final TaskListener<Object, BuilderHolder> mOnGetBookListTaskListener =
+            new TaskListener<Object, BuilderHolder>() {
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           final BuilderHolder result,
+                                           @Nullable final Exception e) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                        Logger.debugEnter(this, "onGetBookListTaskFinished",
+                                          "success=" + success,
+                                          "exception=" + e);
+                    }
+                    // Save a flag to say list was loaded at least once successfully (or not)
+                    mListHasBeenLoaded = success;
 
+                    if (mListHasBeenLoaded) {
+                        // always copy modified fields.
+                        mCurrentPositionedBookId = result.currentPositionedBookId;
+                        mRebuildState = result.rebuildState;
+
+                        // always copy these results
+                        mTotalBooks = result.resultTotalBooks;
+                        mUniqueBooks = result.resultUniqueBooks;
+
+                        // do not copy the result.resultListCursor, as it might be null in which case we
+                        // will use the old value in mListCursor
+                    }
+
+                    // always call back, even if there is no new list.
+                    mBuilderResult.setValue(result);
+                }
+            };
     /** Saved position of top row. */
     private int mTopRow;
-
     /**
      * Saved position of last top row offset from view top.
      * <p>
@@ -92,45 +125,45 @@ public class BooksOnBookshelfModel
      * *        item will be positioned.
      */
     private int mTopRowOffset;
-
     /** Currently selected bookshelf. */
     private Bookshelf mCurrentBookshelf;
 
     @Override
     protected void onCleared() {
-        if (BuildConfig.DEBUG) {
-            Logger.debug(this, "onCleared");
+
+        if (mListCursor != null) {
+            mListCursor.getBuilder().close();
+            mListCursor.close();
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
+            TrackedCursor.dumpCursors();
+        }
+
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
         }
     }
 
     /**
-     * @param args Bundle savedInstance/Extras
+     *
      */
-    public void init(@Nullable final Bundle args) {
-        if (args == null) {
-            // Get preferred booklist state to use from preferences;
-            // always do this here in init, as the prefs might have changed anytime.
-            mRebuildState = BooklistBuilder.getListRebuildState();
-        } else {
-            // Always preserve state when rebuilding/recreating etc
-            mRebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
-        }
-
-        // Restore list position on bookshelf
-        mTopRow = App.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
-        mTopRowOffset = App.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
-
-        // Debug; makes list structures vary across calls to ensure code is correct...
-        mCurrentPositionedBookId = -1;
-
-
-        //============  anything below, only do once at real init time. =====================
-
-        if (mSearchCriteria != null) {
-            // already initialized.
+    public void init() {
+        if (mDb != null) {
             return;
         }
-        mSearchCriteria = new SearchCriteria();
+
+        mDb = new DAO();
+    }
+
+    /**
+     * NEVER close this database!
+     *
+     * @return the dao
+     */
+    public DAO getDb() {
+        return mDb;
     }
 
     public void savePosition(final int topRow,
@@ -149,6 +182,7 @@ public class BooksOnBookshelfModel
         return mSearchCriteria;
     }
 
+    @Nullable
     public BooklistPseudoCursor getListCursor() {
         return mListCursor;
     }
@@ -181,16 +215,64 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf;
     }
 
-    public void setCurrentBookshelf(final Bookshelf currentBookshelf) {
+    public void setCurrentBookshelf(@NonNull final Bookshelf currentBookshelf) {
         mCurrentBookshelf = currentBookshelf;
     }
 
+    public void setCurrentBookshelf(final long id) {
+        mCurrentBookshelf = mDb.getBookshelf(id);
+    }
+
+    public void setCurrentBookshelf(@NonNull final Resources resources,
+                                    @NonNull final String selected) {
+        mCurrentBookshelf = mDb.getBookshelfByName(selected);
+        // make sure the shelf exists.
+        if (mCurrentBookshelf == null) {
+            // shelf must have been deleted, switch to 'all book'
+            mCurrentBookshelf = Bookshelf.getAllBooksBookshelf(resources, mDb);
+        }
+        // and make it the new default
+        mCurrentBookshelf.setAsPreferred();
+    }
+
+    @NonNull
+    public BooklistStyle getCurrentStyle() {
+        return mCurrentBookshelf.getStyle(mDb);
+    }
+
+    public void setCurrentStyle(@NonNull final BooklistStyle style) {
+        mCurrentBookshelf.setStyle(mDb, style);
+    }
+
+    public List<String> getBookshelfNameList() {
+        return mBookshelfNameList;
+    }
+
+    public int initBookshelfNameList(@NonNull final Resources resources) {
+        mBookshelfNameList.clear();
+        mBookshelfNameList.add(resources.getString(R.string.bookshelf_all_books));
+        // default to 'All Books'
+        int currentPos = 0;
+        // start at 1, as position 0 is 'All Books'
+        int position = 1;
+
+        for (Bookshelf bookshelf : mDb.getBookshelves()) {
+            if (bookshelf.getId() == mCurrentBookshelf.getId()) {
+                currentPos = position;
+            }
+            position++;
+            mBookshelfNameList.add(bookshelf.getName());
+        }
+
+        return currentPos;
+    }
+
     @Nullable
-    public Boolean getAfterOnActivityResultForceRebuild() {
+    public Boolean isForceRebuild() {
         return mAfterOnActivityResultDoFullRebuild;
     }
 
-    public void setAfterOnActivityResultDoFullRebuild(@Nullable final Boolean rebuild) {
+    public void setForceRebuild(@Nullable final Boolean rebuild) {
         mAfterOnActivityResultDoFullRebuild = rebuild;
     }
 
@@ -224,31 +306,30 @@ public class BooksOnBookshelfModel
      * @param isFullRebuild Indicates whole table structure needs rebuild,
      *                      versus just do a reselect of underlying data
      */
-    public void initBookList(final boolean isFullRebuild,
-                             @NonNull final Resources resources,
-                             @NonNull final DAO db) {
+    public void initBookList(@SuppressWarnings("ParameterCanBeLocal") boolean isFullRebuild,
+                             @NonNull final Resources resources) {
 
         //FIXME: this is one from the original code. isFullRebuild=false is BROKEN.
         // basically all group headers are no longer in the TBL_BOOK_LIST.
         // See DatabaseDefinitions#TBL_BOOK_LIST for an example of the correct table content
         // After rebuild(false) all rows which don't show an expanded node are gone.
         //
-        boolean fullRebuild;
         if (__DEBUG_THE_REBUILD_ISSUE) {
-            fullRebuild = isFullRebuild;
+            Logger.debugWithStackTrace(this, "initBookList",
+                                       "isFullRebuild=" + isFullRebuild);
         } else {
-            fullRebuild = true;
+            isFullRebuild = true;
         }
 
         BooklistBuilder bookListBuilder;
 
-        if (mListCursor != null && !fullRebuild) {
+        if (mListCursor != null && !isFullRebuild) {
             // use the current builder to re-query the underlying data
             bookListBuilder = mListCursor.getBuilder();
 
         } else {
             // get a new builder and add the required extra domains
-            bookListBuilder = new BooklistBuilder(resources, mCurrentBookshelf.getStyle(db));
+            bookListBuilder = new BooklistBuilder(resources, mCurrentBookshelf.getStyle(mDb));
 
             bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
@@ -275,44 +356,10 @@ public class BooksOnBookshelfModel
         BuilderHolder builderHolder = new BuilderHolder(mListCursor, mCurrentPositionedBookId,
                                                         mRebuildState);
 
-        new GetBookListTask(builderHolder, bookListBuilder, isFullRebuild, mOnGetBookListTaskFinished)
+        new GetBookListTask(builderHolder, bookListBuilder, isFullRebuild,
+                            mOnGetBookListTaskListener)
                 .execute();
     }
-
-    /**
-     * Listener for {@link GetBookListTask} results.
-     */
-    private final OnTaskListener<Object, BuilderHolder> mOnGetBookListTaskFinished = new OnTaskListener<Object, BuilderHolder>() {
-        @Override
-        public void onTaskFinished(final int taskId,
-                                   final boolean success,
-                                   final BuilderHolder result,
-                                   @Nullable final Exception e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debugEnter(this, "onGetBookListTaskFinished",
-                                  "success=" + success,
-                                  "exception=" + e);
-            }
-            // Save a flag to say list was loaded at least once successfully (or not)
-            mListHasBeenLoaded = success;
-
-            if (mListHasBeenLoaded) {
-                // always copy modified fields.
-                mCurrentPositionedBookId = result.currentPositionedBookId;
-                mRebuildState = result.rebuildState;
-
-                // always copy these results
-                mTotalBooks = result.resultTotalBooks;
-                mUniqueBooks = result.resultUniqueBooks;
-
-                // do not copy the result.resultListCursor, as it might be null in which case we
-                // will use the old value in mListCursor
-            }
-
-            // always call back, even if there is no new list.
-            mBuilderResult.setValue(result);
-        }
-    };
 
     /**
      * The result of {@link GetBookListTask}
@@ -475,7 +522,7 @@ public class BooksOnBookshelfModel
         @NonNull
         private final BuilderHolder mHolder;
         private final int mTaskId = R.id.TASK_ID_GET_BOOKLIST;
-        private final WeakReference<OnTaskListener<Object, BuilderHolder>> mListener;
+        private final WeakReference<TaskListener<Object, BuilderHolder>> mTaskListener;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
@@ -494,19 +541,15 @@ public class BooksOnBookshelfModel
          * @param builderHolder   holder class with input fields / results.
          * @param bookListBuilder the builder
          * @param isFullRebuild   Indicates whole table structure needs rebuild,
-         * @param listener        OnTaskListener
+         * @param taskListener        TaskListener
          */
         @UiThread
         private GetBookListTask(@NonNull final BuilderHolder builderHolder,
                                 @NonNull final BooklistBuilder bookListBuilder,
                                 final boolean isFullRebuild,
-                                @NonNull final OnTaskListener<Object, BuilderHolder> listener) {
+                                @NonNull final TaskListener<Object, BuilderHolder> taskListener) {
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
-            }
-
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
             mIsFullRebuild = isFullRebuild;
             mBooklistBuilder = bookListBuilder;
             mHolder = builderHolder;
@@ -604,7 +647,7 @@ public class BooksOnBookshelfModel
                 }
 
                 // Now we have the expanded groups as needed, get the list cursor
-                tempListCursor = mBooklistBuilder.getListCursor();
+                tempListCursor = mBooklistBuilder.getNewListCursor();
                 // Clear it so it won't be reused.
                 mHolder.currentPositionedBookId = 0;
 
@@ -670,14 +713,18 @@ public class BooksOnBookshelfModel
         protected void onCancelled(@Nullable final BuilderHolder result) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Logger.debug(this, "onCancelled",
-                                           "result=" + result,
-                                           "mListener.get()=" + mListener.get());
+                             "result=" + result,
+                             "mTaskListener.get()=" + mTaskListener.get());
             }
 
             cleanup();
 
-            if (mListener.get() != null) {
-                mListener.get().onTaskCancelled(mTaskId, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskCancelled(mTaskId, result, mException);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onCancelled", "WeakReference to listener was dead");
+                }
             }
         }
 
@@ -707,15 +754,17 @@ public class BooksOnBookshelfModel
         @UiThread
         protected void onPostExecute(@Nullable final BuilderHolder result) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debugWithStackTrace(this, "onPostExecute",
-                                           "result=" + result,
-                                           "mListener.get()=" + mListener.get());
+                Logger.debug(this, "onPostExecute",
+                             "result=" + result,
+                             "mTaskListener.get()=" + mTaskListener.get());
             }
 
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -724,6 +773,7 @@ public class BooksOnBookshelfModel
     public static class BuilderHolder {
 
         /** input field. */
+        @Nullable
         final BooklistPseudoCursor oldListCursor;
 
         /** input/output field. */
@@ -746,7 +796,7 @@ public class BooksOnBookshelfModel
         /**
          * Constructor: these are the fields we need as input.
          */
-        BuilderHolder(@NonNull final BooklistPseudoCursor oldListCursor,
+        BuilderHolder(@Nullable final BooklistPseudoCursor oldListCursor,
                       final long currentPositionedBookId,
                       final int rebuildState) {
             this.currentPositionedBookId = currentPositionedBookId;

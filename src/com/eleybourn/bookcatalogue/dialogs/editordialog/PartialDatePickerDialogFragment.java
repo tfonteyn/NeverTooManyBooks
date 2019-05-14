@@ -42,7 +42,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
+import java.lang.ref.WeakReference;
 import java.util.Calendar;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -61,8 +63,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author pjw
  */
 public class PartialDatePickerDialogFragment
-        extends
-        EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
+        extends DialogFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = PartialDatePickerDialogFragment.class.getSimpleName();
@@ -77,6 +78,10 @@ public class PartialDatePickerDialogFragment
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
 
+    /** identifier of the field this dialog is bound to. */
+    @IdRes
+    private int mDestinationFieldId;
+
     /**
      * Currently displayed; {@code null} if empty/invalid.
      * The value is automatically updated by the dialog after every change.
@@ -88,11 +93,11 @@ public class PartialDatePickerDialogFragment
     @Nullable
     private Integer mDay;
 
+    private WeakReference<OnPartialDatePickerResultsListener> mListener;
 
     /**
      * Constructor.
      *
-     * @param callerTag     tag of the calling fragment to send results back to.
      * @param fieldId       the field whose content we want to edit
      * @param currentValue  the current value of the field
      * @param dialogTitleId titel resource id for the dialog
@@ -100,8 +105,7 @@ public class PartialDatePickerDialogFragment
      *
      * @return the new instance
      */
-    public static PartialDatePickerDialogFragment newInstance(@NonNull final String callerTag,
-                                                              @IdRes final int fieldId,
+    public static PartialDatePickerDialogFragment newInstance(@IdRes final int fieldId,
                                                               @NonNull final String currentValue,
                                                               @StringRes final int dialogTitleId,
                                                               final boolean todayIfNone) {
@@ -118,7 +122,6 @@ public class PartialDatePickerDialogFragment
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
         Bundle args = new Bundle();
-        args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
         args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
@@ -132,9 +135,13 @@ public class PartialDatePickerDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        readBaseArgs(savedInstanceState);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        Bundle args = requireArguments();
+
+        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+
+        args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         if (args.containsKey(BKEY_DATE)) {
             setDate(args.getString(BKEY_DATE, ""));
         } else {
@@ -145,8 +152,8 @@ public class PartialDatePickerDialogFragment
 
         //noinspection ConstantConditions
         PartialDatePickerDialog dialog = new PartialDatePickerDialog(getContext());
-        if (mTitleId != 0) {
-            dialog.setTitle(mTitleId);
+        if (titleId != 0) {
+            dialog.setTitle(titleId);
         }
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
@@ -177,8 +184,13 @@ public class PartialDatePickerDialogFragment
 
         } else {
             dismiss();
-            getFragmentListener().onPartialDatePickerSave(mDestinationFieldId,
-                                                          mYear, mMonth, mDay);
+            if (mListener.get() != null) {
+                mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPartialDatePickerSave", "WeakReference to listener was dead");
+                }
+            }
         }
     }
 
@@ -232,6 +244,15 @@ public class PartialDatePickerDialogFragment
         if (mDay != null) {
             outState.putInt(BKEY_DAY, mDay);
         }
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final OnPartialDatePickerResultsListener listener) {
+        mListener = new WeakReference<>(listener);
     }
 
     /**

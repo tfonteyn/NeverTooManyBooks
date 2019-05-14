@@ -27,7 +27,7 @@ import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 
 /**
  * Public interface for any backup archive reader.
@@ -47,7 +47,7 @@ public interface BackupReader
      *
      * @throws IOException on failure
      */
-    void restore(@NonNull ImportSettings settings,
+    void restore(@NonNull ImportOptions settings,
                  @NonNull ProgressListener listener)
             throws IOException, ImportException;
 

@@ -27,13 +27,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -43,8 +43,20 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * @author Philip Warner
  */
 public class GoodreadsRegisterActivity
-        extends BaseActivity
-        implements OnTaskListener<Object, Integer> {
+        extends BaseActivity {
+
+    private final TaskListener<Object, Integer> mTaskListener =
+            new TaskListener<Object, Integer>() {
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           final Integer result,
+                                           @Nullable final Exception e) {
+                    GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
+                                                             getWindow().getDecorView(),
+                                                             mTaskListener);
+                }
+            };
 
     @Override
     protected int getLayoutId() {
@@ -68,7 +80,7 @@ public class GoodreadsRegisterActivity
         View authButton = findViewById(R.id.authorize);
         authButton.setOnClickListener(v -> {
             UserMessage.showUserMessage(authButton, R.string.progress_msg_connecting);
-            new GoodreadsUtils.RequestAuthTask(this).execute();
+            new GoodreadsTasks.RequestAuthTask(mTaskListener).execute();
         });
 
         // Forget credentials
@@ -82,15 +94,5 @@ public class GoodreadsRegisterActivity
             blurb.setVisibility(View.GONE);
             blurbButton.setVisibility(View.GONE);
         }
-    }
-
-
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @NonNull final Integer result,
-                               @Nullable final Exception e) {
-        GoodreadsUtils.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                 getWindow().getDecorView(), this);
     }
 }

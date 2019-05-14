@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
 
 public final class NetworkUtils {
 
@@ -30,46 +30,62 @@ public final class NetworkUtils {
     }
 
     /**
-     * Check if we have *any* network open. We're not picky, first network that says ok is fine.
+     * Check if we have network access.
      *
      * @return {@code true} if the application can access the internet
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable(@NonNull final Context context) {
-        ConnectivityManager connectivity =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
-            for (Network network : connectivity.getAllNetworks()) {
-                NetworkInfo info = connectivity.getNetworkInfo(network);
-                if (info != null && info.isConnected()) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        Logger.debug(NetworkUtils.class, "isNetworkAvailable", info);
-                    }
-                    return true;
-                }
-            }
+    public static boolean isNetworkAvailable() {
+
+        Connectivity nc = getNetworkConnectivity();
+
+        if (isAllowMobileData()) {
+            return nc.has(Connectivity.Type.any);
+        } else {
+            return nc.has(Connectivity.Type.wifi);
         }
-        return false;
+    }
+
+    public static boolean isAllowMobileData() {
+        return App.getPrefs().getBoolean(Prefs.pk_ui_network_mobile_data, false);
     }
 
     /**
-     * Sample code not in use right now. Use {@link android.net.NetworkCapabilities}
-     * Check for un-metered access for example.
+     * Use {@link android.net.NetworkCapabilities}
+     * * Check for un-metered access for example.
      */
-    @Deprecated
     @AnyThread
-    public static boolean isWifiOrEthernetAvailable(@NonNull final Context context) {
-        ConnectivityManager connectivity =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
-            NetworkInfo info = connectivity.getActiveNetworkInfo();
-            if (info != null) {
-                return info.isConnected()
-                        && ((info.getType() == ConnectivityManager.TYPE_WIFI)
-                        || (info.getType() == ConnectivityManager.TYPE_ETHERNET));
+    public static Connectivity getNetworkConnectivity() {
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                App.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        Connectivity con = new Connectivity();
+
+        for (Network network : connMgr.getAllNetworks()) {
+            NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+            switch (networkInfo.getType()) {
+                case ConnectivityManager.TYPE_ETHERNET:
+                    con.hasEthernet |= networkInfo.isConnected();
+                    break;
+                case ConnectivityManager.TYPE_WIFI:
+                    con.hasWifi |= networkInfo.isConnected();
+                    break;
+                case ConnectivityManager.TYPE_BLUETOOTH:
+                    con.hasBluetooth |= networkInfo.isConnected();
+                    break;
+                case ConnectivityManager.TYPE_MOBILE:
+                    con.hasMobile |= networkInfo.isConnected();
+                    break;
             }
         }
-        return false;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+            Logger.debug(NetworkUtils.class, "getNetworkConnectivity", con);
+        }
+
+        return con;
     }
 
     /**
@@ -130,6 +146,51 @@ public final class NetworkUtils {
                                     + e.getLocalizedMessage());
             }
             return false;
+        }
+    }
+
+    public static class Connectivity {
+
+        boolean hasEthernet = false;
+        boolean hasWifi = false;
+        boolean hasBluetooth = false;
+        boolean hasMobile = false;
+
+        boolean has(@NonNull final Type type) {
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "has", "type=" + type);
+            }
+            switch (type) {
+                case any:
+                    return hasEthernet || hasWifi || hasBluetooth || hasMobile;
+
+                case wifi:
+                    return hasEthernet || hasWifi;
+
+                case ethernet:
+                    return hasEthernet;
+                case bluetooth:
+                    return hasBluetooth;
+                case mobile:
+                    return hasMobile;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Connectivity{" +
+                    "hasEthernet=" + hasEthernet +
+                    ", hasWifi=" + hasWifi +
+                    ", hasBluetooth=" + hasBluetooth +
+                    ", hasMobile=" + hasMobile +
+                    '}';
+        }
+
+        public enum Type {
+            any, wifi, ethernet, bluetooth, mobile
         }
     }
 }

@@ -169,6 +169,12 @@ public class OpenLibraryManager
         return R.string.searching_open_library;
     }
 
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.open_library;
+    }
+
     /**
      * https://openlibrary.org/dev/docs/api/books
      *
@@ -178,9 +184,9 @@ public class OpenLibraryManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final /* not supported */ String author,
+                         @Nullable final /* not supported */ String title,
                          final boolean fetchThumbnail)
             throws IOException {
 
@@ -204,13 +210,16 @@ public class OpenLibraryManager
             try {
                 Bundle bookData = handleResponse(new JSONObject(response), fetchThumbnail);
                 return bookData != null ? bookData : new Bundle();
+
             } catch (JSONException e) {
                 throw new IOException(e);
             }
 
-        } else {
-            // by author/title
+        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             throw new UnsupportedOperationException();
+
+        } else {
+            return new Bundle();
         }
     }
 

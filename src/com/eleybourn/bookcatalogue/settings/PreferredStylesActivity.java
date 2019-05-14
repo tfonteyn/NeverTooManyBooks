@@ -68,8 +68,6 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallba
 public class PreferredStylesActivity
         extends BaseActivity {
 
-    private static final int REQ_EDIT_STYLE = 0;
-
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
     /** The View for the list. */
@@ -133,9 +131,7 @@ public class PreferredStylesActivity
      * Reminder: the item row itself has to have:  android:longClickable="true".
      * Otherwise the click will only work on the 'blank' bits of the row.
      */
-    private void onCreateContextMenu(final int position) {
-
-        BooklistStyle style = mModel.getList().get(position);
+    private void onCreateContextMenu(@NonNull final BooklistStyle style) {
 
         Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
@@ -149,8 +145,8 @@ public class PreferredStylesActivity
         }
 
         // display the menu
-        String menuTitle = style.getLabel(this);
-        final MenuPicker<Integer> picker = new MenuPicker<>(this, menuTitle, menu, position,
+        String menuTitle = style.getLabel(getResources());
+        final MenuPicker<BooklistStyle> picker = new MenuPicker<>(this, menuTitle, menu, style,
                                                             this::onContextItemSelected);
         picker.show();
     }
@@ -159,22 +155,20 @@ public class PreferredStylesActivity
      * Using {@link ValuePicker} for context menus.
      */
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                         @NonNull final Integer position) {
-        // Save the current row
-        mModel.setEditedRow(position);
+                                         @NonNull final BooklistStyle style) {
 
-        BooklistStyle style = mModel.getList().get(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:
-                editStyle(style.clone(this));
+                editStyle(style.clone(getResources()));
                 return true;
 
             case R.id.MENU_EDIT:
-                // editing a system style -> clone it first.
-                if (!style.isUserDefined()) {
-                    style = style.clone(this);
+                if (style.isUserDefined()) {
+                    editStyle(style);
+                } else {
+                    // editing a system style -> clone it first.
+                    editStyle(style.clone(getResources()));
                 }
-                editStyle(style);
                 return true;
 
             case R.id.MENU_DELETE:
@@ -200,7 +194,7 @@ public class PreferredStylesActivity
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleSettingsFragment.TAG)
                 .putExtra(UniqueId.BKEY_STYLE, (Parcelable) style);
-        startActivityForResult(intent, REQ_EDIT_STYLE);
+        startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }
 
     @Override
@@ -212,14 +206,15 @@ public class PreferredStylesActivity
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case REQ_EDIT_STYLE: {
-                // need to send up the chain as-is
+            case UniqueId.REQ_EDIT_STYLE: {
+
                 if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
                     //noinspection ConstantConditions
                     BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                     mModel.handleStyleChange(style);
                     mListAdapter.notifyDataSetChanged();
 
+                    // need to send up the chain
                     setResult(resultCode, data);
                 }
                 break;
@@ -279,7 +274,7 @@ public class PreferredStylesActivity
 
             BooklistStyle style = getItem(position);
 
-            holder.nameView.setText(style.getLabel(getContext()));
+            holder.nameView.setText(style.getLabel(getResources()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(style.isPreferred());
@@ -291,7 +286,7 @@ public class PreferredStylesActivity
                 notifyItemChanged(position);
             });
 
-            holder.groupsView.setText(style.getGroupLabels(getContext()));
+            holder.groupsView.setText(style.getGroupLabels(getResources()));
             if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {
@@ -299,8 +294,8 @@ public class PreferredStylesActivity
             }
 
             // long-click -> menu
-            holder.rowDetailsView.setOnLongClickListener((v) -> {
-                onCreateContextMenu(position);
+            holder.rowDetailsView.setOnLongClickListener(v -> {
+                onCreateContextMenu(style);
                 return true;
             });
         }

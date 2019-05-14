@@ -7,8 +7,8 @@ import java.util.Set;
 
 /**
  * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
- * due to limitations of {@link android.preference.ListPreference}
- * and {@link android.preference.MultiSelectListPreference}
+ * due to limitations of {@link androidx.preference.ListPreference}
+ * and {@link androidx.preference.MultiSelectListPreference}
  * <p>
  * This call allows by-passing the real type for write-through.
  * Used in importing from a backup.

@@ -354,7 +354,7 @@ public class EditAuthorListActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener((v) -> {
+            holder.rowDetailsView.setOnClickListener(v -> {
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
                     EditBookAuthorDialogFragment.newInstance(author)

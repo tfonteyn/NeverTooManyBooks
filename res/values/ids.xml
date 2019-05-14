@@ -6,11 +6,11 @@
 
     <!-- BEGIN predefined View tags -->
 
-    <!-- GoodreadsTask. -->
+    <!-- BaseTask. -->
     <item name="TAG_GR_EVENT" type="id" />
-    <!-- GoodreadsTask. -->
+    <!-- BaseTask. -->
     <item name="TAG_GR_TASK" type="id" />
-    <!-- GoodreadsTask. -->
+    <!-- BaseTask. -->
     <item name="TAG_GR_TASK_HOLDER" type="id" />
     <!-- Goodreads BookEvent Holder -->
     <item name="TAG_GR_BOOK_EVENT_HOLDER" type="id" />

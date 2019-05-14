@@ -20,7 +20,9 @@
         app:constraint_referenced_ids="name"
         />
 
-    <!-- Smaller text, but with padding so user can still select it -->
+    <!-- Smaller text, but with padding so user can still select it
+        Note that the 'drawableEnd' is done from code. Only here 'tools'.
+    -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"

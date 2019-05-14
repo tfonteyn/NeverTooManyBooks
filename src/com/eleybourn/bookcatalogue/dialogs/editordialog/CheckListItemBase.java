@@ -25,12 +25,6 @@ public abstract class CheckListItemBase<T>
 
     /**
      * Constructor.
-     */
-    protected CheckListItemBase() {
-    }
-
-    /**
-     * Constructor.
      *
      * @param item     to encapsulate
      * @param selected the current status
@@ -82,23 +76,5 @@ public abstract class CheckListItemBase<T>
     @Override
     public void setChecked(final boolean selected) {
         mSelected = selected;
-    }
-
-    /**
-     * Access the list of {@link CheckListItem} and extract the actual items.
-     *
-     * @param list to dissect
-     *
-     * @return the extracted list
-     */
-    @NonNull
-    public ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
-        ArrayList<T> result = new ArrayList<>();
-        for (CheckListItem<T> entry : list) {
-            if (entry.isChecked()) {
-                result.add(entry.getItem());
-            }
-        }
-        return result;
     }
 }

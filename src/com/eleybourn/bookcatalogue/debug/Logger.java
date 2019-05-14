@@ -202,7 +202,7 @@ public final class Logger {
 
 
     /**
-     * This is an expensive call... file open+close... booooo
+     * This is an expensive call... file open+close... BOOOO!
      *
      * @param type    prefix tag
      * @param message to write

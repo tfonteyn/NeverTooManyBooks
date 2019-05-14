@@ -5,28 +5,28 @@ import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 
 /**
- * Reminder: this is probably obvious to some, but:
- *
- * If you pass the listener as a lambda to the AsyncTask constructor and store it in the task as
- * a WeakReference, the lambda gets garbage collected by the time you want to use it
- * in onPostExecute.
- *
- * So... using a WeakReference to store the listener: good. But do not pass a lambda, either:
+ * Warning: To prevent unintended garbage collection, you must store a strong reference to
+ * the listener.
+ * <p>
+ * The AsyncTask implementations as used, store only a WeakReference to the listener which is good.
+ * We don't want them to store a strong reference, as that could/would lead to memory leaks.
+ * <p>
+ * This does mean that the creator of the AsyncTask must:
  * <ul>
- *     <li>implemented the interface on the caller, and pass the caller</li>
- *     <li>or create a member variable in the caller of the listener type, and pass that</li>
+ * <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this</li>
+ * <li>or create an instance variable in the caller of the listener type, and pass that</li>
  * </ul>
+ * <strong>Do NOT simply pass a lambda, or anonymous class.</strong>
+ * <br>
  *
- * The other possibility is also obvious: I'm missing something obvious and the above is paranoia.
- *
- * @param <Progress>
- * @param <Result>
+ * @param <Progress> type of progress values
+ * @param <Result>   type of the task result
  */
-public interface OnTaskListener<Progress, Result> {
+public interface TaskListener<Progress, Result> {
 
     /**
      * Called when a task finishes.
-     *
+     * <p>
      * Note that 'success' only means the call itself was successful.
      * It usually still depends on the 'result' from the call what the next step should be.
      *
@@ -47,8 +47,6 @@ public interface OnTaskListener<Progress, Result> {
      * @param taskId id for the task which was provided at construction time.
      * @param values progress objects from the {@link AsyncTask}.
      *               Nullable/NonNull is up to the implementation.
-     *
-     * <br>Note: not using varargs (Possible heap pollution from parameterized vararg type).
      */
     default void onTaskProgress(int taskId,
                                 Progress[] values) {

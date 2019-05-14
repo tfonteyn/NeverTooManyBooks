@@ -25,6 +25,7 @@ import android.app.Activity;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 
@@ -33,8 +34,8 @@ public class EditFormatDialog
 
     public EditFormatDialog(@NonNull final Activity activity,
                             @NonNull final DAO db,
-                            @NonNull final Runnable onChanged) {
-        super(activity, db, db.getFormats(), onChanged);
+                            @NonNull final BookChangedListener listener) {
+        super(activity, db, db.getFormats(), listener);
     }
 
     @CallSuper
@@ -46,5 +47,8 @@ public class EditFormatDialog
     protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
         mDb.updateFormat(from, to);
+        if (mListener != null) {
+            mListener.onBookChanged(0, BookChangedListener.FORMAT, null);
+        }
     }
 }

@@ -28,10 +28,6 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
-/**
- * Ideally should use {@link EditObjectListActivity} but that needs to be converted
- * to a Fragment first.
- */
 public class SearchOrderFragment
         extends Fragment {
 
@@ -84,7 +80,6 @@ public class SearchOrderFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
     }
-
 
     /**
      * @return the list, or {@code null} if this fragment was not displayed,

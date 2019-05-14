@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
-    <PreferenceCategory android:title="@string/pg_ui">
+    <PreferenceCategory
+        android:title="@string/pg_ui">
         <!-- the list contains Locale string id's in contrast to other ListPreference which use 0,1... -->
         <ListPreference
             android:defaultValue="system"
@@ -33,7 +34,9 @@
         <PreferenceScreen
             android:icon="@drawable/ic_visibility"
             android:key="@string/pt_ui_field_visibility"
-            android:title="@string/pt_ui_field_visibility">
+            android:summary="@string/info_manage_fields"
+            android:title="@string/pt_ui_field_visibility"
+            >
             <!-- NEWKIND: new fields visibility. Third part of the key name **MUST** be equal to the DOM column name. -->
             <SwitchPreference
                 android:defaultValue="true"
@@ -164,7 +167,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pg_booklist">
+    <PreferenceCategory
+        android:title="@string/pg_booklist">
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
@@ -191,7 +195,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pg_scanning">
+    <PreferenceCategory
+        android:title="@string/pg_scanning">
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_surround_sound"
@@ -218,7 +223,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pg_thumbnails">
+    <PreferenceCategory
+        android:title="@string/pg_thumbnails">
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_crop_original"
@@ -270,7 +276,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/lbl_credentials">
+    <PreferenceCategory
+        android:title="@string/lbl_credentials">
         <PreferenceScreen
             android:icon="@drawable/ic_goodreads"
             android:key="@string/goodreads"
@@ -286,7 +293,17 @@
         </PreferenceScreen>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/lbl_search_sites">
+    <PreferenceCategory
+        android:title="@string/lbl_search_sites">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_perm_data_setting"
+            android:key="App.network.mobile_data"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_allow_mobile_data" />
+
         <PreferenceScreen
             android:icon="@drawable/ic_sort"
             android:key="@string/lbl_search_site_order"
@@ -318,10 +335,10 @@
             android:title="@string/amazon" />
 
         <!--<EditTextPreference-->
-            <!--android:defaultValue="http://www.isfdb.org"-->
-            <!--android:icon="@drawable/ic_link"-->
-            <!--android:inputType="textUri"-->
-            <!--android:key="ISFDB.hostUrl"-->
-            <!--android:title="@string/ISFDB" />-->
+        <!--android:defaultValue="http://www.isfdb.org"-->
+        <!--android:icon="@drawable/ic_link"-->
+        <!--android:inputType="textUri"-->
+        <!--android:key="ISFDB.hostUrl"-->
+        <!--android:title="@string/ISFDB" />-->
     </PreferenceCategory>
 </PreferenceScreen>

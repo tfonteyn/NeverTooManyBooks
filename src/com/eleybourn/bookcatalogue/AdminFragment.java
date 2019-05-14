@@ -20,9 +20,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.ExportCSVTask;
 import com.eleybourn.bookcatalogue.backup.csv.ImportCSVTask;
@@ -34,17 +34,16 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public class AdminFragment
-        extends Fragment
-        implements OnTaskListener<Object, Integer> {
+        extends Fragment {
 
     /** Fragment manager tag. */
     public static final String TAG = AdminFragment.class.getSimpleName();
@@ -61,6 +60,53 @@ public class AdminFragment
 
     private ProgressDialogFragment<Object, Integer> mProgressDialog;
 
+    private final TaskListener<Object, Integer> mListener = new TaskListener<Object, Integer>() {
+        /**
+         * The result of the task is not used here.
+         * <p>
+         * <br>{@inheritDoc}
+         */
+        @Override
+        public void onTaskFinished(final int taskId,
+                                   final boolean success,
+                                   @Nullable final Integer result,
+                                   @Nullable final Exception e) {
+            switch (taskId) {
+                case R.id.TASK_ID_CSV_EXPORT:
+                    if (success) {
+                        onExportFinished();
+                    } else {
+                        //noinspection ConstantConditions
+                        UserMessage.showUserMessage(getView(), e.getLocalizedMessage());
+                    }
+                    break;
+
+                case R.id.TASK_ID_CSV_IMPORT:
+                    if (!success) {
+                        String msg;
+                        if (e instanceof FormattedMessageException) {
+                            msg = ((FormattedMessageException) e).getFormattedMessage(getResources());
+                        } else if (e != null) {
+                            msg = e.getLocalizedMessage();
+                        } else {
+                            msg = getString(R.string.error_import_failed);
+                        }
+                        //noinspection ConstantConditions
+                        UserMessage.showUserMessage(getView(), msg);
+                    }
+                    break;
+
+                case R.id.TASK_ID_GR_IMPORT:
+                case R.id.TASK_ID_GR_SEND_BOOKS:
+                case R.id.TASK_ID_GR_REQUEST_AUTH:
+                    //noinspection ConstantConditions
+                    GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
+                                                             getView(), this);
+                    break;
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -73,13 +119,12 @@ public class AdminFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        FragmentManager fm = getFragmentManager();
-
-        //noinspection unchecked,ConstantConditions
+        FragmentManager fm = getChildFragmentManager();
+        //noinspection unchecked
         mProgressDialog = (ProgressDialogFragment<Object, Integer>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setOnTaskListener(this);
+            mProgressDialog.setTaskListener(mListener);
 //            mProgressDialog.setOnUserCancelledListener(this);
         }
 
@@ -125,28 +170,28 @@ public class AdminFragment
         v = root.findViewById(R.id.lbl_sync_with_goodreads);
         v.setOnClickListener(v1 -> {
             UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsUtils.ImportTask(true, this).execute();
+            new GoodreadsTasks.ImportTask(true, mListener).execute();
         });
 
         // Goodreads Import All
         v = root.findViewById(R.id.lbl_import_all_from_goodreads);
         v.setOnClickListener(v1 -> {
             UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsUtils.ImportTask(false, this).execute();
+            new GoodreadsTasks.ImportTask(false, mListener).execute();
         });
 
         // Goodreads Export Updated
         v = root.findViewById(R.id.lbl_send_updated_books_to_goodreads);
         v.setOnClickListener(v1 -> {
             UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsUtils.SendBooksTask(true, this).execute();
+            new GoodreadsTasks.SendBooksTask(true, mListener).execute();
         });
 
         // Goodreads Export All
         v = root.findViewById(R.id.lbl_send_all_books_to_goodreads);
         v.setOnClickListener(v1 -> {
             UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsUtils.SendBooksTask(false, this).execute();
+            new GoodreadsTasks.SendBooksTask(false, mListener).execute();
         });
 
         /* Start the activity that shows the active GoodReads tasks. */
@@ -193,11 +238,11 @@ public class AdminFragment
      */
     private void exportToCSV() {
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
-        ExportSettings settings = new ExportSettings(file);
-        settings.what = ExportSettings.BOOK_CSV;
+        ExportOptions settings = new ExportOptions(file);
+        settings.what = ExportOptions.BOOK_CSV;
 
-        FragmentManager fm = getFragmentManager();
-        //noinspection unchecked,ConstantConditions
+        FragmentManager fm = getChildFragmentManager();
+        //noinspection unchecked
         mProgressDialog = (ProgressDialogFragment<Object, Integer>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog == null) {
@@ -207,7 +252,7 @@ public class AdminFragment
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskListener(this);
+        mProgressDialog.setTaskListener(mListener);
         //mProgressDialog.setOnUserCancelledListener(this);
     }
 
@@ -245,11 +290,11 @@ public class AdminFragment
      * @param file the CSV file to read
      */
     private void importFromCSV(@NonNull final File file) {
-        ImportSettings settings = new ImportSettings(file);
-        settings.what = ImportSettings.BOOK_CSV;
+        ImportOptions settings = new ImportOptions(file);
+        settings.what = ImportOptions.BOOK_CSV;
 
-        FragmentManager fm = getFragmentManager();
-        //noinspection unchecked,ConstantConditions
+        FragmentManager fm = getChildFragmentManager();
+        //noinspection unchecked
         mProgressDialog = (ProgressDialogFragment<Object, Integer>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog == null) {
@@ -259,7 +304,7 @@ public class AdminFragment
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
-        mProgressDialog.setOnTaskListener(this);
+        mProgressDialog.setTaskListener(mListener);
         //mProgressDialog.setOnUserCancelledListener(this);
     }
 
@@ -289,51 +334,6 @@ public class AdminFragment
                 break;
         }
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * The result of the task is not used here.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public void onTaskFinished(final int taskId,
-                               final boolean success,
-                               @Nullable final Integer result,
-                               @Nullable final Exception e) {
-        switch (taskId) {
-            case R.id.TASK_ID_CSV_EXPORT:
-                if (success) {
-                    onExportFinished();
-                } else {
-                    //noinspection ConstantConditions
-                    UserMessage.showUserMessage(getView(), e.getLocalizedMessage());
-                }
-                break;
-
-            case R.id.TASK_ID_CSV_IMPORT:
-                if (!success) {
-                    String msg;
-                    if (e instanceof FormattedMessageException) {
-                        msg = ((FormattedMessageException) e).getFormattedMessage(getResources());
-                    } else if (e != null) {
-                        msg = e.getLocalizedMessage();
-                    } else {
-                        msg = getString(R.string.error_import_failed);
-                    }
-                    //noinspection ConstantConditions
-                    UserMessage.showUserMessage(getView(), msg);
-                }
-                break;
-
-            case R.id.TASK_ID_GR_IMPORT:
-            case R.id.TASK_ID_GR_SEND_BOOKS:
-            case R.id.TASK_ID_GR_REQUEST_AUTH:
-                //noinspection ConstantConditions
-                GoodreadsUtils.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                         getView(), this);
-                break;
-        }
     }
 
     /**

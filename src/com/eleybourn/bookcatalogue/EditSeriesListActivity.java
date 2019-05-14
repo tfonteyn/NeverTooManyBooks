@@ -417,7 +417,7 @@ public class EditSeriesListActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener((v) -> {
+            holder.rowDetailsView.setOnClickListener(v -> {
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
                     EditBookSeriesDialogFragment.newInstance(series)

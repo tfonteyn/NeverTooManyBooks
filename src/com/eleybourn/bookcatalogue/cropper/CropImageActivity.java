@@ -255,7 +255,8 @@ public class CropImageActivity
     }
 
     /**
-     * create activity.
+     * Note: setting Window.FEATURE_NO_TITLE + WindowManager.LayoutParams.FLAG_FULLSCREEN
+     * is now done in the manifest using a theme on this activity.
      * <p>
      * intent.putExtra(CropIImage.BKEY_SCALE, true);
      * intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
@@ -267,7 +268,7 @@ public class CropImageActivity
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         // Do this first to avoid 'must be first errors'
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
 
@@ -310,7 +311,7 @@ public class CropImageActivity
 
         if (mBitmap != null) {
             // Make UI fullscreen.
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // the FAB button saves the image, use 'back' to cancel.
             findViewById(R.id.fab).setOnClickListener(v -> onSaveClicked());
             startFaceDetection();

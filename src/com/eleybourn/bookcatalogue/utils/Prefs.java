@@ -29,6 +29,8 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
  * The preference key names here are the ones that define USER settings.
  * See {@link com.eleybourn.bookcatalogue.settings.SettingsActivity} and children.
  *
+ * These keys *MUST* be kept in sync with "res/xml/preferences*.xml"
+ *
  * Application internal settings are done where they are needed/used.
  *
  * The pre-v200 migration method {@link #migratePreV200preferences} is also located here.
@@ -38,6 +40,8 @@ public final class Prefs {
     public static final String pk_ui_language = "App.Locale";
     public static final String pk_ui_theme = "App.Theme";
     public static final String pk_ui_messages_use = "App.UserMessage";
+
+    public static final String pk_ui_network_mobile_data = "App.network.mobile_data";
 
     public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";
     public static final String pk_thumbnail_cropper_layer_type = "Image.ViewLayerType";
@@ -313,7 +317,7 @@ public final class Prefs {
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
                         ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyleId(context, styleName));
+                                   BooklistStyles.getStyleId(context.getResources(), styleName));
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -322,7 +326,7 @@ public final class Prefs {
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
                             styleName = style.substring(0, style.length() - 2);
-                            styleIds.add(BooklistStyles.getStyleId(context, styleName));
+                            styleIds.add(BooklistStyles.getStyleId(context.getResources(), styleName));
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
                                      Csv.join(",", styleIds));

@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Uložit knihu</string>
     <string name="X_info_no_bookshelves_yet">Zatím nemáte vytvořenou žádnou knihovnu. Pro její vytvoření použijte menu ve spodní části obrazovky.</string>
     <string name="menu_add_bookshelf">Vytvořit knihovnu</string>
-    <string name="X_btn_confirm_add_bs">Přidat knihovnu</string>
     <string name="menu_bookshelves">Knihovny…</string>
-    <string name="X_btn_confirm_save_bs">Uložit knihovnu</string>
-    <string name="X_menu_delete_bookshelf">Smazat knihovnu</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
     <string name="lbl_bookshelf">Knihovna</string>
     <string name="bookshelf_all_books">Všechny knihy</string>
@@ -82,7 +76,7 @@
     <string name="error_search_exception">Hledání selhalo %1$s: %2$s</string>
     <string name="menu_delete">Smazat</string>
     <string name="help">Nápověda</string>
-    <string name="X_info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
+    <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="X_anthology_titles">Antologické tituly</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Tato antologie má více autorů.</string>
@@ -153,7 +147,6 @@
     <string name="title_edit_book_series">Upravit sérii knihy</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_given_names">Křestní jméno</string>
-    <string name="X_title_edit_author">Upravit detaily autora</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="menu_cover_replace">Nahradit…</string>
     <string name="menu_cover_search_alt_editions">Z jiné edice…</string>
@@ -164,7 +157,6 @@
     <string name="menu_edit_series">Upravit série…</string>
     <string name="title_delete_series">Smazat série</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série \‘%1$s\’?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
-    <string name="X_title_edit_series">Upravit detaily série</string>
     <string name="X_title_select_cover">Vybrat obálku</string>
     <string name="X_warning_no_isbn_no_editions">Nelze získat edici pro knihu bez ISBN kódu</string>
     <string name="warning_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
@@ -273,10 +265,9 @@
     <string name="acra_resNotifTickerText">&APP_NAME; spadl</string>
     <string name="acra_resNotifTitle">&APP_NAME; spadl</string>
     <string name="acra_resNotifText">Klikněte zde pro více informací</string>
-    <string name="acra_resDialogTitle">&APP_NAME; spadl</string>
     <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem “OK” nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
-    <string name="acra_resDialogOkToast">Děkujeme!</string>
+    <string name="acra_resReportSendSuccessToast">Děkujeme!</string>
     <string name="lbl_read">Přečteno</string>
     <string name="lbl_unread">Nepřečteno</string>
     <string name="warning_date_not_set">(žádné datum)</string>
@@ -290,7 +281,6 @@
     <string name="style_builtin_added_date">Datum přidání</string>
     <string name="style_builtin_author_year">Autor a rok</string>
     <string name="field_not_set_with_brackets">(prázdné)</string>
-    <string name="X_menu_preferences_booklist">Možnosti seznamu knih</string>
     <string name="lbl_bookshelves">Police</string>
     <string name="lbl_credentials">Volitelná rozšíření</string>
     <string name="lbl_data_import_export">Import/Export dat</string>
@@ -298,7 +288,6 @@
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
-    <string name="lbl_application_startup">&APP_NAME; spuštěn</string>
     <string name="searching_goodreads">Vyhledávám na Goodreads</string>
     <string name="menu_booklist_styles">Styly pro seznam knih…</string>
     <string name="menu_show_more_ellipsis">Zobrazit vše…</string>
@@ -337,18 +326,14 @@
     </string>
     <string name="lbl_preferred_styles">Preferované styly</string>
     <string name="title_edit_style">Upravit styl</string>
-    <string name="X_menu_add_style">Přidat styl</string>
     <string name="title_clone_style">Klonovat styl</string>
     <string name="pg_filters">Filtry knih</string>
-    <string name="X_title_add_style">Nový styl</string>
     <string name="X_pt_bob_filter_read">Výběr založený na statusu \‘Přečtení\’</string>
     <string name="title_select_style">Zvolit styl</string>
     <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
     <string name="lbl_settings">Nastavení</string>
     <string name="error_unexpected_error">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím \‘Nápovědy\’ v hlavním menu.</string>
-    <string name="X_menu_delete_style">Smazat styl</string>
-    <string name="X_menu_edit_booklist_style">Upravit styl</string>
     <string name="menu_duplicate">Kopírovat</string>
     <string name="about_dash_or_dash">- nebo -</string>
     <string name="about_donate_paypal">Podpořit prostřednictvím PayPal</string>
@@ -426,8 +411,6 @@
     <string name="hint_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.\n\n
         Prostřednictvím tlačítka \‘Přizpůsobit\’ (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.
     </string>
-    <string name="X_menu_edit_format">Upravit formát…</string>
-    <string name="X_title_edit_format">Upravit jméno formátu</string>
     <string name="warning_required_name">Jméno nesmí být prázdné</string>
     <string name="tab_lbl_content">Obsah</string>
     <string name="X_lbl_loaned_to_short">→</string>

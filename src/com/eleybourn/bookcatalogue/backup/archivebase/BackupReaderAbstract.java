@@ -33,8 +33,8 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ImportException;
+import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
@@ -68,7 +68,7 @@ public abstract class BackupReaderAbstract
     private ProgressListener mProgressListener;
 
     /** what and how to import. */
-    private ImportSettings mSettings;
+    private ImportOptions mSettings;
 
     /**
      * Constructor.
@@ -90,7 +90,7 @@ public abstract class BackupReaderAbstract
      * @throws IOException on failure
      */
     @Override
-    public void restore(@NonNull final ImportSettings settings,
+    public void restore(@NonNull final ImportOptions settings,
                         @NonNull final ProgressListener listener
     )
             throws IOException, ImportException {
@@ -99,7 +99,7 @@ public abstract class BackupReaderAbstract
         mProgressListener = listener;
 
         // keep track of what we read from the archive
-        int entitiesRead = ImportSettings.NOTHING;
+        int entitiesRead = ImportOptions.NOTHING;
 
         // progress counters
         int coverCount = 0;
@@ -128,7 +128,7 @@ public abstract class BackupReaderAbstract
                 }
                 switch (entity.getType()) {
                     case Cover:
-                        if ((mSettings.what & ImportSettings.COVERS) != 0) {
+                        if ((mSettings.what & ImportOptions.COVERS) != 0) {
                             restoreCover(entity);
                             coverCount++;
                             // entitiesRead set when all done
@@ -136,34 +136,34 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case Books:
-                        if ((mSettings.what & ImportSettings.BOOK_CSV) != 0) {
+                        if ((mSettings.what & ImportOptions.BOOK_CSV) != 0) {
                             // a CSV file with all book data
                             restoreBooks(entity);
-                            entitiesRead |= ImportSettings.BOOK_CSV;
+                            entitiesRead |= ImportOptions.BOOK_CSV;
                         }
                         break;
 
                     case Preferences:
                         // current format
-                        if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
+                        if ((mSettings.what & ImportOptions.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter()) {
 
                                 importer.doPreferences(entity, mProgressListener, App.getPrefs());
                             }
-                            entitiesRead |= ImportSettings.PREFERENCES;
+                            entitiesRead |= ImportOptions.PREFERENCES;
                         }
                         break;
 
 
                     case BooklistStyles:
                         // current format
-                        if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                        if ((mSettings.what & ImportOptions.BOOK_LIST_STYLES) != 0) {
                             mProgressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doEntity(entity, mProgressListener);
                             }
-                            entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
+                            entitiesRead |= ImportOptions.BOOK_LIST_STYLES;
                         }
                         break;
 
@@ -174,7 +174,7 @@ public abstract class BackupReaderAbstract
 
                     case PreferencesPreV200:
                         // pre-v200 format
-                        if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
+                        if ((mSettings.what & ImportOptions.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(1, mProcessPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
@@ -182,15 +182,15 @@ public abstract class BackupReaderAbstract
                                                        App.getPrefs(
                                                                Prefs.PREF_LEGACY_BOOK_CATALOGUE));
                             }
-                            entitiesRead |= ImportSettings.PREFERENCES;
+                            entitiesRead |= ImportOptions.PREFERENCES;
                         }
                         break;
 
                     case BooklistStylesPreV200:
                         // pre-v200 format
-                        if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                        if ((mSettings.what & ImportOptions.BOOK_LIST_STYLES) != 0) {
                             restorePreV200Style(entity);
-                            entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
+                            entitiesRead |= ImportOptions.BOOK_LIST_STYLES;
                         }
                         break;
 
@@ -206,7 +206,7 @@ public abstract class BackupReaderAbstract
             }
         } finally {
             if (coverCount > 0) {
-                entitiesRead |= ImportSettings.COVERS;
+                entitiesRead |= ImportOptions.COVERS;
             }
             // report what we actually imported
             mSettings.what = entitiesRead;
@@ -252,7 +252,7 @@ public abstract class BackupReaderAbstract
         final File currentCover = StorageUtils.getRawCoverFile(cover.getName());
         final Date covDate = cover.getDateModified();
 
-        if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (currentCover.exists()) {
                 Date currFileDate = new Date(currentCover.lastModified());
                 if (currFileDate.compareTo(covDate) >= 0) {

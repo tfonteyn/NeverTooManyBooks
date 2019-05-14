@@ -110,7 +110,7 @@ public class StartupActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocaleUtils.applyPreferred(this);
+        LocaleUtils.applyPreferred(getResources());
 
         // the UI
         setContentView(R.layout.activity_startup);
@@ -224,7 +224,7 @@ public class StartupActivity
             return;
         }
         // Display upgrade message if necessary, otherwise go on to next stage
-        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
+        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(getResources());
         if (upgradeMessage.isEmpty()) {
             startNextStage();
             return;

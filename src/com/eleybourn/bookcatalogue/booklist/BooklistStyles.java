@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -448,17 +449,17 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to the id.
      *
-     * @param context caller context
+     * @param resources caller context
      * @param name    of the style
      *
      * @return internal id, or the default style id if not found.
      */
-    public static long getStyleId(@NonNull final Context context,
+    public static long getStyleId(@NonNull final Resources resources,
                                   @NonNull final String name) {
 
         // check builtin first.
         for (BooklistStyle style : getBuiltinStyles().values()) {
-            if (style.getLabel(context).equals(name)) {
+            if (style.getLabel(resources).equals(name)) {
                 return style.getId();
             }
         }
@@ -466,7 +467,7 @@ public final class BooklistStyles {
         // try user-defined
         try (DAO db = new DAO()) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
-                if (style.getLabel(context).equals(name)) {
+                if (style.getLabel(resources).equals(name)) {
                     return style.getId();
                 }
             }

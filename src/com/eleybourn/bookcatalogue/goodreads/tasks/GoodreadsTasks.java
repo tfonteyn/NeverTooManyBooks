@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.tasks;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,22 +16,37 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * AsyncTask classes that run an authorization check first.
- * If successful, a GoodReadsTasks is kicked of.
+ * Wrapper / single point of access to Goodreads tasks.
+ *
+ * These are AsyncTask classes that run a network and authorization check first.
+ * If successful, an actual GoodReadsTasks is kicked of.
+ * <p>
+ * Note that currently there is a bit of a round-about way of starting and handling results.
+ * The caller starts the task, with the caller being the listener.
+ * The task finishes and sends results to the listener.
+ * The listener redirects to {@link #handleGoodreadsTaskResult}
+ * <p>
+ * Why? well... because this is 'clean' although obviously not efficient.
+ * BUT... as the plan is to move to WorkManager instead of task-queue, this at least makes it
+ * invisible/transparent to the caller.
+ * On the other hand, the above reason (mine) is just dumb.
  */
-public final class GoodreadsUtils {
+public final class GoodreadsTasks {
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
@@ -45,8 +60,7 @@ public final class GoodreadsUtils {
     /** Task Integer 'Results' code. */
     private static final int GR_RESULT_CODE_AUTHORIZED_FAILED = -2;
 
-
-    private GoodreadsUtils() {
+    private GoodreadsTasks() {
     }
 
     /**
@@ -119,10 +133,10 @@ public final class GoodreadsUtils {
     }
 
     /**
-     * When a typical Goodreads AsynTask finishes, the 'result' will be a {@code StringRes}
+     * When a typical Goodreads AsyncTask finishes, the 'result' will be a {@code StringRes}
      * to display to the user (or an exception),
      * or a specific code indicating issues authentication.
-     *
+     * <p>
      * This method provides handling for these outcomes.
      *
      * @param view     to tie user messages to
@@ -134,7 +148,7 @@ public final class GoodreadsUtils {
                                                  @StringRes final Integer result,
                                                  @Nullable final Exception e,
                                                  @NonNull final View view,
-                                                 @NonNull final OnTaskListener<Object, Integer> listener) {
+                                                 @NonNull final TaskListener<Object, Integer> listener) {
         //Reminder:  'success' only means the call itself was successful.
         // It still depends on the 'result' code what the next step is.
 
@@ -176,7 +190,7 @@ public final class GoodreadsUtils {
                 // some non-auth related error occurred.
                 String msg = context.getString(result);
                 if (e instanceof FormattedMessageException) {
-                    msg += ' ' +((FormattedMessageException) e)
+                    msg += ' ' + ((FormattedMessageException) e)
                             .getFormattedMessage(context.getResources());
                 } else if (e != null) {
                     msg += ' ' + e.getLocalizedMessage();
@@ -191,7 +205,7 @@ public final class GoodreadsUtils {
 
         private final int mTaskId = R.id.TASK_ID_GR_REQUEST_AUTH;
 
-        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
 
         @Nullable
         protected Exception mException;
@@ -200,14 +214,18 @@ public final class GoodreadsUtils {
          * Constructor.
          */
         @UiThread
-        RequestAuthTask(@NonNull OnTaskListener<Object, Integer> listener) {
-            mListener = new WeakReference<>(listener);
+        public RequestAuthTask(@NonNull TaskListener<Object, Integer> taskListener) {
+            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            //FIXME: should be done BEFORE starting the task
+            if (!NetworkUtils.isNetworkAvailable()) {
+                return R.string.error_no_internet_connection;
+            }
             GoodreadsManager grMgr = new GoodreadsManager();
             // should only happen if the developer forgot to add the Goodreads keys.... (me)
             if (grMgr.noKey()) {
@@ -243,10 +261,12 @@ public final class GoodreadsUtils {
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final Integer result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -258,7 +278,7 @@ public final class GoodreadsUtils {
             extends AsyncTask<Void, Void, Integer> {
 
         @NonNull
-        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
 
         @NonNull
         private final String mTaskDescription;
@@ -269,9 +289,9 @@ public final class GoodreadsUtils {
 
         public SendOneBookTask(@NonNull final Context context,
                                final long bookId,
-                               @NonNull final OnTaskListener<Object, Integer> listener) {
+                               @NonNull final TaskListener<Object, Integer> taskListener) {
 
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
             mBookId = bookId;
             mTaskDescription = context.getString(R.string.gr_send_book_to_goodreads, bookId);
         }
@@ -281,11 +301,15 @@ public final class GoodreadsUtils {
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             try {
-                int msg = checkWeCanExport();
-                if (isCancelled()) {
-                    return R.string.progress_end_cancelled;
+                //FIXME: should be done BEFORE starting the task
+                if (!NetworkUtils.isNetworkAvailable()) {
+                    return R.string.error_no_internet_connection;
                 }
+                int msg = checkWeCanExport();
                 if (msg == GR_RESULT_CODE_AUTHORIZED) {
+                    if (isCancelled()) {
+                        return R.string.progress_end_cancelled;
+                    }
                     QueueManager.getQueueManager().enqueueTask(
                             new GrSendOneBookTask(mTaskDescription, mBookId),
                             QueueManager.Q_SMALL_JOBS);
@@ -302,10 +326,12 @@ public final class GoodreadsUtils {
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final Integer result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -315,13 +341,13 @@ public final class GoodreadsUtils {
      * It can either send 'all' or 'updated-only' books.
      * <p>
      * The AsyncTask does the "can we connect" check.
-     * The actual work is done by a {@link GoodreadsTask}.
+     * The actual work is done by a {@link BaseTask}.
      */
     public static class SendBooksTask
             extends AsyncTask<Void, Object, Integer> {
 
         @NonNull
-        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
         @NonNull
         private final String mTaskDescription;
         private final int mTaskId = R.id.TASK_ID_GR_SEND_BOOKS;
@@ -332,9 +358,9 @@ public final class GoodreadsUtils {
         protected Exception mException;
 
         public SendBooksTask(final boolean updatesOnly,
-                             @NonNull final OnTaskListener<Object, Integer> listener) {
+                             @NonNull final TaskListener<Object, Integer> taskListener) {
 
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
             mUpdatesOnly = updatesOnly;
             mTaskDescription = App.getAppContext().getString(R.string.gr_title_send_book);
         }
@@ -344,6 +370,10 @@ public final class GoodreadsUtils {
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             try {
+                //FIXME: should be done BEFORE starting the task
+                if (!NetworkUtils.isNetworkAvailable()) {
+                    return R.string.error_no_internet_connection;
+                }
                 int msg = checkWeCanExport();
                 if (msg == GR_RESULT_CODE_AUTHORIZED) {
                     if (isCancelled()) {
@@ -366,10 +396,12 @@ public final class GoodreadsUtils {
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final Integer result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }
@@ -379,13 +411,13 @@ public final class GoodreadsUtils {
      * It can either import 'all' or 'sync' books.
      * <p>
      * The AsyncTask does the "can we connect" check.
-     * The actual work is done by a {@link GoodreadsTask}.
+     * The actual work is done by a {@link BaseTask}.
      */
     public static class ImportTask
             extends AsyncTask<Void, Object, Integer> {
 
         @NonNull
-        private final WeakReference<OnTaskListener<Object, Integer>> mListener;
+        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
         @NonNull
         private final String mTaskDescription;
         private final int mTaskId = R.id.TASK_ID_GR_IMPORT;
@@ -396,9 +428,9 @@ public final class GoodreadsUtils {
         protected Exception mException;
 
         public ImportTask(final boolean isSync,
-                          @NonNull final OnTaskListener<Object, Integer> listener) {
+                          @NonNull final TaskListener<Object, Integer> taskListener) {
 
-            mListener = new WeakReference<>(listener);
+            mTaskListener = new WeakReference<>(taskListener);
             mIsSync = isSync;
             mTaskDescription = App.getAppContext().getString(R.string.gr_import_all_from_goodreads);
         }
@@ -408,6 +440,10 @@ public final class GoodreadsUtils {
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             try {
+                //FIXME: should be done BEFORE starting the task
+                if (!NetworkUtils.isNetworkAvailable()) {
+                    return R.string.error_no_internet_connection;
+                }
                 int msg = checkWeCanImport();
                 if (msg == GR_RESULT_CODE_AUTHORIZED) {
                     if (isCancelled()) {
@@ -430,10 +466,12 @@ public final class GoodreadsUtils {
         @Override
         @UiThread
         protected void onPostExecute(@Nullable final Integer result) {
-            if (mListener.get() != null) {
-                mListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                throw new RuntimeException("WeakReference to listener was dead");
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                }
             }
         }
     }

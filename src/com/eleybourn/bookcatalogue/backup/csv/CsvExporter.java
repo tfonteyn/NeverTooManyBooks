@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -106,7 +106,7 @@ public class CsvExporter
     /** backup copies to keep. */
     private static final int COPIES = 5;
     @NonNull
-    private final ExportSettings mSettings;
+    private final ExportOptions mSettings;
 
     private final String mUnknownString;
 
@@ -161,13 +161,13 @@ public class CsvExporter
     /**
      * Constructor.
      *
-     * @param settings      {@link ExportSettings#file} is not used, as we must support writing
-     *                      to a stream. {@link ExportSettings#EXPORT_SINCE} and
-     *                      {@link ExportSettings#dateFrom} are respected.
+     * @param settings      {@link ExportOptions#file} is not used, as we must support writing
+     *                      to a stream. {@link ExportOptions#EXPORT_SINCE} and
+     *                      {@link ExportOptions#dateFrom} are respected.
      *                      Other flags are ignored, as this method only
-     *                      handles {@link ExportSettings#BOOK_CSV} anyhow.
+     *                      handles {@link ExportOptions#BOOK_CSV} anyhow.
      */
-    public CsvExporter(@NonNull final ExportSettings settings) {
+    public CsvExporter(@NonNull final ExportOptions settings) {
 
         //TODO: do not use Application Context for String resources
         mUnknownString = App.getAppContext().getString(R.string.unknown);
@@ -202,7 +202,7 @@ public class CsvExporter
             throws IOException {
 
         // Display startup message
-        listener.onProgress(R.string.progress_msg_export_starting, 0);
+        listener.onProgress(0, R.string.progress_msg_export_starting);
 
         long lastUpdate = 0;
         int numberOfBooksExported = 0;

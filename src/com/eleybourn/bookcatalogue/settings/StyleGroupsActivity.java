@@ -60,6 +60,9 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallba
 
 /**
  * Activity to edit the groups associated with a style (include/exclude + move up/down).
+ *
+ * IMPORTANT: changes here are NOT saved automatically but only when this activity is quit.
+ * See {@link #onBackPressed} and {@link #saveStyleSettings}
  */
 public class StyleGroupsActivity
         extends BaseActivity {
@@ -122,7 +125,7 @@ public class StyleGroupsActivity
         //noinspection ConstantConditions
         bar.setTitle(R.string.title_edit_style);
         bar.setSubtitle(getString(R.string.name_colon_value,
-                                  getString(R.string.pg_groupings), mStyle.getLabel(this)));
+                                  getString(R.string.pg_groupings), mStyle.getLabel(getResources())));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -305,7 +308,7 @@ public class StyleGroupsActivity
 
             GroupWrapper groupWrapper = getItem(position);
 
-            holder.nameView.setText(groupWrapper.group.getName(getContext()));
+            holder.nameView.setText(groupWrapper.group.getName(getContext().getResources()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(groupWrapper.present);

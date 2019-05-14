@@ -136,7 +136,7 @@ public class MenuPicker<T>
             }
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
+            holder.itemView.setOnClickListener(v -> mListener.onPicked(item));
         }
 
         @Override

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
@@ -25,10 +22,7 @@
     <string name="btn_confirm_save_book">Guardar libro</string>
     <string name="X_info_no_bookshelves_yet">Todavía no has creado ninguna biblioteca. Cree una utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_add_bookshelf">Crear biblioteca</string>
-    <string name="X_btn_confirm_add_bs">Añadir biblioteca</string>
     <string name="menu_bookshelves">Bibliotecas…</string>
-    <string name="X_btn_confirm_save_bs">Guardar biblioteca</string>
-    <string name="X_menu_delete_bookshelf">Eliminar biblioteca</string>
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="bookshelf_all_books">Todos los libros</string>
@@ -81,7 +75,7 @@
     <string name="error_search_exception">La búsqueda ha fallado %1$s: %2$s</string>
     <string name="menu_delete">Borrar</string>
     <string name="help">Ayuda</string>
-    <string name="X_info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
+    <string name="info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="X_anthology_titles">Antologías</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Esta antología tiene múltiples autores.</string>
@@ -153,7 +147,6 @@
     <string name="title_edit_book_series">Modificar serie</string>
     <string name="lbl_family_name">Apellidos</string>
     <string name="lbl_given_names">Nombre</string>
-    <string name="X_title_edit_author">Modificar autor</string>
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
     <string name="menu_cover_replace">Cambiar…</string>
     <string name="menu_cover_search_alt_editions">De otras ediciones…</string>
@@ -164,7 +157,6 @@
     <string name="menu_edit_series">Modificar serie…</string>
     <string name="title_delete_series">Eliminar serie</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie \‘%1$s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
-    <string name="X_title_edit_series">Modificar serie</string>
     <string name="X_title_select_cover">Seleccionar portada</string>
     <string name="X_warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
     <string name="warning_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
@@ -278,10 +270,9 @@
     <string name="acra_resNotifTickerText">&APP_NAME; se ha detenido</string>
     <string name="acra_resNotifTitle">Error de &APP_NAME;</string>
     <string name="acra_resNotifText">Pulse para ver más detalles</string>
-    <string name="acra_resDialogTitle">Error de &APP_NAME;</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
-    <string name="acra_resDialogOkToast">¡Muchas gracias!</string>
+    <string name="acra_resReportSendSuccessToast">¡Muchas gracias!</string>
     <string name="lbl_read">Leídos</string>
     <string name="lbl_unread">No leídos</string>
     <string name="warning_date_not_set">(sin fecha)</string>
@@ -295,8 +286,6 @@
     <string name="style_builtin_added_date">Fecha de inclusión</string>
     <string name="style_builtin_author_year">Autor y Año</string>
     <string name="field_not_set_with_brackets">(vacío)</string>
-
-    <string name="X_menu_preferences_booklist">Preferencias para listas de libros</string>
     <string name="lbl_bookshelves_long">Biblioteca</string>
     <string name="lbl_bookshelves">Biblioteca</string>
     <string name="lbl_location">Ubicación</string>
@@ -306,7 +295,6 @@
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_starting_up">Arrancando…</string>
-    <string name="lbl_application_startup">Arranque de &APP_NAME;</string>
     <string name="searching_goodreads">Buscando en Goodreads</string>
     <string name="menu_booklist_styles">Estilos del listado de libros…</string>
     <string name="menu_show_more_ellipsis">Mostrar más…</string>
@@ -347,18 +335,14 @@
     </string>
     <string name="lbl_preferred_styles">Estilos preferidos</string>
     <string name="title_edit_style">Editar estilo</string>
-    <string name="X_menu_add_style">Añadir estilo</string>
     <string name="title_clone_style">Duplicar estilo</string>
     <string name="pg_filters">Filtros adicionales</string>
-    <string name="X_title_add_style">Nuevo estilo</string>
     <string name="X_pt_bob_filter_read">Seleccionar en función del estado \‘Leído\’</string>
     <string name="title_select_style">Seleccionar Estilo</string>
     <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>
     <string name="lbl_settings">Preferencias</string>
     <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción \‘Help\’ del menú principal</string>
-    <string name="X_menu_delete_style">Eliminar Estilo</string>
-    <string name="X_menu_edit_booklist_style">Editar Estilo</string>
     <string name="menu_duplicate">Duplicar</string>
     <string name="about_dash_or_dash">- O -</string>
     <string name="about_donate_paypal">Donación PayPal</string>
@@ -449,8 +433,6 @@
         Esta opción le permite seleccionar el estilo de los listados.\n
         \nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando \'Configurar\' al final de la lista.
     </string>
-    <string name="X_menu_edit_format">Editar Formato…</string>
-    <string name="X_title_edit_format">Editar Nombre del Formato</string>
     <string name="warning_required_name">El nombre no puede ser blanco</string>
     <string name="progress_msg_export_starting">Empezando exportación…</string>
     <string name="menu_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>
@@ -460,7 +442,6 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s no es un ISBN válido</string>
     <string name="X_warning_cover_not_found2">No se ha encontrado imagen</string>
     <string name="warning_cover_copy_failed">No se pudo copiar la imagen</string>
-    <string name="X_info_option_not_available_until_book_saved">Esta opción no está disponible mientras no se guarde el libro</string>
     <string name="menu_add_book_by_barcode_scan">Escanear código de barras/ISBN</string>
     <string name="menu_add_book_by_isbn">Introducir ISBN</string>
     <string name="lbl_allow_asin">Permitir ASIN</string>
@@ -758,7 +739,7 @@
     <string name="book_format_ebook">Libro electronico</string>
     <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 4.0.0</string>
-    <string name="error_not_available">no disponible</string>
+    <string name="error_not_available">%1$s no disponible</string>
     <string name="error_storage_no_access">No puedo acceder a la tarjeta SD</string>
     <string name="error_storage_no_space_left">No hay suficiente espacio en la tarjeta SD</string>
     <string name="error_storage_not_available">La tarjeta SD no está disponible</string>

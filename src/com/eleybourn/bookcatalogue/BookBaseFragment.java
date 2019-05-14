@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,15 +36,12 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -56,10 +52,6 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
@@ -271,98 +263,6 @@ public abstract class BookBaseFragment
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Field editors">
-
-    /**
-     * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link FieldPicker#FieldPicker} with a list of strings
-     * to choose from.
-     *
-     * @param field         {@link Field} to edit
-     * @param dialogTitleId title of the dialog box.
-     * @param fieldButtonId field/button to bind the OnPickListener to (can be same as fieldId)
-     * @param list          list of strings to choose from.
-     */
-    void initValuePicker(@NonNull final Field field,
-                         @StringRes final int dialogTitleId,
-                         @IdRes final int fieldButtonId,
-                         @NonNull final List<String> list) {
-        // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
-        }
-
-        // Get the list to use in the AutoCompleteTextView
-        //noinspection ConstantConditions
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
-        mFields.setAdapter(field.id, adapter);
-
-        // Get the drop-down button for the list and setup dialog
-        //noinspection ConstantConditions
-        getView().findViewById(fieldButtonId).setOnClickListener(v -> {
-            FieldPicker<String> picker = new FieldPicker<>(getContext(),
-                                                           getString(dialogTitleId),
-                                                           field, list);
-            picker.show();
-        });
-    }
-
-    /**
-     * @param callerTag     the fragment class that is calling the editor
-     * @param field         {@link Field} to edit
-     * @param dialogTitleId title of the dialog box.
-     * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
-     */
-    void initPartialDatePicker(@NonNull final String callerTag,
-                               @NonNull final Field field,
-                               @StringRes final int dialogTitleId,
-                               final boolean todayIfNone) {
-        // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
-        }
-
-        field.getView().setOnClickListener(v -> {
-            FragmentManager fm = requireFragmentManager();
-            if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
-                PartialDatePickerDialogFragment
-                        .newInstance(callerTag, field.id, field.getValue().toString(),
-                                     dialogTitleId, todayIfNone)
-                        .show(fm, PartialDatePickerDialogFragment.TAG);
-            }
-        });
-    }
-
-    /**
-     * @param callerTag     the fragment class that is calling the editor
-     * @param field         {@link Field} to edit
-     * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListEditorDialogFragment.CheckListEditorListGetter <T>}
-     *                      interface to get the *current* list
-     * @param <T>           type of the {@link CheckListItem}
-     */
-    <T> void initCheckListEditor(@NonNull final String callerTag,
-                                 @NonNull final Field field,
-                                 @StringRes final int dialogTitleId,
-                                 @NonNull final CheckListEditorDialogFragment.CheckListEditorListGetter<T> listGetter) {
-        // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
-        }
-
-        field.getView().setOnClickListener(v -> {
-            FragmentManager fm = requireFragmentManager();
-            if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
-                CheckListEditorDialogFragment
-                        .newInstance(callerTag, field.id, dialogTitleId, listGetter)
-                        .show(fm, CheckListEditorDialogFragment.TAG);
-            }
-        });
     }
 
     //</editor-fold>

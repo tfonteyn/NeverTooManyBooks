@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.viewmodels;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,14 +7,12 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -48,7 +45,7 @@ public class BookBaseFragmentModel
     /** Field drop down list. */
     private List<String> mFormats;
     /** Field drop down list. */
-    private List<String> mLanguages;
+    private List<String> mLanguagesCodes;
     /** Field drop down list. */
     private List<String> mPublishers;
     /** Field drop down list. */
@@ -67,7 +64,7 @@ public class BookBaseFragmentModel
      * Otherwise use the passed data to construct a Book.
      */
     public void init(@Nullable final Bundle args) {
-        if (mBook == null) {
+        if (mDb == null) {
             mDb = new DAO();
 
             if (args != null) {
@@ -198,20 +195,14 @@ public class BookBaseFragmentModel
      * <p>
      * Returns a unique list of all languages in the database.
      *
-     * @param desiredContext the DESIRED context; e.g. get the names in a different language.
-     *
-     * @return The list; expanded full displayName's in the desiredContext Locale
+     * @return The list of ISO3 codes
      */
     @NonNull
-    public List<String> getLanguages(@NonNull final Context desiredContext) {
-        if (mLanguages == null) {
-            List<String> languageCodes = mDb.getLanguageCodes();
-            mLanguages = new ArrayList<>(languageCodes.size());
-            for (String code : languageCodes) {
-                mLanguages.add(LocaleUtils.getDisplayName(desiredContext, code));
-            }
+    public List<String> getLanguagesCodes() {
+        if (mLanguagesCodes == null) {
+            mLanguagesCodes = mDb.getLanguageCodes();
         }
-        return mLanguages;
+        return mLanguagesCodes;
     }
 
     /**

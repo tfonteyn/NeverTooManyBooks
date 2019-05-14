@@ -33,13 +33,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * DialogFragment to edit a list of checkbox options.
@@ -50,8 +54,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
  * @param <T> type to use for {@link CheckListItem}
  */
 public class CheckListEditorDialogFragment<T>
-        extends
-        EditorDialogFragment<CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>> {
+        extends DialogFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = CheckListEditorDialogFragment.class.getSimpleName();
@@ -61,11 +64,16 @@ public class CheckListEditorDialogFragment<T>
 
     /** The list of items to display. Object + checkbox. */
     private ArrayList<CheckListItem<T>> mList;
+    private WeakReference<OnCheckListEditorResultsListener<T>> mListener;
+
+    /** identifier of the field this dialog is bound to. */
+    @IdRes
+    private
+    int mDestinationFieldId;
 
     /**
      * Constructor.
      *
-     * @param callerTag     tag of the calling fragment to send results back to.
      * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param listGetter    callback interface for getting the list to use.
@@ -74,14 +82,12 @@ public class CheckListEditorDialogFragment<T>
      * @return the new instance
      */
     public static <T> CheckListEditorDialogFragment<T> newInstance(
-            @NonNull final String callerTag,
             @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
             @NonNull final CheckListEditorListGetter<T> listGetter) {
 
         CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
         Bundle args = new Bundle();
-        args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
         args.putParcelableArrayList(BKEY_CHECK_LIST, listGetter.getList());
@@ -95,9 +101,12 @@ public class CheckListEditorDialogFragment<T>
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        readBaseArgs(savedInstanceState);
+        Bundle args = getArguments();
+        //noinspection ConstantConditions
+        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
         Objects.requireNonNull(mList);
 
@@ -120,15 +129,41 @@ public class CheckListEditorDialogFragment<T>
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(root)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, (d, which) ->
-                        getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList))
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    if (mListener.get() != null) {
+                        mListener.get().onCheckListEditorSave(mDestinationFieldId,
+                                                              extractList(mList));
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onCheckListEditorSave", "WeakReference to listener was dead");
+                        }
+                    }
+                })
                 .create();
 
-        if (mTitleId != 0) {
-            dialog.setTitle(mTitleId);
+        if (titleId != 0) {
+            dialog.setTitle(titleId);
         }
 
         return dialog;
+    }
+
+    /**
+     * Access the list of {@link CheckListItem} and extract the actual items.
+     *
+     * @param list to dissect
+     *
+     * @return the extracted list
+     */
+    @NonNull
+    private ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
+        ArrayList<T> result = new ArrayList<>(list.size());
+        for (CheckListItem<T> entry : list) {
+            if (entry.isChecked()) {
+                result.add(entry.getItem());
+            }
+        }
+        return result;
     }
 
     @Override
@@ -136,6 +171,15 @@ public class CheckListEditorDialogFragment<T>
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final OnCheckListEditorResultsListener<T> listener) {
+        mListener = new WeakReference<>(listener);
     }
 
     /**
@@ -149,10 +193,11 @@ public class CheckListEditorDialogFragment<T>
          * reports the results after this dialog was confirmed.
          *
          * @param destinationFieldId the field this dialog is bound to
-         * @param list               the list of options
+         * @param list               the list of CHECKED options
+         *                           (non-checked options have been removed)
          */
         void onCheckListEditorSave(int destinationFieldId,
-                                   @NonNull List<CheckListItem<T>> list);
+                                   @NonNull List<T> list);
     }
 
     /**

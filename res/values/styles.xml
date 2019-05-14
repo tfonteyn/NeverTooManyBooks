@@ -226,6 +226,7 @@
 
     <style name="rvr_delete_button" parent="@style/rvr_base_image_button">
         <item name="android:src">@drawable/ic_delete</item>
+        <!--<item name="android:tint">?android:attr/colorPrimary</item>-->
         <item name="android:background">?android:selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -376,7 +377,7 @@
         <item name="android:layout_margin">@dimen/border_double</item>
         <item name="android:elevation">2dp</item>
         <item name="android:visibility">gone</item>
-        <item name="android:background">?attr/colorBackgroundFloating</item>
+        <item name="android:background">?android:attr/colorBackgroundFloating</item>
     </style>
 
     <style name="floatingActionButton">
@@ -400,15 +401,15 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- Read-only checkbox with custom 'check/invisible' icon -->
-    <style name="read_only_cbx">
+    <!-- Read-only "CheckBox" with custom 'check/invisible' icon -->
+    <style name="book_read">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-        <item name="android:background">@drawable/ic_checked_selector</item>
-        <item name="android:button">@null</item>
+        <item name="android:button">@drawable/ic_checked_selector</item>
+        <item name="android:buttonTint">?attr/checked_icon_tint</item>
     </style>
     <!-- *************************************************************************************** -->
     <!-- translators: create a language specific styles.xml file and copy these styles -->

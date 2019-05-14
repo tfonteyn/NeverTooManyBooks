@@ -28,8 +28,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * By default uses {@link Site#SEARCH_ALL}.
  */
 public abstract class BookSearchBaseFragment
-        extends Fragment
-        implements SearchCoordinator.OnSearchFinishedListener {
+        extends Fragment {
 
     /** Fragment manager tag. */
     private static final String TAG = BookSearchBaseFragment.class.getSimpleName();
@@ -53,6 +52,8 @@ public abstract class BookSearchBaseFragment
     Intent mLastBookData;
     /** sites to search on. Can be overridden by the user (option menu). */
     private int mSearchSites = Site.SEARCH_ALL;
+
+    abstract SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener();
 
     @Override
     @CallSuper
@@ -78,8 +79,9 @@ public abstract class BookSearchBaseFragment
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false, "search");
         }
-        //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+
+        // Check general network connectivity. If none, WARN the user.
+        if (!NetworkUtils.isNetworkAvailable()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
         }
@@ -133,7 +135,7 @@ public abstract class BookSearchBaseFragment
         super.onResume();
         if (mSearchManagerId != 0) {
             SearchCoordinator.MESSAGE_SWITCH
-                             .addListener(mSearchManagerId, this, true);
+                             .addListener(mSearchManagerId, getOnSearchFinishedListener(), true);
         }
     }
 
@@ -157,10 +159,17 @@ public abstract class BookSearchBaseFragment
                               "title=" + titleSearchText);
         }
 
+        // Don't start search if we have no approved network... FAIL.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(),R.string.error_no_internet_connection);
+            return false;
+        }
+
         try {
             // Start the lookup in a background search task.
             final SearchCoordinator searchCoordinator =
-                    new SearchCoordinator(mActivity.getTaskManager(), this);
+                    new SearchCoordinator(mActivity.getTaskManager(), getOnSearchFinishedListener());
             mSearchManagerId = searchCoordinator.getId();
 
             mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_searching);
@@ -173,9 +182,10 @@ public abstract class BookSearchBaseFragment
             Logger.error(this, e);
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.error_search_failed);
-            mActivity.setResult(Activity.RESULT_CANCELED);
-            mActivity.finish();
+
         }
+        mActivity.setResult(Activity.RESULT_CANCELED);
+        mActivity.finish();
         return false;
     }
 
@@ -188,7 +198,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onPause() {
         if (mSearchManagerId != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, this);
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, getOnSearchFinishedListener());
         }
         super.onPause();
     }

@@ -32,20 +32,15 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the publication fields Tab.
  */
 public class EditBookPublicationFragment
-        extends EditBookBaseFragment
-        implements PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+        extends EditBookBaseFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookPublicationFragment.class.getSimpleName();
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -95,13 +90,13 @@ public class EditBookPublicationFragment
         mFields.add(R.id.pages, DBDefinitions.KEY_PAGES);
 
         field = mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
-        initValuePicker(field, R.string.lbl_format, R.id.btn_format, mBookBaseFragmentModel.getFormats());
+        initValuePicker(field, R.string.lbl_format, R.id.btn_format,
+                        mBookBaseFragmentModel.getFormats());
 
         field = mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                        .setFormatter(new Fields.LanguageFormatter());
-        //noinspection ConstantConditions
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
-                        mBookBaseFragmentModel.getLanguages(getContext()));
+                        mBookBaseFragmentModel.getLanguagesCodes());
 
         field = mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
@@ -109,12 +104,11 @@ public class EditBookPublicationFragment
 
         field = mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
                        .setFormatter(dateFormatter);
-        //noinspection ConstantConditions
-        initPartialDatePicker(getTag(), field, R.string.lbl_date_published, false);
+        initPartialDatePicker(field, R.string.lbl_date_published, false);
 
         field = mFields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(getTag(), field, R.string.lbl_first_publication, false);
+        initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
         mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
         field = mFields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
@@ -129,19 +123,4 @@ public class EditBookPublicationFragment
         // Restore default visibility
         showHideFields(false);
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Field editors callbacks">
-
-    @Override
-    public void onPartialDatePickerSave(final int destinationFieldId,
-                                        @Nullable final Integer year,
-                                        @Nullable final Integer month,
-                                        @Nullable final Integer day) {
-        mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
-    }
-
-    //</editor-fold>
-
 }

@@ -4,11 +4,14 @@ import android.net.ParseException;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -36,6 +39,7 @@ public final class GoogleBooksManager
     private static final String PREF_PREFIX = "GoogleBooks.";
 
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
     /**
      * Constructor.
@@ -58,7 +62,7 @@ public final class GoogleBooksManager
     @Override
     public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // support 1 size only
-        return SearchSiteManager.ImageSizes.LARGE.equals(size);
+        return ImageSizes.LARGE.equals(size);
     }
 
     @StringRes
@@ -67,66 +71,78 @@ public final class GoogleBooksManager
         return R.string.searching_google_books;
     }
 
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.google_books;
+    }
+
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final String author,
+                         @Nullable final String title,
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Bundle bookData = new Bundle();
+        String query;
 
-        String url = getBaseURL() + "/books/feeds/volumes";
-        if (!isbn.isEmpty()) {
-            // sanity check
-            if (!ISBN.isValid(isbn)) {
-                return bookData;
-            }
-            url += "?q=ISBN%3C" + isbn + "%3E";
+        if (ISBN.isValid(isbn)) {
+            query = "q=ISBN%3C" + isbn + "%3E";
+
+        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            query = "q=" + "intitle%3A" + encodeSpaces(title)
+                    + "%2Binauthor%3A" + encodeSpaces(author);
+
         } else {
-            // sanity check
-            if (author.isEmpty() && title.isEmpty()) {
-                return bookData;
-            }
-            //replace spaces in author/title with %20
-            url += "?q=" + "intitle%3A" + title.replace(" ", "%20")
-                    + "%2Binauthor%3A" + author.replace(" ", "%20");
+            return new Bundle();
         }
 
-        // Setup the parser; the handler can return multiple books ('entry' elements)
+        Bundle bookData = new Bundle();
+
         SAXParserFactory factory = SAXParserFactory.newInstance();
+
+        // The main handler can return multiple books ('entry' elements)
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
-        // The entry handler takes care of individual entries
+
+        // The entry handler takes care of an individual book ('entry')
         SearchGoogleBooksEntryHandler entryHandler =
                 new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail);
 
-        // yes, 'try' nesting makes this ugly to read,... but the code is very clean.
+        String url = getBaseURL() + "/books/feeds/volumes?" + query;
+
         try {
+            SAXParser parser = factory.newSAXParser();
+
             // get the book list
             try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
-                SAXParser parser = factory.newSAXParser();
                 parser.parse(con.inputStream, handler);
             }
 
             ArrayList<String> urlList = handler.getUrlList();
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
-                url = urlList.get(0);
-
-                try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
-                    SAXParser parser = factory.newSAXParser();
+                String oneBookUrl = urlList.get(0);
+                try (TerminatorConnection con = TerminatorConnection.getConnection(oneBookUrl)) {
                     parser.parse(con.inputStream, entryHandler);
                 }
             }
-            // only catch exceptions related to the parsing, others will be caught by the caller.
-        } catch (ParserConfigurationException | ParseException | SAXException e) {
+            // wrap parser exceptions in an IOException
+        } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
+            throw new IOException(e);
         }
 
         return bookData;
+    }
+
+    /**
+     * replace spaces with %20
+     */
+    public String encodeSpaces(@NonNull final String s) {
+        return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

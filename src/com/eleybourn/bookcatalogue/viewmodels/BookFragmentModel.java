@@ -35,7 +35,7 @@ public class BookFragmentModel
 
     public void init(@Nullable final Bundle args,
                      final long bookId) {
-        if (mFlattenedBooklist == null) {
+        if (mDb == null) {
             mDb = new DAO();
 
             // no arguments ? -> no list!

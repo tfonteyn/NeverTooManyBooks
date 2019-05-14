@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,9 +133,10 @@ public abstract class ManagedTask
     protected abstract void runTask()
             throws Exception;
 
+
     @NonNull
-    protected Context getContext() {
-        return mTaskManager.getContext();
+    protected Resources getResources() {
+        return mTaskManager.getContext().getResources();
     }
 
     /**
@@ -145,10 +147,6 @@ public abstract class ManagedTask
         try {
             runTask();
         } catch (InterruptedException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                Logger.debug(ManagedTask.this, "run",
-                             "ManagedTask=" + getName() + " was interrupted");
-            }
             mCancelFlg = true;
         } catch (Exception e) {
             Logger.error(this, e);

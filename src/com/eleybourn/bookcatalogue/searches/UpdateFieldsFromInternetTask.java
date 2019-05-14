@@ -63,8 +63,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author Philip Warner
  */
 public class UpdateFieldsFromInternetTask
-        extends ManagedTask
-        implements SearchCoordinator.OnSearchFinishedListener {
+        extends ManagedTask {
 
     /** The fields that the user requested to update. */
     @NonNull
@@ -93,23 +92,53 @@ public class UpdateFieldsFromInternetTask
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
 
-//    /**
-//     * Our class local {@link SearchManager.SearchManagerListener}.
-//     * This must be a class global. Don't make this local to the constructor.
-//     */
-//    @SuppressWarnings("FieldCanBeLocal")
-//    private final SearchManager.SearchManagerListener mSearchListener =
-//           new SearchManager.SearchManagerListener() {
-//        @Override
-//        public boolean onSearchFinished(@NonNull final Bundle bookData,
-//                                        final boolean wasCancelled) {
-//            return UpdateFieldsFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
-//        }
-//    };
-
     /** WHERE clause to use in cursor, none by default, but see {@link #setBookId(long)}. */
     @NonNull
     private String mBookWhereClause = "";
+
+    /**
+     * Called in the main thread for this object when the search for one book has completed.
+     *
+     * Note: do not make it local... we need a strong reference here.
+     */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final SearchCoordinator.OnSearchFinishedListener mListener =
+            new SearchCoordinator.OnSearchFinishedListener() {
+                @Override
+                public void onSearchFinished(final boolean wasCancelled,
+                                             @NonNull final Bundle bookData) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                        Logger.debugEnter(this, "onSearchFinished",
+                                          "bookId=" + mCurrentBookId);
+                    }
+
+                    if (wasCancelled) {
+                        // if the search was cancelled, propagate by cancelling ourselves.
+                        cancelTask();
+                    } else if (bookData.isEmpty()) {
+                        // tell the user if the search failed.
+                        mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
+                    }
+
+                    // Save the local data from the context so we can start a new search
+                    if (!isCancelled() && !bookData.isEmpty()) {
+                        processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages,
+                                             bookData,
+                                             mOriginalBookData);
+                    }
+
+                    /*
+                     * The search is complete AND the class-level data has been cached
+                     * by the processing thread. Let another search begin.
+                     */
+                    mSearchLock.lock();
+                    try {
+                        mSearchDone.signal();
+                    } finally {
+                        mSearchLock.unlock();
+                    }
+                }
+            };
 
     /**
      * Constructor.
@@ -129,7 +158,7 @@ public class UpdateFieldsFromInternetTask
         mFields = fields;
         mSearchSites = searchSites;
 
-        mSearchCoordinator = new SearchCoordinator(mTaskManager, this);
+        mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
         mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
         MESSAGE_SWITCH.addListener(getSenderId(), listener, false);
     }
@@ -252,9 +281,12 @@ public class UpdateFieldsFromInternetTask
                         || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderUpdate(
-                            getContext().getString(R.string.progress_msg_skip_title, title));
+                            getResources().getString(R.string.progress_msg_skip_title, title));
                     continue;
                 }
+
+                boolean wantCoverImage = mCurrentBookFieldUsages
+                        .containsKey(UniqueId.BKEY_COVER_IMAGE);
 
                 // at this point we know we want a search.
 
@@ -266,9 +298,7 @@ public class UpdateFieldsFromInternetTask
                 }
 
                 // Start searching, then wait...
-                mSearchCoordinator.search(mSearchSites, author, title, isbn,
-                                          mCurrentBookFieldUsages.containsKey(
-                                                  UniqueId.BKEY_COVER_IMAGE));
+                mSearchCoordinator.search(mSearchSites, author, title, isbn, wantCoverImage);
 
                 mSearchLock.lock();
                 try {
@@ -291,12 +321,11 @@ public class UpdateFieldsFromInternetTask
             // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = getContext().getString(R.string.progress_end_num_books_searched,
-                                                   progressCounter);
+            mFinalMessage = getResources().getString(R.string.progress_end_num_books_searched,
+                                                     progressCounter);
             if (isCancelled()) {
-                mFinalMessage = getContext().getString(R.string.progress_end_cancelled_info,
-                                                       mFinalMessage);
-//                Logger.info(this, " was cancelled");
+                mFinalMessage = getResources().getString(R.string.progress_end_cancelled_info,
+                                                         mFinalMessage);
             }
         }
     }
@@ -389,42 +418,6 @@ public class UpdateFieldsFromInternetTask
     }
 
     /**
-     * Called in the main thread for this object when the search for one book has completed.
-     */
-    public void onSearchFinished(final boolean wasCancelled,
-                                 @NonNull final Bundle bookData) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debugEnter(this, "onSearchFinished",
-                              "bookId=" + mCurrentBookId);
-        }
-
-        if (wasCancelled) {
-            // if the search was cancelled, propagate by cancelling ourselves.
-            cancelTask();
-        } else if (bookData.isEmpty()) {
-            // tell the user if the search failed.
-            mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
-        }
-
-        // Save the local data from the context so we can start a new search
-        if (!isCancelled() && !bookData.isEmpty()) {
-            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, bookData,
-                                 mOriginalBookData);
-        }
-
-        /*
-         * The search is complete AND the class-level data has been cached by the processing thread.
-         * Let another search begin.
-         */
-        mSearchLock.lock();
-        try {
-            mSearchDone.signal();
-        } finally {
-            mSearchLock.unlock();
-        }
-    }
-
-    /**
      * Passed the old & new data, construct the update data and perform the update.
      *
      * @param bookId           Book ID
@@ -439,6 +432,7 @@ public class UpdateFieldsFromInternetTask
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.debug(this, "processSearchResults", "bookId=" + bookId);
         }
+
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
@@ -579,8 +573,8 @@ public class UpdateFieldsFromInternetTask
     private void cleanup() {
         if (mDb != null) {
             mDb.close();
+            mDb = null;
         }
-        mDb = null;
     }
 
     /**

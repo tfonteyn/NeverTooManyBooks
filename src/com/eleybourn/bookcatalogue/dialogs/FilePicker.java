@@ -68,7 +68,7 @@ public class FilePicker
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
-            mLocale = LocaleUtils.from(context);
+            mLocale = LocaleUtils.from(context.getResources());
             mList = objects;
         }
 
@@ -89,12 +89,12 @@ public class FilePicker
             File item = mList.get(position);
             holder.name.setText(item.getName());
             holder.path.setText(item.getParent());
-            holder.size.setText(Utils.formatFileSize(context, item.length()));
+            holder.size.setText(Utils.formatFileSize(context.getResources(), item.length()));
             holder.lastModDate.setText(DateUtils.toPrettyDateTime(mLocale,
                                                                   new Date(item.lastModified())));
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
+            holder.itemView.setOnClickListener(v -> mListener.onPicked(item));
         }
 
         @Override

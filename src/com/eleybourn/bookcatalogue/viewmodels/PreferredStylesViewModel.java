@@ -18,9 +18,6 @@ public class PreferredStylesViewModel
     /** The *in-memory* list of styles. */
     private ArrayList<BooklistStyle> mList;
 
-    /** The row being edited. Set when an individual style is edited. */
-    private int mEditedRow;
-
     @Override
     protected void onCleared() {
         if (mDb != null) {
@@ -30,15 +27,11 @@ public class PreferredStylesViewModel
     }
 
     public void init() {
-        if (mList != null) {
+        if (mDb != null) {
             return;
         }
-
+        mDb = new DAO();
         mList = new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
-    }
-
-    public void setEditedRow(final int editedRow) {
-        mEditedRow = editedRow;
     }
 
     @NonNull
@@ -50,20 +43,30 @@ public class PreferredStylesViewModel
      * Called after a style has been edited.
      */
     public void handleStyleChange(@NonNull final BooklistStyle style) {
-        if (mEditedRow < 0) {
+        // based on the id, find the style in the list.
+        // We can't use the object, as it was parcelled along the way.
+        int editedrow = -1;
+        for (int i=0; i < mList.size(); i++) {
+            if (mList.get(i).getId() == style.getId()) {
+                editedrow = i;
+                break;
+            }
+        }
+
+        if (editedrow < 0) {
             // New Style added. Put at top and set as preferred
             mList.add(0, style);
             style.setPreferred(true);
 
         } else {
             // Existing Style edited.
-            BooklistStyle origStyle = mList.get(mEditedRow);
+            BooklistStyle origStyle = mList.get(editedrow);
             if (origStyle.getId() != style.getId()) {
                 if (!origStyle.isUserDefined()) {
                     // Working on a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // Replace the original row with the new one
-                        mList.set(mEditedRow, style);
+                        mList.set(editedrow, style);
                         // Make the new one preferred
                         style.setPreferred(true);
                         // And demote the original
@@ -71,14 +74,14 @@ public class PreferredStylesViewModel
                         mList.add(origStyle);
                     } else {
                         // Try to put it directly after original
-                        mList.add(mEditedRow, style);
+                        mList.add(editedrow, style);
                     }
                 } else {
                     // A clone of an user-defined. Put it directly after the user-defined
-                    mList.add(mEditedRow, style);
+                    mList.add(editedrow, style);
                 }
             } else {
-                mList.set(mEditedRow, style);
+                mList.set(editedrow, style);
             }
         }
 

@@ -14,13 +14,14 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.OnTaskListener;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
@@ -43,7 +44,7 @@ public class FileListerTask
                                   LocaleUtils.getSystemLocale()));
 
     @NonNull
-    private final WeakReference<OnTaskListener<Object, FileChooserFragment.DirectoryContent>> mListener;
+    private final WeakReference<TaskListener<Object, FileChooserFragment.DirectoryContent>> mTaskListener;
 
     @NonNull
     private final FileChooserFragment.DirectoryContent mDir;
@@ -62,8 +63,8 @@ public class FileListerTask
      */
     @UiThread
     FileListerTask(@NonNull final File root,
-                   @NonNull final OnTaskListener<Object, FileChooserFragment.DirectoryContent> listener) {
-        mListener = new WeakReference<>(listener);
+                   @NonNull final TaskListener<Object, FileChooserFragment.DirectoryContent> taskListener) {
+        mTaskListener = new WeakReference<>(taskListener);
 
         mDir = new FileChooserFragment.DirectoryContent(root);
     }
@@ -109,10 +110,12 @@ public class FileListerTask
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final FileChooserFragment.DirectoryContent result) {
-        if (mListener.get() != null) {
-            mListener.get().onTaskFinished(mTaskId,mException == null, result, mException);
+        if (mTaskListener.get() != null) {
+            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
         } else {
-            throw new RuntimeException("WeakReference to listener was dead");
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+            }
         }
     }
 }

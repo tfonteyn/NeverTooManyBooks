@@ -1028,6 +1028,8 @@ public class BooklistBuilder
     /**
      * Process the 'sort-by' columns into a list suitable for a sort-by statement, or index.
      *
+     * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
+     *
      * @param sortedColumns the list of sorted domains from the builder
      * @param collationIsCs if {@code true} then we'll adjust the case ourselves
      * @param sqlCmp        will be updated with the sorting information
@@ -2069,7 +2071,7 @@ public class BooklistBuilder
      * @return a {@link BooklistPseudoCursor} instead of a real cursor.
      */
     @NonNull
-    public BooklistPseudoCursor getListCursor() {
+    public BooklistPseudoCursor getNewListCursor() {
         return new BooklistPseudoCursor(this);
     }
 

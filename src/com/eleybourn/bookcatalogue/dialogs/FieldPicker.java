@@ -17,6 +17,9 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 
 /**
  * @param <T> type of the actual Object that is represented by a row in the selection list.
+ *           Right now, this is ALWAYS {@code String} and we use {@link #toString()}.
+ *           Using another type is bound to bring up issues.
+ *           This limitation is due to {@link Fields.Field#format}.
  */
 public class FieldPicker<T>
         extends ValuePicker {
@@ -24,7 +27,7 @@ public class FieldPicker<T>
     /**
      * Value picker for a text field.
      * <p>
-     * TODO: use {@link com.eleybourn.bookcatalogue.entities.Entity} instead of a field value.
+     * TODO: use {@link com.eleybourn.bookcatalogue.entities.Entity} instead of a string/field.
      * But not all (far from) the values are entities.
      *
      * @param context caller context

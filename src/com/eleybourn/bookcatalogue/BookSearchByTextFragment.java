@@ -35,9 +35,6 @@ public class BookSearchByTextFragment
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
-    /**
-     *
-     */
     private ArrayAdapter<String> mAuthorAdapter;
 
     private EditText mTitleView;
@@ -115,8 +112,6 @@ public class BookSearchByTextFragment
 
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
-     * <p>
-     * The results will arrive in {@link #onSearchFinished}
      */
     private void startSearch() {
         // check if we have an active search, if so, quit.
@@ -136,37 +131,47 @@ public class BookSearchByTextFragment
         }
     }
 
-    /**
-     * results of search started by {@link #startSearch}.
-     * <p>
-     * The details will get sent to {@link EditBookActivity}
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    public void onSearchFinished(final boolean wasCancelled,
-                                 @NonNull final Bundle bookData) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debugEnter(this, "onSearchFinished",
-                              "SearchManagerId=" + mSearchManagerId);
-        }
-        try {
-            if (!wasCancelled) {
-                mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
-                Intent intent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                // Clear the data entry fields ready for the next one
-                mAuthorView.setText("");
-                mTitleView.setText("");
-            }
-        } finally {
-            // Clean up
-            mSearchManagerId = 0;
-            // Make sure the base message will be empty.
-            mActivity.getTaskManager().sendHeaderUpdate(null);
-        }
+    @Override
+    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
+        return mOnSearchFinishedListener;
     }
+
+    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
+            new SearchCoordinator.OnSearchFinishedListener() {
+        /**
+         * results of search.
+         * <p>
+         * The details will get sent to {@link EditBookActivity}
+         * <p>
+         * <br>{@inheritDoc}
+         */
+        @Override
+        public void onSearchFinished(final boolean wasCancelled,
+                                     @NonNull final Bundle bookData) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                Logger.debugEnter(this, "onSearchFinished",
+                                  "SearchManagerId=" + mSearchManagerId);
+            }
+            try {
+                if (!wasCancelled) {
+                    mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
+                    Intent intent = new Intent(getContext(), EditBookActivity.class)
+                            .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+                    // Clear the data entry fields ready for the next one
+                    mAuthorView.setText("");
+                    mTitleView.setText("");
+                }
+            } finally {
+                // Clean up
+                mSearchManagerId = 0;
+                // Make sure the base message will be empty.
+                mActivity.getTaskManager().sendHeaderUpdate(null);
+            }
+        }
+    };
+
 
     @Override
     @CallSuper

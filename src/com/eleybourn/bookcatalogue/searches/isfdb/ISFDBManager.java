@@ -3,11 +3,14 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
@@ -23,6 +26,7 @@ public class ISFDBManager
 
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+    private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 
     /** Type: {@code boolean}. */
     private static final String PREFS_SERIES_FROM_TOC = PREF_PREFIX + "seriesFromToc";
@@ -71,12 +75,18 @@ public class ISFDBManager
         return R.string.searching_isfdb;
     }
 
+    @StringRes
+    @Override
+    public int getNameResId() {
+        return R.string.isfdb;
+    }
+
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final String isbn,
-                         @NonNull final String author,
-                         @NonNull final String title,
+    public Bundle search(@Nullable final String isbn,
+                         @Nullable final /* not supported */ String author,
+                         @Nullable final /* not supported */ String title,
                          final boolean fetchThumbnail)
             throws IOException {
 
@@ -87,16 +97,29 @@ public class ISFDBManager
             if (!editions.isEmpty()) {
                 new ISFDBBook().fetch(editions, bookData, isCollectSeriesInfoFromToc(), fetchThumbnail);
             }
-        } else {
+
+        } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+
             //replace spaces in author/title with %20
             //TODO: implement ISFDB search by author/title
             String urlText = getBaseURL() + "/cgi-bin/adv_search_results.cgi?" +
-                    "title_title%3A" + title.replace(" ", "%20") +
+                    "title_title%3A" + encodeSpaces(title) +
                     "%2B" +
-                    "author_canonical%3A" + author.replace(" ", "%20");
+                    "author_canonical%3A" + encodeSpaces(author);
             throw new UnsupportedOperationException(urlText);
+
+        } else {
+            return new Bundle();
         }
+
         //TODO: only let IOExceptions out (except RTE's)
         return bookData;
+    }
+
+    /**
+     * replace spaces with %20
+     */
+    public String encodeSpaces(@NonNull final String s) {
+        return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

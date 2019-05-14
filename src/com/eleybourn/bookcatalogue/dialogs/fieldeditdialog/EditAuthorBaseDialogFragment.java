@@ -13,8 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -38,6 +40,7 @@ public abstract class EditAuthorBaseDialogFragment
     private String mFamilyName;
     private String mGivenNames;
     private boolean mIsComplete;
+    WeakReference<BookChangedListener> mBookChangedListener;
 
     @NonNull
     @Override
@@ -109,6 +112,15 @@ public abstract class EditAuthorBaseDialogFragment
                     confirmChanges(author, newAuthorData);
                 })
                 .create();
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final BookChangedListener listener) {
+        mBookChangedListener = new WeakReference<>(listener);
     }
 
     /**

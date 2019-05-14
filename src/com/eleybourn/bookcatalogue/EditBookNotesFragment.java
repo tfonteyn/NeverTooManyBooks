@@ -30,32 +30,21 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
-import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Notes Tab.
  */
 public class EditBookNotesFragment
-        extends EditBookBaseFragment
-        implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+        extends EditBookBaseFragment<Integer> {
 
     /** Fragment manager tag. */
     public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -131,21 +120,20 @@ public class EditBookNotesFragment
 
         field = mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
-        //noinspection ConstantConditions
-        initCheckListEditor(getTag(), field, R.string.lbl_edition,
-                            () -> mBookBaseFragmentModel.getBook().getEditableEditionList());
+        initCheckListEditor(field, R.string.lbl_edition, () ->
+                mBookBaseFragmentModel.getBook().getEditableEditionList());
 
         field = mFields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(getTag(), field, R.string.lbl_date_acquired, true);
+        initPartialDatePicker(field, R.string.lbl_date_acquired, true);
 
         field = mFields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(getTag(), field, R.string.lbl_read_start, true);
+        initPartialDatePicker(field, R.string.lbl_read_start, true);
 
         field = mFields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(getTag(), field, R.string.lbl_read_end, true);
+        initPartialDatePicker(field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
             private static final long serialVersionUID = -3288341939109142352L;
@@ -175,31 +163,4 @@ public class EditBookNotesFragment
         // Restore default visibility
         showHideFields(false);
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Field editors callbacks">
-    @Override
-    public void onCheckListEditorSave(final int destinationFieldId,
-                                      @NonNull final List<CheckListItem<Integer>> list) {
-
-        Book book = mBookBaseFragmentModel.getBook();
-
-        if (destinationFieldId == R.id.edition) {
-            book.putEditions(new Book.EditionCheckListItem().extractList(list));
-            mFields.getField(destinationFieldId)
-                   .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
-        }
-    }
-
-    @Override
-    public void onPartialDatePickerSave(final int destinationFieldId,
-                                        @Nullable final Integer year,
-                                        @Nullable final Integer month,
-                                        @Nullable final Integer day) {
-        mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
-    }
-
-    //</editor-fold>
-
 }

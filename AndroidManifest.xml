@@ -11,6 +11,7 @@
     <!-- android:versionName="5.2.2" -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -169,7 +170,10 @@
         <!-- View an Author and all of his works. -->
         <activity android:name=".AuthorWorksActivity" />
         <!-- Cropping an image, either from the cover of a book, or direct from a new scan -->
-        <activity android:name=".cropper.CropImageActivity" />
+        <activity
+            android:name=".cropper.CropImageActivity"
+            android:theme="@style/AppTheme.FullScreen"
+            />
         <!-- These Goodreads activities are commented out (waiting on API access) -->
         <activity android:name=".goodreads.GoodreadsSearchCriteriaActivity" />
         <activity android:name=".goodreads.GoodreadsSearchResultsActivity" />

@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -84,43 +83,43 @@ public class BackupFileDetails
 
     @Override
     public void onBindViewHolder(@NonNull final FileChooserFragment.Holder holder,
-                                 @NonNull final Context context) {
+                                 @NonNull final Resources resources) {
 
         holder.filenameView.setText(mFile.getName());
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
-            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
+            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_folder));
             holder.fileDetails.setVisibility(View.GONE);
         } else {
             // Display details
-            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_business_center));
+            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_business_center));
             holder.fileDetails.setVisibility(View.VISIBLE);
 
-            holder.sizeView.setText(Utils.formatFileSize(context, mFile.length()));
+            holder.sizeView.setText(Utils.formatFileSize(resources, mFile.length()));
 
-            Resources res = context.getResources();
-            Locale locale = LocaleUtils.from(context);
+
+            Locale locale = LocaleUtils.from(resources);
             if (mInfo != null) {
                 List<String> args = new ArrayList<>();
                 if (mInfo.hasBookCount()) {
-                    args.add(res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(),
-                                                   mInfo.getBookCount()));
+                    args.add(resources.getQuantityString(R.plurals.n_books, mInfo.getBookCount(),
+                                                         mInfo.getBookCount()));
                 } else if (mInfo.hasBooks()) {
-                    args.add(res.getString(R.string.lbl_books));
+                    args.add(resources.getString(R.string.lbl_books));
                 }
                 if (mInfo.hasCoverCount()) {
-                    args.add(res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(),
-                                                   mInfo.getCoverCount()));
+                    args.add(resources.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(),
+                                                         mInfo.getCoverCount()));
                 } else if (mInfo.hasCovers()) {
-                    args.add(res.getString(R.string.lbl_covers));
+                    args.add(resources.getString(R.string.lbl_covers));
                 }
 
                 if (mInfo.hasPreferences()) {
-                    args.add(res.getString(R.string.lbl_settings));
+                    args.add(resources.getString(R.string.lbl_settings));
                 }
                 if (mInfo.hasBooklistStyles()) {
-                    args.add(res.getString(R.string.lbl_styles));
+                    args.add(resources.getString(R.string.lbl_styles));
                 }
 
                 // needs RTL

@@ -10,13 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import java.lang.ref.WeakReference;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.debug.MustImplementException;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -24,30 +25,24 @@ public class ExportOptionsDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = ExportOptionsDialogFragment.class.getSimpleName();
+    public static final String TAG = ExportOptionsDialogFragment.class.getSimpleName();
 
-    private ExportSettings mExportSettings;
+    private ExportOptions mOptions;
 
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final ExportSettings settings) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(settings).show(fm, TAG);
-        }
-    }
+    private WeakReference<OptionsListener> mListener;
 
     /**
      * Constructor.
      *
+     * @param options export configuration
+     *
      * @return Created fragment
      */
     @NonNull
-    public static ExportOptionsDialogFragment newInstance(@NonNull final ExportSettings settings) {
+    public static ExportOptionsDialogFragment newInstance(@NonNull final ExportOptions options) {
         ExportOptionsDialogFragment frag = new ExportOptionsDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, settings);
+        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, options);
         frag.setArguments(args);
         return frag;
     }
@@ -59,7 +54,7 @@ public class ExportOptionsDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
+        mOptions = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS);
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_export_options, null);
@@ -71,7 +66,14 @@ public class ExportOptionsDialogFragment
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     updateOptions();
-                    OnOptionsListener.onOptionsSet(this, mExportSettings);
+                    if (mListener.get() != null) {
+                        mListener.get().onOptionsSet(mOptions);
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onOptionsSet",
+                                         "WeakReference to listener was dead");
+                        }
+                    }
                 })
                 .create();
 
@@ -79,40 +81,44 @@ public class ExportOptionsDialogFragment
         return dialog;
     }
 
+    public void setListener(final OptionsListener listener) {
+        mListener = new WeakReference<>(listener);
+    }
+
     private void updateOptions() {
         Dialog dialog = getDialog();
-        // what to export. All checked == ExportSettings.ALL
+        // what to export. All checked == ExportOptions.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.cbx_xml_tables)).isChecked()) {
-            mExportSettings.what |= ExportSettings.XML_TABLES;
+            mOptions.what |= ExportOptions.XML_TABLES;
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
-            mExportSettings.what |= ExportSettings.BOOK_CSV;
+            mOptions.what |= ExportOptions.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
-            mExportSettings.what |= ExportSettings.COVERS;
+            mOptions.what |= ExportOptions.COVERS;
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
-            mExportSettings.what |= ExportSettings.PREFERENCES | ExportSettings.BOOK_LIST_STYLES;
+            mOptions.what |= ExportOptions.PREFERENCES | ExportOptions.BOOK_LIST_STYLES;
         }
 
         Checkable radioSinceLastBackup = dialog.findViewById(R.id.radioSinceLastBackup);
         Checkable radioSinceDate = dialog.findViewById(R.id.radioSinceDate);
 
         if (radioSinceLastBackup.isChecked()) {
-            mExportSettings.what |= ExportSettings.EXPORT_SINCE;
+            mOptions.what |= ExportOptions.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
-            mExportSettings.dateFrom = null;
+            mOptions.dateFrom = null;
 
         } else if (radioSinceDate.isChecked()) {
             EditText dateSinceView = dialog.findViewById(R.id.txtDate);
             try {
-                mExportSettings.what |= ExportSettings.EXPORT_SINCE;
-                mExportSettings.dateFrom =
+                mOptions.what |= ExportOptions.EXPORT_SINCE;
+                mOptions.dateFrom =
                         DateUtils.parseDate(dateSinceView.getText().toString().trim());
             } catch (RuntimeException e) {
                 UserMessage.showUserMessage(dateSinceView, R.string.warning_date_not_set);
-                mExportSettings.what = ExportSettings.NOTHING;
+                mOptions.what = ExportOptions.NOTHING;
             }
         }
     }
@@ -126,41 +132,14 @@ public class ExportOptionsDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, mExportSettings);
+        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS, mOptions);
     }
 
     /**
      * Listener interface to receive notifications when dialog is confirmed.
      */
-    public interface OnOptionsListener {
+    public interface OptionsListener {
 
-        /**
-         *  BAD idea... to be removed
-         *
-         * Convenience method. Try in order:
-         * <ul>
-         * <li>getTargetFragment()</li>
-         * <li>getParentFragment()</li>
-         * <li>getActivity()</li>
-         * </ul>
-         */
-        static void onOptionsSet(@NonNull final Fragment sourceFragment,
-                                 @NonNull final ExportSettings settings) {
-
-            if (sourceFragment.getTargetFragment() instanceof OnOptionsListener) {
-                ((OnOptionsListener) sourceFragment.getTargetFragment())
-                        .onOptionsSet(settings);
-            } else if (sourceFragment.getParentFragment() instanceof OnOptionsListener) {
-                ((OnOptionsListener) sourceFragment.getParentFragment())
-                        .onOptionsSet(settings);
-            } else if (sourceFragment.getActivity() instanceof OnOptionsListener) {
-                ((OnOptionsListener) sourceFragment.getActivity())
-                        .onOptionsSet(settings);
-            } else {
-                throw new MustImplementException(OnOptionsListener.class);
-            }
-        }
-
-        void onOptionsSet(@NonNull ExportSettings settings);
+        void onOptionsSet(@NonNull ExportOptions options);
     }
 }

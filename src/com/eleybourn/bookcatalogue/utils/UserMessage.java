@@ -13,7 +13,12 @@ import com.google.android.material.snackbar.Snackbar;
 /**
  * Shielding the actual implementation of Toast/Snackbar or whatever is next.
  *
- * TODO: 2019... it's probably time to remove Toast. But consider each usage individually!
+ * TODO: 2019... it's probably time to remove Toast.
+ *
+ * https://developer.android.com/training/snackbar
+ * Note: The Snackbar class supersedes Toast. While Toast is currently still supported,
+ * Snackbar is now the preferred way to display brief, transient messages to the user.
+ *
  */
 public final class UserMessage {
 

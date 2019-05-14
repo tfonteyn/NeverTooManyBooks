@@ -35,33 +35,6 @@ public interface BookChangedListener {
     int BOOK_WAS_DELETED = 1 << 9;
 
     /**
-     * Convenience method. Try in order:
-     * <ul>
-     * <li>getTargetFragment()</li>
-     * <li>getParentFragment()</li>
-     * <li>getActivity()</li>
-     * </ul>
-     */
-    static void onBookChanged(@NonNull final Fragment sourceFragment,
-                              final long bookId,
-                              final int fieldsChanged,
-                              @Nullable final Bundle data) {
-
-        if (sourceFragment.getTargetFragment() instanceof BookChangedListener) {
-            ((BookChangedListener) sourceFragment.getTargetFragment())
-                    .onBookChanged(bookId, fieldsChanged, data);
-        } else if (sourceFragment.getParentFragment() instanceof BookChangedListener) {
-            ((BookChangedListener) sourceFragment.getParentFragment())
-                    .onBookChanged(bookId, fieldsChanged, data);
-        } else if (sourceFragment.getActivity() instanceof BookChangedListener) {
-            ((BookChangedListener) sourceFragment.getActivity())
-                    .onBookChanged(bookId, fieldsChanged, data);
-        } else {
-            throw new MustImplementException(BookChangedListener.class);
-        }
-    }
-
-    /**
      * Called if changes were made.
      *
      * @param bookId        the book that was changed, or 0 if the change was global

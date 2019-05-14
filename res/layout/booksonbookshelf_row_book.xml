@@ -106,7 +106,7 @@
 
     <CheckBox
         android:id="@+id/read"
-        style="@style/read_only_cbx"
+        style="@style/book_read"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"

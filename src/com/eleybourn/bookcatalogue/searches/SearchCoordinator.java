@@ -62,8 +62,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
  *
  * @author Philip Warner
  */
-public class SearchCoordinator
-        implements TaskManagerListener {
+public class SearchCoordinator {
 
     /**
      * STATIC Object for passing messages from background tasks to activities
@@ -121,10 +120,69 @@ public class SearchCoordinator
     /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
 
+    private final TaskManagerListener mListener = new TaskManagerListener() {
+
+        /**
+         * {@link TaskManager.TaskFinishedMessage}
+         * <p>
+         * When a task has ended, see check if there are more tasks running.
+         * If not, finish and send results back with {@link SearchCoordinator#sendResults}
+         */
+        @Override
+        public void onTaskFinished(@NonNull final TaskManager taskManager,
+                                   @NonNull final ManagedTask task) {
+            // display final message from task.
+            String finalMessage = task.getFinalMessage();
+            if (finalMessage != null) {
+                onTaskUserMessage(finalMessage);
+            }
+
+            // Handle the result, and optionally queue another task
+            if (task instanceof SearchTask) {
+                handleSearchTaskFinished((SearchTask) task);
+            }
+
+            int tasksActive;
+            // Remove the finished task from our list
+            synchronized (mManagedTasks) {
+                mManagedTasks.remove(task);
+                tasksActive = mManagedTasks.size();
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                    dumpTasks(task);
+                }
+            }
+            // no more tasks ? Then send the results back to our creator.
+            if (tasksActive == 0) {
+                // Stop listening FIRST...otherwise, if sendResults() calls a listener
+                // that starts a new task, we will stop listening for the new task.
+                TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), this);
+                // all searches done.
+                sendResults();
+            }
+        }
+
+        @Override
+        public void onTaskUserMessage(@NonNull final String message) {
+            TaskManager.MESSAGE_SWITCH
+                    .send(mTaskManager.getId(), new TaskManager.TaskUserMessage(message));
+        }
+
+        @Override
+        public void onTaskProgress(final int absPosition,
+                                   final int max,
+                                   @NonNull final String message) {
+            TaskManager.MESSAGE_SWITCH
+                    .send(mTaskManager.getId(), new TaskManager.TaskProgressMessage(absPosition,
+                                                                                    max,
+                                                                                    message));
+        }
+    };
+
     /**
      * Constructor.
      *
-     * @param taskManager               TaskManager to use
+     * @param taskManager              TaskManager to use
      * @param onSearchFinishedListener to send results to
      */
     public SearchCoordinator(@NonNull final TaskManager taskManager,
@@ -190,25 +248,27 @@ public class SearchCoordinator
                        @NonNull final String isbn,
                        final boolean fetchThumbnail) {
 
-        // last chance before we try to make network connections in the individual tasks.
-        if (!NetworkUtils.isNetworkAvailable(mTaskManager.getContext())) {
-            throw new RuntimeException("Network not available");
+        // dev sanity check
+        if (!NetworkUtils.isNetworkAvailable()) {
+            throw new IllegalStateException("network should be checked before starting search");
+        }
+
+        // dev sanity check
+        if (!mManagedTasks.isEmpty()) {
+            throw new IllegalStateException("don't start a new search while a search is running");
         }
 
         // dev sanity check
         if ((searchFlags & Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
-        // dev sanity check
-        if (!mManagedTasks.isEmpty()) {
-            throw new IllegalStateException(
-                    "Attempting to start new search while previous search running");
-        }
+
         // dev sanity check
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Must specify at least one criteria non-empty: isbn=" + isbn
-                            + ", author=" + author + ", title=" + title);
+            throw new IllegalArgumentException("Must specify at least one criteria non-empty:"
+                                                       + " isbn=" + isbn
+                                                       + ", author=" + author
+                                                       + ", title=" + title);
         }
 
         // Save the flags
@@ -233,7 +293,7 @@ public class SearchCoordinator
         }
 
         // Listen for TaskManager messages.
-        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), this, false);
+        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), mListener, false);
 
         // We really want to ensure we get the same book from each, so if isbn is
         // not present, search the sites one at a time till we get an isbn
@@ -262,7 +322,7 @@ public class SearchCoordinator
                 // accumulate all data and send it back to our caller.
                 sendResults();
                 // stop listening
-                TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(),this);
+                TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), mListener);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     Logger.debug(this,
                                  "search",
@@ -360,57 +420,18 @@ public class SearchCoordinator
 
     }
 
-    /**
-     * {@link TaskManager.TaskFinishedMessage}
-     * <p>
-     * When a task has ended, see check if there are more tasks running.
-     * If not, finish and send results back with {@link SearchCoordinator#sendResults}
-     */
-    @Override
-    public void onTaskFinished(@NonNull final TaskManager taskManager,
-                               @NonNull final ManagedTask task) {
-        // display final message from task.
-        String message = task.getFinalMessage();
-        if (message != null) {
-            onTaskUserMessage(message);
-        }
-
-        // Handle the result, and optionally queue another task
-        if (task instanceof SearchTask) {
-            handleSearchTaskFinished((SearchTask) task);
-        }
-
-        int tasksActive;
-        // Remove the finished task from our list
-        synchronized (mManagedTasks) {
-            mManagedTasks.remove(task);
-            tasksActive = mManagedTasks.size();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                dumpTasks(task);
-            }
-        }
-        // no more tasks ? Then send the results back to our creator.
-        if (tasksActive == 0) {
-            // Stop listening FIRST...otherwise, if sendResults() calls a listener
-            // that starts a new task, we will stop listening for the new task.
-            TaskManager.MESSAGE_SWITCH.removeListener(mTaskManager.getId(), this);
-            // all searches done.
-            sendResults();
-        }
-    }
 
     /**
      * DEBUG only.
-     *
+     * <p>
      * log current finishing task + any still active tasks.
      */
     private void dumpTasks(@NonNull final ManagedTask task) {
-        Logger.debug(SearchCoordinator.this,"onTaskFinished",
+        Logger.debug(SearchCoordinator.this, "onTaskFinished",
                      "Task `" + task.getName() + "` finished");
 
         for (ManagedTask t : mManagedTasks) {
-            Logger.debug(SearchCoordinator.this,"onTaskFinished",
+            Logger.debug(SearchCoordinator.this, "onTaskFinished",
                          "Task `" + t.getName() + "` still running");
         }
     }
@@ -749,7 +770,6 @@ public class SearchCoordinator
         mBookData.putParcelableArrayList(key, dest);
 
     }
-
 
 
     /**

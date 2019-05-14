@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -35,7 +35,7 @@ public class ExportCSVTask
      * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    public ExportCSVTask(@NonNull final ExportSettings settings,
+    public ExportCSVTask(@NonNull final ExportOptions settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
         super(R.id.TASK_ID_CSV_EXPORT, progressDialog);
 

@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
-public class ExportSettings
+public class ExportOptions
         implements Parcelable {
 
     /*
@@ -53,15 +53,15 @@ public class ExportSettings
      * all defined flags.
      */
     public static final int MASK = ALL | EXPORT_SINCE;
-    public static final Creator<ExportSettings> CREATOR = new Creator<ExportSettings>() {
+    public static final Creator<ExportOptions> CREATOR = new Creator<ExportOptions>() {
         @Override
-        public ExportSettings createFromParcel(@NonNull final Parcel source) {
-            return new ExportSettings(source);
+        public ExportOptions createFromParcel(@NonNull final Parcel source) {
+            return new ExportOptions(source);
         }
 
         @Override
-        public ExportSettings[] newArray(final int size) {
-            return new ExportSettings[size];
+        public ExportOptions[] newArray(final int size) {
+            return new ExportOptions[size];
         }
     };
     /** file to export to. */
@@ -77,7 +77,7 @@ public class ExportSettings
     @Nullable
     public Date dateFrom;
 
-    public ExportSettings() {
+    public ExportOptions() {
     }
 
     /**
@@ -85,11 +85,11 @@ public class ExportSettings
      *
      * @param file to export to
      */
-    public ExportSettings(@NonNull final File file) {
+    public ExportOptions(@NonNull final File file) {
         this.file = file;
     }
 
-    protected ExportSettings(@NonNull final Parcel in) {
+    protected ExportOptions(@NonNull final Parcel in) {
         what = in.readInt();
         if (in.readInt() == 1) {
             file = new File(in.readString());
@@ -131,7 +131,7 @@ public class ExportSettings
 
     public void validate() {
         // if we want 'since', we *must* have a valid dateFrom
-        if ((what & ExportSettings.EXPORT_SINCE) != 0) {
+        if ((what & ExportOptions.EXPORT_SINCE) != 0) {
             Objects.requireNonNull(dateFrom, "Export Failed - 'dateFrom' is null");
         } else {
             // sanity check: we don't want 'since', so make sure fromDate is not set.
@@ -142,7 +142,7 @@ public class ExportSettings
     @Override
     @NonNull
     public String toString() {
-        return "ExportSettings{"
+        return "ExportOptions{"
                 + "file=`" + file + '`'
                 + ", what=0%" + Integer.toBinaryString(what)
                 + ", dateFrom=" + dateFrom

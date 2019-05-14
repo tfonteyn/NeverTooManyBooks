@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.goodreads.tasks.AuthorizationResultCheckTask;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,

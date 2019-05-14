@@ -41,11 +41,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -61,7 +62,7 @@ public class LendBookDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = LendBookDialogFragment.class.getSimpleName();
+    public static final String TAG = LendBookDialogFragment.class.getSimpleName();
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -75,31 +76,7 @@ public class LendBookDialogFragment
     private AutoCompleteTextView mLoaneeView;
     private String mAuthorName;
     private String mLoanee;
-
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            final long bookId,
-                            final long authorId,
-                            @NonNull final String title) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(bookId, authorId, title).show(fm, TAG);
-        }
-    }
-
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static LendBookDialogFragment show(@NonNull final FragmentManager fm,
-                                              @NonNull final Book book) {
-        LendBookDialogFragment dialog = (LendBookDialogFragment) fm.findFragmentByTag(TAG);
-        if (dialog == null) {
-            dialog = newInstance(book);
-            dialog.show(fm, TAG);
-        }
-        return dialog;
-    }
+    private WeakReference<BookChangedListener> mBookChangedListener;
 
     /**
      * Constructor.
@@ -183,11 +160,18 @@ public class LendBookDialogFragment
                 .setTitle(R.string.lbl_lend_to)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
-                    // the book was returned, remove the loan data
+                    // the book was returned (inspect it for sub-nano damage), remove the loan data
                     dismiss();
                     mDb.deleteLoan(bookId);
-                    BookChangedListener.onBookChanged(this, bookId,
-                                                      BookChangedListener.BOOK_LOANEE, null);
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.BOOK_LOANEE,
+                                                                 null);
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onBookChanged",
+                                         "WeakReference to listener was dead");
+                        }
+                    }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
@@ -208,10 +192,26 @@ public class LendBookDialogFragment
 
                     Bundle data = new Bundle();
                     data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-                    BookChangedListener.onBookChanged(this, bookId,
-                                                      BookChangedListener.BOOK_LOANEE, data);
+                    if (mBookChangedListener.get() != null) {
+                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.BOOK_LOANEE,
+                                                                 data);
+                    } else {
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this, "onBookChanged",
+                                         "WeakReference to listener was dead");
+                        }
+                    }
                 })
                 .create();
+    }
+
+    /**
+     * Call this from {@link #onAttachFragment} in the parent.
+     *
+     * @param listener the object to send the result to.
+     */
+    public void setListener(final BookChangedListener listener) {
+        mBookChangedListener = new WeakReference<>(listener);
     }
 
     /**

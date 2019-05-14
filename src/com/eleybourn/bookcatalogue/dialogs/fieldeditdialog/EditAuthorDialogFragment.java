@@ -23,11 +23,12 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 /**
@@ -39,17 +40,7 @@ public class EditAuthorDialogFragment
         extends EditAuthorBaseDialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
-
-    /**
-     * (syntax sugar for newInstance)
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final Author author) {
-        if (fm.findFragmentByTag(TAG) == null) {
-            newInstance(author).show(fm, TAG);
-        }
-    }
+    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     /**
      * Constructor.
@@ -76,6 +67,14 @@ public class EditAuthorDialogFragment
         author.copyFrom(newAuthorData);
         mDb.updateOrInsertAuthor(author);
 
-        BookChangedListener.onBookChanged(this, 0, BookChangedListener.AUTHOR, null);
+        Bundle data = new Bundle();
+        data.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
+        if (mBookChangedListener.get() != null) {
+            mBookChangedListener.get().onBookChanged(0, BookChangedListener.AUTHOR, data);
+        } else {
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "onBookChanged", "WeakReference to listener was dead");
+            }
+        }
     }
 }

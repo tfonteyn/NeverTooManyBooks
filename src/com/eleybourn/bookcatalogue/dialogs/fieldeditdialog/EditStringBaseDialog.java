@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -27,7 +28,7 @@ public abstract class EditStringBaseDialog {
     @NonNull
     private final Activity mActivity;
     @Nullable
-    private final Runnable mOnChanged;
+    protected final BookChangedListener mListener;
 
     /** Adapter for the AutoCompleteTextView field. */
     private final ArrayAdapter<String> mAdapter;
@@ -38,14 +39,14 @@ public abstract class EditStringBaseDialog {
     /**
      * EditText.
      *
-     * @param onChanged Runnable to be started after user confirming
+     * @param listener Runnable to be started after user confirming
      */
     EditStringBaseDialog(@NonNull final Activity activity,
                          @NonNull final DAO db,
-                         @Nullable final Runnable onChanged) {
+                         @Nullable final BookChangedListener listener) {
         mActivity = activity;
         mDb = db;
-        mOnChanged = onChanged;
+        mListener = listener;
         mAdapter = null;
     }
 
@@ -53,15 +54,15 @@ public abstract class EditStringBaseDialog {
      * AutoCompleteTextView.
      *
      * @param list      for the AutoCompleteTextView
-     * @param onChanged Runnable to be started after user confirming
+     * @param listener BookChangedListener
      */
     EditStringBaseDialog(@NonNull final Activity activity,
                          @NonNull final DAO db,
                          @NonNull final List<String> list,
-                         @Nullable final Runnable onChanged) {
+                         @Nullable final BookChangedListener listener) {
         mActivity = activity;
         mDb = db;
-        mOnChanged = onChanged;
+        mListener = listener;
         mAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, list);
     }
 
@@ -105,9 +106,6 @@ public abstract class EditStringBaseDialog {
         }
         // ask child class to save
         saveChanges(mCurrentText, newText);
-        if (mOnChanged != null) {
-            mOnChanged.run();
-        }
     }
 
     protected abstract void saveChanges(@NonNull final String from,

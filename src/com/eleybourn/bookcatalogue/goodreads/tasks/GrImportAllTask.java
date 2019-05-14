@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.goodreads;
+package com.eleybourn.bookcatalogue.goodreads.tasks;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -50,9 +50,10 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewFields;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -72,8 +73,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  *
  * @author Philip Warner
  */
-public class GrImportAllTask
-        extends GoodreadsTask {
+class GrImportAllTask
+        extends BaseTask {
 
     private static final long serialVersionUID = -3535324410982827612L;
     /**
@@ -135,7 +136,7 @@ public class GrImportAllTask
     private static boolean hasCover(final String imageName) {
         return imageName != null
                 && !imageName.toLowerCase(LocaleUtils.getSystemLocale())
-                             .contains(GoodreadsUtils.NO_COVER);
+                             .contains(GoodreadsTasks.NO_COVER);
     }
 
     /**
@@ -578,7 +579,7 @@ public class GrImportAllTask
             }
 
             if (thumbnail != null) {
-                String fileSpec = ImageUtils.saveImage(thumbnail, GoodreadsUtils.FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveImage(thumbnail, GoodreadsTasks.FILENAME_SUFFIX);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);
