@@ -5,6 +5,7 @@
     https://developer.android.com/reference/android/R.styleable.html#Theme
     -->
 
+    <!-- Specific Theme for full screen usage. -->
     <style name="AppTheme.FullScreen" parent="AppTheme.Dark">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>

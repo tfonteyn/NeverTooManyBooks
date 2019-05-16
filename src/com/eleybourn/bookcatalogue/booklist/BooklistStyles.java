@@ -318,13 +318,13 @@ public final class BooklistStyles {
 
     /**
      * @param db     the database
-     * @param getAll if {@code true} then also return the non-preferred styles
+     * @param all if {@code true} then also return the non-preferred styles
      *
      * @return all styles, with the preferred styles at the front of the list.
      */
     @NonNull
     public static Map<Long, BooklistStyle> getStyles(@NonNull final DAO db,
-                                                     final boolean getAll) {
+                                                     final boolean all) {
         // Get all styles: user
         Map<Long, BooklistStyle> allStyles = getUserStyles(db);
         // Get all styles: builtin
@@ -334,7 +334,7 @@ public final class BooklistStyles {
         Map<Long, BooklistStyle> styles = filterPreferredStyles(allStyles);
 
         // but if we want all, add the missing styles to the end of the list
-        if (getAll) {
+        if (all) {
             if (!styles.equals(allStyles)) {
                 for (BooklistStyle style : allStyles.values()) {
                     if (!styles.containsKey(style.getId())) {

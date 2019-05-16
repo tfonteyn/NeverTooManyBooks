@@ -5,7 +5,7 @@
     -->
     <declare-styleable name="FastScrollListView">
         <attr name="scrollHandle" format="reference" />
-        <attr name="overlay" format="reference" />
+        <attr name="scrollOverlay" format="reference" />
         <!-- Default: android:attr/textColorPrimary -->
         <attr name="textColor" format="color" />
     </declare-styleable>

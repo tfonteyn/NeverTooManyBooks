@@ -21,8 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -47,18 +45,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
-import com.eleybourn.bookcatalogue.adapters.RadioGroupRecyclerAdapter;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -76,15 +70,16 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.StylePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditPublisherDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditSeriesDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditFormatDialog;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditGenreDialog;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditLanguageDialog;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditLocationDialog;
-import com.eleybourn.bookcatalogue.dialogs.entities.EditPublisherDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.entities.EditSeriesDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -93,7 +88,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
-import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -109,10 +103,9 @@ import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 public class BooksOnBookshelf
         extends BaseActivity {
 
-
     /**
      * Views for the current row level-text.
-     * These are shown at the top of the list (just below the bookshelf spinner) while scrolling.
+     * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mLevelTextView = new TextView[2];
     /** Listener for GoodreadsTasks. */
@@ -129,7 +122,10 @@ public class BooksOnBookshelf
             };
     /** The View for the list. */
     private ListView mListView;
+
+    /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
+
     /** Multi-type adapter to manage list connection to cursor. */
     private MultiTypeListCursorAdapter mAdapter;
     /** The dropdown button to select a Bookshelf. */
@@ -200,6 +196,44 @@ public class BooksOnBookshelf
             }
         }
     };
+
+    private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
+            new StylePickerDialogFragment.StyleChangedListener() {
+                /**
+                 * Apply the style that a user has selected.
+                 *
+                 * @param style that was selected
+                 */
+                public void onStyleChanged(@NonNull final BooklistStyle style) {
+
+                    // save the new bookshelf/style combination
+                    mModel.getCurrentBookshelf().setAsPreferred();
+                    mModel.setCurrentStyle(style);
+
+                    /* Set the rebuild state like this is the first time in, which it sort of is, given we
+                     * are changing style. There is very little ability to preserve position when going from
+                     * a list sorted by author/series to on sorted by unread/addedDate/publisher.
+                     * Keeping the current row/pos is probably the most useful thing we can do since we *may*
+                     * come back to a similar list.
+                     */
+                    int topRowOffset;
+                    View view = mListView.getChildAt(0);
+                    if (view != null) {
+                        topRowOffset = view.getTop();
+                    } else {
+                        topRowOffset = 0;
+                    }
+
+                    mModel.setTopRow(mListView.getFirstVisiblePosition());
+                    mModel.setTopRowOffset(topRowOffset);
+
+                    // New style, so use the user-pref for rebuild
+                    mModel.setRebuildState(BooklistBuilder.getListRebuildState());
+
+                    // Do a rebuild
+                    initBookList(true);
+                }
+            };
 
     @Override
     protected int getLayoutId() {
@@ -551,9 +585,8 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                HintManager.displayHint(getLayoutInflater(),
-                                        R.string.hint_booklist_style_menu,
-                                        () -> doSortMenu(false));
+                HintManager.displayHint(getLayoutInflater(), R.string.hint_booklist_style_menu,
+                                        this::showStylePicker);
                 return true;
 
             case R.id.MENU_EXPAND:
@@ -603,6 +636,13 @@ public class BooksOnBookshelf
                 return MenuHandler.handleBookSubMenu(this, item)
                         || super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showStylePicker() {
+        ArrayList<BooklistStyle> styles = new ArrayList<>(
+                BooklistStyles.getStyles(mModel.getDb(), false).values());
+        StylePickerDialogFragment.newInstance(getSupportFragmentManager(), styles,
+                                              mModel.getCurrentStyle(), false);
     }
 
     /**
@@ -863,7 +903,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     *
      * @param menuItem Related MenuItem
      * @param row      Row view for affected cursor row
      *
@@ -921,7 +960,7 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_EDIT_LOAN:
                 if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
                     LendBookDialogFragment.newInstance(bookId, row.getAuthorId(), row.getTitle())
-                                            .show(fm, LendBookDialogFragment.TAG);
+                                          .show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
 
@@ -1003,7 +1042,7 @@ public class BooksOnBookshelf
             case R.id.MENU_PUBLISHER_EDIT:
                 if (fm.findFragmentByTag(EditPublisherDialogFragment.TAG) == null) {
                     EditPublisherDialogFragment.newInstance(new Publisher(row.getPublisherName()))
-                                            .show(fm, EditPublisherDialogFragment.TAG);
+                                               .show(fm, EditPublisherDialogFragment.TAG);
                 }
                 return true;
 
@@ -1050,12 +1089,18 @@ public class BooksOnBookshelf
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
+        if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {
+            ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
+
+        } else if (EditAuthorDialogFragment.TAG.equals(fragment.getTag())) {
             ((EditAuthorBaseDialogFragment) fragment).setListener(mBookChangedListener);
+
         } else if (EditPublisherDialogFragment.TAG.equals(fragment.getTag())) {
             ((EditPublisherDialogFragment) fragment).setListener(mBookChangedListener);
+
         } else if (EditSeriesDialogFragment.TAG.equals(fragment.getTag())) {
             ((EditSeriesDialogFragment) fragment).setListener(mBookChangedListener);
+
         } else if (LendBookDialogFragment.TAG.equals(fragment.getTag())) {
             ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
         }
@@ -1319,7 +1364,9 @@ public class BooksOnBookshelf
         // once we know how many items appear in a typical view and we can tell
         // if it is already in the view.
         if (targetRows != null) {
-            fixPositionWhenDrawn(mListView, targetRows);
+            mListView.post(() -> {
+                fixPositionWhenDrawn(targetRows);
+            });
         }
 
         // setup the level-text's at the top of the list
@@ -1421,72 +1468,69 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Queue a runnable to set the position once we know how many items appear in a typical
+     * Set the position once we know how many items appear in a typical
      * view and we can tell if it is already in the view.
      * <p>
      * called from {@link #displayList}
      */
-    private void fixPositionWhenDrawn(@NonNull final ListView listView,
-                                      @NonNull final ArrayList<BookRowInfo> targetRows) {
-        mListView.post(() -> {
-            // Find the actual extend of the current view and get centre.
-            int first = listView.getFirstVisiblePosition();
-            int last = listView.getLastVisiblePosition();
-            int centre = (last + first) / 2;
+    private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
+        // Find the actual extend of the current view and get centre.
+        int first = mListView.getFirstVisiblePosition();
+        int last = mListView.getLastVisiblePosition();
+        int centre = (last + first) / 2;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
+            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                         " New List: (" + first + ", " + last + ")<-" + centre);
+        }
+        // Get the first 'target' and make it 'best candidate'
+        BookRowInfo best = targetRows.get(0);
+        int dist = Math.abs(best.listPosition - centre);
+        // Loop all other rows, looking for a nearer one
+        for (int i = 1; i < targetRows.size(); i++) {
+            BookRowInfo ri = targetRows.get(i);
+            int newDist = Math.abs(ri.listPosition - centre);
+            if (newDist < dist) {
+                dist = newDist;
+                best = ri;
+            }
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
+            Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                         " Best listPosition @" + best.listPosition);
+        }
+        // Try to put at top if not already visible, or only partially visible
+        if (first >= best.listPosition || last <= best.listPosition) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                 Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                             " New List: (" + first + ", " + last + ")<-" + centre);
+                             " Adjusting position");
             }
-            // Get the first 'target' and make it 'best candidate'
-            BookRowInfo best = targetRows.get(0);
-            int dist = Math.abs(best.listPosition - centre);
-            // Loop all other rows, looking for a nearer one
-            for (int i = 1; i < targetRows.size(); i++) {
-                BookRowInfo ri = targetRows.get(i);
-                int newDist = Math.abs(ri.listPosition - centre);
-                if (newDist < dist) {
-                    dist = newDist;
-                    best = ri;
-                }
-            }
+            // setSelectionFromTop does not seem to always do what is expected.
+            // But adding smoothScrollToPosition seems to get the job done reasonably well.
+            //
+            // Specific problem occurs if:
+            // - put phone in portrait mode
+            // - edit a book near bottom of list
+            // - turn phone to landscape
+            // - save the book (don't cancel)
+            // Book will be off bottom of screen without the smoothScroll in the
+            // second Runnable.
+            //
+            mListView.setSelectionFromTop(best.listPosition, 0);
+            // Code below does not behave as expected.
+            // Results in items often being near bottom.
+            //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                             " Best listPosition @" + best.listPosition);
-            }
-            // Try to put at top if not already visible, or only partially visible
-            if (first >= best.listPosition || last <= best.listPosition) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                    Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                                 " Adjusting position");
-                }
-                // setSelectionFromTop does not seem to always do what is expected.
-                // But adding smoothScrollToPosition seems to get the job done reasonably well.
-                //
-                // Specific problem occurs if:
-                // - put phone in portrait mode
-                // - edit a book near bottom of list
-                // - turn phone to landscape
-                // - save the book (don't cancel)
-                // Book will be off bottom of screen without the smoothScroll in the
-                // second Runnable.
-                //
-                listView.setSelectionFromTop(best.listPosition, 0);
-                // Code below does not behave as expected.
-                // Results in items often being near bottom.
-                //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
+            // Without this call some positioning may be off by one row (see above).
+            final int newPos = best.listPosition;
+            mListView.post(() -> mListView.smoothScrollToPosition(newPos));
 
-                // Without this call some positioning may be off by one row (see above).
-                final int newPos = best.listPosition;
-                mListView.post(() -> listView.smoothScrollToPosition(newPos));
-
-                //int newTop = best.listPosition - (last-first)/2;
-                // if (BuildConfig.DEBUG && BOOKS_ON_BOOKSHELF) {
-                //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
-                //}
-                //lv.setSelection(newTop);
-            }
-        });
+            //int newTop = best.listPosition - (last-first)/2;
+            // if (BuildConfig.DEBUG && BOOKS_ON_BOOKSHELF) {
+            //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
+            //}
+            //lv.setSelection(newTop);
+        }
     }
 
     /**
@@ -1539,132 +1583,6 @@ public class BooksOnBookshelf
             mBookCountView.setVisibility(View.VISIBLE);
         } else {
             mBookCountView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Setup the sort options. This function will also call fillData when
-     * complete having loaded the appropriate view.
-     *
-     * @param showAll if {@code true} show all styles, otherwise only the preferred ones.
-     */
-    private void doSortMenu(final boolean showAll) {
-        FragmentManager fm = getSupportFragmentManager();
-        SortMenuFragment smf;
-
-        // Tried several tactics to re-show the fragment to no avail. Leaving these comments.
-//        smf = (SortMenuFragment) fm.findFragmentByTag(SortMenuFragment.TAG);
-//        if (smf == null) {
-        smf = new SortMenuFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(SortMenuFragment.BKEY_SHOW_ALL_STYLES, showAll);
-        smf.setArguments(args);
-        smf.show(fm, SortMenuFragment.TAG);
-//        } else {
-        // something... but what?
-//        }
-    }
-
-    /**
-     * Apply the style that a user has selected.
-     *
-     * @param style that was selected
-     */
-    private void onStyleSelected(@NonNull final BooklistStyle style) {
-
-        // save the new bookshelf/style combination
-        mModel.getCurrentBookshelf().setAsPreferred();
-        mModel.setCurrentStyle(style);
-
-        /* Set the rebuild state like this is the first time in, which it sort of is, given we
-         * are changing style. There is very little ability to preserve position when going from
-         * a list sorted by author/series to on sorted by unread/addedDate/publisher.
-         * Keeping the current row/pos is probably the most useful thing we can do since we *may*
-         * come back to a similar list.
-         */
-        int topRowOffset;
-        View view = mListView.getChildAt(0);
-        if (view != null) {
-            topRowOffset = view.getTop();
-        } else {
-            topRowOffset = 0;
-        }
-
-        mModel.setTopRow(mListView.getFirstVisiblePosition());
-        mModel.setTopRowOffset(topRowOffset);
-
-        // New style, so use the user-pref for rebuild
-        mModel.setRebuildState(BooklistBuilder.getListRebuildState());
-
-        // Do a rebuild
-        initBookList(true);
-    }
-
-    /**
-     * Reminder: must be a public static class to be  properly recreated from instance state.
-     */
-    public static class SortMenuFragment
-            extends DialogFragment {
-
-        /** Fragment manager tag. */
-        public static final String TAG = SortMenuFragment.class.getSimpleName();
-
-        private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-
-        private boolean mShowAllStyles;
-
-        private RecyclerView mStylesListView;
-        private List<BooklistStyle> mList;
-        private RadioGroupRecyclerAdapter<BooklistStyle> mAdapter;
-
-        /**
-         * The sort menu is 100% tied to the main class, so might as well give full access.
-         * And yes, this is not clean.
-         */
-        private BooksOnBookshelf mActivity;
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            mActivity = (BooksOnBookshelf) getActivity();
-
-            Bundle args = requireArguments();
-            mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
-
-            @SuppressWarnings("ConstantConditions")
-            View root = getActivity().getLayoutInflater()
-                                     .inflate(R.layout.dialog_styles_menu, null);
-
-            mStylesListView = root.findViewById(R.id.styles);
-            mStylesListView.setHasFixedSize(true);
-            mStylesListView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-            mList = new ArrayList<>(
-                    BooklistStyles.getStyles(mActivity.mModel.getDb(), mShowAllStyles).values());
-
-            //noinspection ConstantConditions
-            mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mList,
-                                                       mActivity.mModel.getCurrentStyle(), v -> {
-                BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
-                mActivity.onStyleSelected(style);
-                dismiss();
-            });
-            mStylesListView.setAdapter(mAdapter);
-
-            @StringRes
-            int moreOrLess = mShowAllStyles ? R.string.menu_show_fewer_ellipsis
-                                            : R.string.menu_show_more_ellipsis;
-
-            return new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.title_select_style)
-                    .setView(root)
-                    .setNeutralButton(R.string.menu_customize_ellipsis, (d, which) -> {
-                        Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
-                        startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-                    })
-                    .setPositiveButton(moreOrLess,
-                                       (d, which) -> mActivity.doSortMenu(!mShowAllStyles))
-                    .create();
         }
     }
 }

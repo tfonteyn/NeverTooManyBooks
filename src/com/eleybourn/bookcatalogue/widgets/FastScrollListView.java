@@ -68,7 +68,7 @@ import com.eleybourn.bookcatalogue.R;
  *      {@code
  *      <declare-styleable name="FastScrollListView">
  *          <attr name="scrollHandle" format="reference" />
- *          <attr name="overlay" format="reference" />
+ *          <attr name="scrollOverlay" format="reference" />
  *          <attr name="textColor" format="color" />
  *      </declare-styleable>
  *      }
@@ -185,7 +185,7 @@ public class FastScrollListView
                 attrs, R.styleable.FastScrollListView, defStyleAttr, defStyleRes);
 
         mScrollHandleDrawableId = a.getResourceId(R.styleable.FastScrollListView_scrollHandle, -1);
-        mOverlayDrawableId = a.getResourceId(R.styleable.FastScrollListView_overlay, -1);
+        mOverlayDrawableId = a.getResourceId(R.styleable.FastScrollListView_scrollOverlay, -1);
         mTextColor = a.getColor(R.styleable.FastScrollListView_textColor, -1);
 
         a.recycle();
@@ -203,7 +203,6 @@ public class FastScrollListView
                 mFastScroll = new FastScroller(this,
                                                mScrollHandleDrawableId, mOverlayDrawableId,
                                                mTextColor);
-
             }
         }
     }
@@ -453,6 +452,8 @@ public class FastScrollListView
             // is there ever a null situation if we pass in a valid attribute?
             if (csl != null) {
                 mPaint.setColor(csl.getDefaultColor());
+            } else {
+                throw new NullPointerException("cls was NULL");
             }
             ta.recycle();
 

@@ -139,8 +139,10 @@ public final class HintManager {
      *                 but one place being 'disable the hint' and another 'show'.
      * @param postRun  Optional Runnable to run after the hint was dismissed (or not displayed at all).
      * @param args     Optional arguments for the hint string
+     *
+     * @return {@code true} if the hint is showing, {@code false} if this was a nop.
      */
-    public static void displayHint(@NonNull final LayoutInflater inflater,
+    public static boolean displayHint(@NonNull final LayoutInflater inflater,
                                    @StringRes final int stringId,
                                    @Nullable final Runnable postRun,
                                    @Nullable final Object... args) {
@@ -150,15 +152,16 @@ public final class HintManager {
             // log but ignore.
             Logger.warnWithStackTrace(HintManager.class, "displayHint", "not found",
                                       "stringId=" + stringId);
-            return;
+            return false;
         }
         if (!hint.shouldBeShown()) {
             if (postRun != null) {
                 postRun.run();
             }
-            return;
+            return false;
         }
         hint.display(inflater, stringId, args, postRun);
+        return true;
     }
 
     public interface HintOwner {
