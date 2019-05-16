@@ -31,6 +31,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -84,8 +85,10 @@ public class GoodreadsSearchResultsActivity
         mDb = new DAO();
 
         mListView = findViewById(android.R.id.list);
-        mListView.setLayoutManager(new LinearLayoutManager(this));
-
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(linearLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);
 
         // If we have criteria, do a search. Otherwise complain and finish.
@@ -189,7 +192,8 @@ public class GoodreadsSearchResultsActivity
 
         /**
          * Constructor.
-         *  @param context caller context
+         *
+         * @param context caller context
          * @param items   the list
          */
         ResultsAdapter(@NonNull final Context context,
@@ -213,7 +217,8 @@ public class GoodreadsSearchResultsActivity
             GoodreadsWork work = getItem(position);
 
             holder.itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
-            holder.itemView.setOnClickListener(v -> doItemClick((Holder) v.getTag(R.id.TAG_VIEW_HOLDER)));
+            holder.itemView.setOnClickListener(
+                    v -> doItemClick((Holder) v.getTag(R.id.TAG_VIEW_HOLDER)));
 
             // get the cover (or put it in background task)
             work.fillImageView(holder.coverView);

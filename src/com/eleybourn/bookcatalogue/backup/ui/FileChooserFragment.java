@@ -36,6 +36,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,17 +67,6 @@ public class FileChooserFragment
     /** Value holder for the root and its content. */
     @Nullable
     private FileChooserFragment.DirectoryContent mDir;
-    /** User clicks on the 'up' button. */
-    private final OnClickListener onPathUpClickListener = v -> {
-        String parent = mDir.root.getParent();
-        if (parent == null) {
-            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
-            return;
-        }
-        mDir = new FileChooserFragment.DirectoryContent(parent);
-        onPathChanged(mDir.root);
-    };
-
     private EditText mFilenameView;
     private TextView mCurrentFolderView;
     private final TaskListener<Object, FileChooserFragment.DirectoryContent> mListener =
@@ -101,6 +91,16 @@ public class FileChooserFragment
                     }
                 }
             };
+    /** User clicks on the 'up' button. */
+    private final OnClickListener onPathUpClickListener = v -> {
+        String parent = mDir.root.getParent();
+        if (parent == null) {
+            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        mDir = new FileChooserFragment.DirectoryContent(parent);
+        onPathChanged(mDir.root);
+    };
 
     /**
      * Constructor.
@@ -218,7 +218,10 @@ public class FileChooserFragment
         FileDetailsAdapter adapter = new FileDetailsAdapter(getContext(), mDir);
         @SuppressWarnings("ConstantConditions")
         RecyclerView listView = getView().findViewById(android.R.id.list);
-        listView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        listView.setLayoutManager(linearLayoutManager);
+        listView.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         listView.setHasFixedSize(true);
         listView.setAdapter(adapter);
     }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,7 +55,7 @@ public class StylePickerDialogFragment
 
         StylePickerDialogFragment smf = new StylePickerDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(BKEY_STYLE_LIST,list);
+        args.putParcelableArrayList(BKEY_STYLE_LIST, list);
         args.putParcelable(UniqueId.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         smf.setArguments(args);
@@ -83,27 +84,30 @@ public class StylePickerDialogFragment
         View root = getActivity().getLayoutInflater()
                                  .inflate(R.layout.dialog_styles_menu, null);
 
-        RecyclerView stylesListView = root.findViewById(R.id.styles);
-        stylesListView.setHasFixedSize(true);
-        stylesListView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        RecyclerView listView = root.findViewById(R.id.styles);
+        listView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        listView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
+        listView.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+
         RadioGroupRecyclerAdapter<BooklistStyle> adapter =
                 new RadioGroupRecyclerAdapter<>(getContext(), mList, mCurrentStyle, v -> {
-            BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
-            if (mListener.get() != null) {
-                mListener.get().onStyleChanged(style);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onStyleChanged",
-                                 "WeakReference to listener was dead");
-                }
-            }
+                    BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
+                    if (mListener.get() != null) {
+                        mListener.get().onStyleChanged(style);
+                    } else {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onStyleChanged",
+                                         "WeakReference to listener was dead");
+                        }
+                    }
 
-            dismiss();
-        });
+                    dismiss();
+                });
 
-        stylesListView.setAdapter(adapter);
+        listView.setAdapter(adapter);
 
         @StringRes
         int moreOrLess = mShowAllStyles ? R.string.menu_show_fewer_ellipsis

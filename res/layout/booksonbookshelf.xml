@@ -3,7 +3,6 @@
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fslv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -95,7 +94,8 @@
             app:layout_constraintTop_toBottomOf="@id/level_2_text"
             />
 
-        <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+        <com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
+            xmlns:csf="http://schemas.android.com/apk/res-auto"
             android:id="@android:id/list"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -103,13 +103,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_divider"
-            fslv:scrollOverlay="@drawable/fast_scroll_overlay"
-            fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
+
+            csf:cfsEnabled="true"
+            csf:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
+            csf:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"
+            csf:cfsVerticalThumbDrawable="@drawable/fast_scroll_thumb"
+            csf:cfsVerticalTrackDrawable="@drawable/fast_scroll_track"
+            csf:cfsOverlayDrawable="@drawable/fast_scroll_overlay"
             >
 
             <requestFocus />
 
-        </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
+        </com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS>
 
         <ProgressBar
             android:id="@+id/progressBar"

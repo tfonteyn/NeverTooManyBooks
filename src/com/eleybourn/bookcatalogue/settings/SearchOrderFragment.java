@@ -11,6 +11,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,11 +22,11 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
-import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
+import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 public class SearchOrderFragment
         extends Fragment {
@@ -57,10 +58,13 @@ public class SearchOrderFragment
 
         //noinspection ConstantConditions
         mListView = getView().findViewById(android.R.id.list);
-        mListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mListView.setLayoutManager(linearLayoutManager);
+        //noinspection ConstantConditions
+        mListView.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        //noinspection ConstantConditions
         mListAdapter = new SearchSiteListAdapter(
                 getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         // any change done in the adapter will set the book 'dirty'
@@ -69,7 +73,7 @@ public class SearchOrderFragment
             @Override
             public void onChanged() {
                 //noinspection ConstantConditions
-                ((SearchAdminActivity)getActivity()).setDirty(true);
+                ((SearchAdminActivity) getActivity()).setDirty(true);
             }
         });
         mListView.setAdapter(mListAdapter);

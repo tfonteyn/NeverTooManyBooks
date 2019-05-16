@@ -34,6 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,14 +56,14 @@ import com.eleybourn.bookcatalogue.viewmodels.PreferredStylesViewModel;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * Activity to edit the list of styles.
  * - enable/disable their presence in the styles menu.
  * - Individual context menus allow cloning/editing/deleting of styles.
- *
+ * <p>
  * All changes are saved immediately.
  */
 public class PreferredStylesActivity
@@ -95,6 +96,8 @@ public class PreferredStylesActivity
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(mLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
         // setup the adapter
@@ -147,7 +150,7 @@ public class PreferredStylesActivity
         // display the menu
         String menuTitle = style.getLabel(getResources());
         final MenuPicker<BooklistStyle> picker = new MenuPicker<>(this, menuTitle, menu, style,
-                                                            this::onContextItemSelected);
+                                                                  this::onContextItemSelected);
         picker.show();
     }
 

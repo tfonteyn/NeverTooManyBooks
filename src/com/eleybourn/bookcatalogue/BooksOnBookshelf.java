@@ -29,12 +29,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -48,11 +45,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
+import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapterWrapper;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -121,13 +122,14 @@ public class BooksOnBookshelf
                 }
             };
     /** The View for the list. */
-    private ListView mListView;
+    private RecyclerView mListView;
+    private LinearLayoutManager mLinearLayoutManager;
+    /** Multi-type adapter to manage list connection to cursor. */
+    private MultiTypeListCursorAdapterWrapper mAdapter;
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
 
-    /** Multi-type adapter to manage list connection to cursor. */
-    private MultiTypeListCursorAdapter mAdapter;
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** The adapter used to fill the mBookshelfSpinner. */
@@ -224,7 +226,7 @@ public class BooksOnBookshelf
                         topRowOffset = 0;
                     }
 
-                    mModel.setTopRow(mListView.getFirstVisiblePosition());
+                    mModel.setTopRow(mLinearLayoutManager.findFirstVisibleItemPosition());
                     mModel.setTopRowOffset(topRowOffset);
 
                     // New style, so use the user-pref for rebuild
@@ -308,9 +310,10 @@ public class BooksOnBookshelf
         mProgressBar = findViewById(R.id.progressBar);
 
         mListView = findViewById(android.R.id.list);
-        mListView.setFastScrollEnabled(true);
-        mListView.setOnItemClickListener(this::onItemClick);
-        mListView.setOnItemLongClickListener(this::onItemLongClick);
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(mLinearLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, mLinearLayoutManager.getOrientation()));
 
         // details for the header of the list.
         mBookCountView = findViewById(R.id.book_count);
@@ -401,6 +404,7 @@ public class BooksOnBookshelf
                     Logger.debug(this, "onResume", "reusing builder");
                 }
                 // a list has been build previously and we should re-use it.
+                //noinspection ConstantConditions
                 BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
                 displayList(booklistBuilder.getNewListCursor(), null);
 
@@ -520,7 +524,7 @@ public class BooksOnBookshelf
                 topRowOffset = 0;
             }
             // and save to preferences.
-            mModel.savePosition(mListView.getFirstVisiblePosition(), topRowOffset);
+            mModel.savePosition(mLinearLayoutManager.findFirstVisibleItemPosition(), topRowOffset);
         }
     }
 
@@ -656,6 +660,7 @@ public class BooksOnBookshelf
             int oldAbsPos = mAdapter.getAbsolutePosition(mListView.getChildAt(0));
             savePosition();
             // get the builder from the current cursor.
+            //noinspection ConstantConditions
             BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
             booklistBuilder.expandAll(expand);
             mModel.setTopRow(booklistBuilder.getPosition(oldAbsPos));
@@ -668,14 +673,12 @@ public class BooksOnBookshelf
      * The user clicked on a row:
      * - Book: open the details screen.
      * - expand/collapse the section as appropriate.
-     *
-     * @param position in the list that was clicked.
      */
-    public void onItemClick(@SuppressWarnings("unused") @NonNull final AdapterView<?> parent,
-                            @SuppressWarnings("unused") @NonNull final View view,
-                            final int position,
-                            @SuppressWarnings("unused") final long id) {
+    public void onItemClick(@NonNull final View view) {
+        int position = (int) view.getTag(R.id.TAG_POSITION);
+
         BooklistPseudoCursor listCursor = mModel.getListCursor();
+        //noinspection ConstantConditions
         listCursor.moveToPosition(position);
         BooklistCursorRow row = listCursor.getCursorRow();
 
@@ -722,15 +725,12 @@ public class BooksOnBookshelf
 
     /**
      * User long-clicked on a row. Bring up a context menu as appropriate.
-     *
-     * @param view     to tie the context menu to
-     * @param position in the list that was clicked.
      */
-    private boolean onItemLongClick(@SuppressWarnings("unused") @NonNull final AdapterView<?> parent,
-                                    @NonNull final View view,
-                                    final int position,
-                                    @SuppressWarnings("unused") final long id) {
+    private boolean onItemLongClick(@NonNull final View view) {
+        int position = (int) view.getTag(R.id.TAG_POSITION);
+
         BooklistPseudoCursor listCursor = mModel.getListCursor();
+        //noinspection ConstantConditions
         listCursor.moveToPosition(position);
 
         Context context = view.getContext();
@@ -1331,6 +1331,7 @@ public class BooksOnBookshelf
             t0 = System.nanoTime();
         }
 
+
         // Save the old list so we can close it later
         BooklistPseudoCursor oldList = mModel.getListCursor();
 
@@ -1342,31 +1343,30 @@ public class BooksOnBookshelf
         BooksMultiTypeListHandler listHandler =
                 new BooksMultiTypeListHandler(getLayoutInflater(),
                                               mModel.getDb(), mModel.getCurrentStyle());
-        mAdapter = new MultiTypeListCursorAdapter(this, mModel.getListCursor(), listHandler);
+        //noinspection ConstantConditions
+        mAdapter = new MultiTypeListCursorAdapterWrapper(
+                this, new MultiTypeListCursorAdapter(this, mModel.getListCursor(), listHandler));
+        mAdapter.setOnItemClickListener(this::onItemClick);
+        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
 
         mListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-
-        // Force a rebuild of ListView
-        mListView.setFastScrollEnabled(false);
-        mListView.setFastScrollEnabled(true);
 
         // Restore saved position
         final int count = mModel.getListCursor().getCount();
         if (mModel.getTopRow() >= count) {
             mModel.setTopRow(count - 1);
-            mListView.setSelection(mModel.getTopRow());
+            mLinearLayoutManager.scrollToPosition(mModel.getTopRow());
         } else {
-            mListView.setSelectionFromTop(mModel.getTopRow(), mModel.getTopRowOffset());
+            mLinearLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(),
+                                                            mModel.getTopRowOffset());
         }
 
         // If a target position array is set, then queue a runnable to set the position
         // once we know how many items appear in a typical view and we can tell
         // if it is already in the view.
         if (targetRows != null) {
-            mListView.post(() -> {
-                fixPositionWhenDrawn(targetRows);
-            });
+            mListView.post(() -> fixPositionWhenDrawn(targetRows));
         }
 
         // setup the level-text's at the top of the list
@@ -1377,13 +1377,13 @@ public class BooksOnBookshelf
         }
 
         // Define a scroller to update header detail when the top row changes
-        mListView.setOnScrollListener(
-                new OnScrollListener() {
-                    @Override
-                    public void onScroll(@NonNull final AbsListView view,
-                                         final int firstVisibleItem,
-                                         final int visibleItemCount,
-                                         final int totalItemCount) {
+        mListView.clearOnScrollListeners();
+        mListView.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    public void onScrolled(@NonNull RecyclerView recyclerView,
+                                           int dx,
+                                           int dy) {
+                        int firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
                         // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
                         // activity terminates and closes cursor
                         if (mModel.getLastTopRow() != firstVisibleItem
@@ -1393,10 +1393,6 @@ public class BooksOnBookshelf
                         }
                     }
 
-                    @Override
-                    public void onScrollStateChanged(@NonNull final AbsListView view,
-                                                     final int scrollState) {
-                    }
                 }
         );
 
@@ -1433,6 +1429,7 @@ public class BooksOnBookshelf
             // a level is visible if
             // 1. the cursor provides the data for this level, and
             // 2. the style defined the level.
+            //noinspection ConstantConditions
             if (mModel.getListCursor().levels() > level && style.hasSummaryForLevel(level)) {
                 mLevelTextView[index].setVisibility(View.VISIBLE);
                 mLevelTextView[index].setText("");
@@ -1456,9 +1453,11 @@ public class BooksOnBookshelf
             mModel.setLastTopRow(0);
         }
         if (mLevelTextView[0].getVisibility() == View.VISIBLE) {
-            BooklistCursorRow row = mModel.getListCursor().getCursorRow();
+            BooklistPseudoCursor listCursor = mModel.getListCursor();
+            //noinspection ConstantConditions
+            BooklistCursorRow row = listCursor.getCursorRow();
 
-            if (mModel.getListCursor().moveToPosition(mModel.getLastTopRow())) {
+            if (listCursor.moveToPosition(mModel.getLastTopRow())) {
                 mLevelTextView[0].setText(row.getLevelText(getResources(), 1));
                 if (mLevelTextView[1].getVisibility() == View.VISIBLE) {
                     mLevelTextView[1].setText(row.getLevelText(getResources(), 2));
@@ -1475,8 +1474,8 @@ public class BooksOnBookshelf
      */
     private void fixPositionWhenDrawn(@NonNull final ArrayList<BookRowInfo> targetRows) {
         // Find the actual extend of the current view and get centre.
-        int first = mListView.getFirstVisiblePosition();
-        int last = mListView.getLastVisiblePosition();
+        int first = mLinearLayoutManager.findFirstVisibleItemPosition();
+        int last = mLinearLayoutManager.findLastVisibleItemPosition();
         int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
             Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
@@ -1516,7 +1515,7 @@ public class BooksOnBookshelf
             // Book will be off bottom of screen without the smoothScroll in the
             // second Runnable.
             //
-            mListView.setSelectionFromTop(best.listPosition, 0);
+            mLinearLayoutManager.scrollToPositionWithOffset(best.listPosition, 0);
             // Code below does not behave as expected.
             // Results in items often being near bottom.
             //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);

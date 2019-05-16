@@ -45,7 +45,10 @@ public class ValuePicker {
 
         // list of options
         mListView = root.findViewById(android.R.id.list);
-        mListView.setLayoutManager(new LinearLayoutManager(context));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        mListView.setLayoutManager(linearLayoutManager);
+//        mListView.addItemDecoration(
+//                new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
         // there is no 'positive' button. The user chooses one of the list options instead.
         mDialog = new AlertDialog.Builder(context)

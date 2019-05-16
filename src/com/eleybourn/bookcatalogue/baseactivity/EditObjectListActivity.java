@@ -32,6 +32,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -119,6 +120,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(mLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
         // setup the adapter

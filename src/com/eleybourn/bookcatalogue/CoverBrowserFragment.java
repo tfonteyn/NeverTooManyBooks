@@ -41,6 +41,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,7 +86,7 @@ public class CoverBrowserFragment
     private boolean mDismissing;
 
     /** The gallery displays a list of images, one for each edition. */
-    private RecyclerView mGalleryView;
+    private RecyclerView mListView;
 
     @Nullable
     private GalleryAdapter mGalleryAdapter;
@@ -170,10 +171,12 @@ public class CoverBrowserFragment
         mDisplaySizes = ImageUtils.getDisplaySizes(getContext());
 
         // setup the gallery.
-        mGalleryView = root.findViewById(R.id.gallery);
+        mListView = root.findViewById(R.id.gallery);
         LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
         galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        mGalleryView.setLayoutManager(galleryLayoutManager);
+        mListView.setLayoutManager(galleryLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(getContext(), galleryLayoutManager.getOrientation()));
 
         // setup the switcher.
         mImageSwitcherView = root.findViewById(R.id.switcher);
@@ -262,7 +265,7 @@ public class CoverBrowserFragment
         mStatusTextView.setText(R.string.info_tap_on_thumb);
 
         mGalleryAdapter = new GalleryAdapter(mDisplaySizes.small, mDisplaySizes.small);
-        mGalleryView.setAdapter(mGalleryAdapter);
+        mListView.setAdapter(mGalleryAdapter);
     }
 
     /**

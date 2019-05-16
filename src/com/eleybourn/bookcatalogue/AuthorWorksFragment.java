@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,10 @@ public class AuthorWorksFragment
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
     private AuthorWorksModel mModel;
+
+    private RecyclerView mListView;
+    private LinearLayoutManager mLinearLayoutManager;
+    private TocAdapter mAdapter;
 
 //    @Override
 //    @CallSuper
@@ -74,12 +79,16 @@ public class AuthorWorksFragment
         getActivity().setTitle(title);
 
         //noinspection ConstantConditions
-        RecyclerView listView = getView().findViewById(android.R.id.list);
-        listView.setHasFixedSize(true);
-        listView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mListView = getView().findViewById(android.R.id.list);
+        mListView.setHasFixedSize(true);
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mListView.setLayoutManager(mLinearLayoutManager);
         //noinspection ConstantConditions
-        TocAdapter adapter = new TocAdapter(getContext(), mModel);
-        listView.setAdapter(adapter);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(getContext(), mLinearLayoutManager.getOrientation()));
+
+        mAdapter = new TocAdapter(getContext(), mModel);
+        mListView.setAdapter(mAdapter);
     }
 
     /**

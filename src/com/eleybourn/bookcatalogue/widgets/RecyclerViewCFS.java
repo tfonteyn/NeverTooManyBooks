@@ -19,18 +19,16 @@ import com.eleybourn.bookcatalogue.R;
 /**
  * Replacement for {@link FastScrollListView}.
  * The overlay part could use more work, but it's functionally equal now.
- *
+ * <p>
  * FastScroller initialisation code lifted from "recyclerview-1.1.0-alpha01-sources.jar"
- *
- * 1. xml attributes to enable the fast-scroller (and set the thumb etc)
- * 2. xml attribute to set the Overlay drawable; this does not enable it!
- *
- * 3. Call {@link #setAdapter} with a 'normal' Adapter ==> independent from 1+2 above
- * OR
- * 3. Call {@link #setAdapter}with Adapter that implements {@link SectionIndexerV2}
+ * <br>
+ * <br>1. xml attributes to enable the fast-scroller (and set the thumb etc)
+ * <br>2. xml attribute to set the Overlay drawable; this does not enable it!
+ * <br>
+ * <br>3. Call {@link #setAdapter} with a 'normal' Adapter ==> independent from 1+2 above
+ * <br>OR
+ * <br>3. Call {@link #setAdapter}with Adapter that implements {@link SectionIndexerV2}
  * and the fast scroller will use it.
- *
- *
  */
 public class RecyclerViewCFS
         extends RecyclerView {

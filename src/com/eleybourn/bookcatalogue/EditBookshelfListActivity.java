@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -96,7 +97,10 @@ public class EditBookshelfListActivity
                 v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId())));
 
         RecyclerView listView = findViewById(android.R.id.list);
-        listView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(linearLayoutManager);
+        listView.addItemDecoration(
+                new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
         listView.setHasFixedSize(true);
         listView.setAdapter(mAdapter);
     }

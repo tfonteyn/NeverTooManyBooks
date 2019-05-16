@@ -27,6 +27,8 @@
     <!-- store the uuid of a cover into a tag on the view. -->
     <item name="TAG_UUID" type="id" />
 
+    <item name="TAG_POSITION" type="id" />
+
     <!-- for storing a 'holder' with the view itself. -->
     <item name="TAG_VIEW_HOLDER" type="id" />
 
@@ -56,89 +58,89 @@
 
     <!-- BEGIN predefined menu items -->
 
-    <item name="MENU_SEARCH" type="id"/>
-    <item name="MENU_INSERT" type="id"/>
-    <item name="MENU_EDIT" type="id"/>
-    <item name="MENU_DELETE" type="id"/>
-    <item name="MENU_CLONE" type="id"/>
+    <item name="MENU_SEARCH" type="id" />
+    <item name="MENU_INSERT" type="id" />
+    <item name="MENU_EDIT" type="id" />
+    <item name="MENU_DELETE" type="id" />
+    <item name="MENU_CLONE" type="id" />
     <item name="MENU_USE" type="id" />
     <item name="MENU_SAVE" type="id" />
 
-    <item name="SUBMENU_BOOK_ADD" type="id"/>
-    <item name="MENU_BOOK_ADD_BY_SCAN" type="id"/>
-    <item name="MENU_BOOK_ADD_BY_SEARCH_ISBN" type="id"/>
-    <item name="MENU_BOOK_ADD_BY_SEARCH_TEXT" type="id"/>
-    <item name="MENU_BOOK_ADD_MANUALLY" type="id"/>
+    <item name="SUBMENU_BOOK_ADD" type="id" />
+    <item name="MENU_BOOK_ADD_BY_SCAN" type="id" />
+    <item name="MENU_BOOK_ADD_BY_SEARCH_ISBN" type="id" />
+    <item name="MENU_BOOK_ADD_BY_SEARCH_TEXT" type="id" />
+    <item name="MENU_BOOK_ADD_MANUALLY" type="id" />
 
-    <item name="MENU_GROUP_BOOK" type="id"/>
-    <item name="MENU_BOOK_DELETE" type="id"/>
-    <item name="MENU_BOOK_DUPLICATE" type="id"/>
-    <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id"/>
+    <item name="MENU_GROUP_BOOK" type="id" />
+    <item name="MENU_BOOK_DELETE" type="id" />
+    <item name="MENU_BOOK_DUPLICATE" type="id" />
+    <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id" />
 
-    <item name="MENU_SHARE" type="id"/>
+    <item name="MENU_SHARE" type="id" />
 
     <item name="MENU_BOOK_SAVE" type="id" />
-    <item name="MENU_BOOK_EDIT" type="id"/>
-    <item name="MENU_BOOK_EDIT_NOTES" type="id"/>
-    <item name="MENU_BOOK_EDIT_LOAN" type="id"/>
-    <item name="MENU_BOOK_LOAN_RETURNED" type="id"/>
-    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id"/>
+    <item name="MENU_BOOK_EDIT" type="id" />
+    <item name="MENU_BOOK_EDIT_NOTES" type="id" />
+    <item name="MENU_BOOK_EDIT_LOAN" type="id" />
+    <item name="MENU_BOOK_LOAN_RETURNED" type="id" />
+    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
 
-    <item name="MENU_BOOK_READ" type="id"/>
-    <item name="MENU_BOOK_UNREAD" type="id"/>
+    <item name="MENU_BOOK_READ" type="id" />
+    <item name="MENU_BOOK_UNREAD" type="id" />
 
-    <item name="MENU_AUTHOR_DETAILS" type="id"/>
-    <item name="MENU_AUTHOR_EDIT" type="id"/>
-    <item name="MENU_AUTHOR_COMPLETE" type="id"/>
+    <item name="MENU_AUTHOR_DETAILS" type="id" />
+    <item name="MENU_AUTHOR_EDIT" type="id" />
+    <item name="MENU_AUTHOR_COMPLETE" type="id" />
 
-    <item name="MENU_SERIES_DELETE" type="id"/>
-    <item name="MENU_SERIES_EDIT" type="id"/>
-    <item name="MENU_SERIES_COMPLETE" type="id"/>
+    <item name="MENU_SERIES_DELETE" type="id" />
+    <item name="MENU_SERIES_EDIT" type="id" />
+    <item name="MENU_SERIES_COMPLETE" type="id" />
 
-    <item name="MENU_FORMAT_EDIT" type="id"/>
-    <item name="MENU_GENRE_EDIT" type="id"/>
-    <item name="MENU_LANGUAGE_EDIT" type="id"/>
-    <item name="MENU_LOCATION_EDIT" type="id"/>
-    <item name="MENU_PUBLISHER_EDIT" type="id"/>
+    <item name="MENU_FORMAT_EDIT" type="id" />
+    <item name="MENU_GENRE_EDIT" type="id" />
+    <item name="MENU_LANGUAGE_EDIT" type="id" />
+    <item name="MENU_LOCATION_EDIT" type="id" />
+    <item name="MENU_PUBLISHER_EDIT" type="id" />
 
-    <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id"/>
+    <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->
-    <item name="MENU_SORT" type="id"/>
-    <item name="MENU_EXPAND" type="id"/>
-    <item name="MENU_COLLAPSE" type="id"/>
-    <item name="MENU_CLEAR_FILTERS" type="id"/>
+    <item name="MENU_SORT" type="id" />
+    <item name="MENU_EXPAND" type="id" />
+    <item name="MENU_COLLAPSE" type="id" />
+    <item name="MENU_CLEAR_FILTERS" type="id" />
 
     <!-- debug options for the options menu; only shown in debug mode. -->
     <item name="SUBMENU_DEBUG" type="id" />
-    <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
-    <item name="MENU_DEBUG_DUMP_STYLE" type="id"/>
-    <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
-    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id"/>
-    <item name="MENU_DEBUG_RUN_TEST" type="id"/>
+    <item name="MENU_DEBUG_DUMP_PREFS" type="id" />
+    <item name="MENU_DEBUG_DUMP_STYLE" type="id" />
+    <item name="MENU_DEBUG_DUMP_TRACKER" type="id" />
+    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id" />
+    <item name="MENU_DEBUG_RUN_TEST" type="id" />
 
     <!-- Amazon search options submenu -->
-    <item name="SUBMENU_AMAZON_SEARCH" type="id"/>
-    <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id"/>
-    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id"/>
+    <item name="SUBMENU_AMAZON_SEARCH" type="id" />
+    <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id" />
+    <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
 
     <!-- Thumbnail context menu -->
-    <item name="MENU_THUMB_DELETE" type="id"/>
+    <item name="MENU_THUMB_DELETE" type="id" />
 
-    <item name="SUBMENU_THUMB_REPLACE" type="id"/>
-    <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id"/>
-    <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id"/>
-    <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id"/>
+    <item name="SUBMENU_THUMB_REPLACE" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id" />
+    <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id" />
+    <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id" />
 
-    <item name="SUBMENU_THUMB_ROTATE" type="id"/>
-    <item name="MENU_THUMB_ROTATE_CW" type="id"/>
-    <item name="MENU_THUMB_ROTATE_CCW" type="id"/>
-    <item name="MENU_THUMB_ROTATE_180" type="id"/>
-    <item name="MENU_THUMB_CROP" type="id"/>
+    <item name="SUBMENU_THUMB_ROTATE" type="id" />
+    <item name="MENU_THUMB_ROTATE_CW" type="id" />
+    <item name="MENU_THUMB_ROTATE_CCW" type="id" />
+    <item name="MENU_THUMB_ROTATE_180" type="id" />
+    <item name="MENU_THUMB_CROP" type="id" />
 
     <!-- options menu: on-the-fly access to setting search order -->
-    <item name="MENU_PREFS_SEARCH_SITES" type="id"/>
+    <item name="MENU_PREFS_SEARCH_SITES" type="id" />
     <!-- options menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
 
@@ -153,11 +155,11 @@
     <!-- the part of the row that can be made (long)clickable. -->
     <item name="ROW_DETAILS" type="id" />
     <!-- the optional delete button -->
-    <item name="ROW_DELETE_BTN" type="id"/>
+    <item name="ROW_DELETE_BTN" type="id" />
     <!-- the optional checkable button -->
-    <item name="ROW_CHECKABLE_BTN" type="id"/>
+    <item name="ROW_CHECKABLE_BTN" type="id" />
     <!-- the grabber handle -->
-    <item name="ROW_GRABBER_ICON" type="id"/>
+    <item name="ROW_GRABBER_ICON" type="id" />
 
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 

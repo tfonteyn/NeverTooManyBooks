@@ -34,6 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,12 +56,12 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * Activity to edit the groups associated with a style (include/exclude + move up/down).
- *
+ * <p>
  * IMPORTANT: changes here are NOT saved automatically but only when this activity is quit.
  * See {@link #onBackPressed} and {@link #saveStyleSettings}
  */
@@ -109,6 +110,8 @@ public class StyleGroupsActivity
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mListView.setLayoutManager(mLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
         // setup the adapter
@@ -125,7 +128,8 @@ public class StyleGroupsActivity
         //noinspection ConstantConditions
         bar.setTitle(R.string.title_edit_style);
         bar.setSubtitle(getString(R.string.name_colon_value,
-                                  getString(R.string.pg_groupings), mStyle.getLabel(getResources())));
+                                  getString(R.string.pg_groupings),
+                                  mStyle.getLabel(getResources())));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
