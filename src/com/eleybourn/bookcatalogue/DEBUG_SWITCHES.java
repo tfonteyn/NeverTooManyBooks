@@ -57,6 +57,9 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
 
+    /** Where listeners are held in a WeakReference, we can log dead references. */
+    public static final boolean TRACE_WEAK_REFERENCES = false;
+
     /* ****************************************************************************************** */
 
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
@@ -74,7 +77,7 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel#initBookList}. */
     public static final boolean BOB_INIT_BOOK_LIST = true;
 
-    /** {@link CoverBrowser}. */
+    /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils}. */

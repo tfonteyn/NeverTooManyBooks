@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -47,6 +47,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -167,7 +168,7 @@ public class LendBookDialogFragment
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.BOOK_LOANEE,
                                                                  null);
                     } else {
-                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",
                                          "WeakReference to listener was dead");
                         }
@@ -196,7 +197,7 @@ public class LendBookDialogFragment
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.BOOK_LOANEE,
                                                                  data);
                     } else {
-                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",
                                          "WeakReference to listener was dead");
                         }

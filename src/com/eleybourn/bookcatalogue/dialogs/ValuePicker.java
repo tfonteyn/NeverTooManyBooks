@@ -84,7 +84,7 @@ public class ValuePicker {
     /**
      * Interface to listen for item selection in a custom dialog list.
      */
-    public interface OnPickListener<T> {
+    public interface PickListener<T> {
 
         void onPicked(@NonNull T item);
     }

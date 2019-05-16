@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -34,6 +34,7 @@ import androidx.fragment.app.DialogFragment;
 import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -65,7 +66,7 @@ public class EditBookshelfDialogFragment
     private EditText mNameView;
 
     private String mName;
-    private WeakReference<OnBookshelfChangedListener> mListener;
+    private WeakReference<BookshelfChangedListener> mListener;
 
     /**
      *
@@ -151,7 +152,7 @@ public class EditBookshelfDialogFragment
                 if (mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                         Logger.debug(this, "onBookshelfChanged",
                                      "WeakReference to listener was dead");
                     }
@@ -191,7 +192,7 @@ public class EditBookshelfDialogFragment
                     if (mListener.get() != null) {
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
                     } else {
-                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookshelfChanged",
                                          "WeakReference to listener was dead");
                         }
@@ -214,11 +215,11 @@ public class EditBookshelfDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final OnBookshelfChangedListener listener) {
+    public void setListener(final BookshelfChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
-    public interface OnBookshelfChangedListener {
+    public interface BookshelfChangedListener {
 
         /**
          * Called after the user confirms a change.

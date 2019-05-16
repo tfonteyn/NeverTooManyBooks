@@ -139,7 +139,7 @@ public interface SearchSiteManager {
      * <p>
      * TODO: the above warning could be phrased better...
      * try again:
-     * CoverBrowser loops through all sizes
+     * CoverBrowserFragment loops through all sizes
      * --> must use this method check to avoid calling sites to many times.
      * Other places, where just a single image is fetched, don't use this method.
      * <p>

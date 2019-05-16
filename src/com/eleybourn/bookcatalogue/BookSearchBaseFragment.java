@@ -53,7 +53,7 @@ public abstract class BookSearchBaseFragment
     /** sites to search on. Can be overridden by the user (option menu). */
     private int mSearchSites = Site.SEARCH_ALL;
 
-    abstract SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener();
+    abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
 
     @Override
     @CallSuper
@@ -135,7 +135,7 @@ public abstract class BookSearchBaseFragment
         super.onResume();
         if (mSearchManagerId != 0) {
             SearchCoordinator.MESSAGE_SWITCH
-                             .addListener(mSearchManagerId, getOnSearchFinishedListener(), true);
+                             .addListener(mSearchManagerId, true, getSearchFinishedListener());
         }
     }
 
@@ -143,7 +143,7 @@ public abstract class BookSearchBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in
-     * {@link SearchCoordinator.OnSearchFinishedListener#onSearchFinished(boolean, Bundle)}
+     * {@link SearchCoordinator.SearchFinishedListener#onSearchFinished(boolean, Bundle)}
      *
      * @return {@code true} if search was started.
      */
@@ -169,7 +169,7 @@ public abstract class BookSearchBaseFragment
         try {
             // Start the lookup in a background search task.
             final SearchCoordinator searchCoordinator =
-                    new SearchCoordinator(mActivity.getTaskManager(), getOnSearchFinishedListener());
+                    new SearchCoordinator(mActivity.getTaskManager(), getSearchFinishedListener());
             mSearchManagerId = searchCoordinator.getId();
 
             mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_searching);
@@ -198,7 +198,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onPause() {
         if (mSearchManagerId != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, getOnSearchFinishedListener());
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, getSearchFinishedListener());
         }
         super.onPause();
     }

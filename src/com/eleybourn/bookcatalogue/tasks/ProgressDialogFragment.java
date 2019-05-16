@@ -69,7 +69,7 @@ public class ProgressDialogFragment<Progress, Result>
     @Nullable
     private WeakReference<TaskListener<Progress, Result>> mTaskListener;
     @Nullable
-    private WeakReference<OnUserCancelledListener> mOnProgressCancelledListener;
+    private WeakReference<UserCancelledListener> mOnProgressCancelledListener;
 
     /**
      * @param titelId         Titel for the dialog, can be 0 for no title.
@@ -133,7 +133,7 @@ public class ProgressDialogFragment<Progress, Result>
         mTaskListener = new WeakReference<>(taskListener);
     }
 
-    public void setUserCancelledListener(@Nullable final OnUserCancelledListener listener) {
+    public void setUserCancelledListener(@Nullable final UserCancelledListener listener) {
         mOnProgressCancelledListener = new WeakReference<>(listener);
     }
 
@@ -253,6 +253,7 @@ public class ProgressDialogFragment<Progress, Result>
             if (listener != null) {
                 listener.onTaskFinished(tmpTaskId, success, result, e);
             } else {
+                // keep this as a throw, as not having the listener here would be bug
                 throw new RuntimeException("WeakReference to listener was dead");
             }
         } else {
@@ -265,14 +266,15 @@ public class ProgressDialogFragment<Progress, Result>
     public void onCancel(@NonNull final DialogInterface dialog) {
         // Tell the caller we're done. mTaskId will be null if there is no task.
         if (mOnProgressCancelledListener != null) {
-            OnUserCancelledListener listener = mOnProgressCancelledListener.get();
+            UserCancelledListener listener = mOnProgressCancelledListener.get();
             if (listener != null) {
                 listener.onProgressDialogCancelled(mTaskId);
             } else {
+                // keep this as a throw, as not having the listener here would be bug
                 throw new RuntimeException("WeakReference to listener was dead");
             }
         } else {
-            throw new IllegalStateException("no OnUserCancelledListener set.");
+            throw new IllegalStateException("no UserCancelledListener set.");
         }
     }
 
@@ -387,7 +389,7 @@ public class ProgressDialogFragment<Progress, Result>
     /**
      * Used when the USER cancels.
      */
-    public interface OnUserCancelledListener {
+    public interface UserCancelledListener {
 
         /**
          * @param taskId for the task; {@code null} if there was no embedded task.

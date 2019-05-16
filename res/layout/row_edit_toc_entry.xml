@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     >
 
     <ImageButton
         android:id="@id/ROW_DELETE_BTN"
-        style="@style/rvr_delete_button"
+        style="@style/row_delete_button"
         app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,7 +17,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/ROW_DETAILS"
-        style="@style/rvr_details_row"
+        style="@style/row_details_section"
         android:longClickable="true"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
         app:layout_constraintStart_toEndOf="@id/ROW_DELETE_BTN"
@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/rvr_details_row_major"
+            style="@style/row_details_txt_major"
             android:layout_width="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +36,7 @@
 
         <TextView
             android:id="@+id/year"
-            style="@style/rvr_details_row_minor"
+            style="@style/row_details_txt_minor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
@@ -45,7 +45,7 @@
 
         <TextView
             android:id="@+id/author"
-            style="@style/rvr_details_row_minor"
+            style="@style/row_details_txt_minor"
             android:layout_width="0dp"
             app:layout_constraintStart_toEndOf="@id/year"
             app:layout_constraintTop_toBottomOf="@id/title"
@@ -56,7 +56,7 @@
 
     <ImageView
         android:id="@id/ROW_GRABBER_ICON"
-        style="@style/rvr_drag_handle"
+        style="@style/row_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"

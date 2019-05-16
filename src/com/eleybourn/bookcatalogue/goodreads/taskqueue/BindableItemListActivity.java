@@ -52,7 +52,7 @@ abstract class BindableItemListActivity
     /**
      * Listener to handle add/change/delete.
      */
-    protected final QueueManager.OnChangeListener mOnChangeListener = this::refreshData;
+    protected final QueueManager.ChangeListener mChangeListener = this::refreshData;
 
     /**
      * Subclass MUST implement to return the cursor that will be used to display items.

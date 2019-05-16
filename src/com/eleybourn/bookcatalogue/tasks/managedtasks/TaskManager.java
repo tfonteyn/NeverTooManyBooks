@@ -92,6 +92,17 @@ public class TaskManager {
     private final Context mContext;
 
     /**
+     * {@link Csv#join} formatter for {@link #sendProgress}
+     */
+    private final Csv.Formatter<TaskInfo> mProgressMsgFormatter = element -> {
+        String pm = element.progressMessage;
+        if (pm != null && !pm.isEmpty()) {
+            return " - " + pm;
+        } else {
+            return null;
+        }
+    };
+    /**
      * Current progress message to display, even if no tasks running.
      * Setting to {@code null} or blank will remove the Progress Dialog if no tasks are left
      * running. If this is not done, the dialog WILL STAY OPEN
@@ -194,8 +205,9 @@ public class TaskManager {
             if (getTaskInfo(task) == null) {
                 mTaskInfoList.add(new TaskInfo(task));
                 // Tell the ManagedTask we are listening for messages.
-                ManagedTask.MESSAGE_SWITCH.addListener(task.getSenderId(), mManagedTaskListener,
-                                                       true);
+                ManagedTask.MESSAGE_SWITCH.addListener(task.getSenderId(), true,
+                                                       mManagedTaskListener
+                );
             }
         }
     }
@@ -279,12 +291,8 @@ public class TaskManager {
                     if (progressMessage.length() > 0) {
                         progressMessage.append('\n');
                     }
-
                     progressMessage.append(Csv.join("\n", mTaskInfoList, false,
-                                                    element -> {
-                                                        String pm = element.progressMessage;
-                                                        return pm == null ? null : " - " + pm;
-                                                    }));
+                                                    mProgressMsgFormatter));
                 }
             }
 

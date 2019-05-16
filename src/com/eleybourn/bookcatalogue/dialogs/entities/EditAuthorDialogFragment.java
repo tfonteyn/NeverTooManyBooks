@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.os.Bundle;
 
@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -72,8 +73,9 @@ public class EditAuthorDialogFragment
         if (mBookChangedListener.get() != null) {
             mBookChangedListener.get().onBookChanged(0, BookChangedListener.AUTHOR, data);
         } else {
-            if (BuildConfig.DEBUG) {
-                Logger.debug(this, "onBookChanged", "WeakReference to listener was dead");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onBookChanged",
+                             "WeakReference to listener was dead");
             }
         }
     }

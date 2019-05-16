@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.viewmodels.PreferredStylesViewModel;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
@@ -254,7 +254,7 @@ public class PreferredStylesActivity
 
         BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final ArrayList<BooklistStyle> items,
-                              @NonNull final OnStartDragListener dragStartListener) {
+                              @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 

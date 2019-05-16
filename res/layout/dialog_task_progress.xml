@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <TextView
         android:id="@+id/progressMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border_double"
+        android:layout_margin="@dimen/border2"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,7 +24,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border_double"
+        android:layout_margin="@dimen/border2"
         android:max="100"
         android:progress="0"
         app:layout_constraintEnd_toEndOf="parent"

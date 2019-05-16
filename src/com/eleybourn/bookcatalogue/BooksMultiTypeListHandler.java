@@ -314,7 +314,7 @@ public class BooksMultiTypeListHandler
 
         /** The listener for the tasks result. */
         @NonNull
-        private final WeakReference<OnGetBookExtrasTaskFinishedListener> mTaskListener;
+        private final WeakReference<GetBookExtrasTaskFinishedListener> mTaskListener;
 
         /** Database access. */
         @NonNull
@@ -356,7 +356,7 @@ public class BooksMultiTypeListHandler
         GetBookExtrasTask(@NonNull final Resources resources,
                           @NonNull final DAO db,
                           final long bookId,
-                          @NonNull final OnGetBookExtrasTaskFinishedListener taskListener,
+                          @NonNull final GetBookExtrasTaskFinishedListener taskListener,
                           @NonNull final BooklistStyle style) {
 
             mLocale = resources.getConfiguration().locale;
@@ -377,6 +377,7 @@ public class BooksMultiTypeListHandler
         @Override
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
+            Thread.currentThread().setName("GetBookExtrasTask " + mBookId);
             //A performance run (in UIThread!) on 983 books showed:
             // 1. withBookshelves==false; t=799.380.500
             // 2. withBookshelves==true and complex SQL; t=806.311.600
@@ -447,13 +448,14 @@ public class BooksMultiTypeListHandler
                 mTaskListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher,
                                                                 mFormat, mShelves, mLocation);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
 
-        interface OnGetBookExtrasTaskFinishedListener {
+        interface GetBookExtrasTaskFinishedListener {
 
             /**
              * Results from fetching the extras. Fields not used/fetched will be {@code null}.
@@ -511,8 +513,8 @@ public class BooksMultiTypeListHandler
         TextView publisherView;
         /** Pointer to the view that stores the related book field. */
         TextView formatView;
-        private final GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener mTaskListener =
-                new GetBookExtrasTask.OnGetBookExtrasTaskFinishedListener() {
+        private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
+                new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
                     @Override
                     public void onGetBookExtrasTaskFinished(@Nullable final String author,
                                                             @Nullable final String publisher,

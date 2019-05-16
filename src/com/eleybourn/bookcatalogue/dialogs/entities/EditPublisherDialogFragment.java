@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,42 +36,41 @@ import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.EditSeriesListActivity;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * Dialog to edit an existing single series.
+ * Dialog to edit an existing publisher.
  * <p>
- * Calling point is a List; see {@link EditSeriesListActivity} for book
+ * Calling point is a List.
  */
-public class EditSeriesDialogFragment
+public class EditPublisherDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+    public static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
 
     /** Database access. */
     private DAO mDb;
 
-    private AutoCompleteTextView mNameView;
-    private Checkable mIsCompleteView;
-
     private String mName;
-    private boolean mIsComplete;
+
+    private AutoCompleteTextView mNameView;
     private WeakReference<BookChangedListener> mBookChangedListener;
 
     /**
      * Constructor.
      */
-    public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
-        EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
+    public static EditPublisherDialogFragment newInstance(@NonNull final Publisher publisher) {
+
+        EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DBDefinitions.KEY_SERIES, series);
+        args.putParcelable(DBDefinitions.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
     }
@@ -80,41 +78,34 @@ public class EditSeriesDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-        //noinspection ConstantConditions
-        @NonNull
         Context context = getContext();
         mDb = new DAO();
 
         Bundle args = requireArguments();
 
-        final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
+        final Publisher publisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            mName = series.getName();
-            mIsComplete = series.isComplete();
+            mName = publisher.getName();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
         }
 
         @SuppressWarnings("ConstantConditions")
-        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
+        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
+        //noinspection ConstantConditions
         ArrayAdapter<String> mAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAllSeriesNames());
+                                   mDb.getPublisherNames());
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
 
-        mIsCompleteView = root.findViewById(R.id.is_complete);
-        mIsCompleteView.setChecked(mIsComplete);
-
         return new AlertDialog.Builder(context)
                 .setView(root)
-                .setTitle(R.string.lbl_series)
+                .setTitle(R.string.lbl_publisher)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mName = mNameView.getText().toString().trim();
@@ -122,26 +113,23 @@ public class EditSeriesDialogFragment
                         UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
                         return;
                     }
-                    mIsComplete = mIsCompleteView.isChecked();
                     dismiss();
 
                     //noinspection ConstantConditions
-                    if (series.getName().equals(mName)
-                            && series.isComplete() == mIsComplete) {
+                    if (publisher.getName().equals(mName)) {
                         return;
                     }
-                    series.setName(mName);
-                    series.setComplete(mIsComplete);
-
-                    mDb.updateOrInsertSeries(series);
+                    mDb.updatePublisher(publisher.getName(), mName);
 
                     Bundle data = new Bundle();
-                    data.putLong(DBDefinitions.KEY_SERIES, series.getId());
+                    data.putString(DBDefinitions.KEY_PUBLISHER, publisher.getName());
                     if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.SERIES, data);
+                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.PUBLISHER,
+                                                                 data);
                     } else {
-                        if (BuildConfig.DEBUG) {
-                            Logger.debug(this, "onBookChanged", "WeakReference to listener was dead");
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onBookChanged",
+                                         "WeakReference to listener was dead");
                         }
                     }
                 })
@@ -160,15 +148,13 @@ public class EditSeriesDialogFragment
     @Override
     public void onPause() {
         mName = mNameView.getText().toString().trim();
-        mIsComplete = mIsCompleteView.isChecked();
         super.onPause();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_SERIES, mName);
-        outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putString(DBDefinitions.KEY_PUBLISHER, mName);
     }
 
     @Override

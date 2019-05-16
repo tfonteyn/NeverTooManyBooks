@@ -14,7 +14,7 @@
         class="com.eleybourn.bookcatalogue.cropper.CropImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/border_double"
+        android:layout_margin="@dimen/border2"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

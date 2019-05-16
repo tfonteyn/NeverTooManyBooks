@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
@@ -288,7 +288,7 @@ public class StyleGroupsActivity
 
         GroupWrapperListAdapter(@NonNull final Context context,
                                 @NonNull final ArrayList<GroupWrapper> items,
-                                @NonNull final OnStartDragListener dragStartListener) {
+                                @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 

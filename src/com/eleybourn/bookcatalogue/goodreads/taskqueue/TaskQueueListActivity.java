@@ -53,7 +53,7 @@ public class TaskQueueListActivity
         setTitle(R.string.gr_tq_menu_background_tasks);
 
         //When any task is added/changed/deleted, update the list. Lazy, yes.
-        QueueManager.getQueueManager().registerTaskListener(mOnChangeListener);
+        QueueManager.getQueueManager().registerTaskListener(mChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_tasks);
@@ -113,7 +113,7 @@ public class TaskQueueListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterTaskListener(mOnChangeListener);
+        QueueManager.getQueueManager().unregisterTaskListener(mChangeListener);
         super.onDestroy();
     }
 }

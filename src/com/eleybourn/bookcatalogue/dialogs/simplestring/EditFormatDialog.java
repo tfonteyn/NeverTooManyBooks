@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
 
@@ -29,26 +29,26 @@ import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 
-public class EditLocationDialog
+public class EditFormatDialog
         extends EditStringBaseDialog {
 
-    public EditLocationDialog(@NonNull final Activity activity,
-                              @NonNull final DAO db,
-                              @NonNull final BookChangedListener listener) {
-        super(activity, db, db.getLocations(), listener);
+    public EditFormatDialog(@NonNull final Activity activity,
+                            @NonNull final DAO db,
+                            @NonNull final BookChangedListener listener) {
+        super(activity, db, db.getFormats(), listener);
     }
 
     @CallSuper
     public void edit(@NonNull final String currentText) {
-        super.edit(currentText, R.layout.dialog_edit_location, R.string.lbl_location);
+        super.edit(currentText, R.layout.dialog_edit_format, R.string.lbl_format);
     }
 
     @Override
     protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        mDb.updateLocation(from, to);
+        mDb.updateFormat(from, to);
         if (mListener != null) {
-            mListener.onBookChanged(0, BookChangedListener.LOCATION, null);
+            mListener.onBookChanged(0, BookChangedListener.FORMAT, null);
         }
     }
 }

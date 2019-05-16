@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.editordialog;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -26,7 +26,7 @@ public interface CheckListItem<T>
     /**
      * @param context caller context
      *
-     * @return the label to use in a {@link CheckListEditorDialogFragment}.
+     * @return the label to use in a {@link CheckListDialogFragment}.
      */
     String getLabel(@NonNull final Context context);
 }

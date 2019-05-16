@@ -28,6 +28,8 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected Boolean doInBackground(final Void... params) {
+        Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
+
         GoodreadsManager grMgr = new GoodreadsManager();
         try {
             grMgr.handleAuthentication();

@@ -259,13 +259,6 @@ public class EditBookFieldsFragment
 
     @Override
     @CallSuper
-    public void onPause() {
-        mCoverHandler.dismissCoverBrowser();
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {

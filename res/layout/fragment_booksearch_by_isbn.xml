@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border"
+    android:layout_margin="@dimen/border1"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".BookSearchActivity"
     >
@@ -13,7 +13,7 @@
     <EditText
         android:id="@+id/isbn"
         style="@style/isbnEntry"
-        android:layout_margin="@dimen/border_double"
+        android:layout_margin="@dimen/border2"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:windowSoftInputMode="stateAlwaysHidden"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
@@ -164,7 +164,7 @@
         android:id="@+id/allow_asin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border_double"
+        android:layout_marginTop="@dimen/border2"
         android:text="@string/lbl_allow_asin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <AutoCompleteTextView
@@ -28,7 +28,7 @@
     <TextView
         android:id="@+id/blurb"
         style="@style/txt_blurb_medium"
-        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/indent1"
         android:text="@string/warning_immediate_global_changes"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

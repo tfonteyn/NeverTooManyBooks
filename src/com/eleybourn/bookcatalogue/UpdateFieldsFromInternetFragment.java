@@ -70,12 +70,6 @@ public class UpdateFieldsFromInternetFragment
 
     /** senderId of the update task. */
     private long mUpdateSenderId;
-
-    /** display reminder only. */
-    private String mAuthorFormatted;
-    /** display reminder only. */
-    private String mTitle;
-
     private final ManagedTaskListener mManagedTaskListener = new ManagedTaskListener() {
         @Override
         public void onTaskFinished(@NonNull final ManagedTask task) {
@@ -99,6 +93,10 @@ public class UpdateFieldsFromInternetFragment
             activity.finish();
         }
     };
+    /** display reminder only. */
+    private String mAuthorFormatted;
+    /** display reminder only. */
+    private String mTitle;
 
     @Override
     @CallSuper
@@ -417,20 +415,22 @@ public class UpdateFieldsFromInternetFragment
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(),R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
             return;
         }
 
         //noinspection ConstantConditions
         TaskManager taskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
         UpdateFieldsFromInternetTask updateTask =
-                new UpdateFieldsFromInternetTask(taskManager, mSearchSites, mFieldUsages, mManagedTaskListener);
+                new UpdateFieldsFromInternetTask(taskManager, mSearchSites, mFieldUsages,
+                                                 mManagedTaskListener);
         if (bookId > 0) {
             updateTask.setBookId(bookId);
         }
 
         mUpdateSenderId = updateTask.getSenderId();
-        UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, mManagedTaskListener, false);
+        UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, false,
+                                                                mManagedTaskListener);
         updateTask.start();
     }
 
@@ -438,7 +438,8 @@ public class UpdateFieldsFromInternetFragment
     @CallSuper
     public void onPause() {
         if (mUpdateSenderId != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.removeListener(mUpdateSenderId, mManagedTaskListener);
+            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.removeListener(mUpdateSenderId,
+                                                                       mManagedTaskListener);
         }
         super.onPause();
     }
@@ -448,7 +449,8 @@ public class UpdateFieldsFromInternetFragment
     public void onResume() {
         super.onResume();
         if (mUpdateSenderId != 0) {
-            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, mManagedTaskListener, true);
+            UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, true,
+                                                                    mManagedTaskListener);
         }
     }
 }

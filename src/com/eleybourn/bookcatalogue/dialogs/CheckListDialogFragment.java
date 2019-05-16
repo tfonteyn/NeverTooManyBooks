@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs.editordialog;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -53,18 +54,18 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  *
  * @param <T> type to use for {@link CheckListItem}
  */
-public class CheckListEditorDialogFragment<T>
+public class CheckListDialogFragment<T>
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = CheckListEditorDialogFragment.class.getSimpleName();
+    public static final String TAG = CheckListDialogFragment.class.getSimpleName();
 
     /** Argument. */
     private static final String BKEY_CHECK_LIST = TAG + ":list";
 
     /** The list of items to display. Object + checkbox. */
     private ArrayList<CheckListItem<T>> mList;
-    private WeakReference<OnCheckListEditorResultsListener<T>> mListener;
+    private WeakReference<CheckListResultsListener<T>> mListener;
 
     /** identifier of the field this dialog is bound to. */
     @IdRes
@@ -81,12 +82,12 @@ public class CheckListEditorDialogFragment<T>
      *
      * @return the new instance
      */
-    public static <T> CheckListEditorDialogFragment<T> newInstance(
+    public static <T> CheckListDialogFragment<T> newInstance(
             @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
             @NonNull final CheckListEditorListGetter<T> listGetter) {
 
-        CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
+        CheckListDialogFragment<T> frag = new CheckListDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
@@ -134,8 +135,9 @@ public class CheckListEditorDialogFragment<T>
                         mListener.get().onCheckListEditorSave(mDestinationFieldId,
                                                               extractList(mList));
                     } else {
-                        if (BuildConfig.DEBUG) {
-                            Logger.debug(this, "onCheckListEditorSave", "WeakReference to listener was dead");
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                            Logger.debug(this, "onCheckListEditorSave",
+                                         "WeakReference to listener was dead");
                         }
                     }
                 })
@@ -178,7 +180,7 @@ public class CheckListEditorDialogFragment<T>
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final OnCheckListEditorResultsListener<T> listener) {
+    public void setListener(final CheckListResultsListener<T> listener) {
         mListener = new WeakReference<>(listener);
     }
 
@@ -187,7 +189,7 @@ public class CheckListEditorDialogFragment<T>
      *
      * @param <T> - type of item in the checklist
      */
-    public interface OnCheckListEditorResultsListener<T> {
+    public interface CheckListResultsListener<T> {
 
         /**
          * reports the results after this dialog was confirmed.
@@ -201,7 +203,7 @@ public class CheckListEditorDialogFragment<T>
     }
 
     /**
-     * Loads the {@link CheckListEditorDialogFragment} with the *current* list,
+     * Loads the {@link CheckListDialogFragment} with the *current* list,
      * e.g. not the state of the list at init time.
      */
     public interface CheckListEditorListGetter<T> {

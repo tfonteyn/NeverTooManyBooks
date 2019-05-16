@@ -8,7 +8,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dateSelector"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal"

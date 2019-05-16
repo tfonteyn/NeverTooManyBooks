@@ -167,7 +167,7 @@ public abstract class BaseActivityWithTasks
         if (!isFinishing()) {
             // Restore/create mTaskManager.
             getTaskManager();
-            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, mTaskManagerListener, true);
+            TaskManager.MESSAGE_SWITCH.addListener(mTaskManagerId, true, mTaskManagerListener);
         }
     }
 

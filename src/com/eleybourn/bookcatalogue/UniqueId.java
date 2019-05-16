@@ -48,7 +48,7 @@ public final class UniqueId {
     public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
 
 
-    /** Request code: ask the CoverBrowser to get an alternative edition cover. */
+    /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ALT_EDITION = 3_001;
     /** Request code: use internal routines for cropping images. */

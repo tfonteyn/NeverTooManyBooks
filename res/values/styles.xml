@@ -2,39 +2,51 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- *************************************************************************************** -->
-    <!-- Page section headers and dividers -->
+    <!-- Page section headers -->
     <!-- *************************************************************************************** -->
 
     <style name="majorSectionHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border_double</item>
-        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:layout_marginTop">@dimen/border2</item>
+        <item name="android:layout_marginBottom">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="sectionHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border</item>
-        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:layout_marginTop">@dimen/border2</item>
+        <item name="android:layout_marginBottom">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <!-- section header for grouped menu settings -->
-    <style name="menuSectionHeader" parent="@style/sectionHeader">
+    <style name="menuSectionHeader">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/border1</item>
+        <item name="android:layout_marginBottom">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Page dividers -->
+    <!-- *************************************************************************************** -->
 
     <!-- basic horizontal divider line -->
     <style name="div_horizontal">
         <item name="android:layout_width">0dp</item>
         <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
         <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginTop">@dimen/margin_div</item>
-        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
         <item name="android:background">?android:attr/dividerHorizontal</item>
     </style>
 
@@ -52,108 +64,52 @@
 
     <!-- generic field labels where the data is on the side of the label -->
     <style name="lbl_textField_inline" parent="@style/lbl_textField">
-        <item name="android:layout_marginStart">@dimen/border_double</item>
-        <item name="android:layout_marginEnd">@dimen/border</item>
-    </style>
-
-    <!-- field labels for editable fields; identical to lbl_textField for now,
-     but allows future customization -->
-    <style name="lbl_editField" parent="@style/lbl_textField">
+        <item name="android:paddingEnd">@dimen/indent1</item>
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Generic TextView fields in 3 sizes -->
+    <!-- Generic TextView with user-data in 3 sizes -->
     <!-- *************************************************************************************** -->
 
-    <!-- 'major' detail text field; for example the book title -->
-    <style name="txt_detail_large">
+    <style name="base_txt_detail">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <!-- 'major' detail text field; for example the book title -->
+    <style name="txt_detail_large" parent="base_txt_detail">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textStyle">italic</item>
     </style>
 
     <!-- 'medium' detail text field; for example series title, ... -->
-    <style name="txt_detail_medium">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="txt_detail_medium" parent="base_txt_detail">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textIsSelectable">true</item>
     </style>
 
     <!-- 'minor' detail text field; for example format, isbn,... -->
-    <style name="txt_detail_small">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">true</item>
-    </style>
-
-    <!-- informational piece of text -->
-    <style name="txt_blurb_medium">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_triple</item>
-        <item name="android:layout_marginEnd">@dimen/border_triple</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- informational piece of text -->
-    <style name="txt_blurb_small">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_triple</item>
-        <item name="android:layout_marginEnd">@dimen/border_triple</item>
+    <style name="txt_detail_small" parent="base_txt_detail">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Specialized TextView fields -->
+    <!-- Information (blurb) TextView fields -->
     <!-- *************************************************************************************** -->
 
-    <!-- level 1/2 text in the bookshelf spinner on the booklist activity -->
-    <style name="bobSpinnerLevelText">
+    <style name="base_txt_blurb">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_double</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">false</item>
+        <item name="android:layout_marginEnd">@dimen/indent3</item>
     </style>
 
-    <!-- Booklist book row fields; level 1,2,3 are kept in their layout files -->
-    <style name="row_booklist_book_fields">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border</item>
-        <item name="android:layout_marginEnd">@dimen/border</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <!-- file info fields for a File selection screen -->
-    <style name="txt_row_fileInfo">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
-    <style name="link_url">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <!-- informational piece of text -->
+    <style name="txt_blurb_medium" parent="base_txt_blurb">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
-    <style name="error_message">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?android:attr/colorError</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textIsSelectable">true</item>
+    <!-- informational piece of text -->
+    <style name="txt_blurb_small" parent="base_txt_blurb">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -178,8 +134,8 @@
     <!-- International three character currency code (uppercase) -->
     <style name="currencyTextEntry" parent="@style/base_editorField">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_double</item>
-        <item name="android:layout_marginEnd">@dimen/border_double</item>
+        <item name="android:layout_marginStart">@dimen/indent2</item>
+        <item name="android:layout_marginEnd">@dimen/indent2</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
         <item name="android:hint">...</item>
@@ -207,72 +163,14 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- RecyclerView rows -->
-    <!-- *************************************************************************************** -->
-
-    <style name="rvr_base_image_button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border_double</item>
-    </style>
-
-    <!-- checkbox with custom 'check/invisible' icon -->
-    <style name="rvr_checkable_button" parent="@style/rvr_base_image_button">
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:background">?android:attr/textCheckMark</item>
-        <item name="android:button">@null</item>
-    </style>
-
-    <style name="rvr_delete_button" parent="@style/rvr_base_image_button">
-        <item name="android:src">@drawable/ic_delete</item>
-        <!--<item name="android:tint">?android:attr/colorPrimary</item>-->
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-    </style>
-
-    <style name="rvr_drag_handle" parent="@style/rvr_base_image_button">
-        <item name="android:src">@drawable/ic_reorder</item>
-    </style>
-
-    <!-- the details part of the row in a RecyclerView row. -->
-    <style name="rvr_details_row">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:focusable">false</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <!-- the first/top row inside a RecyclerView details row. -->
-    <style name="rvr_details_row_major">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-    <!-- the second/.. rows inside a RecyclerView details row. -->
-    <style name="rvr_details_row_minor">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:layout_marginStart">@dimen/border_double</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
     <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_iconButton" parent="@style/rvr_base_image_button">
+    <style name="base_iconButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:padding">@dimen/border2</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:focusable">true</item>
     </style>
 
@@ -285,39 +183,98 @@
     </style>
 
     <!-- *************************************************************************************** -->
+    <!-- Rows in a list -->
+    <!-- *************************************************************************************** -->
+
+    <style name="base_row_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border2</item>
+    </style>
+
+    <!-- CheckBox - editable checkbox with custom icon -->
+    <style name="row_checkable_button" parent="@style/base_row_button">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:button">?android:attr/textCheckMark</item>
+    </style>
+
+    <!-- ImageButton - 'delete this row' -->
+    <style name="row_delete_button" parent="@style/base_row_button">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:src">@drawable/ic_delete</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
+    <style name="row_drag_handle" parent="@style/base_row_button">
+        <item name="android:src">@drawable/ic_reorder</item>
+    </style>
+
+    <!-- the details part of the row in a list row. -->
+    <style name="row_details_section">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- the first/top row inside a list details row. -->
+    <style name="row_details_txt_major">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    <!-- the second/.. rows inside a RecyclerView details row. -->
+    <style name="row_details_txt_minor">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <!-- indent a bit -->
+        <item name="android:layout_marginStart">@dimen/indent2</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
     <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
     <!-- *************************************************************************************** -->
 
-    <!-- Clickable row in a ListView. Flashes when clicked. -->
-    <style name="row_in_ListView">
+    <!-- Clickable row in a list. Flashes when clicked. -->
+    <style name="row_option">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border</item>
+        <item name="android:layout_margin">@dimen/border1</item>
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Menu label for options in a list -->
-    <style name="row_option_menu" parent="@style/row_in_ListView">
-        <item name="android:padding">@dimen/border_double</item>
-        <item name="android:drawablePadding">@dimen/border_quad</item>
+    <style name="row_option_menu" parent="@style/row_option">
+        <item name="android:padding">@dimen/border2</item>
+        <item name="android:drawablePadding">@dimen/border3</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
-    <style name="row_option_checkable" parent="@style/row_in_ListView">
+    <style name="row_option_checkable" parent="@style/row_option">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Used for a dedicated 'help' TextView associated with an option -->
-    <style name="row_option_info">
+    <style name="row_option_blurb">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_quad</item>
-        <item name="android:layout_marginEnd">@dimen/border_quad</item>
-        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:layout_margin">@dimen/border1</item>
+        <item name="android:paddingStart">@dimen/indent_compound_button</item>
+        <item name="android:paddingEnd">0dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
-
     <!-- *************************************************************************************** -->
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
@@ -334,7 +291,7 @@
     <style name="coverImage" parent="@style/base_cover_image">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border</item>
+        <item name="android:padding">@dimen/border1</item>
     </style>
 
     <!-- full screen zoomed -->
@@ -346,6 +303,53 @@
     <!-- *************************************************************************************** -->
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
+
+    <!-- level 1/2 text in the header on the booklist activity -->
+    <style name="booklist_header_level_text">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent2</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <!-- Booklist book row fields; level 1,2,3 are kept in their layout files -->
+    <style name="booklist_book_row">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent1</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <!-- file info fields for a File selection screen -->
+    <style name="file_info">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- clickable URL -->
+    <style name="link_url">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
+    </style>
+
+    <!-- err. -->
+    <style name="error_message">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?android:attr/colorError</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
 
     <style name="nav_view">
         <item name="android:layout_width">wrap_content</item>
@@ -363,18 +367,19 @@
     </style>
 
     <!-- the outer frame (e.g. 'root') for a Dialog -->
-    <style name="dialogFrame">
+    <style name="dialog_frame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/border_double</item>
+        <item name="android:padding">@dimen/border2</item>
     </style>
 
-    <style name="progressOverlay">
+    <!-- a progress "dialog" implemented as an overlay to a full-screen. -->
+    <style name="progress_overlay">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border</item>
-        <item name="android:layout_margin">@dimen/border_double</item>
+        <item name="android:padding">@dimen/border1</item>
+        <item name="android:layout_margin">@dimen/border2</item>
         <item name="android:elevation">2dp</item>
         <item name="android:visibility">gone</item>
         <item name="android:background">?android:attr/colorBackgroundFloating</item>
@@ -387,7 +392,7 @@
         <item name="android:layout_margin">@dimen/fab_margin</item>
     </style>
 
-    <!-- Style for keys on the isbn search keyboard -->
+    <!-- Keys on the isbn search keyboard -->
     <style name="isbnSearchKey">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
@@ -401,7 +406,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- Read-only "CheckBox" with custom 'check/invisible' icon -->
+    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
     <style name="book_read">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -411,39 +416,7 @@
         <item name="android:button">@drawable/ic_checked_selector</item>
         <item name="android:buttonTint">?attr/checked_icon_tint</item>
     </style>
-    <!-- *************************************************************************************** -->
-    <!-- translators: create a language specific styles.xml file and copy these styles -->
-    <!-- *************************************************************************************** -->
-
-    <!-- base style for all *LOCALISED* EditFields; not to be used directly in layouts -->
-    <style name="base_localeTextEntry" parent="@style/base_editorField">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
-    <style name="simpleTextEntry" parent="@style/base_localeTextEntry" />
-
-    <style name="multiLineTextEntry" parent="@style/simpleTextEntry">
-        <item name="android:inputType">textCapSentences|textMultiLine</item>
-    </style>
-
-    <!-- Fields for 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/base_localeTextEntry" />
-
-    <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
-
-    <!-- The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
-
-    <!-- The language field. -->
-    <style name="languageTextEntry" parent="@style/base_localeTextEntry" />
-
-    <!-- The price (listed, paid, ... ) fields. -->
-    <style name="priceTextEntry" parent="@style/base_localeTextEntry">
-        <item name="android:inputType">numberDecimal</item>
-    </style>
 
     <!-- *************************************************************************************** -->
-
 
 </resources>

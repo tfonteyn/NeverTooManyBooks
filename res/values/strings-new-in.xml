@@ -13,7 +13,7 @@
             * Language field shows the translated name in the current locale.\n
             * More local support in general (formatting etc.)
             * Books & Anthology/TOC titles now have a “first published” field.\n
-            * Books Editions (1st, book-club, etc).\n
+            * Book Editions (1st, book-club, etc).\n
             * Book paid price.\n
             * Book date acquired.\n
             * Book pages is now alphanumeric\n
@@ -25,6 +25,7 @@
             * Experimental: New Search website: OpenLibrary\n
             * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
             * Removed: The old “Classic” view is gone.\n
+            * Bug fixes\n
         </p>]]>
     </string>
 

@@ -620,6 +620,8 @@ public final class ImageUtils {
         @Nullable
         @WorkerThread
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("GetImageTask");
+
             RUNNING_TASKS.incrementAndGet();
 
             try {
@@ -762,6 +764,8 @@ public final class ImageUtils {
         @Override
         @WorkerThread
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("ImageCacheWriterTask");
+
             runningTasks.incrementAndGet();
 
             if (mBitmap.isRecycled()) {

@@ -612,6 +612,7 @@ public class BooksOnBookshelfModel
         @NonNull
         @WorkerThread
         protected BuilderHolder doInBackground(final Void... params) {
+            Thread.currentThread().setName("GetBookListTask");
             try {
                 long t0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -722,8 +723,9 @@ public class BooksOnBookshelfModel
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskCancelled(mTaskId, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onCancelled", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onCancelled",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -762,8 +764,9 @@ public class BooksOnBookshelfModel
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }

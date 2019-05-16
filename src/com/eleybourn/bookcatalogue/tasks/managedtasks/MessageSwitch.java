@@ -100,14 +100,13 @@ public class MessageSwitch<T, U> {
 
     /**
      * Add a listener for the specified sender ID.
-     *
-     * @param senderId    ID of sender to which the listener listens
-     * @param listener    Listener object
+     *  @param senderId    ID of sender to which the listener listens
      * @param deliverLast If true, send the last message (if any) to this listener
+     * @param listener    Listener object
      */
     public void addListener(@NonNull final Long senderId,
-                            @NonNull final T listener,
-                            final boolean deliverLast) {
+                            final boolean deliverLast,
+                            @NonNull final T listener) {
         // Add the listener to the queue, creating the queue if necessary
         MessageListeners queue;
         synchronized (mListeners) {

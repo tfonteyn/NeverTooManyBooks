@@ -57,6 +57,8 @@ public class ExportCSVTask
     @Nullable
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
+        Thread.currentThread().setName("ExportCSVTask");
+
         try (OutputStream out = new FileOutputStream(tmpFile)) {
             // start the export
             mExporter.doBooks(out, new ProgressListener() {

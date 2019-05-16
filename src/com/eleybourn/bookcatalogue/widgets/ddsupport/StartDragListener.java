@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * Listener for manual initiation of a drag.
  */
-public interface OnStartDragListener {
+public interface StartDragListener {
 
     /**
      * Called when a view is requesting a start of a drag.

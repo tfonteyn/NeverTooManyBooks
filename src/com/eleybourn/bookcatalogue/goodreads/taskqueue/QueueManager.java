@@ -73,11 +73,11 @@ public final class QueueManager {
     @NonNull
     private final WeakReference<Thread> mUIThread;
     /** Objects listening for Event operations. */
-    private final List<WeakReference<OnChangeListener>> mEventChangeListeners =
+    private final List<WeakReference<ChangeListener>> mEventChangeListeners =
             new ArrayList<>();
     /** Objects listening for Task operations. */
     @NonNull
-    private final List<WeakReference<OnChangeListener>> mTaskChangeListeners;
+    private final List<WeakReference<ChangeListener>> mTaskChangeListeners;
 
     /** Handle inter-thread messages. */
     private final MessageHandler mMessageHandler;
@@ -127,10 +127,10 @@ public final class QueueManager {
         return sInstance;
     }
 
-    void registerEventListener(@NonNull final OnChangeListener listener) {
+    void registerEventListener(@NonNull final ChangeListener listener) {
         synchronized (mEventChangeListeners) {
-            for (WeakReference<OnChangeListener> lr : mEventChangeListeners) {
-                OnChangeListener l = lr.get();
+            for (WeakReference<ChangeListener> lr : mEventChangeListeners) {
+                ChangeListener l = lr.get();
                 if (l != null && l.equals(listener)) {
                     return;
                 }
@@ -140,16 +140,16 @@ public final class QueueManager {
     }
 
     /** ignores any failures. */
-    void unregisterEventListener(@NonNull final OnChangeListener listener) {
+    void unregisterEventListener(@NonNull final ChangeListener listener) {
         try {
             synchronized (mEventChangeListeners) {
-                List<WeakReference<OnChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<OnChangeListener> l : mEventChangeListeners) {
+                List<WeakReference<ChangeListener>> ll = new ArrayList<>();
+                for (WeakReference<ChangeListener> l : mEventChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<OnChangeListener> l : ll) {
+                for (WeakReference<ChangeListener> l : ll) {
                     mEventChangeListeners.remove(l);
                 }
             }
@@ -157,10 +157,10 @@ public final class QueueManager {
         }
     }
 
-    void registerTaskListener(@NonNull final OnChangeListener listener) {
+    void registerTaskListener(@NonNull final ChangeListener listener) {
         synchronized (mTaskChangeListeners) {
-            for (WeakReference<OnChangeListener> lr : mTaskChangeListeners) {
-                OnChangeListener l = lr.get();
+            for (WeakReference<ChangeListener> lr : mTaskChangeListeners) {
+                ChangeListener l = lr.get();
                 if (l != null && l.equals(listener)) {
                     return;
                 }
@@ -170,16 +170,16 @@ public final class QueueManager {
     }
 
     /** ignores any failures. */
-    void unregisterTaskListener(@NonNull final OnChangeListener listener) {
+    void unregisterTaskListener(@NonNull final ChangeListener listener) {
         try {
             synchronized (mTaskChangeListeners) {
-                List<WeakReference<OnChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<OnChangeListener> l : mTaskChangeListeners) {
+                List<WeakReference<ChangeListener>> ll = new ArrayList<>();
+                for (WeakReference<ChangeListener> l : mTaskChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<OnChangeListener> l : ll) {
+                for (WeakReference<ChangeListener> l : ll) {
                     mTaskChangeListeners.remove(l);
                 }
             }
@@ -189,13 +189,13 @@ public final class QueueManager {
 
     void notifyTaskChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<OnChangeListener>> list;
+        List<WeakReference<ChangeListener>> list;
         synchronized (mTaskChangeListeners) {
             list = new ArrayList<>(mTaskChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<OnChangeListener> wl : list) {
-            final OnChangeListener listener = wl.get();
+        for (WeakReference<ChangeListener> wl : list) {
+            final ChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mTaskChangeListeners) {
                     mTaskChangeListeners.remove(wl);
@@ -211,13 +211,13 @@ public final class QueueManager {
 
     private void notifyEventChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<OnChangeListener>> list;
+        List<WeakReference<ChangeListener>> list;
         synchronized (mEventChangeListeners) {
             list = new ArrayList<>(mEventChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<OnChangeListener> wl : list) {
-            final OnChangeListener listener = wl.get();
+        for (WeakReference<ChangeListener> wl : list) {
+            final ChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mEventChangeListeners) {
                     mEventChangeListeners.remove(wl);
@@ -473,7 +473,7 @@ public final class QueueManager {
         notifyTaskChange();
     }
 
-    public interface OnChangeListener {
+    public interface ChangeListener {
 
         void onChange();
     }

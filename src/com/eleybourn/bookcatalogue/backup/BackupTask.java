@@ -73,6 +73,7 @@ public class BackupTask
     @NonNull
     @WorkerThread
     protected ExportOptions doInBackground(final Void... params) {
+        Thread.currentThread().setName("BackupTask");
 
         try (BackupWriter writer = BackupManager.getWriter(mTmpFile)) {
 

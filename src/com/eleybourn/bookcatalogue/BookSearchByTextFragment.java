@@ -132,12 +132,12 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    SearchCoordinator.OnSearchFinishedListener getOnSearchFinishedListener() {
-        return mOnSearchFinishedListener;
+    SearchCoordinator.SearchFinishedListener getSearchFinishedListener() {
+        return mSearchFinishedListener;
     }
 
-    private final SearchCoordinator.OnSearchFinishedListener mOnSearchFinishedListener =
-            new SearchCoordinator.OnSearchFinishedListener() {
+    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
+            new SearchCoordinator.SearchFinishedListener() {
         /**
          * results of search.
          * <p>

@@ -41,13 +41,13 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorBaseDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList and return an updated list.
@@ -149,7 +149,7 @@ public class EditAuthorListActivity
     @Override
     protected RecyclerViewAdapterBase
     createListAdapter(@NonNull final ArrayList<Author> list,
-                      @NonNull final OnStartDragListener dragStartListener) {
+                      @NonNull final StartDragListener dragStartListener) {
         // no need for an observer.
 //        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
 //            @Override
@@ -324,7 +324,7 @@ public class EditAuthorListActivity
 
         AuthorListAdapter(@NonNull final Context context,
                           @NonNull final ArrayList<Author> items,
-                          @NonNull final OnStartDragListener dragStartListener) {
+                          @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 

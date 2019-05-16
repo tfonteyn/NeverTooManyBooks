@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperAdapter;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * Base class for implementing a RecyclerView with Drag&Drop support for re-arranging rows.
@@ -33,7 +33,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     private final List<Item> mItems;
     /** Optional. */
     @Nullable
-    private final OnStartDragListener mDragStartListener;
+    private final StartDragListener mDragStartListener;
     @NonNull
     private final LayoutInflater mInflater;
 
@@ -45,7 +45,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
      */
     protected RecyclerViewAdapterBase(@NonNull final Context context,
                                       @NonNull final List<Item> items,
-                                      @Nullable final OnStartDragListener dragStartListener) {
+                                      @Nullable final StartDragListener dragStartListener) {
 
         mInflater = LayoutInflater.from(context);
         mDragStartListener = dragStartListener;

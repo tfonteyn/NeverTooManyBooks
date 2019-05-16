@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.dialogs.editordialog;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -93,7 +93,7 @@ public class PartialDatePickerDialogFragment
     @Nullable
     private Integer mDay;
 
-    private WeakReference<OnPartialDatePickerResultsListener> mListener;
+    private WeakReference<PartialDatePickerResultsListener> mListener;
 
     /**
      * Constructor.
@@ -187,8 +187,9 @@ public class PartialDatePickerDialogFragment
             if (mListener.get() != null) {
                 mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPartialDatePickerSave", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPartialDatePickerSave",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -251,14 +252,14 @@ public class PartialDatePickerDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final OnPartialDatePickerResultsListener listener) {
+    public void setListener(final PartialDatePickerResultsListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      */
-    public interface OnPartialDatePickerResultsListener {
+    public interface PartialDatePickerResultsListener {
 
         void onPartialDatePickerSave(@IdRes int destinationFieldId,
                                      @Nullable Integer year,

@@ -40,6 +40,7 @@ public class StartupViewModel
     private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
     private final MutableLiveData<String> mTaskProgressMessage = new MutableLiveData<>();
+
     private final TaskListener<String, Void> mTaskListener = new TaskListener<String, Void>() {
         /**
          * Called in the UI thread when any startup task completes. If no more tasks, flag it up
@@ -203,8 +204,9 @@ public class StartupViewModel
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskProgress(mTaskId, values);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onProgressUpdate", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onProgressUpdate",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -215,8 +217,9 @@ public class StartupViewModel
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -242,6 +245,8 @@ public class StartupViewModel
 
         @Override
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("BuildLanguageMappingsTask");
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
@@ -283,6 +288,8 @@ public class StartupViewModel
         @WorkerThread
         @Override
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("DBCleanerTask");
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
@@ -342,6 +349,8 @@ public class StartupViewModel
         @Override
         @WorkerThread
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("RebuildFtsTask");
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
@@ -385,6 +394,8 @@ public class StartupViewModel
 
         @Override
         protected Void doInBackground(final Void... params) {
+            Thread.currentThread().setName("AnalyzeDbTask");
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }

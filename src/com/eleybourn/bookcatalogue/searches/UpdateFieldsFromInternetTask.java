@@ -102,8 +102,8 @@ public class UpdateFieldsFromInternetTask
      * Note: do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
-    private final SearchCoordinator.OnSearchFinishedListener mListener =
-            new SearchCoordinator.OnSearchFinishedListener() {
+    private final SearchCoordinator.SearchFinishedListener mListener =
+            new SearchCoordinator.SearchFinishedListener() {
                 @Override
                 public void onSearchFinished(final boolean wasCancelled,
                                              @NonNull final Bundle bookData) {
@@ -160,7 +160,7 @@ public class UpdateFieldsFromInternetTask
 
         mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
         mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
-        MESSAGE_SWITCH.addListener(getSenderId(), listener, false);
+        MESSAGE_SWITCH.addListener(getSenderId(), false, listener);
     }
 
     /**

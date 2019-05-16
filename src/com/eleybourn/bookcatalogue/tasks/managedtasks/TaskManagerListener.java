@@ -14,9 +14,13 @@ public interface TaskManagerListener {
     void onTaskFinished(@NonNull TaskManager taskManager,
                         @NonNull ManagedTask task);
 
-    void onTaskProgress(int absPosition,
+    default void onTaskProgress(int absPosition,
                                 int max,
-                                @NonNull String message);
+                                @NonNull String message) {
+        // ignore
+    }
 
-    void onTaskUserMessage(@NonNull String message);
+    default void onTaskUserMessage(@NonNull String message) {
+        // ignore
+    }
 }

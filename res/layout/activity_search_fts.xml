@@ -44,8 +44,8 @@
     <View
         android:id="@+id/divider"
         style="@style/div_horizontal"
-        android:layout_marginTop="@dimen/border"
-        android:layout_marginBottom="@dimen/border_double"
+        android:layout_marginTop="@dimen/border1"
+        android:layout_marginBottom="@dimen/border2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/books_found"

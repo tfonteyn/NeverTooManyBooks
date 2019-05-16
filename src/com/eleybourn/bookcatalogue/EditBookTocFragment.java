@@ -24,7 +24,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,8 +74,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
@@ -360,7 +359,7 @@ public class EditBookTocFragment
         // finally the TOC itself; not saved here but only put on display for the user to approve
         FragmentManager fm = getChildFragmentManager();
         if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
-            ConfirmToc.newInstance(bookData,  mISFDBEditions.size() > 1)
+            ConfirmToc.newInstance(bookData, mISFDBEditions.size() > 1)
                       .show(fm, ConfirmToc.TAG);
         }
 
@@ -487,21 +486,18 @@ public class EditBookTocFragment
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasToc = tocEntries != null && !tocEntries.isEmpty();
 
-            // Dialog content field is just a plain text field.
-            TextView root = new TextView(getContext());
-            root.setTextSize(TypedValue.COMPLEX_UNIT_PX, R.dimen.text_size_small);
-            //API: 23:
-            //content.setTextAppearance(android.R.style.TextAppearance_Small);
-            //API: 26 ?
-            //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            @SuppressWarnings("ConstantConditions")
+            final View root = getActivity().getLayoutInflater()
+                                           .inflate(R.layout.dialog_edit_book_toc, null);
 
+            TextView content = root.findViewById(R.id.content);
             if (hasToc) {
                 StringBuilder message = new StringBuilder(getString(R.string.warning_toc_confirm))
                         .append("\n\n")
                         .append(Csv.join(", ", tocEntries, TocEntry::getTitle));
-                root.setText(message);
+                content.setText(message);
             } else {
-                root.setText(getString(R.string.error_auto_toc_population_failed));
+                content.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
             //noinspection ConstantConditions
@@ -660,6 +656,7 @@ public class EditBookTocFragment
         @Nullable
         @WorkerThread
         protected ArrayList<Editions.Edition> doInBackground(final Void... params) {
+            Thread.currentThread().setName("ISFDBGetEditionsTask " + mIsbn);
             try {
                 return new Editions().fetch(mIsbn);
             } catch (SocketTimeoutException e) {
@@ -677,8 +674,9 @@ public class EditBookTocFragment
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGotISFDBEditions(result);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -713,6 +711,7 @@ public class EditBookTocFragment
         @Nullable
         @WorkerThread
         protected Bundle doInBackground(final Void... params) {
+            Thread.currentThread().setName("ISFDBGetBookTask");
             try {
                 return new ISFDBBook().fetch(mEditions, new Bundle(), mAddSeriesFromToc, false);
             } catch (SocketTimeoutException e) {
@@ -730,8 +729,9 @@ public class EditBookTocFragment
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGotISFDBBook(result);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -770,7 +770,7 @@ public class EditBookTocFragment
          */
         TocListAdapterForEditing(@NonNull final Context context,
                                  @NonNull final List<TocEntry> items,
-                                 @NonNull final OnStartDragListener dragStartListener) {
+                                 @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 

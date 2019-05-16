@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <CheckBox
@@ -20,9 +20,9 @@
         style="@style/row_option_checkable"
         android:checked="true"
         android:text="@string/lbl_cover_images"
-        app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
         />
 
     <CheckBox
@@ -30,17 +30,17 @@
         style="@style/row_option_checkable"
         android:checked="true"
         android:text="@string/lbl_settings"
-        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
 
     <View
         android:id="@+id/footer_divider"
         style="@style/div_horizontal"
-        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
         />
 
     <RadioGroup
@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/textView"
-            style="@style/row_option_info"
+            style="@style/row_option_blurb"
             android:text="@string/import_option_info_all_books"
             />
 
@@ -73,7 +73,7 @@
 
         <TextView
             android:id="@+id/radioNewAndUpdatedBooksInfo"
-            style="@style/row_option_info"
+            style="@style/row_option_blurb"
             android:text="@string/import_option_info_new_and_changed_books"
             />
     </RadioGroup>

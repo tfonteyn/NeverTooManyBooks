@@ -156,6 +156,8 @@ public class GoodreadsWork {
         @Override
         @WorkerThread
         protected  byte[] doInBackground(final Void... params) {
+            Thread.currentThread().setName("GR.GetImageTask");
+
             return ImageUtils.getBytes(mUrl);
         }
 

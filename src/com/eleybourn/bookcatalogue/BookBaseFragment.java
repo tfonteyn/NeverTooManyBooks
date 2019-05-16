@@ -69,7 +69,7 @@ public abstract class BookBaseFragment
     /** Database access. */
     protected DAO mDb;
 
-    /** The book. */
+    /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookBaseFragmentModel;
 
     /** The fields collection. */
@@ -117,9 +117,11 @@ public abstract class BookBaseFragment
 
         mDb = new DAO();
 
+
+        // Activity scope!
         //noinspection ConstantConditions
-        mBookBaseFragmentModel = ViewModelProviders.of(getActivity()).get(
-                BookBaseFragmentModel.class);
+        mBookBaseFragmentModel = ViewModelProviders.of(getActivity())
+                                                   .get(BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookBaseFragmentModel.init(args);
 
@@ -344,12 +346,9 @@ public abstract class BookBaseFragment
 
         showHide(hideIfEmpty, R.id.publisher);
         showHide(hideIfEmpty, R.id.date_published);
-        // Hide the baseline if both fields are gone.
-        setVisibilityGoneOr(R.id.lbl_publisher_baseline, View.INVISIBLE,
-                            R.id.publisher, R.id.date_published);
 
         // Hide the label if none of the publishing fields are shown.
-        setVisibilityGoneOr(R.id.lbl_publishing, View.VISIBLE,
+        setVisibilityGoneOr(R.id.lbl_publication_section, View.VISIBLE,
                             R.id.publisher, R.id.date_published,
                             R.id.price_listed, R.id.first_publication);
 

@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
 import android.view.View;

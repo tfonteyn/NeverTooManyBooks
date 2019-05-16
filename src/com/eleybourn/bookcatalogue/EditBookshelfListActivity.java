@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -66,8 +66,8 @@ public class EditBookshelfListActivity
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
 
-    private final EditBookshelfDialogFragment.OnBookshelfChangedListener mListener =
-            new EditBookshelfDialogFragment.OnBookshelfChangedListener() {
+    private final EditBookshelfDialogFragment.BookshelfChangedListener mListener =
+            new EditBookshelfDialogFragment.BookshelfChangedListener() {
                 @Override
                 public void onBookshelfChanged(final long bookshelfId,
                                                final int booksMoved) {

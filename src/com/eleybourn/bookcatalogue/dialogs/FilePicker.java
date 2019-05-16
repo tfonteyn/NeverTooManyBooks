@@ -39,7 +39,7 @@ public class FilePicker
                       @Nullable final String title,
                       @Nullable final String message,
                       @NonNull final List<File> files,
-                      @NonNull final OnPickListener<File> handler) {
+                      @NonNull final PickListener<File> handler) {
         super(context, title, message);
 
         final FileItemListAdapter adapter = new FileItemListAdapter(context, files, (item) -> {
@@ -60,11 +60,11 @@ public class FilePicker
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final OnPickListener<File> mListener;
+        private final PickListener<File> mListener;
 
         FileItemListAdapter(@NonNull final Context context,
                             @NonNull final List<File> objects,
-                            @NonNull final OnPickListener<File> listener) {
+                            @NonNull final PickListener<File> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;

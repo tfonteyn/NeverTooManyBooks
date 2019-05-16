@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.app.Dialog;
 import android.content.Context;

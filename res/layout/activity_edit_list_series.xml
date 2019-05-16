@@ -21,7 +21,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/txt_detail_medium"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:ignore="SelectableText"
@@ -31,7 +31,7 @@
     <AutoCompleteTextView
         android:id="@+id/series"
         style="@style/titleTextEntry"
-        android:layout_marginStart="@dimen/border"
+        android:layout_marginStart="@dimen/indent1"
         android:completionThreshold="2"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toStartOf="@id/series_num"

@@ -3,28 +3,29 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- Default spacing for a Navigation panel header. -->
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
 
+    <!-- Default spacing around a FAB. -->
     <dimen name="fab_margin">16dp</dimen>
 
+    <!-- Spacing either for all around, or for bottom/top.
+    But NOT for start/end, for the latter use 'indent' -->
+    <dimen name="border1">4dp</dimen>
+    <dimen name="border2">8dp</dimen>
+    <dimen name="border3">16dp</dimen>
 
-    <dimen name="border">4dp</dimen>
-    <dimen name="border_double">8dp</dimen>
-    <dimen name="border_triple">16dp</dimen>
-    <dimen name="border_quad">20dp</dimen>
+    <!-- indent, usually start only, but can be used for end as well. -->
+    <dimen name="indent1">4dp</dimen>
+    <dimen name="indent2">8dp</dimen>
+    <dimen name="indent3">16dp</dimen>
 
-    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
-    <dimen name="text_size_small">14sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
-    <dimen name="text_size_medium">18sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
-    <dimen name="text_size_large">22sp</dimen>
-
-
-    <!-- dividers -->
-    <dimen name="margin_div">2dp</dimen>
-
-    <!-- default and full height of a button with the standard text size inside -->
+    <!-- Default and full height of a standard EditView with default text size inside.
+    Used to make other elements the same height. -->
     <dimen name="edit_text_height">48dp</dimen>
+
+    <!-- indent an element so it matches up with the text of a standard size compound button. -->
+    <dimen name="indent_compound_button">32dp</dimen>
+
 </resources>

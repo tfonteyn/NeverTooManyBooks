@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.LendBookDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -74,6 +74,7 @@ public class BookFragment
 
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
+
     /** Handle next/previous paging in the flattened booklist. */
     private GestureDetector mGestureDetector;
 
@@ -204,8 +205,7 @@ public class BookFragment
 
     @SuppressLint("ClickableViewAccessibility")
     private void initFlattenedBookList(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
-        mBookFragmentModel = ViewModelProviders.of(getActivity()).get(BookFragmentModel.class);
+        mBookFragmentModel = ViewModelProviders.of(this).get(BookFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
 
@@ -356,9 +356,6 @@ public class BookFragment
             field.getView().setVisibility(View.GONE);
         }
     }
-    //</editor-fold>
-
-    //<editor-fold desc="Fragment shutdown">
 
     /**
      * Show or hide the Table Of Content section.
@@ -431,35 +428,6 @@ public class BookFragment
 
     //<editor-fold desc="Menu handlers">
 
-    /**
-     * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     * <p>
-     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
-     * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
-     * the database being closed by the deeply dodgy auto-close code in Android.
-     * </p>
-     * <br>
-     * {@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        FlattenedBooklist fbl = mBookFragmentModel.getFlattenedBooklist();
-        if (fbl != null) {
-            // release resources (statements)
-            fbl.close();
-        }
-
-        mCoverHandler.dismissCoverBrowser();
-
-        //  set the current visible book id as the result data.
-        Intent data = new Intent()
-                .putExtra(DBDefinitions.KEY_ID, mBookBaseFragmentModel.getBook().getId());
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
-        super.onPause();
-    }
-
     @Override
     @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
@@ -529,7 +497,6 @@ public class BookFragment
 
         super.onPrepareOptionsMenu(menu);
     }
-    //</editor-fold>
 
     @Override
     @CallSuper
@@ -600,6 +567,8 @@ public class BookFragment
         }
     }
 
+    //</editor-fold>
+
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
@@ -627,6 +596,33 @@ public class BookFragment
                 }
                 break;
         }
+    }
+
+    /**
+     * Close the list object (frees statements) and if we are finishing, delete the temp table.
+     * <p>
+     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
+     * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
+     * the database being closed by the deeply dodgy auto-close code in Android.
+     * </p>
+     * <br>
+     * {@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        FlattenedBooklist fbl = mBookFragmentModel.getFlattenedBooklist();
+        if (fbl != null) {
+            // release resources (statements)
+            fbl.close();
+        }
+
+        //  set the current visible book id as the result data.
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
+                                            mBookBaseFragmentModel.getBook().getId());
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, data);
+        super.onPause();
     }
 
     /**

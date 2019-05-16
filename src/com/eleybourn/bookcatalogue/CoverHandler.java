@@ -18,11 +18,11 @@ import android.view.SubMenu;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,6 +74,9 @@ public class CoverHandler {
     private final Fragment mCallerFragment;
 
     @NonNull
+    private final FragmentManager mFragmentManager;
+
+    @NonNull
     private final Context mContext;
     /**
      * Sure, just use context instead. But limiting the use of context gives opportunity
@@ -99,7 +102,7 @@ public class CoverHandler {
     private final int mMaxWidth;
     private final int mMaxHeight;
     @Nullable
-    private CoverBrowser mCoverBrowserFragment;
+    private CoverBrowserFragment mCoverBrowserFragment;
 
     /** Used to display a hint if user rotates a camera image. */
     private boolean mGotCameraImage;
@@ -116,6 +119,8 @@ public class CoverHandler {
                  final int maxHeight) {
 
         mCallerFragment = callerFragment;
+        //noinspection ConstantConditions
+        mFragmentManager = mCallerFragment.getFragmentManager();
         mResources = mCallerFragment.getResources();
 
         //noinspection ConstantConditions
@@ -135,12 +140,11 @@ public class CoverHandler {
 
         //Allow zooming by clicking on the image
         mCoverView.setOnClickListener(
-                v -> ZoomedImageDialogFragment.show(mCallerFragment.getFragmentManager(),
-                                                    getCoverFile()));
+                v -> ZoomedImageDialogFragment.show(mFragmentManager, getCoverFile()));
     }
 
     /**
-     * When the user clicks the switcher in the {@link CoverBrowser}, we take that image and
+     * When the user clicks the switcher in the {@link CoverBrowserFragment}, we take that image and
      * stuff it into the view.
      *
      * @param fileSpec the file
@@ -155,6 +159,29 @@ public class CoverHandler {
             StorageUtils.renameFile(newFile, bookFile);
             // Update the ImageView with the new image
             updateCoverView();
+            // all done, get rid of the browser fragment
+            mCoverBrowserFragment.dismiss();
+            mCoverBrowserFragment = null;
+        }
+    }
+
+    private void getCoverBrowser(final String isbn) {
+        // we must use the same fragment manager as the hosting fragment.
+        mCoverBrowserFragment = (CoverBrowserFragment)
+                mFragmentManager.findFragmentByTag(CoverBrowserFragment.TAG);
+        if (mCoverBrowserFragment == null) {
+            mCoverBrowserFragment = CoverBrowserFragment.newInstance(isbn, Site.SEARCH_ALL);
+            mCoverBrowserFragment.show(mFragmentManager, CoverBrowserFragment.TAG);
+        }
+
+        mCoverBrowserFragment.setTargetFragment(mCallerFragment, UniqueId.REQ_ALT_EDITION);
+    }
+
+    /**
+     * Dismiss the cover browser.
+     */
+    void dismissCoverBrowser() {
+        if (mCoverBrowserFragment != null) {
             mCoverBrowserFragment.dismiss();
             mCoverBrowserFragment = null;
         }
@@ -325,18 +352,9 @@ public class CoverHandler {
         String isbn = mIsbnView.getText().toString().trim();
 
         if (ISBN.isValid(isbn)) {
-            // we must use the same fragment manager as the hosting fragment.
-            mCoverBrowserFragment = (CoverBrowser)
-                    mCallerFragment.getFragmentManager().findFragmentByTag(CoverBrowser.TAG);
-            if (mCoverBrowserFragment == null) {
-                mCoverBrowserFragment = CoverBrowser.newInstance(mCallerFragment, isbn,
-                                                                 Site.SEARCH_ALL);
-                mCoverBrowserFragment.show(mCallerFragment.getFragmentManager(), CoverBrowser.TAG);
-            }
+            getCoverBrowser(isbn);
         } else {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
-                                        R.string.warning_editions_require_isbn);
+            UserMessage.showUserMessage(mCoverView, R.string.warning_editions_require_isbn);
         }
     }
 
@@ -583,9 +601,7 @@ public class CoverHandler {
 
         List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(mCoverBrowserFragment.getView(),
-                                        R.string.error_no_external_crop_app);
+            UserMessage.showUserMessage(mCoverView, R.string.error_no_external_crop_app);
         } else {
             mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }
@@ -631,36 +647,17 @@ public class CoverHandler {
     }
 
     /**
-     * Dismiss the cover browser.
-     */
-    void dismissCoverBrowser() {
-        if (mCoverBrowserFragment != null) {
-            mCoverBrowserFragment.dismiss();
-            mCoverBrowserFragment = null;
-        }
-    }
-
-    @Override
-    @CallSuper
-    protected void finalize()
-            throws Throwable {
-        dismissCoverBrowser();
-        super.finalize();
-    }
-
-    /**
      * Handles results from Camera, Image Gallery, Cropping.
      * <p>
      * Note: rotating is done locally in {@link #rotateImage(long)}.
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
-            // coming back from CoverBrowser with the selected image.
+            // coming back from CoverBrowserFragment with the selected image.
             case UniqueId.REQ_ALT_EDITION:
                 if (resultCode == Activity.RESULT_OK) {
                     //noinspection ConstantConditions

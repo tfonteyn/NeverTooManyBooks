@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <TextView
@@ -21,7 +21,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border"
+        android:layout_margin="@dimen/border1"
         android:divider="@null"
         tools:itemCount="10"
         tools:listitem="@layout/row_simple_dialog_list_item"

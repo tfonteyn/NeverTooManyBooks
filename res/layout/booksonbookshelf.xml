@@ -43,7 +43,7 @@
             android:id="@+id/search_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/border"
+            android:layout_marginStart="@dimen/indent1"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,8 +57,8 @@
             android:id="@+id/book_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/border"
-            android:layout_marginBottom="@dimen/border_double"
+            android:layout_marginStart="@dimen/indent1"
+            android:layout_marginBottom="@dimen/border2"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textIsSelectable="false"
             app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
 
         <TextView
             android:id="@+id/level_1_text"
-            style="@style/bobSpinnerLevelText"
+            style="@style/booklist_header_level_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/book_count"
@@ -79,7 +79,7 @@
 
         <TextView
             android:id="@+id/level_2_text"
-            style="@style/bobSpinnerLevelText"
+            style="@style/booklist_header_level_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/level_1_text"

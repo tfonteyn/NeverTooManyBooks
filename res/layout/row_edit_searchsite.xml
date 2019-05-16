@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     >
 
     <CheckBox
         android:id="@id/ROW_CHECKABLE_BTN"
-        style="@style/rvr_checkable_button"
+        style="@style/row_checkable_button"
         app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,7 +17,7 @@
 
     <LinearLayout
         android:id="@id/ROW_DETAILS"
-        style="@style/rvr_details_row"
+        style="@style/row_details_section"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
         app:layout_constraintStart_toEndOf="@id/ROW_CHECKABLE_BTN"
@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/name"
-            style="@style/rvr_details_row_major"
+            style="@style/row_details_txt_major"
             tools:ignore="SelectableText"
             tools:text="site name"
             />
@@ -35,7 +35,7 @@
 
     <ImageView
         android:id="@id/ROW_GRABBER_ICON"
-        style="@style/rvr_drag_handle"
+        style="@style/row_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"

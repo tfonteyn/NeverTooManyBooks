@@ -217,7 +217,7 @@ public class GoodreadsManager
         }
         if (wait > 0) {
             try {
-                Log.d("sleep", String.valueOf(wait));
+                Log.d("GR", "wait=" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException ignored) {
             }

@@ -4,7 +4,7 @@
     android:id="@+id/name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border"
+    android:layout_margin="@dimen/border1"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:textIsSelectable="false"
     tools:text="Bookshelf name"

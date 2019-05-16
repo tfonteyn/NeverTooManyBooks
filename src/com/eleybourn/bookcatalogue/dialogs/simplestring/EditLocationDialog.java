@@ -18,54 +18,37 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
+package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-/**
- * Edit the language field.
- * <p>
- * Will hardly ever be needed now that we have ISO3 code.
- * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
- * be needed.
- */
-public class EditLanguageDialog
+public class EditLocationDialog
         extends EditStringBaseDialog {
 
-    public EditLanguageDialog(@NonNull final Activity activity,
+    public EditLocationDialog(@NonNull final Activity activity,
                               @NonNull final DAO db,
                               @NonNull final BookChangedListener listener) {
-        super(activity, db, listener);
+        super(activity, db, db.getLocations(), listener);
     }
 
     @CallSuper
-    public void edit(@NonNull final String lang) {
-        String editLang;
-        if (lang.length() > 3) {
-            editLang = lang;
-        } else {
-            Locale loc = new Locale(lang);
-            editLang = loc.getDisplayLanguage();
-        }
-        super.edit(editLang, R.layout.dialog_edit_language, R.string.lbl_language);
+    public void edit(@NonNull final String currentText) {
+        super.edit(currentText, R.layout.dialog_edit_location, R.string.lbl_location);
     }
 
     @Override
     protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        mDb.updateLanguage(from, LocaleUtils.getISO3Language(to));
+        mDb.updateLocation(from, to);
         if (mListener != null) {
-            mListener.onBookChanged(0, BookChangedListener.LANGUAGE, null);
+            mListener.onBookChanged(0, BookChangedListener.LOCATION, null);
         }
     }
 }

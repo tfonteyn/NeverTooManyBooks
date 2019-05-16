@@ -2,14 +2,13 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <TextView
         android:id="@+id/hint"
         style="@style/txt_blurb_medium"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:maxLines="20"
         tools:ignore="SelectableText"
         tools:text="@tools:sample/lorem/random"

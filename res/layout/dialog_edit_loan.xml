@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame"
+    style="@style/dialog_frame"
     >
 
     <TextView
         android:id="@+id/title"
         style="@style/txt_detail_small"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/author"
         style="@style/txt_detail_small"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

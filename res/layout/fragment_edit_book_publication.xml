@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border"
+    android:layout_margin="@dimen/border1"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/lbl_format"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/format"
             android:text="@string/lbl_format"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
 
         <TextView
             android:id="@+id/lbl_language"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/language"
             android:text="@string/lbl_language"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,8 +71,8 @@
             />
 
         <TextView
-            android:id="@+id/lbl_publishing"
-            style="@style/lbl_editField"
+            android:id="@+id/lbl_publication_section"
+            style="@style/lbl_textField"
             android:labelFor="@id/publisher"
             android:text="@string/lbl_publisher"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
             android:completionThreshold="2"
             app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publication_section"
             />
 
         <ImageButton
@@ -112,7 +112,7 @@
 
         <TextView
             android:id="@+id/lbl_first_publication"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -121,7 +121,7 @@
 
         <TextView
             android:id="@+id/lbl_date_published"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -156,19 +156,18 @@
 
         <TextView
             android:id="@+id/lbl_pages"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/pages"
             android:text="@string/lbl_pages"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/publication_dates_baseline"
             />
 
-        <!-- input type text, so details like 'intro pages', 'appendix pages' etc can be used -->
+        <!-- input type simpleTextEntry, so details like 'intro pages', 'appendix pages' etc can be used -->
         <EditText
             android:id="@+id/pages"
             style="@style/simpleTextEntry"
             android:layout_height="wrap_content"
-            android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
@@ -178,7 +177,7 @@
 
         <TextView
             android:id="@+id/lbl_price_listed"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/price_listed"
             android:text="@string/lbl_price_listed"
             app:layout_constraintStart_toStartOf="parent"

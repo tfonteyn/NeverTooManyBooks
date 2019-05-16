@@ -39,6 +39,7 @@ public class RestoreTask
     @NonNull
     @WorkerThread
     protected ImportOptions doInBackground(final Void... params) {
+        Thread.currentThread().setName("RestoreTask");
 
         //noinspection ConstantConditions
         try (BackupReader reader = BackupManager.getReader(mSettings.file)) {

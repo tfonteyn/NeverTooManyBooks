@@ -38,6 +38,7 @@ import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -153,6 +154,8 @@ public class LibraryThingAdminActivity
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            Thread.currentThread().setName("LT.ValidateKey");
+
             try {
                 LibraryThingManager ltm = new LibraryThingManager();
                 File tmpFile = ltm.getCoverImage("0451451783", SearchSiteManager.ImageSizes.SMALL);
@@ -186,8 +189,9 @@ public class LibraryThingAdminActivity
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }

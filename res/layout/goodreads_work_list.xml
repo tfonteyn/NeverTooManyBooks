@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/lbl_author"
-        style="@style/lbl_editField"
+        style="@style/lbl_textField"
         android:text="@string/lbl_author"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/lbl_title"
-        style="@style/lbl_editField"
+        style="@style/lbl_textField"
         android:text="@string/lbl_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/lbl_isbn"
-        style="@style/lbl_editField"
+        style="@style/lbl_textField"
         android:text="@string/lbl_isbn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"

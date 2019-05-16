@@ -43,6 +43,7 @@ public class ImportCSVTask
     @WorkerThread
     @Nullable
     protected Integer doInBackground(final Void... params) {
+        Thread.currentThread().setName("ImportCSVTask");
 
         try (FileInputStream in = new FileInputStream(mSettings.file)) {
             //noinspection ConstantConditions

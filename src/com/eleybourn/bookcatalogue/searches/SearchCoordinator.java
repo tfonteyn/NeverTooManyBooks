@@ -70,7 +70,7 @@ public class SearchCoordinator {
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    public static final MessageSwitch<OnSearchFinishedListener, SearchCoordinatorController>
+    public static final MessageSwitch<SearchFinishedListener, SearchCoordinatorController>
             MESSAGE_SWITCH = new MessageSwitch<>();
 
     /**
@@ -161,32 +161,16 @@ public class SearchCoordinator {
                 sendResults();
             }
         }
-
-        @Override
-        public void onTaskUserMessage(@NonNull final String message) {
-            TaskManager.MESSAGE_SWITCH
-                    .send(mTaskManager.getId(), new TaskManager.TaskUserMessage(message));
-        }
-
-        @Override
-        public void onTaskProgress(final int absPosition,
-                                   final int max,
-                                   @NonNull final String message) {
-            TaskManager.MESSAGE_SWITCH
-                    .send(mTaskManager.getId(), new TaskManager.TaskProgressMessage(absPosition,
-                                                                                    max,
-                                                                                    message));
-        }
     };
 
     /**
      * Constructor.
      *
      * @param taskManager              TaskManager to use
-     * @param onSearchFinishedListener to send results to
+     * @param searchFinishedListener to send results to
      */
     public SearchCoordinator(@NonNull final TaskManager taskManager,
-                             @NonNull final OnSearchFinishedListener onSearchFinishedListener) {
+                             @NonNull final SearchFinishedListener searchFinishedListener) {
 
         /* Controller instance for this specific SearchManager */
         SearchCoordinatorController controller = new SearchCoordinatorController() {
@@ -210,7 +194,7 @@ public class SearchCoordinator {
         mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
 
         mTaskManager = taskManager;
-        MESSAGE_SWITCH.addListener(mMessageSenderId, onSearchFinishedListener, false);
+        MESSAGE_SWITCH.addListener(mMessageSenderId, false, searchFinishedListener);
     }
 
     /**
@@ -293,7 +277,7 @@ public class SearchCoordinator {
         }
 
         // Listen for TaskManager messages.
-        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), mListener, false);
+        TaskManager.MESSAGE_SWITCH.addListener(mTaskManager.getId(), false, mListener);
 
         // We really want to ensure we get the same book from each, so if isbn is
         // not present, search the sites one at a time till we get an isbn
@@ -786,7 +770,7 @@ public class SearchCoordinator {
     /**
      * Allows other objects to know when a task completed.
      */
-    public interface OnSearchFinishedListener {
+    public interface SearchFinishedListener {
 
         void onSearchFinished(boolean wasCancelled,
                               @NonNull Bundle bookData);

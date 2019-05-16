@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border"
+    android:layout_margin="@dimen/border1"
     android:scrollbarAlwaysDrawVerticalTrack="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
@@ -17,7 +17,7 @@
 
         <TextView
             android:id="@+id/lbl_rating"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/rating"
             android:text="@string/lbl_rating"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/lbl_read_start"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:layout_width="0dp"
             android:text="@string/lbl_read_start"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -66,7 +66,7 @@
 
         <TextView
             android:id="@+id/lbl_read_end"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:layout_width="0dp"
             android:text="@string/lbl_read_end"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -101,7 +101,7 @@
 
         <TextView
             android:id="@+id/lbl_location"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,6 @@
             android:id="@+id/location"
             style="@style/simpleTextEntry"
             android:completionThreshold="2"
-            android:inputType="textCapSentences"
             app:layout_constraintEnd_toStartOf="@id/btn_location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_location"
@@ -130,7 +129,7 @@
 
         <TextView
             android:id="@+id/lbl_date_acquired"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/location"
@@ -146,7 +145,7 @@
 
         <TextView
             android:id="@+id/lbl_price_paid"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/price_paid"
             android:text="@string/lbl_price_paid"
             app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +183,7 @@
 
         <TextView
             android:id="@+id/lbl_edition"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_paid"
@@ -217,7 +216,7 @@
 
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/notes"
             android:text="@string/menu_edit_book_notes"
             app:layout_constraintStart_toStartOf="parent"

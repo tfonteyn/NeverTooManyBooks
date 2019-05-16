@@ -1,13 +1,10 @@
-package com.eleybourn.bookcatalogue.dialogs.editordialog;
+package com.eleybourn.bookcatalogue.dialogs;
 
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The main reason that you need to extend this is because each type of encapsulated item

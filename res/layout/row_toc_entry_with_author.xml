@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     >
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
         style="@style/txt_detail_medium"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/year"
         style="@style/txt_detail_small"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintEnd_toStartOf="@id/author"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
     <TextView
         android:id="@+id/author"
         style="@style/txt_detail_small"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,50 +20,72 @@
         android:fillViewport="true"
         >
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/border"
-            android:orientation="vertical"
+            android:layout_margin="@dimen/border1"
             >
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/indents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp"
+                />
 
             <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                android:layout_gravity="center_horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="SelectableText"
                 tools:text="help page url"
                 />
 
             <TextView
+                android:id="@+id/info_blurb"
                 style="@style/txt_blurb_medium"
                 android:text="@string/debug_send_info_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/help_page"
                 />
 
             <Button
                 android:id="@+id/send_info"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/border_double"
-                android:layout_marginBottom="@dimen/border_double"
+                android:layout_marginTop="@dimen/border2"
+                android:layout_marginBottom="@dimen/border2"
                 android:text="@string/about_send_info"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/info_blurb"
                 />
 
             <TextView
                 android:id="@+id/cleanup_text"
                 style="@style/txt_blurb_medium"
                 android:text="@string/info_cleanup_files_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/send_info"
                 />
 
             <Button
                 android:id="@+id/cleanup_button"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/border_double"
-                android:layout_marginBottom="@dimen/border_double"
+                android:layout_marginTop="@dimen/border2"
+                android:layout_marginBottom="@dimen/border2"
                 android:text="@string/cleanup_files"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cleanup_text"
                 />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

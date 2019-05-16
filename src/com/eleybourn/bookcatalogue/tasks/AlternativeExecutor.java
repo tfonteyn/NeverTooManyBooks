@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.CoverBrowser;
+import com.eleybourn.bookcatalogue.CoverBrowserFragment;
 
 /**
  * A copy of {@link AsyncTask#THREAD_POOL_EXECUTOR} with lower configuration numbers.
@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.CoverBrowser;
  * This allows to run specific tasks that we don't want to submit (and wait on) the
  * shared one in AsyncTask.
  * <p>
- * <br>Example: {@link CoverBrowser} uses the default one to get thumbnails, but uses this
+ * <br>Example: {@link CoverBrowserFragment} uses the default one to get thumbnails, but uses this
  * alternative one to get the larger preview image without waiting in the shared queue.
  */
 public final class AlternativeExecutor {

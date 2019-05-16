@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
@@ -73,6 +74,7 @@ public class FileListerTask
     @Nullable
     @WorkerThread
     protected FileChooserFragment.DirectoryContent doInBackground(final Void... params) {
+        Thread.currentThread().setName("FileListerTask");
 
         // Filter for directories and our own archive files.
         FileFilter fileFilter = pathname ->
@@ -113,8 +115,9 @@ public class FileListerTask
         if (mTaskListener.get() != null) {
             mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
         } else {
-            if (BuildConfig.DEBUG) {
-                Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onPostExecute",
+                             "WeakReference to listener was dead");
             }
         }
     }

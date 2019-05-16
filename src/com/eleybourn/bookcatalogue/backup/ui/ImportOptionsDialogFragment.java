@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
@@ -78,7 +79,7 @@ public class ImportOptionsDialogFragment
                     if (mListener.get() != null) {
                         mListener.get().onOptionsSet(mOptions);
                     } else {
-                        if (BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onOptionsSet",
                                          "WeakReference to listener was dead");
                         }

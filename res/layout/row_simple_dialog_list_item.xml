@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     android:orientation="horizontal"
     >
 
@@ -11,8 +11,8 @@
         android:id="@+id/menu_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border_double"
-        android:drawablePadding="@dimen/border_double"
+        android:layout_margin="@dimen/border2"
+        android:drawablePadding="@dimen/border2"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:drawableStart="@drawable/ic_image"

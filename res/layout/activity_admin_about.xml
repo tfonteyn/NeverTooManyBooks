@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,18 +20,20 @@
         android:fillViewport="true"
         >
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/border"
-            android:orientation="vertical"
+            android:layout_margin="@dimen/border1"
             >
 
             <LinearLayout
+                android:id="@+id/header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 >
 
                 <TextView
@@ -46,7 +49,7 @@
                     android:id="@+id/version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/border"
+                    android:layout_marginStart="@dimen/indent1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textIsSelectable="true"
                     android:textStyle="bold"
@@ -57,7 +60,9 @@
             <TextView
                 android:id="@+id/website"
                 style="@style/link_url"
-                android:layout_gravity="center_horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
                 tools:ignore="SelectableText"
                 tools:text="website url"
                 />
@@ -65,96 +70,126 @@
             <TextView
                 android:id="@+id/sourcecode"
                 style="@style/link_url"
-                android:layout_gravity="center_horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/website"
                 tools:ignore="SelectableText"
                 tools:text="sourcecode url"
                 />
 
-            <TextView
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/indents"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/border"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp"
+                />
+
+            <TextView
+                android:id="@+id/contacts"
+                style="@style/sectionHeader"
                 android:text="@string/about_lbl_contacts"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sourcecode"
                 />
 
             <TextView
                 android:id="@+id/contact1"
                 style="@style/link_url"
-                android:layout_marginStart="@dimen/border_triple"
                 android:text="@string/email_contact1"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/contacts"
                 />
 
             <TextView
                 android:id="@+id/contact2"
                 style="@style/link_url"
-                android:layout_marginStart="@dimen/border_triple"
                 android:text="@string/email_contact2"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/contact1"
                 />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/border"
+                android:id="@+id/thanks"
+                style="@style/sectionHeader"
                 android:text="@string/about_lbl_special_thanks"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contact2"
                 />
 
             <TextView
+                android:id="@+id/b1"
                 style="@style/txt_blurb_small"
                 android:text="@string/about_translators"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/thanks"
                 />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/border"
+                android:id="@+id/donate"
+                style="@style/sectionHeader"
                 android:text="@string/about_lbl_donate"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/b1"
                 />
 
             <TextView
+                android:id="@+id/b2"
                 style="@style/txt_blurb_small"
                 android:text="@string/about_donate"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/donate"
                 />
 
             <TextView
                 android:id="@+id/amazon_url"
                 style="@style/link_url"
-                android:layout_gravity="center_horizontal"
                 android:text="@string/about_donate_amazon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/b2"
                 />
 
             <TextView
+                android:id="@+id/or"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:text="@string/about_dash_or_dash"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/amazon_url"
                 />
 
             <TextView
                 android:id="@+id/donate_url"
                 style="@style/link_url"
-                android:layout_gravity="center_horizontal"
                 android:text="@string/about_donate_paypal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/or"
                 />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/border"
+                android:id="@+id/amazon"
+                style="@style/sectionHeader"
                 android:text="@string/amazon"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/donate_url"
                 />
 
             <TextView
                 android:id="@+id/amazon_links_info"
                 style="@style/txt_blurb_small"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/amazon"
                 tools:ignore="SelectableText"
                 tools:text="@string/hint_amazon_links_blurb"
                 />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 

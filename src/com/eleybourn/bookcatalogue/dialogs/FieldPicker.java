@@ -60,13 +60,13 @@ public class FieldPicker<T>
         @NonNull
         private final Fields.Field mField;
         @NonNull
-        private final OnPickListener<T> mListener;
+        private final PickListener<T> mListener;
         private int mPreSelectedPosition = -1;
 
         FieldListAdapter(@NonNull final Context context,
                          @NonNull final Fields.Field field,
                          @NonNull final List<T> items,
-                         @NonNull final OnPickListener<T> listener) {
+                         @NonNull final PickListener<T> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;

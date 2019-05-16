@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 /**
@@ -153,7 +153,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      */
     protected abstract RecyclerViewAdapterBase
     createListAdapter(@NonNull ArrayList<T> list,
-                      @NonNull OnStartDragListener dragStartListener);
+                      @NonNull StartDragListener dragStartListener);
 
     /**
      * Called when user clicks the 'Add' button (if present).

@@ -161,7 +161,7 @@ public class LibraryThingManager
 
         if (wait > 0) {
             try {
-                Log.d("sleep", String.valueOf(wait));
+                Log.d("LT", "wait=" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException ignored) {
             }

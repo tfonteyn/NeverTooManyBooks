@@ -157,9 +157,6 @@ public final class NetworkUtils {
         boolean hasMobile = false;
 
         boolean has(@NonNull final Type type) {
-            if (BuildConfig.DEBUG) {
-                Logger.debug(this, "has", "type=" + type);
-            }
             switch (type) {
                 case any:
                     return hasEthernet || hasWifi || hasBluetooth || hasMobile;

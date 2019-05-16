@@ -39,13 +39,13 @@ public class MenuPicker<T>
      * @param title      for the dialog/menu
      * @param menu       the menu options to show
      * @param userObject a reference free to set/use by the caller
-     * @param handler    callback handler with the MenuItem the user chooses + the position
+     * @param listener   callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
                       @Nullable final String title,
                       @NonNull final Menu menu,
                       @NonNull final T userObject,
-                      @NonNull final OnContextItemSelected<T> handler) {
+                      @NonNull final ContextItemSelected<T> listener) {
         super(context, title, null);
 
         mAdapter = new MenuItemListAdapter(context, menu, (menuItem) -> {
@@ -54,7 +54,7 @@ public class MenuPicker<T>
                 mAdapter.setMenu(menuItem.getSubMenu());
             } else {
                 dismiss();
-                handler.onContextItemSelected(menuItem, userObject);
+                listener.onContextItemSelected(menuItem, userObject);
             }
         });
 
@@ -66,7 +66,7 @@ public class MenuPicker<T>
         return new PopupMenu(context, null).getMenu();
     }
 
-    public interface OnContextItemSelected<T> {
+    public interface ContextItemSelected<T> {
 
         /**
          * @param menuItem   that was selected
@@ -90,11 +90,11 @@ public class MenuPicker<T>
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final OnPickListener<MenuItem> mListener;
+        private final PickListener<MenuItem> mListener;
 
         MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu,
-                            @NonNull final OnPickListener<MenuItem> listener) {
+                            @NonNull final PickListener<MenuItem> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;

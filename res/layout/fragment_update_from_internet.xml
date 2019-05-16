@@ -1,67 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_fragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/border"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".UpdateFieldsFromInternetActivity"
     >
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/txt_detail_large"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="Anna Karenina"
-        />
-
-    <TextView
-        android:id="@+id/author"
-        style="@style/txt_detail_medium"
-        android:layout_marginStart="@dimen/border_double"
-        android:layout_marginBottom="@dimen/border"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="SelectableText"
-        tools:text="by Lev Tolstoy"
-        />
-
-    <TextView
-        android:id="@+id/select_fields_blurb"
-        style="@style/txt_blurb_small"
-        android:text="@string/info_select_fields_to_update"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/border1"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
+        tools:context=".UpdateFieldsFromInternetActivity"
         >
 
-        <LinearLayout
-            android:id="@+id/manage_fields_scrollview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/border"
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/title"
+            style="@style/txt_detail_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SelectableText"
+            tools:text="Anna Karenina"
+            />
 
+        <TextView
+            android:id="@+id/author"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/indent2"
+            android:layout_marginBottom="@dimen/border1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:ignore="SelectableText"
+            tools:text="by Lev Tolstoy"
+            />
+
+        <TextView
+            android:id="@+id/select_fields_blurb"
+            style="@style/txt_blurb_small"
+            android:layout_marginStart="@dimen/indent2"
+            android:text="@string/info_select_fields_to_update"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author"
+            />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
             >
-            <!-- fields are added here dynamically -->
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/manage_fields_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/border1"
+                android:orientation="vertical"
+
+                >
+                <!-- fields are added here dynamically -->
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

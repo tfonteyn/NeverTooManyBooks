@@ -61,7 +61,7 @@ public class EventQueueListActivity
 
         setTitle(R.string.gr_tq_title_task_errors);
 
-        QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
+        QueueManager.getQueueManager().registerEventListener(mChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
@@ -107,7 +107,7 @@ public class EventQueueListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterEventListener(mOnChangeListener);
+        QueueManager.getQueueManager().unregisterEventListener(mChangeListener);
         super.onDestroy();
     }
 

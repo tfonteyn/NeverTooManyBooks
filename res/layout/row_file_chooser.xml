@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     >
 
     <ImageView
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:padding="@dimen/border"
+        android:padding="@dimen/border1"
         android:src="@drawable/ic_business_center"
         app:layout_constraintEnd_toStartOf="@id/filename"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/filename"
-        style="@style/txt_row_fileInfo"
+        style="@style/file_info"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/icon"
@@ -40,7 +40,7 @@
 
     <TextView
         android:id="@+id/file_content"
-        style="@style/txt_row_fileInfo"
+        style="@style/file_info"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/filename"
@@ -51,7 +51,7 @@
 
     <TextView
         android:id="@+id/size"
-        style="@style/txt_row_fileInfo"
+        style="@style/file_info"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintBaseline_toBaselineOf="@id/date"
         app:layout_constraintStart_toStartOf="@id/filename"
@@ -62,8 +62,8 @@
 
     <TextView
         android:id="@+id/date"
-        style="@style/txt_row_fileInfo"
-        android:layout_marginStart="@dimen/border_double"
+        style="@style/file_info"
+        android:layout_marginStart="@dimen/indent2"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/size"

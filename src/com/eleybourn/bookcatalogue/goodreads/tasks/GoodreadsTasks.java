@@ -17,6 +17,7 @@ import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -222,6 +223,8 @@ public final class GoodreadsTasks {
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            Thread.currentThread().setName("GR.RequestAuthTask");
+
             //FIXME: should be done BEFORE starting the task
             if (!NetworkUtils.isNetworkAvailable()) {
                 return R.string.error_no_internet_connection;
@@ -264,8 +267,9 @@ public final class GoodreadsTasks {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -300,6 +304,8 @@ public final class GoodreadsTasks {
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            Thread.currentThread().setName("GR.SendOneBookTask");
+
             try {
                 //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
@@ -329,8 +335,9 @@ public final class GoodreadsTasks {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -369,6 +376,8 @@ public final class GoodreadsTasks {
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            Thread.currentThread().setName("GR.SendBooksTask");
+
             try {
                 //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
@@ -399,8 +408,9 @@ public final class GoodreadsTasks {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }
@@ -439,6 +449,8 @@ public final class GoodreadsTasks {
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
+            Thread.currentThread().setName("GR.ImportTask");
+
             try {
                 //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
@@ -469,8 +481,9 @@ public final class GoodreadsTasks {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
             } else {
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "onPostExecute", "WeakReference to listener was dead");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                    Logger.debug(this, "onPostExecute",
+                                 "WeakReference to listener was dead");
                 }
             }
         }

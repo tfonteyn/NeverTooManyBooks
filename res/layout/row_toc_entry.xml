@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView"
+    style="@style/row_option"
     >
 
     <TextView
@@ -21,7 +21,7 @@
     <TextView
         android:id="@+id/year"
         style="@style/txt_detail_small"
-        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginStart="@dimen/indent2"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

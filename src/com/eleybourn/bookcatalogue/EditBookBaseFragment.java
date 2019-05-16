@@ -22,9 +22,9 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.CheckListDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -44,8 +44,8 @@ public abstract class EditBookBaseFragment<T>
         extends BookBaseFragment
         implements DataEditor {
 
-    private final CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>
-            mOnCheckListEditorResultsListener = (destinationFieldId, list) -> {
+    private final CheckListDialogFragment.CheckListResultsListener<T>
+            mCheckListResultsListener = (destinationFieldId, list) -> {
         Book book = mBookBaseFragmentModel.getBook();
 
         if (destinationFieldId == R.id.bookshelves) {
@@ -61,8 +61,8 @@ public abstract class EditBookBaseFragment<T>
         }
     };
 
-    private final PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener
-            mOnPartialDatePickerResultsListener = (destinationFieldId, year, month, day) ->
+    private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
+            mPartialDatePickerResultsListener = (destinationFieldId, year, month, day) ->
             mFields.getField(destinationFieldId)
                    .setValue(DateUtils.buildPartialDate(year, month, day));
 
@@ -70,12 +70,12 @@ public abstract class EditBookBaseFragment<T>
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
             ((PartialDatePickerDialogFragment) childFragment)
-                    .setListener(mOnPartialDatePickerResultsListener);
+                    .setListener(mPartialDatePickerResultsListener);
 
-        } else if (CheckListEditorDialogFragment.TAG.equals(childFragment.getTag())) {
+        } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
             //noinspection unchecked
-            ((CheckListEditorDialogFragment<T>) childFragment)
-                    .setListener(mOnCheckListEditorResultsListener);
+            ((CheckListDialogFragment<T>) childFragment)
+                    .setListener(mCheckListResultsListener);
         }
     }
 
@@ -157,7 +157,7 @@ public abstract class EditBookBaseFragment<T>
      *
      * @param field         {@link Fields.Field} to edit
      * @param dialogTitleId title of the dialog box.
-     * @param fieldButtonId field/button to bind the OnPickListener to (can be same as fieldId)
+     * @param fieldButtonId field/button to bind the PickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
      */
     void initValuePicker(@NonNull final Fields.Field field,
@@ -212,12 +212,12 @@ public abstract class EditBookBaseFragment<T>
     /**
      * @param field         {@link Fields.Field} to edit
      * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListEditorDialogFragment.CheckListEditorListGetter <T>}
+     * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter <T>}
      *                      interface to get the *current* list
      */
     void initCheckListEditor(@NonNull final Fields.Field field,
                              @StringRes final int dialogTitleId,
-                             @NonNull final CheckListEditorDialogFragment.CheckListEditorListGetter<T> listGetter) {
+                             @NonNull final CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
         if (!field.isUsed()) {
             return;
@@ -225,10 +225,10 @@ public abstract class EditBookBaseFragment<T>
 
         field.getView().setOnClickListener(v -> {
             FragmentManager fm = getChildFragmentManager();
-            if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
-                CheckListEditorDialogFragment
+            if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
+                CheckListDialogFragment
                         .newInstance(field.id, dialogTitleId, listGetter)
-                        .show(fm, CheckListEditorDialogFragment.TAG);
+                        .show(fm, CheckListDialogFragment.TAG);
             }
         });
     }

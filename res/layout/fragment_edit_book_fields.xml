@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border"
+    android:layout_margin="@dimen/border1"
     android:scrollbarAlwaysDrawVerticalTrack="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
@@ -30,7 +30,7 @@
 
         <TextView
             android:id="@+id/lbl_author"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
 
         <TextView
             android:id="@+id/lbl_title"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/title"
             android:text="@string/lbl_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
 
         <TextView
             android:id="@+id/lbl_isbn"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/isbn"
             android:text="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +87,7 @@
 
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +104,7 @@
 
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series"
@@ -120,7 +120,7 @@
 
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:labelFor="@id/genre"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +156,7 @@
 
         <TextView
             android:id="@+id/lbl_description"
-            style="@style/lbl_editField"
+            style="@style/lbl_textField"
             android:layout_width="wrap_content"
             android:text="@string/lbl_description"
             app:layout_constraintStart_toStartOf="parent"

@@ -22,10 +22,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
-import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.OnStartDragListener;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 
 public class SearchOrderFragment
@@ -108,7 +107,7 @@ public class SearchOrderFragment
          */
         SearchSiteListAdapter(@NonNull final Context context,
                               @NonNull final List<Site> items,
-                              @NonNull final OnStartDragListener dragStartListener) {
+                              @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
         }
 
