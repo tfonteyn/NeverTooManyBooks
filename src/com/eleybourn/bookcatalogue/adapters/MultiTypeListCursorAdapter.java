@@ -5,22 +5,26 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
 
 /**
- * Makes the {@link LegacyMultiTypeListCursorAdapter} suitable for use with
- * a {@link androidx.recyclerview.widget.RecyclerView}.
+ * Cursor adapter for flattened multi-typed ListViews.
+ * Simplifies the implementation of such lists.
  * <p>
- * TODO: merge with {@link LegacyMultiTypeListCursorAdapter}
+ * Users of this class need to implement MultiTypeListHandler to manage the creation
+ * and display of each view.
+ * The {@link RecyclerView.ViewHolder} as used here is oblivious about the real view members.
+ * <p>
+ * Original author Philip Warner; now rewritten to use RecyclerView
  */
 public class MultiTypeListCursorAdapter
-        extends CursorAdapterWrapper
+        extends RecyclerView.Adapter<MultiTypeListCursorAdapter.Holder>
         implements SectionIndexerV2 {
 
     @NonNull
@@ -40,16 +44,24 @@ public class MultiTypeListCursorAdapter
     public MultiTypeListCursorAdapter(@NonNull final Context context,
                                       @NonNull final Cursor cursor,
                                       @NonNull final MultiTypeListHandler listHandler) {
-        super(context, new LegacyMultiTypeListCursorAdapter(context, cursor, listHandler));
         mContext = context;
         mCursor = cursor;
         mListHandler = listHandler;
     }
 
+    @NonNull
+    @Override
+    public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                     final int viewType) {
+        View itemView = mListHandler.newView(mContext, mCursor, parent);
+        return new Holder(itemView);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-        super.onBindViewHolder(holder, position);
+        mCursor.moveToPosition(position);
+        mListHandler.bindView(holder.itemView, mContext, mCursor);
 
         // temp tag for the position, so the click-listeners get get it.
         holder.itemView.setTag(R.id.TAG_POSITION, position);
@@ -57,8 +69,26 @@ public class MultiTypeListCursorAdapter
         holder.itemView.setOnLongClickListener(mOnItemLongClick);
     }
 
-    public int getAbsolutePosition(@NonNull final View v) {
-        return mListHandler.getAbsolutePosition(v);
+    @Override
+    public int getItemCount() {
+        return mCursor.getCount();
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        mCursor.moveToPosition(position);
+        return mListHandler.getItemViewType(mCursor);
+    }
+
+    /**
+     * Return the absolute position in the list for the passed View.
+     *
+     * @param view to find
+     *
+     * @return position
+     */
+    public int getAbsolutePosition(@NonNull final View view) {
+        return mListHandler.getAbsolutePosition(view);
     }
 
     /**
@@ -91,6 +121,7 @@ public class MultiTypeListCursorAdapter
     public void setOnItemLongClickListener(@NonNull final View.OnLongClickListener onItemLongClick) {
         mOnItemLongClick = onItemLongClick;
     }
+
 
     /**
      * Interface for handling the View-related tasks in a multi-type ListView.
@@ -127,7 +158,7 @@ public class MultiTypeListCursorAdapter
          * Get the text to display in ListView for row at current cursor position.
          *
          * @param resources caller context
-         * @param cursor  Cursor, correctly positioned.
+         * @param cursor    Cursor, correctly positioned.
          *
          * @return the section text as an array.
          */
@@ -159,52 +190,11 @@ public class MultiTypeListCursorAdapter
                       @NonNull Cursor cursor);
     }
 
-    /**
-     * Cursor adapter for flattened multi-typed ListViews.
-     * Simplifies the implementation of such lists.
-     * <p>
-     * Users of this class need to implement MultiTypeListHandler to manage the creation
-     * and display of each view.
-     *
-     * @author Philip Warner
-     */
-    private static class LegacyMultiTypeListCursorAdapter
-            extends CursorAdapter {
+    static class Holder
+            extends RecyclerView.ViewHolder {
 
-        @NonNull
-        private final MultiTypeListHandler mListHandler;
-
-        LegacyMultiTypeListCursorAdapter(@NonNull final Context context,
-                                         @NonNull final Cursor cursor,
-                                         @NonNull final MultiTypeListHandler handler) {
-            super(context, cursor);
-            mListHandler = handler;
-        }
-
-        @Override
-        public int getItemViewType(final int position) {
-            final Cursor listCursor = getCursor();
-            listCursor.moveToPosition(position);
-            return mListHandler.getItemViewType(listCursor);
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return mListHandler.getViewTypeCount();
-        }
-
-        @Override
-        public View newView(@NonNull final Context context,
-                            @NonNull final Cursor cursor,
-                            @NonNull final ViewGroup parent) {
-            return mListHandler.newView(context, cursor, parent);
-        }
-
-        @Override
-        public void bindView(@NonNull final View view,
-                             @NonNull final Context context,
-                             @NonNull final Cursor cursor) {
-            mListHandler.bindView(view, context, cursor);
+        Holder(@NonNull final View itemView) {
+            super(itemView);
         }
     }
 }
