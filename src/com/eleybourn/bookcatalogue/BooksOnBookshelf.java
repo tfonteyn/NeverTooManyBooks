@@ -236,6 +236,9 @@ public class BooksOnBookshelf
                 }
             };
 
+    /** Define a scroller to update header detail when the top row changes. */
+    private RecyclerView.OnScrollListener mOnScrollListener;
+
     @Override
     protected int getLayoutId() {
         return R.layout.booksonbookshelf;
@@ -1375,24 +1378,23 @@ public class BooksOnBookshelf
         }
 
         // Define a scroller to update header detail when the top row changes
-        mListView.clearOnScrollListeners();
-        mListView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    public void onScrolled(@NonNull RecyclerView recyclerView,
-                                           int dx,
-                                           int dy) {
-                        int firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
-                        // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
-                        // activity terminates and closes cursor
-                        if (mModel.getLastTopRow() != firstVisibleItem
-                                && !isDestroyed()
-                                && showLevelTexts) {
-                            setLevelText(firstVisibleItem);
-                        }
-                    }
-
+        mListView.removeOnScrollListener(mOnScrollListener);
+        mOnScrollListener = new RecyclerView.OnScrollListener() {
+            public void onScrolled(@NonNull RecyclerView recyclerView,
+                                   int dx,
+                                   int dy) {
+                int firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
+                // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
+                // activity terminates and closes cursor
+                if (mModel.getLastTopRow() != firstVisibleItem
+                        && !isDestroyed()
+                        && showLevelTexts) {
+                    setLevelText(firstVisibleItem);
                 }
-        );
+            }
+
+        };
+        mListView.addOnScrollListener(mOnScrollListener);
 
         // Close old list
         if (oldList != null) {

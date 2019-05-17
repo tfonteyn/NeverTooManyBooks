@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
  * Class responsible to animate and provide a fast scroller.
  * <p>
  * Code taken from  "recyclerview-1.1.0-alpha01-sources.jar"
+ * androidx/recyclerview/widget/FastScroller.java
+ * <p>
  * ==> check regularly for modifications, and port them here.
  * Should really be done as a source patch to apply automatically.
  *
@@ -33,8 +35,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * {@link #onDrawOver} where the {@link RecyclerViewCFS} is requested to draw the overlay.
  */
-@SuppressWarnings("ALL")
-class RecyclerCFS
+class FastScroller
         extends RecyclerView.ItemDecoration
         implements RecyclerView.OnItemTouchListener {
 
@@ -124,14 +125,14 @@ class RecyclerCFS
     @DragState
     private int mDragState = DRAG_NONE;
 
-    RecyclerCFS(RecyclerView recyclerView,
-                StateListDrawable verticalThumbDrawable,
-                Drawable verticalTrackDrawable,
-                StateListDrawable horizontalThumbDrawable,
-                Drawable horizontalTrackDrawable,
-                int defaultWidth,
-                int scrollbarMinimumRange,
-                int margin) {
+    FastScroller(RecyclerView recyclerView,
+                 StateListDrawable verticalThumbDrawable,
+                 Drawable verticalTrackDrawable,
+                 StateListDrawable horizontalThumbDrawable,
+                 Drawable horizontalTrackDrawable,
+                 int defaultWidth,
+                 int scrollbarMinimumRange,
+                 int margin) {
         mVerticalThumbDrawable = verticalThumbDrawable;
         mVerticalTrackDrawable = verticalTrackDrawable;
         mHorizontalThumbDrawable = horizontalThumbDrawable;

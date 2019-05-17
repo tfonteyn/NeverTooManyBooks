@@ -43,8 +43,8 @@ public class CursorAdapterWrapper
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
-        return new Holder(v);
+        View itemView = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
+        return new Holder(itemView);
     }
 
     @Override

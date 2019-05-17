@@ -169,7 +169,7 @@ public class BooksMultiTypeListHandler
     /**
      * Get the text to display for the row at the current cursor position.
      * <p>
-     * called by {@link MultiTypeListCursorAdapter.MultiTypeListCursorAdapter#getSectionTextForPosition(int)}}
+     * called by {@link MultiTypeListCursorAdapter#getSectionTextForPosition(int)}}
      * <p>
      * <br>{@inheritDoc}
      */
