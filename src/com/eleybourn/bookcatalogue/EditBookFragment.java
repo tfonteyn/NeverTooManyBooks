@@ -158,6 +158,9 @@ public class EditBookFragment
         outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
+    /**
+     * Add the menu items which are common to all child fragments.
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
@@ -171,12 +174,31 @@ public class EditBookFragment
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        // do NOT call super here. Actual edit fragments will do that.
+        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 MenuHandler.MENU_ORDER_UPDATE_FIELDS,
+                 R.string.menu_internet_update_fields)
+            .setIcon(R.drawable.ic_search);
+
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * Set visibility of menu items as appropriate.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                             mBookBaseFragmentModel.isExistingBook());
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_SAVE:
                 doSave();
@@ -188,6 +210,7 @@ public class EditBookFragment
                 return true;
 
             default:
+                // MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
                 return super.onOptionsItemSelected(item);
         }
     }

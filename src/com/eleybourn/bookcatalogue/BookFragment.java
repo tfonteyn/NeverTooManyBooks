@@ -115,6 +115,13 @@ public class BookFragment
     }
 
     @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
+        }
+    }
+
+    @Override
     @CallSuper
     protected void initFields() {
         super.initFields();
@@ -459,6 +466,12 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
+        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 MenuHandler.MENU_ORDER_UPDATE_FIELDS,
+                 R.string.menu_internet_update_fields)
+            .setIcon(R.drawable.ic_search);
+
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             // Only one of these two is made visible.
             menu.add(R.id.MENU_BOOK_EDIT_LOAN,
@@ -504,8 +517,8 @@ public class BookFragment
         //noinspection ConstantConditions
         @NonNull
         BaseActivity activity = (BaseActivity) getActivity();
-
         Book book = mBookBaseFragmentModel.getBook();
+
         switch (item.getItemId()) {
 
             case R.id.MENU_BOOK_EDIT:
@@ -563,18 +576,12 @@ public class BookFragment
                 if (MenuHandler.handleAmazonSearchSubMenu(activity, item, book)) {
                     return true;
                 }
+                // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
                 return super.onOptionsItemSelected(item);
         }
     }
 
     //</editor-fold>
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
-            ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
-        }
-    }
 
     @Override
     public void onActivityResult(final int requestCode,

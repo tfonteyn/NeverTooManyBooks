@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -56,9 +57,16 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
 /**
- * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
+ * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
  * <p>
  * This class supports the loading of a book. See {@link #loadFields}.
+ *
+ * BookBaseFragment -> BookFragment.
+ * BookBaseFragment -> EditBookFragment.
+ * BookBaseFragment -> EditBookBaseFragment -> EditBookFieldsFragment
+ * BookBaseFragment -> EditBookBaseFragment -> EditBookNotesFragment
+ * BookBaseFragment -> EditBookBaseFragment -> EditBookPublicationFragment
+ * BookBaseFragment -> EditBookBaseFragment -> EditBookTocFragment
  *
  * @author pjw
  */
@@ -116,7 +124,6 @@ public abstract class BookBaseFragment
         super.onActivityCreated(savedInstanceState);
 
         mDb = new DAO();
-
 
         // Activity scope!
         //noinspection ConstantConditions
@@ -218,34 +225,11 @@ public abstract class BookBaseFragment
     //<editor-fold desc="Menu handlers">
 
     @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 MenuHandler.MENU_ORDER_UPDATE_FIELDS,
-                 R.string.menu_internet_update_fields)
-            .setIcon(R.drawable.ic_search);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    /**
-     * Set visibility of menu items as appropriate.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                             mBookBaseFragmentModel.isExistingBook());
-    }
-
-    @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection ConstantConditions
+        @NonNull
+        BaseActivity activity = (BaseActivity) getActivity();
         Book book = mBookBaseFragmentModel.getBook();
 
         //noinspection SwitchStatementWithTooFewBranches
