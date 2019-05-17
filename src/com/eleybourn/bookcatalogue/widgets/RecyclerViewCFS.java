@@ -28,18 +28,36 @@ import com.eleybourn.bookcatalogue.R;
  * <br>3. Call {@link #setAdapter} with a 'normal' Adapter ==> independent from 1+2 above
  * <br>OR
  * <br>3. Call {@link #setAdapter}with Adapter that implements {@link SectionIndexerV2}
- * and the fast scroller will use it.
+ * and the fast scroller will use it for the overlay.
+ *
+ * TOMF... hacking the FastScroller was a BAD idea...
+ *
+ *
+ * // can we use this instead of hacking the FastScroller ?
+ * //    @SuppressWarnings("FieldCanBeLocal")
+ * //    private final RecyclerView.OnScrollListener
+ * //            mOnScrollListener = new RecyclerView.OnScrollListener() {
+ * //        @Override
+ * //        public void onScrolled(@NonNull final RecyclerView recyclerView,
+ * //                               final int dx, final int dy) {
+ * //
+ * //        }
+ * //    };
+ *
+ *     // similarly, can we morph the overlay into a standard ItemDecoration
+ *
+ *
  */
 public class RecyclerViewCFS
         extends RecyclerView {
 
     /** The FastScroller. */
     @Nullable
-    private RecyclerCFS mRecyclerCFS;
+    private FastScroller mFastScroller;
     /** The overlay. */
     @Nullable
     private RecyclerViewCFSOverlay mOverlay;
-    /** The overlay. */
+    /** The overlay drawable. */
     @Nullable
     private Drawable mOverlayDrawable;
 
@@ -109,16 +127,17 @@ public class RecyclerViewCFS
                 }
 
                 Resources resources = getContext().getResources();
-                mRecyclerCFS = new RecyclerCFS(this,
-                                               verticalThumbDrawable, verticalTrackDrawable,
-                                               horizontalThumbDrawable, horizontalTrackDrawable,
-                                               resources.getDimensionPixelSize(
+                mFastScroller = new FastScroller(this,
+                                                 verticalThumbDrawable, verticalTrackDrawable,
+                                                 horizontalThumbDrawable, horizontalTrackDrawable,
+                                                 resources.getDimensionPixelSize(
                                                        R.dimen.cfs_default_thickness),
-                                               resources.getDimensionPixelSize(
+                                                 resources.getDimensionPixelSize(
                                                        R.dimen.cfs_minimum_range),
-                                               resources.getDimensionPixelOffset(
+                                                 resources.getDimensionPixelOffset(
                                                        R.dimen.cfs_margin));
 
+//                addOnScrollListener(mOnScrollListener);
             }
             a.recycle();
         }
@@ -127,7 +146,7 @@ public class RecyclerViewCFS
     @Override
     public void setAdapter(@Nullable final Adapter adapter) {
         super.setAdapter(adapter);
-        if ((adapter instanceof SectionIndexerV2) && mRecyclerCFS != null) {
+        if ((adapter instanceof SectionIndexerV2) && mFastScroller != null) {
             //noinspection ConstantConditions
             mOverlay = new RecyclerViewCFSOverlay(this, mOverlayDrawable);
         }
@@ -146,11 +165,12 @@ public class RecyclerViewCFS
     }
 
     /**
-     * Computes the position of the row in the adapter and set it on the overlay.
-     *
-     * @param offsetInPercentage the % offset in the list.
+     * Computes the position of the row in the adapter and sets it on the overlay.
      */
-    public void computeAndSetPosition(final float offsetInPercentage) {
+    public void computeAndSetPosition(final int totalPossibleOffset, final int absoluteOffset) {
+
+        float offsetInPercentage = (float) (absoluteOffset) / (float) totalPossibleOffset;
+
         //noinspection ConstantConditions
         int adapterItemCount = getAdapter().getItemCount();
         // transform the % to an actual row. This is not exact...
