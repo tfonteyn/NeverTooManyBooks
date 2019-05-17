@@ -12,6 +12,7 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book IDs in
@@ -41,6 +42,8 @@ public class FlattenedBooklist
     private long mBookId;
     /** Collection of statements compiled for this object. */
     private SqlStatementManager mStatements;
+    /** DEBUG: Indicates close() has been called. */
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor.
@@ -252,12 +255,12 @@ public class FlattenedBooklist
         return stmt.count();
     }
 
-
     /**
      * Release resource-consuming stuff.
      */
     @Override
     public void close() {
+        mCloseWasCalled = true;
         mStatements.close();
     }
 
@@ -270,14 +273,14 @@ public class FlattenedBooklist
         mTable.clear();
     }
 
-    /**
-     * Close the statements.
-     */
     @Override
     @CallSuper
     protected void finalize()
             throws Throwable {
-        close();
+        if (!mCloseWasCalled) {
+            Logger.warn(this, "finalize", "mCloseWasCalled=false; calling close() now");
+            close();
+        }
         super.finalize();
     }
 }

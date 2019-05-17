@@ -35,8 +35,8 @@ public class SynchronizedStatement
     private final boolean mIsReadOnly;
     /** DEBUG: Indicates this is a 'count' statement. */
     private boolean mIsCount;
-    /** Indicates close() has been called. */
-    private boolean mIsClosed;
+    /** DEBUG: Indicates close() has been called. */
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor.
@@ -125,7 +125,7 @@ public class SynchronizedStatement
      */
     @Override
     public void close() {
-        mIsClosed = true;
+        mCloseWasCalled = true;
         mStatement.close();
     }
 
@@ -336,12 +336,11 @@ public class SynchronizedStatement
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (BuildConfig.DEBUG && !mIsClosed) {
+        if (!mCloseWasCalled) {
             Logger.warn(this, "finalize",
-                        "Finalizing non-closed statement (potential error/small)\n"
-                                + mStatement);
+                        "Closing unclosed statement:\n" + mStatement);
+            mStatement.close();
         }
-        mStatement.close();
         super.finalize();
     }
 

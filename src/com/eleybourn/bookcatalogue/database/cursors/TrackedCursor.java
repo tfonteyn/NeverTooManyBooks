@@ -77,8 +77,8 @@ public class TrackedCursor
     @Nullable
     private WeakReference<TrackedCursor> mWeakRef;
 
-    /** Already closed. */
-    private boolean mIsClosedFlg;
+    /** DEBUG: Indicates close() has been called. */
+    private boolean mCloseWasCalled;
 
     public TrackedCursor(@NonNull final SQLiteCursorDriver driver,
                          @NonNull final String editTable,
@@ -205,9 +205,9 @@ public class TrackedCursor
     public void close() {
         super.close();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            if (!mIsClosedFlg) {
+            if (!mCloseWasCalled) {
                 removeCursor();
-                mIsClosedFlg = true;
+                mCloseWasCalled = true;
             }
             Logger.debug(this,
                          "close", "instances left: "
@@ -216,16 +216,18 @@ public class TrackedCursor
     }
 
     /**
+     * DEBUG only.
+     *
      * Setting a break here can catch the exact moment that
      * a cursor is deleted before being closed.
      */
     @Override
     @CallSuper
     protected void finalize() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            // This is a cursor that is being deleted before it is closed.
-            // Setting a break here is sometimes useful.
-            removeCursor();
+        if (!mCloseWasCalled) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
+                removeCursor();
+            }
         }
         super.finalize();
     }

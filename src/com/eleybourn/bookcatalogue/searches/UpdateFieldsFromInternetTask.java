@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -414,7 +413,10 @@ public class UpdateFieldsFromInternetTask
      */
     @Override
     public void onTaskFinish() {
-        cleanup();
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
+        }
     }
 
     /**
@@ -567,24 +569,4 @@ public class UpdateFieldsFromInternetTask
         }
     }
 
-    /**
-     * Cleanup.
-     */
-    private void cleanup() {
-        if (mDb != null) {
-            mDb.close();
-            mDb = null;
-        }
-    }
-
-    /**
-     * Cleanup.
-     */
-    @Override
-    @CallSuper
-    protected void finalize()
-            throws Throwable {
-        cleanup();
-        super.finalize();
-    }
 }

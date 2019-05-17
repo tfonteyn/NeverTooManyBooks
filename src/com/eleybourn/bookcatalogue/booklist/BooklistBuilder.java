@@ -120,7 +120,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
 
 /**
  * Class used to build and populate temporary tables with details of a flattened book
- * list used to display books in a ListView control and perform operation like
+ * list used to display books in a list control and perform operation like
  * 'expand/collapse' on pseudo nodes in the list.
  * <p>
  * TODO: [0123456789] replace by [0..9]
@@ -277,6 +277,8 @@ public class BooklistBuilder
 
     /** A bookshelf id to use as a filter; i.e. show only books on this bookshelf. */
     private long mFilterOnBookshelfId;
+    /** DEBUG: Indicates close() has been called. */
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor.
@@ -1027,7 +1029,7 @@ public class BooklistBuilder
 
     /**
      * Process the 'sort-by' columns into a list suitable for a sort-by statement, or index.
-     *
+     * <p>
      * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
      *
      * @param sortedColumns the list of sorted domains from the builder
@@ -1894,7 +1896,6 @@ public class BooklistBuilder
         stmt.executeUpdateDelete();
     }
 
-
     /**
      * Save the currently expanded top level nodes, and the top level group kind, to the database
      * so that the next time this view is opened, the user will see the same opened/closed nodes.
@@ -2379,18 +2380,17 @@ public class BooklistBuilder
         return mStyle;
     }
 
-
     /**
-     * General cleanup routine called by both {@link #close()} and {@link #finalize()}.
-     *
-     * @param isFinalize set in the finalize[] method call
+     * Close the builder.
      */
-    private void cleanup(final boolean isFinalize) {
+    @Override
+    public void close() {
+        mCloseWasCalled = true;
+
         if (!mStatements.isEmpty()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.debug(this,
-                             "cleanup",
-                             "Finalizing with active mStatements (this is not an error): ");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debug(this, "close",
+                             "Has active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
                     Logger.debug(this, "cleanup", name);
                 }
@@ -2400,10 +2400,9 @@ public class BooklistBuilder
         }
 
         if (mNavTable != null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.debug(this,
-                             "cleanup",
-                             "Finalizing with mNavTable (this is not an error)");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debug(this, "close",
+                             "Dropping mNavTable (this is not an error)");
             }
 
             try {
@@ -2413,11 +2412,11 @@ public class BooklistBuilder
                 Logger.error(this, e);
             }
         }
+
         if (mListTable != null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.debug(this,
-                             "cleanup",
-                             "Finalizing with mListTable (this is not an error)");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debug(this, "close",
+                             "Dropping mListTable (this is not an error)");
             }
 
             try {
@@ -2432,28 +2431,23 @@ public class BooklistBuilder
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             if (!mDebugReferenceDecremented) {
-                // Only de-reference once!
-                Logger.debug(this,
-                             "cleanup",
+                // Only de-reference once! Paranoia ... close() might be called twice?
+                Logger.debug(this,"close",
                              "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
         }
     }
 
-    /**
-     * Close the builder.
-     */
-    @Override
-    public void close() {
-        cleanup(false);
-    }
-
     @Override
     @CallSuper
     protected void finalize()
             throws Throwable {
-        cleanup(true);
+        if (!mCloseWasCalled) {
+            Logger.warn(this, "finalize",
+                        "Closing unclosed builder");
+            close();
+        }
         super.finalize();
     }
 
@@ -2781,596 +2775,3 @@ public class BooklistBuilder
         }
     }
 }
-
-//<editor-fold desc="Experimental commented code">
-/*
- * Below was an interesting experiment, kept because it may one day get resurrected.
- *
- * The basic idea was to create the list in sorted order to start with by using
- * a BEFORE INSERT trigger on the book_list table. The problems were two-fold:
- *
- * - Android 1.6 has a buggy SQLite that does not like insert triggers that insert on the
- * same table (this is fixed by android 2.0). So the old code would have to be kept anyway,
- * to deal with old Android.
- *
- * - it did not speed things up, probably because of index maintenance. It took about 5% longer.
- *
- * Tests were performed on Android 2.2 using approx. 800 books.
- *
- * Circumstances under which this may be resurrected include:
- *
- * - Huge libraries (so that index build times are compensated for by huge tables).
- * 800 books is close to break-even
- * - Stored procedures in SQLite become available to avoid multiple nested trigger calls.
- *
- */
-//
-//	/**
-//   * Clear and the build the temporary list of books based on the passed criteria.
-//   *
-//   * @param bookshelf     Search criteria: limit to shelf
-//   * @param authorWhere   Search criteria: additional conditions that apply to authors table
-//   * @param bookWhere     Search criteria: additional conditions that apply to book table
-//   * @param loaned_to     Search criteria: only books loaned to named person
-//   * @param seriesName    Search criteria: only books in named series
-//   * @param searchText    Search criteria: book details must in some way contain the passed text
-//   *
-//   */
-//  public BooklistCursor build(long previouslySelectedBookId, String bookshelf,
-//                              String authorWhere, String bookWhere,
-//                              String loaned_to, String seriesName, String searchText) {
-//      final long t0 = System.nanoTime();
-//      SummaryBuilder summary = new SummaryBuilder();
-//      // Add the minimum required domains
-//
-//      summary.addDomain(DOM_PK_ID);
-//      summary.addDomain(DOM_BL_NODE_LEVEL, String.valueOf(mLevels.size()+1), SummaryBuilder.FLAG_NONE);
-//      summary.addDomain(DOM_BL_NODE_ROW_KIND, "" + RowKind.BOOK, SummaryBuilder.FLAG_NONE);
-//      summary.addDomain(DOM_FK_BOOK_ID, TBL_BOOKS.dot(DOM_PK_ID), SummaryBuilder.FLAG_NONE);
-//      summary.addDomain(DOM_BL_BOOK_COUNT, "1", SummaryBuilder.FLAG_NONE);
-//      summary.addDomain(DOM_BL_ROOT_KEY);
-//      //summary.addDomain(DOM_PARENT_KEY);
-//
-//      BooklistSeriesLevel seriesLevel = null;
-//      BooklistAuthorLevel authorLevel = null;
-//      boolean hasLevelLOANED = false;
-//
-//      final long t0a = System.nanoTime();
-//
-//      for (BooklistLevel l : mLevels) {
-//          //
-//          //  Build each row-kind group.
-//          //
-//          //  ****************************************************************************************
-//          //  IMPORTANT NOTE: for each row kind, then FIRST SORTED AND GROUPED domain should be the one
-//          //					that will be displayed and that level in the UI.
-//          //  ****************************************************************************************
-//          //
-//			switch (l.kind) {
-//
-//			case RowKind.SERIES:
-//				l.displayDomain = DOM_SERIES_TITLE;
-//				seriesLevel = (BooklistSeriesLevel) l; // getLevel(RowKind.SERIES);
-//				summary.addDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(DOM_SERIES_TITLE), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-//				summary.addDomain(DOM_FK_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
-//				summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_BOOK_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_BL_PRIMARY_SERIES_COUNT,"case when Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1) == 1 then 1 else 0 end", SummaryBuilder.FLAG_NONE);
-//				summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_SORTED);
-//				//summary.addKeyComponents("'s'", TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID));
-//				l.setKeyComponents("s", DOM_FK_SERIES_ID);
-//				break;
-//
-//			case RowKind.AUTHOR:
-//				l.displayDomain = DOM_AUTHOR_FORMATTED;
-//				authorLevel = (BooklistAuthorLevel) l; //getLevel(RowKind.AUTHOR);
-//				summary.addDomain(DOM_AUTHOR_SORT, X_AUTHOR_FORMATTED_LAST_FIRST, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-//				if (authorLevel.givenName)
-//					summary.addDomain(DOM_AUTHOR_FORMATTED, X_AUTHOR_FORMATTED_FIRST_LAST, SummaryBuilder.FLAG_GROUPED);
-//				else
-//					summary.addDomain(DOM_AUTHOR_FORMATTED, X_AUTHOR_FORMATTED_LAST_FIRST, SummaryBuilder.FLAG_GROUPED);
-//
-//				summary.addDomain(DOM_FK_AUTHOR_ID, TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
-//
-//				//summary.addKeyComponents("'a'", TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID));
-//				l.setKeyComponents("a", DOM_FK_AUTHOR_ID);
-//
-//				break;
-//
-//			case RowKind.GENRE:
-//				l.displayDomain = DOM_BOOK_GENRE;
-//				summary.addDomain(DOM_BOOK_GENRE, TBL_BOOKS.dot(DOM_BOOK_GENRE), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'g'", TBL_BOOKS.dot(DOM_BOOK_GENRE));
-//				l.setKeyComponents("g", DOM_BOOK_GENRE);
-//				break;
-//
-//			case RowKind.PUBLISHER:
-//				l.displayDomain = DOM_BOOK_PUBLISHER;
-//				summary.addDomain(DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(DOM_BOOK_PUBLISHER), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'p'", TBL_BOOKS.dot(DOM_BOOK_PUBLISHER));
-//				l.setKeyComponents("p", DOM_BOOK_PUBLISHER);
-//				break;
-//
-//			case RowKind.ROW_KIND_UNREAD:
-//				l.displayDomain = DOM_READ_STATUS;
-//				String unreadExpr = "Case When " + TBL_BOOKS.dot(DOM_BOOK_READ) + " = 1 " +
-//						" Then '" + BookCatalogueApp.getResString(R.string.booklist_read) + "'" +
-//						" Else '" + BookCatalogueApp.getResString(R.string.booklist_unread) + "' end";
-//				summary.addDomain(DOM_READ_STATUS, unreadExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-//				summary.addDomain(DOM_BOOK_READ, TBL_BOOKS.dot(DOM_BOOK_READ), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'r'", TBL_BOOKS.dot(DOM_BOOK_READ));
-//				l.setKeyComponents("r", DOM_BOOK_READ);
-//				break;
-//
-//			case RowKind.LOANED:
-//				hasLevelLOANED = true;
-//				l.displayDomain = DOM_BOOK_LOANEE;
-//				summary.addDomain(DOM_BOOK_LOANEE, LOANED_TO_EXPRESSION, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'l'", DatabaseDefinitions.TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE));
-//				l.setKeyComponents("l", DOM_BOOK_LOANEE);
-//				break;
-//
-//			case RowKind.TITLE_LETTER:
-//				l.displayDomain = DOM_TITLE_LETTER;
-//				String titleLetterExpr = "substr(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)";
-//				summary.addDomain(DOM_TITLE_LETTER, titleLetterExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'t'", titleLetterExpr);
-//				l.setKeyComponents("t", DOM_TITLE_LETTER);
-//				break;
-//
-//			default:
-//				throw new IllegalTypeException(l.kind.toString());
-//
-//			}
-//			// Copy the current groups to this level item; this effectively accumulates 'group by' domains
-//			// down each level so that the top has fewest groups and the bottom level has groups for all levels.
-//			l.groupDomains = (ArrayList<DomainDefinition>) summary.cloneGroups();
-//		}
-//		final long t0b = System.nanoTime();
-//
-//		if (previouslySelectedBookId != 0) {
-//			summary.addDomain(DOM_BL_SELECTED, TBL_BOOKS.dot(DOM_PK_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
-//		}
-//
-//		// Ensure any caller-specified extras (e.g. title) are added at the end.
-//		for(Entry<String,ExtraDomainInfo> d : mExtraDomains.entrySet()) {
-//			ExtraDomainInfo info = d.get();
-//			int flags;
-//			if (info.isSorted)
-//				flags = SummaryBuilder.FLAG_SORTED;
-//			else
-//				flags = SummaryBuilder.FLAG_NONE;
-//			summary.addDomain(info.domain, info.sourceExpression, flags);
-//		}
-//		final long t0c = System.nanoTime();
-//
-//		//
-//		// Build the initial insert statement: 'insert into <tbl> (col-list) select (expr-list) from'.
-//		// We just need to add the 'from' tables. It is a fairly static list, for the most part we just
-//		// add extra criteria as needed.
-//		//
-//		// The seriesLevel and authorLevel fields will influenced the nature of the join. If at a later
-//		// stage some row kinds introduce more table dependencies, a flag (or object) can be set
-//		// when processing the level to inform the joining code (below) which tables need to be added.
-//		//
-//		// Aside: The sql used prior to using DbUtils is included as comments below the call that replaced it.
-//		//
-//		String sql = summary.buildBaseInsert(mLevels.get(0).getCompoundKey());
-//
-//		final long t0d = System.nanoTime();
-//
-//		Joiner join;
-//
-//		if (!bookshelf.isEmpty()) {
-//			join = new Joiner(TBL_BOOKSHELF)
-//				.start()
-//				.join(TBL_BOOK_BOOKSHELF)
-//				.join(TBL_BOOKS);
-//		} else {
-//			join = new Joiner(TBL_BOOKS).start();
-//		}
-//			/*
-//			if (!bookshelf.isEmpty()) {
-//				sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS +
-//						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
-//				sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK_ID + "\n";
-//			} else {
-//				sql +=	"    " + DB_TB_BOOKS_AND_ALIAS + "\n";
-//			}
-//			*/
-//
-//		// If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
-//		if (hasLevelLOANED) {
-//			join.join(TBL_BOOK_LOANEE);
-//		}
-//
-//		// Specify a parent in the join, because the last table joined was one of BOOKS or LOAN.
-//		join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
-//		if (authorLevel == null || !authorLevel.allAuthors) {
-//			join.append( "		and " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " == 1\n");
-//		}
-//		join.join(TBL_AUTHORS);
-//		join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
-//			/*
-//			sql +=	"    join " + DB_TB_BOOK_AUTHOR_AND_ALIAS + " on " + ALIAS_BOOK_AUTHOR + "." + KEY_BOOK_ID + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n" +
-//					"    join " + DB_TB_AUTHORS_AND_ALIAS + " on " + ALIAS_AUTHORS + "." + KEY_ID + " = " + ALIAS_BOOK_AUTHOR + "." + KEY_AUTHOR + "\n";
-//			sql +=	"    left outer join " + DB_TB_BOOK_SERIES_AND_ALIAS + " on " + ALIAS_BOOK_SERIES + "." + KEY_BOOK_ID + " = " + ALIAS_BOOKS + "." + KEY_ID + "\n";
-//			*/
-//
-//		if (seriesLevel == null || !seriesLevel.allSeries) {
-//			join.append( "		and " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + " == 1\n");
-//		}
-//		join.leftOuterJoin(TBL_SERIES);
-//			/*
-//			if (seriesLevel == null || !seriesLevel.allSeries) {
-//				sql += "		and " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_POSITION + " == 1\n";
-//			}
-//			sql +=	"    left outer join " + DB_TB_SERIES_AND_ALIAS + " on " + ALIAS_SERIES + "." + KEY_ID + " = " + ALIAS_BOOK_SERIES + "." + KEY_SERIES_ID;
-//			*/
-//
-//		// Append the joined tables to our initial insert statement
-//		sql += join.toString();
-//
-//		//
-//		// Now build the 'where' clause.
-//		//
-//		final long t0e = System.nanoTime();
-//		String where = "";
-//
-//		if (!bookshelf.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + " = '" + DAO.encodeString(bookshelf) + "')";
-//		}
-//		if (!authorWhere.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "(" + authorWhere + ")";
-//		}
-//		if (!bookWhere.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "(" + bookWhere + ")";
-//		}
-//		if (!loaned_to.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "Exists(Select NULL From " + TBL_BOOK_LOANEE.ref() + " Where " + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE) + " = '" + encodeString(loaned_to) + "'" +
-//					" and " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ")";
-//					// .and()    .op(TBL_BOOK_LOANEE.dot(DOM_FK_BOOK_ID), "=", TBL_BOOKS.dot(DOM_PK_ID)) + ")";
-//		}
-//		if (!seriesName.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "(" + TBL_SERIES.dot(DOM_SERIES_TITLE) + " = '" + encodeString(seriesName) + "')";
-//		}
-//		if(!searchText.equals("")) {
-//			if (!where.equals(""))
-//				where += " and ";
-//			where += "(" + TBL_BOOKS.dot(DOM_PK_ID) + " in (select docid from " + DB_TB_BOOKS_FTS + " where " + DB_TB_BOOKS_FTS + " match '" + encodeString(searchText) + "'))";
-//		}
-//
-//		// If we got any conditions, add them to the initial insert statement
-//		if (!where.equals(""))
-//			sql += " where " + where.toString();
-//
-//		final long t1 = System.nanoTime();
-//
-//		{
-//			final ArrayList<DomainDefinition> sort = summary.getExtraSort();
-//			final StringBuilder sortCols = new StringBuilder();
-//			for (DomainDefinition d: sort) {
-//				sortCols.append(d.name);
-//				sortCols.append(DAO.COLLATION + ", ");
-//			}
-//			sortCols.append(DOM_BL_NODE_LEVEL.name);
-//			mSortColumnList = sortCols.toString();
-//		}
-//
-//		{
-//			final ArrayList<DomainDefinition> group = summary.cloneGroups();
-//			final StringBuilder groupCols = new StringBuilder();;
-//			for (DomainDefinition d: group) {
-//				groupCols.append(d.name);
-//				groupCols.append(DAO.COLLATION + ", ");
-//			}
-//			groupCols.append( DOM_BL_NODE_LEVEL.name );
-//			mGroupColumnList = groupCols.toString();
-//		}
-//
-//		{
-//			final ArrayList<DomainDefinition> keys = summary.getKeys();
-//			final StringBuilder keyCols = new StringBuilder();;
-//			for (DomainDefinition d: keys) {
-//				keyCols.append(d.name);
-//				keyCols.append(DAO.COLLATION + ", ");
-//			}
-//			keyCols.append( DOM_BL_NODE_LEVEL.name );
-//			mKeyColumnList = keyCols.toString();
-//		}
-//
-//		mLevelBuildStmts = new ArrayList<SQLiteStatement>();
-//
-//		String listNameSave = mListTable.getName();
-//		try {
-//			mListTable.setName(TBL_BOOK_LIST.getName());
-//			mListTable.drop(mSyncedDb);
-//			mListTable.create(mSyncedDb, false);
-//		} finally {
-//			mListTable.setName(listNameSave);
-//		}
-//		//mSyncedDb.execSQL("Create View " + TBL_BOOK_LIST + " as select * from " + mListTable);
-//
-//		// Make sure triggers can check easily
-//		//mSyncedDb.execSQL("Create Index " + mListTable + "_IX_TG on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mGroupColumnList + ")");
-//		mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable + "(" + DOM_BL_NODE_LEVEL + ", " + mKeyColumnList + ", " + DOM_FK_BOOK_ID + ")");
-//
-//		/*
-//		 * Create a trigger to forward all row details to real table
-//		 */
-//		/*
-//		String fullInsert = "Insert into " + mListTable + "(";
-//		{
-//			String fullValues = "Values (";
-//			boolean firstCol = true;
-//			for (DomainDefinition d: mListTable.domains) {
-//				if (!d.equals(DOM_PK_ID)) {
-//					if (firstCol)
-//						firstCol = false;
-//					else {
-//						fullInsert+=", ";
-//						fullValues += ", ";
-//					}
-//					fullInsert += d;
-//					fullValues += "new." + d;
-//				}
-//			}
-//			fullInsert += ") " + fullValues + ");";
-//
-//			String tgForwardName = "header_Z_F";
-//			mSyncedDb.execSQL("Drop Trigger if exists " + tgForwardName);
-//			String tgForwardSql = "Create Trigger " + tgForwardName + " instead of  insert on " + TBL_BOOK_LIST + " for each row \n" +
-//					"	Begin\n" +
-//					"		" + fullInsert + "\n" +
-//					"	End";
-//			SQLiteStatement stmt = mStatements.add(tgForwardName, tgForwardSql);
-//			mLevelBuildStmts.add(stmt);
-//			stmt.execute();
-//		}
-//		*/
-//
-//		// Now make some BEFORE INSERT triggers to build hierarchy;
-//      // no trigger on root level (index = 0).
-//		//String[] tgLines = new String[mLevels.size()];
-//
-//		for (int i = mLevels.size()-1; i >= 0; i--) {
-//			final BooklistLevel l = mLevels.get(i);
-//			final int levelId = i + 1;
-//			String insertSql = "INSERT INTO " + mListTable + "( " + DOM_BL_NODE_LEVEL
-//                   + ',' + DOM_BL_NODE_ROW_KIND + ", " + DOM_BL_ROOT_KEY + "\n";
-//			// If inserting with forwarding table:
-//          //  String insertSql = "INSERT INTO " + TBL_BOOK_LIST + "( " + DOM_BL_NODE_LEVEL
-//         //        + ',' + DOM_BL_NODE_ROW_KIND + ", " + DOM_BL_ROOT_KEY + "\n";
-
-//			// If inserting in one trigger using multiple 'exists':
-//          //  String valuesSql = levelId + ", " + l.kind + ", " + "new." + DOM_BL_ROOT_KEY + "\n";
-//			String valuesSql = "VALUES (" + levelId + ", " + l.kind + ", " + "new." + DOM_BL_ROOT_KEY + "\n";
-//			String conditionSql = "l." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
-//			for(DomainDefinition d  : l.groupDomains) {
-//				insertSql += ", " + d;
-//				valuesSql += ", new." + d;
-//				if (summary.getKeys().contains(d))
-//					conditionSql += "	and l." + d + " = new." + d + DAO.COLLATION + "\n";
-//			}
-//			//insertSql += ")\n	SELECT " + valuesSql + " WHERE NOT EXISTS (SELECT 1 FROM " + mListTable + " l WHERE " + conditionSql + ")";
-//			//tgLines[i] = insertSql;
-//
-//			insertSql += ")\n" + valuesSql + ")";
-//			String tgName = "header_A_tg_Level" + i;
-//			mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgName);
-//			// If using forwarding table: String tgSql = "CREATE TRIGGER " + tgName + " INSTEAD OF INSERT ON " + TBL_BOOK_LIST + " FOR EACH ROW WHEN new.level = " + (levelId+1) +
-//			String tgSql = "CREATE TEMP TRIGGER " + tgName + " BEFORE INSERT ON " + mListTable + " FOR EACH ROW WHEN new.level = " + (levelId+1) +
-//					" and not exists(SELECT 1 FROM " + mListTable + " l WHERE " + conditionSql + ")\n" +
-//					"	BEGIN\n" +
-//					"		" + insertSql + ";\n" +
-//					"	END";
-//			SQLiteStatement stmt = mStatements.add(tgName, tgSql);
-//			mLevelBuildStmts.add(stmt);
-//			stmt.execute();
-//		}
-//		/*
-//		String tgName = "header_tg";
-//		mSyncedDb.execSQL("Drop Trigger if exists " + tgName);
-//		String tgSql = "Create Trigger " + tgName + " instead of  insert on " + TBL_BOOK_LIST + " for each row when new.level = " + (mLevels.size()+1) +
-//				"	Begin\n";
-//		for(String s: tgLines) {
-//			tgSql += "		" + s + ";\n";
-//		}
-//
-//		tgSql += "\n	" + fullIns + ") " + values + ");\n";
-//		tgSql += "	End";
-//
-//		SQLiteStatement tgStmt = mStatements.add(tgName, tgSql);
-//		mLevelBuildStmts.add(tgStmt);
-//		tgStmt.execute();
-//		*/
-//
-//		// We are good to go.
-//		final long t1a = System.nanoTime();
-//		mSyncedDb.beginTransaction();
-//		long t1b = System.nanoTime();
-//		try {
-//			// Build the lowest level summary using our initial insert statement
-//			//mBaseBuildStmt = mStatements.add("mBaseBuild", sql + ") zzz Order by " + mGroupColumnList);
-//			mBaseBuildStmt = mStatements.add("mBaseBuild", sql );
-//			mBaseBuildStmt.execute();
-//
-//			/*
-//			 Create table foo(level int, g1 text, g2 text, g3 text);
-//			 Create Temp Trigger foo_tgL2 before insert on foo for each row when new.level = 3 and not exists(Select * From foo where level = 2 and g1=new.g1 and g2= foo.g2)
-//			 Begin
-//			    Insert into foo(level, g1, g2) values (2, new.g1, new.g2);
-//			   End;
-//			 Create Temp Trigger foo_tgL1 before insert on foo for each row when new.level = 2 and not exists(Select * From foo where level = 1 and g1=new.g1)
-//			 Begin
-//			    Insert into foo(level, g1) values (1, new.g1);
-//			   End;
-//
-//			 Create Temp Trigger L3 After Insert On mListTable For Each Row When LEVEL = 3 Begin
-//			 Insert into mListTable (level, kind, root_key, <cols>) values (new.level-1, new.<cols>)
-//			 Where not exists
-//			 */
-//			long t1c = System.nanoTime();
-//			//mSyncedDb.execSQL(ix3cSql);
-//			long t1d = System.nanoTime();
-//			//mSyncedDb.analyze(mListTable);
-//
-//			long t2 = System.nanoTime();
-//
-//			// Now build each summary level query based on the prior level.
-//			// We build and run from the bottom up.
-//
-//			/*
-//			long t2a[] = new long[mLevels.size()];
-//			int pos=0;
-//			for (int i = mLevels.size()-1; i >= 0; i--) {
-//				final BooklistLevel l = mLevels.get(i);
-//				final int levelId = i + 1;
-//				String cols = "";
-//				String collatedCols = "";
-//				for(DomainDefinition d  : l.groupDomains) {
-//					if (!collatedCols.equals(""))
-//						collatedCols += ",";
-//					cols += ",\n	" + d.name;
-//					//collatedCols += ",\n	" + d.name + DAO.COLLATION;
-//					collatedCols += "\n	" + d.name + DAO.COLLATION;
-//				}
-//				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_BL_NODE_LEVEL + ",\n	" + DOM_BL_NODE_ROW_KIND +
-//						//",\n	" + DOM_PARENT_KEY +
-//						cols + "," + DOM_BL_ROOT_KEY +
-//						")" +
-//						"\n SELECT " + levelId + " AS " + DOM_BL_NODE_LEVEL + ",\n	" + l.kind + " AS " + DOM_BL_NODE_ROW_KIND +
-//						//l.getKeyExpression() +
-//						cols + "," + DOM_BL_ROOT_KEY +
-//						"\n FROM " + mListTable + "\n " + " WHERE level = " + (levelId+1) +
-//						"\n GROUP BY " + collatedCols + "," + DOM_BL_ROOT_KEY + DAO.COLLATION;
-//						//"\n GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
-//
-//				SQLiteStatement stmt = mStatements.add("L" + i, sql);
-//				mLevelBuildStmts.add(stmt);
-//				stmt.execute();
-//				t2a[pos++] = System.nanoTime();
-//			}
-//			*/
-//
-//			String ix1Sql = "Create Index " + mListTable + "_IX1 on " + mListTable + "(" + mSortColumnList + ")";
-//
-//			SQLiteStatement stmt;
-//			long t3 = System.nanoTime();
-//			stmt = mStatements.add("ix1", ix1Sql);
-//			mLevelBuildStmts.add(stmt);
-//			stmt.execute();
-//			long t3a = System.nanoTime();
-//			mSyncedDb.analyze(mListTable);
-//			long t3b = System.nanoTime();
-//
-//			// Now build a lookup table to match row sort position to row ID. This is used to match a specific
-//			// book (or other row in result set) to a position directly.
-//			mNavTable.drop(mSyncedDb);
-//			mNavTable.create(mSyncedDb, true, false);
-//			sql = mNavTable.getInsert(DOM_BL_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_BL_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
-//					" Select " + mListTable.dot(DOM_PK_ID) + "," + mListTable.dot(DOM_BL_NODE_LEVEL) + "," + mListTable.dot(DOM_BL_ROOT_KEY) +
-//					" ,\n	Case When " + DOM_BL_NODE_LEVEL + " = 1 Then 1 \n" +
-//					"	When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL Then 0\n	Else 1 end,\n "+
-//					"	Case When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL Then 0 Else 1 end\n"+
-//					" From " + mListTable.ref() + "\n	left outer join " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
-//					"\n		On " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " = " + mListTable.dot(DOM_BL_ROOT_KEY) +
-//					"\n			And " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + " = " + mLevels.get(0).kind +
-//					"\n	Order by " + mSortColumnList;
-//
-//			stmt = mStatements.add("InsNav", sql);
-//			mLevelBuildStmts.add(stmt);
-//			stmt.execute();
-//
-//			long t4 = System.nanoTime();
-//			mSyncedDb.execSQL("Create Index " + mNavTable + "_IX1" + " On " + mNavTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_BL_ROOT_KEY + ")");
-//			long t4a = System.nanoTime();
-//			// Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
-//			mSyncedDb.execSQL("Create Unique Index " + mNavTable + "_IX2" + " On " + mNavTable + "(" + DOM_BL_REAL_ROW_ID + ")");
-//			long t4b = System.nanoTime();
-//			mSyncedDb.analyze(mNavTable);
-//			long t4c = System.nanoTime();
-//
-//			/*
-//			// Create Index book_list_tmp_row_pos_1_ix2 on book_list_tmp_row_pos_1(level, expanded, root_key);
-//			long t5 = System.nanoTime();
-//			sql = "UPDATE " + navName + " SET expanded = 1 WHERE level=1 AND " +
-//					"exists(SELECT _id FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " x2 WHERE x2.kind=" + mLevels.get(0).kind + " and x2.root_key = " + navName + ".root_key)";
-//			mSyncedDb.execSQL(sql);
-//			long t6 = System.nanoTime();
-//			sql = "Update " + navName + " set visible = 1, expanded = 1 where level > 1 and " +
-//					"exists(Select _id From " + navName + " x2 Where x2.level = 1 and x2.root_key = " + navName + ".root_key and x2.expanded=1)";
-//			mSyncedDb.execSQL(sql);
-//			long t7 = System.nanoTime();
-//			sql = "Update " + navName + " set visible = 1 where level = 1";
-//			mSyncedDb.execSQL(sql);
-//			*/
-//
-//			long t8 = System.nanoTime();
-//			//stmt = makeStatement(ix1Sql);
-//			//mLevelBuildStmts.add(stmt);
-//			//stmt.execute();
-//			long t9 = System.nanoTime();
-//			//mSyncedDb.execSQL(ix2Sql);
-//			long t10 = System.nanoTime();
-//			//mSyncedDb.analyze(mTableName);
-//			long t11 = System.nanoTime();
-//
-//			Logger.info("T0a: " + (t0a-t0));
-//			Logger.info("T0b: " + (t0b-t0a));
-//			Logger.info("T0c: " + (t0c-t0b));
-//			Logger.info("T0d: " + (t0d-t0c));
-//			Logger.info("T0e: " + (t0e-t0d));
-//			Logger.info("T1: " + (t1-t0));
-//			Logger.info("T1a: " + (t1a-t1));
-//			Logger.info("T1b: " + (t1b-t1a));
-//			Logger.info("T1c: " + (t1c-t1b));
-//			Logger.info("T1d: " + (t1d-t1c));
-//			Logger.info("T2: " + (t2-t1d));
-//			//Logger.info("T2a[0]: " + (t2a[0]-t2));
-//			//for(int i = 1; i < mLevels.size(); i++) {
-//			//	Logger.info("T2a[" + i + "]: " + (t2a[i]-t2a[i-1]));
-//			//}
-//			//Logger.info("T3: " + (t3-t2a[mLevels.size()-1]));
-//			Logger.info("T3a: " + (t3a-t3));
-//			Logger.info("T3b: " + (t3b-t3a));
-//			Logger.info("T4: " + (t4-t3b));
-//			Logger.info("T4a: " + (t4a-t4));
-//			Logger.info("T4b: " + (t4b-t4a));
-//			Logger.info("T4c: " + (t4c-t4b));
-//			//Logger.info("T5: " + (t5-t4));
-//			//Logger.info("T6: " + (t6-t5));
-//			//Logger.info("T7: " + (t7-t6));
-//			Logger.info("T8: " + (t8-t4c));
-//			Logger.info("T9: " + (t9-t8));
-//			Logger.info("T10: " + (t10-t9));
-//			Logger.info("T10: " + (t11-t10));
-//
-//			mSyncedDb.setTransactionSuccessful();
-//
-//			mSummary = summary;
-//
-//
-//			// Get the final result
-//			return getList();
-//			//sql = "select * from " + mTableName + " Order by " + mSortColumnList;
-//
-//			//return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql, EMPTY_STRING_ARRAY, "");
-//
-//		} finally {
-//			mSyncedDb.endTransaction();
-//			//mSyncedDb.execSQL("PRAGMA synchronous = FULL");
-//
-//		}
-//	}
-//</editor-fold>
