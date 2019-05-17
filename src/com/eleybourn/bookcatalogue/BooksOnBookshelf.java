@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
-import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapterWrapper;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -125,7 +124,7 @@ public class BooksOnBookshelf
     private RecyclerView mListView;
     private LinearLayoutManager mLinearLayoutManager;
     /** Multi-type adapter to manage list connection to cursor. */
-    private MultiTypeListCursorAdapterWrapper mAdapter;
+    private MultiTypeListCursorAdapter mAdapter;
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
@@ -1344,8 +1343,7 @@ public class BooksOnBookshelf
                 new BooksMultiTypeListHandler(getLayoutInflater(),
                                               mModel.getDb(), mModel.getCurrentStyle());
         //noinspection ConstantConditions
-        mAdapter = new MultiTypeListCursorAdapterWrapper(
-                this, new MultiTypeListCursorAdapter(this, mModel.getListCursor(), listHandler));
+        mAdapter = new MultiTypeListCursorAdapter(this, mModel.getListCursor(), listHandler);
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
 
