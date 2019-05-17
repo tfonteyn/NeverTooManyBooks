@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue;
 
-
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
@@ -20,11 +19,11 @@ import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
-import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.CheckListDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
+import com.eleybourn.bookcatalogue.dialogs.FieldPicker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -68,6 +67,7 @@ public abstract class EditBookBaseFragment<T>
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
             ((PartialDatePickerDialogFragment) childFragment)
                     .setListener(mPartialDatePickerResultsListener);
@@ -145,8 +145,6 @@ public abstract class EditBookBaseFragment<T>
     protected void onSaveFieldsToBook() {
         mFields.putAllInto(mBookBaseFragmentModel.getBook());
     }
-
-    //<editor-fold desc="Field editors">
 
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
@@ -232,6 +230,4 @@ public abstract class EditBookBaseFragment<T>
             }
         });
     }
-
-    //</editor-fold>
 }

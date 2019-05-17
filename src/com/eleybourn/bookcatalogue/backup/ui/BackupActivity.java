@@ -121,13 +121,6 @@ public class BackupActivity
     private ProgressDialogFragment<Object, ExportOptions> mProgressDialog;
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (ExportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
-            ((ExportOptionsDialogFragment)fragment).setListener(mOptionsListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -156,6 +149,13 @@ public class BackupActivity
         confirm.setOnClickListener(v -> doBackup());
 
         setTitle(R.string.lbl_backup);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (ExportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ExportOptionsDialogFragment)fragment).setListener(mOptionsListener);
+        }
     }
 
     /**

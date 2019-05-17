@@ -117,13 +117,6 @@ public class RestoreActivity
     private ProgressDialogFragment<Object, ImportOptions> mProgressDialog;
 
     @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
-            ((ImportOptionsDialogFragment)fragment).setListener(mOptionsListener);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -146,6 +139,13 @@ public class RestoreActivity
         confirm.setOnClickListener(v -> doRestore());
 
         setTitle(R.string.lbl_import_from_archive);
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ImportOptionsDialogFragment)fragment).setListener(mOptionsListener);
+        }
     }
 
     /**

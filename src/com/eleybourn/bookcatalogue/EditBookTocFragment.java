@@ -162,6 +162,14 @@ public class EditBookTocFragment
         ViewUtils.fixFocusSettings(getView());
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (ConfirmToc.TAG.equals(childFragment.getTag())
+                || EditTocEntry.TAG.equals(childFragment.getTag())) {
+            childFragment.setTargetFragment(this, 0);
+        }
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Populate">
@@ -441,14 +449,6 @@ public class EditBookTocFragment
         }
 
         mListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (ConfirmToc.TAG.equals(childFragment.getTag())
-                || EditTocEntry.TAG.equals(childFragment.getTag())) {
-            childFragment.setTargetFragment(this, 0);
-        }
     }
 
     /**

@@ -74,7 +74,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATI
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 
 /**
- * Handles all views in a multi-type ListView showing books, authors, series etc.
+ * Handles all views in a multi-type list showing books, authors, series etc.
  * <p>
  * Each row(level) needs to have a layout like:
  * <layout id="@id/ROW_INFO">
@@ -167,7 +167,7 @@ public class BooksMultiTypeListHandler
     }
 
     /**
-     * Get the text to display in the ListView for the row at the current cursor position.
+     * Get the text to display for the row at the current cursor position.
      * <p>
      * called by {@link MultiTypeListCursorAdapter#getSectionTextForPosition(int)}}
      * <p>

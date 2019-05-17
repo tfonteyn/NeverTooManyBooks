@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ListView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -120,9 +120,7 @@ public class BooksOnBookshelfModel
     /**
      * Saved position of last top row offset from view top.
      * <p>
-     * {@link ListView#setSelectionFromTop(int position, int y)} :
-     * * @param y The distance from the top edge of the ListView (plus padding) that the
-     * *        item will be positioned.
+     * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
     private int mTopRowOffset;
     /** Currently selected bookshelf. */
@@ -541,7 +539,7 @@ public class BooksOnBookshelfModel
          * @param builderHolder   holder class with input fields / results.
          * @param bookListBuilder the builder
          * @param isFullRebuild   Indicates whole table structure needs rebuild,
-         * @param taskListener        TaskListener
+         * @param taskListener    TaskListener
          */
         @UiThread
         private GetBookListTask(@NonNull final BuilderHolder builderHolder,

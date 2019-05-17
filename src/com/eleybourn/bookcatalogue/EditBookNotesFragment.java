@@ -45,7 +45,6 @@ public class EditBookNotesFragment
     /** Fragment manager tag. */
     public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
-
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,

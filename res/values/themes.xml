@@ -24,15 +24,6 @@
         <item name="checked_icon_tint">@color/light_green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
 
-        <!-- =============== -->
-        <!-- Global defaults -->
-        <!-- =============== -->
-
-        <!-- the default style attributes for a ListView using a native fast scroller. -->
-        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
-        <item name="android:fastScrollTrackDrawable">@null</item>
-        <item name="android:fastScrollOverlayPosition">floating</item>
-
         <!--  =========================== -->
         <!-- Theme Color palette -->
         <!--  =========================== -->
@@ -62,25 +53,12 @@
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
 
-        <!-- =============== -->
-        <!-- Global defaults -->
-        <!-- =============== -->
-
-        <!-- the default style attributes for a ListView using a native fast scroller. -->
-        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
-        <item name="android:fastScrollTrackDrawable">@null</item>
-        <item name="android:fastScrollOverlayPosition">floating</item>
-
         <!-- ============================ -->
         <!-- Theme Color palette -->
         <!-- ============================ -->
 
         <item name="colorPrimary">@color/blue_500</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-            the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
         <item name="colorPrimaryDark">@color/blue_700</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-          to framework controls (via colorControlActivated). -->
         <item name="colorAccent">@color/blue_a200</item>
 
     </style>
@@ -98,25 +76,12 @@
         <item name="checked_icon_tint">@color/green_a700</item>
         <item name="completed_icon_tint">@color/amber_a700</item>
 
-        <!-- =============== -->
-        <!-- Global defaults -->
-        <!-- =============== -->
-
-        <!-- the default style attributes for a ListView using a native fast scroller. -->
-        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
-        <item name="android:fastScrollTrackDrawable">@null</item>
-        <item name="android:fastScrollOverlayPosition">floating</item>
-
         <!-- ============================ -->
         <!-- Theme Color palette -->
         <!-- ============================ -->
 
         <item name="colorPrimary">@color/red_500</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-            the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
         <item name="colorPrimaryDark">@color/red_700</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-          to framework controls (via colorControlActivated). -->
         <item name="colorAccent">@color/red_a200</item>
     </style>
 

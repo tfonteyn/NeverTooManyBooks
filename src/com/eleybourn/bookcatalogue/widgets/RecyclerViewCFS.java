@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.eleybourn.bookcatalogue.R;
 
 /**
- * Replacement for {@link FastScrollListView}.
+ * Replacement for the old FastScrollListView.
  * The overlay part could use more work, but it's functionally equal now.
  * <p>
  * FastScroller initialisation code lifted from "recyclerview-1.1.0-alpha01-sources.jar"

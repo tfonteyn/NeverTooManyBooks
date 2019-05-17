@@ -105,6 +105,13 @@ public class EditBookshelfListActivity
         listView.setAdapter(mAdapter);
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (EditBookshelfDialogFragment.TAG.equals(fragment.getTag())) {
+            ((EditBookshelfDialogFragment) fragment).setListener(mListener);
+        }
+    }
+
     /**
      * Using {@link ValuePicker} for context menus.
      */
@@ -141,13 +148,6 @@ public class EditBookshelfListActivity
         if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
             EditBookshelfDialogFragment.newInstance(bookshelf)
                                        .show(fm, EditBookshelfDialogFragment.TAG);
-        }
-    }
-
-    @Override
-    public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (EditBookshelfDialogFragment.TAG.equals(fragment.getTag())) {
-            ((EditBookshelfDialogFragment) fragment).setListener(mListener);
         }
     }
 

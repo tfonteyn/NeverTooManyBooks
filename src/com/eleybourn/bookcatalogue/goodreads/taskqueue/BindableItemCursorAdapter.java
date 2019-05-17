@@ -255,7 +255,7 @@ public class BindableItemCursorAdapter
          * performed on this object.
          *
          * @param context  Context resulting in Click() event
-         * @param parent   ListView (or other) that contained the item
+         * @param parent   that contained the item
          * @param view     View that was clicked
          * @param position position in cursor of item
          * @param id       row id of item
