@@ -250,7 +250,7 @@ public class LendBookDialogFragment
     private ArrayList<String> getPhoneContacts()
             throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ContentResolver cr = getActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                                               null, null, null)) {

@@ -134,7 +134,7 @@ public class UpdateFieldsFromInternetFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_select_fields);
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         TextView authorView = root.findViewById(R.id.author);
         TextView titleView = root.findViewById(R.id.title);
         // we're only requesting ONE book to be updated.
@@ -419,7 +419,7 @@ public class UpdateFieldsFromInternetFragment
             return;
         }
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         TaskManager taskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
         UpdateFieldsFromInternetTask updateTask =
                 new UpdateFieldsFromInternetTask(taskManager, mSearchSites, mFieldUsages,

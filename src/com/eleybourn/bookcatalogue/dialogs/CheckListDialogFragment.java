@@ -103,15 +103,14 @@ public class CheckListDialogFragment<T>
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Bundle args = getArguments();
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
         args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
-        Objects.requireNonNull(mList);
+        mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         @SuppressLint("InflateParams")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
 
@@ -126,7 +125,7 @@ public class CheckListDialogFragment<T>
             body.addView(buttonView);
         }
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(root)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())

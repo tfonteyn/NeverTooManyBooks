@@ -106,7 +106,7 @@ public class SearchOrderFragment
         /**
          * Constructor.
          *
-         * @param context caller context
+         * @param context Current context
          * @param items   list of sites
          */
         SearchSiteListAdapter(@NonNull final Context context,

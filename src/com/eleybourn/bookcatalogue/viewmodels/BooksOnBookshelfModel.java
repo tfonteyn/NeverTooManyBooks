@@ -506,7 +506,7 @@ public class BooksOnBookshelfModel
      * @author Philip Warner
      */
     private static class GetBookListTask
-            extends AsyncTask<Void, Object, BuilderHolder> {
+            extends AsyncTask<Void, Void, BuilderHolder> {
 
         /**
          * Indicates whole table structure needs rebuild,

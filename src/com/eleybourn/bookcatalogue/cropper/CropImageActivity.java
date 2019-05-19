@@ -33,8 +33,6 @@ import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -287,8 +285,7 @@ public class CropImageActivity
                 mOptionAspectY = 1;
             }
 
-            String imagePath = args.getString(BKEY_IMAGE_ABSOLUTE_PATH);
-            Objects.requireNonNull(imagePath);
+            String imagePath = Objects.requireNonNull(args.getString(BKEY_IMAGE_ABSOLUTE_PATH));
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file

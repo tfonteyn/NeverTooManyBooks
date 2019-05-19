@@ -37,7 +37,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     private T mSelectedItem;
 
     /**
-     * @param context caller context
+     * @param context Current context
      * @param items the list
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,

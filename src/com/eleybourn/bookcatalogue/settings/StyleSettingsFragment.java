@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +81,7 @@ public class StyleSettingsFragment
         //noinspection ConstantConditions
         @NonNull
         Activity activity = getActivity();
-        ActionBar bar = ((AppCompatActivity)activity).getSupportActionBar();
+        ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
         //noinspection ConstantConditions
         bar.setSubtitle(mStyle.getLabel(getResources()));
         if (mStyle.getId() == 0) {
@@ -124,7 +126,7 @@ public class StyleSettingsFragment
 
     /**
      * Put the style into the activity result.
-     *
+     * <p>
      * Reminder: do NOT call this in onPause... as onBackPressed is called before (and does finish).
      */
     @Override
@@ -147,7 +149,7 @@ public class StyleSettingsFragment
      * <li>group labels + Adds an onClick to edit the groups for this style.
      * The groups are a PreferenceScreen of their own, here 'faked' with a new activity.</li>
      * </ul>
-     *
+     * <p>
      * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
      */
     private void updateLocalSummaries() {
@@ -157,7 +159,7 @@ public class StyleSettingsFragment
         // the 'extra' fields in use.
         preference = findPreference(getString(R.string.pg_bob_extra_book_details));
         if (preference != null) {
-            labels = mStyle.getExtraFieldsLabels(getResources(), false);
+            labels = getExtraFieldsLabels();
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
@@ -193,6 +195,41 @@ public class StyleSettingsFragment
         if (preference != null) {
             preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.SERIES));
         }
+        // always visible
+//        preference = findPreference(getString(R.string.lbl_author));
+//        if (preference != null) {
+//            preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.AUTHOR));
+//        }
+    }
+
+    /**
+     * @return the list of in-use extra-field names in a human readable format.
+     */
+    private List<String> getExtraFieldsLabels() {
+
+        int extraFields = mStyle.getExtraFieldsStatus();
+
+        List<String> labels = new ArrayList<>();
+        if ((extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
+            labels.add(getString(R.string.pt_bob_thumbnails_show));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
+            labels.add(getString(R.string.lbl_bookshelves));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
+            labels.add(getString(R.string.lbl_location));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
+            labels.add(getString(R.string.lbl_author));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+            labels.add(getString(R.string.lbl_publisher));
+        }
+        if ((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
+            labels.add(getString(R.string.lbl_format));
+        }
+        Collections.sort(labels);
+        return labels;
     }
 
     @Override
@@ -205,9 +242,7 @@ public class StyleSettingsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     // replace the current style with the edited copy
                     //noinspection ConstantConditions
-                    mStyle = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                    // sanity check
-                    Objects.requireNonNull(mStyle);
+                    mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
                     // refresh summaries on screen
                     updateLocalSummaries();
                     // and set the activity result with the new style object

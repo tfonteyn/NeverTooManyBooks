@@ -299,7 +299,7 @@ public class BooksMultiTypeListHandler
     }
 
     /**
-     * TOMF: this really needs performance testing
+     * TOMF: this really needs performance testing. Can we not simply add the columns to the real cursor?
      * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.
@@ -327,13 +327,7 @@ public class BooksMultiTypeListHandler
         /** The book ID to fetch. */
         private final long mBookId;
 
-        @NonNull
-        private final BooklistStyle mStyle;
-        private final boolean mWithBookshelves;
-        private final boolean mWithLocation;
-        private final boolean mWithFormat;
-        private final boolean mWithAuthor;
-        private final boolean mWithPublisher;
+        private final int mExtraFields;
 
         /** Resulting location data. */
         private String mLocation;
@@ -363,13 +357,7 @@ public class BooksMultiTypeListHandler
             mDb = db;
             mBookId = bookId;
             mTaskListener = new WeakReference<>(taskListener);
-            mStyle = style;
-
-            mWithBookshelves = mStyle.getExtraField(BooklistStyle.EXTRAS_BOOKSHELVES).isRequested();
-            mWithLocation = mStyle.getExtraField(BooklistStyle.EXTRAS_LOCATION).isRequested();
-            mWithFormat = mStyle.getExtraField(BooklistStyle.EXTRAS_FORMAT).isRequested();
-            mWithAuthor = mStyle.getExtraField(BooklistStyle.EXTRAS_AUTHOR).isRequested();
-            mWithPublisher = mStyle.getExtraField(BooklistStyle.EXTRAS_PUBLISHER).isRequested();
+            mExtraFields = style.getExtraFieldsStatus();
 
             mA_bracket_b_bracket = resources.getString(R.string.a_bracket_b_bracket);
         }
@@ -378,16 +366,8 @@ public class BooksMultiTypeListHandler
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookExtrasTask " + mBookId);
-            //A performance run (in UIThread!) on 983 books showed:
-            // 1. withBookshelves==false; t=799.380.500
-            // 2. withBookshelves==true and complex SQL; t=806.311.600
-            // 3. withBookshelves==true, simpler SQL,
-            // and extra getBookshelvesByBookId call; t=1.254.915.700
-            //
-            // so nothing too spectacular between 1/2,
-            // but avoiding the extra fetch of option 3. is worth it.
 
-            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mWithBookshelves)) {
+            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mExtraFields)) {
                 // Bail out if we don't have a book.
                 if (!cursor.moveToFirst()) {
                     return false;
@@ -401,23 +381,23 @@ public class BooksMultiTypeListHandler
                                                        DOM_BOOK_DATE_PUBLISHED,
                                                        DOM_BOOKSHELF);
 
-                if (mWithAuthor) {
+                if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mAuthor = mapper.getString(DOM_AUTHOR_FORMATTED);
                 }
 
-                if (mWithLocation) {
+                if ((mExtraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
                     mLocation = mapper.getString(DOM_BOOK_LOCATION);
                 }
 
-                if (mWithFormat) {
+                if ((mExtraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
                     mFormat = mapper.getString(DOM_BOOK_FORMAT);
                 }
 
-                if (mWithBookshelves) {
+                if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                     mShelves = mapper.getString(DOM_BOOKSHELF);
                 }
 
-                if (mWithPublisher) {
+                if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                     mPublisher = mapper.getString(DOM_BOOK_PUBLISHER);
                     String tmpPubDate = mapper.getString(DOM_BOOK_DATE_PUBLISHED);
                     // over optimisation ?
@@ -527,6 +507,33 @@ public class BooksMultiTypeListHandler
                         showOrHide(bookshelvesView, mShelvesLabel, shelves);
                         showOrHide(locationView, mLocationLabel, location);
                     }
+
+                    /**
+                     * Conditionally display 'text'.
+                     */
+                    private void showOrHide(@NonNull final TextView view,
+                                            @Nullable final String text) {
+                        if (text != null && !text.isEmpty()) {
+                            view.setText(text);
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.GONE);
+                        }
+                    }
+
+                    /**
+                     * Conditionally display 'label: text'.
+                     */
+                    private void showOrHide(@NonNull final TextView view,
+                                            @NonNull final String label,
+                                            @Nullable final String text) {
+                        if (text != null && !text.isEmpty()) {
+                            view.setText(String.format(mName_colon_value, label, text));
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.GONE);
+                        }
+                    }
                 };
         /** Pointer to the view that stores the series number when it is a short piece of text. */
         TextView seriesNumView;
@@ -576,10 +583,12 @@ public class BooksMultiTypeListHandler
             readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
                                                                       : View.GONE);
 
+            int extraFields = mStyle.getExtraFieldsStatus();
+
             // visibility is independent from actual data, so set here.
             coverView = view.findViewById(R.id.coverImage);
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
-                    && mStyle.getExtraField(BooklistStyle.EXTRAS_THUMBNAIL).isRequested()) {
+                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 coverView.setVisibility(View.VISIBLE);
             } else {
                 coverView.setVisibility(View.GONE);
@@ -595,29 +604,24 @@ public class BooksMultiTypeListHandler
             // iow: they are (and stay) hidden when not in use;
             // and we'll hide the used ones if empty.
             bookshelvesView = view.findViewById(R.id.shelves);
-            bookshelvesView.setVisibility(
-                    mStyle.getExtraField(BooklistStyle.EXTRAS_BOOKSHELVES).isRequested()
-                    ? View.VISIBLE : View.GONE);
+            bookshelvesView.setVisibility((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0
+                                          ? View.VISIBLE : View.GONE);
 
             authorView = view.findViewById(R.id.author);
-            authorView.setVisibility(
-                    mStyle.getExtraField(BooklistStyle.EXTRAS_AUTHOR).isRequested()
-                    ? View.VISIBLE : View.GONE);
+            authorView.setVisibility((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0
+                                     ? View.VISIBLE : View.GONE);
 
             locationView = view.findViewById(R.id.location);
-            locationView.setVisibility(
-                    mStyle.getExtraField(BooklistStyle.EXTRAS_LOCATION).isRequested()
-                    ? View.VISIBLE : View.GONE);
+            locationView.setVisibility((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0
+                                       ? View.VISIBLE : View.GONE);
 
             publisherView = view.findViewById(R.id.publisher);
-            publisherView.setVisibility(
-                    mStyle.getExtraField(BooklistStyle.EXTRAS_PUBLISHER).isRequested()
-                    ? View.VISIBLE : View.GONE);
+            publisherView.setVisibility((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0
+                                        ? View.VISIBLE : View.GONE);
 
             formatView = view.findViewById(R.id.format);
-            formatView.setVisibility(
-                    mStyle.getExtraField(BooklistStyle.EXTRAS_FORMAT).isRequested()
-                    ? View.VISIBLE : View.GONE);
+            formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
+                                     ? View.VISIBLE : View.GONE);
 
             // The default is to indent all views based on the level, but with book covers on
             // the far left, it looks better if we 'out-dent' one step.
@@ -632,6 +636,7 @@ public class BooksMultiTypeListHandler
         public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
                                      @NonNull final View view) {
 
+            int extraFields = mStyle.getExtraFieldsStatus();
             final int imageMaxSize = mStyle.getScaledCoverImageMaxSize(view.getContext());
 
             // Title
@@ -668,7 +673,7 @@ public class BooksMultiTypeListHandler
             }
 
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
-                    && mStyle.getExtraField(BooklistStyle.EXTRAS_THUMBNAIL).isRequested()) {
+                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getBookUuid());
 
@@ -685,7 +690,7 @@ public class BooksMultiTypeListHandler
             }
 
             // If there are extras to get, start a background task.
-            if (mStyle.hasExtraDetailFields()) {
+            if ((extraFields & BooklistStyle.EXTRAS_LOWER16) != 0) {
                 // Fill in the extras field as blank initially.
                 bookshelvesView.setText("");
                 locationView.setText("");
@@ -696,33 +701,6 @@ public class BooksMultiTypeListHandler
                 new GetBookExtrasTask(view.getContext().getResources(),
                                       mDb, rowData.getBookId(), mTaskListener, mStyle)
                         .execute();
-            }
-        }
-
-        /**
-         * Conditionally display 'text'.
-         */
-        private void showOrHide(@NonNull final TextView view,
-                                @Nullable final String text) {
-            if (text != null && !text.isEmpty()) {
-                view.setText(text);
-                view.setVisibility(View.VISIBLE);
-            } else {
-                view.setVisibility(View.GONE);
-            }
-        }
-
-        /**
-         * Conditionally display 'label: text'.
-         */
-        private void showOrHide(@NonNull final TextView view,
-                                @NonNull final String label,
-                                @Nullable final String text) {
-            if (text != null && !text.isEmpty()) {
-                view.setText(String.format(mName_colon_value, label, text));
-                view.setVisibility(View.VISIBLE);
-            } else {
-                view.setVisibility(View.GONE);
             }
         }
     }

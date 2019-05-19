@@ -272,7 +272,7 @@ public class AdminFragment
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
-                //noinspection ConstantConditions
+                @SuppressWarnings("ConstantConditions")
                 ValuePicker picker =
                         new FilePicker(getContext(),
                                        getString(R.string.lbl_import_from_csv),
@@ -340,8 +340,8 @@ public class AdminFragment
      * Callback for the CSV export task.
      */
     private void onExportFinished() {
-        //noinspection ConstantConditions
-        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+        @SuppressWarnings("ConstantConditions")
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
@@ -375,7 +375,7 @@ public class AdminFragment
         ArrayList<Uri> uris = new ArrayList<>();
         try {
             File csvExportFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             Uri coverURI = FileProvider.getUriForFile(getContext(),
                                                       GenericFileProvider.AUTHORITY,
                                                       csvExportFile);

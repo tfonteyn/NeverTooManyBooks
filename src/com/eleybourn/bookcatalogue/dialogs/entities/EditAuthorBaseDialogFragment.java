@@ -50,8 +50,7 @@ public abstract class EditAuthorBaseDialogFragment
 
         Bundle args = requireArguments();
 
-        final Author author = args.getParcelable(DBDefinitions.KEY_AUTHOR);
-        Objects.requireNonNull(author);
+        final Author author = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_AUTHOR));
         if (savedInstanceState == null) {
             mFamilyName = author.getFamilyName();
             mGivenNames = author.getGivenNames();
@@ -65,7 +64,7 @@ public abstract class EditAuthorBaseDialogFragment
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mFamilyNameAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
                                    mDb.getAuthorsFamilyName());

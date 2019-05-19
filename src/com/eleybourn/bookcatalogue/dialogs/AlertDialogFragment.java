@@ -51,7 +51,7 @@ public class AlertDialogFragment
     @NonNull
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         @NonNull
         AlertDialogListener listener = (AlertDialogListener) getActivity();
 

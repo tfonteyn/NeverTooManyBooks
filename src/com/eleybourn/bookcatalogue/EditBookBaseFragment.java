@@ -168,7 +168,7 @@ public abstract class EditBookBaseFragment<T>
         }
 
         // Get the list to use in the AutoCompleteTextView
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(field.id, adapter);

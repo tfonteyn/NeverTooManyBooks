@@ -253,6 +253,11 @@ public class BooklistBuilder
     /**
      * Local copy of the {@link DBDefinitions#TBL_BOOK_LIST} table definition,
      * 'book_list_tmp' but renamed by adding the instance number to the end to match this instance.
+     *
+     * The builder will create the needed columns (domain) on the fly
+     * and create INSERT statements to build the content of this table.
+     *
+     * TOMF: speculation.. use a VIEW instead ?
      */
     private TableDefinition mListTable;
     /**
@@ -656,13 +661,25 @@ public class BooklistBuilder
             Logger.debugEnter(this, "build", mBooklistBuilderId);
         }
 
+        // We can not use triggers to fill in headings in API < 8 since
+        // SQLite 3.5.9 (2008-05-14) is broken.
+        // Allow for the user preferences to override in case another build is broken.
+        // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
+        //ENHANCE: time to remove sqlite pre-trigger use logic ? -> keep it till the bug of rebuild (using triggers) is resolved.
+        final CompatibilityMode listMode = CompatibilityMode.get();
+
+        // Build a sort mask based on if triggers are used;
+        // we can not reverse sort if they are not used.
+        final int sortDescendingMask = listMode.useTriggers
+                                       ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
+
+        SummaryBuilder summary = new SummaryBuilder();
+
         try {
             final long t0 = System.nanoTime();
 
             // create the mListTable/mNavTable fresh.
             buildTableDefinitions();
-
-            SummaryBuilder summary = new SummaryBuilder();
 
             // Add the minimum required domains which will have special handling
 
@@ -681,25 +698,12 @@ public class BooklistBuilder
             summary.addDomain(DOM_BL_BOOK_COUNT, "1",
                               SummaryBuilder.FLAG_NONE);
 
-            // We can not use triggers to fill in headings in API < 8 since
-            // SQLite 3.5.9 (2008-05-14) is broken.
-            // Allow for the user preferences to override in case another build is broken.
-            // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
-            //ENHANCE: time to remove sqlite pre-trigger use logic ? -> keep it till the bug of rebuild (using triggers) is resolved.
-            final CompatibilityMode listMode = CompatibilityMode.get();
-
-            // Build a sort mask based on if triggers are used;
-            // we can not reverse sort if they are not used.
-            final int sortDescendingMask = listMode.useTriggers
-                                           ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
-
             final long t1_basic_setup_done = System.nanoTime();
 
             final BuildInfoHolder buildInfoHolder = new BuildInfoHolder();
-
+            // process each group/RowKind
             for (BooklistGroup group : mStyle.getGroups()) {
-                // process each group/RowKind
-                buildSummaryForGroup(summary, buildInfoHolder, group, sortDescendingMask);
+                summary.addGroup(group, sortDescendingMask, buildInfoHolder);
 
                 // Copy the current groups to this level item; this effectively accumulates
                 // 'group by' domains down each level so that the top has fewest groups and
@@ -813,10 +817,10 @@ public class BooklistBuilder
                         // Nested triggers are compatible with Android 2.2+ and fast.
                         // (or at least relatively fast when there are a 'reasonable'
                         // number of headings to be inserted).
-                        tgt = makeNestedTriggers(summary);
+                        tgt = makeNestedTriggers(summary.getSortedColumns());
                     } else {
                         // Flat triggers are compatible with Android 1.6+ but slower
-                        tgt = makeSingleTrigger(summary);
+                        tgt = makeSingleTrigger(summary.getSortedColumns());
                     }
                     mBaseBuildStmt = mStatements.add(
                             STMT_BASE_BUILD,
@@ -1183,330 +1187,6 @@ public class BooklistBuilder
     }
 
     /**
-     * Build each kind group.
-     * <p>
-     * ****************************************************************************************
-     * IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
-     * that will be displayed at that level in the UI.
-     * <p>
-     * -> 2018-12-07: due to moving some things to {@link BooklistGroup.RowKind}
-     * the requirement is semi-reverse: the displayed domain is normally decided by the RowKind
-     * and this should be set as the FIRST SORTED AND GROUPED domain
-     * ****************************************************************************************
-     */
-    private void buildSummaryForGroup(@NonNull final SummaryBuilder /* in/out */ summary,
-                                      @NonNull final BuildInfoHolder /* in/out */ buildInfoHolder,
-                                      @NonNull final BooklistGroup /* in/out */ booklistGroup,
-                                      final int sortDescendingMask) {
-
-        switch (booklistGroup.getKind()) {
-
-            case BooklistGroup.RowKind.AUTHOR:
-                // Save this for later use
-                buildInfoHolder.authorGroup = (BooklistGroup.BooklistAuthorGroup) booklistGroup;
-
-                // Always group & sort by DOM_AUTHOR_SORT and user preference order; see #696
-                summary.addDomain(DOM_AUTHOR_SORT,
-                                  mStyle.sortAuthorByGiven()
-                                  ? X_AUTHOR_FORMATTED_FIRST_LAST
-                                  : X_AUTHOR_FORMATTED_LAST_FIRST,
-                                  SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
-
-                // Add the 'formatted' field of the requested type
-                summary.addDomain(DOM_AUTHOR_FORMATTED,
-                                  buildInfoHolder.authorGroup.showGivenNameFirst()
-                                  ? X_AUTHOR_FORMATTED_FIRST_LAST
-                                  : X_AUTHOR_FORMATTED_LAST_FIRST,
-                                  SummaryBuilder.FLAG_GROUPED);
-
-                // We also want the ID
-                summary.addDomain(DOM_FK_AUTHOR_ID,
-                                  TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID),
-                                  SummaryBuilder.FLAG_GROUPED);
-
-                // we want the isComplete flag
-                summary.addDomain(DOM_AUTHOR_IS_COMPLETE,
-                                  TBL_AUTHORS.dot(DOM_AUTHOR_IS_COMPLETE),
-                                  SummaryBuilder.FLAG_GROUPED);
-
-                break;
-
-            case BooklistGroup.RowKind.SERIES:
-                // Save this for later use
-                buildInfoHolder.seriesGroup = (BooklistGroup.BooklistSeriesGroup) booklistGroup;
-
-                // Group and sort by name
-                summary.addDomain(DOM_SERIES_TITLE,
-                                  TBL_SERIES.dot(DOM_SERIES_TITLE),
-                                  SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
-
-                // Group by ID (we want the ID available and there is a *chance* two
-                // series will have the same name...with bad data
-                summary.addDomain(DOM_FK_SERIES_ID,
-                                  TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID),
-                                  SummaryBuilder.FLAG_GROUPED);
-
-                // We want the series position in the base data
-                summary.addDomain(DOM_BOOK_SERIES_POSITION,
-                                  TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION),
-                                  SummaryBuilder.FLAG_NONE);
-
-                // we want the isComplete flag
-                summary.addDomain(DOM_SERIES_IS_COMPLETE,
-                                  TBL_SERIES.dot(DOM_SERIES_IS_COMPLETE),
-                                  SummaryBuilder.FLAG_GROUPED);
-
-                // We want the series number in the base data in sorted order
-                // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series number.
-                // so we convert it to a real (aka float).
-                summary.addDomain(DOM_BL_SERIES_NUM_FLOAT,
-                                  "CAST(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + " AS REAL)",
-                                  SummaryBuilder.FLAG_SORTED);
-
-                // We also add the base name as a sorted field for display purposes
-                // and in case of non-numeric data.
-                summary.addDomain(DOM_BOOK_SERIES_NUM,
-                                  TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM),
-                                  SummaryBuilder.FLAG_SORTED);
-
-                // We want a counter of how many books use the series as a primary series,
-                // so we can skip some series
-                summary.addDomain(DOM_BL_PRIMARY_SERIES_COUNT,
-                                  X_PRIMARY_SERIES_COUNT_AS_BOOLEAN,
-                                  SummaryBuilder.FLAG_NONE);
-                break;
-
-            case BooklistGroup.RowKind.LOANED:
-                // Saved for later to indicate group was present
-                buildInfoHolder.hasGroupLOANED = true;
-                summary.addDomain(DOM_LOANED_TO_SORT,
-                                  X_BOOK_IS_AVAILABLE_AS_BOOLEAN,
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-
-                summary.addDomain(DOM_BOOK_LOANEE,
-                                  X_BOOK_IS_AVAILABLE_AS_TEXT,
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.BOOKSHELF:
-                buildInfoHolder.hasGroupBOOKSHELF = true;
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKSHELF.dot(DOM_BOOKSHELF),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.READ_STATUS:
-                // Define how the new field is retrieved and sorted/grouped
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_READ),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-
-                summary.addDomain(DOM_BOOK_READ,
-                                  TBL_BOOKS.dot(DOM_BOOK_READ),
-                                  //FIXME: run a cleanup of data in db upgrades.
-                                  // We want the READ flag at the lowest level only.
-                                  // Some bad data means that it may be 0 or 'f',
-                                  // so we don't group by it.
-                                  SummaryBuilder.FLAG_NONE);
-                break;
-
-            case BooklistGroup.RowKind.PUBLISHER:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_PUBLISHER),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.GENRE:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_GENRE),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.LANGUAGE:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_LANGUAGE),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.LOCATION:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_LOCATION),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.FORMAT:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  TBL_BOOKS.dot(DOM_BOOK_FORMAT),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.TITLE_LETTER:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)",
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                break;
-
-            case BooklistGroup.RowKind.RATING:
-                // sorting should be descending.
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  "CAST(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS INTEGER)",
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-                break;
-
-
-            //TOMF: check with original code what this quote really means.
-            // It was on most, but not all date rows:
-            // ----------------------------------
-            // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
-            // max/min for non-grouped domains that appear in sublevels based on desc/asc.
-            // We don't use DESCENDING sort yet because the 'header' ends up below
-            // the detail rows in the flattened table.
-            // ----------------------------------
-
-            // Also: sortDescendingMask: original code had it added to "date added" and
-            // "date last updated" but not to others.
-            // Commented ones mine, added as reminder)
-            case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_READ_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_READ_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_READ_DAY:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-
-            case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_ACQUIRED_DAY:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
-                // | sortDescendingMask);
-                break;
-
-
-            case BooklistGroup.RowKind.DATE_ADDED_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_ADDED_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_ADDED_DAY:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-                break;
-
-
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                                  null,
-                                  SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                                  null,
-                                  SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY:
-                summary.addDomain(booklistGroup.getDisplayDomain(),
-                                  dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
-                                          | sortDescendingMask);
-
-                summary.addDomain(DOM_LAST_UPDATE_DATE,
-                                  null,
-                                  SummaryBuilder.FLAG_SORTED | sortDescendingMask);
-                break;
-
-
-            // NEWKIND: RowKind.ROW_KIND_x
-
-            case BooklistGroup.RowKind.BOOK:
-                // nothing to do.
-                break;
-
-            default:
-                throw new IllegalTypeException(String.valueOf(booklistGroup.getKind()));
-        }
-    }
-
-    /**
      * Build the 'join' statement based on the groups and extra criteria.
      */
     @NonNull
@@ -1602,7 +1282,7 @@ public class BooklistBuilder
      *
      * @return the mListTable table name
      */
-    private String makeNestedTriggers(@NonNull final SummaryBuilder summary) {
+    private String makeNestedTriggers(@NonNull final ArrayList<SortedDomainInfo> sortedColumns) {
         // Name of a table to store the snapshot of the most recent/current row headings
         final String currentTableName = mListTable + "_curr";
         // Alias for the table
@@ -1616,7 +1296,7 @@ public class BooklistBuilder
         Set<String> sortedDomainNames = new HashSet<>();
 
         // Build the 'current' header table definition and the sort column list
-        for (SortedDomainInfo domainInfo : summary.getSortedColumns()) {
+        for (SortedDomainInfo domainInfo : sortedColumns) {
             if (!sortedDomainNames.contains(domainInfo.domain.name)) {
                 sortedDomainNames.add(domainInfo.domain.name);
                 if (sortedCols.length() > 0) {
@@ -1743,7 +1423,7 @@ public class BooklistBuilder
      * @return the view table name
      */
     @NonNull
-    private String makeSingleTrigger(@NonNull final SummaryBuilder summary) {
+    private String makeSingleTrigger(@NonNull final ArrayList<SortedDomainInfo> sortedColumns) {
         // Create a trigger to forward all row details to real table
         // Name of the trigger to create. 2019-01-27: added mBooklistBuilderId.
         final String tgForwardName = mListTable + "_TG_AAA" + '_' + mBooklistBuilderId;
@@ -1784,7 +1464,7 @@ public class BooklistBuilder
         // List of domain names for sorting
         Set<String> sortedDomainNames = new HashSet<>();
         // Build the 'current' header table definition and the sort column list
-        for (SortedDomainInfo domainInfo : summary.getSortedColumns()) {
+        for (SortedDomainInfo domainInfo : sortedColumns) {
             if (!sortedDomainNames.contains(domainInfo.domain.name)) {
                 sortedDomainNames.add(domainInfo.domain.name);
                 if (sortedCols.length() > 0) {
@@ -2432,7 +2112,7 @@ public class BooklistBuilder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once! Paranoia ... close() might be called twice?
-                Logger.debug(this,"close",
+                Logger.debug(this, "close",
                              "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
@@ -2444,8 +2124,7 @@ public class BooklistBuilder
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize",
-                        "Closing unclosed builder");
+            Logger.warn(this, "finalize","Closing unclosed builder");
             close();
         }
         super.finalize();
@@ -2676,6 +2355,330 @@ public class BooklistBuilder
         }
 
         /**
+         * Build each kind group.
+         * <p>
+         * ****************************************************************************************
+         * IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
+         * that will be displayed at that level in the UI.
+         * <p>
+         * -> 2018-12-07: due to moving some things to {@link BooklistGroup.RowKind}
+         * the requirement is semi-reverse: the displayed domain is normally decided by the RowKind
+         * and this should be set as the FIRST SORTED AND GROUPED domain
+         * ****************************************************************************************
+         */
+        void addGroup(@NonNull final BooklistGroup booklistGroup,
+                      final int sortDescendingMask,
+                      @NonNull final BuildInfoHolder /* in/out */ buildInfoHolder) {
+
+            switch (booklistGroup.getKind()) {
+
+                case BooklistGroup.RowKind.AUTHOR:
+                    // Save this for later use
+                    buildInfoHolder.authorGroup = (BooklistGroup.BooklistAuthorGroup) booklistGroup;
+
+                    // Always group & sort by DOM_AUTHOR_SORT and user preference order; see #696
+                    addDomain(DOM_AUTHOR_SORT,
+                              mStyle.sortAuthorByGiven()
+                              ? X_AUTHOR_FORMATTED_FIRST_LAST
+                              : X_AUTHOR_FORMATTED_LAST_FIRST,
+                              SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+
+                    // Add the 'formatted' field of the requested type
+                    addDomain(DOM_AUTHOR_FORMATTED,
+                              buildInfoHolder.authorGroup.showGivenNameFirst()
+                              ? X_AUTHOR_FORMATTED_FIRST_LAST
+                              : X_AUTHOR_FORMATTED_LAST_FIRST,
+                              SummaryBuilder.FLAG_GROUPED);
+
+                    // We also want the ID
+                    addDomain(DOM_FK_AUTHOR_ID,
+                              TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID),
+                              SummaryBuilder.FLAG_GROUPED);
+
+                    // we want the isComplete flag
+                    addDomain(DOM_AUTHOR_IS_COMPLETE,
+                              TBL_AUTHORS.dot(DOM_AUTHOR_IS_COMPLETE),
+                              SummaryBuilder.FLAG_GROUPED);
+
+                    break;
+
+                case BooklistGroup.RowKind.SERIES:
+                    // Save this for later use
+                    buildInfoHolder.seriesGroup = (BooklistGroup.BooklistSeriesGroup) booklistGroup;
+
+                    // Group and sort by name
+                    addDomain(DOM_SERIES_TITLE,
+                              TBL_SERIES.dot(DOM_SERIES_TITLE),
+                              SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+
+                    // Group by ID (we want the ID available and there is a *chance* two
+                    // series will have the same name...with bad data
+                    addDomain(DOM_FK_SERIES_ID,
+                              TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID),
+                              SummaryBuilder.FLAG_GROUPED);
+
+                    // We want the series position in the base data
+                    addDomain(DOM_BOOK_SERIES_POSITION,
+                              TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION),
+                              SummaryBuilder.FLAG_NONE);
+
+                    // we want the isComplete flag
+                    addDomain(DOM_SERIES_IS_COMPLETE,
+                              TBL_SERIES.dot(DOM_SERIES_IS_COMPLETE),
+                              SummaryBuilder.FLAG_GROUPED);
+
+                    // We want the series number in the base data in sorted order
+                    // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series number.
+                    // so we convert it to a real (aka float).
+                    addDomain(DOM_BL_SERIES_NUM_FLOAT,
+                              "CAST(" + TBL_BOOK_SERIES.dot(
+                                      DOM_BOOK_SERIES_NUM) + " AS REAL)",
+                              SummaryBuilder.FLAG_SORTED);
+
+                    // We also add the base name as a sorted field for display purposes
+                    // and in case of non-numeric data.
+                    addDomain(DOM_BOOK_SERIES_NUM,
+                              TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM),
+                              SummaryBuilder.FLAG_SORTED);
+
+                    // We want a counter of how many books use the series as a primary series,
+                    // so we can skip some series
+                    addDomain(DOM_BL_PRIMARY_SERIES_COUNT,
+                              X_PRIMARY_SERIES_COUNT_AS_BOOLEAN,
+                              SummaryBuilder.FLAG_NONE);
+                    break;
+
+                case BooklistGroup.RowKind.LOANED:
+                    // Saved for later to indicate group was present
+                    buildInfoHolder.hasGroupLOANED = true;
+                    addDomain(DOM_LOANED_TO_SORT,
+                              X_BOOK_IS_AVAILABLE_AS_BOOLEAN,
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+
+                    addDomain(DOM_BOOK_LOANEE,
+                              X_BOOK_IS_AVAILABLE_AS_TEXT,
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.BOOKSHELF:
+                    buildInfoHolder.hasGroupBOOKSHELF = true;
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKSHELF.dot(DOM_BOOKSHELF),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.READ_STATUS:
+                    // Define how the new field is retrieved and sorted/grouped
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_READ),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+
+                    addDomain(DOM_BOOK_READ,
+                              TBL_BOOKS.dot(DOM_BOOK_READ),
+                              //FIXME: run a cleanup of data in db upgrades.
+                              // We want the READ flag at the lowest level only.
+                              // Some bad data means that it may be 0 or 'f',
+                              // so we don't group by it.
+                              SummaryBuilder.FLAG_NONE);
+                    break;
+
+                case BooklistGroup.RowKind.PUBLISHER:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_PUBLISHER),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.GENRE:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_GENRE),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.LANGUAGE:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_LANGUAGE),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.LOCATION:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_LOCATION),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.FORMAT:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              TBL_BOOKS.dot(DOM_BOOK_FORMAT),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.TITLE_LETTER:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)",
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    break;
+
+                case BooklistGroup.RowKind.RATING:
+                    // sorting should be descending.
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              "CAST(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS INTEGER)",
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+                    break;
+
+
+                //TOMF: check with original code what this quote really means.
+                // It was on most, but not all date rows:
+                // ----------------------------------
+                // TODO: Handle 'DESCENDING'. Requires the navigator construction to use
+                // max/min for non-grouped domains that appear in sublevels based on desc/asc.
+                // We don't use DESCENDING sort yet because the 'header' ends up below
+                // the detail rows in the flattened table.
+                // ----------------------------------
+
+                // Also: sortDescendingMask: original code had it added to "date added" and
+                // "date last updated" but not to others.
+                // Commented ones mine, added as reminder)
+                case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_READ_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_READ_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_READ_DAY:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+
+                case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_ACQUIRED_DAY:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                    // | sortDescendingMask);
+                    break;
+
+
+                case BooklistGroup.RowKind.DATE_ADDED_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_ADDED_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_ADDED_DAY:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+                    break;
+
+
+                case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+
+                    addDomain(DOM_LAST_UPDATE_DATE,
+                              null,
+                              SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+
+                    addDomain(DOM_LAST_UPDATE_DATE,
+                              null,
+                              SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                    break;
+
+                case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY:
+                    addDomain(booklistGroup.getDisplayDomain(),
+                              dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
+                                      | sortDescendingMask);
+
+                    addDomain(DOM_LAST_UPDATE_DATE,
+                              null,
+                              SummaryBuilder.FLAG_SORTED | sortDescendingMask);
+                    break;
+
+
+                // NEWKIND: RowKind.ROW_KIND_x
+
+                case BooklistGroup.RowKind.BOOK:
+                    // nothing to do.
+                    break;
+
+                default:
+                    throw new IllegalTypeException(String.valueOf(booklistGroup.getKind()));
+            }
+        }
+
+        /**
          * @return a clone of the CURRENT domains.
          * <p>
          * Since BooklistGroup objects are processed in order, this allows us to get
@@ -2742,24 +2745,28 @@ public class BooklistBuilder
 
             // Build the lists. mDomains and mExpressions were built in sync with each other.
             for (int i = 0; i < mDomains.size(); i++) {
-                DomainDefinition domain = mDomains.get(i);
-                String expression = mExpressions.get(i);
                 if (i > 0) {
                     destColumns.append(',');
                     expressions.append(',');
                     values.append(',');
                 }
-                destColumns.append(domain.name);
+
+                String domainName = mDomains.get(i).name;
+                String expression = mExpressions.get(i);
+
+                destColumns.append(domainName);
                 expressions.append(expression);
                 values.append('?');
-                // This is not strictly necessary, but makes SQL more readable and debugging easier.
-                expressions.append(" AS ").append(domain.name);
+                // This is not strictly necessary, but the SQL is more readable and easier to debug.
+                expressions.append(" AS ").append(domainName);
             }
 
             // Build the expression for the root key.
             StringBuilder keyExpression = new StringBuilder('\'' + rootKey.getPrefix());
-            for (DomainDefinition d : rootKey.getDomains()) {
-                keyExpression.append("/'||Coalesce(").append(mExpressionMap.get(d)).append(",'')");
+            for (DomainDefinition domain : rootKey.getDomains()) {
+                keyExpression.append("/'||Coalesce(")
+                             .append(mExpressionMap.get(domain))
+                             .append(",'')");
             }
 
             // Setup the SQL phrases.

@@ -35,7 +35,7 @@ public class MenuPicker<T>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
      *
-     * @param context    caller context
+     * @param context    Current context
      * @param title      for the dialog/menu
      * @param menu       the menu options to show
      * @param userObject a reference free to set/use by the caller

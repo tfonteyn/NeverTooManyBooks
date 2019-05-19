@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
-import android.net.ParseException;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;

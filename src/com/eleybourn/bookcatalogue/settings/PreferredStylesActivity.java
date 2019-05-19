@@ -212,7 +212,7 @@ public class PreferredStylesActivity
             case UniqueId.REQ_EDIT_STYLE: {
 
                 if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
-                    //noinspection ConstantConditions
+                    @SuppressWarnings("ConstantConditions")
                     BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                     mModel.handleStyleChange(style);
                     mListAdapter.notifyDataSetChanged();

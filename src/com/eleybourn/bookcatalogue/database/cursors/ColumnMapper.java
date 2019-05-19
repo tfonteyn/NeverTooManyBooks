@@ -112,7 +112,7 @@ public class ColumnMapper {
     public String getString(@NonNull final String domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain);
         if (index == -1) {
             throw new ColumnNotPresentException(domain);
@@ -134,7 +134,7 @@ public class ColumnMapper {
     public String getString(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
@@ -155,7 +155,7 @@ public class ColumnMapper {
     public boolean getBoolean(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
@@ -176,7 +176,7 @@ public class ColumnMapper {
     public int getInt(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
@@ -197,7 +197,7 @@ public class ColumnMapper {
     public long getLong(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
@@ -219,7 +219,7 @@ public class ColumnMapper {
     public double getDouble(final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
@@ -242,7 +242,7 @@ public class ColumnMapper {
     public byte[] getBlob(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int index = mColumnIndexes.get(domain.name);
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);

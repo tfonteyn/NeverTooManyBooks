@@ -7,5 +7,5 @@ import androidx.annotation.NonNull;
 public interface FormattedMessageException {
 
     @NonNull
-    String getFormattedMessage(@NonNull Resources res);
+    String getFormattedMessage(@NonNull Resources resources);
 }

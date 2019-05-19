@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.eleybourn.bookcatalogue.widgets;
+package com.eleybourn.bookcatalogue.widgets.cfs;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -37,21 +37,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Class responsible to animate and provide a fast scroller.
- * <p>
- * Code taken from  "recyclerview-1.1.0-alpha05-sources.jar"
- * androidx/recyclerview/widget/FastScroller.java
- * <p>
- * ==> check regularly for modifications, and port them here.
- * Should really be done as a source patch to apply automatically.
- *
- * <p>
- * Minimal changes made to enhance this with ability to display an overlay.
- * see:
- * {@link #scrollTo} where the position is send to the {@link RecyclerViewCFS}.
- * <p>
- * {@link #onDrawOver} where the {@link RecyclerViewCFS} is requested to draw the overlay.
+
  */
-class FastScroller
+@SuppressWarnings("ALL")
+class CFSFastScroller
         extends RecyclerView.ItemDecoration implements RecyclerView.OnItemTouchListener {
     @IntDef({STATE_HIDDEN, STATE_VISIBLE, STATE_DRAGGING})
     @Retention(RetentionPolicy.SOURCE)
@@ -149,10 +138,10 @@ class FastScroller
         }
     };
 
-    FastScroller(RecyclerView recyclerView, StateListDrawable verticalThumbDrawable,
-                 Drawable verticalTrackDrawable, StateListDrawable horizontalThumbDrawable,
-                 Drawable horizontalTrackDrawable, int defaultWidth, int scrollbarMinimumRange,
-                 int margin) {
+    CFSFastScroller(RecyclerView recyclerView, StateListDrawable verticalThumbDrawable,
+                    Drawable verticalTrackDrawable, StateListDrawable horizontalThumbDrawable,
+                    Drawable horizontalTrackDrawable, int defaultWidth, int scrollbarMinimumRange,
+                    int margin) {
         mVerticalThumbDrawable = verticalThumbDrawable;
         mVerticalTrackDrawable = verticalTrackDrawable;
         mHorizontalThumbDrawable = horizontalThumbDrawable;
@@ -300,13 +289,13 @@ class FastScroller
             }
         }
 
-        // BEGIN - RecyclerViewCFS
-        if (mRecyclerView instanceof RecyclerViewCFS) {
+        // BEGIN - CFSRecyclerView
+        if (mRecyclerView instanceof CFSRecyclerView) {
             if (isDragging()) {
-                ((RecyclerViewCFS) mRecyclerView).drawIndexerOverlay(canvas, state);
+                ((CFSRecyclerView) mRecyclerView).drawIndexerOverlay(canvas, state);
             }
         }
-        // END - RecyclerViewCFS
+        // END - CFSRecyclerView
     }
 
     private void drawVerticalScrollbar(Canvas canvas) {
@@ -507,13 +496,6 @@ class FastScroller
         int scrollingBy = (int) (percentage * totalPossibleOffset);
         int absoluteOffset = scrollOffset + scrollingBy;
         if (absoluteOffset < totalPossibleOffset && absoluteOffset >= 0) {
-
-            // BEGIN - RecyclerViewCFS
-            if (mRecyclerView instanceof RecyclerViewCFS) {
-                ((RecyclerViewCFS) mRecyclerView).computeAndSetPosition(totalPossibleOffset, absoluteOffset);
-            }
-            // END - RecyclerViewCFS
-
             return scrollingBy;
         } else {
             return 0;

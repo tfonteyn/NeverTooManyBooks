@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -78,7 +77,6 @@ public class EditPublisherDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Context context = getContext();
         mDb = new DAO();
 
         Bundle args = requireArguments();
@@ -94,16 +92,16 @@ public class EditPublisherDialogFragment
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                    mDb.getPublisherNames());
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
 
-        return new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(getContext())
                 .setView(root)
                 .setTitle(R.string.lbl_publisher)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())

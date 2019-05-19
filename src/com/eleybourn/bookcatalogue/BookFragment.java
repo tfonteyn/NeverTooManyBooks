@@ -172,7 +172,7 @@ public class BookFragment
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        Field field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
         Field field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize(imageSize.standard, imageSize.standard);
@@ -378,7 +378,7 @@ public class BookFragment
                 && !tocList.isEmpty();
 
         View view = getView();
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         View tocLabel = view.findViewById(R.id.lbl_toc);
         View tocButton = view.findViewById(R.id.toc_button);
         LinearLayout tocView = view.findViewById(R.id.toc);
@@ -514,7 +514,7 @@ public class BookFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         @NonNull
         BaseActivity activity = (BaseActivity) getActivity();
         Book book = mBookBaseFragmentModel.getBook();

@@ -290,7 +290,7 @@ public class DAO
     private final SqlStatementManager mStatements;
 
     /** used by finalize so close does not get called twice. */
-    private boolean mCloseCalled;
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor.
@@ -538,14 +538,14 @@ public class DAO
                          "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
             //debugRemoveInstance(this);
         }
-        mCloseCalled = true;
+        mCloseWasCalled = true;
     }
 
     @Override
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!mCloseCalled) {
+        if (!mCloseWasCalled) {
             Logger.warn(this, "finalize", "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
             close();
         }
@@ -2532,18 +2532,27 @@ public class DAO
      * The columns fetched are limited to what is needed for the
      * {@link BooksOnBookshelf} so called "extras" fields.
      *
-     * @param bookId          to retrieve
-     * @param withBookshelves if we need bookshelves (which is a table join) or not.
+     * @param bookId      to retrieve
+     * @param extraFields to get; used to optimize query
      *
      * @return {@link Cursor} containing all records, if any
      */
     @NonNull
     public Cursor fetchBookExtrasById(final long bookId,
-                                      final boolean withBookshelves) {
+                                      final int extraFields) {
+
+        //A performance run (in UIThread!) on 983 books showed:
+        // 1. withBookshelves==false; 799ms
+        // 2. withBookshelves==true and complex SQL; 806ms
+        // 3. withBookshelves==true, simpler SQL,
+        // and an extra getBookshelvesByBookId call; 1254ms
+        //
+        // so nothing spectacular between 1/2,
+        // but avoiding the extra fetch of option 3. is worth it.
 
         // for now, we only optimize on fetching bookshelves or not.
         // and honestly, it's almost not worth bothering.
-        if (withBookshelves) {
+        if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
             return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITH_BOOKSHELVES,
                                       new String[]{String.valueOf(bookId)});
         } else {

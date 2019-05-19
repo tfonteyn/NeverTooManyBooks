@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 
@@ -85,7 +84,7 @@ public final class UpgradeMessageManager {
     /**
      * Get the upgrade message for the running app instance; caches the result for later use.
      *
-     * @param resources caller context
+     * @param resources for locale specific strings
      *
      * @return Upgrade message (or blank string)
      */

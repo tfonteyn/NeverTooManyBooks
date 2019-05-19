@@ -63,7 +63,7 @@ public class BindableItemCursorAdapter
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.
      *
-     * @param context caller context
+     * @param context Current context
      * @param cursor  Cursor to use as source
      */
     BindableItemCursorAdapter(@NonNull final BindableItemBinder binder,
@@ -83,6 +83,16 @@ public class BindableItemCursorAdapter
     public View newView(@NonNull final Context context,
                         @NonNull final Cursor cursor,
                         @NonNull final ViewGroup parent) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * NOT USED. Should never be called.
+     */
+    @Override
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
         throw new UnsupportedOperationException();
     }
 
@@ -110,16 +120,6 @@ public class BindableItemCursorAdapter
         mBinder.bindView(mContext, cursor, convertView, item);
 
         return convertView;
-    }
-
-    /**
-     * NOT USED. Should never be called.
-     */
-    @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final Cursor cursor) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class BindableItemCursorAdapter
          * so that any application-specific context can be added, or it can just be passed off
          * to the Event object itself.
          *
-         * @param context     caller context
+         * @param context     Current context
          * @param cursor      Cursor, positions at the relevant row
          * @param convertView View to populate
          */

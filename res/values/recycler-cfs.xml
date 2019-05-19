@@ -3,25 +3,13 @@
     <!--
     Copied from: recyclerview-1.1.0-alpha01-sources.jar/res/values/values.xml
 
-    The CFS specific attributes all prefixed with 'cfs'
+    The CFSRecyclerView specific attributes are all prefixed with 'cfs'
     -->
-    <declare-styleable name="RecyclerViewCFS">
-        <!-- Class name of the Layout Manager to be used.
-        <p/>
-        The class must extend androidx.recyclerview.widget.RecyclerView$LayoutManager
-        and have either a default constructor or constructor with the signature
-        (android.content.Context, android.util.AttributeSet, int, int).
-         <p/>
-         If the name starts with a '.', the application package is prefixed.
-         Else, if the name contains a '.', the classname is assumed to be a full class name.
-         Else, the recycler view package androidx.appcompat.widget) is prefixed. -->
+    <declare-styleable name="CFSRecyclerView">
+        <!-- Class name of the Layout Manager to be used. -->
         <attr format="string" name="layoutManager"/>
 
-        <!-- ============================= -->
         <!-- Attributes for Layout Manager -->
-        <!-- ============================= -->
-        <eat-comment/>
-
         <attr name="android:orientation"/>
         <attr name="android:descendantFocusability"/>
         <attr format="integer" name="spanCount"/>
@@ -40,12 +28,5 @@
     <dimen name="cfs_default_thickness">8dp</dimen>
     <dimen name="cfs_margin">0dp</dimen>
     <dimen name="cfs_minimum_range">50dp</dimen>
-
-    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
-    <dimen name="cfs_text_size_small">14sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
-    <dimen name="cfs_text_size_medium">18sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
-    <dimen name="cfs_text_size_large">22sp</dimen>
 
 </resources>

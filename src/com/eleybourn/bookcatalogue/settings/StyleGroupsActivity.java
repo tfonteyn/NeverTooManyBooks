@@ -95,8 +95,7 @@ public class StyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        mStyle = intent.getParcelableExtra(UniqueId.BKEY_STYLE);
-        Objects.requireNonNull(mStyle);
+        mStyle = Objects.requireNonNull(intent.getParcelableExtra(UniqueId.BKEY_STYLE));
 
         // Get the list
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();

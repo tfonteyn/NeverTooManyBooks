@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.database.cursors;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 

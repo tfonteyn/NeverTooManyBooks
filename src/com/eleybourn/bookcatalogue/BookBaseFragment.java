@@ -23,8 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +42,6 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -86,7 +83,7 @@ public abstract class BookBaseFragment
     private void setActivityTitle() {
         Book book = mBookBaseFragmentModel.getBook();
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (book.getId() > 0) {
@@ -227,9 +224,6 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection ConstantConditions
-        @NonNull
-        BaseActivity activity = (BaseActivity) getActivity();
         Book book = mBookBaseFragmentModel.getBook();
 
         //noinspection SwitchStatementWithTooFewBranches
@@ -263,7 +257,7 @@ public abstract class BookBaseFragment
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
+                    @SuppressWarnings("ConstantConditions")
                     long bookId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
@@ -376,7 +370,7 @@ public abstract class BookBaseFragment
     private void showHide(final boolean hideIfEmpty,
                           @IdRes final int fieldId,
                           @NonNull @IdRes final int... relatedFields) {
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         final View view = getView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();
@@ -414,7 +408,7 @@ public abstract class BookBaseFragment
     private void setVisibilityGoneOr(@IdRes final int fieldToSet,
                                      final int visibility,
                                      @NonNull @IdRes final int... fields) {
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         final View baselineField = getView().findViewById(fieldToSet);
         if (baselineField != null) {
             baselineField.setVisibility(isVisibilityGone(fields) ? View.GONE : visibility);
@@ -429,7 +423,7 @@ public abstract class BookBaseFragment
     private boolean isVisibilityGone(@IdRes @NonNull final int[] fields) {
         boolean isGone = true;
         for (int fieldId : fields) {
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             View field = getView().findViewById(fieldId);
             if (field != null) {
                 // all fields must be gone to result into isGone==true
@@ -449,7 +443,7 @@ public abstract class BookBaseFragment
                                  @NonNull @IdRes final int... fields) {
         View root = getView();
         for (int fieldId : fields) {
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             View field = root.findViewById(fieldId);
             if (field != null) {
                 field.setVisibility(visibility);

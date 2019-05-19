@@ -40,7 +40,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     /**
      * Constructor.
      *
-     * @param context caller context
+     * @param context Current context
      * @param items   the list
      */
     protected RecyclerViewAdapterBase(@NonNull final Context context,

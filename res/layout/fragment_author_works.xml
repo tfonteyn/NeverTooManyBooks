@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS
+<androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:csf="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@android:id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
+
+    app:fastScrollEnabled="true"
+    app:fastScrollHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
+    app:fastScrollHorizontalTrackDrawable="@drawable/fast_scroll_track"
+    app:fastScrollVerticalThumbDrawable="@drawable/fast_scroll_thumb"
+    app:fastScrollVerticalTrackDrawable="@drawable/fast_scroll_track"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    csf:cfsEnabled="true"
-    csf:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
-    csf:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"
-    csf:cfsVerticalThumbDrawable="@drawable/fast_scroll_thumb"
-    csf:cfsVerticalTrackDrawable="@drawable/fast_scroll_track"
-    csf:cfsOverlayDrawable="@drawable/fast_scroll_overlay"
     >
+
     <!--
      ALL 5 above fastScroll drawable attributes must be specified,
      even when not using horizontal here
@@ -24,4 +25,4 @@
     https://issuetracker.google.com/issues/64729576
     -->
     <requestFocus />
-</com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS>
+</androidx.recyclerview.widget.RecyclerView>

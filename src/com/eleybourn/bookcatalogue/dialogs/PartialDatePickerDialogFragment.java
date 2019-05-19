@@ -150,7 +150,7 @@ public class PartialDatePickerDialogFragment
             mDay = args.getInt(BKEY_DAY);
         }
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         PartialDatePickerDialog dialog = new PartialDatePickerDialog(getContext());
         if (titleId != 0) {
             dialog.setTitle(titleId);
@@ -286,7 +286,7 @@ public class PartialDatePickerDialogFragment
         /**
          * Constructor.
          *
-         * @param context caller context
+         * @param context Current context
          */
         @SuppressLint("SetTextI18n")
         PartialDatePickerDialog(@NonNull final Context context) {

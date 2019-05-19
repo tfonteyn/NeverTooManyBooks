@@ -176,7 +176,7 @@ public class BookSearchByIsbnFragment
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
         }
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.search_isbn);
@@ -253,7 +253,7 @@ public class BookSearchByIsbnFragment
 
     private void handleDeleteButton() {
         try {
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             int start = mIsbnView.getSelectionStart();
             int end = mIsbnView.getSelectionEnd();
             if (start < end) {
@@ -313,7 +313,7 @@ public class BookSearchByIsbnFragment
      * Handle character insertion at cursor position in EditText.
      */
     private void handleIsbnKey(@NonNull final String key) {
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         int start = mIsbnView.getSelectionStart();
         int end = mIsbnView.getSelectionEnd();
         mIsbnView.getText().replace(start, end, key);
@@ -382,8 +382,8 @@ public class BookSearchByIsbnFragment
      * @param existingId of the book we already have in the database
      */
     private void isbnAlreadyPresent(final long existingId) {
-        //noinspection ConstantConditions
-        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+        @SuppressWarnings("ConstantConditions")
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setMessage(R.string.confirm_duplicate_book_message)
                 .setTitle(R.string.title_duplicate_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)

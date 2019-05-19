@@ -187,7 +187,7 @@ public class ProgressDialogFragment<Progress, Result>
         }
         mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(root)
                 .create();

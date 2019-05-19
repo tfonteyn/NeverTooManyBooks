@@ -80,7 +80,7 @@ public final class AmazonSearchPage {
     /**
      * Start an intent to open a web page e.g. start a browser.
      *
-     * @param context caller context
+     * @param context Current context
      * @param url     url to open
      */
     private static void openIntent(@NonNull final Context context,
@@ -91,7 +91,7 @@ public final class AmazonSearchPage {
     /**
      * Use Amazon AssociatesAPI to open the search.
      *
-     * @param context caller context
+     * @param context Current context
      * @param author  to search for
      * @param series  to search for
      */

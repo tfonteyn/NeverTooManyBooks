@@ -88,8 +88,7 @@ public class SqlStatementManager
     @NonNull
     public SynchronizedStatement add(@NonNull final String name,
                                      @NonNull final String sql) {
-        Objects.requireNonNull(mSyncedDb,
-                               "Database not set when SqlStatementManager created");
+        Objects.requireNonNull(mSyncedDb, "Database not set when SqlStatementManager created");
         return add(mSyncedDb, name, sql);
     }
 
@@ -154,5 +153,4 @@ public class SqlStatementManager
     public List<String> getNames() {
         return new ArrayList<>(mStatements.keySet());
     }
-
 }

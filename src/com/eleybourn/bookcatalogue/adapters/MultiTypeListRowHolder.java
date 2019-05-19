@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 /**
- * Holder for rows in a {@link MultiTypeListCursorAdapter.MultiTypeListCursorAdapter.MultiTypeListHandler}.
+ * Holder for rows in a {@link MultiTypeListCursorAdapter.MultiTypeListHandler}.
  * <p>
  * Method names now mimic {@link androidx.recyclerview.widget.RecyclerView.Adapter}.
  * <p>

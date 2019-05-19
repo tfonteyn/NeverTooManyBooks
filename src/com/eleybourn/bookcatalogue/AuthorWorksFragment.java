@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
-import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
+import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
 /**
  * Display all TocEntry's for an Author.
@@ -67,7 +67,7 @@ public class AuthorWorksFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         long authorId = getArguments().getLong(DBDefinitions.KEY_ID, 0);
         boolean withBooks = getArguments().getBoolean(BKEY_WITH_BOOKS, true);
 
@@ -86,6 +86,9 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         mListView.addItemDecoration(
                 new DividerItemDecoration(getContext(), mLinearLayoutManager.getOrientation()));
+
+        mListView.addItemDecoration(
+                new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
 
         mAdapter = new TocAdapter(getContext(), mModel);
         mListView.setAdapter(mAdapter);
@@ -147,7 +150,7 @@ public class AuthorWorksFragment
 
     public class TocAdapter
             extends RecyclerView.Adapter<Holder>
-            implements SectionIndexerV2 {
+            implements FastScrollerOverlay.SectionIndexerV2 {
 
         /** Icon to show for a book. */
         private final Drawable sBookIndicator;

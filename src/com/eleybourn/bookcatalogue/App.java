@@ -203,7 +203,7 @@ public class App
     /**
      * Show a notification while this app is running.
      *
-     * @param context caller context
+     * @param context Current context
      * @param titleId string resource for the title
      * @param message the message to display
      */

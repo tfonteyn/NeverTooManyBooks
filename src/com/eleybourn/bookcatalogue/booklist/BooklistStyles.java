@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
@@ -317,7 +316,7 @@ public final class BooklistStyles {
     }
 
     /**
-     * @param db     the database
+     * @param db  the database
      * @param all if {@code true} then also return the non-preferred styles
      *
      * @return all styles, with the preferred styles at the front of the list.
@@ -449,8 +448,8 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to the id.
      *
-     * @param resources caller context
-     * @param name    of the style
+     * @param resources for locale specific strings
+     * @param name      of the style
      *
      * @return internal id, or the default style id if not found.
      */

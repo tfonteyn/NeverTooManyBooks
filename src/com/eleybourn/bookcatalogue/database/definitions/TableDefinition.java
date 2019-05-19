@@ -309,7 +309,7 @@ public class TableDefinition
     @NonNull
     public String getAlias() {
         if (mAlias == null || mAlias.isEmpty()) {
-            return getName();
+            return mName;
         } else {
             return mAlias;
         }
@@ -854,7 +854,7 @@ public class TableDefinition
         } else {
             fk = mParents.get(to);
         }
-        Objects.requireNonNull(fk, "No foreign key between `" + getName()
+        Objects.requireNonNull(fk, "No foreign key between `" + mName
                 + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
@@ -879,8 +879,8 @@ public class TableDefinition
      */
     public boolean exists(@NonNull final SynchronizedDb db) {
         try (SynchronizedStatement stmt = db.compileStatement(EXISTS_SQL)) {
-            stmt.bindString(1, getName());
-            stmt.bindString(2, getName());
+            stmt.bindString(1, mName);
+            stmt.bindString(2, mName);
             return (stmt.count() > 0);
         }
     }

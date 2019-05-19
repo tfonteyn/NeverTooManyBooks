@@ -700,9 +700,7 @@ public class Fields {
         @Override
         public void setFieldValueFrom(@NonNull final Field field,
                                       @NonNull final Bundle values) {
-            String v = values.getString(field.mColumn);
-            Objects.requireNonNull(v);
-            set(field, v);
+            set(field, Objects.requireNonNull(values.getString(field.mColumn)));
         }
 
         @Override
@@ -959,7 +957,7 @@ public class Fields {
          * A default maximum size gets calculated. Override by calling {@link #setMaxSize}
          * BEFORE the displaying is done.
          *
-         * @param context caller context
+         * @param context Current context
          */
         ImageViewAccessor(@NonNull final Context context) {
             //FIXME: arbitrary default; it was the hardcoded value for Booklist cover images.
@@ -1186,7 +1184,7 @@ public class Fields {
         private final Context mContext;
 
         /**
-         * @param context caller context for resource access
+         * @param context Current context for resource access
          */
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mContext = context;

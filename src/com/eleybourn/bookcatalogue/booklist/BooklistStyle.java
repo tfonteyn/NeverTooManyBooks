@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import com.eleybourn.bookcatalogue.App;
@@ -128,10 +127,12 @@ public class BooklistStyle
     public static final int EXTRAS_PUBLISHER = 1 << 3;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_AUTHOR = 1 << 4;
+
+
     /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_THUMBNAIL = 1 << 5;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_THUMBNAIL_LARGE = 1 << 6;
+    public static final int EXTRAS_THUMBNAIL = 1 << 16;
+
+    public static final int EXTRAS_LOWER16 = 0x11111111;
 
     /**
      * the amount of details to show in the header.
@@ -229,6 +230,9 @@ public class BooklistStyle
      */
     private transient PInteger mScaleSize;
 
+    /** Use normal or large thumbnails. */
+    private transient PBoolean mUseLargeThumbnails;
+
     /**
      * Show list header info.
      * <p>
@@ -237,43 +241,15 @@ public class BooklistStyle
     private transient PBitmask mShowHeaderInfo;
     /** Sorting. */
     private transient PBoolean mSortAuthor;
-    /** Extra details to show on book rows. */
+    /** Show a thumbnail on each book row in the list. */
     private transient PBoolean mExtraShowThumbnails;
-    private transient PBoolean mExtraLargeThumbnails;
 
+    /** Extra info to show on each book row in the list. */
     private transient PBoolean mExtraShowBookshelves;
     private transient PBoolean mExtraShowLocation;
     private transient PBoolean mExtraShowAuthor;
     private transient PBoolean mExtraShowPublisher;
     private transient PBoolean mExtraShowFormat;
-
-    public static class ExtraDetail {
-        @NonNull
-        private final PBoolean mField;
-        @StringRes
-        private final int mLabel;
-
-        public ExtraDetail(final int label,
-                          @NonNull final PBoolean field) {
-            mLabel = label;
-            mField = field;
-        }
-
-        public boolean isRequested() {
-            return mField.isTrue();
-        }
-
-        public String getLabel(@NonNull final Resources resources) {
-            return resources.getString(mLabel);
-        }
-    }
-
-    /**
-     * All extra details for a row.
-     *
-     * The key in the Map is one of {@link #EXTRAS_BOOKSHELVES} etc.
-     */
-    private transient Map<Integer, ExtraDetail> mExtraDetail;
 
     /**
      * All groups in this style.
@@ -337,7 +313,7 @@ public class BooklistStyle
      * @param in      Parcel to read the object from
      * @param doNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
-     * @param resources caller context, will be {@code null} when doNew==false !
+     * @param resources  for locale specific strings, will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
                             final boolean doNew,
@@ -368,12 +344,12 @@ public class BooklistStyle
 
         mIsPreferred.set(in);
         mScaleSize.set(in);
+        mUseLargeThumbnails.set(in);
         mShowHeaderInfo.set(in);
 
         mStyleGroups.set(in);
 
         mExtraShowThumbnails.set(in);
-        mExtraLargeThumbnails.set(in);
         mExtraShowBookshelves.set(in);
         mExtraShowLocation.set(in);
         mExtraShowAuthor.set(in);
@@ -411,7 +387,7 @@ public class BooklistStyle
     /**
      * Only ever init the Preferences if you have a valid UUID ({@code null} is valid).
      */
-    public void initPrefs() {
+    private void initPrefs() {
 
         mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid);
 
@@ -423,40 +399,17 @@ public class BooklistStyle
 
         mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid);
 
-        // all extra details
+        mUseLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid);
 
-        mExtraDetail = new LinkedHashMap<>();
-
+        // all extra details for book-rows.
         mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, true);
-        mExtraDetail.put(EXTRAS_THUMBNAIL,
-                         new ExtraDetail(R.string.pt_bob_thumbnails_show, mExtraShowThumbnails));
-
-        mExtraLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid);
-        mExtraDetail.put(EXTRAS_THUMBNAIL_LARGE,
-                         new ExtraDetail(R.string.pt_bob_thumbnails_show_large, mExtraLargeThumbnails));
-
         mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid);
-        mExtraDetail.put(EXTRAS_BOOKSHELVES,
-                         new ExtraDetail(R.string.lbl_bookshelves, mExtraShowBookshelves));
-
         mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid);
-        mExtraDetail.put(EXTRAS_LOCATION,
-                         new ExtraDetail(R.string.lbl_location, mExtraShowLocation));
-
         mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid);
-        mExtraDetail.put(EXTRAS_AUTHOR,
-                         new ExtraDetail(R.string.lbl_author, mExtraShowAuthor));
-
         mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid);
-        mExtraDetail.put(EXTRAS_PUBLISHER,
-                         new ExtraDetail(R.string.lbl_publisher, mExtraShowPublisher));
-
         mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid);
-        mExtraDetail.put(EXTRAS_FORMAT,
-                         new ExtraDetail(R.string.lbl_format, mExtraShowFormat));
 
         // all filters
-
         mFilters = new LinkedHashMap<>();
 
         mFilterRead = new BooleanFilter(R.string.lbl_read,
@@ -495,12 +448,12 @@ public class BooklistStyle
 
         mIsPreferred.writeToParcel(dest);
         mScaleSize.writeToParcel(dest);
+        mUseLargeThumbnails.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
 
         mStyleGroups.writeToParcel(dest);
 
         mExtraShowThumbnails.writeToParcel(dest);
-        mExtraLargeThumbnails.writeToParcel(dest);
         mExtraShowBookshelves.writeToParcel(dest);
         mExtraShowLocation.writeToParcel(dest);
         mExtraShowAuthor.writeToParcel(dest);
@@ -596,14 +549,15 @@ public class BooklistStyle
 
         // is a preferred style
         map.put(mIsPreferred.getKey(), mIsPreferred);
-        // relative scaling of font and images
+        // relative scaling of fonts
         map.put(mScaleSize.getKey(), mScaleSize);
+        // size of thumbnails to use.
+        map.put(mUseLargeThumbnails.getKey(), mUseLargeThumbnails);
         // list header information shown
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
         // properties that can be shown as extra information for each line in the book list
         map.put(mExtraShowThumbnails.getKey(), mExtraShowThumbnails);
-        map.put(mExtraLargeThumbnails.getKey(), mExtraLargeThumbnails);
         map.put(mExtraShowBookshelves.getKey(), mExtraShowBookshelves);
         map.put(mExtraShowLocation.getKey(), mExtraShowLocation);
         map.put(mExtraShowPublisher.getKey(), mExtraShowPublisher);
@@ -710,7 +664,7 @@ public class BooklistStyle
         }
 
         int maxSize;
-        if (mExtraLargeThumbnails.isTrue()) {
+        if (mUseLargeThumbnails.isTrue()) {
             maxSize = 90;
         } else {
             maxSize = 60;
@@ -728,19 +682,12 @@ public class BooklistStyle
      * individual getters for each.
      *
      * @return bitmask with the 'extra' fields that are in use (visible) for this style.
-     *
-     * @deprecated use {link #getExtraFields} instead.
      */
-    @Deprecated
     public int getExtraFieldsStatus() {
         int extras = 0;
 
         if (mExtraShowThumbnails.isTrue()) {
             extras |= EXTRAS_THUMBNAIL;
-        }
-
-        if (mExtraLargeThumbnails.isTrue()) {
-            extras |= EXTRAS_THUMBNAIL_LARGE;
         }
 
         if (mExtraShowBookshelves.isTrue()) {
@@ -764,45 +711,6 @@ public class BooklistStyle
         }
 
         return extras;
-    }
-
-    /**
-     *
-     * @return {@code true} if this style has extra details enabled.
-     */
-    public boolean hasExtraDetailFields() {
-        for (ExtraDetail detail : mExtraDetail.values()) {
-            if (detail.isRequested()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @NonNull
-    public ExtraDetail getExtraField(final Integer key) {
-        return Objects.requireNonNull(mExtraDetail.get(key));
-    }
-
-    @NonNull
-    public Map<Integer, ExtraDetail> getExtraFields() {
-        return mExtraDetail;
-    }
-    /**
-     * @param all {@code true} to get all, {@code false} for only the enabled fields
-     *
-     * @return the list of in-use extra-field names in a human readable format.
-     */
-    public List<String> getExtraFieldsLabels(@NonNull final Resources resources,
-                                             final boolean all) {
-        List<String> labels = new ArrayList<>();
-        for (ExtraDetail detail : mExtraDetail.values()) {
-            if (detail.mField.isTrue() || all) {
-                labels.add(detail.getLabel(resources));
-            }
-        }
-        Collections.sort(labels);
-        return labels;
     }
 
     /**
@@ -928,6 +836,8 @@ public class BooklistStyle
     }
 
     /**
+     * Convenience method for use in the Preferences screen.
+     *
      * @param all {@code true} to get all, {@code false} for only the active filters
      *
      * @return the list of in-use filter names in a human readable format.
@@ -982,7 +892,7 @@ public class BooklistStyle
         SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
-        mExtraLargeThumbnails.set(ed, (Boolean) in.readObject());
+        mUseLargeThumbnails.set(ed, (Boolean) in.readObject());
 
         mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
         mExtraShowLocation.set(ed, (Boolean) in.readObject());
@@ -1052,7 +962,7 @@ public class BooklistStyle
      *
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param resources caller context, needed for the 'name' of the style.
+     * @param resources needed for the 'name' of the style.
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Resources resources) {
@@ -1123,7 +1033,7 @@ public class BooklistStyle
                 + "\nmShowHeaderInfo=" + mShowHeaderInfo
                 + "\nmSortAuthor=" + mSortAuthor
                 + "\nmExtraShowThumbnails=" + mExtraShowThumbnails
-                + "\nmExtraLargeThumbnails=" + mExtraLargeThumbnails
+                + "\nmUseLargeThumbnails=" + mUseLargeThumbnails
                 + "\nmExtraShowBookshelves=" + mExtraShowBookshelves
                 + "\nmExtraShowLocation=" + mExtraShowLocation
                 + "\nmExtraShowAuthor=" + mExtraShowAuthor

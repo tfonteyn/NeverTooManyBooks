@@ -276,7 +276,7 @@ public class EditBookTocFragment
     private void onCreateContextMenu(final int position) {
 
         TocEntry item = mList.get(position);
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
             .setIcon(R.drawable.ic_edit);
@@ -480,11 +480,12 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
-            Objects.requireNonNull(targetFragment);
+            final EditBookTocFragment targetFragment = (EditBookTocFragment)
+                    Objects.requireNonNull(getTargetFragment());
 
-            Bundle args = requireArguments();
+            Bundle args = getArguments();
 
+            @SuppressWarnings("ConstantConditions")
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
             final long tocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
@@ -505,8 +506,8 @@ public class EditBookTocFragment
                 content.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
-            //noinspection ConstantConditions
-            final AlertDialog dialog = new AlertDialog.Builder(getContext())
+            @SuppressWarnings("ConstantConditions")
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(root)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
@@ -568,8 +569,8 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            final EditBookTocFragment targetFragment = (EditBookTocFragment) getTargetFragment();
-            Objects.requireNonNull(targetFragment);
+            final EditBookTocFragment targetFragment = (EditBookTocFragment)
+                    Objects.requireNonNull(getTargetFragment());
 
             @SuppressWarnings("ConstantConditions")
             final View root = getActivity().getLayoutInflater()
@@ -585,7 +586,7 @@ public class EditBookTocFragment
             mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
 
             if (mHasMultipleAuthors) {
-                //noinspection ConstantConditions
+                @SuppressWarnings("ConstantConditions")
                 ArrayAdapter<String> authorAdapter =
                         new ArrayAdapter<>(getContext(),
                                            android.R.layout.simple_dropdown_item_1line,
@@ -770,7 +771,7 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param context caller context
+         * @param context Current context
          * @param items   the list
          */
         TocListAdapterForEditing(@NonNull final Context context,

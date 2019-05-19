@@ -143,13 +143,11 @@ public class CoverBrowserFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Fragment targetFragment = getTargetFragment();
-        Objects.requireNonNull(targetFragment);
+        final Fragment targetFragment = Objects.requireNonNull(getTargetFragment());
 
         Bundle args = getArguments();
-        //noinspection ConstantConditions
-        String isbn = args.getString(DBDefinitions.KEY_ISBN);
-        Objects.requireNonNull(isbn);
+        @SuppressWarnings("ConstantConditions")
+        String isbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
         int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, Site.SEARCH_ALL);
 
         if (savedInstanceState != null) {
@@ -410,6 +408,7 @@ public class CoverBrowserFragment
                                      final int position) {
 
             // fetch an image based on the isbn
+            @SuppressWarnings("ConstantConditions")
             String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
@@ -461,6 +460,7 @@ public class CoverBrowserFragment
 
         @Override
         public int getItemCount() {
+            //noinspection ConstantConditions
             return mAlternativeEditions.size();
         }
     }

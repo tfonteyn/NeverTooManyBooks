@@ -30,7 +30,7 @@ public class ImportException
 
     @NonNull
     @Override
-    public String getFormattedMessage(@NonNull final Resources res) {
-        return res.getString(mStringId, mArgs);
+    public String getFormattedMessage(@NonNull final Resources resources) {
+        return resources.getString(mStringId, mArgs);
     }
 }

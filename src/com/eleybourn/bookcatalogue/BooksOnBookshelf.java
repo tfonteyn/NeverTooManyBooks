@@ -406,7 +406,7 @@ public class BooksOnBookshelf
                     Logger.debug(this, "onResume", "reusing builder");
                 }
                 // a list has been build previously and we should re-use it.
-                //noinspection ConstantConditions
+                @SuppressWarnings("ConstantConditions")
                 BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
                 displayList(booklistBuilder.getNewListCursor(), null);
 
@@ -662,7 +662,7 @@ public class BooksOnBookshelf
             int oldAbsPos = mAdapter.getAbsolutePosition(mListView.getChildAt(0));
             savePosition();
             // get the builder from the current cursor.
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
             booklistBuilder.expandAll(expand);
             mModel.setTopRow(booklistBuilder.getPosition(oldAbsPos));
@@ -1178,7 +1178,7 @@ public class BooksOnBookshelf
                         break;
 
                     case Activity.RESULT_OK:
-                        //noinspection ConstantConditions
+                        @SuppressWarnings("ConstantConditions")
                         long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
                             mModel.setCurrentPositionedBookId(newId);
@@ -1228,7 +1228,7 @@ public class BooksOnBookshelf
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (resultCode == Activity.RESULT_OK) {
                     // the last edited/inserted shelf
-                    //noinspection ConstantConditions
+                    @SuppressWarnings("ConstantConditions")
                     long bookshelfId = data.getLongExtra(DBDefinitions.KEY_ID,
                                                          Bookshelf.DEFAULT_ID);
                     mModel.setCurrentBookshelf(bookshelfId);
@@ -1281,7 +1281,7 @@ public class BooksOnBookshelf
                         break;
 
                     case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE:
-                        //noinspection ConstantConditions
+                        @SuppressWarnings("ConstantConditions")
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         // can be null if a style was deleted.
                         if (style != null) {
@@ -1454,9 +1454,8 @@ public class BooksOnBookshelf
         }
         if (mLevelTextView[0].getVisibility() == View.VISIBLE) {
             BooklistPseudoCursor listCursor = mModel.getListCursor();
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             BooklistCursorRow row = listCursor.getCursorRow();
-
             if (listCursor.moveToPosition(mModel.getLastTopRow())) {
                 mLevelTextView[0].setText(row.getLevelText(getResources(), 1));
                 if (mLevelTextView[1].getVisibility() == View.VISIBLE) {

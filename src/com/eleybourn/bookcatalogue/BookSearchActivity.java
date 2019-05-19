@@ -48,7 +48,7 @@ public class BookSearchActivity
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
 
         FragmentManager fm = getSupportFragmentManager();

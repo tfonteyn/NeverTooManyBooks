@@ -172,7 +172,7 @@ public class LibraryThingManager
     /**
      * Check if we have a key; if not alert the user.
      *
-     * @param context    caller context
+     * @param context    Current context
      * @param required   {@code true} if we must have access to LT.
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
@@ -189,7 +189,7 @@ public class LibraryThingManager
     /**
      * Alert the user if not shown before that we require or would benefit from LT access.
      *
-     * @param context    caller context
+     * @param context    Current context
      * @param required   {@code true} if we must have access to LT.
      *                   {@code false} it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from

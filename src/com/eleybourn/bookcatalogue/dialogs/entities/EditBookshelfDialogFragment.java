@@ -124,7 +124,7 @@ public class EditBookshelfDialogFragment
         // are we adding a new Bookshelf but trying to use an existing name?
         if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
             Context c = getContext();
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
             String msg = c.getString(R.string.warning_thing_already_exists,
                                      c.getString(R.string.lbl_bookshelf));
             UserMessage.showUserMessage(mNameView, msg);

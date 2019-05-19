@@ -29,7 +29,7 @@ public class FilePicker
     /**
      * Constructor.
      *
-     * @param context caller context
+     * @param context Current context
      * @param title   for the dialog
      * @param message optional message
      * @param files   list to choose from

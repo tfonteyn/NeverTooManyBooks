@@ -189,11 +189,14 @@ public class BooklistPseudoCursor
                         oldPos = i;
                     }
                 }
+
                 if (oldPos < 0) {
                     // Not in MRU; just add it to the top
                     mMruListPos = (mMruListPos + 1) % MRU_LIST_SIZE;
                     mMruList[mMruListPos] = cursorId;
+
                 } else {
+
                     if (oldPos <= mMruListPos) {
                         // Just shuffle intervening items down
                         int nextPosition = oldPos;

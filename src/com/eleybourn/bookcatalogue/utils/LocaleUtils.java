@@ -303,7 +303,7 @@ public final class LocaleUtils {
     /**
      * Load a Resources set for the specified Locale.
      *
-     * @param context caller context
+     * @param context Current context
      * @param locale  the desired Locale
      *
      * @return the Resources

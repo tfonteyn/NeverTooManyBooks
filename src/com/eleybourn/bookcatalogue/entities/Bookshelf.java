@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.entities;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;

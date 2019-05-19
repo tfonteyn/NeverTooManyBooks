@@ -28,4 +28,12 @@
     <!-- indent an element so it matches up with the text of a standard size compound button. -->
     <dimen name="indent_compound_button">32dp</dimen>
 
+
+    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
+    <dimen name="cfs_text_size_small">14sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
+    <dimen name="cfs_text_size_medium">18sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
+    <dimen name="cfs_text_size_large">22sp</dimen>
+
 </resources>

@@ -30,7 +30,7 @@ public class FieldPicker<T>
      * TODO: use {@link com.eleybourn.bookcatalogue.entities.Entity} instead of a string/field.
      * But not all (far from) the values are entities.
      *
-     * @param context caller context
+     * @param context Current context
      * @param field   to get/set
      * @param list    list to choose from
      */

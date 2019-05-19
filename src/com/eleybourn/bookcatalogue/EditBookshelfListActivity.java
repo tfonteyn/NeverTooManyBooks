@@ -193,7 +193,7 @@ public class EditBookshelfListActivity
         /**
          * Constructor.
          *
-         * @param context caller context
+         * @param context Current context
          * @param objects the list
          */
         BookshelfAdapter(@NonNull final Context context,

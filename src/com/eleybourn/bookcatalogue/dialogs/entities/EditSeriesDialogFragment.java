@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.dialogs.entities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -82,9 +81,6 @@ public class EditSeriesDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        //noinspection ConstantConditions
-        @NonNull
-        Context context = getContext();
         mDb = new DAO();
 
         Bundle args = requireArguments();
@@ -102,8 +98,9 @@ public class EditSeriesDialogFragment
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
 
+        @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                    mDb.getAllSeriesNames());
 
         mNameView = root.findViewById(R.id.name);
@@ -113,7 +110,7 @@ public class EditSeriesDialogFragment
         mIsCompleteView = root.findViewById(R.id.is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        return new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(getContext())
                 .setView(root)
                 .setTitle(R.string.lbl_series)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())

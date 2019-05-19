@@ -59,7 +59,7 @@ public class BookSearchByTextFragment
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
-        //noinspection ConstantConditions
+        @SuppressWarnings("ConstantConditions")
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.title_search_for);

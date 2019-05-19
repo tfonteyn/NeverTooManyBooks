@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
+import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
 /**
  * Cursor adapter for flattened multi-typed ListViews.
@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.widgets.SectionIndexerV2;
  */
 public class MultiTypeListCursorAdapter
         extends RecyclerView.Adapter<MultiTypeListCursorAdapter.Holder>
-        implements SectionIndexerV2 {
+        implements FastScrollerOverlay.SectionIndexerV2 {
 
     @NonNull
     private final Context mContext;
@@ -92,8 +92,7 @@ public class MultiTypeListCursorAdapter
     }
 
     /**
-     * Provide the text for the fast-scroller overlay of ListView
-     * and {@link com.eleybourn.bookcatalogue.widgets.RecyclerViewCFS}
+     * Provide the text for the fast-scroller overlay.
      * <p>
      * The actual text comes from {@link MultiTypeListHandler#getSectionText}}.
      */
@@ -157,7 +156,7 @@ public class MultiTypeListCursorAdapter
         /**
          * Get the text to display in ListView for row at current cursor position.
          *
-         * @param resources caller context
+         * @param resources for locale specific strings
          * @param cursor    Cursor, correctly positioned.
          *
          * @return the section text as an array.
