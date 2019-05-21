@@ -11,7 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         />
 
     <androidx.core.widget.NestedScrollView
@@ -59,7 +59,7 @@
 
             <TextView
                 android:id="@+id/website"
-                style="@style/link_url"
+                style="@style/Url"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/header"
@@ -69,7 +69,7 @@
 
             <TextView
                 android:id="@+id/sourcecode"
-                style="@style/link_url"
+                style="@style/Url"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/website"
@@ -87,7 +87,7 @@
 
             <TextView
                 android:id="@+id/contacts"
-                style="@style/sectionHeader"
+                style="@style/SectionHeader"
                 android:text="@string/about_lbl_contacts"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/sourcecode"
@@ -95,7 +95,7 @@
 
             <TextView
                 android:id="@+id/contact1"
-                style="@style/link_url"
+                style="@style/Url"
                 android:text="@string/email_contact1"
                 app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintTop_toBottomOf="@id/contacts"
@@ -103,7 +103,7 @@
 
             <TextView
                 android:id="@+id/contact2"
-                style="@style/link_url"
+                style="@style/Url"
                 android:text="@string/email_contact2"
                 app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintTop_toBottomOf="@id/contact1"
@@ -111,7 +111,7 @@
 
             <TextView
                 android:id="@+id/thanks"
-                style="@style/sectionHeader"
+                style="@style/SectionHeader"
                 android:text="@string/about_lbl_special_thanks"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contact2"
@@ -119,7 +119,7 @@
 
             <TextView
                 android:id="@+id/b1"
-                style="@style/txt_blurb_small"
+                style="@style/Blurb.Small"
                 android:text="@string/about_translators"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
@@ -128,7 +128,7 @@
 
             <TextView
                 android:id="@+id/donate"
-                style="@style/sectionHeader"
+                style="@style/SectionHeader"
                 android:text="@string/about_lbl_donate"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/b1"
@@ -136,7 +136,7 @@
 
             <TextView
                 android:id="@+id/b2"
-                style="@style/txt_blurb_small"
+                style="@style/Blurb.Small"
                 android:text="@string/about_donate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
@@ -145,7 +145,7 @@
 
             <TextView
                 android:id="@+id/amazon_url"
-                style="@style/link_url"
+                style="@style/Url"
                 android:text="@string/about_donate_amazon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -165,7 +165,7 @@
 
             <TextView
                 android:id="@+id/donate_url"
-                style="@style/link_url"
+                style="@style/Url"
                 android:text="@string/about_donate_paypal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -174,7 +174,7 @@
 
             <TextView
                 android:id="@+id/amazon"
-                style="@style/sectionHeader"
+                style="@style/SectionHeader"
                 android:text="@string/amazon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/donate_url"
@@ -182,7 +182,7 @@
 
             <TextView
                 android:id="@+id/amazon_links_info"
-                style="@style/txt_blurb_small"
+                style="@style/Blurb.Small"
                 app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/amazon"

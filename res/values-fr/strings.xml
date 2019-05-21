@@ -824,4 +824,8 @@
     <string name="gr_tq_generic_task_info">ID de tâche %1$d, en file d\'attente à %2$s</string>
     <string name="X_events_found">%1$d événements trouvés</string>
     <string name="info_tap_on_image_to_select">Appuyez sur la grande photo pour la sélectionner</string>
+    <string name="menu_hide_keyboard">Masquer le clavier</string>
+    <string name="none">Aucun</string>
+    <string name="pt_allow_mobile_data">Autoriser l\'utilisation de données mobiles</string>
+    <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
 </resources>

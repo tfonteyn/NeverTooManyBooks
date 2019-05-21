@@ -50,6 +50,7 @@
     <!-- Preference -->
     <string name="pt_ui_theme">Thema</string>
     <string-array name="pe_ui_theme">
+        <item>Jour / Nuit</item>
         <item>Noir</item>
         <item>Clair</item>
         <item>Clair 2</item>

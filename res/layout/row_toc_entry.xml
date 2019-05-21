@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_option"
+    style="@style/OptionRow"
     >
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_detail_small"
+        style="@style/TextDetail.Small"
         android:layout_width="0dp"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/year"
-        style="@style/txt_detail_small"
+        style="@style/TextDetail.Small"
         android:layout_marginStart="@dimen/indent2"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"

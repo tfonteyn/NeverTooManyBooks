@@ -2,7 +2,7 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coverImage"
-    style="@style/zoomedCoverImage"
+    style="@style/CoverImage.Zoomed"
     tools:ignore="ContentDescription"
     tools:src="@drawable/ic_image"
     />

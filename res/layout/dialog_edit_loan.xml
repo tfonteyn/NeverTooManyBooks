@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_detail_small"
+        style="@style/TextDetail.Small"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/txt_detail_small"
+        style="@style/TextDetail.Small"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -28,7 +28,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -37,7 +37,6 @@
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"
-        android:completionThreshold="2"
         android:hint="@string/menu_loan_lend_book"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/button"
-    style="@style/row_option_checkable"
+    style="@style/OptionRow.Checkable"
     tools:text="checkbox option"
     />

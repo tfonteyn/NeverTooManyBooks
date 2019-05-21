@@ -10,13 +10,13 @@
 
     <TextView
         android:id="@+id/lbl_author"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:text="@string/lbl_author"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/author"
         style="@style/personalNameTextEntry"
         android:hint="@string/lbl_author"
@@ -28,15 +28,15 @@
 
     <TextView
         android:id="@+id/lbl_title"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:text="@string/lbl_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
         />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/title"
-        style="@style/titleTextEntry"
+        style="@style/titleTextEntryAutoComplete"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/lbl_isbn"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:text="@string/lbl_isbn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -54,12 +54,11 @@
 
     <EditText
         android:id="@+id/isbn"
-        style="@style/isbnEntry"
-        android:hint="@string/lbl_isbn"
+        style="@style/Edit.Text.Isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-        tools:ignore="Autofill"
+        tools:ignore="Autofill,LabelFor"
         />
 
     <Button
@@ -74,7 +73,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search"
@@ -94,7 +93,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintBottom_toTopOf="@id/works_found"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

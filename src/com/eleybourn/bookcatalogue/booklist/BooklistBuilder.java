@@ -56,7 +56,6 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
@@ -99,7 +98,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANED_TO_SORT;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
@@ -107,7 +105,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS_FTS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LIST;
@@ -253,10 +250,10 @@ public class BooklistBuilder
     /**
      * Local copy of the {@link DBDefinitions#TBL_BOOK_LIST} table definition,
      * 'book_list_tmp' but renamed by adding the instance number to the end to match this instance.
-     *
+     * <p>
      * The builder will create the needed columns (domain) on the fly
      * and create INSERT statements to build the content of this table.
-     *
+     * <p>
      * TOMF: speculation.. use a VIEW instead ?
      */
     private TableDefinition mListTable;
@@ -560,37 +557,6 @@ public class BooklistBuilder
     }
 
     /**
-     * Set the filter for only books with named author (family or given) with added wildcards.
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param filter the author (family or given) to limit the search for.
-     */
-    public void setFilterOnAuthorName(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            mFilters.add(() -> '(' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                    + " LIKE '%" + DAO.encodeString(filter) + "%'"
-                    + " OR "
-                    + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                    + " LIKE '%" + DAO.encodeString(filter) + "%')");
-        }
-    }
-
-    /**
-     * Set the filter for only books with named title with added wildcards.
-     * <p>
-     * An empty filter will silently be rejected.
-     * {@link WildcardFilter} is case insensitive.
-     *
-     * @param filter the title to limit the search for.
-     */
-    public void setFilterOnTitle(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            mFilters.add(new WildcardFilter(TBL_BOOKS, DOM_TITLE, filter));
-        }
-    }
-
-    /**
      * Set the filter for only books in named series with added wildcards.
      * <p>
      * An empty filter will silently be rejected.
@@ -618,19 +584,16 @@ public class BooklistBuilder
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param filter book details must in some way contain the passed text
+     * @param author   Author-related keywords to find
+     * @param title    Title-related keywords to find
+     * @param keywords Keywords to find anywhere in book
      */
-    public void setFilterOnText(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            // Cleanup searchText
-            // Because FTS does not understand locales in all android up to 4.2,
-            // we do case folding here using the user preferred locale.
-            final String cleanCriteria = filter.toLowerCase(LocaleUtils.getPreferredLocal());
-
+    public void setFilter(@Nullable final String author,
+                          @Nullable final String title,
+                          @Nullable final String keywords) {
+        if (isNonBlank(keywords)) {
             mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
-                    + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
-                    + " WHERE " + TBL_BOOKS_FTS + " match '"
-                    + DAO.encodeString(DAO.cleanupFtsCriterion(cleanCriteria)) + "'))");
+                    + " IN (" + DAO.getFtsSearchSQL(author, title, keywords) + ")");
         }
     }
 
@@ -2124,7 +2087,7 @@ public class BooklistBuilder
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(this, "finalize","Closing unclosed builder");
+            Logger.warn(this, "finalize", "Closing unclosed builder");
             close();
         }
         super.finalize();

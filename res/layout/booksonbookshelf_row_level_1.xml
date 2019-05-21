@@ -25,11 +25,7 @@
     -->
     <TextView
         android:id="@+id/name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textIsSelectable="false"
-        android:textStyle="bold"
+        style="@style/BooklistBook.Section.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

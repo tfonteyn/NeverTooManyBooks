@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
-import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -41,12 +41,12 @@ public class FieldUsage {
         return (usage != Usage.Skip);
     }
 
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mNameStringId);
+    public String getLabel(@NonNull final Resources resources) {
+        return resources.getString(mNameStringId);
     }
 
-    public String getUsageInfo(@NonNull final Context context) {
-        return context.getString(usage.getStringId());
+    public String getUsageInfo(@NonNull final Resources resources) {
+        return resources.getString(usage.getStringId());
     }
 
     /**

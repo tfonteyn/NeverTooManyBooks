@@ -42,7 +42,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_path_up"
@@ -64,7 +64,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintBottom_toTopOf="@id/file_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

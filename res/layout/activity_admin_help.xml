@@ -11,7 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         />
 
     <androidx.core.widget.NestedScrollView
@@ -36,7 +36,7 @@
 
             <TextView
                 android:id="@+id/help_page"
-                style="@style/link_url"
+                style="@style/Url"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +46,7 @@
 
             <TextView
                 android:id="@+id/info_blurb"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:text="@string/debug_send_info_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
@@ -67,7 +67,7 @@
 
             <TextView
                 android:id="@+id/cleanup_text"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:text="@string/info_cleanup_files_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"

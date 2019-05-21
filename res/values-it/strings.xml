@@ -739,5 +739,9 @@
     <string name="lbl_covers">Copertine</string>
     <string name="confirm_merge_bookshelves">La libreria che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="info_tap_on_image_to_select">Tocca l\'immagine grande per selezionare</string>
+    <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
+    <string name="none">Nessuna</string>
+    <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
+    <string name="menu_hide_keyboard">Nascondi tastiera</string>
 
 </resources>

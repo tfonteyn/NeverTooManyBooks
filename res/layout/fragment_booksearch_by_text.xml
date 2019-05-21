@@ -14,7 +14,6 @@
         android:id="@+id/author"
         style="@style/personalNameTextEntry"
         android:layout_margin="@dimen/border2"
-        android:completionThreshold="2"
         android:hint="@string/lbl_author"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,7 +24,7 @@
 
     <EditText
         android:id="@+id/title"
-        style="@style/titleTextEntry"
+        style="@style/simpleTextEntry"
         android:layout_margin="@dimen/border2"
         android:hint="@string/lbl_title"
         android:textAppearance="?android:attr/textAppearanceLarge"

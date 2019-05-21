@@ -1175,19 +1175,22 @@ public class Fields {
     /**
      * Formatter for boolean fields.
      *
+     * Can be reused for multiple fields.
+     *
      * @author Philip Warner
      */
     public static class BinaryYesNoEmptyFormatter
             implements FieldFormatter {
 
-        @NonNull
-        private final Context mContext;
+        private final String mYes;
+        private final String mNo;
 
         /**
-         * @param context Current context for resource access
+         * @param resources for string
          */
-        public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
-            mContext = context;
+        public BinaryYesNoEmptyFormatter(@NonNull final Resources resources) {
+            mYes = resources.getString(R.string.yes);
+            mNo = resources.getString(R.string.no);
         }
 
         /**
@@ -1201,7 +1204,7 @@ public class Fields {
             }
             try {
                 boolean val = Datum.toBoolean(source, false);
-                return mContext.getString(val ? R.string.yes : R.string.no);
+                return val ? mYes : mNo;
             } catch (NumberFormatException e) {
                 return source;
             }

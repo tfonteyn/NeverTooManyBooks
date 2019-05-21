@@ -12,10 +12,7 @@
 
     <EditText
         android:id="@+id/isbn"
-        style="@style/isbnEntry"
-        android:layout_margin="@dimen/border2"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:windowSoftInputMode="stateAlwaysHidden"
+        style="@style/Edit.Text.Isbn.Large"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,7 +31,7 @@
 
     <Button
         android:id="@+id/isbn_1"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="1"
         app:layout_constraintEnd_toStartOf="@id/isbn_2"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +41,7 @@
 
     <Button
         android:id="@+id/isbn_2"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="2"
         app:layout_constraintBottom_toBottomOf="@id/isbn_1"
         app:layout_constraintEnd_toStartOf="@id/isbn_3"
@@ -55,7 +52,7 @@
 
     <Button
         android:id="@+id/isbn_3"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="3"
         app:layout_constraintBottom_toBottomOf="@id/isbn_1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +63,7 @@
 
     <Button
         android:id="@+id/isbn_4"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="4"
         app:layout_constraintEnd_toEndOf="@id/isbn_1"
         app:layout_constraintStart_toStartOf="@id/isbn_1"
@@ -76,7 +73,7 @@
 
     <Button
         android:id="@+id/isbn_5"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="5"
         app:layout_constraintBottom_toBottomOf="@id/isbn_4"
         app:layout_constraintEnd_toEndOf="@id/isbn_2"
@@ -87,7 +84,7 @@
 
     <Button
         android:id="@+id/isbn_6"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="6"
         app:layout_constraintBottom_toBottomOf="@id/isbn_4"
         app:layout_constraintEnd_toEndOf="@id/isbn_3"
@@ -98,7 +95,7 @@
 
     <Button
         android:id="@+id/isbn_7"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="7"
         app:layout_constraintEnd_toEndOf="@id/isbn_4"
         app:layout_constraintStart_toStartOf="@id/isbn_4"
@@ -108,7 +105,7 @@
 
     <Button
         android:id="@+id/isbn_8"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="8"
         app:layout_constraintBottom_toBottomOf="@id/isbn_7"
         app:layout_constraintEnd_toEndOf="@id/isbn_5"
@@ -119,7 +116,7 @@
 
     <Button
         android:id="@+id/isbn_9"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="9"
         app:layout_constraintBottom_toBottomOf="@id/isbn_7"
         app:layout_constraintEnd_toEndOf="@id/isbn_6"
@@ -130,7 +127,7 @@
 
     <Button
         android:id="@+id/isbn_X"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="X"
         app:layout_constraintEnd_toEndOf="@id/isbn_7"
         app:layout_constraintStart_toStartOf="@id/isbn_7"
@@ -140,7 +137,7 @@
 
     <Button
         android:id="@+id/isbn_0"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:text="0"
         app:layout_constraintBottom_toBottomOf="@id/isbn_X"
         app:layout_constraintEnd_toEndOf="@id/isbn_8"
@@ -151,7 +148,7 @@
 
     <ImageButton
         android:id="@+id/isbn_del"
-        style="@style/isbnSearchKey"
+        style="@style/IsbnSearchKey"
         android:src="@drawable/ic_backspace"
         app:layout_constraintBottom_toBottomOf="@id/isbn_X"
         app:layout_constraintEnd_toEndOf="@id/isbn_9"

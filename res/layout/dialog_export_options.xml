@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <CheckBox
         android:id="@+id/cbx_books_csv"
-        style="@style/row_option_checkable"
+        style="@style/OptionRow.Checkable"
         android:checked="true"
         android:text="@string/import_export_option_csv"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,7 +18,7 @@
 
     <CheckBox
         android:id="@+id/cbx_covers"
-        style="@style/row_option_checkable"
+        style="@style/OptionRow.Checkable"
         android:checked="true"
         android:text="@string/lbl_cover_images"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
 
     <CheckBox
         android:id="@+id/cbx_preferences"
-        style="@style/row_option_checkable"
+        style="@style/OptionRow.Checkable"
         android:checked="true"
         android:text="@string/lbl_settings"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
 
     <CheckBox
         android:id="@+id/cbx_xml_tables"
-        style="@style/row_option_checkable"
+        style="@style/OptionRow.Checkable"
         android:checked="false"
         android:text="@string/import_export_option_xml"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +60,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables_info"
@@ -68,7 +68,7 @@
 
     <TextView
         android:id="@+id/export_advanced_date_blurb"
-        style="@style/txt_blurb_medium"
+        style="@style/Blurb"
         android:text="@string/export_option_info_books_since_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,14 +86,14 @@
 
         <RadioButton
             android:id="@+id/radioAllBooks"
-            style="@style/row_option_checkable"
+            style="@style/OptionRow.Checkable"
             android:checked="true"
             android:text="@string/bookshelf_all_books"
             />
 
         <RadioButton
             android:id="@+id/radioSinceLastBackup"
-            style="@style/row_option_checkable"
+            style="@style/OptionRow.Checkable"
             android:text="@string/export_option_books_since_last_full_backup"
             />
 
@@ -101,7 +101,7 @@
          of the UI and app; may enable one day. Deemed to be too rarely of use. -->
         <RadioButton
             android:id="@+id/radioSinceDate"
-            style="@style/row_option_checkable"
+            style="@style/OptionRow.Checkable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_option_books_since_date"

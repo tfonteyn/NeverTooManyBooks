@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/border1"
-    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:fadeScrollbars="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
@@ -17,7 +17,7 @@
 
         <ImageView
             android:id="@+id/coverImage"
-            style="@style/coverImage"
+            style="@style/CoverImage"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,7 @@
 
         <TextView
             android:id="@+id/lbl_author"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
 
         <Button
             android:id="@+id/author"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -50,7 +50,7 @@
 
         <TextView
             android:id="@+id/lbl_title"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/title"
             android:text="@string/lbl_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
 
         <TextView
             android:id="@+id/lbl_isbn"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/isbn"
             android:text="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,8 +77,7 @@
 
         <EditText
             android:id="@+id/isbn"
-            style="@style/isbnEntry"
-            android:inputType="textCapCharacters|textNoSuggestions"
+            style="@style/Edit.Text.Isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
@@ -87,7 +86,7 @@
 
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +95,7 @@
 
         <Button
             android:id="@+id/series"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
@@ -104,7 +103,7 @@
 
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series"
@@ -112,7 +111,7 @@
 
         <Button
             android:id="@+id/bookshelves"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
@@ -120,7 +119,7 @@
 
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/genre"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
@@ -129,8 +128,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/genre"
-            style="@style/simpleTextEntry"
-            android:completionThreshold="2"
+            style="@style/autoCompleteTextEntry"
             app:layout_constraintEnd_toStartOf="@id/btn_genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
@@ -138,7 +136,7 @@
 
         <ImageButton
             android:id="@+id/btn_genre"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/genre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/genre"
@@ -148,7 +146,7 @@
 
         <View
             android:id="@+id/notes_divider"
-            style="@style/div_horizontal"
+            style="@style/SectionDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre"
@@ -156,7 +154,7 @@
 
         <TextView
             android:id="@+id/lbl_description"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:text="@string/lbl_description"
             app:layout_constraintStart_toStartOf="parent"

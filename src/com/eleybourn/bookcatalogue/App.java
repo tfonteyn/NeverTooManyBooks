@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -41,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
@@ -121,6 +121,7 @@ public class App
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
+
     /** Activity is in need of recreating. */
     private static final int ACTIVITY_NEEDS_RECREATING = 1;
     /** Checked in onResume() so not to start tasks etc. */
@@ -130,13 +131,20 @@ public class App
      * <ol>
      * <li>add it to themes.xml</li>
      * <li>add it to R.array.pv_ui_theme, the string-array order must match the APP_THEMES order</li>
-     * <li>The DEFAULT_THEME must be set in res/xml/preferences.xml on the App.Theme element.</li>
+     * <li>make sure the integer list in R.array.pv_ui_theme matches the number of themes</li>
+     * <li>The default theme integer must be set in res/xml/preferences.xml on the App.Theme element.</li>
+     * <li>The default theme name must be set in the manifest application tag.</li>
      * </ol>
      * The preferences choice will be build according to the string-array list/order.
+     * <p>
+     * DEFAULT_THEME: the default to use.
      */
-    private static final int DEFAULT_THEME = 1;
+    private static final int DEFAULT_THEME = 0;
+    /** don't assume / allow the day-night theme to have a different integer id. */
+    public static final int THEME_DAY_NIGHT = 0;
     /** As defined in res/themes.xml. */
     private static final int[] APP_THEMES = {
+            R.style.AppTheme_DayNight,
             R.style.AppTheme_Dark,
             R.style.AppTheme_Light_Blue,
             R.style.AppTheme_Light_Red,
@@ -153,8 +161,8 @@ public class App
     private static App sInstance;
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
-    /** Cache the User-specified theme currently in use. */
-    private static int sCurrentTheme = DEFAULT_THEME;
+    /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
+    private static int sCurrentTheme = -1;
 
     /** create a singleton. */
     @SuppressWarnings("unused")
@@ -226,6 +234,12 @@ public class App
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build();
+
+        // Create the notifier
+        if (sNotifier == null) {
+            sNotifier = (NotificationManager)
+                    getAppContext().getSystemService(NOTIFICATION_SERVICE);
+        }
 
         sNotifier.notify(NOTIFICATION_ID, notification);
     }
@@ -353,15 +367,15 @@ public class App
      *
      * @return {@code true} if the theme was changed
      */
-    public static boolean applyTheme(@NonNull final Activity activity) {
+    public static boolean applyTheme() {
         int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        boolean changed = theme != sCurrentTheme;
 
-        if (theme != sCurrentTheme) {
-            sCurrentTheme = theme;
-            activity.setTheme(APP_THEMES[sCurrentTheme]);
-            return true;
+        sCurrentTheme = theme;
+        if (sCurrentTheme == THEME_DAY_NIGHT) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
         }
-        return false;
+        return changed;
     }
 
     public static void setNeedsRecreating() {
@@ -416,11 +430,8 @@ public class App
         // Get the preferred locale as soon as possible
         setSystemLocale();
 
-        // cache the preferred theme.
-        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-
-        // Create the notifier
-        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // The preferred theme.
+        applyTheme();
 
         // create the singleton QueueManager
         QueueManager.init();

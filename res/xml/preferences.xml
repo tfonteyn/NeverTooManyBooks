@@ -15,8 +15,9 @@
             android:key="App.Locale"
             android:title="@string/pt_ui_language" />
 
+        <!-- NEWKIND: APP THEME. -->
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="0"
             android:entries="@array/pe_ui_theme"
             android:entryValues="@array/pv_ui_theme"
             android:icon="@drawable/ic_settings_brightness"

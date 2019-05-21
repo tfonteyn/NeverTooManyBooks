@@ -645,5 +645,9 @@
     <string name="X_events_found">%1$d событий найдено</string>
     <string name="gr_tq_events_recorded">(Записано %1$d событий)</string>
     <string name="X_error_no_style_found">Я не могу найти правильный стиль</string>
+    <string name="none">Никто</string>
+    <string name="menu_hide_keyboard">Скрыть клавиатуру</string>
+    <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
+    <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
 
 </resources>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/border1"
-    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:fadeScrollbars="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
@@ -17,7 +17,7 @@
 
         <TextView
             android:id="@+id/lbl_rating"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/rating"
             android:text="@string/lbl_rating"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
 
         <CheckBox
             android:id="@+id/read"
-            style="@style/editCheckbox"
+            style="@style/CheckboxEntry"
             android:text="@string/lbl_is_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
@@ -57,7 +57,7 @@
 
         <TextView
             android:id="@+id/lbl_read_start"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:layout_width="0dp"
             android:text="@string/lbl_read_start"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -66,7 +66,7 @@
 
         <TextView
             android:id="@+id/lbl_read_end"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:layout_width="0dp"
             android:text="@string/lbl_read_end"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start_end_baseline"
@@ -85,7 +85,7 @@
 
         <Button
             android:id="@+id/read_start"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
             app:layout_constraintEnd_toStartOf="@id/read_end"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +93,7 @@
 
         <Button
             android:id="@+id/read_end"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintBaseline_toBaselineOf="@id/read_start_end_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/read_start"
@@ -101,7 +101,7 @@
 
         <TextView
             android:id="@+id/lbl_location"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,8 +110,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/location"
-            style="@style/simpleTextEntry"
-            android:completionThreshold="2"
+            style="@style/autoCompleteTextEntry"
             app:layout_constraintEnd_toStartOf="@id/btn_location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_location"
@@ -119,7 +118,7 @@
 
         <ImageButton
             android:id="@+id/btn_location"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/location"
@@ -129,7 +128,7 @@
 
         <TextView
             android:id="@+id/lbl_date_acquired"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/location"
@@ -137,7 +136,7 @@
 
         <Button
             android:id="@+id/date_acquired"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
@@ -145,7 +144,7 @@
 
         <TextView
             android:id="@+id/lbl_price_paid"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/price_paid"
             android:text="@string/lbl_price_paid"
             app:layout_constraintStart_toStartOf="parent"
@@ -164,7 +163,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
-            style="@style/currencyTextEntry"
+            style="@style/Edit.Text.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
@@ -173,7 +172,7 @@
 
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
@@ -183,7 +182,7 @@
 
         <TextView
             android:id="@+id/lbl_edition"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_paid"
@@ -191,7 +190,7 @@
 
         <Button
             android:id="@+id/edition"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
@@ -199,7 +198,7 @@
 
         <CheckBox
             android:id="@+id/signed"
-            style="@style/editCheckbox"
+            style="@style/CheckboxEntry"
             android:text="@string/lbl_is_signed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
@@ -208,7 +207,7 @@
 
         <View
             android:id="@+id/notes_divider"
-            style="@style/div_horizontal"
+            style="@style/SectionDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/signed"
@@ -216,7 +215,7 @@
 
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/notes"
             android:text="@string/menu_edit_book_notes"
             app:layout_constraintStart_toStartOf="parent"

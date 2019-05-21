@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_option_menu"
+    style="@style/OptionRow.Menu"
     >
 
     <!--style="@style/txt_row_fileInfo"-->

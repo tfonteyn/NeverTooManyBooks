@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
@@ -326,10 +327,7 @@ public class DAO
         mStatements = new SqlStatementManager(sSyncedDb);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.debug(this,
-                         "DAO",
-                         "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
-            //debugAddInstance(this);
+            debugAddInstance(this);
         }
     }
 
@@ -360,6 +358,66 @@ public class DAO
     }
 
     /**
+     * DEBUG only.
+     */
+    private static void debugAddInstance(@NonNull final DAO db) {
+        Logger.debug(db, "debugAddInstance",
+                     "count=" + DEBUG_INSTANCE_COUNT.incrementAndGet());
+
+        INSTANCES.add(new InstanceRefDebug(db));
+
+    }
+
+    /**
+     * DEBUG only.
+     */
+    private static void debugRemoveInstance(@NonNull final DAO db) {
+        Logger.debug(db, "debugRemoveInstance",
+                     "count=" + DEBUG_INSTANCE_COUNT.decrementAndGet());
+
+        Iterator<InstanceRefDebug> it = INSTANCES.iterator();
+        while (it.hasNext()) {
+            InstanceRefDebug ref = it.next();
+            DAO refDb = ref.get();
+            if (refDb == null) {
+                Logger.debug(DAO.class, "debugRemoveInstance",
+                             "**** Missing ref (not closed?) ****", ref);
+            } else {
+                if (refDb == db) {
+                    it.remove();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * DEBUG only.
+     */
+    @SuppressWarnings("unused")
+    public static void debugDumpInstances() {
+        for (InstanceRefDebug ref : INSTANCES) {
+            if (ref.get() == null) {
+                Logger.debug(DAO.class, "debugDumpInstances",
+                             "**** Missing ref (not closed?) ****", ref);
+            } else {
+                Logger.debug(DAO.class, "debugDumpInstances", ref);
+            }
+        }
+    }
+
+    /**
+     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
+     * there are still non-fatal anomalies.
+     */
+    @SuppressWarnings("unused")
+    public static void debugPrintReferenceCount(@Nullable final String msg) {
+        if (sSyncedDb != null) {
+            SynchronizedDb.printRefCount(msg, sSyncedDb.getUnderlyingDatabase());
+        }
+    }
+
+    /**
      * Cleanup a search string to remove all quotes etc.
      * <p>
      * Remove punctuation from the search string to TRY to match the tokenizer.
@@ -370,13 +428,18 @@ public class DAO
      *
      * @param search Search criteria to clean
      *
-     * @return Clean string
+     * @return Clean string, or {@code null} on empty input
      */
-    @NonNull
-    public static String cleanupFtsCriterion(@NonNull final String search) {
-        if (search.isEmpty()) {
-            return search;
+    @Nullable
+    private static String cleanupFtsCriterion(@Nullable String search) {
+        if (search == null || search.isEmpty()) {
+            return null;
         }
+
+        // Because FTS does not understand locales in all android up to 4.2,
+        // we do case folding here using the user preferred locale.
+        //TOMF: is this really needed? was done in BooklistBuilder, but not in #searchFts
+        search = search.toLowerCase(LocaleUtils.getPreferredLocal());
 
         // Output buffer
         final StringBuilder out = new StringBuilder();
@@ -422,60 +485,51 @@ public class DAO
     }
 
     /**
-     * DEBUG only.
+     * @param author   Author-related keywords to find
+     * @param title    Title-related keywords to find
+     * @param keywords Keywords to find anywhere in book
+     *
+     * @return an SQL query string suited to search FTS for the specified parameters,
+     * or {@code null} if all input was empty
      */
-    @SuppressWarnings("unused")
-    private static void debugAddInstance(@NonNull final DAO db) {
-        INSTANCES.add(new InstanceRefDebug(db));
-    }
+    public static String getFtsSearchSQL(@Nullable String author,
+                                         @Nullable String title,
+                                         @Nullable String keywords) {
 
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    private static void debugRemoveInstance(@NonNull final DAO db) {
-        Iterator<InstanceRefDebug> it = INSTANCES.iterator();
-        while (it.hasNext()) {
-            InstanceRefDebug ref = it.next();
-            DAO refDb = ref.get();
-            if (refDb == null) {
-                Logger.debug(DAO.class, "debugRemoveInstance",
-                             "**** Missing ref (not closed?) ****",
-                             ref.getCreationException());
-            } else {
-                if (refDb == db) {
-                    it.remove();
+        StringBuilder parameters = new StringBuilder();
+
+        keywords = cleanupFtsCriterion(keywords);
+        if (keywords !=null && !keywords.isEmpty()) {
+            parameters.append(keywords);
+        }
+
+        author = cleanupFtsCriterion(author);
+        if (author !=null && !author.isEmpty()) {
+            for (String w : author.split(" ")) {
+                if (!w.isEmpty()) {
+                    parameters.append(' ').append(DOM_FTS_AUTHOR_NAME).append(':').append(w);
                 }
             }
         }
-    }
 
-    /**
-     * DEBUG only.
-     */
-    @SuppressWarnings("unused")
-    public static void debugDumpInstances() {
-        for (InstanceRefDebug ref : INSTANCES) {
-            if (ref.get() == null) {
-                Logger.debug(DAO.class, "debugDumpInstances",
-                             "**** Missing ref (not closed?) ****",
-                             ref.getCreationException());
-            } else {
-                Logger.debug(DAO.class, "debugDumpInstances",
-                             ref.getCreationException());
+        title = cleanupFtsCriterion(title);
+        if (title != null && !title.isEmpty()) {
+            for (String w : title.split(" ")) {
+                if (!w.isEmpty()) {
+                    parameters.append(' ').append(DOM_TITLE).append(':').append(w);
+                }
             }
         }
-    }
 
-    /**
-     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
-     * there are still non-fatal anomalies.
-     */
-    @SuppressWarnings("unused")
-    public static void debugPrintReferenceCount(@Nullable final String msg) {
-        if (sSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg, sSyncedDb.getUnderlyingDatabase());
+        // do we have anything to search for?
+        if (parameters.length() == 0) {
+            return null;
         }
+
+        return "SELECT " + DOM_PK_DOCID
+                + " FROM " + TBL_BOOKS_FTS
+                + " WHERE " + TBL_BOOKS_FTS
+                + " MATCH '" + parameters.toString().trim() + '\'';
     }
 
     public void recreateTriggers() {
@@ -533,10 +587,7 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.debug(this,
-                         "close",
-                         "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
-            //debugRemoveInstance(this);
+            debugRemoveInstance(this);
         }
         mCloseWasCalled = true;
     }
@@ -2301,29 +2352,6 @@ public class DAO
         return list;
     }
 
-    /**
-     * Get a list of the series a book belongs to.
-     *
-     * @param bookId of the book
-     *
-     * @return list of series
-     */
-    @NonNull
-    public ArrayList<Series> getSeriesByBookId(final long bookId) {
-        ArrayList<Series> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
-            if (cursor.getCount() == 0) {
-                return list;
-            }
-            ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES, DOM_BOOK_SERIES_NUM);
-            while (cursor.moveToNext()) {
-                list.add(new Series(mapper.getLong(DOM_PK_ID), mapper));
-            }
-        }
-        return list;
-    }
-
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
      * So you never get a {@code null} object!
@@ -2355,6 +2383,29 @@ public class DAO
 //        }
 //        return null;
 //    }
+
+    /**
+     * Get a list of the series a book belongs to.
+     *
+     * @param bookId of the book
+     *
+     * @return list of series
+     */
+    @NonNull
+    public ArrayList<Series> getSeriesByBookId(final long bookId) {
+        ArrayList<Series> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
+            if (cursor.getCount() == 0) {
+                return list;
+            }
+            ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES, DOM_BOOK_SERIES_NUM);
+            while (cursor.moveToNext()) {
+                list.add(new Series(mapper.getLong(DOM_PK_ID), mapper));
+            }
+        }
+        return list;
+    }
 
     /**
      * Return the SQL for a list of all books in the database.
@@ -2817,7 +2868,6 @@ public class DAO
             return iId;
         }
     }
-
 
     /**
      * Delete a style.
@@ -3836,35 +3886,15 @@ public class DAO
      * @return a cursor, or {@code null} if all input was empty
      */
     @Nullable
-    public Cursor searchFts(@NonNull String author,
-                            @NonNull String title,
-                            @NonNull String keywords) {
-        author = cleanupFtsCriterion(author);
-        title = cleanupFtsCriterion(title);
-        keywords = cleanupFtsCriterion(keywords);
-
-        if ((author.length() + title.length() + keywords.length()) == 0) {
+    public Cursor searchFts(@NonNull final String author,
+                            @NonNull final String title,
+                            @NonNull final String keywords) {
+        String sql = getFtsSearchSQL(author, title, keywords);
+        if (sql == null) {
             return null;
         }
 
-        StringBuilder sql = new StringBuilder("SELECT " + DOM_PK_DOCID
-                                                      + " FROM " + TBL_BOOKS_FTS
-                                                      + " WHERE " + TBL_BOOKS_FTS
-                                                      + " MATCH '" + keywords);
-
-        for (String w : author.split(" ")) {
-            if (!w.isEmpty()) {
-                sql.append(' ').append(DOM_FTS_AUTHOR_NAME).append(':').append(w);
-            }
-        }
-        for (String w : title.split(" ")) {
-            if (!w.isEmpty()) {
-                sql.append(' ').append(DOM_TITLE).append(':').append(w);
-            }
-        }
-        sql.append('\'');
-
-        return sSyncedDb.rawQuery(sql.toString(), null);
+        return sSyncedDb.rawQuery(sql, null);
     }
 
     /**
@@ -3874,16 +3904,19 @@ public class DAO
             extends WeakReference<DAO> {
 
         @NonNull
-        private final Exception mCreationException;
+        private final Throwable mCreationStackTrace;
 
         InstanceRefDebug(@NonNull final DAO db) {
             super(db);
-            mCreationException = new RuntimeException();
+            mCreationStackTrace = new Throwable();
         }
 
+        @Override
         @NonNull
-        Exception getCreationException() {
-            return mCreationException;
+        public String toString() {
+            return "DAOInstanceRefDebug{"
+                    + "mCreationStackTrace=\n" + Log.getStackTraceString(mCreationStackTrace)
+                    + "\n}";
         }
     }
 

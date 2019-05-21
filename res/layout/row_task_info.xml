@@ -59,7 +59,7 @@
 
     <TextView
         android:id="@+id/retry_info"
-        style="@style/error_message"
+        style="@style/ErrorMessage"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="@id/description"
         app:layout_constraintStart_toStartOf="@id/description"
@@ -70,7 +70,7 @@
 
     <TextView
         android:id="@+id/error"
-        style="@style/error_message"
+        style="@style/ErrorMessage"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="@id/description"
         app:layout_constraintStart_toStartOf="@id/description"

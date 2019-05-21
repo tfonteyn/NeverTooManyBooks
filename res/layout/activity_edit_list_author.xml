@@ -11,7 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_detail_medium"
+        style="@style/TextDetail"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
@@ -32,7 +32,6 @@
         android:id="@+id/author"
         style="@style/personalNameTextEntry"
         android:layout_marginStart="@dimen/indent1"
-        android:completionThreshold="2"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toStartOf="@id/add"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +50,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
         app:layout_constraintStart_toStartOf="parent"/>

@@ -60,7 +60,10 @@ public abstract class BaseActivity
         // apply the user-preferred Locale to the configuration before super.onCreate
         LocaleUtils.applyPreferred(getResources());
         // apply the Theme before super.onCreate
-        setTheme(App.getThemeResId());
+        int theme = App.getThemeResId();
+        if (theme != App.THEME_DAY_NIGHT) {
+            setTheme(theme);
+        }
 
         super.onCreate(savedInstanceState);
 
@@ -97,6 +100,11 @@ public abstract class BaseActivity
 
     /**
      * When resuming, recreate activity if needed.
+     *
+     * TOMF:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
+     *
+     * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
+     *
      */
     @Override
     @CallSuper
@@ -115,8 +123,6 @@ public abstract class BaseActivity
 
         } else if (App.isRecreating()) {
             App.clearRecreateFlag();
-            //TOMF: destroy fragments and recreate them to!! (or force them to reload resources at least)
-
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "BaseActivity.onResume", "isRecreating");
             }
@@ -292,7 +298,11 @@ public abstract class BaseActivity
         // Trigger a recreate of this activity, if the setting has changed.
         switch (key) {
             case Prefs.pk_ui_theme:
-                if (App.applyTheme(this)) {
+                if (App.applyTheme()) {
+                    int theme = App.getThemeResId();
+                    if (theme != App.THEME_DAY_NIGHT) {
+                        setTheme(theme);
+                    }
                     recreate();
                     App.setIsRecreating();
                 }

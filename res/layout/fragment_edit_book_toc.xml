@@ -10,7 +10,7 @@
 
     <CheckBox
         android:id="@+id/is_anthology"
-        style="@style/editCheckbox"
+        style="@style/CheckboxEntry"
         android:text="@string/lbl_is_anthology"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
@@ -21,7 +21,7 @@
 
     <CheckBox
         android:id="@+id/multiple_authors"
-        style="@style/editCheckbox"
+        style="@style/CheckboxEntry"
         android:text="@string/lbl_toc_multiple_authors"
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
@@ -42,7 +42,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/multiple_authors"
@@ -52,7 +52,7 @@
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:fadeScrollbars="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

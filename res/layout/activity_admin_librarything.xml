@@ -11,7 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         />
 
     <androidx.core.widget.NestedScrollView
@@ -36,7 +36,7 @@
 
             <TextView
                 android:id="@+id/b1"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:text="@string/lt_info"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
@@ -45,7 +45,7 @@
 
             <TextView
                 android:id="@+id/register_url"
-                style="@style/link_url"
+                style="@style/Url"
                 android:layout_marginTop="@dimen/border1"
                 android:text="@string/lt_register_text"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +55,7 @@
 
             <TextView
                 android:id="@+id/dev_key_url"
-                style="@style/link_url"
+                style="@style/Url"
                 android:layout_marginTop="@dimen/border1"
                 android:text="@string/lt_dev_key_text"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +65,7 @@
 
             <TextView
                 android:id="@+id/b2"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:layout_marginTop="@dimen/border1"
                 android:text="@string/lt_got_key"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +99,7 @@
 
             <TextView
                 android:id="@+id/b3"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:text="@string/lt_reset_messages_info"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"

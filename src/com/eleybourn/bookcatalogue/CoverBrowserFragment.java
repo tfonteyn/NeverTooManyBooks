@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.viewmodels.CoverBrowserViewModel;
  * an image from a list to use as the (new) book cover image.
  * <p>
  * Will survive a rotation, but not a killed activity.
- * Uses setTargetFragment/getTargetFragment that can handle a {@link Fragment#onActivityResult}.
+ * Uses setTargetFragment/getTargetFragment and returns result to {@link Fragment#onActivityResult}.
  * <p>
  * ENHANCE: allow configuring search-sites on the fly
  * ENHANCE: For each edition, try to get TWO images from a different site each.

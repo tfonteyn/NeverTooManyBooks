@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <TextView
         android:id="@+id/lbl_family_name"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:labelFor="@id/family_name"
         android:text="@string/lbl_family_name"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +18,6 @@
     <AutoCompleteTextView
         android:id="@+id/family_name"
         style="@style/personalNameTextEntry"
-        android:completionThreshold="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
@@ -27,7 +26,7 @@
 
     <TextView
         android:id="@+id/lbl_given_names"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:labelFor="@id/given_names"
         android:text="@string/lbl_given_names"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +53,7 @@
 
     <TextView
         android:id="@+id/blurb"
-        style="@style/txt_blurb_medium"
+        style="@style/Blurb"
         android:layout_marginStart="@dimen/indent1"
         android:text="@string/warning_immediate_global_changes"
         app:layout_constraintEnd_toEndOf="parent"

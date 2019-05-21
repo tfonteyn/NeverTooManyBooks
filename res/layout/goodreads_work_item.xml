@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/coverImage"
-        style="@style/coverImage"
+        style="@style/CoverImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_detail_medium"
+        style="@style/TextDetail"
         android:layout_marginStart="@dimen/indent1"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/txt_detail_medium"
+        style="@style/TextDetail"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/title"

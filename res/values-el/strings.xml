@@ -642,7 +642,6 @@
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="lbl_update_day">Ημέρα ενημέρωσης</string>
 
-    <!-- Preference name (fairly short) for preferred language -->
     <string name="tab_lbl_content">περιεχόμενο</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

@@ -970,5 +970,9 @@
     <string name="book_format_digest">Heft</string>
     <string name="lbl_edition_first_impression">Erstauflage</string>
     <string name="info_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
+    <string name="none">Keiner</string>
+    <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
+    <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
+    <string name="menu_hide_keyboard">Tastatur ausblenden</string>
 
 </resources>

@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/lbl_author"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:labelFor="@id/author"
         android:text="@string/lbl_author"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
 
     <TextView
         android:id="@+id/lbl_title"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:labelFor="@id/title"
         android:text="@string/lbl_title"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
 
     <TextView
         android:id="@+id/lbl_isbn"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:labelFor="@id/isbn"
         android:text="@string/lbl_isbn"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +83,7 @@
 
     <View
         android:id="@+id/header_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
@@ -91,7 +91,7 @@
 
     <TextView
         android:id="@+id/lbl_search_text"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:text="@string/search_criteria"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
@@ -124,7 +124,7 @@
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/div_horizontal"
+        style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_search"

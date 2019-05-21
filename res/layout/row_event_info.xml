@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_detail_medium"
+        style="@style/TextDetail"
         android:layout_width="0dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/retry"
@@ -44,7 +44,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/txt_detail_medium"
+        style="@style/TextDetail"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"
@@ -55,7 +55,7 @@
 
     <TextView
         android:id="@+id/error"
-        style="@style/error_message"
+        style="@style/ErrorMessage"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"
@@ -66,7 +66,7 @@
 
     <TextView
         android:id="@+id/date"
-        style="@style/txt_detail_small"
+        style="@style/TextDetail.Small"
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"

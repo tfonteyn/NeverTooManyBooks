@@ -48,7 +48,8 @@
     <!-- Preference -->
     <string name="pt_ui_theme">Tema</string>
     <string-array name="pe_ui_theme">
-        <item>karanlık</item>
+        <item>Gündüz / Gece</item>
+        <item>Karanlık</item>
         <item>ışık</item>
         <item>ışık 2</item>
     </string-array>

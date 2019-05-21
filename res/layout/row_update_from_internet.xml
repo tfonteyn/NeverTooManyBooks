@@ -12,7 +12,7 @@
         Russian is the only exception where the second column can be split in two lines -->
     <TextView
         android:id="@+id/field"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:layout_width="0dp"
         app:layout_constraintEnd_toStartOf="@id/usage"
         app:layout_constraintHorizontal_weight="4"
@@ -24,7 +24,7 @@
 
     <CheckBox
         android:id="@+id/usage"
-        style="@style/lbl_textField"
+        style="@style/FieldLabel"
         android:layout_width="0dp"
         android:textStyle="italic"
         app:layout_constraintBaseline_toBaselineOf="@id/field"

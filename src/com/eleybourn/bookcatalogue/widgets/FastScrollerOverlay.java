@@ -278,6 +278,7 @@ public class FastScrollerOverlay
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean fastScrollerIsDragging(@NonNull final RecyclerView recyclerView) {
 
         try {

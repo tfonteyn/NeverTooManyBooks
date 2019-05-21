@@ -3,13 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <AutoCompleteTextView
         android:id="@+id/name"
-        style="@style/titleTextEntry"
-        android:completionThreshold="2"
+        style="@style/titleTextEntryAutoComplete"
         android:hint="@string/lbl_bookshelf"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -176,7 +176,7 @@ public class BookFragment
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize(imageSize.standard, imageSize.standard);
-        mCoverHandler = new CoverHandler(this, mDb,
+        mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
                                          mBookBaseFragmentModel.getBook(),
                                          mFields.getField(R.id.isbn).getView(), field.getView(),
                                          displaySizes.standard, displaySizes.standard);
@@ -201,7 +201,7 @@ public class BookFragment
         mFields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         mFields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
-               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()));
+               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getResources()));
 
         // defined, but handled manually
         mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
@@ -533,7 +533,7 @@ public class BookFragment
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
-                    mDb.deleteBook(book.getId());
+                    mBookBaseFragmentModel.getDb().deleteBook(book.getId());
                     activity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                     activity.finish();
                 });

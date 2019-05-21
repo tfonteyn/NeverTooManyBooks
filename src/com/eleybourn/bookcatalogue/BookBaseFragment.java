@@ -42,7 +42,6 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
@@ -57,7 +56,7 @@ import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
  * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
  * <p>
  * This class supports the loading of a book. See {@link #loadFields}.
- *
+ * <p>
  * BookBaseFragment -> BookFragment.
  * BookBaseFragment -> EditBookFragment.
  * BookBaseFragment -> EditBookBaseFragment -> EditBookFieldsFragment
@@ -70,9 +69,6 @@ import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 public abstract class BookBaseFragment
         extends Fragment
         implements DataViewer {
-
-    /** Database access. */
-    protected DAO mDb;
 
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookBaseFragmentModel;
@@ -119,8 +115,6 @@ public abstract class BookBaseFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mDb = new DAO();
 
         // Activity scope!
         //noinspection ConstantConditions
@@ -202,19 +196,6 @@ public abstract class BookBaseFragment
         if (!setAllFrom) {
             mFields.setAllFrom(mBookBaseFragmentModel.getBook());
         }
-    }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Fragment shutdown">
-
-    @Override
-    @CallSuper
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     //</editor-fold>

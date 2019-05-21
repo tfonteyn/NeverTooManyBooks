@@ -9,7 +9,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         />
 
     <androidx.core.widget.NestedScrollView
@@ -26,7 +26,7 @@
             >
 
             <TextView
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:layout_width="match_parent"
                 android:layout_marginStart="@dimen/indent1"
                 android:text="@string/gr_auth_blurb_part1"
@@ -34,7 +34,7 @@
 
             <TextView
                 android:id="@+id/goodreads_url"
-                style="@style/link_url"
+                style="@style/Url"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border2"
                 tools:ignore="SelectableText"
@@ -42,7 +42,7 @@
                 />
 
             <TextView
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:layout_width="match_parent"
                 android:layout_marginStart="@dimen/indent1"
                 android:text="@string/gr_auth_blurb_part2"
@@ -58,7 +58,7 @@
                 />
 
             <TextView
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:layout_width="match_parent"
                 android:layout_marginStart="@dimen/indent1"
                 android:text="@string/gr_auth_blurb_part3"
@@ -66,7 +66,7 @@
 
             <TextView
                 android:id="@+id/forget_blurb"
-                style="@style/txt_blurb_medium"
+                style="@style/Blurb"
                 android:layout_width="match_parent"
                 android:layout_marginStart="@dimen/indent1"
                 android:text="@string/gr_auth_blurb_part4"

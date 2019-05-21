@@ -2,13 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <AutoCompleteTextView
         android:id="@+id/name"
-        style="@style/titleTextEntry"
-        android:completionThreshold="2"
+        style="@style/titleTextEntryAutoComplete"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="2"
@@ -27,7 +26,7 @@
 
     <TextView
         android:id="@+id/blurb"
-        style="@style/txt_blurb_medium"
+        style="@style/Blurb"
         android:layout_marginStart="@dimen/indent1"
         android:text="@string/warning_immediate_global_changes"
         app:layout_constraintEnd_toEndOf="parent"

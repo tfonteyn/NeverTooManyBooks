@@ -265,19 +265,18 @@ public class UpdateFieldsFromInternetFragment
                                                    mFieldListView, false);
 
             TextView fieldLabel = row.findViewById(R.id.field);
-            //noinspection ConstantConditions
-            fieldLabel.setText(usage.getLabel(getContext()));
+            fieldLabel.setText(usage.getLabel(getResources()));
 
             CompoundButton cb = row.findViewById(R.id.usage);
             cb.setChecked(usage.isSelected());
-            cb.setText(usage.getUsageInfo(getContext()));
+            cb.setText(usage.getUsageInfo(getResources()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
                 // ENHANCE: The check is really a FOUR-state.
                 final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isSelected());
-                cb.setText(fieldUsage.getUsageInfo(getContext()));
+                cb.setText(fieldUsage.getUsageInfo(getResources()));
             });
 
             mFieldListView.addView(row);

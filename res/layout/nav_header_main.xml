@@ -14,11 +14,11 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/app_icon"
+        android:layout_height="@dimen/app_icon"
         android:contentDescription="@string/app_name"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/bc_launcher4"
+        android:src="@drawable/ic_bookshelf3"
         />
 
     <TextView
@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="@string/app_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:fontFamily="cursive"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         />
 </LinearLayout>

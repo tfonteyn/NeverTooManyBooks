@@ -8,7 +8,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dateSelector"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -22,7 +22,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_year"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_year"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,7 +30,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/plusYear"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="+"
             app:layout_constraintStart_toStartOf="@id/lbl_year"
             app:layout_constraintTop_toBottomOf="@id/lbl_year"
@@ -54,7 +54,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/minusYear"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="-"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_year"
@@ -70,7 +70,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_month"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_month"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -78,7 +78,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/plusMonth"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="+"
             app:layout_constraintStart_toStartOf="@id/lbl_month"
             app:layout_constraintTop_toBottomOf="@id/lbl_month"
@@ -98,7 +98,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/minusMonth"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="-"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_month"
@@ -114,7 +114,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <TextView
             android:id="@+id/lbl_day"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:text="@string/lbl_day"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -122,7 +122,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/plusDay"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="+"
             app:layout_constraintStart_toStartOf="@id/lbl_day"
             app:layout_constraintTop_toBottomOf="@id/lbl_day"
@@ -142,7 +142,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 
         <Button
             android:id="@+id/minusDay"
-            style="@style/partial_date_picker_buttons"
+            style="@style/PartialDatePickerButtons"
             android:text="-"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/lbl_day"

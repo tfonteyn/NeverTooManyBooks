@@ -39,11 +39,7 @@
     -->
     <TextView
         android:id="@+id/name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="false"
-        android:textStyle="bold"
+        style="BooklistBook.Section"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bullet"
         app:layout_constraintTop_toTopOf="parent"

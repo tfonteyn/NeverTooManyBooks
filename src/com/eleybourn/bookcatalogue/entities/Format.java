@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
-import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
@@ -43,18 +43,18 @@ public final class Format {
     }
 
     /**
-     * Tries to map website terminology to our own localised.
+     * Try to map website terminology to our own localised.
      *
-     * @param context Current context
+     * @param resources Current context
      * @param source  string to map
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public static String map(@NonNull final Context context,
+    public static String map(@NonNull final Resources resources,
                              @NonNull final String source) {
 
         Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getSystemLocale()));
-        return resId != null ? context.getString(resId)
+        return resId != null ? resources.getString(resId)
                              : source;
     }
 }

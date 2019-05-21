@@ -22,6 +22,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.FTSSearchActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -336,25 +337,30 @@ public class BooksOnBookshelfModel
             bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                                           false);
+
+            if (mSearchCriteria.hasIdList()) {
+                // if we have a list of id's, ignore other criteria.
+                // Meant to display the results from FTSSearchActivity directly.
+                bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
+
+            } else {
+                // always limit to the current bookshelf.
+                bookListBuilder.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+
+                // Criteria supported by FTS
+                bookListBuilder.setFilter(mSearchCriteria.ftsAuthor,
+                                          mSearchCriteria.ftsTitle,
+                                          mSearchCriteria.getKeywords());
+
+                // non-FTS
+                bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
+                bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
+            }
+
         }
 
-        // always limit to one bookshelf.
-        bookListBuilder.setFilterOnBookshelfId(mCurrentBookshelf.getId());
-
-        // Use current criteria
-        bookListBuilder.setFilterOnText(mSearchCriteria.getText());
-        bookListBuilder.setFilterOnTitle(mSearchCriteria.title);
-        bookListBuilder.setFilterOnAuthorName(mSearchCriteria.author);
-        bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
-        bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
-
-        bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
-
-
-        BuilderHolder builderHolder = new BuilderHolder(mListCursor, mCurrentPositionedBookId,
-                                                        mRebuildState);
-
-        new GetBookListTask(builderHolder, bookListBuilder, isFullRebuild,
+        new GetBookListTask(bookListBuilder, isFullRebuild,
+                            mListCursor, mCurrentPositionedBookId, mRebuildState,
                             mOnGetBookListTaskListener)
                 .execute();
     }
@@ -370,109 +376,93 @@ public class BooksOnBookshelfModel
 
     /**
      * Holder class for search criteria with some methods to bulk manipulate them.
-     * <p>
-     * All individual criteria are supported by the {@link BooklistBuilder},
-     * but not necessarily in {@link BooksOnBookshelf}.
-     * <p>
-     * Only some are supported by
-     * {@link com.eleybourn.bookcatalogue.entities.Book}#onSearchRequested()}.
      */
     public static class SearchCriteria {
 
         /**
-         * Author to use in search query.
-         * Supported in the builder, but not in this class yet.
+         * List of bookId's to display. The RESULT of a search with {@link FTSSearchActivity}
+         * which can be re-used for the builder.
          */
         @Nullable
-        public
-        String author = "";
+        ArrayList<Integer> bookList;
+
         /**
-         * Title to use in search query.
-         * Supported in the builder, but not in this class yet.
+         * Author to use in FTS search query.
+         * Supported in the builder and {@link FTSSearchActivity}.
          */
         @Nullable
-        public
-        String title = "";
+        String ftsAuthor;
+
+        /**
+         * Title to use in FTS search query.
+         * Supported in the builder and {@link FTSSearchActivity}.
+         */
+        @Nullable
+        String ftsTitle;
+
         /**
          * Series to use in search query.
-         * Supported in the builder, but not in this class yet.
+         * Supported in the builder, but not user-settable yet.
          */
         @Nullable
-        public
-        String series = "";
+        String series;
+
         /**
          * Name of the person we loaned books to, to use in search query.
-         * Supported in the builder, but not in this class yet.
+         * Supported in the builder, but not user-settable yet.
          */
-        @SuppressWarnings("WeakerAccess")
         @Nullable
-        public
-        String loanee = "";
+        String loanee;
+
         /**
-         * List of bookId's to display. The result of a search.
-         */
-        @SuppressWarnings("WeakerAccess")
-        @Nullable
-        public
-        ArrayList<Integer> bookList;
-        /**
-         * Text to use in search query.
+         * Keywords to use in FTS search query.
+         * Supported in the builder and {@link FTSSearchActivity}.
          * <p>
-         * Always use the setter!
+         * Always use the setter as we need to intercept the "." character.
          */
-        @NonNull
-        private String mText = "";
+        @Nullable
+        private String ftsKeywords;
 
         public void clear() {
-            mText = "";
-            author = "";
-            title = "";
-            series = "";
-            loanee = "";
+            ftsKeywords = null;
+            ftsAuthor = null;
+            ftsTitle = null;
+            series = null;
+            loanee = null;
             bookList = null;
         }
 
-        @NonNull
-        public String getText() {
-            return mText;
+
+        @Nullable
+        public String getKeywords() {
+            return ftsKeywords;
         }
 
-        public void setText(@Nullable final String text) {
-            if (text == null || text.isEmpty() || ".".equals(text)) {
-                mText = "";
+        public void setKeywords(@Nullable final String keywords) {
+            if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
+                ftsKeywords = null;
             } else {
-                mText = text;
+                ftsKeywords = keywords;
             }
         }
 
         public void from(@NonNull final Bundle bundle) {
-            if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
-                setText(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
-            }
-            if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
-                author = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            }
-            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
-                title = bundle.getString(DBDefinitions.KEY_TITLE);
-            }
-            if (bundle.containsKey(DBDefinitions.KEY_SERIES)) {
-                series = bundle.getString(DBDefinitions.KEY_SERIES);
-            }
-            if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
-                loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
-            }
-            if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
-                bookList = bundle.getIntegerArrayList(UniqueId.BKEY_ID_LIST);
-            }
+            clear();
+            setKeywords(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
+            ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
+            series = bundle.getString(DBDefinitions.KEY_SERIES);
+            loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
+            bookList = bundle.getIntegerArrayList(UniqueId.BKEY_ID_LIST);
         }
 
         /**
          * @param intent which will be used for a #startActivityForResult call
          */
         public void to(@NonNull final Intent intent) {
-            intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, mText)
-                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author)
-                  .putExtra(DBDefinitions.KEY_TITLE, title)
+            intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
+                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
+                  .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
                   .putExtra(DBDefinitions.KEY_SERIES, series)
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
@@ -482,21 +472,25 @@ public class BooksOnBookshelfModel
          * @param outState from a #onSaveInstanceState
          */
         public void to(final Bundle outState) {
-            outState.putString(UniqueId.BKEY_SEARCH_TEXT, mText);
-            outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
-            outState.putString(DBDefinitions.KEY_TITLE, title);
+            outState.putString(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords);
+            outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor);
+            outState.putString(DBDefinitions.KEY_TITLE, ftsTitle);
             outState.putString(DBDefinitions.KEY_SERIES, series);
             outState.putString(DBDefinitions.KEY_LOANEE, loanee);
             outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
         }
 
         public boolean isEmpty() {
-            return mText.isEmpty()
-                    && (author == null || author.isEmpty())
-                    && (title == null || title.isEmpty())
+            return (ftsKeywords == null || ftsKeywords.isEmpty())
+                    && (ftsAuthor == null || ftsAuthor.isEmpty())
+                    && (ftsTitle == null || ftsTitle.isEmpty())
                     && (series == null || series.isEmpty())
                     && (loanee == null || loanee.isEmpty())
                     && (bookList == null || bookList.isEmpty());
+        }
+
+        public boolean hasIdList() {
+            return bookList != null && !bookList.isEmpty();
         }
     }
 
@@ -520,6 +514,8 @@ public class BooksOnBookshelfModel
         @NonNull
         private final BuilderHolder mHolder;
         private final int mTaskId = R.id.TASK_ID_GET_BOOKLIST;
+        @Nullable
+        private final BooklistPseudoCursor mCurrentListCursor;
         private final WeakReference<TaskListener<Object, BuilderHolder>> mTaskListener;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
@@ -536,21 +532,30 @@ public class BooksOnBookshelfModel
         /**
          * Constructor.
          *
-         * @param builderHolder   holder class with input fields / results.
-         * @param bookListBuilder the builder
-         * @param isFullRebuild   Indicates whole table structure needs rebuild,
-         * @param taskListener    TaskListener
+         * @param bookListBuilder         the builder
+         * @param isFullRebuild           Indicates whole table structure needs rebuild,
+         * @param currentListCursor       Current displayed list cursor.
+         * @param currentPositionedBookId Current position in the list.
+         * @param rebuildState            Requested list state (expanded,collapsed, preserved)
+         * @param taskListener            TaskListener
          */
         @UiThread
-        private GetBookListTask(@NonNull final BuilderHolder builderHolder,
-                                @NonNull final BooklistBuilder bookListBuilder,
-                                final boolean isFullRebuild,
-                                @NonNull final TaskListener<Object, BuilderHolder> taskListener) {
+        GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
+                        final boolean isFullRebuild,
+                        @Nullable final BooklistPseudoCursor currentListCursor,
+
+                        final long currentPositionedBookId,
+                        final int rebuildState,
+                        final TaskListener<Object, BuilderHolder> taskListener) {
 
             mTaskListener = new WeakReference<>(taskListener);
-            mIsFullRebuild = isFullRebuild;
+
             mBooklistBuilder = bookListBuilder;
-            mHolder = builderHolder;
+            mIsFullRebuild = isFullRebuild;
+            mCurrentListCursor = currentListCursor;
+
+            // input/output fields for the task.
+            mHolder = new BuilderHolder(currentPositionedBookId, rebuildState);
         }
 
         /** Try to sync the previously selected book ID. */
@@ -562,8 +567,8 @@ public class BooksOnBookshelfModel
                         .getBookAbsolutePositions(mHolder.currentPositionedBookId);
 
                 if (targetRows != null && !targetRows.isEmpty()) {
-                    // First, get the ones that are currently visible... 30 should do in most cases.
-                    ArrayList<BooklistBuilder.BookRowInfo> visRows = new ArrayList<>(30);
+                    // First, get the ones that are currently visible...
+                    ArrayList<BooklistBuilder.BookRowInfo> visRows = new ArrayList<>();
                     for (BooklistBuilder.BookRowInfo i : targetRows) {
                         if (i.visible) {
                             visRows.add(i);
@@ -617,7 +622,7 @@ public class BooksOnBookshelfModel
                     t0 = System.nanoTime();
                 }
                 // Build the underlying data
-                if (mHolder.oldListCursor != null && !mIsFullRebuild) {
+                if (mCurrentListCursor != null && !mIsFullRebuild) {
                     mBooklistBuilder.rebuild();
                 } else {
                     mBooklistBuilder.build(mHolder.rebuildState, mHolder.currentPositionedBookId);
@@ -663,6 +668,7 @@ public class BooksOnBookshelfModel
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     t4 = System.nanoTime();
                 }
+                // pre-fetch this count
                 mHolder.resultUniqueBooks = tempListCursor.getUniqueBookCount();
 
                 if (isCancelled()) {
@@ -673,6 +679,7 @@ public class BooksOnBookshelfModel
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     t5 = System.nanoTime();
                 }
+                // pre-fetch this count
                 mHolder.resultTotalBooks = tempListCursor.getBookCount();
 
                 long t6;
@@ -731,12 +738,11 @@ public class BooksOnBookshelfModel
         @AnyThread
         private void cleanup() {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "cleanup",
-                             "exception=" + mException);
+                Logger.debug(this, "cleanup", "exception=" + mException);
             }
-            if (tempListCursor != null && tempListCursor != mHolder.oldListCursor) {
-                if (mHolder.oldListCursor == null
-                        || (tempListCursor.getBuilder() != mHolder.oldListCursor.getBuilder())) {
+            if (tempListCursor != null && tempListCursor != mCurrentListCursor) {
+                if (mCurrentListCursor == null
+                        || (tempListCursor.getBuilder() != mCurrentListCursor.getBuilder())) {
                     tempListCursor.getBuilder().close();
                 }
                 tempListCursor.close();
@@ -773,35 +779,43 @@ public class BooksOnBookshelfModel
     /** value class for the Builder. */
     public static class BuilderHolder {
 
-        /** input field. */
-        @Nullable
-        final BooklistPseudoCursor oldListCursor;
-
         /** input/output field. */
         long currentPositionedBookId;
         /** input/output field. */
         int rebuildState;
 
-        /** output field. */
-        int resultTotalBooks;
-        /** output field. */
-        int resultUniqueBooks;
-
-        /** Resulting Cursor; can be {@code null} if the list did not get build. */
+        /**
+         * Resulting Cursor; can be {@code null} if the list did not get build.
+         */
         @Nullable
         BooklistPseudoCursor resultListCursor;
-        /** used to determine new cursor position; can be {@code null}. */
+
+        /**
+         * output field. Pre-fetched from the resultListCursor.
+         * {@link BooklistPseudoCursor#getBookCount()}
+         * Should be ignored if resultListCursor is {@code null}
+         */
+        int resultTotalBooks;
+        /**
+         * output field. Pre-fetched from the resultListCursor.
+         * {@link BooklistPseudoCursor#getUniqueBookCount()}
+         * Should be ignored if resultListCursor is {@code null}
+         */
+        int resultUniqueBooks;
+
+        /**
+         * output field. Used to determine new cursor position; can be {@code null}.
+         * Should be ignored if resultListCursor is {@code null}
+         */
         @Nullable
         ArrayList<BooklistBuilder.BookRowInfo> resultTargetRows;
 
         /**
          * Constructor: these are the fields we need as input.
          */
-        BuilderHolder(@Nullable final BooklistPseudoCursor oldListCursor,
-                      final long currentPositionedBookId,
+        BuilderHolder(final long currentPositionedBookId,
                       final int rebuildState) {
             this.currentPositionedBookId = currentPositionedBookId;
-            this.oldListCursor = oldListCursor;
             this.rebuildState = rebuildState;
         }
 
@@ -819,7 +833,6 @@ public class BooksOnBookshelfModel
         @NonNull
         public String toString() {
             return "BuilderHolder{"
-                    + "oldListCursor=" + oldListCursor
                     + ", currentPositionedBookId=" + currentPositionedBookId
                     + ", rebuildState=" + rebuildState
                     + ", resultTotalBooks=" + resultTotalBooks

@@ -19,7 +19,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/txt_detail_large"
+            style="@style/TextDetail.Large"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SelectableText"
@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/author"
-            style="@style/txt_detail_medium"
+            style="@style/TextDetail"
             android:layout_marginStart="@dimen/indent2"
             android:layout_marginBottom="@dimen/border1"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
 
         <TextView
             android:id="@+id/select_fields_blurb"
-            style="@style/txt_blurb_small"
+            style="@style/Blurb.Small"
             android:layout_marginStart="@dimen/indent2"
             android:text="@string/info_select_fields_to_update"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +52,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fillViewport="true"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:fadeScrollbars="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -101,6 +101,11 @@ public class BookBaseFragmentModel
         mIsDirty = isDirty;
     }
 
+    @NonNull
+    public DAO getDb() {
+        return mDb;
+    }
+
     public Book getBook() {
         return mBook;
     }

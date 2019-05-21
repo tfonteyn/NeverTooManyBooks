@@ -43,7 +43,7 @@ public class ISFDBBook
     private static final String BOOK_URL = "/cgi-bin/pl.cgi?%1$s";
     /**
      * ISFDB extra fields in the results for potential future usage.
-     * ENHANCE: pass and store these ISFBD id's
+     * ENHANCE: pass and store these ISFDB id's
      */
 //    private static final String ISFDB_BKEY_AUTHOR_ID = "__ISFDB_AUTHORS_ID";
 //    private static final String ISFDB_BKEY_SERIES_ID = "__ISFDB_SERIES_ID";
@@ -97,12 +97,14 @@ public class ISFDBBook
         TYPE_MAP.put("COLLECTION", TocEntry.Authors.MULTIPLE_WORKS);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("anth",
+                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
         TYPE_MAP.put("ANTHOLOGY",
                      TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni", TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("omni",
+                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
         TYPE_MAP.put("OMNIBUS",
                      TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
@@ -136,7 +138,7 @@ public class ISFDBBook
     @Nullable
     private String mFirstPublication;
 
-    //ENHANCE: pass and store these ISFBD id's?
+    //ENHANCE: pass and store these ISFDB id's?
 //    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
 //    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
 
@@ -257,7 +259,7 @@ public class ISFDBBook
                     if (as != null) {
                         for (Element a : as) {
                             mAuthors.add(Author.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFBD id's
+                            //ENHANCE: pass and store these ISFDB id's
 //                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
@@ -284,7 +286,7 @@ public class ISFDBBook
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     //tmp = li.childNode(3).attr("href");
-                    //ENHANCE: pass and store these ISFBD id's
+                    //ENHANCE: pass and store these ISFDB id's
                     //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
@@ -295,7 +297,7 @@ public class ISFDBBook
                     if (as != null) {
                         for (Element a : as) {
                             mSeries.add(Series.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFBD id's
+                            //ENHANCE: pass and store these ISFDB id's
 //                            ISFDB_BKEY_SERIES_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
@@ -344,7 +346,7 @@ public class ISFDBBook
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(DBDefinitions.KEY_FORMAT,
                                        //TODO: do not use Application Context for String resources
-                                       Format.map(App.getAppContext(), tmp));
+                                       Format.map(App.getAppContext().getResources(), tmp));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
@@ -398,7 +400,7 @@ public class ISFDBBook
 
         // store accumulated ArrayList's
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        //ENHANCE: pass and store these ISFBD id's
+        //ENHANCE: pass and store these ISFDB id's
 //        bookData.putParcelableArrayList(ISFDB_BKEY_AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
 //        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
 

@@ -944,11 +944,14 @@
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="error_database_upgrade_failed">
-        Kan niet upgraden vanaf een versie ouder dan 4.0.0
+        Upgraden vanaf een versie ouder dan 4.0.0 is niet ondersteunt
     </string>
     <string name="X_events_found">%1$d gebeurtenissen gevonden</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
     <string name="menu_hide_keyboard">Toetsenbord verbergen</string>
+    <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
+    <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
+    <string name="none">Geen</string>
 </resources>

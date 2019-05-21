@@ -94,6 +94,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
+import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -316,6 +317,8 @@ public class BooksOnBookshelf
         mListView.setLayoutManager(mLinearLayoutManager);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, mLinearLayoutManager.getOrientation()));
+        mListView.addItemDecoration(
+                new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
 
         // details for the header of the list.
         mBookCountView = findViewById(R.id.book_count);
@@ -353,8 +356,8 @@ public class BooksOnBookshelf
             // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
             searchText = getIntent().getDataString();
         }
-        mModel.getSearchCriteria().setText(searchText);
-        initSearchField(mModel.getSearchCriteria().getText());
+        mModel.getSearchCriteria().setKeywords(searchText);
+        initSearchField(mModel.getSearchCriteria().getKeywords());
     }
 
     @Override
@@ -1217,7 +1220,7 @@ public class BooksOnBookshelf
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             mModel.getSearchCriteria().from(extras);
-                            initSearchField(mModel.getSearchCriteria().getText());
+                            initSearchField(mModel.getSearchCriteria().getKeywords());
                         }
                         mModel.setForceRebuild(true);
                     }
@@ -1536,9 +1539,9 @@ public class BooksOnBookshelf
      *
      * @param searchText the text which was used for the search (if any).
      */
-    void initSearchField(@NonNull final String searchText) {
+    void initSearchField(@Nullable final String searchText) {
         TextView searchTextView = findViewById(R.id.search_text);
-        if (searchText.isEmpty()) {
+        if (searchText == null || searchText.isEmpty()) {
             searchTextView.setVisibility(View.GONE);
         } else {
             searchTextView.setVisibility(View.VISIBLE);

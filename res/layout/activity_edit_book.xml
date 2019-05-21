@@ -30,7 +30,7 @@
         -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
-            style="@style/floatingActionButton"
+            style="@style/FloatingActionButton"
             android:visibility="gone"
             />
 
@@ -38,7 +38,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        style="@style/nav_view"
+        style="@style/NavigationView"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/nav_view"
         />

@@ -128,7 +128,7 @@ public class SynchronizedDb {
 //                    }
 
                 }
-            } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 // already in debug block
                 Logger.error(SynchronizedDb.class, e);
             }

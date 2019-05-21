@@ -11,7 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar"
+        style="@style/Toolbar"
         app:layout_scrollFlags="scroll|enterAlways"
         />
 </com.google.android.material.appbar.AppBarLayout>

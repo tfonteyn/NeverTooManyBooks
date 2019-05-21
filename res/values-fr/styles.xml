@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Simple; Generic single-line fields -->
+    <style name="simpleTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">textCapSentences</item>
+    </style>
+
+    <!-- Simple; Generic multi-line fields -->
+    <style name="multiLineTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+    </style>
+
+    <!-- AutoComplete; Generic fields -->
+    <style name="autoCompleteTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapSentences</item>
+    </style>
+
+    <!-- ....................................................................................... -->
+
+    <!-- AutoComplete; Fields for 'human' names. e.g. Author, Publisher, ... -->
+    <style name="personalNameTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/Edit.Text" />
+
+    <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntryAutoComplete" parent="@style/Edit.AutoCompleteText">
+    </style>
+
+    <!-- ....................................................................................... -->
+
+    <!-- AutoComplete; The language field. -->
+    <style name="languageTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- AutoComplete; The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/Edit.AutoCompleteText" />
+
+    <!-- The price (listed, paid, ... ) fields. -->
+    <style name="priceTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+
+
+</resources>
+

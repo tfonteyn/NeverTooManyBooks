@@ -3,13 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialog_frame"
+    style="@style/DialogFrame"
     >
 
     <AutoCompleteTextView
         android:id="@+id/series"
-        style="@style/titleTextEntry"
-        android:completionThreshold="2"
+        style="@style/titleTextEntryAutoComplete"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toStartOf="@id/series_num"
         app:layout_constraintHorizontal_weight="2"
@@ -19,7 +18,7 @@
 
     <EditText
         android:id="@+id/series_num"
-        style="@style/seriesNumberEntry"
+        style="@style/Edit.Text.SeriesNumber"
         app:layout_constraintBaseline_toBaselineOf="@id/series"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"

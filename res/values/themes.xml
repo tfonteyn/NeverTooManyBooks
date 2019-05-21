@@ -5,11 +5,51 @@
     https://developer.android.com/reference/android/R.styleable.html#Theme
     -->
 
+    <style name="SplashScreen" parent="Theme.AppCompat">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+
+        <item name="android:layout_width">320dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">32dp</item>
+        <item name="android:background">@drawable/border</item>
+    </style>
+
     <!-- Specific Theme for full screen usage. -->
-    <style name="AppTheme.FullScreen" parent="AppTheme.Dark">
+    <style name="AppTheme.FullScreen" parent="Theme.AppCompat">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+
+    <!-- ================ -->
+    <!-- Day/Night theme. -->
+    <!-- ================ -->
+    <style name="AppTheme.DayNight" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+        <!-- ==================== -->
+        <!-- Application specific -->
+        <!-- ==================== -->
+
+        <item name="border_color">@color/blue_grey_600</item>
+        <item name="checked_icon_tint">@color/green_a700</item>
+        <item name="completed_icon_tint">@color/amber_a700</item>
+
+        <!-- ============================ -->
+        <!-- Theme Color palette -->
+        <!-- ============================ -->
+
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/blue_a200</item>
+
+    </style>
+
 
     <!-- =========== -->
     <!-- Dark theme. -->
@@ -28,14 +68,8 @@
         <!-- Theme Color palette -->
         <!--  =========================== -->
 
-        <!-- The primary branding color for the app. By default, this is the color applied to the
-            action bar background. -->
         <item name="colorPrimary">@color/blue_500</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-            the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
         <item name="colorPrimaryDark">@color/blue_700</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-             to framework controls (via colorControlActivated). -->
         <item name="colorAccent">@color/blue_a200</item>
 
     </style>

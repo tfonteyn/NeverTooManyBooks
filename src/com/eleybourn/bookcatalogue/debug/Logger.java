@@ -101,7 +101,7 @@ public final class Logger {
      */
     public static void warnWithStackTrace(@NonNull final Object object,
                                           @NonNull final Object... params) {
-        Throwable e = new RuntimeException();
+        Throwable e = new Throwable();
         String msg = concat(params);
         writeToLog(WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
@@ -159,7 +159,7 @@ public final class Logger {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag(object),
                   Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params),
-                  new RuntimeException());
+                  new Throwable());
         }
     }
 

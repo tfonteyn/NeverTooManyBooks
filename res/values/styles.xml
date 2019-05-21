@@ -5,17 +5,7 @@
     <!-- Page section headers -->
     <!-- *************************************************************************************** -->
 
-    <style name="majorSectionHeader">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border2</item>
-        <item name="android:layout_marginBottom">@dimen/border1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="sectionHeader">
+    <style name="SectionHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/border2</item>
@@ -25,15 +15,12 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <!-- section header for grouped menu settings -->
-    <style name="menuSectionHeader">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/border1</item>
-        <item name="android:layout_marginBottom">@dimen/border1</item>
+    <style name="SectionHeader.Large">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="SectionHeader.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -41,7 +28,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- basic horizontal divider line -->
-    <style name="div_horizontal">
+    <style name="SectionDivider">
         <item name="android:layout_width">0dp</item>
         <!-- reminder: don't set layout_height to wrap_content, will CF the layout -->
         <item name="android:layout_height">1dp</item>
@@ -55,7 +42,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- generic field labels where the data is below the label -->
-    <style name="lbl_textField">
+    <style name="FieldLabel" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -63,7 +50,7 @@
     </style>
 
     <!-- generic field labels where the data is on the side of the label -->
-    <style name="lbl_textField_inline" parent="@style/lbl_textField">
+    <style name="FieldLabel.Inline">
         <item name="android:paddingEnd">@dimen/indent1</item>
     </style>
 
@@ -71,25 +58,22 @@
     <!-- Generic TextView with user-data in 3 sizes -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_txt_detail">
+    <!-- 'medium' detail text field; for example series title, ... -->
+    <style name="TextDetail" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- 'major' detail text field; for example the book title -->
-    <style name="txt_detail_large" parent="base_txt_detail">
+    <style name="TextDetail.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textStyle">italic</item>
     </style>
 
-    <!-- 'medium' detail text field; for example series title, ... -->
-    <style name="txt_detail_medium" parent="base_txt_detail">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
     <!-- 'minor' detail text field; for example format, isbn,... -->
-    <style name="txt_detail_small" parent="base_txt_detail">
+    <style name="TextDetail.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -97,42 +81,47 @@
     <!-- Information (blurb) TextView fields -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_txt_blurb">
+    <!-- informational piece of text -->
+    <style name="Blurb" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">@dimen/indent3</item>
-    </style>
-
-    <!-- informational piece of text -->
-    <style name="txt_blurb_medium" parent="base_txt_blurb">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- informational piece of text -->
-    <style name="txt_blurb_small" parent="base_txt_blurb">
+    <style name="Blurb.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- EditText fields - not to be localized! -->
+    <!-- EditText fields -->
     <!-- *************************************************************************************** -->
 
-    <!-- base style for all EditFields; not to be used directly in layouts -->
-    <style name="base_editorField">
+    <!-- base style for all EditText; not to be used directly in layouts. -->
+    <style name="Edit.Text" parent="Widget.AppCompat.EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:hint">@string/field_not_set</item>
     </style>
 
-    <style name="seriesNumberEntry" parent="@style/base_editorField">
+    <!-- base style for all AutoCompleteTextView; not to be used directly in layouts. -->
+    <style name="Edit.AutoCompleteText" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:hint">@string/field_not_set</item>
+    </style>
+
+    <style name="Edit.Text.SeriesNumber">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:inputType">text</item>
         <item name="android:singleLine">true</item>
     </style>
 
     <!-- International three character currency code (uppercase) -->
-    <style name="currencyTextEntry" parent="@style/base_editorField">
+    <style name="Edit.Text.Currency">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
@@ -145,62 +134,60 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
-    <style name="editCheckbox" parent="@style/base_editorField">
-        <item name="android:layout_height">@dimen/edit_text_height</item>
-    </style>
-
-    <!-- *not to be localised* button with 'data' displayed on it,
-            a click leads to a screen/dialog to edit that data -->
-    <style name="buttonDataEntry" parent="@style/base_editorField" />
-
-    <style name="isbnEntry">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="Edit.Text.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="android:digits">1234567890xX</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
     </style>
 
-    <!-- *************************************************************************************** -->
-    <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
-    <!-- *************************************************************************************** -->
+    <style name="Edit.Text.Isbn.Large">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:layout_margin">@dimen/border2</item>
+    </style>
 
-    <style name="base_iconButton">
+    <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
+    <style name="CheckboxEntry" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/edit_text_height</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Button with 'data' displayed on it; a click leads to a screen/dialog to edit that data -->
+    <style name="DataEntryButton" parent="Widget.AppCompat.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:hint">@string/field_not_set</item>
+    </style>
+
+    <style name="DropDownMenu">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:padding">@dimen/border2</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:focusable">true</item>
-    </style>
-
-    <style name="dropDownMenuButton" parent="@style/base_iconButton">
         <item name="android:src">@drawable/ic_arrow_drop_down</item>
-    </style>
-
-    <style name="itemEditMenuButton" parent="@style/base_iconButton">
-        <item name="android:src">@drawable/ic_edit</item>
     </style>
 
     <!-- *************************************************************************************** -->
     <!-- Rows in a list -->
     <!-- *************************************************************************************** -->
 
-    <style name="base_row_button">
+    <!-- Some sort of button in a row; not to be used directly in layouts -->
+    <style name="RowButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/border2</item>
     </style>
 
     <!-- CheckBox - editable checkbox with custom icon -->
-    <style name="row_checkable_button" parent="@style/base_row_button">
+    <style name="RowButton.Checkable">
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:button">?android:attr/textCheckMark</item>
     </style>
 
     <!-- ImageButton - 'delete this row' -->
-    <style name="row_delete_button" parent="@style/base_row_button">
+    <style name="RowButton.Delete">
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
@@ -209,35 +196,35 @@
     </style>
 
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
-    <style name="row_drag_handle" parent="@style/base_row_button">
+    <style name="RowButton.DragHandle">
         <item name="android:src">@drawable/ic_reorder</item>
     </style>
 
-    <!-- the details part of the row in a list row. -->
-    <style name="row_details_section">
+    <!-- LinearLayout/ConstraintLayout - the details part of the row in a list row. -->
+    <style name="RowTextSection">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:focusable">false</item>
         <item name="android:orientation">vertical</item>
     </style>
 
-    <!-- the first/top row inside a list details row. -->
-    <style name="row_details_txt_major">
+    <!-- a row inside a list details row; not to be used directly in layouts -->
+    <style name="RowTextLine" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:singleLine">true</item>
         <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
-    <!-- the second/.. rows inside a RecyclerView details row. -->
-    <style name="row_details_txt_minor">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+
+    <!-- Primary row inside a list details row. -->
+    <style name="RowTextLine.Primary">
+        <item name="android:textAppearance">?android:attr/textAppearanceListItem</item>
+    </style>
+
+    <!-- Secondary rows inside a list details row. -->
+    <style name="RowTextLine.Secondary">
+        <item name="android:textAppearance">?android:attr/textAppearanceListItemSecondary</item>
         <!-- indent a bit -->
         <item name="android:layout_marginStart">@dimen/indent2</item>
     </style>
@@ -247,55 +234,51 @@
     <!-- *************************************************************************************** -->
 
     <!-- Clickable row in a list. Flashes when clicked. -->
-    <style name="row_option">
+    <style name="OptionRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border1</item>
-        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Menu label for options in a list -->
-    <style name="row_option_menu" parent="@style/row_option">
+    <style name="OptionRow.Menu">
         <item name="android:padding">@dimen/border2</item>
         <item name="android:drawablePadding">@dimen/border3</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
-    <style name="row_option_checkable" parent="@style/row_option">
+    <style name="OptionRow.Checkable">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Used for a dedicated 'help' TextView associated with an option -->
-    <style name="row_option_blurb">
+    <style name="OptionRow.Blurb">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border1</item>
         <item name="android:paddingStart">@dimen/indent_compound_button</item>
         <item name="android:paddingEnd">0dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
+
     <!-- *************************************************************************************** -->
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
 
-    <!-- base style for all Cover image fields; not to be used directly in layouts -->
-    <style name="base_cover_image">
+    <!-- Cover image; actual size is always set from code. -->
+    <style name="CoverImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border1</item>
         <item name="android:background">@drawable/border</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:contentDescription">@string/lbl_cover</item>
     </style>
 
-    <!-- normal size; actual size set from code. -->
-    <style name="coverImage" parent="@style/base_cover_image">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/border1</item>
-    </style>
-
     <!-- full screen zoomed -->
-    <style name="zoomedCoverImage" parent="@style/base_cover_image">
+    <style name="CoverImage.Zoomed">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>
@@ -304,29 +287,64 @@
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
 
-    <!-- level 1/2 text in the header on the booklist activity -->
-    <style name="booklist_header_level_text">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent2</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <!-- Booklist book row fields; level 1,2,3 are kept in their layout files -->
-    <style name="booklist_book_row">
+    <!-- Booklist; not to be used directly in layouts -->
+    <style name="BooklistBook">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
         <item name="android:layout_marginEnd">@dimen/indent1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textIsSelectable">false</item>
     </style>
 
+    <!-- level 1/2 text in the header on the booklist activity -->
+    <style name="BooklistBook.Header">
+        <item name="android:layout_marginStart">@dimen/indent2</item>
+        <item name="android:layout_marginEnd">@dimen/indent2</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="BooklistBook.Header.Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="BooklistBook.Section">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="BooklistBook.Section.Large">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="BooklistBook.Section.Small">
+        <item name="android:padding">@dimen/border1</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="BooklistBook.Primary">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="BooklistBook.Secondary">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
+    <style name="Flag" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:button">@drawable/ic_checked_selector</item>
+        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+    </style>
+
+
     <!-- file info fields for a File selection screen -->
-    <style name="file_info">
+    <style name="FileInfo">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">false</item>
@@ -335,7 +353,7 @@
     </style>
 
     <!-- clickable URL -->
-    <style name="link_url">
+    <style name="Url">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -343,7 +361,7 @@
     </style>
 
     <!-- err. -->
-    <style name="error_message">
+    <style name="ErrorMessage">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?android:attr/colorError</item>
         <item name="android:textStyle">bold</item>
@@ -351,14 +369,14 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="nav_view">
+    <style name="NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
-    <style name="toolbar">
+    <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
@@ -367,7 +385,7 @@
     </style>
 
     <!-- the outer frame (e.g. 'root') for a Dialog -->
-    <style name="dialog_frame">
+    <style name="DialogFrame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
@@ -375,7 +393,7 @@
     </style>
 
     <!-- a progress "dialog" implemented as an overlay to a full-screen. -->
-    <style name="progress_overlay">
+    <style name="ProgressOverlay">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/border1</item>
@@ -385,7 +403,7 @@
         <item name="android:background">?android:attr/colorBackgroundFloating</item>
     </style>
 
-    <style name="floatingActionButton">
+    <style name="FloatingActionButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
@@ -393,29 +411,72 @@
     </style>
 
     <!-- Keys on the isbn search keyboard -->
-    <style name="isbnSearchKey">
+    <style name="IsbnSearchKey">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
     <!-- 'plus' and 'minus' buttons on the PartialDatePicker dialog.-->
-    <style name="partial_date_picker_buttons">
+    <style name="PartialDatePickerButtons">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
-    <style name="book_read">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:button">@drawable/ic_checked_selector</item>
-        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+    <!-- *************************************************************************************** -->
+    <!-- translators: create a language specific styles.xml file and copy these styles. -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Simple; Generic single-line fields -->
+    <style name="simpleTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">textCapWords</item>
     </style>
+
+    <!-- Simple; Generic multi-line fields -->
+    <style name="multiLineTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+    </style>
+
+    <!-- AutoComplete; Generic fields -->
+    <style name="autoCompleteTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- ....................................................................................... -->
+
+    <!-- AutoComplete; Fields for 'human' names. e.g. Author, Publisher, ... -->
+    <style name="personalNameTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntryAutoComplete" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- ....................................................................................... -->
+
+    <!-- AutoComplete; The language field. -->
+    <style name="languageTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- AutoComplete; The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/Edit.AutoCompleteText">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <!-- The price (listed, paid, ... ) fields. -->
+    <style name="priceTextEntry" parent="@style/Edit.Text">
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+
 
     <!-- *************************************************************************************** -->
 

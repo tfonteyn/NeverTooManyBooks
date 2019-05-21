@@ -761,4 +761,8 @@
     <string name="warning_required_title_and_author">Falta el título y / o el autor.</string>
     <string name="X_events_found">%1$d eventos encontrados</string>
     <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
+    <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
+    <string name="none">Ninguno</string>
+    <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
+    <string name="menu_hide_keyboard">Ocultar teclado</string>
 </resources>

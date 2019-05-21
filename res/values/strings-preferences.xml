@@ -65,17 +65,20 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- ListPreference -->
+    <!-- ListPreference NEWKIND: APP THEME. -->
     <string name="pt_ui_theme">Interface Theme</string>
     <string-array name="pe_ui_theme">
+        <item>Day / Night</item>
         <item>Dark</item>
         <item>Light</item>
         <item>Light 2</item>
     </string-array>
+    <!-- NEWKIND: APP THEME. -->
     <string-array name="pv_ui_theme">
         <item translatable="false">0</item>
         <item translatable="false">1</item>
         <item translatable="false">2</item>
+        <item translatable="false">3</item>
     </string-array>
 
     <!-- ListPreference - Preferred interface Locale -->

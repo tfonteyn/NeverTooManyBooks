@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/lbl_format"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/format"
             android:text="@string/lbl_format"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,6 @@
         <AutoCompleteTextView
             android:id="@+id/format"
             style="@style/bookFormatTextEntry"
-            android:completionThreshold="2"
             app:layout_constraintEnd_toStartOf="@id/btn_format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
@@ -34,7 +33,7 @@
 
         <ImageButton
             android:id="@+id/btn_format"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/format"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/format"
@@ -44,7 +43,7 @@
 
         <TextView
             android:id="@+id/lbl_language"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/language"
             android:text="@string/lbl_language"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +53,6 @@
         <AutoCompleteTextView
             android:id="@+id/language"
             style="@style/languageTextEntry"
-            android:completionThreshold="2"
             app:layout_constraintEnd_toStartOf="@id/btn_language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
@@ -62,7 +60,7 @@
 
         <ImageButton
             android:id="@+id/btn_language"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/language"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/language"
@@ -72,7 +70,7 @@
 
         <TextView
             android:id="@+id/lbl_publication_section"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/publisher"
             android:text="@string/lbl_publisher"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,7 +80,6 @@
         <AutoCompleteTextView
             android:id="@+id/publisher"
             style="@style/personalNameTextEntry"
-            android:completionThreshold="2"
             app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publication_section"
@@ -90,7 +87,7 @@
 
         <ImageButton
             android:id="@+id/btn_publisher"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/publisher"
@@ -112,7 +109,7 @@
 
         <TextView
             android:id="@+id/lbl_first_publication"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -121,7 +118,7 @@
 
         <TextView
             android:id="@+id/lbl_date_published"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_publication_dates_baseline"
@@ -140,7 +137,7 @@
 
         <Button
             android:id="@+id/first_publication"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toStartOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
@@ -148,7 +145,7 @@
 
         <Button
             android:id="@+id/date_published"
-            style="@style/buttonDataEntry"
+            style="@style/DataEntryButton"
             app:layout_constraintBaseline_toBaselineOf="@id/publication_dates_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/first_publication"
@@ -156,7 +153,7 @@
 
         <TextView
             android:id="@+id/lbl_pages"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/pages"
             android:text="@string/lbl_pages"
             app:layout_constraintStart_toStartOf="parent"
@@ -167,7 +164,6 @@
         <EditText
             android:id="@+id/pages"
             style="@style/simpleTextEntry"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
@@ -177,7 +173,7 @@
 
         <TextView
             android:id="@+id/lbl_price_listed"
-            style="@style/lbl_textField"
+            style="@style/FieldLabel"
             android:labelFor="@id/price_listed"
             android:text="@string/lbl_price_listed"
             app:layout_constraintStart_toStartOf="parent"
@@ -196,7 +192,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
-            style="@style/currencyTextEntry"
+            style="@style/Edit.Text.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"
@@ -205,7 +201,7 @@
 
         <ImageButton
             android:id="@+id/btn_price_listed_currency"
-            style="@style/dropDownMenuButton"
+            style="@style/DropDownMenu"
             app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"

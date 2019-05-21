@@ -10,6 +10,9 @@
     <!-- Default spacing around a FAB. -->
     <dimen name="fab_margin">16dp</dimen>
 
+    <!-- Application icon size on the nav panel -->
+    <dimen name="app_icon">100dp</dimen>
+
     <!-- Spacing either for all around, or for bottom/top.
     But NOT for start/end, for the latter use 'indent' -->
     <dimen name="border1">4dp</dimen>
@@ -19,7 +22,7 @@
     <!-- indent, usually start only, but can be used for end as well. -->
     <dimen name="indent1">4dp</dimen>
     <dimen name="indent2">8dp</dimen>
-    <dimen name="indent3">16dp</dimen>
+    <dimen name="indent3">12dp</dimen>
 
     <!-- Default and full height of a standard EditView with default text size inside.
     Used to make other elements the same height. -->
@@ -35,5 +38,6 @@
     <dimen name="cfs_text_size_medium">18sp</dimen>
     <!-- equivalent size from ?android:attr/textAppearanceLarge -->
     <dimen name="cfs_text_size_large">22sp</dimen>
+
 
 </resources>

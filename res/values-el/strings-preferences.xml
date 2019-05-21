@@ -50,6 +50,7 @@
     <!-- Preference -->
     <string name="pt_ui_theme">Θέμα</string>
     <string-array name="pe_ui_theme">
+        <item>Ημέρα / Νύχτα</item>
         <item>Σκούρο</item>
         <item>Φως</item>
         <item>Φως 2</item>
