@@ -2,46 +2,46 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Simple; Generic single-line fields -->
-    <style name="simpleTextEntry" parent="@style/Edit.Text">
+    <style name="simpleTextEntry" parent="@style/EditText">
         <item name="android:inputType">textCapSentences</item>
     </style>
 
     <!-- Simple; Generic multi-line fields -->
-    <style name="multiLineTextEntry" parent="@style/Edit.Text">
+    <style name="multiLineTextEntry" parent="@style/EditText">
         <item name="android:inputType">textMultiLine|textCapSentences</item>
     </style>
 
     <!-- AutoComplete; Generic fields -->
-    <style name="autoCompleteTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapSentences</item>
     </style>
 
     <!-- ....................................................................................... -->
 
     <!-- AutoComplete; Fields for 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="personalNameTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/Edit.Text" />
+    <style name="titleTextEntry" parent="@style/EditText" />
 
     <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntryAutoComplete" parent="@style/Edit.AutoCompleteText">
+    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete">
     </style>
 
     <!-- ....................................................................................... -->
 
     <!-- AutoComplete; The language field. -->
-    <style name="languageTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="languageTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- AutoComplete; The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/Edit.AutoCompleteText" />
+    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete" />
 
     <!-- The price (listed, paid, ... ) fields. -->
-    <style name="priceTextEntry" parent="@style/Edit.Text">
+    <style name="priceTextEntry" parent="@style/EditText">
         <item name="android:inputType">numberDecimal</item>
     </style>
 

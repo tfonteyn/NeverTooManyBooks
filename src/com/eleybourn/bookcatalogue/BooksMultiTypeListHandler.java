@@ -756,17 +756,15 @@ public class BooksMultiTypeListHandler
         private int getDefaultLayoutId(final int level) {
             switch (level) {
                 case 1:
-                    // top-level uses a larger font
                     return R.layout.booksonbookshelf_row_level_1;
                 case 2:
-                    // second level uses a smaller font
                     return R.layout.booksonbookshelf_row_level_2;
                 default:
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                         Logger.debug(this, "getDefaultLayoutId",
                                      "level=" + level);
                     }
-                    // this is in fact either level 3 or 4 for non-Book rows; uses a smaller font
+                    // this is in fact either level 3 or 4 for non-Book rows
                     return R.layout.booksonbookshelf_row_level_3;
             }
         }

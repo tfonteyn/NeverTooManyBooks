@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
-import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
- * By default uses {@link Site#SEARCH_ALL}.
+ * By default uses {@link SearchSites#SEARCH_ALL}.
  */
 public abstract class BookSearchBaseFragment
         extends Fragment {
@@ -51,7 +51,7 @@ public abstract class BookSearchBaseFragment
     @Nullable
     Intent mLastBookData;
     /** sites to search on. Can be overridden by the user (option menu). */
-    private int mSearchSites = Site.SEARCH_ALL;
+    private int mSearchSites = SearchSites.SEARCH_ALL;
 
     abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
 
@@ -73,9 +73,9 @@ public abstract class BookSearchBaseFragment
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
         // optional, use ALL if not there
-        mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, Site.SEARCH_ALL);
+        mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
-        if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
+        if ((mSearchSites & SearchSites.LIBRARY_THING) != 0) {
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false, "search");
         }

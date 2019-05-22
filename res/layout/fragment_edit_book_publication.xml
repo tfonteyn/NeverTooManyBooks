@@ -192,7 +192,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
-            style="@style/Edit.Text.Currency"
+            style="@style/EditText.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"

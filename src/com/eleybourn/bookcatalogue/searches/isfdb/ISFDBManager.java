@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 public class ISFDBManager
-        implements SearchSiteManager {
+        implements SearchEngine {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "ISFDB.";
@@ -66,7 +66,7 @@ public class ISFDBManager
     @Override
     public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // support 1 size only
-        return SearchSiteManager.ImageSizes.LARGE.equals(size);
+        return SearchEngine.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

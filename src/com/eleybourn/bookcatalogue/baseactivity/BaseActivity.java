@@ -60,10 +60,7 @@ public abstract class BaseActivity
         // apply the user-preferred Locale to the configuration before super.onCreate
         LocaleUtils.applyPreferred(getResources());
         // apply the Theme before super.onCreate
-        int theme = App.getThemeResId();
-        if (theme != App.THEME_DAY_NIGHT) {
-            setTheme(theme);
-        }
+        setTheme(App.getThemeResId());
 
         super.onCreate(savedInstanceState);
 
@@ -298,11 +295,7 @@ public abstract class BaseActivity
         // Trigger a recreate of this activity, if the setting has changed.
         switch (key) {
             case Prefs.pk_ui_theme:
-                if (App.applyTheme()) {
-                    int theme = App.getThemeResId();
-                    if (theme != App.THEME_DAY_NIGHT) {
-                        setTheme(theme);
-                    }
+                if (App.isThemeChanged(this)) {
                     recreate();
                     App.setIsRecreating();
                 }

@@ -6,13 +6,13 @@
 
     <!-- BEGIN predefined View tags -->
 
-    <!-- BaseTask. -->
+    <!-- Goodreads. -->
     <item name="TAG_GR_EVENT" type="id" />
-    <!-- BaseTask. -->
+    <!-- Goodreads. -->
     <item name="TAG_GR_TASK" type="id" />
-    <!-- BaseTask. -->
+    <!-- Goodreads. -->
     <item name="TAG_GR_TASK_HOLDER" type="id" />
-    <!-- Goodreads BookEvent Holder -->
+    <!-- Goodreads. -->
     <item name="TAG_GR_BOOK_EVENT_HOLDER" type="id" />
     <!-- only used in {@link GoodreadsWork} but the Tagger class wants a @IdRes -->
     <item name="TAG_GR_WORK" type="id" />

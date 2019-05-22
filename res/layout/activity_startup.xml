@@ -3,7 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/SplashScreen"
+
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:padding="16dp"
+    android:background="@drawable/border"
+    android:backgroundDimEnabled="true"
+    android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
+    android:windowBackground="@android:color/transparent"
+    android:windowContentOverlay="@null"
+    android:windowIsFloating="true"
+    android:windowIsTranslucent="true"
+    android:windowNoTitle="true"
     >
 
     <ImageView
@@ -35,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/progress_msg_starting_up"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="true"
         app:layout_constraintBottom_toTopOf="@id/progressBar"
         app:layout_constraintTop_toBottomOf="@id/logo"

@@ -143,7 +143,7 @@ public class UpdateFieldsFromInternetTask
      * Constructor.
      *
      * @param taskManager Object to manage background tasks
-     * @param searchSites sites to search, see {@link Site#SEARCH_ALL}
+     * @param searchSites sites to search, see {@link SearchSites#SEARCH_ALL}
      * @param fields      fields to update
      * @param listener    where to send our results to
      */

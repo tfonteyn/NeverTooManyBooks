@@ -648,9 +648,7 @@ public class BooksOnBookshelf
     }
 
     private void showStylePicker() {
-        ArrayList<BooklistStyle> styles = new ArrayList<>(
-                BooklistStyles.getStyles(mModel.getDb(), false).values());
-        StylePickerDialogFragment.newInstance(getSupportFragmentManager(), styles,
+        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
                                               mModel.getCurrentStyle(), false);
     }
 

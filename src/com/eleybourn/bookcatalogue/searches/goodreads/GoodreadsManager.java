@@ -87,7 +87,7 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShelfAddBookHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -100,7 +100,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * @author Philip Warner
  */
 public class GoodreadsManager
-        implements SearchSiteManager {
+        implements SearchEngine {
 
     /**
      * website & Root URL for API calls. Right now, identical,
@@ -867,7 +867,7 @@ public class GoodreadsManager
         if (!hasValidCredentials()) {
             return null;
         }
-        return SearchSiteManager.getCoverImageFallback(this, isbn);
+        return SearchEngine.getCoverImageFallback(this, isbn);
     }
 
     /**
@@ -919,7 +919,7 @@ public class GoodreadsManager
     @Override
     public boolean supportsImageSize(@NonNull final ImageSizes size) {
         // support 1 size only
-        return SearchSiteManager.ImageSizes.LARGE.equals(size);
+        return SearchEngine.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

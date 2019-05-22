@@ -24,6 +24,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.RadioGroupRecyclerAdapter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 
@@ -34,12 +36,10 @@ public class StylePickerDialogFragment
     public static final String TAG = StylePickerDialogFragment.class.getSimpleName();
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-    private static final String BKEY_STYLE_LIST = TAG + ":styleList";
 
     private boolean mShowAllStyles;
     private BooklistStyle mCurrentStyle;
 
-    private ArrayList<BooklistStyle> mList;
     private WeakReference<StyleChangedListener> mListener;
 
     /**
@@ -48,14 +48,12 @@ public class StylePickerDialogFragment
      * @param all if {@code true} show all styles, otherwise only the preferred ones.
      */
     public static void newInstance(@NonNull final FragmentManager fm,
-                                   ArrayList<BooklistStyle> list,
                                    @NonNull final BooklistStyle currentStyle,
                                    final boolean all) {
 
 
         StylePickerDialogFragment smf = new StylePickerDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(BKEY_STYLE_LIST, list);
         args.putParcelable(UniqueId.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         smf.setArguments(args);
@@ -78,7 +76,12 @@ public class StylePickerDialogFragment
         Bundle args = requireArguments();
         mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
-        mList = args.getParcelableArrayList(BKEY_STYLE_LIST);
+
+        ArrayList<BooklistStyle> list;
+
+        try (DAO db = new DAO()) {
+            list = new ArrayList<>(BooklistStyles.getStyles(db, mShowAllStyles).values());
+        }
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater()
@@ -88,24 +91,12 @@ public class StylePickerDialogFragment
         listView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
+//        listView.addItemDecoration(
+//                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+
         //noinspection ConstantConditions
-        listView.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-
         RadioGroupRecyclerAdapter<BooklistStyle> adapter =
-                new RadioGroupRecyclerAdapter<>(getContext(), mList, mCurrentStyle, v -> {
-                    BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
-                    if (mListener.get() != null) {
-                        mListener.get().onStyleChanged(style);
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Logger.debug(this, "onStyleChanged",
-                                         "WeakReference to listener was dead");
-                        }
-                    }
-
-                    dismiss();
-                });
+                new RadioGroupRecyclerAdapter<>(getContext(), list, mCurrentStyle, this::onStyleSelected);
 
         listView.setAdapter(adapter);
 
@@ -116,16 +107,32 @@ public class StylePickerDialogFragment
         return new AlertDialog.Builder(getContext())
                 .setTitle(R.string.title_select_style)
                 .setView(root)
-                .setNeutralButton(R.string.menu_customize_ellipsis, (d1, which1) -> {
+                .setNeutralButton(R.string.menu_customize_ellipsis, (d, which) -> {
                     Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
                     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 })
                 .setPositiveButton(moreOrLess, (d, which) -> {
+                    // note: simply reloading the list would make more sense, but preventing
+                    // the dialog from closing is headache inducing. This is easier.
                     //noinspection ConstantConditions
-                    StylePickerDialogFragment.newInstance(getFragmentManager(), mList,
+                    StylePickerDialogFragment.newInstance(getFragmentManager(),
                                                           mCurrentStyle, !mShowAllStyles);
                 })
                 .create();
+    }
+
+    private void onStyleSelected(View v) {
+        BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
+        if (mListener.get() != null) {
+            mListener.get().onStyleChanged(style);
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onStyleSelected",
+                             "WeakReference to listener was dead");
+            }
+        }
+
+        dismiss();
     }
 
     public interface StyleChangedListener {

@@ -23,7 +23,7 @@
 
     <EditText
         android:id="@+id/isbn"
-        style="@style/Edit.Text.Isbn.Large"
+        style="@style/EditText.Isbn.Large"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
         app:layout_constraintStart_toEndOf="@id/allow_asin"
         app:layout_constraintTop_toTopOf="parent"

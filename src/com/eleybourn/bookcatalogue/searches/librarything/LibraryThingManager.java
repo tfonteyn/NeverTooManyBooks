@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -85,7 +85,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * @author Philip Warner
  */
 public class LibraryThingManager
-        implements SearchSiteManager {
+        implements SearchEngine {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "LibraryThing.";
@@ -420,11 +420,11 @@ public class LibraryThingManager
         }
 
         if (fetchThumbnail) {
-            File file = getCoverImage(isbn, SearchSiteManager.ImageSizes.LARGE);
+            File file = getCoverImage(isbn, SearchEngine.ImageSizes.LARGE);
             if (file == null) {
-                file = getCoverImage(isbn, SearchSiteManager.ImageSizes.MEDIUM);
+                file = getCoverImage(isbn, SearchEngine.ImageSizes.MEDIUM);
                 if (file == null) {
-                    file = getCoverImage(isbn, SearchSiteManager.ImageSizes.SMALL);
+                    file = getCoverImage(isbn, SearchEngine.ImageSizes.SMALL);
                 }
             }
             if (file != null) {

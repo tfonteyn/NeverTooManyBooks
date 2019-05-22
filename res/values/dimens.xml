@@ -10,7 +10,7 @@
     <!-- Default spacing around a FAB. -->
     <dimen name="fab_margin">16dp</dimen>
 
-    <!-- Application icon size on the nav panel -->
+    <!-- Application icon size on the nav panel and startup splash-->
     <dimen name="app_icon">100dp</dimen>
 
     <!-- Spacing either for all around, or for bottom/top.
@@ -32,12 +32,11 @@
     <dimen name="indent_compound_button">32dp</dimen>
 
 
-    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
-    <dimen name="cfs_text_size_small">14sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
-    <dimen name="cfs_text_size_medium">18sp</dimen>
-    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
-    <dimen name="cfs_text_size_large">22sp</dimen>
+    <!-- FastScrollerOverlay line 1 - equivalent size from ?android:attr/textAppearanceLarge -->
+    <dimen name="fso_text_primary">22sp</dimen>
+    <!-- FastScrollerOverlay line 2 - equivalent size from ?android:attr/textAppearanceMedium -->
+    <dimen name="fso_text_secondary">18sp</dimen>
+
 
 
 </resources>

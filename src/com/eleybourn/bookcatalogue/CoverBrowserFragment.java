@@ -52,8 +52,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
-import com.eleybourn.bookcatalogue.searches.Site;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -113,7 +113,7 @@ public class CoverBrowserFragment
      * Images themselves are searched from the 'searchSites' as usual.
      *
      * @param isbn        ISBN of book
-     * @param searchSites bitmask with sites to search, see {@link Site#SEARCH_ALL}.
+     * @param searchSites bitmask with sites to search, see {@link SearchSites#SEARCH_ALL}.
      *
      * @return the instance
      */
@@ -148,7 +148,7 @@ public class CoverBrowserFragment
         Bundle args = getArguments();
         @SuppressWarnings("ConstantConditions")
         String isbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
-        int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, Site.SEARCH_ALL);
+        int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
         if (savedInstanceState != null) {
             mAlternativeEditions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
@@ -413,9 +413,9 @@ public class CoverBrowserFragment
 
             // Get the image file; try the sizes in order as specified here.
             File imageFile = mModel.getFileManager().getFile(isbn,
-                                                             SearchSiteManager.ImageSizes.SMALL,
-                                                             SearchSiteManager.ImageSizes.MEDIUM,
-                                                             SearchSiteManager.ImageSizes.LARGE);
+                                                             SearchEngine.ImageSizes.SMALL,
+                                                             SearchEngine.ImageSizes.MEDIUM,
+                                                             SearchEngine.ImageSizes.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",

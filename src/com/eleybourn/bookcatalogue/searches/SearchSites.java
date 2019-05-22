@@ -8,28 +8,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * Manages the setup of search engines/sites.
  * <p>
  * <br>NEWKIND: adding a new search engine:
- * A search engine for a particular site should implement {@link SearchSiteManager}.
- * Configure in this class here below:
+ * To make it available, follow these steps:
  * <ol>
- * <li>Add an identifier (bit) + add it to {@link Site#SEARCH_ALL}.</li>
- * <li>Add your new engine to {@link Site#getSearchSiteManager};</li>
- * <li>Create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
+ * <li>Implement {@link SearchEngine} to create the new engine.</li>
+ * <li>Add an identifier (bit) + add it to {@link #SEARCH_ALL}.</li>
+ * <li>Add a name for it to {@link #getName}.<br>
+ * This should be a hardcoded, single word, and will be user visible.</li>
+ * <li>Add your new engine to {@link #getSearchEngine};</li>
+ * <li>Create+add a new instance to {@link #SEARCH_ORDER_DEFAULTS}<br>
  * and {@link #COVER_SEARCH_ORDER_DEFAULTS}</li>
  * <li>Optional: add to res/xml/preferences.xml if the url should be editable.</li>
  * </ol>
+ *
  */
 public final class SearchSites {
 
     /** tag. */
     public static final String TAG = SearchSites.class.getSimpleName();
-
-    /** */
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
+
+    /** search source to use. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int GOOGLE_BOOKS = 1;
+
+    /** search source to use. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int AMAZON = 1 << 1;
+
+    /** search source to use. */
+    public static final int LIBRARY_THING = 1 << 2;
+
+    /** search source to use. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int GOODREADS = 1 << 3;
+
+    /**
+     * search source to use.
+     * Speculative Fiction only. i.e. Science-Fiction/Fantasy etc...
+     */
+    public static final int ISFDB = 1 << 4;
+
+    /* search source to use. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int OPEN_LIBRARY = 1 << 5;
+
+    /** Mask including all search sources. */
+    public static final int SEARCH_ALL = GOOGLE_BOOKS | AMAZON
+            | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY;
 
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
@@ -47,41 +84,113 @@ public final class SearchSites {
      * default search order.
      *
      *  Original app reliability order was:
-     *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
+     *  {GOODREADS, AMAZON, GOOGLE_BOOKS, LIBRARY_THING}
      */
     static {
         /*
          * standard searches for full details.
          */
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, 0, 1));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, 1, 0));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, 2, 2));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, 3, 3));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, 4, 4));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(AMAZON, 0, 1));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, 1, 0));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, 2, 2));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, 3, 3));
 
-        // bottom of the list, and disabled by default
-        Site openLibrary = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
+        // the data from ISFDB is **VERY** reliable, sadly access to the site is not.
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, 4, 4));
+
+        // bottom of the list as the data from this site is not up to scratch. Disabled by default.
+        Site openLibrary = Site.newSite(OPEN_LIBRARY, 5, 5);
         openLibrary.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(openLibrary);
 
-        /* ************************************************************************************** */
         /*
          * dedicated cover lookup; does not use a reliability index.
          */
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "cover", 0));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, "cover", 1));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "cover", 2));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "cover", 3));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "cover", 4));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, 0));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, 1));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, 2));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, 3));
+        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, 4));
 
         // bottom of the list, and disabled by default
-        openLibrary = new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5);
+        openLibrary = Site.newCoverSite(OPEN_LIBRARY, 5);
         openLibrary.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);
+    }
 
-        /* ************************************************************************************** */
+    /**
+     * Return the name for the site. This should/is a hardcoded single word.
+     * It is used for:
+     * <ol>
+     *     <li>User-visible name in the app settings.</li>
+     *     <li>As the key into the actual preferences.</li>
+     *     <li>Internal task(thread) name which in some circumstances will be user-visible.</li>
+     * </ol>
+     *
+     * As it's used as a prefs key, it should never be changed.
+     *
+     * Note: the name is also required in the actual {@link SearchEngine} as a {@code StringRes}
+     * but the method here can not use that one without instantiating which we don't want here.
+     *
+     * @param id for the site
+     *
+     * @return the name
+     */
+    static String getName(final int id) {
+        switch (id) {
+            case GOOGLE_BOOKS:
+                return "GoogleBooks";
+            case AMAZON:
+                return "Amazon";
+            case GOODREADS:
+                return "Goodreads";
+            case ISFDB:
+                return "ISFDB";
+            case LIBRARY_THING:
+                return "LibraryThing";
+            case OPEN_LIBRARY:
+                return "OpenLibrary";
+
+            default:
+                throw new IllegalTypeException("Unexpected search source: " + id);
+        }
+    }
+
+    /**
+     * @return a new SearchEngine class instance for the given id.
+     */
+    static SearchEngine getSearchEngine(final int id) {
+
+        switch (id) {
+            case GOOGLE_BOOKS:
+                return new GoogleBooksManager();
+
+            case AMAZON:
+                return new AmazonManager();
+
+            case GOODREADS:
+                return new GoodreadsManager();
+
+            case ISFDB:
+                return new ISFDBManager();
+
+            case LIBRARY_THING:
+                return new LibraryThingManager();
+
+            case OPEN_LIBRARY:
+                return new OpenLibraryManager();
+
+            default:
+                throw new IllegalTypeException("Unexpected search source: " + id);
+        }
+    }
+
+
+    /* ************************************************************************************** */
+    static {
 
         PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
+
         /*
          * Create the user configurable lists.
          */
@@ -104,7 +213,7 @@ public final class SearchSites {
     }
 
     /**
-     * Reset all back to the hardcoded defaults.
+     * Reset all values back to the hardcoded defaults.
      */
     public static void reset() {
         setSearchOrder(SEARCH_ORDER_DEFAULTS);

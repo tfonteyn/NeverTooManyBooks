@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CoverBrowserFragment;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -176,7 +176,7 @@ public class CoverBrowserViewModel
          * Constructor.
          *
          * @param initialSearchSites bitmask with sites to search,
-         *                           see {@link Site#SEARCH_ALL} and individual flags
+         *                           see {@link SearchSites#SEARCH_ALL} and individual flags
          */
         FileManager(final int initialSearchSites) {
 
@@ -218,7 +218,7 @@ public class CoverBrowserViewModel
         /**
          * Download a file if not present and keep a record of it.
          * <p>
-         * ENHANCE: use {@link SearchSiteManager#isAvailable()}.
+         * ENHANCE: use {@link SearchEngine#isAvailable()}.
          * <p>
          * Reminder: the for() loop will bailout (return) as soon as a cover file is found.
          * i.e. for each edition of the isbn, we try to get an image from the search-sites.
@@ -235,13 +235,13 @@ public class CoverBrowserViewModel
         @Nullable
         @WorkerThread
         public String download(@NonNull final String isbn,
-                               @NonNull final SearchSiteManager.ImageSizes... imageSizes) {
+                               @NonNull final SearchEngine.ImageSizes... imageSizes) {
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
             // if none respond with that size, try the next size inline.
             // The other way around we could get a site/size instead of other0site/better-size.
-            for (SearchSiteManager.ImageSizes size : imageSizes) {
+            for (SearchEngine.ImageSizes size : imageSizes) {
                 String key = isbn + '_' + size;
                 String fileSpec = mFiles.get(key);
 
@@ -266,10 +266,10 @@ public class CoverBrowserViewModel
                             // and should we search this site ?
                             && ((mSearchSites & site.id) != 0)
                     ) {
-                        SearchSiteManager sm = site.getSearchSiteManager();
+                        SearchEngine searchEngine = site.getSearchEngine();
                         // don't search the same site for all sizes if it only supports one size.
-                        if (sm.supportsImageSize(size)) {
-                            File file = sm.getCoverImage(isbn, size);
+                        if (searchEngine.supportsImageSize(size)) {
+                            File file = searchEngine.getCoverImage(isbn, size);
                             if (file != null && isGood(file)) {
                                 fileSpec = file.getAbsolutePath();
                                 mFiles.put(key, fileSpec);
@@ -312,8 +312,8 @@ public class CoverBrowserViewModel
          */
         @Nullable
         public File getFile(@NonNull final String isbn,
-                            @NonNull final SearchSiteManager.ImageSizes... sizes) {
-            for (SearchSiteManager.ImageSizes size : sizes) {
+                            @NonNull final SearchEngine.ImageSizes... sizes) {
+            for (SearchEngine.ImageSizes size : sizes) {
                 String fileSpec = mFiles.get(isbn + '_' + size);
                 if (fileSpec != null && !fileSpec.isEmpty()) {
                     return new File(fileSpec);
@@ -431,9 +431,9 @@ public class CoverBrowserViewModel
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
             try {
                 return mFileManager.download(mIsbn,
-                                             SearchSiteManager.ImageSizes.SMALL,
-                                             SearchSiteManager.ImageSizes.MEDIUM,
-                                             SearchSiteManager.ImageSizes.LARGE);
+                                             SearchEngine.ImageSizes.SMALL,
+                                             SearchEngine.ImageSizes.MEDIUM,
+                                             SearchEngine.ImageSizes.LARGE);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
@@ -506,9 +506,9 @@ public class CoverBrowserViewModel
         protected String doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mIsbn);
             try {
-                return mFileManager.download(mIsbn, SearchSiteManager.ImageSizes.LARGE,
-                                             SearchSiteManager.ImageSizes.MEDIUM,
-                                             SearchSiteManager.ImageSizes.SMALL);
+                return mFileManager.download(mIsbn, SearchEngine.ImageSizes.LARGE,
+                                             SearchEngine.ImageSizes.MEDIUM,
+                                             SearchEngine.ImageSizes.SMALL);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
                 // tad annoying... java.io.InterruptedIOException: thread interrupted

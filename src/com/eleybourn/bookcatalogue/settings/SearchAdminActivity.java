@@ -149,7 +149,7 @@ public class SearchAdminActivity
         switch (item.getItemId()) {
 
             case R.id.MENU_USE:
-                int sites = Site.SEARCH_ALL;
+                int sites = SearchSites.SEARCH_ALL;
                 list = ((SearchOrderFragment) mAdapter.getItem(0)).getList();
                 //noinspection ConstantConditions
                 for (Site site : list) {

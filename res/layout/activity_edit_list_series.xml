@@ -40,7 +40,7 @@
 
     <EditText
         android:id="@+id/series_num"
-        style="@style/Edit.Text.SeriesNumber"
+        style="@style/EditText.SeriesNumber"
         android:layout_width="80sp"
         app:layout_constraintEnd_toStartOf="@id/add"
         app:layout_constraintStart_toEndOf="@id/series"

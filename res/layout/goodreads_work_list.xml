@@ -54,7 +54,7 @@
 
     <EditText
         android:id="@+id/isbn"
-        style="@style/Edit.Text.Isbn"
+        style="@style/EditText.Isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"

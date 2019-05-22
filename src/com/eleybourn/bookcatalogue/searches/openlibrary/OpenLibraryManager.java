@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
 public class OpenLibraryManager
-        implements SearchSiteManager {
+        implements SearchEngine {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "OpenLibrary.";

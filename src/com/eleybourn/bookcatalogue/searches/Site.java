@@ -7,13 +7,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
-import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
-import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * All search engines are added here.
@@ -34,28 +27,6 @@ public class Site
                     return new Site[size];
                 }
             };
-    /** search source to use. */
-    public static final int SEARCH_LIBRARY_THING = 1 << 2;
-    /** search source to use. */
-    static final int SEARCH_GOOGLE = 1;
-    /** search source to use. */
-    static final int SEARCH_AMAZON = 1 << 1;
-    /** search source to use. */
-    static final int SEARCH_GOODREADS = 1 << 3;
-    /**
-     * search source to use.
-     * Speculative Fiction only. i.e. Science-Fiction/Fantasy etc...
-     */
-    static final int SEARCH_ISFDB = 1 << 4;
-    /*
-     *  search source to use.
-     */
-    static final int SEARCH_OPEN_LIBRARY = 1 << 5;
-
-    /** Mask including all search sources. */
-    public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON
-            | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB | SEARCH_OPEN_LIBRARY;
-
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "SearchSite.";
@@ -75,44 +46,17 @@ public class Site
     private int mReliability;
 
     /** the class which implements the search engine for a specific site. */
-    private SearchSiteManager mSearchSiteManager;
+    private SearchEngine mSearchEngine;
 
-    /**
-     * Create the Site with whatever suitable default values.
-     * If previously stored to SharedPreferences, the stored values will be used instead.
-     *
-     * @param id         Internal id, bitmask based
-     * @param nameSuffix suffix to the add to the name
-     * @param priority   the search priority order
-     */
-    @SuppressWarnings("SameParameterValue")
-    Site(final int id,
-         @NonNull final String nameSuffix,
-         final int priority) {
+
+    /** Constructor. Use static method instead. */
+    private Site(final int id,
+                 @NonNull final String name,
+                 final int priority,
+                 final int reliability) {
 
         this.id = id;
-        mName = getName(id) + '-' + nameSuffix;
-        mPriority = priority;
-        // by default, reliability == order.
-        mReliability = priority;
-
-        loadFromPrefs();
-    }
-
-    /**
-     * Create the Site with whatever suitable default values.
-     * If previously stored to SharedPreferences, the stored values will be used instead.
-     *
-     * @param id          Internal id, bitmask based
-     * @param priority    the search priority order
-     * @param reliability the search reliability order
-     */
-    Site(final int id,
-         final int priority,
-         final int reliability) {
-
-        this.id = id;
-        mName = getName(id);
+        mName = name;
         mPriority = priority;
         mReliability = reliability;
 
@@ -124,72 +68,48 @@ public class Site
      */
     Site(@NonNull final Parcel in) {
         id = in.readInt();
-        //noinspection ConstantConditions
-        mName = in.readString();
+        mName = SearchSites.getName(id);
         mEnabled = in.readByte() != 0;
         mPriority = in.readInt();
         mReliability = in.readInt();
     }
 
-    private static String getName(final int id) {
-        switch (id) {
-            case SEARCH_GOOGLE:
-                return "Google";
-            case SEARCH_AMAZON:
-                return "Amazon";
-            case SEARCH_GOODREADS:
-                return "Goodreads";
-            case SEARCH_ISFDB:
-                return "ISFDB";
-            case SEARCH_LIBRARY_THING:
-                return "LibraryThing";
-            case SEARCH_OPEN_LIBRARY:
-                return "OpenLibrary";
-
-            default:
-                throw new IllegalTypeException("Unexpected search source: " + id);
-        }
+    /**
+     * Create the Site with whatever suitable default values.
+     * If previously stored to SharedPreferences, the stored values will be used instead.
+     *
+     * @param id          Internal id, bitmask based
+     * @param priority    the search priority order
+     * @param reliability the search reliability order
+     */
+    static Site newSite(final int id,
+                        final int priority,
+                        final int reliability) {
+        return new Site(id, SearchSites.getName(id), priority, reliability);
     }
 
     /**
-     * @return the manager class instance. Note that these are cached, so there is only one
-     * instance for each site at all times.
+     * Create the Site with whatever suitable default values.
+     * If previously stored to SharedPreferences, the stored values will be used instead.
+     *
+     * @param id       Internal id, bitmask based
+     * @param priority the search priority order
      */
-    public SearchSiteManager getSearchSiteManager() {
-        if (mSearchSiteManager != null) {
-            return mSearchSiteManager;
+    static Site newCoverSite(final int id,
+                             final int priority) {
+        // by default, reliability == order.
+        return new Site(id, SearchSites.getName(id) + "-covers", priority, priority);
+    }
+
+    /**
+     * @return the manager class instance.
+     */
+    public SearchEngine getSearchEngine() {
+        if (mSearchEngine == null) {
+            mSearchEngine = SearchSites.getSearchEngine(id);
         }
 
-        switch (id) {
-            case SEARCH_GOOGLE:
-                mSearchSiteManager = new GoogleBooksManager();
-                break;
-
-            case SEARCH_AMAZON:
-                mSearchSiteManager = new AmazonManager();
-                break;
-
-            case SEARCH_GOODREADS:
-                mSearchSiteManager = new GoodreadsManager();
-                break;
-
-            case SEARCH_ISFDB:
-                mSearchSiteManager = new ISFDBManager();
-                break;
-
-            case SEARCH_LIBRARY_THING:
-                mSearchSiteManager = new LibraryThingManager();
-                break;
-
-            case SEARCH_OPEN_LIBRARY:
-                mSearchSiteManager = new OpenLibraryManager();
-                break;
-
-            default:
-                throw new IllegalTypeException("Unexpected search source: " + mName);
-        }
-
-        return mSearchSiteManager;
+        return mSearchEngine;
     }
 
     /**
@@ -199,7 +119,6 @@ public class Site
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(id);
-        dest.writeString(mName);
         dest.writeByte((byte) (mEnabled ? 1 : 0));
         dest.writeInt(mPriority);
         dest.writeInt(mReliability);
@@ -262,7 +181,7 @@ public class Site
                 + ", mEnabled=" + mEnabled
                 + ", mPriority=" + mPriority
                 + ", mReliability=" + mReliability
-                + ", mSearchSiteManager=" + mSearchSiteManager
+                + ", mSearchEngine=" + mSearchEngine
                 + '}';
     }
 }

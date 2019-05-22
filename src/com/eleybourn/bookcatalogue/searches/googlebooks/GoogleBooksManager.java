@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
  */
 public final class GoogleBooksManager
-        implements SearchSiteManager {
+        implements SearchEngine {
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "GoogleBooks.";

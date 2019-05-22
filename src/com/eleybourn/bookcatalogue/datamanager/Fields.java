@@ -1488,17 +1488,15 @@ public class Fields {
             final View view = getView();
 
             // Set the appropriate accessor
-            if (view instanceof Spinner) {
-                mFieldDataAccessor = new SpinnerAccessor();
-
-            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+             if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
                 //TOMF: this emphasizes the need for having an actual type for the field.
                 mFieldDataAccessor = new CheckableAccessor();
                 addTouchSignalsDirty(view);
 
-            } else if (view instanceof Checkable) {
+            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
+                 // the opposite, do not accept the MaterialButton here.
                 mFieldDataAccessor = new CheckableAccessor();
                 addTouchSignalsDirty(view);
 
@@ -1521,6 +1519,9 @@ public class Fields {
             } else if (view instanceof RatingBar) {
                 mFieldDataAccessor = new RatingBarAccessor();
                 addTouchSignalsDirty(view);
+
+            } else if (view instanceof Spinner) {
+                mFieldDataAccessor = new SpinnerAccessor();
 
             } else {
                 //noinspection ConstantConditions
@@ -1560,16 +1561,6 @@ public class Fields {
         public Field setAccessor(@NonNull final FieldDataAccessor accessor) {
             mFieldDataAccessor = accessor;
             return this;
-        }
-
-        /**
-         * For specialized access.
-         *
-         * @return the field data accessor.
-         */
-        public <IVA extends FieldDataAccessor> IVA getFieldDataAccessor() {
-            //noinspection unchecked
-            return (IVA) mFieldDataAccessor;
         }
 
         /**

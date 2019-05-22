@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.searches.Site;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -170,7 +170,7 @@ public class CoverHandler {
         mCoverBrowserFragment = (CoverBrowserFragment)
                 mFragmentManager.findFragmentByTag(CoverBrowserFragment.TAG);
         if (mCoverBrowserFragment == null) {
-            mCoverBrowserFragment = CoverBrowserFragment.newInstance(isbn, Site.SEARCH_ALL);
+            mCoverBrowserFragment = CoverBrowserFragment.newInstance(isbn, SearchSites.SEARCH_ALL);
             mCoverBrowserFragment.show(mFragmentManager, CoverBrowserFragment.TAG);
         }
 

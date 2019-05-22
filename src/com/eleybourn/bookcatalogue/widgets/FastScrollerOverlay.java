@@ -129,14 +129,14 @@ public class FastScrollerOverlay
         Resources resources = context.getResources();
         float size;
         try {
-            size = resources.getDimension(R.dimen.cfs_text_size_large);
+            size = resources.getDimension(R.dimen.fso_text_secondary);
         } catch (Resources.NotFoundException e) {
             size = TEXT_SIZE_LARGE_IN_SP * resources.getDisplayMetrics().scaledDensity;
         }
         mPrimaryTextSize = size;
 
         try {
-            size = resources.getDimension(R.dimen.cfs_text_size_medium);
+            size = resources.getDimension(R.dimen.fso_text_primary);
         } catch (Resources.NotFoundException e) {
             size = TEXT_SIZE__MEDIUM_IN_SP * resources.getDisplayMetrics().scaledDensity;
         }

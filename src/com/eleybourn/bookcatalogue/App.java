@@ -119,6 +119,9 @@ public class App
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
+    /** don't assume / allow the day-night theme to have a different integer id. */
+    public static final int THEME_DAY_NIGHT = 0;
+
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
 
@@ -140,9 +143,17 @@ public class App
      * DEFAULT_THEME: the default to use.
      */
     private static final int DEFAULT_THEME = 0;
-    /** don't assume / allow the day-night theme to have a different integer id. */
-    public static final int THEME_DAY_NIGHT = 0;
-    /** As defined in res/themes.xml. */
+    /**
+     * As defined in res/themes.xml.
+     * <p>
+     * MODE_NIGHT_AUTO_BATTERY  <item>Set by Battery Saver</item>
+     * MODE_NIGHT_FOLLOW_SYSTEM <item>Use system default</item>  API28+
+     * <item>Day / Night</item>
+     * MODE_NIGHT_YES
+     * <item>Dark</item>
+     * MODE_NIGHT_NO
+     * <item>Light</item>
+     */
     private static final int[] APP_THEMES = {
             R.style.AppTheme_DayNight,
             R.style.AppTheme_Dark,
@@ -367,15 +378,111 @@ public class App
      *
      * @return {@code true} if the theme was changed
      */
-    public static boolean applyTheme() {
+    public static boolean isThemeChanged(@NonNull final Context context) {
         int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
         boolean changed = theme != sCurrentTheme;
 
         sCurrentTheme = theme;
+
         if (sCurrentTheme == THEME_DAY_NIGHT) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
+        }
+
+        if (changed) {
+            context.setTheme(sCurrentTheme);
+        }
+
+        if (BuildConfig.DEBUG) {
+            debugDayNightMode();
         }
         return changed;
+    }
+
+    /**
+     * DEBUG only.
+     */
+    public static void debugDayNightMode() {
+
+        switch (sCurrentTheme) {
+            case 0:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_DAY_NIGHT");
+                break;
+            case 1:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_DARK");
+                break;
+            case 2:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_LIGHT");
+                break;
+            case 3:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_LIGHT2");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=eh?");
+                break;
+        }
+
+
+        int defNightMode = AppCompatDelegate.getDefaultNightMode();
+
+        switch (defNightMode) {
+            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_NO");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_YES");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=Twilight Zone");
+                break;
+
+        }
+        int currentNightMode = getAppContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_NO");
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_YES");
+                break;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=Twilight Zone");
+                break;
+        }
     }
 
     public static void setNeedsRecreating() {
@@ -430,8 +537,8 @@ public class App
         // Get the preferred locale as soon as possible
         setSystemLocale();
 
-        // The preferred theme.
-        applyTheme();
+        // load the preferred theme from preferences.
+        isThemeChanged(App.getAppContext());
 
         // create the singleton QueueManager
         QueueManager.init();

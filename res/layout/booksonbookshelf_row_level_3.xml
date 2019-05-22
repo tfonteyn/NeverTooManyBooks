@@ -25,7 +25,7 @@
     -->
     <TextView
         android:id="@+id/name"
-        style="BooklistBook.Section"
+        style="@style/BooklistBook.Section"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

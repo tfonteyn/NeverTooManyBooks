@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
- * Searches a single {@link SearchSiteManager},
+ * Searches a single {@link SearchEngine},
  * and send the results back to the {@link SearchCoordinator}.
  * <p>
  * (the 'results' being this while Task object first send to the {@link TaskManager} which
@@ -62,7 +62,7 @@ public class SearchTask
     private final int mProgressTitleResId;
 
     @NonNull
-    private final SearchSiteManager mSearchSiteManager;
+    private final SearchEngine mSearchEngine;
 
     /** identifier for this task. */
     private final int mTaskId;
@@ -94,17 +94,17 @@ public class SearchTask
      * @param manager           TaskHandler implementation
      * @param taskId            identifier
      * @param taskName          thread name, used for debug only really.
-     * @param searchSiteManager the search site manager
+     * @param searchEngine the search site manager
      */
     SearchTask(@NonNull final TaskManager manager,
                final int taskId,
                @NonNull final String taskName,
-               @NonNull final SearchSiteManager searchSiteManager) {
+               @NonNull final SearchEngine searchEngine) {
         super(manager, taskName);
         mTaskId = taskId;
-        mSearchSiteManager = searchSiteManager;
+        mSearchEngine = searchEngine;
         // cache the resId for convenience
-        mProgressTitleResId = mSearchSiteManager.getSearchingResId();
+        mProgressTitleResId = mSearchEngine.getSearchingResId();
     }
 
     /**
@@ -165,8 +165,8 @@ public class SearchTask
                               getResources().getString(mProgressTitleResId));
         }
         // keys? site up? etc...
-        if (!mSearchSiteManager.isAvailable()) {
-            setFinalError(R.string.error_not_available, mSearchSiteManager.getNameResId());
+        if (!mSearchEngine.isAvailable()) {
+            setFinalError(R.string.error_not_available, mSearchEngine.getNameResId());
             return;
         }
 
@@ -176,7 +176,7 @@ public class SearchTask
             // SEARCH!
             // manager checks the arguments
             //ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
-            mBookData = mSearchSiteManager.search(mIsbn, mAuthor, mTitle, mFetchThumbnail);
+            mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
                 // Look for series name in the book title and clean KEY_TITLE
                 checkForSeriesNameInTitle();

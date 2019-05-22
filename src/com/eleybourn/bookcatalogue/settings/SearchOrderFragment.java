@@ -140,7 +140,6 @@ public class SearchOrderFragment
                 site.setEnabled(!site.isEnabled());
                 holder.mCheckableButton.setChecked(site.isEnabled());
             });
-
         }
     }
 

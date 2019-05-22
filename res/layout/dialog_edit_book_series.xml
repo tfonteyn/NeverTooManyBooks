@@ -18,7 +18,7 @@
 
     <EditText
         android:id="@+id/series_num"
-        style="@style/Edit.Text.SeriesNumber"
+        style="@style/EditText.SeriesNumber"
         app:layout_constraintBaseline_toBaselineOf="@id/series"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"

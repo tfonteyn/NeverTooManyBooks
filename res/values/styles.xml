@@ -42,7 +42,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- generic field labels where the data is below the label -->
-    <style name="FieldLabel" parent="Widget.AppCompat.TextView">
+    <style name="FieldLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -59,7 +59,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- 'medium' detail text field; for example series title, ... -->
-    <style name="TextDetail" parent="Widget.AppCompat.TextView">
+    <style name="TextDetail">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
@@ -82,9 +82,10 @@
     <!-- *************************************************************************************** -->
 
     <!-- informational piece of text -->
-    <style name="Blurb" parent="Widget.AppCompat.TextView">
+    <style name="Blurb">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
         <item name="android:layout_marginEnd">@dimen/indent3</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
@@ -99,7 +100,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- base style for all EditText; not to be used directly in layouts. -->
-    <style name="Edit.Text" parent="Widget.AppCompat.EditText">
+    <style name="EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -107,21 +108,21 @@
     </style>
 
     <!-- base style for all AutoCompleteTextView; not to be used directly in layouts. -->
-    <style name="Edit.AutoCompleteText" parent="Widget.AppCompat.AutoCompleteTextView">
+    <style name="EditText.AutoComplete">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:hint">@string/field_not_set</item>
     </style>
 
-    <style name="Edit.Text.SeriesNumber">
+    <style name="EditText.SeriesNumber">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:inputType">text</item>
         <item name="android:singleLine">true</item>
     </style>
 
     <!-- International three character currency code (uppercase) -->
-    <style name="Edit.Text.Currency">
+    <style name="EditText.Currency">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
@@ -134,28 +135,29 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="Edit.Text.Isbn">
+    <style name="EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="android:digits">1234567890xX</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
     </style>
 
-    <style name="Edit.Text.Isbn.Large">
+    <style name="EditText.Isbn.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:layout_margin">@dimen/border2</item>
     </style>
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
-    <style name="CheckboxEntry" parent="Widget.AppCompat.CompoundButton.CheckBox">
+    <style name="CheckboxEntry">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">@dimen/edit_text_height</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Button with 'data' displayed on it; a click leads to a screen/dialog to edit that data -->
-    <style name="DataEntryButton" parent="Widget.AppCompat.Button">
+    <style name="DataEntryButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/border1</item>
         <item name="android:hint">@string/field_not_set</item>
     </style>
 
@@ -209,7 +211,7 @@
     </style>
 
     <!-- a row inside a list details row; not to be used directly in layouts -->
-    <style name="RowTextLine" parent="Widget.AppCompat.TextView">
+    <style name="RowTextLine">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -324,7 +326,8 @@
     </style>
 
     <style name="BooklistBook.Primary">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <!-- medium was tried but it's way to big. -->
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <style name="BooklistBook.Secondary">
@@ -332,7 +335,7 @@
     </style>
 
     <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
-    <style name="Flag" parent="Widget.AppCompat.CompoundButton.CheckBox">
+    <style name="Flag">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:clickable">false</item>
@@ -380,7 +383,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
-        <item name="android:background">?android:attr/colorPrimary</item>
+        <!--<item name="android:background">?android:attr/colorPrimary</item>-->
+        <item name="android:background">@drawable/side_nav_bar</item>
         <item name="android:elevation">4dp</item>
     </style>
 
@@ -429,51 +433,51 @@
     <!-- *************************************************************************************** -->
 
     <!-- Simple; Generic single-line fields -->
-    <style name="simpleTextEntry" parent="@style/Edit.Text">
+    <style name="simpleTextEntry" parent="@style/EditText">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- Simple; Generic multi-line fields -->
-    <style name="multiLineTextEntry" parent="@style/Edit.Text">
+    <style name="multiLineTextEntry" parent="@style/EditText">
         <item name="android:inputType">textMultiLine|textCapSentences</item>
     </style>
 
     <!-- AutoComplete; Generic fields -->
-    <style name="autoCompleteTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- ....................................................................................... -->
 
     <!-- AutoComplete; Fields for 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="personalNameTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/Edit.Text">
+    <style name="titleTextEntry" parent="@style/EditText">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntryAutoComplete" parent="@style/Edit.AutoCompleteText">
+    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- ....................................................................................... -->
 
     <!-- AutoComplete; The language field. -->
-    <style name="languageTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="languageTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- AutoComplete; The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/Edit.AutoCompleteText">
+    <style name="bookFormatTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- The price (listed, paid, ... ) fields. -->
-    <style name="priceTextEntry" parent="@style/Edit.Text">
+    <style name="priceTextEntry" parent="@style/EditText">
         <item name="android:inputType">numberDecimal</item>
     </style>
 

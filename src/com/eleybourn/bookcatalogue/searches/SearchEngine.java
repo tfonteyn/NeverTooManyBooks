@@ -21,11 +21,11 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 /**
  * The API a search engine for a site needs to implement.
  */
-public interface SearchSiteManager {
+public interface SearchEngine {
 
     /**
-     * If a {@link SearchSiteManager} does not support a specific (and faster) way/api
-     * to fetch a cover image, then {@link SearchSiteManager#getCoverImage(String, SearchSiteManager.ImageSizes)}
+     * If a {@link SearchEngine} does not support a specific (and faster) way/api
+     * to fetch a cover image, then {@link SearchEngine#getCoverImage(String, SearchEngine.ImageSizes)}
      * can call this fallback method.
      * Do NOT use if the site either does not support returning images during search,
      * or does not support isbn searches.
@@ -40,7 +40,7 @@ public interface SearchSiteManager {
      */
     @Nullable
     @WorkerThread
-    static File getCoverImageFallback(@NonNull final SearchSiteManager site,
+    static File getCoverImageFallback(@NonNull final SearchEngine site,
                                       @NonNull final String isbn) {
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -72,6 +72,9 @@ public interface SearchSiteManager {
      * Checking the arguments should really be done inside the implementation,
      * as they generally will depend on what the object can do with them.
      *
+     * The implementation will/should give preference to using the ISBN if present,
+     * and only fall back to using author/title if needed.
+     *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data. Can be empty, but never {@code null}.
@@ -96,7 +99,7 @@ public interface SearchSiteManager {
      *
      * @return found/saved File, or {@code null} when none found (or any other failure)
      * <p>
-     * If a {@link SearchSiteManager} does not support a specific (and faster) way/api
+     * If a {@link SearchEngine} does not support a specific (and faster) way/api
      * to fetch a cover image, then this default method is used, delegating to the
      * {@link #search(String, String, String, boolean)} method.
      * <p>
@@ -169,7 +172,7 @@ public interface SearchSiteManager {
 
     /**
      * Sizes of thumbnails.
-     * These are open to interpretation (or not used) by individual {@link SearchSiteManager}.
+     * These are open to interpretation (or not used) by individual {@link SearchEngine}.
      */
     enum ImageSizes {
         SMALL,

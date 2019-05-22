@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.FieldUsage;
-import com.eleybourn.bookcatalogue.searches.Site;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
@@ -55,13 +55,13 @@ public class UpdateFieldsFromInternetFragment
 
     /**
      * optionally limit the sites to search on.
-     * By default uses {@link Site#SEARCH_ALL}
+     * By default uses {@link SearchSites#SEARCH_ALL}
      */
     private static final String REQUEST_BKEY_SEARCH_SITES = TAG + ":SearchSites";
     /** which fields to update and how. */
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
     /** where to look. */
-    private int mSearchSites = Site.SEARCH_ALL;
+    private int mSearchSites = SearchSites.SEARCH_ALL;
     /** 0 for all books, or a specific book. */
     private long mBookId;
 
@@ -122,7 +122,7 @@ public class UpdateFieldsFromInternetFragment
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, Site.SEARCH_ALL);
+            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
             mBookId = args.getLong(DBDefinitions.KEY_ID, 0L);
             if (mBookId > 0) {
                 mAuthorFormatted = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
@@ -159,7 +159,7 @@ public class UpdateFieldsFromInternetFragment
         initFields();
         populateFields();
 
-        if ((mSearchSites & Site.SEARCH_LIBRARY_THING) != 0) {
+        if ((mSearchSites & SearchSites.LIBRARY_THING) != 0) {
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false,
                                                        "update_from_internet");

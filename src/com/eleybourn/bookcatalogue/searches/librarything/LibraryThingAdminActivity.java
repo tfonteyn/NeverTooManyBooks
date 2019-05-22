@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSiteManager;
+import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -158,7 +158,7 @@ public class LibraryThingAdminActivity
 
             try {
                 LibraryThingManager ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage("0451451783", SearchSiteManager.ImageSizes.SMALL);
+                File tmpFile = ltm.getCoverImage("0451451783", SearchEngine.ImageSizes.SMALL);
                 if (tmpFile != null) {
                     tmpFile.deleteOnExit();
                     long length = tmpFile.length();

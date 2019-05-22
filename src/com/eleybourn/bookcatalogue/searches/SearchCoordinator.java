@@ -218,7 +218,7 @@ public class SearchCoordinator {
      * Start a search.
      *
      * @param searchFlags    bitmask with sites to search,
-     *                       see {@link Site#SEARCH_ALL} and individual flags
+     *                       see {@link SearchSites#SEARCH_ALL} and individual flags
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
      * @param author         to search for (can be empty)
@@ -243,7 +243,7 @@ public class SearchCoordinator {
         }
 
         // dev sanity check
-        if ((searchFlags & Site.SEARCH_ALL) == 0) {
+        if ((searchFlags & SearchSites.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
@@ -294,7 +294,7 @@ public class SearchCoordinator {
                     // Assume it's an ASIN, and just search Amazon
                     mSearchingAsin = true;
                     mWaitingForIsbn = false;
-                    tasksStarted = startSearches(Site.SEARCH_AMAZON);
+                    tasksStarted = startSearches(SearchSites.AMAZON);
                 }
             } else {
                 // Run one at a time, startNext() defined the order.
@@ -377,14 +377,14 @@ public class SearchCoordinator {
             return false;
         }
 
-        SearchSiteManager sm = site.getSearchSiteManager();
+        SearchEngine searchEngine = site.getSearchEngine();
 
         // special case, some sites can only be searched with an ISBN
-        if (sm.isIsbnOnly() && !mHasValidIsbn) {
+        if (searchEngine.isIsbnOnly() && !mHasValidIsbn) {
             return false;
         }
 
-        SearchTask task = new SearchTask(mTaskManager, site.id, site.getName(), sm);
+        SearchTask task = new SearchTask(mTaskManager, site.id, site.getName(), searchEngine);
         task.setIsbn(mIsbn);
         task.setAuthor(mAuthor);
         task.setTitle(mTitle);
