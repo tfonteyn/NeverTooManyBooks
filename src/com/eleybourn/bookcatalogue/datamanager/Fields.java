@@ -25,8 +25,6 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -66,7 +64,6 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -170,7 +167,6 @@ public class Fields {
      *
      * @param activity The parent activity which contains all Views this object will manage.
      */
-    @SuppressWarnings("unused")
     Fields(@NonNull final Activity activity) {
         mFieldContext = new ActivityContext(activity);
     }
@@ -273,9 +269,9 @@ public class Fields {
      */
     @NonNull
     public Field getField(@IdRes final int fieldId) {
-        for (Field f : mAllFields) {
-            if (f.id == fieldId) {
-                return f;
+        for (Field field : mAllFields) {
+            if (field.id == fieldId) {
+                return field;
             }
         }
         throw new IllegalArgumentException("fieldId= 0x" + Integer.toHexString(fieldId));
@@ -297,32 +293,6 @@ public class Fields {
     }
 
     /**
-     * Load all fields from the passed Cursor.
-     *
-     * @param cursor with data to load.
-     *
-     * @throws ColumnNotPresentException if the Cursor does not have a required column
-     */
-    @SuppressWarnings("unused")
-    public void setAllFrom(@NonNull final Cursor cursor) {
-        for (Field field : mAllFields) {
-            field.setValueFrom(cursor);
-        }
-    }
-
-    /**
-     * Load all fields from the passed bundle.
-     *
-     * @param values with data to load.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void setAllFrom(@NonNull final Bundle values) {
-        for (Field field : mAllFields) {
-            field.setValueFrom(values);
-        }
-    }
-
-    /**
      * Load fields from the passed bundle.
      *
      * @param values        with data to load.
@@ -332,7 +302,9 @@ public class Fields {
     public void setAllFrom(@NonNull final Bundle values,
                            final boolean withOverwrite) {
         if (withOverwrite) {
-            setAllFrom(values);
+            for (Field field : mAllFields) {
+                field.setValueFrom(values);
+            }
         } else {
             for (Field field : mAllFields) {
                 if (!field.mColumn.isEmpty() && values.containsKey(field.mColumn)) {
@@ -391,7 +363,6 @@ public class Fields {
      *
      * @return {@code true} if all validation passed.
      */
-    @SuppressWarnings("unused")
     private boolean validateAllFields(@NonNull final Bundle values) {
         boolean isOk = true;
         mValidationExceptions.clear();
@@ -460,7 +431,6 @@ public class Fields {
      * @return the text message associated with the last validation exception to occur.
      */
     @NonNull
-    @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.isEmpty()) {
             return "No error";
@@ -567,18 +537,6 @@ public class Fields {
      * @author Philip Warner
      */
     public interface FieldDataAccessor {
-
-        /**
-         * Passed a Field and a Cursor get the column from the cursor and set the view value.
-         *
-         * @param field  which defines the View details
-         * @param cursor with data to load.
-         *
-         * @throws CursorIndexOutOfBoundsException if the cursor does not have a required column
-         */
-        void setFieldValueFrom(@NonNull Field field,
-                               @NonNull Cursor cursor)
-                throws CursorIndexOutOfBoundsException;
 
         /**
          * Passed a Field and a Bundle get the column from the Bundle and set the view value.
@@ -689,13 +647,6 @@ public class Fields {
     /** Base implementation. */
     private abstract static class BaseDataAccessor
             implements FieldDataAccessor {
-
-        @Override
-        public void setFieldValueFrom(@NonNull final Field field,
-                                      @NonNull final Cursor cursor)
-                throws CursorIndexOutOfBoundsException {
-            set(field, cursor.getString(cursor.getColumnIndex(field.mColumn)));
-        }
 
         @Override
         public void setFieldValueFrom(@NonNull final Field field,
@@ -1036,19 +987,6 @@ public class Fields {
     public static class RatingBarAccessor
             extends BaseDataAccessor {
 
-        public void setFieldValueFrom(@NonNull final Field field,
-                                      @NonNull final Cursor cursor)
-                throws CursorIndexOutOfBoundsException {
-            RatingBar bar = field.getView();
-            int col = cursor.getColumnIndex(field.mColumn);
-            if (field.formatter != null) {
-                String sValue = field.formatter.format(field, cursor.getString(col));
-                bar.setRating(Float.parseFloat(sValue));
-            } else {
-                bar.setRating(cursor.getFloat(col));
-            }
-        }
-
         public void set(@NonNull final Field field,
                         @Nullable final String value) {
             RatingBar bar = field.getView();
@@ -1174,7 +1112,7 @@ public class Fields {
 
     /**
      * Formatter for boolean fields.
-     *
+     * <p>
      * Can be reused for multiple fields.
      *
      * @author Philip Warner
@@ -1488,7 +1426,7 @@ public class Fields {
             final View view = getView();
 
             // Set the appropriate accessor
-             if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
                 //TOMF: this emphasizes the need for having an actual type for the field.
@@ -1496,7 +1434,7 @@ public class Fields {
                 addTouchSignalsDirty(view);
 
             } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
-                 // the opposite, do not accept the MaterialButton here.
+                // the opposite, do not accept the MaterialButton here.
                 mFieldDataAccessor = new CheckableAccessor();
                 addTouchSignalsDirty(view);
 
@@ -1598,7 +1536,6 @@ public class Fields {
          *
          * @return field (for chaining)
          */
-        @SuppressWarnings("UnusedReturnValue")
         @NonNull
         public Field setShowHtml(final boolean showHtml) {
             if (mFieldDataAccessor instanceof TextViewAccessor) {
@@ -1612,7 +1549,6 @@ public class Fields {
          *
          * @return field (for chaining)
          */
-        @SuppressWarnings({"UnusedReturnValue", "unused"})
         public Field setDoNotFetch(final boolean doNoFetch) {
             mDoNoFetch = doNoFetch;
             return this;
@@ -1731,22 +1667,6 @@ public class Fields {
          **/
         void putValueInto(@NonNull final DataManager data) {
             mFieldDataAccessor.putFieldValueInto(this, data);
-        }
-
-        /**
-         * Set the value of this field from the passed cursor.
-         * Useful for getting access to raw data values from the database.
-         *
-         * @throws ColumnNotPresentException if the cursor does not have a required column
-         */
-        void setValueFrom(@NonNull final Cursor cursor) {
-            if (!mColumn.isEmpty() && !mDoNoFetch) {
-                try {
-                    mFieldDataAccessor.setFieldValueFrom(this, cursor);
-                } catch (CursorIndexOutOfBoundsException e) {
-                    throw new ColumnNotPresentException(mColumn, e);
-                }
-            }
         }
 
         /**

@@ -248,7 +248,7 @@ public class BookFragment
      * <br>{@inheritDoc}
      */
     @Override
-    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
+    protected void onLoadFieldsFromBook() {
         Book book = mBookBaseFragmentModel.getBook();
 
         // pass the CURRENT currency code to the price formatters
@@ -260,7 +260,7 @@ public class BookFragment
         ((Fields.PriceFormatter) mFields.getField(R.id.price_paid).getFormatter())
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
-        super.onLoadFieldsFromBook(setAllFrom);
+        super.onLoadFieldsFromBook();
 
         populateAuthorListField();
         populateSeriesListField();

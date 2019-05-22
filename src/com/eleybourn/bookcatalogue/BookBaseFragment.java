@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
@@ -123,6 +122,7 @@ public abstract class BookBaseFragment
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookBaseFragmentModel.init(args);
 
+        mFields = new Fields(this);
         initFields();
     }
 
@@ -134,12 +134,8 @@ public abstract class BookBaseFragment
      * Set onClickListener etc...
      * <p>
      * Note this is NOT where we set values.
-     * <p>
-     * Override as needed, but call super FIRST
      */
-    @CallSuper
     protected void initFields() {
-        mFields = new Fields(this);
     }
 
     /**
@@ -161,6 +157,7 @@ public abstract class BookBaseFragment
     /**
      * Populate all Fields with the data from the Book.
      * Loads the data while preserving the isDirty() status.
+     * Normally called from the base onResume, but can also be called after {@link Book#reload}.
      * <p>
      * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
      * <p>
@@ -173,8 +170,8 @@ public abstract class BookBaseFragment
         // preserve the 'dirty' status.
         final boolean wasDirty = mBookBaseFragmentModel.isDirty();
         // make it so!
-        onLoadFieldsFromBook(false);
-
+        onLoadFieldsFromBook();
+        // get dirty...
         mBookBaseFragmentModel.setDirty(wasDirty);
         mFields.setAfterFieldChangeListener(
                 (field, newValue) -> mBookBaseFragmentModel.setDirty(true));
@@ -187,15 +184,10 @@ public abstract class BookBaseFragment
      * This is where you should populate all the fields with the values coming from the book.
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
-     *
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)}
-     *                   has already been called or not
      */
     @CallSuper
-    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
-        if (!setAllFrom) {
-            mFields.setAllFrom(mBookBaseFragmentModel.getBook());
-        }
+    protected void onLoadFieldsFromBook() {
+        mFields.setAllFrom(mBookBaseFragmentModel.getBook());
     }
 
     //</editor-fold>

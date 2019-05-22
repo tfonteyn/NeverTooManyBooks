@@ -156,8 +156,8 @@ public class EditBookNotesFragment
     }
 
     @Override
-    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(setAllFrom);
+    protected void onLoadFieldsFromBook() {
+        super.onLoadFieldsFromBook();
 
         // Restore default visibility
         showHideFields(false);

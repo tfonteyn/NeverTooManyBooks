@@ -80,8 +80,8 @@ public abstract class EditBookBaseFragment<T>
     }
 
     @Override
-    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(setAllFrom);
+    protected void onLoadFieldsFromBook() {
+        super.onLoadFieldsFromBook();
 
         // new book ?
         if (!mBookBaseFragmentModel.isExistingBook()) {

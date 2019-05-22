@@ -161,8 +161,8 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    protected void onLoadFieldsFromBook(final boolean setAllFrom) {
-        super.onLoadFieldsFromBook(setAllFrom);
+    protected void onLoadFieldsFromBook() {
+        super.onLoadFieldsFromBook();
 
         Book book = mBookBaseFragmentModel.getBook();
 

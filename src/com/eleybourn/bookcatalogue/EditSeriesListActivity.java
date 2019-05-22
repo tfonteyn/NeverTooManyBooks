@@ -71,9 +71,6 @@ public class EditSeriesListActivity
     /** AutoCompleteTextView for mSeriesNameView and the EditView in the dialog box. */
     private ArrayAdapter<String> mSeriesAdapter;
 
-    /** flag indicating global changes were made. Used in setResult. */
-    private boolean mGlobalChangeMade;
-
     /**
      * Constructor.
      */
@@ -136,31 +133,23 @@ public class EditSeriesListActivity
     protected boolean onSave(@NonNull final Intent data) {
         String name = mSeriesNameView.getText().toString().trim();
         if (name.isEmpty()) {
-            // no current edit, so we're good to go. Add the global flag.
-            data.putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalChangeMade);
-            return super.onSave(data);
+            // no current edit, so we're good to go.
+            return true;
         }
 
+        // if the user had enter a (partial) new name, check if it's ok to leave
         StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-            // runs when user clicks 'exit'
+            // runs when user clicks 'exit anyway'
             mSeriesNameView.setText("");
-            findViewById(R.id.confirm).performClick();
+            doSave();
         });
 
         return false;
     }
 
-
     @Override
     protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<Series> list,
                                                         @NonNull final StartDragListener dragStartListener) {
-
-        // no need for an observer.
-//        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-//            @Override
-//            public void onChanged() {
-//            }
-//        });
         return new SeriesListAdapter(this, list, dragStartListener);
     }
 
@@ -231,7 +220,7 @@ public class EditSeriesListActivity
                          (d, which) -> {
                              d.dismiss();
 
-                             mGlobalChangeMade = mDb.globalReplaceSeries(series, newSeries);
+                             mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries);
                              series.copyFrom(newSeries);
                              Series.pruneSeriesList(mList);
                              Utils.pruneList(mDb, mList);

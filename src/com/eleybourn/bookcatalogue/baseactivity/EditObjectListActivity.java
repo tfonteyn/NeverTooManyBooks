@@ -24,12 +24,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -40,24 +40,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
-import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
+import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
+import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
  * Base class for editing a list of objects.
  * <p>
  * {@link #createListAdapter} needs to be implemented returning a suitable RecyclerView adapter.
- * <p>
- * Main View buttons:
- * - R.id.confirm       calls {@link #onSave(Intent)}
- * - R.id.cancel        calls {@link #onCancel()}
- * - R.id.add           calls {@link #onAdd}
- * <p>
- * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
- * So if your list supports adding to the list, you must implement {@link #onAdd}.
  *
  * @param <T> the object type as used in the List
  *
@@ -75,6 +70,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     /** the rows. */
     protected ArrayList<T> mList;
+
+    /** flag indicating local changes were made. Used in setResult. */
+    protected boolean mIsDirty;
+
+    /** flag indicating global changes were made. Used in setResult. */
+    protected boolean mGlobalReplacementsMade;
 
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
@@ -128,27 +129,48 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mListAdapter = createListAdapter(mList,
                                          (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         mListView.setAdapter(mListAdapter);
+        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                mIsDirty = true;
+            }
+        });
 
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
 
-        setTextOrHideView(R.id.title, mBookTitle);
+        TextView titleView = findViewById(R.id.title);
+        if (mBookTitle == null || mBookTitle.isEmpty()) {
+            titleView.setVisibility(View.GONE);
+        } else {
+            titleView.setText(mBookTitle);
+        }
 
-        // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
-        setOnClickListener(R.id.confirm, v -> {
-            Intent data = new Intent().putExtra(mBKey, mList);
-            if (onSave(data)) {
-                finish();
-            }
-        });
-        setOnClickListener(R.id.cancel, v -> {
-            if (onCancel()) {
-                finish();
-            }
-        });
-        setOnClickListener(R.id.add, this::onAdd);
+        findViewById(R.id.add).setOnClickListener(this::onAdd);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_SAVE, 1, R.string.btn_confirm_save)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_SAVE:
+                doSave();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -159,11 +181,22 @@ public abstract class EditObjectListActivity<T extends Parcelable>
                       @NonNull StartDragListener dragStartListener);
 
     /**
-     * Called when user clicks the 'Add' button (if present).
+     * The user entered new data in the edit field and clicked 'add'.
      *
      * @param target The view that was clicked ('add' button).
      */
     protected abstract void onAdd(@NonNull final View target);
+
+    protected void doSave() {
+        Intent data = new Intent()
+                .putExtra(mBKey, mList)
+                .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
+
+        if (onSave(data)) {
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        }
+    }
 
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
@@ -181,57 +214,19 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @return {@code true} if activity should exit, {@code false} to abort exit.
      */
     protected boolean onSave(@NonNull final Intent data) {
-        setResult(Activity.RESULT_OK, data);
         return true;
     }
 
-    /**
-     * Called when user presses 'Cancel' button if present. Primary task is
-     * return a boolean indicating it is OK to continue.
-     * <p>
-     * Can be overridden to perform other checks.
-     *
-     * @return {@code true} if activity should exit, {@code false} to abort exit.
-     */
-    @SuppressWarnings("SameReturnValue")
-    protected boolean onCancel() {
-        setResult(Activity.RESULT_CANCELED);
-        return true;
-    }
-
-    /**
-     * Setup a listener for the specified view id if such id exist.
-     *
-     * @param viewId   Resource ID
-     * @param listener Listener
-     */
-    private void setOnClickListener(@IdRes final int viewId,
-                                    @NonNull final OnClickListener listener) {
-        View view = findViewById(viewId);
-        if (view != null) {
-            view.setOnClickListener(listener);
+    @Override
+    public void onBackPressed() {
+        if (mIsDirty) {
+            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+                // runs when user clicks 'exit anyway'
+                setResult(Activity.RESULT_CANCELED);
+                finish();
+            });
         }
-    }
-
-    /**
-     * Set a TextView to a string, or hide it.
-     *
-     * @param viewId View ID
-     * @param value  String to set
-     */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue")
-                                     @IdRes final int viewId,
-                                     @Nullable final String value) {
-        TextView textView = findViewById(viewId);
-        if (textView == null) {
-            return;
-        }
-
-        if (value == null || value.isEmpty()) {
-            textView.setVisibility(View.GONE);
-        } else {
-            textView.setText(value);
-        }
+        super.onBackPressed();
     }
 
     /**

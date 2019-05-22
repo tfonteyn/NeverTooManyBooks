@@ -66,9 +66,6 @@ public class EditAuthorListActivity
     @SuppressWarnings("FieldCanBeLocal")
     private ArrayAdapter<String> mAuthorAdapter;
 
-    /** flag indicating global changes were made. Used in setResult. */
-    private boolean mGlobalChangeMade;
-
     /**
      * Constructor.
      */
@@ -95,11 +92,6 @@ public class EditAuthorListActivity
         mAuthorNameView.setAdapter(mAuthorAdapter);
     }
 
-    /**
-     * The user entered new data in the edit field and clicked 'save'.
-     *
-     * @param target The view that was clicked ('add' button).
-     */
     @Override
     protected void onAdd(@NonNull final View target) {
         String authorName = mAuthorNameView.getText().toString().trim();
@@ -132,30 +124,23 @@ public class EditAuthorListActivity
         final AutoCompleteTextView view = findViewById(R.id.author);
         String str = view.getText().toString().trim();
         if (str.isEmpty()) {
-            // no current edit, so we're good to go. Add the global flag.
-            data.putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalChangeMade);
-            return super.onSave(data);
+            // no current edit, so we're good to go.
+            return true;
         }
 
+        // if the user had enter a (partial) new name, check if it's ok to leave
         StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-            // runs when user clicks 'exit'
+            // runs when user clicks 'exit anyway'
             view.setText("");
-            findViewById(R.id.confirm).performClick();
+            doSave();
         });
         return false;
     }
-
 
     @Override
     protected RecyclerViewAdapterBase
     createListAdapter(@NonNull final ArrayList<Author> list,
                       @NonNull final StartDragListener dragStartListener) {
-        // no need for an observer.
-//        adapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-//            @Override
-//            public void onChanged() {
-//            }
-//        });
         return new AuthorListAdapter(this, list, dragStartListener);
     }
 
@@ -252,7 +237,8 @@ public class EditAuthorListActivity
                          (d, which) -> {
                              d.dismiss();
 
-                             mGlobalChangeMade = mDb.globalReplaceAuthor(author, newAuthorData);
+                             mGlobalReplacementsMade = mDb.globalReplaceAuthor(author,
+                                                                               newAuthorData);
 
                              author.copyFrom(newAuthorData);
                              Utils.pruneList(mDb, mList);
