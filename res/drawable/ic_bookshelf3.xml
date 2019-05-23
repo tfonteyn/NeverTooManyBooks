@@ -3,35 +3,53 @@
     android:height="24dp"
     android:viewportWidth="460"
     android:viewportHeight="460">
+
+    <!-- feet -->
     <path
         android:fillColor="@color/blue_grey_900"
-        android:pathData="M111.289,431.602L61.289,431.602L51.289,401.602h70zM411.289,401.602h-70l10,30h50z" />
+        android:pathData="
+        M 50,420 h70 L110,430 h-50 z
+        M350,420 h70 L410,430 h-50 z" />
+
+    <!-- shelf -->
     <path
         android:fillColor="@color/grey_400"
-        android:pathData="M461.289,411.602L1.289,411.602v-40h460z" />
+        android:pathData="M0,400 h459 L439,350 L19,350 z" />
+
+    <!-- front of shelf -->
     <path
         android:fillColor="@color/grey_600"
-        android:pathData="M461.289,421.602L1.289,421.602v-20h460z" />
+        android:pathData="M0,420 h459 v-20 h-459 z" />
+
     <!-- book 1 -->
     <path
         android:fillColor="@color/brown_500"
-        android:pathData="M125.781,34.336L125.781,384.336c0,5.523 -4.31,10 -9.626,10L68.025,394.336c-5.317,0 -9.626,-4.477 -9.626,-10L58.398,34.336c0,-5.523 4.31,-10 9.626,-10h48.131c5.317,0 9.626,4.477 9.626,10z"
-        android:strokeWidth="0.98112768" />
+        android:pathData="M145,0
+        V385
+        c0,5  -1,10   -5, 10
+        h-55
+        c-5,0 -5,-5  -5,-10
+        v-350
+        c0,-5  1,-10   5,-10
+        h55
+        c5,0   5,5      5, 10
+        z"
+        android:strokeWidth="1" />
 
     <path
         android:fillAlpha="1"
-        android:fillColor="#ac9d93"
-        android:pathData="M58.398,64.688h67.383v17.969h-67.383z"
-        android:strokeWidth="2.09829783"
+        android:fillColor="@color/grey_500"
+        android:pathData="M80,65 h65 v20 h-65z"
+        android:strokeWidth="1"
         android:strokeAlpha="1"
         android:strokeColor="#00000000"
         android:strokeLineCap="round"
         android:strokeLineJoin="miter" />
     <path
         android:fillAlpha="1"
-        android:fillColor="#ac9d93"
-        android:pathData="M58.398,338.711h67.383v17.969h-67.383z"
-        android:strokeWidth="2.09829783"
+        android:fillColor="@color/grey_500"
+        android:pathData="M80,340 h65 v20 h-65z"
+        android:strokeWidth="1"
         android:strokeAlpha="1"
         android:strokeColor="#00000000"
         android:strokeLineCap="round"
@@ -41,14 +59,23 @@
     <!-- book 2 -->
     <path
         android:fillColor="@color/blue_grey_600"
-        android:pathData="m206.641,114.102v272.561c0,4.301 -5.172,7.787 -11.551,7.787h-57.757c-6.38,0 -11.551,-3.486 -11.551,-7.787V114.102c0,-4.301 5.172,-7.787 11.551,-7.787h57.757c6.38,0 11.551,3.486 11.551,7.787z"
-        android:strokeWidth="0.9484486" />
+        android:pathData="M235,115
+        v270
+        c 0, 4   -5, 8   -12, 8
+        h-60
+        c-7, 0  -12,-3   -12,-8
+        v-250
+        c 0,-4    5,-8    12,-8
+        h60
+        c 7, 0   12, 3    12, 8
+        z"
+        android:strokeWidth="1" />
 
     <path
         android:fillAlpha="1"
-        android:fillColor="#ac9d93"
-        android:pathData="M134.766,145.547h62.891v143.75h-62.891z"
-        android:strokeWidth="1.796875"
+        android:fillColor="@color/grey_500"
+        android:pathData="M160,145 h67 v145 h-67z"
+        android:strokeWidth="1"
         android:strokeAlpha="1"
         android:strokeColor="#00000000"
         android:strokeLineCap="round"
@@ -56,9 +83,18 @@
 
     <path
         android:fillAlpha="1"
-        android:fillColor="#ac9d93"
-        android:pathData="m169.126,308.326 l10.562,21.4 23.617,3.432 -17.089,16.658 4.034,23.521 -21.124,-11.105 -21.124,11.105 4.034,-23.521 -17.089,-16.658 23.617,-3.432z"
-        android:strokeWidth="1.796875"
+        android:fillColor="@color/orange_400"
+        android:pathData="M193,310
+         l10,21
+          24,4
+         -17,17
+           4,24
+         -21,-11
+         -21,11
+           4,-24
+         -17,-17
+          24,-4z"
+        android:strokeWidth="1"
         android:strokeAlpha="1"
         android:strokeColor="#00000000"
         android:strokeLineCap="round"
@@ -67,7 +103,15 @@
     <!-- book 3 -->
     <path
         android:fillColor="@color/red_600"
-        android:pathData="M238.086,81.925V383.987c0,4.767 -1.974,8.63 -4.41,8.63h-22.05c-2.436,0 -4.41,-3.864 -4.41,-8.63V81.925c0,-4.767 1.974,-8.63 4.41,-8.63h22.05c2.436,0 4.41,3.864 4.41,8.63z"
-        android:strokeWidth="0.61692667" />
-
+        android:pathData="M285,0
+        v385
+        c 0, 5 -2, 10     -5, 10
+        h-25
+        c-2, 0 -5, -5     -5,-10
+        v-285
+        c 0,-5  2,-10      5,-10
+        h25
+        c 2, 0  5,  5      5, 10
+        z"
+        android:strokeWidth="1" />
 </vector>

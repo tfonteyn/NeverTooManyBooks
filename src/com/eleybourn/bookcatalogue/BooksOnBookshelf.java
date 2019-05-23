@@ -61,7 +61,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistBuilder.BookRowInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
@@ -783,9 +782,9 @@ public class BooksOnBookshelf
                         .setIcon(R.drawable.ic_check_box);
                 }
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
                     .setIcon(R.drawable.ic_delete);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
+                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, 0, R.string.menu_edit_book_notes)
                     .setIcon(R.drawable.ic_note);
@@ -793,14 +792,12 @@ public class BooksOnBookshelf
                 if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mModel.getDb().getLoaneeByBookId(row.getBookId());
                     if (isAvailable) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN,
-                                 MenuHandler.MENU_ORDER_LENDING,
-                                 R.string.menu_loan_lend_book)
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
+                                 MenuHandler.MENU_ORDER_LENDING, R.string.menu_loan_lend_book)
                             .setIcon(R.drawable.ic_people);
                     } else {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED,
-                                 MenuHandler.MENU_ORDER_LENDING,
-                                 R.string.menu_loan_return_book)
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
+                                 MenuHandler.MENU_ORDER_LENDING, R.string.menu_loan_return_book)
                             .setIcon(R.drawable.ic_people);
                     }
                 }
@@ -817,7 +814,7 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.AUTHOR:
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit_author)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
                 if (row.isAuthorComplete()) {
                     menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_incomplete)
@@ -830,9 +827,9 @@ public class BooksOnBookshelf
 
             case BooklistGroup.RowKind.SERIES:
                 if (row.getSeriesId() != 0) {
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete_series)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete)
                         .setIcon(R.drawable.ic_delete);
-                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit_series)
+                    menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                     if (row.isSeriesComplete()) {
                         menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
@@ -960,14 +957,14 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-            case R.id.MENU_BOOK_EDIT_LOAN:
+            case R.id.MENU_BOOK_LOAN_ADD:
                 if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
                     LendBookDialogFragment.newInstance(bookId, row.getAuthorId(), row.getTitle())
                                           .show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
 
-            case R.id.MENU_BOOK_LOAN_RETURNED:
+            case R.id.MENU_BOOK_LOAN_DELETE:
                 db.deleteLoan(bookId);
                 mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, null);
                 return true;

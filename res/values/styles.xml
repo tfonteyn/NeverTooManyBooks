@@ -245,7 +245,7 @@
     <!-- Menu label for options in a list -->
     <style name="OptionRow.Menu">
         <item name="android:padding">@dimen/border2</item>
-        <item name="android:drawablePadding">@dimen/border3</item>
+        <item name="android:drawablePadding">@dimen/border4</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
@@ -334,17 +334,18 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color. -->
+    <!-- Read-only "CheckBox" with custom 'check/invisible' icon in our custom color.
+     Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
+     Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
     <style name="Flag">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:button">@drawable/ic_checked_selector</item>
         <item name="android:buttonTint">?attr/checked_icon_tint</item>
     </style>
-
 
     <!-- file info fields for a File selection screen -->
     <style name="FileInfo">

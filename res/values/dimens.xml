@@ -17,20 +17,21 @@
     But NOT for start/end, for the latter use 'indent' -->
     <dimen name="border1">4dp</dimen>
     <dimen name="border2">8dp</dimen>
-    <dimen name="border3">16dp</dimen>
+    <dimen name="border4">16dp</dimen>
 
     <!-- indent, usually start only, but can be used for end as well. -->
     <dimen name="indent1">4dp</dimen>
     <dimen name="indent2">8dp</dimen>
     <dimen name="indent3">12dp</dimen>
-
-    <!-- Default and full height of a standard EditView with default text size inside.
-    Used to make other elements the same height. -->
-    <dimen name="edit_text_height">48dp</dimen>
+    <dimen name="indent4">16dp</dimen>
 
     <!-- indent an element so it matches up with the text of a standard size compound button. -->
     <dimen name="indent_compound_button">32dp</dimen>
 
+
+    <!-- Default and full height of a standard EditView with default text size inside.
+    Used to make other elements the same height. -->
+    <dimen name="edit_text_height">48dp</dimen>
 
     <!-- FastScrollerOverlay line 1 - equivalent size from ?android:attr/textAppearanceLarge -->
     <dimen name="fso_text_primary">22sp</dimen>

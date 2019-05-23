@@ -554,7 +554,10 @@ public class Book
      * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
     private void initValidatorsAndAccessors() {
+
         addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
+        addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR);
+
         addValidator(DBDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
         addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);

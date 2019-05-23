@@ -181,7 +181,7 @@ public class EditBookshelfDialogFragment
 
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
-                .setTitle(R.string.menu_edit_bookshelf)
+                .setTitle(R.string.title_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
                 .setNegativeButton(android.R.string.cancel, ((d, which) -> d.dismiss()))
                 .setPositiveButton(R.string.btn_merge, (d, which) -> {

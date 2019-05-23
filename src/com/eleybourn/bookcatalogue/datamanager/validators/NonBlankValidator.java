@@ -21,6 +21,9 @@ package com.eleybourn.bookcatalogue.datamanager.validators;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
@@ -43,9 +46,15 @@ public class NonBlankValidator
             return;
         }
 
-        String v = dataManager.getString(datum).trim();
-        if (v.isEmpty()) {
-            throw new ValidatorException(R.string.vldt_non_blank_required, datum.getKey());
+        Object o = dataManager.get(datum);
+        if (o == null) {
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
+
+        } else if ((o instanceof String) && (dataManager.getString(datum).trim().isEmpty())) {
+                throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
+
+        } else if ((o instanceof ArrayList) && (dataManager.getParcelableArrayList(datum).isEmpty())) {
+                throw new ValidatorException(R.string.vldt_non_blank_required_for_x, datum.getKey());
         }
     }
 }

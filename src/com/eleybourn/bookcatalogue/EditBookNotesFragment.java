@@ -79,6 +79,7 @@ public class EditBookNotesFragment
     @Override
     protected void initFields() {
         super.initFields();
+        Fields fields = getFields();
 
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
@@ -89,12 +90,12 @@ public class EditBookNotesFragment
         Field field;
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, DBDefinitions.KEY_READ)
+        fields.add(R.id.read, DBDefinitions.KEY_READ)
                .getView().setOnClickListener(v -> {
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field end = mFields.getField(R.id.read_end);
+                Field end = fields.getField(R.id.read_end);
                 if (end.getValue().toString().trim().isEmpty()) {
                     end.setValue(DateUtils.localSqlDateForToday());
                 }
@@ -102,39 +103,39 @@ public class EditBookNotesFragment
         });
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, DBDefinitions.KEY_SIGNED);
+        fields.add(R.id.signed, DBDefinitions.KEY_SIGNED);
 
-        mFields.add(R.id.rating, DBDefinitions.KEY_RATING);
+        fields.add(R.id.rating, DBDefinitions.KEY_RATING);
 
-        mFields.add(R.id.notes, DBDefinitions.KEY_NOTES);
+        fields.add(R.id.notes, DBDefinitions.KEY_NOTES);
 
-        mFields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
-        field = mFields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
+        field = fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
                         mBookBaseFragmentModel.getPricePaidCurrencyCodes());
 
-        field = mFields.add(R.id.location, DBDefinitions.KEY_LOCATION);
+        field = fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location,
                         mBookBaseFragmentModel.getLocations());
 
-        field = mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
+        field = fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
         initCheckListEditor(field, R.string.lbl_edition, () ->
                 mBookBaseFragmentModel.getBook().getEditableEditionList());
 
-        field = mFields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
+        field = fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_date_acquired, true);
 
-        field = mFields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
+        field = fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_start, true);
 
-        field = mFields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
+        field = fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_end, true);
 
-        mFields.addCrossValidator(new Fields.FieldCrossValidator() {
+        fields.addCrossValidator(new Fields.FieldCrossValidator() {
             private static final long serialVersionUID = -3288341939109142352L;
 
             public void validate(@NonNull final Fields fields,

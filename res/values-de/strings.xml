@@ -4,7 +4,7 @@
 <resources>
     <string name="title_add_book">Buch hinzufügen</string>
     <string name="menu_add_book">Buch hinzufügen…</string>
-    <string name="menu_delete_book">Buch löschen</string>
+    <string name="title_delete_book">Buch löschen</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_title">Titel</string>
     <string name="lbl_publisher">Verlag</string>
@@ -12,7 +12,7 @@
     <string name="lbl_rating">Bewertung</string>
     <string name="lbl_is_read">Haben Sie dieses Buch gelesen?</string>
     <string name="lbl_pages">Seiten</string>
-    <string name="btn_confirm_add_book">Buch hinzufügen</string>
+    <string name="X_btn_confirm_add_book">Buch hinzufügen</string>
     <string name="btn_confirm_update">Aktualisieren</string>
     <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
         Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.
@@ -21,11 +21,11 @@
     <string name="X_menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="menu_search">Suche</string>
-    <string name="btn_confirm_save_book">Buch speichern</string>
+    <string name="X_btn_confirm_save_book">Buch speichern</string>
     <string name="X_info_no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt.
         Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.
     </string>
-    <string name="menu_add_bookshelf">Bücherregal erstellen</string>
+    <string name="X_menu_add_bookshelf">Bücherregal erstellen</string>
     <string name="menu_bookshelves">Bücherregale…</string>
     <string name="warning_cannot_delete_1st_bs">
         Das erste Bücherregal kann nicht gelöscht werden
@@ -35,7 +35,7 @@
     <string name="X_isbn_found">ISBN gescannt. Suche im Internet.</string>
     <string name="search_isbn">ISBN-Suche</string>
     <string name="title_edit_bookshelves">Bücherregale verwalten</string>
-    <string name="menu_edit_bookshelf">Bücherregal bearbeiten</string>
+    <string name="title_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="lbl_search_for_books">Suche nach Büchern</string>
     <string name="title_search_for">Suche nach Autor oder Titel</string>
     <string name="warning_book_not_found">Das gescannte Buch wurde nicht gefunden.
@@ -155,16 +155,16 @@
         Barcode manchmal auf der Rückseite des Covers zu finden ist.
     </string>
     <string name="about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
-    <string name="vldt_unable_to_get_value">Der Wert für ‘%1$s’ konnte nicht ermittelt werden</string>
-    <string name="vldt_integer_expected">Es wird ein Integer-Wert für ‘%1$s’ erwartet</string>
-    <string name="vldt_real_expected">Es wird ein Gleitkomma-Wert für ‘%1$s’ erwartet</string>
-    <string name="vldt_date_expected">Es wird ein Datum für ‘%1$s’ erwartet</string>
-    <string name="vldt_boolean_expected">
+    <string name="vldt_unable_to_get_value_for_x">Der Wert für ‘%1$s’ konnte nicht ermittelt werden</string>
+    <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für ‘%1$s’ erwartet</string>
+    <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für ‘%1$s’ erwartet</string>
+    <string name="vldt_date_expected_for_x">Es wird ein Datum für ‘%1$s’ erwartet</string>
+    <string name="vldt_boolean_expected_for_x">
         Es wird ein boolescher Wert (0,1,t,f,true,false) für ‘%1$s’ erwartet
     </string>
-    <string name="vldt_non_blank_required">Es ist ein Wert für ‘%1$s’ erforderlich</string>
-    <string name="vldt_blank_required">‘%1$s’ muss leer sein</string>
-    <string name="vldt_failed">Die Überprüfung für ‘%1$s’ ist fehlgeschlagen</string>
+    <string name="vldt_non_blank_required_for_x">Es ist ein Wert für ‘%1$s’ erforderlich</string>
+    <string name="vldt_blank_required_for_x">‘%1$s’ muss leer sein</string>
+    <string name="vldt_failed_for_x">Die Überprüfung für ‘%1$s’ ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">
         Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen
     </string>
@@ -218,9 +218,9 @@
         Es muss mindestens ein Autor angegeben werden
     </string>
     <string name="warning_required_title">Es muss ein Titel angegeben werden</string>
-    <string name="menu_delete_series">Serie löschen…</string>
-    <string name="menu_edit_author">Autor bearbeiten…</string>
-    <string name="menu_edit_series">Serie bearbeiten…</string>
+    <string name="X_menu_delete_series">Serie löschen…</string>
+    <string name="X_menu_edit_author">Autor bearbeiten…</string>
+    <string name="X_menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
     <string name="confirm_delete_series">
         Soll die Serie ‘%1$s’ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n
@@ -638,7 +638,7 @@
     <string name="lbl_month">Monat</string>
     <string name="lbl_day">Tag</string>
     <string name="menu_edit">Bearbeiten…</string>
-    <string name="progress_msg_getting_books">Hole Bücher…</string>
+    <string name="X_progress_msg_getting_books">Hole Bücher…</string>
     <string name="gr_tq_last_error_e">Letzter Fehler: %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">Ungültige ISBN ‘%1$s’ gesucht</string>
     <string name="warning_if_day_set_month_and_year_must_be">

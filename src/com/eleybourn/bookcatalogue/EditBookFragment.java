@@ -167,17 +167,18 @@ public class EditBookFragment
 
         int saveOrAddText = mBookBaseFragmentModel.isExistingBook() ? R.string.btn_confirm_save
                                                                     : R.string.btn_confirm_add;
-        menu.add(Menu.NONE, R.id.MENU_BOOK_SAVE, 1, saveOrAddText)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 2, R.string.menu_hide_keyboard)
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 MenuHandler.MENU_ORDER_UPDATE_FIELDS,
-                 R.string.menu_internet_update_fields)
+        menu.add(Menu.NONE, R.id.MENU_SAVE,
+                 MenuHandler.MENU_ORDER_SAVE, saveOrAddText)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                 MenuHandler.MENU_ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -200,7 +201,7 @@ public class EditBookFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.MENU_BOOK_SAVE:
+            case R.id.MENU_SAVE:
                 doSave();
                 return true;
 
@@ -222,15 +223,21 @@ public class EditBookFragment
      * <p>
      * It will check if the book already exists (isbn search) if you are creating a book;
      * if so the user will be prompted to confirm.
-     * <p>
-     * In all cases, once the book is added/created, or not, the appropriate method of the
-     * passed nextStep parameter will be executed. Passing nextStep is necessary because
-     * this method may return after displaying a dialogue.
+     *
+     * <br>Validation is done in two steps:
+     * <ol>
+     * <li>The data in the fields, done on a per-fragment base in {@link EditBookBaseFragment#onSaveFieldsToBook()}<br>
+     * Limited to one cross-validation between start/end dates for reading</li>
+     * <li>the book data, done here.<br>
+     * These are *data* checks, e.g. date formats, boolean, ...</li>
+     * </ol>
+     * FIXME: validation is awkward and incomplete.
      */
     private void doSave() {
-        Book book = mBookBaseFragmentModel.getBook();
 
-        // ask any page that has not gone into 'onPause' to add its fields.
+        // ask any fragment that has not gone into 'onPause' to add its fields.
+        // Note: we could just ask the 'current' fragment which would be enough.
+        // Call it an experiment...
         for (int p = 0; p < mPagerAdapter.getCount(); p++) {
             Fragment frag = mPagerAdapter.getItem(p);
             if (frag.isResumed()) {
@@ -238,19 +245,23 @@ public class EditBookFragment
             }
         }
 
+        Book book = mBookBaseFragmentModel.getBook();
+
         // Ignore validation failures; but we still validate to get the current values updated.
-        book.validate();
-        // if (!book.validate()) {
-        //      StandardDialogs.sendTaskUserMessage(this,
-        //      book.getValidationExceptionMessage(getResources()));
-        // }
-        // However, there is some data that we really do require...
-        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        //book.validate();
+
+        // validate the book data
+        if (!book.validate()) {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
-            return;
+            new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.vldt_failure)
+                    .setMessage(book.getValidationExceptionMessage(getResources()))
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
         }
 
+        // However, there is some data that we really do require...
         if (!book.containsKey(DBDefinitions.KEY_TITLE)
                 || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
             //noinspection ConstantConditions
@@ -258,10 +269,17 @@ public class EditBookFragment
             return;
         }
 
+        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
+            return;
+        }
+
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             /* Check if the book already exists */
-            if (!isbn.isEmpty() && ((mBookBaseFragmentModel.getDb().getBookIdFromIsbn(isbn, true) > 0))) {
+            if (!isbn.isEmpty() && ((mBookBaseFragmentModel.getDb().getBookIdFromIsbn(isbn,
+                                                                                      true) > 0))) {
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.title_duplicate_book)

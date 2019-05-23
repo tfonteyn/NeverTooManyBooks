@@ -18,6 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -129,7 +130,8 @@ public class SearchAdminActivity
             menu.add(Menu.NONE, R.id.MENU_USE, 0, R.string.btn_confirm_use)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         } else {
-            menu.add(Menu.NONE, R.id.MENU_SAVE, 0, R.string.btn_confirm_save)
+            menu.add(Menu.NONE, R.id.MENU_SAVE,
+                     MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 

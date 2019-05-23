@@ -20,6 +20,16 @@
         tools:src="@drawable/ic_image"
         />
 
+    <CheckBox
+        android:id="@+id/read"
+        style="@style/Flag"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"
+        tools:ignore="ContentDescription"
+        />
+
     <TextView
         android:id="@+id/series_num_long"
         style="@style/BooklistBook.Secondary"
@@ -51,7 +61,7 @@
         app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
         tools:ignore="SelectableText"
-        tools:text="@tools:sample/lorem"
+        tools:text="@string/lbl_title"
         />
 
     <TextView
@@ -104,13 +114,4 @@
         tools:text="@string/lbl_location"
         />
 
-    <CheckBox
-        android:id="@+id/read"
-        style="@style/Flag"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/title"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:checked="true"
-        tools:ignore="ContentDescription"
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>

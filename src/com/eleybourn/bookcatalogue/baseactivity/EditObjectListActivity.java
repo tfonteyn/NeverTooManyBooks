@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -154,7 +155,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_SAVE, 1, R.string.btn_confirm_save)
+        menu.add(Menu.NONE, R.id.MENU_SAVE,
+                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);

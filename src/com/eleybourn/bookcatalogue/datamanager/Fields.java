@@ -88,9 +88,8 @@ import com.google.android.material.button.MaterialButton;
  * as expected as will setting the value of a Spinner). As new view types are added, it
  * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
  * <li> Custom data accessors and formatters to provide application-specific data rules.</li>
- * <li> validation: calling {@link #validateAllFields} will call user-defined or predefined</li>
+ * <li> validation: calling {@link #validate} will call user-defined or predefined</li>
  * validation routines. The text of any exceptions will be available after the call.</li>
- * <li> simplified loading of data from a Cursor.</li>
  * <li> simplified extraction of data to a {@link ContentValues} collection.</li>
  * </ul>
  * <p>
@@ -109,13 +108,13 @@ import com.google.android.material.button.MaterialButton;
  * Data flows to and from a view as follows:
  * <ul>
  * <li>IN  ( no formatter ):
- * <br>(Cursor or other source) -> transform (in accessor) -> View</li>
+ * <br>(DataManager/Bundle) -> transform (in accessor) -> View</li>
  * <li>IN  (with formatter):
- * <br>(Cursor or other source) -> format() (via accessor) -> transform (in accessor) -> View</li>
+ * <br>(DataManager/Bundle) -> format() (via accessor) -> transform (in accessor) -> View</li>
  * <li>OUT ( no formatter ):
- * <br>(Cursor or other source) -> transform (in accessor) -> validator -> (ContentValues or Object)</li>
+ * <br>(DataManager/Bundle) -> transform (in accessor) -> validator -> (ContentValues or Object)</li>
  * <li>OUT (with formatter):
- * <br>(Cursor or other source) -> transform (in accessor) -> extract (via accessor)
+ * <br>(DataManager/Bundle) -> transform (in accessor) -> extract (via accessor)
  * -> validator -> (ContentValues or Object)</li>
  * </ul>
  * <p>
@@ -140,15 +139,18 @@ import com.google.android.material.button.MaterialButton;
  */
 public class Fields {
 
-    /** The activity or fragment related to this object. */
-    @NonNull
-    private final FieldsContext mFieldContext;
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
     /** All validator exceptions caught. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     /** the list with all fields. */
     private final ArrayList<Fields.Field> mAllFields = new ArrayList<>();
+    /**
+     * The activity or fragment related to this object.
+     * Uses a WeakReference to the Activity/Fragment.
+     */
+    @NonNull
+    private FieldsContext mFieldContext;
     /** TextEdit fields will be watched. */
     @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener;
@@ -220,14 +222,33 @@ public class Fields {
     }
 
     /**
-     * Accessor for related FieldsContext. This would be one of:
-     * {@link ActivityContext} or {@link FragmentContext}.
+     * Accessor for related FieldsContext.
+     * <p>
+     * Provides acces to {@link FieldsContext#findViewById(int)}
      *
      * @return FieldsContext for this collection.
      */
     @NonNull
     private FieldsContext getFieldContext() {
         return mFieldContext;
+    }
+
+    /**
+     * Allow re-setting the context so we can use the Fields class from a ViewModel.
+     *
+     * @param fragment The parent fragment which contains all Views this object will manage.
+     */
+    public void setFieldContext(@NonNull final Fragment fragment) {
+        mFieldContext = new FragmentContext(fragment);
+    }
+
+    /**
+     * Allow re-setting the context so we can use the Fields class from a ViewModel.
+     *
+     * @param activity The parent activity which contains all Views this object will manage.
+     */
+    public void setFieldContext(@NonNull final Activity activity) {
+        mFieldContext = new ActivityContext(activity);
     }
 
     /**
@@ -355,32 +376,35 @@ public class Fields {
      * The Bundle collection is then used in cross-validation as a second pass, and finally
      * passed to each defined cross-validator.
      * <p>
-     * 2018-11-11: this and all related code is not used at all in the original code.
-     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     * Use {@link #getValidationExceptionMessage(Resources)} for the results.
      *
      * @param values The Bundle collection to fill
      *
      * @return {@code true} if all validation passed.
      */
-    private boolean validateAllFields(@NonNull final Bundle values) {
+    public boolean validate(@NonNull final Bundle values) {
         boolean isOk = true;
         mValidationExceptions.clear();
 
         // First, just validate all fields with the cross-val flag set false
-        if (!validateAllFields(values, false)) {
+        if (!validate(values, false)) {
             isOk = false;
         }
 
         // Now re-run with cross-val set to true.
-        if (!validateAllFields(values, true)) {
+        if (!validate(values, true)) {
             isOk = false;
         }
 
-        // Finally run the local cross-validation
+        // Finally run the cross-validators
         for (FieldCrossValidator validator : mCrossValidators) {
             try {
                 validator.validate(this, values);
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "validate", validator.toString());
+                }
+
             } catch (ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
@@ -392,21 +416,25 @@ public class Fields {
     /**
      * Perform a loop validating all fields.
      * <p>
-     * 2018-11-11: Called by {@link #validateAllFields(Bundle)} which however is not called at all
-     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param values          The Bundle to fill in/use.
      * @param crossValidating flag indicating if this is a cross validation pass.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean validateAllFields(@NonNull final Bundle values,
-                                      final boolean crossValidating) {
+    private boolean validate(@NonNull final Bundle values,
+                             final boolean crossValidating) {
         boolean isOk = true;
         for (Field field : mAllFields) {
             if (field.mFieldValidator != null) {
                 try {
                     field.mFieldValidator.validate(this, field, values, crossValidating);
+                    if (BuildConfig.DEBUG) {
+                        Logger.debug(this, "validate",
+                                     "column=" + field.mColumn,
+                                     "crossValidating=" + crossValidating);
+                    }
+
                 } catch (ValidatorException e) {
                     mValidationExceptions.add(e);
                     isOk = false;
@@ -477,11 +505,7 @@ public class Fields {
      * Interface for all field-level validators. Each field validator is called twice; once
      * with the crossValidating flag set to false, then, if all validations were successful,
      * they are all called a second time with the flag set to true.
-     * This is done in {@link #validateAllFields(Bundle)}
-     * <p>
-     * This is an alternate method of applying cross-validation.
-     * 2018-11-11: the original code never actively used this.
-     * It seems {@link DataManager} replaced/implemented validation instead.
+     * This is done in {@link #validate(Bundle)}
      *
      * @author Philip Warner
      */
@@ -1305,7 +1329,7 @@ public class Fields {
             final View view = mFragment.get().getView();
             if (view == null) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debugWithStackTrace(this, "findViewById", "View is NULL");
+                    Logger.debugWithStackTrace(this, "findViewById", "Fragment View is NULL");
                 }
                 return null;
             }
@@ -1367,14 +1391,14 @@ public class Fields {
         @NonNull
         private final String group;
         /**
-         * column name (can be blank) used to access a {@link DataManager} (or Bundle/Cursor).
+         * column name (can be blank) used to access a {@link DataManager} (or Bundle).
          * <p>
          * - column is set, and doNoFetch==false:
-         * ===> fetched from the {@link DataManager} (or Bundle/Cursor), and populated on the screen
+         * ===> fetched from the {@link DataManager} (or Bundle), and populated on the screen
          * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
          * <p>
          * - column is set, and doNoFetch==true:
-         * ===> fetched from the {@link DataManager} (or Bundle/Cursor), but populating
+         * ===> fetched from the {@link DataManager} (or Bundle), but populating
          * the screen must be done manually.
          * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
          * <p>
@@ -1385,13 +1409,11 @@ public class Fields {
         /** FieldFormatter to use (can be {@code null}). */
         @Nullable
         FieldFormatter formatter;
-        /** The view for this field; looked up on first use, then cached. */
-        private View mFieldView;
         /** Is the field in use; i.e. is it enabled in the user-preferences. **/
         private boolean mIsUsed;
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
-         * from a {@link DataManager} (or Bundle/Cursor).
+         * from a {@link DataManager} (or Bundle).
          * This is usually done for synthetic fields needed when putting the data
          * into the {@link DataManager} (or Bundle).
          */
@@ -1481,7 +1503,6 @@ public class Fields {
                     ", group='" + group + '\'' +
                     ", mColumn='" + mColumn + '\'' +
                     ", formatter=" + formatter +
-                    ", mFieldView=" + mFieldView +
                     ", mIsUsed=" + mIsUsed +
                     ", mDoNoFetch=" + mDoNoFetch +
                     ", mFieldValidator=" + mFieldValidator +
@@ -1607,26 +1628,23 @@ public class Fields {
          *
          * @see #debugNullView
          */
-        @SuppressWarnings("unchecked")
         @NonNull
         public <T extends View> T getView() {
-            if (mFieldView == null) {
-                mFieldView = mFields.get().getFieldContext().findViewById(id);
-                // see comment on debugNullView
-                if (mFieldView == null) {
-                    // the debug call ends with throwing an exception.
-                    debugNullView(this);
-                }
+            View view = mFields.get().getFieldContext().findViewById(id);
+            // see comment on debugNullView
+            if (view == null) {
+                // the debug call ends with throwing an exception.
+                debugNullView(this);
             }
-            return (T) mFieldView;
+
+            //noinspection ConstantConditions,unchecked
+            return (T) view;
         }
 
         /**
          * syntax sugar.
          *
          * @return the Locale of the fields' context.
-         *
-         * @throws NullPointerException if the host object is not found, which should never happen
          */
         @NonNull
         public Locale getLocale() {

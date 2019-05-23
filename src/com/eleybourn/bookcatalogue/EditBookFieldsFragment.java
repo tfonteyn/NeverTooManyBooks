@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -96,32 +97,33 @@ public class EditBookFieldsFragment
     @CallSuper
     protected void initFields() {
         super.initFields();
+        Fields fields = getFields();
 
         Book book = mBookBaseFragmentModel.getBook();
 
         // book fields
 
-        mFields.add(R.id.title, DBDefinitions.KEY_TITLE);
-        mFields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
-        mFields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
+        fields.add(R.id.title, DBDefinitions.KEY_TITLE);
+        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
-//        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
-        Field coverImageField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
+//        field = fields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
+        Field coverImageField = fields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
         //noinspection ConstantConditions
         ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getActivity());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
                                          book,
-                                         mFields.getField(R.id.isbn).getView(),
+                                         fields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
                                          displaySizes.small, displaySizes.small);
 
         // defined, but handled manually
-        mFields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
+        fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
                .getView().setOnClickListener(v -> {
-            String title = mFields.getField(R.id.title).getValue().toString().trim();
+            String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
             Intent intent = new Intent(getActivity(), EditAuthorListActivity.class)
@@ -132,10 +134,10 @@ public class EditBookFieldsFragment
         });
 
         // defined, but handled manually
-        mFields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
+        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
                .getView().setOnClickListener(v -> {
             // use the current title.
-            String title = mFields.getField(R.id.title).getValue().toString().trim();
+            String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
             Intent intent = new Intent(getActivity(), EditSeriesListActivity.class)
@@ -147,7 +149,7 @@ public class EditBookFieldsFragment
 
         Field field;
 
-        field = mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
+        field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre,
                         mBookBaseFragmentModel.getGenres());
 
@@ -155,7 +157,7 @@ public class EditBookFieldsFragment
 
         // defined, but handled manually (reminder: storing the list back into the book
         // is handled by onCheckListEditorSave)
-        field = mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
+        field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
         initCheckListEditor(field, R.string.lbl_bookshelves_long, () ->
                 book.getEditableBookshelvesList(mBookBaseFragmentModel.getDb()));
     }
@@ -170,11 +172,11 @@ public class EditBookFieldsFragment
         populateSeriesListField();
 
         ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
+        getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
-        mFields.getField(R.id.coverImage).getView()
+        getField(R.id.coverImage).getView()
                .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
@@ -209,7 +211,7 @@ public class EditBookFieldsFragment
                 bookshelf = Bookshelf.getDefaultBookshelf(getResources(), mBookBaseFragmentModel.getDb());
             }
 
-            mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());
+            getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
             list.add(bookshelf);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
@@ -230,13 +232,13 @@ public class EditBookFieldsFragment
         if (newText.isEmpty()) {
             newText = getString(R.string.btn_set_authors);
         }
-        mFields.getField(R.id.author).setValue(newText);
+        getField(R.id.author).setValue(newText);
     }
 
     private void populateSeriesListField() {
         Book book = mBookBaseFragmentModel.getBook();
 
-        if (mFields.getField(R.id.series).isUsed()) {
+        if (getField(R.id.series).isUsed()) {
 
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             if (!list.isEmpty() && Utils.pruneList(mBookBaseFragmentModel.getDb(), list)) {
@@ -249,7 +251,7 @@ public class EditBookFieldsFragment
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
-            mFields.getField(R.id.series).setValue(newText);
+            getField(R.id.series).setValue(newText);
 
             setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
 

@@ -58,19 +58,21 @@ TODO: uniform quotes in all string:
     <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
     <!-- ####################################################################################### -->
-    <!-- ========== ValidatorException error messages; currently never shown. ========== -->
+    <!-- ========== ValidatorException error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="vldt_unable_to_get_value">Unable to get value for ‘%1$s’</string>
-    <string name="vldt_integer_expected">Expected an integer value for ‘%1$s’</string>
-    <string name="vldt_real_expected">Expected a real number for ‘%1$s’</string>
-    <string name="vldt_date_expected">Expected a date for ‘%1$s’</string>
-    <string name="vldt_boolean_expected">
+    <string name="vldt_unable_to_get_value_for_x">Unable to get value for ‘%1$s’</string>
+    <string name="vldt_integer_expected_for_x">Expected an integer value for ‘%1$s’</string>
+    <string name="vldt_real_expected_for_x">Expected a real number for ‘%1$s’</string>
+    <string name="vldt_date_expected_for_x">Expected a date for ‘%1$s’</string>
+    <string name="vldt_boolean_expected_for_x">
         Expected a boolean value (0,1,t,f,true,false) for ‘%1$s’
     </string>
-    <string name="vldt_non_blank_required">Non-empty value required for ‘%1$s’</string>
-    <string name="vldt_blank_required">Empty value required for ‘%1$s’</string>
-    <string name="vldt_failed">Validation failed for ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Non-empty value required for ‘%1$s’</string>
+    <string name="vldt_blank_required_for_x">Empty value required for ‘%1$s’</string>
+    <string name="vldt_failed_for_x">Validation failed for ‘%1$s’</string>
+    <string name="vldt_failure">Validation failure</string>
+
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
 
     <!-- ####################################################################################### -->
@@ -316,7 +318,7 @@ TODO: uniform quotes in all string:
     <string name="progress_msg_adding_book">Adding book…</string>
     <string name="progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
-    <string name="progress_msg_getting_books">Getting books…</string>
+    <string name="X_progress_msg_getting_books">Getting books…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting to web site…</string>
     <string name="progress_msg_saving_image">Saving image…</string>
@@ -648,23 +650,17 @@ TODO: uniform quotes in all string:
     <string name="menu_add_book_by_barcode_scan">Scan Barcode/ISBN</string>
     <string name="menu_add_book_by_isbn">Enter ISBN</string>
     <string name="menu_add_book_manually">Add Manually</string>
-    <string name="menu_add_bookshelf">Add Bookshelf</string>
-
-    <string name="menu_delete_book">Delete Book</string>
-    <string name="menu_delete_series">Delete Series…</string>
 
     <string name="menu_set_read">Set as read</string>
     <string name="menu_set_unread">Set as unread</string>
     <string name="menu_set_complete">Set complete</string>
     <string name="menu_set_incomplete">Set incomplete</string>
 
-    <string name="menu_edit_book">Edit Book</string>
     <string name="menu_edit_book_notes">My Comments</string>
-    <string name="menu_booklist_styles">Booklist styles…</string>
-    <string name="menu_edit_bookshelf">Edit Bookshelf</string>
 
-    <string name="menu_edit_author">Edit Author…</string>
-    <string name="menu_edit_series">Edit Series…</string>
+    <string name="menu_author_details">All works by this author</string>
+
+    <string name="menu_booklist_styles">Booklist styles…</string>
     <string name="menu_bookshelves">Bookshelves…</string>
 
     <string name="menu_cover_crop">Crop</string>
@@ -676,8 +672,6 @@ TODO: uniform quotes in all string:
     <string name="menu_cover_rotate_cw">Clockwise</string>
     <string name="menu_cover_rotate_ccw">Anti-Clockwise</string>
     <string name="menu_cover_rotate_180" translatable="false">180°</string>
-
-    <string name="menu_author_details">All works by this author</string>
 
     <string name="menu_expand_all">Expand All</string>
     <string name="menu_collapse_all">Collapse All</string>
@@ -698,6 +692,8 @@ TODO: uniform quotes in all string:
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
 
+
+    <string name="menu_edit_book">Edit Book</string>
 
     <!-- a short + a longer description for Administration -->
     <string name="menu_administration">Admin</string>
@@ -726,20 +722,21 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
 
     <string name="title_add_book">Add book</string>
-
+    <string name="title_delete_book">Delete Book</string>
     <string name="title_delete_series">Delete Series</string>
     <string name="title_duplicate_book">Duplicate Book</string>
-
     <string name="title_edit_book_series">Edit Book Series</string>
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
+    <string name="title_edit_bookshelf">Edit Bookshelf</string>
     <string name="title_edit_style">Edit style</string>
     <string name="title_clone_style">Clone style</string>
 
     <string name="title_import_book_data">Import Books</string>
     <string name="title_install_scan">Install Barcode Scanner</string>
 
-    <string name="title_select_an_action">Select an action</string>
     <string name="title_cover">Book Cover</string>
+
+    <string name="title_select_an_action">Select an action</string>
     <string name="title_select_style">Select Style</string>
     <string name="title_select_image">Select Image</string>
     <string name="title_scope_of_change">Scope of Change</string>
@@ -751,8 +748,8 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
 
     <!-- positive response button texts; must be short. -->
-    <string name="btn_confirm_add_book">Add Book</string>
-    <string name="btn_confirm_save_book">Save Book</string>
+    <string name="X_btn_confirm_add_book">Add Book</string>
+    <string name="X_btn_confirm_save_book">Save Book</string>
 
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_add">Add</string>
@@ -1147,10 +1144,15 @@ TODO: uniform quotes in all string:
         Please add some using the menu at the bottom of this screen.
     </string>
 
+    <string name="X_menu_add_bookshelf">Add Bookshelf</string>
+    <string name="X_menu_edit_author">Edit Author…</string>
+    <string name="X_menu_edit_series">Edit Series…</string>
+    <string name="X_menu_delete_series">Delete Series…</string>
     <string name="X_menu_cover_options">Cover Options…</string>
     <string name="X_menu_search_books">Search Books</string>
     <string name="X_menu_sort_by">Sort By</string>
     <string name="X_menu_delete_toc_entry">Delete Title from TOC</string>
+
     <string name="X_title_select_cover">Select Cover</string>
     <string name="X_title_cover_detail">Cover Detail</string>
     <string name="X_title_export_books">

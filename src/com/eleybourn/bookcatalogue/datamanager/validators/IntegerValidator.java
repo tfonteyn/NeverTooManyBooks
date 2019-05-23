@@ -61,17 +61,21 @@ public class IntegerValidator
         Object o = dataManager.get(datum);
         if (o == null) {
             value = mDefaultValue;
+
         } else if (o instanceof Integer) {
             value = (Integer) o;
+
         } else if (o instanceof Long) {
             value = ((Long) o).intValue();
+
         } else if (o.toString().trim().isEmpty()) {
             value = mDefaultValue;
+
         } else {
             try {
                 value = Integer.parseInt(o.toString());
             } catch (NumberFormatException e) {
-                throw new ValidatorException(R.string.vldt_integer_expected,
+                throw new ValidatorException(R.string.vldt_integer_expected_for_x,
                                              datum.getKey());
             }
         }

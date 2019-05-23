@@ -288,11 +288,8 @@ public class UpdateFieldsFromInternetFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-//        menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.btn_confirm_update)
-//            .setIcon(R.drawable.ic_cloud_download)
-//            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                 MenuHandler.MENU_ORDER_SEARCH_SITES, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 

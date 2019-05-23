@@ -67,7 +67,7 @@ public class DateValidator
             if (date != null) {
                 value = DateUtils.utcSqlDateTime(date);
             } else {
-                throw new ValidatorException(R.string.vldt_date_expected, datum.getKey());
+                throw new ValidatorException(R.string.vldt_date_expected_for_x, datum.getKey());
             }
         }
         dataManager.putString(datum, value);

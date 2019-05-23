@@ -394,7 +394,7 @@ public class BookSearchByIsbnFragment
                          (d, which) -> startSearch());
 
         // User wants to review the existing book
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
+        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
                          (d, which) -> {
                              Intent intent = new Intent(getContext(), EditBookActivity.class)
                                      .putExtra(DBDefinitions.KEY_ID, existingId)

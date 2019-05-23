@@ -4,7 +4,7 @@
 <resources>
     <string name="title_add_book">Boek Toevoegen</string>
     <string name="menu_add_book">Boek Toevoegen…</string>
-    <string name="menu_delete_book">Boek verwijderen</string>
+    <string name="title_delete_book">Boek verwijderen</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_title">Titel</string>
     <string name="lbl_publisher">Uitgever</string>
@@ -12,7 +12,7 @@
     <string name="lbl_rating">Waardering</string>
     <string name="lbl_is_read">Heeft u dit boek gelezen?</string>
     <string name="lbl_pages">Pagina\'s</string>
-    <string name="btn_confirm_add_book">Boek toevoegen</string>
+    <string name="X_btn_confirm_add_book">Boek toevoegen</string>
     <string name="btn_confirm_update">Bijwerken</string>
     <string name="X_info_no_books_yet">
         Er staan geen boeken op deze boekenplank.
@@ -22,11 +22,11 @@
     <string name="X_menu_sort_by">Sorteren op</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="menu_search">Zoeken</string>
-    <string name="btn_confirm_save_book">Boek opslaan</string>
+    <string name="X_btn_confirm_save_book">Boek opslaan</string>
     <string name="X_info_no_bookshelves_yet">
         U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.
     </string>
-    <string name="menu_add_bookshelf">Boekenplank maken</string>
+    <string name="X_menu_add_bookshelf">Boekenplank maken</string>
     <string name="menu_bookshelves">Boekenplanken…</string>
     <string name="warning_cannot_delete_1st_bs">
         De eerste boekenplank kan niet verwijderd worden
@@ -36,7 +36,7 @@
     <string name="X_isbn_found">ISBN gescand. Zoeken op Internet.</string>
     <string name="search_isbn">ISBN zoeken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
-    <string name="menu_edit_bookshelf">Boekenplank bewerken</string>
+    <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
     <string name="title_search_for">zoeken naar auteurs of titels</string>
     <string name="warning_book_not_found">
@@ -160,16 +160,16 @@
     </string>
     <string name="about_help_tap_here">Tik hier voor online help</string>
 
-    <string name="vldt_unable_to_get_value">Kan de waarde voor ‘%1$s’ niet krijgen</string>
-    <string name="vldt_integer_expected">Verwachtte een numerieke waarde voor ‘%1$s’</string>
-    <string name="vldt_real_expected">Verwachtte een echt nummer voor ‘%1$s’</string>
-    <string name="vldt_date_expected">Verwachtte een datum voor ‘%1$s’</string>
-    <string name="vldt_boolean_expected">
+    <string name="vldt_unable_to_get_value_for_x">Kan de waarde voor ‘%1$s’ niet krijgen</string>
+    <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor ‘%1$s’</string>
+    <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor ‘%1$s’</string>
+    <string name="vldt_date_expected_for_x">Verwachtte een datum voor ‘%1$s’</string>
+    <string name="vldt_boolean_expected_for_x">
         Verwachtte een boolean waarde (0,1,t,f,true,false) voor ‘%1$s’
     </string>
-    <string name="vldt_non_blank_required">Waardeveld mag niet leeg zijn voor ‘%1$s’</string>
-    <string name="vldt_blank_required">Waardeveld moet leeg zijn voor ‘%1$s’</string>
-    <string name="vldt_failed">Validatie mislukt voor ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Waardeveld mag niet leeg zijn voor ‘%1$s’</string>
+    <string name="vldt_blank_required_for_x">Waardeveld moet leeg zijn voor ‘%1$s’</string>
+    <string name="vldt_failed_for_x">Validatie mislukt voor ‘%1$s’</string>
     <string name="vldt_read_start_after_end">
         De begindatum voor lezen moet vóór de einddatum liggen.
     </string>
@@ -219,9 +219,9 @@
     <string name="warning_required_title_and_author">De titel en/of de auteur ontbreekt.</string>
     <string name="warning_required_author_long">Er moet tenminste één auteur worden vermeld</string>
     <string name="warning_required_title">Het titelveld mag niet leeg zijn</string>
-    <string name="menu_delete_series">Verwijderen serie…</string>
-    <string name="menu_edit_author">Bewerken auteur…</string>
-    <string name="menu_edit_series">Serie bewerken…</string>
+    <string name="X_menu_delete_series">Verwijderen serie…</string>
+    <string name="X_menu_edit_author">Bewerken auteur…</string>
+    <string name="X_menu_edit_series">Serie bewerken…</string>
     <string name="title_delete_series">Verwijderen serie</string>
     <string name="confirm_delete_series">
         Wilt u werkelijk de serie ‘%1$s’ verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n
@@ -633,7 +633,7 @@
     <string name="lbl_month">Maand</string>
     <string name="lbl_day">Dag</string>
     <string name="menu_edit">Bewerken…</string>
-    <string name="progress_msg_getting_books">Verkrijgen van boeken…</string>
+    <string name="X_progress_msg_getting_books">Verkrijgen van boeken…</string>
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">
         Ongeldig ISBN \‘%1$s\’ gespecificeerd in zoekveld</string>

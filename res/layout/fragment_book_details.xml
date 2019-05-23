@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="16dp"
+            app:layout_constraintGuide_begin="@dimen/indent4"
             />
 
         <TextView
@@ -44,10 +44,10 @@
         <CheckBox
             android:id="@+id/read"
             style="@style/Flag"
-            app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"
-            tools:checked="true"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="ContentDescription"
+            tools:checked="true"
             />
 
         <TextView
@@ -58,7 +58,7 @@
             app:layout_constraintStart_toEndOf="@id/read"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
-            tools:text="Anna Karenina"
+            tools:text="War and Peace &amp; Anna Karenina"
             />
 
         <ImageView
@@ -132,7 +132,7 @@
             app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             tools:ignore="SelectableText"
-            tools:text="573 pages"
+            tools:text="1073 pages"
             />
 
         <TextView

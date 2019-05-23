@@ -68,7 +68,7 @@ public class OrValidator
         if (lastException != null) {
             throw lastException;
         } else {
-            throw new ValidatorException(R.string.vldt_failed, datum.getKey());
+            throw new ValidatorException(R.string.vldt_failed_for_x, datum.getKey());
         }
     }
 }

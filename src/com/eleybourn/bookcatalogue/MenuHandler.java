@@ -37,7 +37,12 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
  *
  * Defines some menu 'order' variables, to ensure certain menu's have a fixed spot.
  */
-final class MenuHandler {
+public final class MenuHandler {
+
+    public static final int MENU_ORDER_HIDE_KEYBOARD = 1;
+    public static final int MENU_ORDER_SAVE = 5;
+
+    public static final int MENU_ORDER_SEARCH_SITES = 20;
 
     public static final int MENU_ORDER_UPDATE_FIELDS = 80;
     public static final int MENU_ORDER_LENDING = 90;

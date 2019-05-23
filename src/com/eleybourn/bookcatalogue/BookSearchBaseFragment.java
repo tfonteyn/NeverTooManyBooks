@@ -15,10 +15,10 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -39,12 +39,10 @@ public abstract class BookSearchBaseFragment
     private static final String BKEY_LAST_BOOK_INTENT = TAG + ":LastBookIntent";
     /** activity request code. */
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
-
-    /** hosting activity. */
-    BookSearchActivity mActivity;
-
     /** Database access. */
     protected DAO mDb;
+    /** hosting activity. */
+    BookSearchActivity mActivity;
     /** Objects managing current search. */
     long mSearchManagerId;
     /** The last Intent returned as a result of creating a book. */
@@ -92,11 +90,13 @@ public abstract class BookSearchBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD, 0, R.string.menu_hide_keyboard)
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                 MenuHandler.MENU_ORDER_SEARCH_SITES, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -135,7 +135,7 @@ public abstract class BookSearchBaseFragment
         super.onResume();
         if (mSearchManagerId != 0) {
             SearchCoordinator.MESSAGE_SWITCH
-                             .addListener(mSearchManagerId, true, getSearchFinishedListener());
+                    .addListener(mSearchManagerId, true, getSearchFinishedListener());
         }
     }
 
@@ -162,7 +162,7 @@ public abstract class BookSearchBaseFragment
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(),R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
             return false;
         }
 
@@ -198,7 +198,8 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onPause() {
         if (mSearchManagerId != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId, getSearchFinishedListener());
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId,
+                                                            getSearchFinishedListener());
         }
         super.onPause();
     }
@@ -244,9 +245,9 @@ public abstract class BookSearchBaseFragment
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.warnWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
-                                "NOT HANDLED:",
-                                "requestCode=" + requestCode,
-                                "resultCode=" + resultCode);
+                                              "NOT HANDLED:",
+                                              "requestCode=" + requestCode,
+                                              "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

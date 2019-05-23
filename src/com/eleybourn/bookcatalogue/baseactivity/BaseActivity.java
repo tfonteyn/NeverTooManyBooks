@@ -98,6 +98,8 @@ public abstract class BaseActivity
     /**
      * When resuming, recreate activity if needed.
      *
+     * The current (2nd) incarnation of restart-logic is still rather broken
+     * as it does not deal with back-stack.
      * TOMF:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
      *
      * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/

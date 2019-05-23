@@ -317,7 +317,9 @@ public class DataManager {
         datum.putFloat(this, mRawData, value);
     }
 
-    /** @return an int value. */
+    /**
+     *  @return an int value.
+     *  */
     public int getInt(@NonNull final String key) {
         return mDatumMap.get(key).getInt(this, mRawData);
     }
@@ -338,7 +340,9 @@ public class DataManager {
         datum.putInt(this, mRawData, value);
     }
 
-    /** @return a long value. */
+    /**
+     *  @return a long value.
+     *  */
     public long getLong(@NonNull final String key) {
         return mDatumMap.get(key).getLong(this, mRawData);
     }
@@ -454,6 +458,16 @@ public class DataManager {
     /**
      * Get the Parcelable ArrayList from the collection.
      *
+     * @return The list, can be empty, but never {@code null}
+     */
+    @NonNull
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final Datum datum) {
+        return datum.getParcelableArrayList(this, mRawData);
+    }
+
+    /**
+     * Get the Parcelable ArrayList from the collection.
+     *
      * @param key Key of object
      *
      * @return The list, can be empty, but never {@code null}
@@ -507,15 +521,13 @@ public class DataManager {
     }
 
     /**
-     * Loop through and apply validators, generating a Bundle collection as a by-product.
-     * The Bundle collection is then used in cross-validation as a second pass, and finally
-     * passed to each defined cross-validator.
+     * Loop through and apply validators.
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
+     * Use {@link #getValidationExceptionMessage(Resources)} for the results.
      *
      * @return {@code true} if all validation passed.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public boolean validate() {
 
         boolean isOk = true;
@@ -614,7 +626,6 @@ public class DataManager {
      *
      * @return a user displayable list of error messages, or {@code null} if none present
      */
-    @SuppressWarnings("unused")
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.isEmpty()) {

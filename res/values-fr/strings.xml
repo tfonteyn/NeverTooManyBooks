@@ -10,7 +10,7 @@
     <string name="menu_add_book">Ajouter un livre…</string>
     <string name="warning_bad_scanner">Votre scanner de code barre ne semble pas être compatible avec &APP_NAME;. Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Essai %1$d de %2$d, suivant à %3$s</string>
-    <string name="menu_delete_book">Supprimer un livre</string>
+    <string name="title_delete_book">Supprimer un livre</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_title">Titre</string>
     <string name="lbl_publisher">Éditeur</string>
@@ -18,16 +18,16 @@
     <string name="lbl_rating">Appreciation</string>
     <string name="lbl_is_read">Avez-vous lu ce livre ?</string>
     <string name="lbl_pages">Pages</string>
-    <string name="btn_confirm_add_book">Ajouter le livre</string>
+    <string name="X_btn_confirm_add_book">Ajouter le livre</string>
     <string name="btn_confirm_update">Mettre à jour</string>
     <string name="X_info_no_books_yet">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
     <string name="X_menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
     <string name="menu_search">Recherche</string>
-    <string name="btn_confirm_save_book">Sauvegarder le livre</string>
+    <string name="X_btn_confirm_save_book">Sauvegarder le livre</string>
     <string name="X_info_no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
-    <string name="menu_add_bookshelf">Créer une bibliothèque</string>
+    <string name="X_menu_add_bookshelf">Créer une bibliothèque</string>
     <string name="menu_bookshelves">Bibliothèques…</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
     <string name="lbl_bookshelf">Bibliothèque : </string>
@@ -35,7 +35,7 @@
     <string name="X_isbn_found">ISBN scanné. Recherche en cours.</string>
     <string name="search_isbn">recherche par ISBN</string>
     <string name="title_edit_bookshelves">gérer les biblothèques</string>
-    <string name="menu_edit_bookshelf">modifier la bibliothèque</string>
+    <string name="title_edit_bookshelf">modifier la bibliothèque</string>
     <string name="lbl_search_for_books">Rechercher des livres</string>
     <string name="title_search_for">Rechercher un auteur ou un titre</string>
     <string name="warning_book_not_found">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
@@ -131,14 +131,14 @@
         à l\'intérieur de la couverture.\n\n
     </string>
     <string name="about_help_tap_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>
-    <string name="vldt_unable_to_get_value">Impossible d\'obtenir la valeur de ‘%1$s’</string>
-    <string name="vldt_integer_expected">Valeur entière attendue pour ‘%1$s’</string>
-    <string name="vldt_real_expected">Valeur décimale attendue pour ‘%1$s’</string>
-    <string name="vldt_date_expected">Date attendue pour ‘%1$s’</string>
-    <string name="vldt_boolean_expected">Valeur booléenne (0,1,t,f,true,false) attendue pour ‘%1$s’</string>
-    <string name="vldt_non_blank_required">Valeur non vide attendue pour ‘%1$s’</string>
-    <string name="vldt_blank_required">Le champ ‘%1$s’ doit être vide</string>
-    <string name="vldt_failed">La validation a échoué pour ‘%1$s’</string>
+    <string name="vldt_unable_to_get_value_for_x">Impossible d\'obtenir la valeur de ‘%1$s’</string>
+    <string name="vldt_integer_expected_for_x">Valeur entière attendue pour ‘%1$s’</string>
+    <string name="vldt_real_expected_for_x">Valeur décimale attendue pour ‘%1$s’</string>
+    <string name="vldt_date_expected_for_x">Date attendue pour ‘%1$s’</string>
+    <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Valeur non vide attendue pour ‘%1$s’</string>
+    <string name="vldt_blank_required_for_x">Le champ ‘%1$s’ doit être vide</string>
+    <string name="vldt_failed_for_x">La validation a échoué pour ‘%1$s’</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
@@ -172,9 +172,9 @@
     <string name="menu_cover_search_alt_editions">À partir d\'autres éditions…</string>
     <string name="warning_required_author_long">Au moins un auteur doit être spécifié</string>
     <string name="warning_required_title">un titre non vide doit être spécifié</string>
-    <string name="menu_delete_series">Supprimer une série…</string>
-    <string name="menu_edit_author">Modifier l\'auteur…</string>
-    <string name="menu_edit_series">Modifier les séries…</string>
+    <string name="X_menu_delete_series">Supprimer une série…</string>
+    <string name="X_menu_edit_author">Modifier l\'auteur…</string>
+    <string name="X_menu_edit_series">Modifier les séries…</string>
     <string name="title_delete_series">Supprimer la série</string>
     <string name="confirm_delete_series">
         Supprimer la série ‘%1$s’ ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
@@ -535,7 +535,7 @@
     <string name="lbl_month">Mois</string>
     <string name="lbl_day">Jour</string>
     <string name="menu_edit">Modifier…</string>
-    <string name="progress_msg_getting_books">Chargement…</string>
+    <string name="X_progress_msg_getting_books">Chargement…</string>
     <string name="gr_tq_last_error_e">Dernière erreur : %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">ISBN incorrect dans la recherche ‘%1$s’</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si le jour est précisé, le mois et l\‘année doivent l\’être aussi.</string>

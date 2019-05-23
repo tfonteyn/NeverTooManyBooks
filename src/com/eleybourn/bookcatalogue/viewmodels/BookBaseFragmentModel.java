@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
@@ -12,15 +13,16 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
- * This is the (obvious) replacement of the homegrown BookManager in previous commits.
- * <p>
  * Used by the set of fragments that allow viewing and editing a Book.
  * <p>
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
+ * <p>
+ * Holds the fields collection.
  */
 public class BookBaseFragmentModel
         extends ViewModel {
@@ -30,6 +32,7 @@ public class BookBaseFragmentModel
 
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
+    /** The Book this model represents. */
     private Book mBook;
 
     /**
@@ -64,6 +67,7 @@ public class BookBaseFragmentModel
      * Otherwise use the passed data to construct a Book.
      */
     public void init(@Nullable final Bundle args) {
+
         if (mDb == null) {
             mDb = new DAO();
 

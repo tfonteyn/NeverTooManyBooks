@@ -72,8 +72,8 @@ public abstract class BookBaseFragment
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookBaseFragmentModel;
 
-    /** The fields collection. */
-    Fields mFields;
+    /** The fields collection. Does not store any context or Views, but does keep WeakReferences. */
+    private Fields mFields;
 
     private void setActivityTitle() {
         Book book = mBookBaseFragmentModel.getBook();
@@ -126,6 +126,18 @@ public abstract class BookBaseFragment
         initFields();
     }
 
+    /** Convenience method. */
+    @NonNull
+    protected Fields getFields() {
+        return mFields;
+    }
+
+    /** Convenience method. */
+    @NonNull
+    Field getField(@IdRes final int fieldId) {
+        return mFields.getField(fieldId);
+    }
+
 
     /**
      * Add any {@link Field} we need to {@link Fields}.
@@ -166,14 +178,14 @@ public abstract class BookBaseFragment
     @Override
     public final void loadFields() {
         // load the book, while disabling the AfterFieldChangeListener
-        mFields.setAfterFieldChangeListener(null);
+        getFields().setAfterFieldChangeListener(null);
         // preserve the 'dirty' status.
         final boolean wasDirty = mBookBaseFragmentModel.isDirty();
         // make it so!
         onLoadFieldsFromBook();
         // get dirty...
         mBookBaseFragmentModel.setDirty(wasDirty);
-        mFields.setAfterFieldChangeListener(
+        getFields().setAfterFieldChangeListener(
                 (field, newValue) -> mBookBaseFragmentModel.setDirty(true));
 
         // this is a good place to do this, as we use data from the book for the title.
@@ -187,7 +199,7 @@ public abstract class BookBaseFragment
      */
     @CallSuper
     protected void onLoadFieldsFromBook() {
-        mFields.setAllFrom(mBookBaseFragmentModel.getBook());
+        getFields().setAllFrom(mBookBaseFragmentModel.getBook());
     }
 
     //</editor-fold>
@@ -278,7 +290,7 @@ public abstract class BookBaseFragment
      */
     void showHideFields(final boolean hideIfEmpty) {
         // reset to user-preferences.
-        mFields.resetVisibility();
+        getFields().resetVisibility();
 
         // actual book
         showHide(hideIfEmpty, R.id.coverImage);
@@ -359,7 +371,7 @@ public abstract class BookBaseFragment
                     } else if (!(view instanceof ImageView)) {
                         // don't act on ImageView, but all other fields can be string tested.
 
-                        final String value = mFields.getField(fieldId).getValue().toString().trim();
+                        final String value = getField(fieldId).getValue().toString().trim();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }

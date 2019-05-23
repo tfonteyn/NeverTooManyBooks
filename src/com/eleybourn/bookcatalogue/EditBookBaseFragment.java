@@ -8,6 +8,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -50,20 +51,20 @@ public abstract class EditBookBaseFragment<T>
         if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            mFields.getField(destinationFieldId)
-                   .setValue(Bookshelf.toDisplayString(bsList));
+            getField(destinationFieldId)
+                    .setValue(Bookshelf.toDisplayString(bsList));
 
         } else if (destinationFieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            mFields.getField(destinationFieldId)
-                   .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
+            getField(destinationFieldId)
+                    .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
             mPartialDatePickerResultsListener = (destinationFieldId, year, month, day) ->
-            mFields.getField(destinationFieldId)
-                   .setValue(DateUtils.buildPartialDate(year, month, day));
+            getField(destinationFieldId)
+                    .setValue(DateUtils.buildPartialDate(year, month, day));
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -102,7 +103,7 @@ public abstract class EditBookBaseFragment<T>
             Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (values != null) {
                 // if we do, add if not there yet
-                mFields.setAllFrom(values, false);
+                getFields().setAllFrom(values, false);
             }
         }
     }
@@ -143,7 +144,22 @@ public abstract class EditBookBaseFragment<T>
      */
     @CallSuper
     protected void onSaveFieldsToBook() {
-        mFields.putAllInto(mBookBaseFragmentModel.getBook());
+        // validate the fields
+        if (getFields().validate(new Bundle())) {
+            // we're ignoring the passed/returned Bundle for now...
+            getFields().putAllInto(mBookBaseFragmentModel.getBook());
+
+        } else {
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.vldt_failure)
+                    .setMessage(getFields().getValidationExceptionMessage(getResources()))
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
+        }
+
+        getFields().putAllInto(mBookBaseFragmentModel.getBook());
     }
 
     /**
@@ -166,12 +182,11 @@ public abstract class EditBookBaseFragment<T>
         if (!field.isUsed()) {
             return;
         }
-
         // Get the list to use in the AutoCompleteTextView
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
-        mFields.setAdapter(field.id, adapter);
+        getFields().setAdapter(field.id, adapter);
 
         // Get the drop-down button for the list and setup dialog
         //noinspection ConstantConditions

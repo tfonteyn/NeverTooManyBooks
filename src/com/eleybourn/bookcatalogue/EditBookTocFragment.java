@@ -134,7 +134,7 @@ public class EditBookTocFragment
                 Book book = mBookBaseFragmentModel.getBook();
 
                 book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                mFields.getField(R.id.multiple_authors).setValueFrom(book);
+                getField(R.id.multiple_authors).setValueFrom(book);
             }
 
             mList.addAll(tocEntries);
@@ -226,16 +226,17 @@ public class EditBookTocFragment
     @Override
     protected void initFields() {
         super.initFields();
+        Fields fields = getFields();
 
         Fields.Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
-        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
+        fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
                .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
 
-        field = mFields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
+        field = fields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
 
         View view = getView();

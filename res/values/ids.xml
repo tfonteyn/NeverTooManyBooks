@@ -77,14 +77,11 @@
     <item name="MENU_BOOK_DUPLICATE" type="id" />
     <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id" />
 
-    <item name="MENU_SHARE" type="id" />
-
-    <item name="MENU_BOOK_SAVE" type="id" />
     <item name="MENU_BOOK_EDIT" type="id" />
     <item name="MENU_BOOK_EDIT_NOTES" type="id" />
-    <item name="MENU_BOOK_EDIT_LOAN" type="id" />
-    <item name="MENU_BOOK_LOAN_RETURNED" type="id" />
-    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
+
+    <item name="MENU_BOOK_LOAN_ADD" type="id" />
+    <item name="MENU_BOOK_LOAN_DELETE" type="id" />
 
     <item name="MENU_BOOK_READ" type="id" />
     <item name="MENU_BOOK_UNREAD" type="id" />
@@ -103,6 +100,8 @@
     <item name="MENU_LOCATION_EDIT" type="id" />
     <item name="MENU_PUBLISHER_EDIT" type="id" />
 
+    <item name="MENU_SHARE" type="id" />
+    <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->

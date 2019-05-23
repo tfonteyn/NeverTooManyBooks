@@ -64,7 +64,7 @@ public class BooleanValidator
         try {
             Datum.toBoolean(o);
         } catch (NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected,
+            throw new ValidatorException(R.string.vldt_boolean_expected_for_x,
                                          datum.getKey());
         }
     }
