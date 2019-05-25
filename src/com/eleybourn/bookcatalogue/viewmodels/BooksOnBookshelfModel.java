@@ -53,11 +53,10 @@ public class BooksOnBookshelfModel
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /**
-     * Holder for all (semi)supported search criteria.
+     * Holder for all search criteria.
      * See {@link SearchCriteria} for more info.
      */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
-    private final List<String> mBookshelfNameList = new ArrayList<>();
     /** Database access. */
     private DAO mDb;
     /**
@@ -241,29 +240,6 @@ public class BooksOnBookshelfModel
 
     public void setCurrentStyle(@NonNull final BooklistStyle style) {
         mCurrentBookshelf.setStyle(mDb, style);
-    }
-
-    public List<String> getBookshelfNameList() {
-        return mBookshelfNameList;
-    }
-
-    public int initBookshelfNameList(@NonNull final Resources resources) {
-        mBookshelfNameList.clear();
-        mBookshelfNameList.add(resources.getString(R.string.bookshelf_all_books));
-        // default to 'All Books'
-        int currentPos = 0;
-        // start at 1, as position 0 is 'All Books'
-        int position = 1;
-
-        for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            if (bookshelf.getId() == mCurrentBookshelf.getId()) {
-                currentPos = position;
-            }
-            position++;
-            mBookshelfNameList.add(bookshelf.getName());
-        }
-
-        return currentPos;
     }
 
     @Nullable

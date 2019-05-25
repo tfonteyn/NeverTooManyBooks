@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,6 @@ import java.util.Set;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -393,6 +393,16 @@ public class TableDefinition
     }
 
     /**
+     * Get the domains forming the PK of this table.
+     *
+     * @return Domain List
+     */
+    @NonNull
+    private List<DomainDefinition> getPrimaryKey() {
+        return mPrimaryKey;
+    }
+
+    /**
      * Set the primary key domains.
      * <p>
      * Do not use this on a table which already has a standard column PK _id
@@ -406,16 +416,6 @@ public class TableDefinition
         mPrimaryKey.clear();
         Collections.addAll(mPrimaryKey, domains);
         return this;
-    }
-
-    /**
-     * Get the domains forming the PK of this table.
-     *
-     * @return Domain List
-     */
-    @NonNull
-    private List<DomainDefinition> getPrimaryKey() {
-        return mPrimaryKey;
     }
 
     /**
@@ -478,6 +478,23 @@ public class TableDefinition
     private TableDefinition addReference(@NonNull final TableDefinition parent,
                                          @NonNull final List<DomainDefinition> domains) {
         FkReference fk = new FkReference(parent, this, domains);
+        return addReference(fk);
+    }
+
+    /**
+     * Add a foreign key (FK) references to another (parent) table.
+     *
+     * @param parent    The referenced table
+     * @param parentKey single Domain key in the parent table
+     * @param domain    single Domain in child table that references parentKey in parent
+     *
+     * @return TableDefinition (for chaining)
+     */
+    @NonNull
+    public TableDefinition addReference(@NonNull final TableDefinition parent,
+                                        @NonNull final DomainDefinition parentKey,
+                                        @NonNull final DomainDefinition domain) {
+        FkReference fk = new FkReference(parent, parentKey, this, domain);
         return addReference(fk);
     }
 
@@ -615,13 +632,13 @@ public class TableDefinition
      * <p>
      * format: [table-alias].[name]
      *
-     * @param name Domain name
+     * @param domain Domain name
      *
      * @return SQL fragment
      */
     @NonNull
-    public String dot(@NonNull final String name) {
-        return getAlias() + '.' + name;
+    public String dot(@NonNull final String domain) {
+        return getAlias() + '.' + domain;
     }
 
     /**
@@ -629,7 +646,7 @@ public class TableDefinition
      * <p>
      * format: [table-alias].[domain-name] AS [domain_name]
      * <p>
-     * This is useful in older SQLite installations that add make the alias part of the output
+     * TOMF: deprecated?... This is useful in older SQLite installations that add make the alias part of the output
      * column name.
      *
      * @param domain Domain
@@ -644,7 +661,7 @@ public class TableDefinition
     /**
      * Return an SQL fragment.
      * <p>
-     * format: [table-alias].[domain-name] AS [asDomain]
+     * format: [table-alias].[domain-name] AS [asName]
      * <p>
      * This is useful when multiple differing versions of a domain are retrieved.
      * (i.e. same domain name, different table)
@@ -656,59 +673,9 @@ public class TableDefinition
      */
     @NonNull
     public String dotAs(@NonNull final DomainDefinition domain,
-                        @NonNull final DomainDefinition asDomain) {
-        return getAlias() + '.' + domain.name + " AS " + asDomain.name;
+                        @NonNull final String asDomain) {
+        return getAlias() + '.' + domain.name + " AS " + asDomain;
     }
-
-    /**
-     * Return a base list of ALL registered domain fields for this table.
-     * <p>
-     * format: [alias].[domain-1], ..., [alias].[domain-n]
-     * <p>
-     * Keep in mind that not all tables are fully registered in {@link DBDefinitions}
-     * Add domains there when needed. Eventually the lists will get complete.
-     *
-     * @param withAS set to {@code true} if you need 'AS domain-x' added.
-     *
-     * @return SQL fragment
-     *
-     * @see #dot
-     */
-    @NonNull
-    public String csvColumns(final boolean withAS) {
-        return Csv.join(",", mDomains, element -> {
-            if (withAS) {
-                return dotAs(element);
-            } else {
-                return dot(element);
-            }
-        });
-    }
-
-    /**
-     * Return a base list of fields for this table using the passed list of domains.
-     * <p>
-     * format: [alias].[domain-1] AS [domain-1], ..., [alias].[domain-n] AS [domain-n]
-     *
-     * @param withAS  set to {@code true} if you need 'AS domain-x' added.
-     * @param domains List of domains to use
-     *
-     * @return SQL fragment
-     *
-     * @see #dotAs
-     */
-    @NonNull
-    public String csvColumns(final boolean withAS,
-                             @NonNull final DomainDefinition... domains) {
-        return Csv.join(",", Arrays.asList(domains), element -> {
-            if (withAS) {
-                return dotAs(element);
-            } else {
-                return dot(element);
-            }
-        });
-    }
-
 
     /**
      * Return a base INSERT statement for this table using the passed list of domains.
@@ -733,27 +700,11 @@ public class TableDefinition
 
         if (withValues) {
             sql.append(" VALUES (")
-             .append(Csv.join(",", "?", domains.length))
-             .append(')');
+               .append(Csv.join(",", "?", domains.length))
+               .append(')');
         }
         return sql.toString();
     }
-
-    /**
-     * Return a base UPDATE statement for this table using the passed list of domains.
-     * <p>
-     * format: UPDATE [table-name] SET [domain-1]=?, ..., [domain-n]=?
-     *
-     * @param domains List of domains to use
-     *
-     * @return SQL fragment
-     */
-    @NonNull
-    public String getUpdate(@NonNull final DomainDefinition... domains) {
-        return "UPDATE " + mName + " SET " +
-                Csv.join(",", Arrays.asList(domains), element -> element + "=?");
-    }
-
 
     /**
      * Return the SQL that can be used to define this table.
@@ -881,7 +832,7 @@ public class TableDefinition
         try (SynchronizedStatement stmt = db.compileStatement(EXISTS_SQL)) {
             stmt.bindString(1, mName);
             stmt.bindString(2, mName);
-            return (stmt.count() > 0);
+            return stmt.count() > 0;
         }
     }
 
@@ -935,11 +886,16 @@ public class TableDefinition
         /** Domains in the FK that reference the parent PK. */
         @NonNull
         private final List<DomainDefinition> mDomains;
+        /** Optional key in the parent to use instead of the PK. */
+        @Nullable
+        private DomainDefinition mParentKey;
 
         /**
          * Constructor.
+         * <p>
+         * Create a reference to a parent table's Primary Key
          *
-         * @param parent  Parent table (one with PK that the FK references)
+         * @param parent  Parent table (with PK that the FK references)
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
@@ -954,8 +910,10 @@ public class TableDefinition
 
         /**
          * Constructor.
+         * <p>
+         * Create a reference to a parent table's Primary Key
          *
-         * @param parent  Parent table (one with PK that FK references)
+         * @param parent  Parent table (with PK that FK references)
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
@@ -969,6 +927,27 @@ public class TableDefinition
         }
 
         /**
+         * Constructor.
+         * <p>
+         * Create a 1:1 reference to a parent table's specific domain.
+         *
+         * @param parent    Parent table
+         * @param parentKey single Domain key in the parent table
+         * @param child     Child table (owner of the FK)
+         * @param domain    single Domain in child table that references parentKey in parent
+         */
+        FkReference(@NonNull final TableDefinition parent,
+                    @NonNull final DomainDefinition parentKey,
+                    @NonNull final TableDefinition child,
+                    @NonNull final DomainDefinition domain) {
+            mDomains = new ArrayList<>();
+            mDomains.add(domain);
+            mParent = parent;
+            mParentKey = parentKey;
+            mChild = child;
+        }
+
+        /**
          * Get an SQL fragment that matches the PK of the parent to the FK of the child.
          * <p>
          * format: [parent alias].[column] = [child alias].[column]
@@ -977,26 +956,32 @@ public class TableDefinition
          */
         @NonNull
         String getPredicate() {
-            List<DomainDefinition> pk = mParent.getPrimaryKey();
-            if (BuildConfig.DEBUG /* always */) {
-                if (pk.isEmpty()) {
-                    throw new IllegalStateException("no primary key on table: " + mParent);
+            if (mParentKey != null) {
+                return mParent.getAlias() + '.' + mParentKey.name +
+                        '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
+
+            } else {
+                List<DomainDefinition> pk = mParent.getPrimaryKey();
+                if (BuildConfig.DEBUG /* always */) {
+                    if (pk.isEmpty()) {
+                        throw new IllegalStateException("no primary key on table: " + mParent);
+                    }
                 }
-            }
-            StringBuilder sql = new StringBuilder();
-            for (int i = 0; i < pk.size(); i++) {
-                if (i > 0) {
-                    sql.append(" AND ");
+                StringBuilder sql = new StringBuilder();
+                for (int i = 0; i < pk.size(); i++) {
+                    if (i > 0) {
+                        sql.append(" AND ");
+                    }
+                    sql.append(mParent.getAlias());
+                    sql.append('.');
+                    sql.append(pk.get(i).name);
+                    sql.append('=');
+                    sql.append(mChild.getAlias());
+                    sql.append('.');
+                    sql.append(mDomains.get(i).name);
                 }
-                sql.append(mParent.getAlias());
-                sql.append('.');
-                sql.append(pk.get(i).name);
-                sql.append('=');
-                sql.append(mChild.getAlias());
-                sql.append('.');
-                sql.append(mDomains.get(i).name);
+                return sql.toString();
             }
-            return sql.toString();
         }
 
         /**
@@ -1007,9 +992,14 @@ public class TableDefinition
          */
         @NonNull
         String def() {
-            return "FOREIGN KEY (" + Csv.join(",", mDomains) +
-                    ") REFERENCES " + mParent +
-                    '(' + Csv.join(",", mParent.getPrimaryKey()) + ')';
+            if (mParentKey != null) {
+                return "FOREIGN KEY (" + mDomains.get(0)
+                        + ") REFERENCES " + mParent + '(' + mParentKey + ')';
+            } else {
+                return "FOREIGN KEY (" + Csv.join(",", mDomains)
+                        + ") REFERENCES " + mParent
+                        + '(' + Csv.join(",", mParent.getPrimaryKey()) + ')';
+            }
         }
 
         @Override
@@ -1017,6 +1007,7 @@ public class TableDefinition
         public String toString() {
             return "FkReference{"
                     + "mParent=" + mParent
+                    + ", mParentKey=" + mParentKey
                     + ", mChild=" + mChild
                     + ", mDomains=" + mDomains
                     + '}';

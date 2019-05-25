@@ -102,7 +102,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
      * @param position The position of the item removed.
      */
     @Override
-    public void onItemRemoved(final int position) {
+    public void onItemSwiped(final int position) {
         mItems.remove(position);
         notifyItemRemoved(position);
     }

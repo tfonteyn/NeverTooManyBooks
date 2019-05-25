@@ -140,7 +140,7 @@ public class EditBookshelfDialogFragment
 
         // At this point, we know changes were made.
         // Create a new Bookshelf as a holder for the changes.
-        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb).getId());
+        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb));
         // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
         // copy new values
         mBookshelf.copyFrom(newBookshelf);

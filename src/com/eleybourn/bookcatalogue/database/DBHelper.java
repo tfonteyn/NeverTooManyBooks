@@ -61,10 +61,12 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_I
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTRY_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LC;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
@@ -232,21 +234,22 @@ public class DBHelper
     /**
      * Run at installation (and v200 upgrade) time to add the builtin style id's to the database.
      * This allows foreign keys to work.
-     * <p>
-     * Set's both id and uuid columns to the builtin style id.
      *
      * @param syncedDb the database
      */
     private static void prepareStylesTable(@NonNull final SynchronizedDb syncedDb) {
         String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES + '('
-                        + DOM_PK_ID
+                "INSERT INTO " + TBL_BOOKLIST_STYLES
+                        + '(' + DOM_PK_ID
+                        + ',' + DOM_STYLE_IS_BUILTIN
                         + ',' + DOM_UUID
-                        + ") VALUES(?,?)";
+                        // 1==true
+                        + ") VALUES(?,1,?)";
         try (SynchronizedStatement stmt = syncedDb.compileStatement(sqlInsertStyles)) {
-            for (long id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
+            for (int id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
-                stmt.bindString(2, String.valueOf(id));
+                stmt.bindString(2, BooklistStyles.ID_UUID[-id]);
+
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
@@ -298,14 +301,17 @@ public class DBHelper
         // create the indexes not covered in the calls above.
         createIndices(syncedDb, false);
 
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ')'
-                                 + " VALUES ('"
-                                 + App.getAppContext().getString(R.string.bookshelf_my_books)
-                                 + "')");
-
-        // insert the builtin style id's so foreign key rules are possible.
+        // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(syncedDb);
+
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                                 + '(' + DOM_BOOKSHELF
+                                 + ',' + DOM_FK_STYLE_ID
+                                 + ") VALUES ("
+                                 + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
+                                 + "'," + BooklistStyles.DEFAULT_STYLE_ID
+                                 + ')');
 
         //reminder: FTS columns don't need a type nor constraints
         TBL_BOOKS_FTS.create(syncedDb, false);

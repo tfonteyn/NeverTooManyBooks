@@ -25,7 +25,7 @@
     <path
         android:fillColor="@color/brown_500"
         android:pathData="M145,0
-        V385
+        v385
         c0,5  -1,10   -5, 10
         h-55
         c-5,0 -5,-5  -5,-10
@@ -83,7 +83,7 @@
 
     <path
         android:fillAlpha="1"
-        android:fillColor="@color/orange_400"
+        android:fillColor="@color/yellow_600"
         android:pathData="M193,310
          l10,21
           24,4

@@ -100,7 +100,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder,
                          final int direction) {
         // Notify the adapter of the dismissal
-        mAdapter.onItemRemoved(viewHolder.getAdapterPosition());
+        mAdapter.onItemSwiped(viewHolder.getAdapterPosition());
     }
 
     @Override

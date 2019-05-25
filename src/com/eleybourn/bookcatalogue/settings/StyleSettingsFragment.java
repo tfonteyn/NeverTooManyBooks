@@ -131,9 +131,7 @@ public class StyleSettingsFragment
      */
     @Override
     void prepareResult() {
-        Intent data = new Intent()
-                .putExtra(DBDefinitions.KEY_ID, mStyle.getId())
-                .putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
+        Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
         //noinspection ConstantConditions
         getActivity().setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE, data);
 

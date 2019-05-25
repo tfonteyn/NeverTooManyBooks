@@ -316,20 +316,20 @@ public final class Prefs {
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
-                        ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyleId(context.getResources(), styleName));
+                        ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
+                                   BooklistStyles.getStyle(context.getResources(), styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":
                         // using a set to eliminate duplicates
-                        Set<Long> styleIds = new LinkedHashSet<>();
+                        Set<String> uuidSet = new LinkedHashSet<>();
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
                             styleName = style.substring(0, style.length() - 2);
-                            styleIds.add(BooklistStyles.getStyleId(context.getResources(), styleName));
+                            uuidSet.add(BooklistStyles.getStyle(context.getResources(), styleName).getUuid());
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
-                                     Csv.join(",", styleIds));
+                                     Csv.join(",", uuidSet));
                         break;
 
                     // skip obsolete keys

@@ -175,11 +175,10 @@ public class BooklistStyle
     private long mId;
 
     /**
-     * The unique uuid based SharedPreference name.
-     * Will be empty (but not {@code null}) for builtin styles
+     * The uuid based SharedPreference name.
      */
     @NonNull
-    private String mUuid = "";
+    private String mUuid;
 
     /**
      * ID if string representing name of this style.
@@ -258,7 +257,7 @@ public class BooklistStyle
 
     /**
      * All filters.
-     *
+     * <p>
      * The key in the Map is the actual preference key.
      */
     private transient Map<String, BooleanFilter> mFilters;
@@ -272,14 +271,17 @@ public class BooklistStyle
      * Constructor for system-defined styles.
      *
      * @param id     a negative int
+     * @param uuid   the hardcoded UUID for the builtin style.
      * @param nameId the resource id for the name
      * @param kinds  a list of group kinds to attach to this style
      */
     BooklistStyle(@IntRange(from = -100, to = -1) final long id,
+                  @NonNull final String uuid,
                   @StringRes final int nameId,
                   @NonNull final int... kinds) {
 
         mId = id;
+        mUuid = uuid;
         mNameResId = nameId;
         initPrefs();
         for (int kind : kinds) {
@@ -310,19 +312,20 @@ public class BooklistStyle
     /**
      * Custom Parcelable constructor which allows cloning/new.
      *
-     * @param in      Parcel to read the object from
-     * @param doNew   when set to true, partially override the incoming data so we get
-     *                a 'new' object but with the settings from the Parcel.
-     * @param resources  for locale specific strings, will be {@code null} when doNew==false !
+     * @param in        Parcel to read the object from
+     * @param isNew     when set to true, partially override the incoming data so we get
+     *                  a 'new' object but with the settings from the Parcel.
+     *                  The new id will be 0, and the uuid will be newly generated.
+     * @param resources for locale specific strings, will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
-                            final boolean doNew,
+                            final boolean isNew,
                             @Nullable final Resources resources) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
-        if (doNew) {
+        if (isNew) {
             mUuid = createUniqueName();
         }
 
@@ -333,7 +336,7 @@ public class BooklistStyle
         mName = mDisplayName.get();
 
         // create new clone ?
-        if (doNew) {
+        if (isNew) {
             // get a copy of the name first
             //noinspection ConstantConditions
             setName(getLabel(resources));
@@ -377,7 +380,7 @@ public class BooklistStyle
     }
 
     /**
-     * @return the UUID, will be empty for builtin styles, but never {@code null} .
+     * @return the UUID
      */
     @NonNull
     public String getUuid() {
@@ -385,7 +388,7 @@ public class BooklistStyle
     }
 
     /**
-     * Only ever init the Preferences if you have a valid UUID ({@code null} is valid).
+     * Only ever init the Preferences if you have a valid UUID.
      */
     private void initPrefs() {
 
@@ -489,6 +492,11 @@ public class BooklistStyle
         mId = id;
     }
 
+    @Override
+    public String getLabel() {
+        throw new IllegalStateException("Use getLabel(Resources)");
+    }
+
     /**
      * @return the system name or user-defined name based on kind of style this object defines.
      */
@@ -507,10 +515,10 @@ public class BooklistStyle
     }
 
     /**
-     * @return {@code true} if this style is user-defined.
+     * @return {@code true} if this style is a builtin style.
      */
-    public boolean isUserDefined() {
-        return (mNameResId == 0);
+    public boolean isBuiltin() {
+        return (mNameResId != 0);
     }
 
     /**
@@ -531,7 +539,7 @@ public class BooklistStyle
      * store the current style as the global default one.
      */
     public void setDefault() {
-        App.getPrefs().edit().putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mId).apply();
+        App.getPrefs().edit().putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mUuid).apply();
     }
 
     /**
@@ -846,7 +854,7 @@ public class BooklistStyle
                                         final boolean all) {
         List<String> labels = new ArrayList<>();
         for (Filter filter : mFilters.values()) {
-            if (filter.isActive() ||all ) {
+            if (filter.isActive() || all) {
                 labels.add(filter.getLabel(resources));
             }
         }
@@ -957,9 +965,8 @@ public class BooklistStyle
     }
 
     /**
-     * Construct a clone of this object.
-     * The id is set to 0! (aka 'new')
-     *
+     * Construct a clone of this object with id==0, and a new uuid.
+     * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
      * @param resources needed for the 'name' of the style.
@@ -977,7 +984,6 @@ public class BooklistStyle
         BooklistStyle clone = new BooklistStyle(parcel, true, resources);
         parcel.recycle();
 
-        clone.setId(0);
         return clone;
     }
 
@@ -987,18 +993,14 @@ public class BooklistStyle
      * if an insert fails, the style retains id==0.
      */
     public void save(@NonNull final DAO db) {
-        // negative id == builtin style
-        if (mId < 0) {
+        if (isBuiltin()) {
             throw new IllegalStateException("Builtin Style cannot be saved to database");
         }
 
         // check if the style already exists.
         long existingId = db.getBooklistStyleIdByUuid(mUuid);
         if (existingId == 0) {
-            long newId = db.insertBooklistStyle(this);
-            if (newId > 0) {
-                mId = newId;
-            }
+            db.insertBooklistStyle(this);
         } else {
             // force-update the id.
             mId = existingId;
@@ -1010,7 +1012,7 @@ public class BooklistStyle
      */
     public void delete(@NonNull final DAO db) {
         // cannot delete a builtin or a 'new' style(id==0)
-        if (mId <= 0 || mUuid.isEmpty()) {
+        if (mId == 0 || isBuiltin()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
 

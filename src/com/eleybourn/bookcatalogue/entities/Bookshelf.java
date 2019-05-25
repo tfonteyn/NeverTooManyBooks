@@ -22,6 +22,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 
 /**
  * Represents a Bookshelf.
@@ -54,32 +55,34 @@ public class Bookshelf
      * Storing the name and not the id. If you export/import... the id will be different.
      */
     public static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
+    public static final int DEFAULT_ID = 1;
     /** String encoding use. */
     private static final char FIELD_SEPARATOR = '*';
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
-    /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
-    public static final int DEFAULT_ID = 1;
     private long mId;
     @NonNull
     private String mName;
 
     /**
-     * the style id. Should never be exposed as it's not validated on its own.
+     * the style uuid. Should never be exposed as it's not validated on its own.
      * Always call {@link #getStyle(DAO)}}
      */
-    private long mStyleId;
+    @NonNull
+    private String mStyleUuid;
 
-    /** the style gets cached. It only gets reloaded when the mStyleId != cached one. */
+    /** the style gets cached. It only gets reloaded when the mStyleUuid != cached one. */
     private BooklistStyle mCachedStyle;
 
     /**
      * Constructor without ID.
      */
     public Bookshelf(@NonNull final String name,
-                     final long styleId) {
+                     @NonNull final String styleUuid) {
         mName = name.trim();
-        mStyleId = styleId;
+        mStyleUuid = styleUuid;
+//        mCachedStyle = null;
     }
 
     /**
@@ -88,8 +91,9 @@ public class Bookshelf
     public Bookshelf(@NonNull final String name,
                      @NonNull final BooklistStyle style) {
         mName = name.trim();
+
+        mStyleUuid = style.getUuid();
         mCachedStyle = style;
-        mStyleId = style.getId();
     }
 
     /**
@@ -97,10 +101,12 @@ public class Bookshelf
      */
     public Bookshelf(final long id,
                      @NonNull final String name,
-                     final long styleId) {
+                     @NonNull final BooklistStyle style) {
         mId = id;
         mName = name.trim();
-        mStyleId = styleId;
+
+        mStyleUuid = style.getUuid();
+        mCachedStyle = style;
     }
 
     /**
@@ -112,7 +118,8 @@ public class Bookshelf
                      @NonNull final ColumnMapper mapper) {
         mId = id;
         mName = mapper.getString(DOM_BOOKSHELF);
-        mStyleId = mapper.getLong(DOM_FK_STYLE_ID);
+        mStyleUuid = mapper.getString(DOM_UUID);
+//        mCachedStyle = null;
     }
 
     /** {@link Parcelable}. */
@@ -120,7 +127,9 @@ public class Bookshelf
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
-        mStyleId = in.readLong();
+        //noinspection ConstantConditions
+        mStyleUuid = in.readString();
+//        mCachedStyle = null;
     }
 
     /**
@@ -139,20 +148,10 @@ public class Bookshelf
         // check if we have a style
         if (list.size() > 1) {
             String uuid = list.get(1).trim();
-            if (uuid.startsWith("-")) {
-                // it's a builtin style, use it.
-                try {
-                    long builtinId = Long.parseLong(uuid);
-                    return new Bookshelf(name, builtinId);
-                } catch (NumberFormatException ignore) {
-                }
-            } else {
-                //TOMF: ENHANCE... implement later it's a user defined style,
-                // Problem: importing an archive where the bookshelf data comes BEFORE the styles
-                // see if we can find the uuid in the db
-                // if found, we have the id: return new Bookshelf(name, styleId);
-                // if not found?
-            }
+            // it's quite possible that the UUID is not a style we (currently) know.
+            // but right now that does not matter as we'll check it when we actually access it.
+            return new Bookshelf(name, uuid);
+
         }
         // the right thing todo would be: get a database, then get the 'real' default style.
         // as this is a lot of overkill for importing, we're just using the builtin default.
@@ -203,7 +202,7 @@ public class Bookshelf
                                                 @NonNull final DAO db) {
         return new Bookshelf(DEFAULT_ID,
                              resources.getString(R.string.bookshelf_my_books),
-                             BooklistStyles.getDefaultStyle(db).getId());
+                             BooklistStyles.getDefaultStyle(db));
     }
 
     /**
@@ -217,7 +216,7 @@ public class Bookshelf
                                                  @NonNull final DAO db) {
         return new Bookshelf(ALL_BOOKS,
                              resources.getString(R.string.bookshelf_all_books),
-                             BooklistStyles.getDefaultStyle(db).getId());
+                             BooklistStyles.getDefaultStyle(db));
     }
 
     /**
@@ -242,7 +241,7 @@ public class Bookshelf
     }
 
     @Override
-    public String getLabel(@NonNull final Resources resources) {
+    public String getLabel() {
         return mName;
     }
 
@@ -256,13 +255,13 @@ public class Bookshelf
                          @NonNull final BooklistStyle style) {
         style.setDefault();
 
-        mStyleId = style.getId();
+        mStyleUuid = style.getUuid();
         db.updateOrInsertBookshelf(this);
+        mCachedStyle = style;
     }
 
     /**
      * Returns a valid style for this bookshelf.
-     * If the currently set style is not valid, returns the global default or the builtin default.
      *
      * @param db the database (needed to check existence and/or to get defaults)
      *
@@ -271,12 +270,11 @@ public class Bookshelf
     @NonNull
     public BooklistStyle getStyle(@NonNull final DAO db) {
 
-        if (mStyleId == 0) {
-            // the value 0 == undefined. User styles: 1+; system style -1..
-            return BooklistStyles.getDefaultStyle(db);
-        } else if (mCachedStyle == null || mStyleId != mCachedStyle.getId()) {
-            // refresh the cached.
-            mCachedStyle = BooklistStyles.getStyle(db, mStyleId);
+        if (mCachedStyle == null || !mStyleUuid.equals(mCachedStyle.getUuid())) {
+            // refresh
+            mCachedStyle = BooklistStyles.getStyle(db, mStyleUuid);
+            // the previous uuid might have been overruled.
+            mStyleUuid = mCachedStyle.getUuid();
         }
 
         return mCachedStyle;
@@ -289,7 +287,8 @@ public class Bookshelf
      */
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
-        mStyleId = source.mStyleId;
+        mStyleUuid = source.mStyleUuid;
+        mCachedStyle = null;
     }
 
     @Override
@@ -297,7 +296,7 @@ public class Bookshelf
                               final int flags) {
         dest.writeLong(mId);
         dest.writeString(mName);
-        dest.writeLong(mStyleId);
+        dest.writeString(mStyleUuid);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -312,13 +311,13 @@ public class Bookshelf
         return "Bookshelf{"
                 + "mId=" + mId
                 + ", mName=`" + mName + '`'
-                + ", mStyleId=" + mStyleId
+                + ", mStyleUuid=" + mStyleUuid
+                + ", mCachedStyle=" + (mCachedStyle == null ? "null" : mCachedStyle.getUuid())
                 + '}';
     }
 
     /**
      * Support for encoding to a text file.
-     * TOMF: fix/finish uuid stuff: give builtin styles a uuid?
      *
      * @return the object encoded as a String.
      * <p>
@@ -326,19 +325,9 @@ public class Bookshelf
      */
     @NonNull
     public String stringEncoded() {
-        if (mStyleId < 0) {
-            // builtin style, use the id.
-            return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleId;
-        }
-
-        if (mCachedStyle != null) {
-            return mName + ' ' + FIELD_SEPARATOR + ' ' + mCachedStyle.getUuid();
-        } else {
-            // without a database, ... no style.
-            return mName;
-        }
+        //TOMF: the uuid is not validated. Does not matter for the CSV export, but will subsequently fail on re-import.
+        return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleUuid;
     }
-
 
     @Override
     public long fixupId(@NonNull final DAO db) {
@@ -364,7 +353,6 @@ public class Bookshelf
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @Override
     public boolean equals(@Nullable final Object obj) {
         if (this == obj) {

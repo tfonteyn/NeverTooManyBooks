@@ -72,7 +72,8 @@ public class EditBookshelfListActivity
                 @Override
                 public void onBookshelfChanged(final long bookshelfId,
                                                final int booksMoved) {
-                    mList = mDb.getBookshelves();
+                    mList.clear();
+                    mList.addAll(mDb.getBookshelves());
                     mAdapter.notifyDataSetChanged();
                     Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
                     setResult(Activity.RESULT_OK, data);
@@ -94,7 +95,7 @@ public class EditBookshelfListActivity
         mAdapter = new BookshelfAdapter(this, mList);
 
         findViewById(R.id.fab).setOnClickListener(
-                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId())));
+                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -194,13 +195,13 @@ public class EditBookshelfListActivity
          * Constructor.
          *
          * @param context Current context
-         * @param objects the list
+         * @param list    the list
          */
         BookshelfAdapter(@NonNull final Context context,
-                         @NonNull final List<Bookshelf> objects) {
+                         @NonNull final List<Bookshelf> list) {
 
             mInflater = LayoutInflater.from(context);
-            mList = objects;
+            mList = list;
         }
 
         @NonNull

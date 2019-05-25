@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -133,6 +134,8 @@ public class BooksOnBookshelf
     private Spinner mBookshelfSpinner;
     /** The adapter used to fill the mBookshelfSpinner. */
     private ArrayAdapter<String> mBookshelfSpinnerAdapter;
+    private final List<String> mBookshelfNameList = new ArrayList<>();
+
     /** The number of books in the current list. */
     private TextView mBookCountView;
     /** The ViewModel. */
@@ -328,7 +331,7 @@ public class BooksOnBookshelf
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(this,
                                                       R.layout.booksonbookshelf_bookshelf_spinner,
-                                                      mModel.getBookshelfNameList());
+                                                      mBookshelfNameList);
         mBookshelfSpinnerAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
@@ -340,6 +343,25 @@ public class BooksOnBookshelf
 
         // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
+    }
+
+    public int initBookshelfNameList(@NonNull final Resources resources) {
+        mBookshelfNameList.clear();
+        mBookshelfNameList.add(resources.getString(R.string.bookshelf_all_books));
+        // default to 'All Books'
+        int currentPos = 0;
+        // start at 1, as position 0 is 'All Books'
+        int position = 1;
+
+        for (Bookshelf bookshelf : mModel.getDb().getBookshelves()) {
+            if (bookshelf.getId() == mModel.getCurrentBookshelf().getId()) {
+                currentPos = position;
+            }
+            position++;
+            mBookshelfNameList.add(bookshelf.getName());
+        }
+
+        return currentPos;
     }
 
     /**
@@ -448,7 +470,7 @@ public class BooksOnBookshelf
         // disable the listener while we add the names.
         mBookshelfSpinner.setOnItemSelectedListener(null);
         // reload the list of names
-        int currentPos = mModel.initBookshelfNameList(getResources());
+        int currentPos = initBookshelfNameList(getResources());
         // and tell the adapter about it.
         mBookshelfSpinnerAdapter.notifyDataSetChanged();
         // (re-)enable the listener
@@ -1281,7 +1303,6 @@ public class BooksOnBookshelf
                     case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE:
                         @SuppressWarnings("ConstantConditions")
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                        // can be null if a style was deleted.
                         if (style != null) {
                             // save the new bookshelf/style combination
                             mModel.getCurrentBookshelf().setAsPreferred();
@@ -1349,7 +1370,6 @@ public class BooksOnBookshelf
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
 
         mListView.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
 
         // Restore saved position
         final int count = mModel.getListCursor().getCount();

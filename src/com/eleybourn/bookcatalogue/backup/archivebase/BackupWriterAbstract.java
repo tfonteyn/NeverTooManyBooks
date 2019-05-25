@@ -231,7 +231,7 @@ public abstract class BackupWriterAbstract
 
     private void doStyles()
             throws IOException {
-        Map<Long, BooklistStyle> bsMap = BooklistStyles.getUserStyles(mDb);
+        Map<String, BooklistStyle> bsMap = BooklistStyles.getUserStyles(mDb);
         if (!bsMap.isEmpty()) {
             // Turn the styles into an XML file in a byte array
             final ByteArrayOutputStream data = new ByteArrayOutputStream();

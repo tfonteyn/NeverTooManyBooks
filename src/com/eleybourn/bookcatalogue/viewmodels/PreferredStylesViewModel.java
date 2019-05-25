@@ -13,7 +13,7 @@ public class PreferredStylesViewModel
         extends ViewModel {
 
     /** Database access. */
-    protected DAO mDb;
+    private DAO mDb;
 
     /** The *in-memory* list of styles. */
     private ArrayList<BooklistStyle> mList;
@@ -43,30 +43,30 @@ public class PreferredStylesViewModel
      * Called after a style has been edited.
      */
     public void handleStyleChange(@NonNull final BooklistStyle style) {
-        // based on the id, find the style in the list.
+        // based on the uuid, find the style in the list.
         // We can't use the object, as it was parcelled along the way.
-        int editedrow = -1;
+        int editedRow = -1;
         for (int i=0; i < mList.size(); i++) {
-            if (mList.get(i).getId() == style.getId()) {
-                editedrow = i;
+            if (mList.get(i).getUuid().equals(style.getUuid())) {
+                editedRow = i;
                 break;
             }
         }
 
-        if (editedrow < 0) {
+        if (editedRow < 0) {
             // New Style added. Put at top and set as preferred
             mList.add(0, style);
             style.setPreferred(true);
 
         } else {
             // Existing Style edited.
-            BooklistStyle origStyle = mList.get(editedrow);
-            if (origStyle.getId() != style.getId()) {
-                if (!origStyle.isUserDefined()) {
+            BooklistStyle origStyle = mList.get(editedRow);
+            if (!origStyle.getUuid().equals(style.getUuid())) {
+                if (origStyle.isBuiltin()) {
                     // Working on a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // Replace the original row with the new one
-                        mList.set(editedrow, style);
+                        mList.set(editedRow, style);
                         // Make the new one preferred
                         style.setPreferred(true);
                         // And demote the original
@@ -74,18 +74,18 @@ public class PreferredStylesViewModel
                         mList.add(origStyle);
                     } else {
                         // Try to put it directly after original
-                        mList.add(editedrow, style);
+                        mList.add(editedRow, style);
                     }
                 } else {
                     // A clone of an user-defined. Put it directly after the user-defined
-                    mList.add(editedrow, style);
+                    mList.add(editedRow, style);
                 }
             } else {
-                mList.set(editedrow, style);
+                mList.set(editedRow, style);
             }
         }
 
-        // add to the db if new.
+        // add to the db if the style is a new one.
         if (style.getId() == 0) {
             mDb.insertBooklistStyle(style);
         }

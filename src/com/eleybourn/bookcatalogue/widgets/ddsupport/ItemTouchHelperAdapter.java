@@ -50,6 +50,6 @@ public interface ItemTouchHelperAdapter {
      *
      * @param position The position of the item dismissed.
      */
-    void onItemRemoved(int position);
+    void onItemSwiped(int position);
 }
 

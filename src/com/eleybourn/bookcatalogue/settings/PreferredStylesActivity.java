@@ -140,7 +140,7 @@ public class PreferredStylesActivity
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
-        if (style.isUserDefined()) {
+        if (!style.isBuiltin()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
             menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
@@ -166,11 +166,11 @@ public class PreferredStylesActivity
                 return true;
 
             case R.id.MENU_EDIT:
-                if (style.isUserDefined()) {
-                    editStyle(style);
-                } else {
+                if (style.isBuiltin()) {
                     // editing a system style -> clone it first.
                     editStyle(style.clone(getResources()));
+                } else {
+                    editStyle(style);
                 }
                 return true;
 
@@ -214,7 +214,9 @@ public class PreferredStylesActivity
                 if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
                     @SuppressWarnings("ConstantConditions")
                     BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
-                    mModel.handleStyleChange(style);
+                    if (style != null) {
+                        mModel.handleStyleChange(style);
+                    }
                     mListAdapter.notifyDataSetChanged();
 
                     // need to send up the chain
@@ -290,10 +292,10 @@ public class PreferredStylesActivity
             });
 
             holder.groupsView.setText(style.getGroupLabels(getResources()));
-            if (style.isUserDefined()) {
-                holder.kindView.setText(R.string.style_is_user_defined);
-            } else {
+            if (style.isBuiltin()) {
                 holder.kindView.setText(R.string.style_is_builtin);
+            } else {
+                holder.kindView.setText(R.string.style_is_user_defined);
             }
 
             // long-click -> menu

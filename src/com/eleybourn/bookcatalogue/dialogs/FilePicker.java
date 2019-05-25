@@ -63,13 +63,13 @@ public class FilePicker
         private final PickListener<File> mListener;
 
         FileItemListAdapter(@NonNull final Context context,
-                            @NonNull final List<File> objects,
+                            @NonNull final List<File> list,
                             @NonNull final PickListener<File> listener) {
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
             mLocale = LocaleUtils.from(context.getResources());
-            mList = objects;
+            mList = list;
         }
 
         @NonNull

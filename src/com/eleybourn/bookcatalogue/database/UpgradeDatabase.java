@@ -16,6 +16,8 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import static com.eleybourn.bookcatalogue.database.DAO.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 
 /**

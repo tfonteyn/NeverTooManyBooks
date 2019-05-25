@@ -135,7 +135,8 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_FK_TOC_ENTRY_ID;
     /**
      * foreign key.
-     * WARNING: if a style is deleted, this key will be set to DEFAULT
+     * When a style is deleted, this key will be (re)set to
+     * {@link BooklistStyles#DEFAULT_STYLE_ID}
      */
     public static final DomainDefinition DOM_FK_STYLE_ID;
 
@@ -475,12 +476,17 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
-    static final DomainDefinition DOM_UUID;
+    public static final DomainDefinition DOM_UUID;
+    static final DomainDefinition DOM_STYLE_IS_BUILTIN;
 
     static {
         DOM_UUID =
                 new DomainDefinition("uuid", ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
+
+        DOM_STYLE_IS_BUILTIN =
+                new DomainDefinition("builtin", ColumnInfo.TYPE_BOOLEAN, true)
+                        .setDefault(0);
     }
 
     /** sorting and grouping in {@link BooklistGroup}. */
@@ -666,6 +672,7 @@ public final class DBDefinitions {
 
     static {
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
+                                       DOM_STYLE_IS_BUILTIN,
                                        DOM_UUID)
                            .setPrimaryKey(DOM_PK_ID)
                            .addIndex(DOM_UUID, true, DOM_UUID);

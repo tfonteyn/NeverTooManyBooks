@@ -440,8 +440,8 @@ public class Book
      */
     @Nullable
     public String getPrimaryAuthor() {
-        ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        return list.isEmpty() ? null : list.get(0).getLabel();
+        ArrayList<Author> authors = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        return authors.isEmpty() ? null : authors.get(0).getLabel();
     }
 
     /**
@@ -452,12 +452,12 @@ public class Book
     @NonNull
     public String getAuthorTextShort(@NonNull final Context context) {
         String newText;
-        List<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (list.isEmpty()) {
+        List<Author> authors = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        if (authors.isEmpty()) {
             return "";
         } else {
-            newText = list.get(0).getLabel();
-            if (list.size() > 1) {
+            newText = authors.get(0).getLabel();
+            if (authors.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;
@@ -494,12 +494,12 @@ public class Book
     @NonNull
     public String getSeriesTextShort(@NonNull final Context context) {
         String newText;
-        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (list.isEmpty()) {
+        ArrayList<Series> series = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        if (series.isEmpty()) {
             return "";
         } else {
-            newText = list.get(0).getLabel();
-            if (list.size() > 1) {
+            newText = series.get(0).getLabel();
+            if (series.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;

@@ -547,7 +547,7 @@ class GrImportAllTask
                 String bsName = translateBookshelf(db, shelfBundle.getString(ReviewFields.SHELF));
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db).getId()));
+                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
                 }
             }
             //TEST see above

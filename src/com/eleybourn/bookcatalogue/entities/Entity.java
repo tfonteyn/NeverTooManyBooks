@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
  * aka 'displayName'
- *
- * The ID is mandatory, the label defaults to toString (which should not be used!!!! ahem)
  */
 public interface Entity {
 
@@ -20,11 +18,11 @@ public interface Entity {
     /**
      * @return the label to use.
      */
-    default String getLabel() {
-        return toString();
-    }
+    String getLabel();
 
     /**
+     * Optional.
+     *
      * @param resources for locale specific strings
      *
      * @return the label to use.
