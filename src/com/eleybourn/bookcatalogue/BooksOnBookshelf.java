@@ -443,7 +443,7 @@ public class BooksOnBookshelf
             //@SuppressWarnings("ConstantConditions")
 //            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
 //            displayList(booklistBuilder.getNewListCursor(), null);
-        initBookList(true);
+            initBookList(true);
 
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -632,11 +632,11 @@ public class BooksOnBookshelf
                 return true;
 
             case R.id.MENU_EXPAND:
-                expandNode(true);
+                expandOrCollapseAllNodes(true);
                 return true;
 
             case R.id.MENU_COLLAPSE:
-                expandNode(false);
+                expandOrCollapseAllNodes(false);
                 return true;
 
             case R.id.MENU_CLEAR_FILTERS:
@@ -690,17 +690,26 @@ public class BooksOnBookshelf
      *
      * @param expand {@code true} to expand, {@code false} to collapse
      */
-    private void expandNode(final boolean expand) {
+    private void expandOrCollapseAllNodes(final boolean expand) {
+
+        int layoutPosition = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
-        if (mListView.getChildCount() != 0) {
-            int oldAbsPos = mAdapter.getAbsolutePosition(mListView.getChildAt(0));
+        if (layoutPosition != RecyclerView.NO_POSITION) {
+            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
+                    mListView.findViewHolderForLayoutPosition(layoutPosition);
+
+            @SuppressWarnings("ConstantConditions")
+            int oldAbsPos = holder.absolutePosition;
+
             savePosition();
+
             // get the builder from the current cursor.
             @SuppressWarnings("ConstantConditions")
             BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
             booklistBuilder.expandAll(expand);
             mModel.setTopRow(booklistBuilder.getPosition(oldAbsPos));
-            // pass in a new cursor.
+
+            // pass in a new cursor and display the list.
             displayList(booklistBuilder.getNewListCursor(), null);
         }
     }

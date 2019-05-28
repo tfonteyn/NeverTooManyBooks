@@ -91,7 +91,7 @@ public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
         implements FastScrollerOverlay.SectionIndexerV2 {
 
-    /** The padding indent (in pixels) added for each level. i.e. padding = level * LEVEL_INDENT. */
+    /** The padding indent (in pixels) added for each level: padding = (level-1) * LEVEL_INDENT. */
     private static final int LEVEL_INDENT = 4;
 
     private final AtomicInteger debugNewViewCounter = new AtomicInteger();
@@ -131,11 +131,11 @@ public class BooklistAdapter
         mInflater = layoutInflater;
     }
 
-    public void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
+    void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
         mOnItemClick = onItemClick;
     }
 
-    public void setOnItemLongClickListener(@NonNull final View.OnLongClickListener onItemLongClick) {
+    void setOnItemLongClickListener(@NonNull final View.OnLongClickListener onItemLongClick) {
         mOnItemLongClick = onItemLongClick;
     }
 
@@ -342,7 +342,7 @@ public class BooklistAdapter
                          "debugBindViewCounter=" + debugBindViewCounter.get());
         }
 
-        // temp tag for the position, so the click-listeners can get it.
+        // tag for the position, so the click-listeners can get it.
         holder.itemView.setTag(R.id.TAG_POSITION, position);
         holder.itemView.setOnClickListener(mOnItemClick);
         holder.itemView.setOnLongClickListener(mOnItemLongClick);
@@ -352,14 +352,6 @@ public class BooklistAdapter
         BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
         holder.onBindViewHolder(row);
-    }
-
-    /**
-     * @return the *absolute* position of the passed view in the list of books.
-     */
-    int getAbsolutePosition(@NonNull final View view) {
-        final RowViewHolder holder = (RowViewHolder) view.getTag(R.id.TAG_VIEW_HOLDER);
-        return holder.absolutePosition;
     }
 
     /**
