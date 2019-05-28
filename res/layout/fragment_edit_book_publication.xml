@@ -5,13 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border1"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/border1"
         >
 
         <TextView
@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/format"
             app:layout_constraintTop_toTopOf="@id/format"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_format"
             />
 
         <TextView
@@ -65,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/language"
             app:layout_constraintTop_toTopOf="@id/language"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_language"
             />
 
         <TextView
@@ -92,7 +92,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/publisher"
             app:layout_constraintTop_toTopOf="@id/publisher"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_publisher"
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
@@ -206,7 +206,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"
             app:layout_constraintTop_toTopOf="@id/price_listed_currency"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_price_listed"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

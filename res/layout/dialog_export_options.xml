@@ -59,7 +59,7 @@
         />
 
     <View
-        android:id="@+id/footer_divider"
+        android:id="@+id/header_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
         android:text="@string/export_option_info_books_since_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_divider"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
         />
 
     <RadioGroup
@@ -123,7 +123,7 @@
         app:layout_constraintEnd_toStartOf="@id/date_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/radio_buttons"
-        tools:ignore="LabelFor,Autofill"
+        tools:ignore="Autofill,LabelFor"
         tools:visibility="visible"
         />
 

@@ -47,14 +47,14 @@ public class BookSearchActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
+        Bundle args = getIntent().getExtras();
         @SuppressWarnings("ConstantConditions")
-        String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
+        String tag = args.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
 
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
             Fragment frag = createFragment(tag);
-            frag.setArguments(getIntent().getExtras());
+            frag.setArguments(args);
             fm.beginTransaction()
               .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               .replace(R.id.main_fragment, frag, tag)

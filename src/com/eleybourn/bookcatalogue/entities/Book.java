@@ -567,17 +567,17 @@ public class Book
         addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
 
-        /* Booleans are stored as Long (0,1) */
+        // Booleans are stored as Long (0,1)
         addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
 
-        /* Booleans are stored as Long (0,1) */
+        // Booleans are stored as Long (0,1)
         addAccessor(IS_SIGNED, new BooleanDataAccessor(DBDefinitions.KEY_SIGNED));
 
-        /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
+        // set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask.
         addAccessor(HAS_MULTIPLE_WORKS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Authors.MULTIPLE_WORKS));
-        /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
+        // set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask.
         addAccessor(HAS_MULTIPLE_AUTHORS,
                     new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Authors.MULTIPLE_AUTHORS));

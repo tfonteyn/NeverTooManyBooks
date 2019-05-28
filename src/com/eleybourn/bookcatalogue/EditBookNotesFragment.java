@@ -71,8 +71,7 @@ public class EditBookNotesFragment
         // do other stuff here that might affect the view.
 
         // Fix up the views
-        //noinspection ConstantConditions
-        ViewUtils.fixFocusSettings(getView());
+        ViewUtils.fixFocusSettings(requireView());
     }
 
     @CallSuper

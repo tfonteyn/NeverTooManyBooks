@@ -1326,7 +1326,7 @@ public class Fields {
                 }
                 return null;
             }
-            final View view = mFragment.get().getView();
+            View view = mFragment.get().getView();
             if (view == null) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.debugWithStackTrace(this, "findViewById", "Fragment View is NULL");

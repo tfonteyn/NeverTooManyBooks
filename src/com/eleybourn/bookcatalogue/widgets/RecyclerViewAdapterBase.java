@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperAdapter;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
@@ -28,6 +29,8 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewViewHolderBase>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
+
+    protected final AtomicInteger debugViewCounter = new AtomicInteger();
 
     @NonNull
     private final List<Item> mItems;
@@ -61,6 +64,14 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     public Context getContext() {
         return mInflater.getContext();
     }
+
+    // add to onCreateViewHolder
+    //            if (BuildConfig.DEBUG) {
+    //                debugViewCounter.incrementAndGet();
+    //                Logger.debug(this, "onCreateViewHolder",
+    //                             "debugViewCounter=" + debugViewCounter.get(),
+    //                             "viewType=" + viewType);
+    //            }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override

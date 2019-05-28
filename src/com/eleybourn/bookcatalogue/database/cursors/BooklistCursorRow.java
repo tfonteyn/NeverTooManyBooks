@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.database.cursors;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -66,7 +66,8 @@ public class BooklistCursorRow
 
     /**
      * level text. Uses a dynamically set domain.
-     * Why 6 members? because at 2 it took me an hour to figure out why we crashed...
+     * Why 6 members? because at 2 it took me an hour to figure out why we had crashed...
+     * i.o.w. there are more then 2 levels, but we only display text for levels 1+2.
      */
     private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2};
 
@@ -166,6 +167,13 @@ public class BooklistCursorRow
         return mMapper.getInt(DOM_BL_NODE_LEVEL);
     }
 
+
+    @Nullable
+    public String[] getLevelText(@NonNull final Context context) {
+        return new String[]{getLevelText(context, 1),
+                            getLevelText(context, 2)};
+    }
+
     /**
      * Get the text associated with the matching level group for the current item.
      *
@@ -174,7 +182,7 @@ public class BooklistCursorRow
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(@NonNull final Resources resources,
+    public String getLevelText(@NonNull final Context context,
                                @IntRange(from = 1) final int level) {
         // bail out if there is no data on level
         if (mBuilder.getStyle().groupCount() < level) {
@@ -196,7 +204,7 @@ public class BooklistCursorRow
             }
         }
 
-        return formatRowGroup(resources, level, mCursor.getString(mLevelCol[index]));
+        return formatRowGroup(context, level, mCursor.getString(mLevelCol[index]));
     }
 
     /**
@@ -209,7 +217,7 @@ public class BooklistCursorRow
      * was needed or on any failure
      */
     @Nullable
-    private String formatRowGroup(@NonNull final Resources resources,
+    private String formatRowGroup(@NonNull final Context context,
                                   @IntRange(from = 1) final int level,
                                   @Nullable final String s) {
         if (s == null) {
@@ -222,7 +230,7 @@ public class BooklistCursorRow
                     "groupCount=" + mBuilder.getStyle().groupCount() + " < level=" + level);
         }
 
-        Locale locale = LocaleUtils.from(resources);
+        Locale locale = LocaleUtils.from(context);
 
         int index = level - 1;
 
@@ -230,9 +238,9 @@ public class BooklistCursorRow
             case BooklistGroup.RowKind.READ_STATUS:
                 switch (s) {
                     case "0":
-                        return resources.getString(R.string.lbl_unread);
+                        return context.getString(R.string.lbl_unread);
                     case "1":
-                        return resources.getString(R.string.lbl_read);
+                        return context.getString(R.string.lbl_read);
                     default:
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this,
@@ -268,7 +276,7 @@ public class BooklistCursorRow
                     int i = Integer.parseInt(s);
                     // If valid, get the name
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        return resources.getQuantityString(R.plurals.n_stars, i, i);
+                        return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (NumberFormatException e) {
                     Logger.error(this, e);

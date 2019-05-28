@@ -72,7 +72,7 @@
         />
 
     <View
-        android:id="@+id/header_divider"
+        android:id="@+id/list_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,16 +83,16 @@
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/footer_divider"
+        app:layout_constraintBottom_toTopOf="@id/header_divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:layout_constraintTop_toBottomOf="@id/list_divider"
         app:layout_constraintVertical_weight="1"
         tools:listitem="@layout/goodreads_work_item"
         />
 
     <View
-        android:id="@+id/footer_divider"
+        android:id="@+id/header_divider"
         style="@style/SectionDivider"
         app:layout_constraintBottom_toTopOf="@id/works_found"
         app:layout_constraintEnd_toEndOf="parent"

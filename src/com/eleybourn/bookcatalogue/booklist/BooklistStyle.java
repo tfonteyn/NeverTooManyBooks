@@ -45,10 +45,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
+import com.eleybourn.bookcatalogue.BooklistAdapter;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.Filter;
@@ -61,8 +62,8 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Entity;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 
 /**
@@ -92,9 +93,9 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * <p>
  * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
  * <p>
- * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
- * then use a {@link BooksMultiTypeListHandler} .GenericStringHolder}, otherwise add a new holder.
- * Need to at least modify {@link BooksMultiTypeListHandler} #createHolder
+ * 4. modify {@link BooklistAdapter} ; If it is just a string field,
+ * then use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.
+ * Need to at least modify {@link BooklistAdapter} #createHolder
  *
  * @author Philip Warner
  */
@@ -285,7 +286,7 @@ public class BooklistStyle
         mNameResId = nameId;
         initPrefs();
         for (int kind : kinds) {
-            mStyleGroups.add(BooklistGroup.newInstance(kind, mUuid));
+            mStyleGroups.add(BooklistGroup.newInstance(kind, mUuid, isUserDefined()));
         }
     }
 
@@ -392,49 +393,52 @@ public class BooklistStyle
      */
     private void initPrefs() {
 
-        mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid);
+        mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid, isUserDefined());
 
-        mStyleGroups = new PStyleGroups(mUuid);
+        mStyleGroups = new PStyleGroups(mUuid, isUserDefined());
 
-        mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid);
-        mScaleSize = new PInteger(Prefs.pk_bob_item_size, mUuid);
-        mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, SUMMARY_SHOW_ALL);
+        mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
+        mScaleSize = new PInteger(Prefs.pk_bob_item_size, mUuid, isUserDefined());
+        mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
+                                       SUMMARY_SHOW_ALL);
 
-        mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid);
+        mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid, isUserDefined());
 
-        mUseLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid);
+        mUseLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid,
+                                           isUserDefined());
 
         // all extra details for book-rows.
-        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, true);
-        mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid);
-        mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid);
-        mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid);
-        mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid);
-        mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid);
+        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, isUserDefined(),
+                                            true);
+        mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid, isUserDefined());
+        mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined());
+        mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined());
+        mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid, isUserDefined());
+        mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid, isUserDefined());
 
         // all filters
         mFilters = new LinkedHashMap<>();
 
         mFilterRead = new BooleanFilter(R.string.lbl_read,
-                                        Prefs.pk_bob_filter_read, mUuid,
+                                        Prefs.pk_bob_filter_read, mUuid, isUserDefined(),
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
         mFilterSigned = new BooleanFilter(R.string.lbl_signed,
-                                          Prefs.pk_bob_filter_signed, mUuid,
+                                          Prefs.pk_bob_filter_signed, mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
         mFilterAnthology = new BooleanFilter(R.string.lbl_anthology,
-                                             Prefs.pk_bob_filter_anthology, mUuid,
+                                             Prefs.pk_bob_filter_anthology, mUuid, isUserDefined(),
                                              DBDefinitions.TBL_BOOKS,
                                              DBDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
         mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
-                                          Prefs.pk_bob_filter_loaned, mUuid,
+                                          Prefs.pk_bob_filter_loaned, mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_BOOK_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
@@ -515,10 +519,10 @@ public class BooklistStyle
     }
 
     /**
-     * @return {@code true} if this style is a builtin style.
+     * @return {@code true} if this style is user defined.
      */
-    public boolean isBuiltin() {
-        return (mNameResId != 0);
+    public boolean isUserDefined() {
+        return (mNameResId == 0);
     }
 
     /**
@@ -539,7 +543,8 @@ public class BooklistStyle
      * store the current style as the global default one.
      */
     public void setDefault() {
-        App.getPrefs().edit().putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mUuid).apply();
+        App.getPrefs().edit().putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
+                                        mUuid).apply();
     }
 
     /**
@@ -769,7 +774,8 @@ public class BooklistStyle
                 // copy the groups PPrefs locally
                 newPPrefs.putAll(newGroup.getPreferences());
                 // and add a new instance of that group
-                mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(), mUuid));
+                mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(),
+                                                           mUuid, isUserDefined()));
             } else {
                 // otherwise, just re-add our (old) current group.
                 mStyleGroups.add(current);
@@ -993,7 +999,7 @@ public class BooklistStyle
      * if an insert fails, the style retains id==0.
      */
     public void save(@NonNull final DAO db) {
-        if (isBuiltin()) {
+        if (!isUserDefined()) {
             throw new IllegalStateException("Builtin Style cannot be saved to database");
         }
 
@@ -1012,13 +1018,44 @@ public class BooklistStyle
      */
     public void delete(@NonNull final DAO db) {
         // cannot delete a builtin or a 'new' style(id==0)
-        if (mId == 0 || isBuiltin()) {
+        if (mId == 0 || !isUserDefined()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
 
         db.deleteBooklistStyle(mId);
-        // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(mUuid);
+        // API: 24 -> App.getAppContext().deleteSharedPreferences(mUuid);
         App.getPrefs(mUuid).edit().clear().apply();
+    }
+
+    /**
+     * Equality.
+     * <p>
+     * - it's the same Object duh..
+     * - the uuid is the same.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        BooklistStyle that = (BooklistStyle) obj;
+
+        // should never happen, famous last words...
+        if (mUuid.isEmpty() || that.mUuid.isEmpty()) {
+            return false;
+        }
+
+        // ignore case because paranoia (import)
+        return mUuid.equalsIgnoreCase(that.mUuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mUuid);
     }
 
     @Override
@@ -1054,18 +1091,14 @@ public class BooklistStyle
 
         private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
 
-        PStyleGroups(final String uuid) {
-            super(Prefs.pk_bob_groups, uuid);
-            loadGroups();
-        }
+        PStyleGroups(@NonNull final String uuid,
+                     final boolean isUserDefined) {
+            super(Prefs.pk_bob_groups, uuid, isUserDefined);
 
-        /**
-         * load the group id's from the SharedPreference and populates the Group object list.
-         */
-        private void loadGroups() {
+            // load the group id's from the SharedPreference and populates the Group object list.
             mGroups.clear();
             for (int kind : get()) {
-                mGroups.add(BooklistGroup.newInstance(kind, mUuid));
+                mGroups.add(BooklistGroup.newInstance(kind, uuid, isUserDefined));
             }
         }
 
@@ -1131,8 +1164,8 @@ public class BooklistStyle
         }
 
         /**
-         * We need the *kind* of group to remove, so we can (optionally) replace it
-         * with a new (different) copy.
+         * We need the *kind* of group to remove (and NOT the group itself),
+         * so we can (optionally) replace it with a new (different) copy.
          *
          * @param kind of group to remove
          */

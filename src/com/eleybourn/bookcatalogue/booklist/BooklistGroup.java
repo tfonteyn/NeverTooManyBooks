@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -89,6 +89,10 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTE
  * IMPORTANT: The {@link #mDomains} must be set at runtime each time but that is ok as
  * they are only needed at list build time. They are NOT stored.
  *
+ * (Small) note: the way preferences are implemented means that all groups will add their
+ * properties to the persisted state of a style. Not just the groups which are active/present
+ * for that state. This is fine, as they won't get used unless activated.
+ *
  * @author Philip Warner
  */
 public class BooklistGroup
@@ -107,19 +111,23 @@ public class BooklistGroup
                     return new BooklistGroup[size];
                 }
             };
+
     /** pre-v200 legacy support. DO NOT CHANGE. */
     private static final long serialVersionUID = 1012206875683862714L;
+
     /**
      * the kind of row/group we represent, see {@link RowKind}.
      * <p>
      * Do not rename or move this variable, deserialization will break.
      */
     private final int kind;
-    /**
-     * the name of the Preference file (comes from the style that contains this group.
-     */
+
+    /** The name of the Preference file (comes from the style that contains this group. */
     @NonNull
     String mUuid;
+    /** Flag indicating the style is user-defined -> our prefs must be persisted. */
+    boolean mIsUserDefinedStyle;
+
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
@@ -130,13 +138,16 @@ public class BooklistGroup
     /**
      * Constructor.
      *
-     * @param kind Kind of group to create
-     * @param uuid of the style
+     * @param kind               Kind of group to create
+     * @param uuid               of the style
+     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      */
     private BooklistGroup(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
-                          @NonNull final String uuid) {
+                          @NonNull final String uuid,
+                          final boolean isUserDefinedStyle) {
         this.kind = kind;
         mUuid = uuid;
+        mIsUserDefinedStyle = isUserDefinedStyle;
         initPrefs();
     }
 
@@ -147,6 +158,7 @@ public class BooklistGroup
         kind = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
+        mIsUserDefinedStyle = in.readInt() != 0;
         mDomains = new ArrayList<>();
         in.readList(mDomains, getClass().getClassLoader());
         // now the prefs
@@ -157,35 +169,39 @@ public class BooklistGroup
      * Create a new BooklistGroup of the specified kind, creating any specific
      * subclasses as necessary.
      *
-     * @param kind Kind of group to create
-     * @param uuid of the style
+     * @param kind               Kind of group to create
+     * @param uuid               of the style
+     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
      * @return a group based on the passed in kind
      */
     @NonNull
     public static BooklistGroup newInstance(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
-                                            @NonNull final String uuid) {
+                                            @NonNull final String uuid,
+                                            final boolean isUserDefinedStyle) {
         switch (kind) {
             case RowKind.AUTHOR:
-                return new BooklistAuthorGroup(uuid);
+                return new BooklistAuthorGroup(uuid, isUserDefinedStyle);
             case RowKind.SERIES:
-                return new BooklistSeriesGroup(uuid);
+                return new BooklistSeriesGroup(uuid, isUserDefinedStyle);
             default:
-                return new BooklistGroup(kind, uuid);
+                return new BooklistGroup(kind, uuid, isUserDefinedStyle);
         }
     }
 
     /**
-     * @param style to get the groups from
+     * @param uuid               of the style
+     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
      * @return a list of BooklistGroups, one for each defined RowKind.
      */
     @NonNull
-    public static List<BooklistGroup> getAllGroups(@NonNull final BooklistStyle style) {
+    public static List<BooklistGroup> getAllGroups(@NonNull final String uuid,
+                                                   final boolean isUserDefinedStyle) {
         List<BooklistGroup> list = new ArrayList<>();
         //skip BOOK KIND
         for (int kind = 1; kind < RowKind.size(); kind++) {
-            list.add(newInstance(kind, style.getUuid()));
+            list.add(newInstance(kind, uuid, isUserDefinedStyle));
         }
         return list;
     }
@@ -195,8 +211,9 @@ public class BooklistGroup
                               final int flags) {
         dest.writeInt(kind);
         dest.writeString(mUuid);
+        dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
         dest.writeList(mDomains);
-        // now the prefs (none for now)
+        // now the prefs for this class (none on this level for now)
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -205,10 +222,18 @@ public class BooklistGroup
         return 0;
     }
 
+    @NonNull
+    public String getUuid() {
+        return mUuid;
+    }
+
+    public boolean isUserDefinedStyle() {
+        return mIsUserDefinedStyle;
+    }
+
     public int getKind() {
         return kind;
     }
-
 
     public String getName(@NonNull final Resources resources) {
         return RowKind.get(kind).getName(resources);
@@ -319,8 +344,9 @@ public class BooklistGroup
          *
          * @param uuid of the style
          */
-        BooklistSeriesGroup(@NonNull final String uuid) {
-            super(RowKind.SERIES, uuid);
+        BooklistSeriesGroup(@NonNull final String uuid,
+                            final boolean isUserDefinedStyle) {
+            super(RowKind.SERIES, uuid, isUserDefinedStyle);
         }
 
         /**
@@ -344,7 +370,9 @@ public class BooklistGroup
          */
         @Override
         protected void initPrefs() {
-            mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid);
+            super.initPrefs();
+            mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid,
+                                      mIsUserDefinedStyle);
         }
 
         boolean showAllSeries() {
@@ -444,8 +472,9 @@ public class BooklistGroup
          *
          * @param uuid of the style
          */
-        BooklistAuthorGroup(@NonNull final String uuid) {
-            super(RowKind.AUTHOR, uuid);
+        BooklistAuthorGroup(@NonNull final String uuid,
+                            final boolean isUserDefinedStyle) {
+            super(RowKind.AUTHOR, uuid, isUserDefinedStyle);
         }
 
         /**
@@ -470,8 +499,11 @@ public class BooklistGroup
          */
         @Override
         protected void initPrefs() {
-            mAllAuthors = new PBoolean(Prefs.pk_bob_books_under_multiple_authors, mUuid);
-            mGivenNameFirst = new PBoolean(Prefs.pk_bob_format_author_name, mUuid);
+            super.initPrefs();
+            mAllAuthors = new PBoolean(Prefs.pk_bob_books_under_multiple_authors, mUuid,
+                                       mIsUserDefinedStyle);
+            mGivenNameFirst = new PBoolean(Prefs.pk_bob_format_author_name, mUuid,
+                                           mIsUserDefinedStyle);
         }
 
         boolean showAllAuthors() {

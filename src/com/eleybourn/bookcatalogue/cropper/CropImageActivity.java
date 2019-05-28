@@ -411,10 +411,10 @@ public class CropImageActivity
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         }
 
-        /* If the output is required to a specific size then SCALE or fill */
+        // If the output is required to a specific size then SCALE or fill
         if (mOptionOutputX != 0 && mOptionOutputY != 0) {
             if (mOptionScale) {
-                /* Scale the image to the required dimensions */
+                // Scale the image to the required dimensions
                 Bitmap old = croppedImage;
                 croppedImage = CropUtil.transform(new Matrix(), croppedImage,
                                                   mOptionOutputX, mOptionOutputY, mOptionScaleUp);
@@ -440,16 +440,16 @@ public class CropImageActivity
                 int dx = (srcRect.width() - dstRect.width()) / 2;
                 int dy = (srcRect.height() - dstRect.height()) / 2;
 
-                /* If the srcRect is too big, use the center part of it. */
+                // If the srcRect is too big, use the center part of it.
                 srcRect.inset(Math.max(0, dx), Math.max(0, dy));
 
-                /* If the dstRect is too big, use the center part of it. */
+                // If the dstRect is too big, use the center part of it.
                 dstRect.inset(Math.max(0, -dx), Math.max(0, -dy));
 
-                /* Draw the cropped bitmap in the center */
+                // Draw the cropped bitmap in the center
                 canvas.drawBitmap(mBitmap, srcRect, dstRect, null);
 
-                /* Set the cropped bitmap as the new bitmap */
+                // Set the cropped bitmap as the new bitmap
                 croppedImage.recycle();
                 croppedImage = bitmap;
             }

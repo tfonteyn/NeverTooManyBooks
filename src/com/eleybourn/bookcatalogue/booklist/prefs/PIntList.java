@@ -24,8 +24,9 @@ public class PIntList
      * @param uuid of the style
      */
     protected PIntList(@NonNull final String key,
-                       @NonNull final String uuid) {
-        super(key, uuid, new ArrayList<>());
+                       @NonNull final String uuid,
+                       final boolean isPersistent) {
+        super(key, uuid, isPersistent, new ArrayList<>());
         mNonPersistedValue = new ArrayList<>();
     }
 
@@ -39,7 +40,7 @@ public class PIntList
     @NonNull
     @Override
     public List<Integer> get() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             String sValues = App.getPrefs(mUuid).getString(getKey(), null);

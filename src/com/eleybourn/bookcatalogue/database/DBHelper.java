@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -28,7 +29,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
@@ -68,7 +69,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LC;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -172,18 +173,18 @@ public class DBHelper
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.
      *
-     * @param sdb         the database
+     * @param db          the database
      * @param source      from table
      * @param destination to table
      * @param toRemove    (optional) List of fields to be removed from the source table
      *                    (skipped in copy)
      */
-    static void copyTableSafely(@NonNull final SynchronizedDb sdb,
+    static void copyTableSafely(@NonNull final SynchronizedDb db,
                                 @SuppressWarnings("SameParameterValue") @NonNull final String source,
                                 @NonNull final String destination,
                                 @NonNull final String... toRemove) {
         // Get the source info
-        TableInfo sourceTable = new TableInfo(sdb, source);
+        TableInfo sourceTable = new TableInfo(db, source);
         // Build the column list
         StringBuilder columns = new StringBuilder();
         boolean first = true;
@@ -206,7 +207,7 @@ public class DBHelper
         }
         String colList = columns.toString();
         String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT " + colList + " FROM " + source;
-        try (SynchronizedStatement stmt = sdb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.executeInsert();
         }
     }
@@ -235,9 +236,9 @@ public class DBHelper
      * Run at installation (and v200 upgrade) time to add the builtin style id's to the database.
      * This allows foreign keys to work.
      *
-     * @param syncedDb the database
+     * @param db the database
      */
-    private static void prepareStylesTable(@NonNull final SynchronizedDb syncedDb) {
+    private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
         String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
                         + '(' + DOM_PK_ID
@@ -245,7 +246,7 @@ public class DBHelper
                         + ',' + DOM_UUID
                         // 1==true
                         + ") VALUES(?,1,?)";
-        try (SynchronizedStatement stmt = syncedDb.compileStatement(sqlInsertStyles)) {
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
                 stmt.bindString(2, BooklistStyles.ID_UUID[-id]);
@@ -302,7 +303,7 @@ public class DBHelper
         createIndices(syncedDb, false);
 
         // insert the builtin styles so foreign key rules are possible.
-        prepareStylesTable(syncedDb);
+        prepareStylesTable(db);
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
@@ -634,7 +635,7 @@ public class DBHelper
             //noinspection UnusedAssignment
             curVersion = 100;
 
-            /* now using the 'real' cache directory */
+            // we're now using the 'real' cache directory
             StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
                                                      + File.separator + "tmp_images"));
 
@@ -642,7 +643,7 @@ public class DBHelper
             Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
             // this trigger was replaced.
-            syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
+            db.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
 
             // TEST: a proper upgrade from 82 to 100 with non-clean data
 
@@ -732,18 +733,15 @@ public class DBHelper
             // just for consistence, rename the table.
             db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
 
-            // add the 'order by' lower-case columns
-            // Note this is a lazy approach as compared to the DAO code where we take the book's
-            // language/locale into account! The overhead here would be huge.
-            // If the user has any specific book issue, a simple update of the book will fix it.
+
+            // add the 'order by' title columns
             db.execSQL("ALTER TABLE " + TBL_BOOKS
-                               + " ADD " + DOM_TITLE_LC + " text not null default ''");
-            db.execSQL("UPDATE " + TBL_BOOKS
-                               + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+                               + " ADD " + DOM_TITLE_OB + " text not null default ''");
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
+
             db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
-                               + " ADD " + DOM_TITLE_LC + " text not null default ''");
-            db.execSQL("UPDATE " + TBL_TOC_ENTRIES
-                               + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+                               + " ADD " + DOM_TITLE_OB + " text not null default ''");
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
 
 
             // add the UUID field for the move of styles to SharedPreferences
@@ -751,7 +749,7 @@ public class DBHelper
                                + " ADD " + DOM_UUID + " text not null default ''");
 
             // insert the builtin style id's so foreign key rules are possible.
-            prepareStylesTable(syncedDb);
+            prepareStylesTable(db);
 
             // convert user styles from serialized storage to SharedPreference xml.
             try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
@@ -794,7 +792,7 @@ public class DBHelper
 
             /* move cover files to a sub-folder.
             Only files with matching rows in 'books' are moved. */
-            UpgradeDatabase.v200_moveCoversToDedicatedDirectory(syncedDb);
+            UpgradeDatabase.v200_moveCoversToDedicatedDirectory(db);
         }
 
         // Rebuild all indices

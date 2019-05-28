@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 

@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 public abstract class CropImageViewTouchBase
         extends AppCompatImageView {

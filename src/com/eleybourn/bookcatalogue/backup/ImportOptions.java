@@ -25,7 +25,7 @@ public class ImportOptions
     // pointless to implement. Just here for mirroring export flags
     //public static final int DATABASE = 1 << 8;
 
-    /* Options value to indicate ALL things should be exported */
+    /** Options value to indicate ALL things should be exported */
     public static final int ALL = BOOK_CSV | COVERS | BOOK_LIST_STYLES | PREFERENCES;
     public static final int NOTHING = 0;
 
@@ -68,7 +68,7 @@ public class ImportOptions
 
     protected ImportOptions(@NonNull final Parcel in) {
         what = in.readInt();
-        if (in.readInt() == 1) {
+        if (in.readInt() != 0) {
             file = new File(in.readString());
         }
     }

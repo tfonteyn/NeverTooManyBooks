@@ -56,7 +56,7 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -244,7 +244,7 @@ public class BooklistBuilder
     /** The word 'UNKNOWN', used for year/month if those are (doh) unknown. */
     private final String mUnknown;
     /** the list of Filters. */
-    private final transient ArrayList<Filter> mFilters = new ArrayList<>();
+    private final ArrayList<Filter> mFilters = new ArrayList<>();
     /** used in debug. */
     private boolean mDebugReferenceDecremented;
     /**

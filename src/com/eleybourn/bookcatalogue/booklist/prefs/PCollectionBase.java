@@ -37,19 +37,20 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     PCollectionBase(@NonNull final String key,
                     @NonNull final String uuid,
+                    final boolean isPersistent,
                     @NonNull final T defaultValue) {
-        super(key, uuid, defaultValue);
+        super(key, uuid, isPersistent, defaultValue);
     }
+
 
     @Override
     public void set(@Nullable final T value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            remove();
         } else {
-            App.getPrefs(mUuid).edit()
-               .putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
@@ -57,34 +58,33 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * Bypass the real type
      */
     public void set(@Nullable final Set<String> value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             throw new IllegalArgumentException("uuid was empty");
         }
 
         if (value == null) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            remove();
         } else {
-            App.getPrefs(mUuid).edit()
-               .putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final T value) {
-        if (value != null) {
-            ed.putString(getKey(), TextUtils.join(DELIM, value));
-        } else {
+        if (value == null) {
             ed.remove(getKey());
+        } else {
+            ed.putString(getKey(), TextUtils.join(DELIM, value));
         }
     }
 
     public void clear() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             //noinspection ConstantConditions
             mNonPersistedValue.clear();
         } else {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            remove();
         }
     }
 
@@ -94,7 +94,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * @param value to add
      */
     public void add(@NonNull final E value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             //noinspection ConstantConditions
             mNonPersistedValue.add(value);
         } else {
@@ -109,7 +109,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     public void remove(@NonNull final E value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             //noinspection ConstantConditions
             mNonPersistedValue.remove(value);
         } else {
@@ -121,11 +121,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                         newList.add(e);
                     }
                 }
-                if (!newList.isEmpty()) {
-                    App.getPrefs(mUuid).edit()
-                       .putString(getKey(), TextUtils.join(DELIM, newList)).apply();
+                if (newList.isEmpty()) {
+                    remove();
                 } else {
-                    App.getPrefs(mUuid).edit().remove(getKey()).apply();
+                    App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, newList)).apply();
                 }
             }
         }
@@ -133,7 +132,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             //noinspection ConstantConditions

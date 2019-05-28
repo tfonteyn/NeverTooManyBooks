@@ -139,7 +139,7 @@
     </string>
     <string name="menu_cover_add_from_gallery">Aus der Fotogalerie…</string>
     <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
-    <string name="lbl_backup_dialog">Sicherungskopie?</string>
+    <string name="title_backup">Sicherungskopie</string>
     <string name="searching_amazon">Suche bei Amazon</string>
     <string name="searching_google_books">Suche bei Google Books</string>
     <string name="searching_library_thing">Suche bei LibraryThing</string>
@@ -422,7 +422,7 @@
     <string name="acra_resReportSendSuccessToast">Danke!</string>
     <string name="lbl_read">Gelesen</string>
     <string name="lbl_unread">Ungelesen</string>
-    <string name="warning_date_not_set">(kein Datum)</string>
+    <string name="date_not_set_with_brackets">(kein Datum)</string>
     <string name="style_builtin_author_series">Autor, danach Serie</string>
     <string name="style_builtin_series">Serie</string>
     <string name="style_builtin_title_first_letter">Erster Buchstabe des Titels</string>
@@ -686,7 +686,7 @@
         Das Löschen der Zugangsdaten entfernt die Goodreads-Option aus dem  Hauptmenü.
     </string>
     <string name="progress_msg_connecting">Verbinde mit der Website…</string>
-    <string name="lbl_backup">Sichern ins Archiv</string>
+    <string name="lbl_backup_to_archive">Sichern ins Archiv</string>
     <string name="lbl_import_from_archive">Import vom Archiv</string>
     <!--  Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
@@ -974,5 +974,9 @@
     <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="menu_hide_keyboard">Tastatur ausblenden</string>
+    <string name="warning_action_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>
+    <string name="vldt_failure">Validierungsfehler.</string>
+    <string name="title_import">Importieren</string>
+    <string name="btn_drag_handle">Ziehen Sie, um diese Liste neu zu ordnen.</string>
 
 </resources>

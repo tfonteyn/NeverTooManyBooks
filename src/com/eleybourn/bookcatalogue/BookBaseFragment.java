@@ -355,8 +355,7 @@ public abstract class BookBaseFragment
     private void showHide(final boolean hideIfEmpty,
                           @IdRes final int fieldId,
                           @NonNull @IdRes final int... relatedFields) {
-        @SuppressWarnings("ConstantConditions")
-        final View view = getView().findViewById(fieldId);
+        View view = requireView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();
             if (hideIfEmpty) {
@@ -393,8 +392,7 @@ public abstract class BookBaseFragment
     private void setVisibilityGoneOr(@IdRes final int fieldToSet,
                                      final int visibility,
                                      @NonNull @IdRes final int... fields) {
-        @SuppressWarnings("ConstantConditions")
-        final View baselineField = getView().findViewById(fieldToSet);
+        View baselineField = requireView().findViewById(fieldToSet);
         if (baselineField != null) {
             baselineField.setVisibility(isVisibilityGone(fields) ? View.GONE : visibility);
         }
@@ -408,8 +406,7 @@ public abstract class BookBaseFragment
     private boolean isVisibilityGone(@IdRes @NonNull final int[] fields) {
         boolean isGone = true;
         for (int fieldId : fields) {
-            @SuppressWarnings("ConstantConditions")
-            View field = getView().findViewById(fieldId);
+            View field = requireView().findViewById(fieldId);
             if (field != null) {
                 // all fields must be gone to result into isGone==true
                 isGone = isGone && (field.getVisibility() == View.GONE);
@@ -426,10 +423,9 @@ public abstract class BookBaseFragment
      */
     protected void setVisibility(final int visibility,
                                  @NonNull @IdRes final int... fields) {
-        View root = getView();
+        View view = requireView();
         for (int fieldId : fields) {
-            @SuppressWarnings("ConstantConditions")
-            View field = root.findViewById(fieldId);
+            View field = view.findViewById(fieldId);
             if (field != null) {
                 field.setVisibility(visibility);
             }

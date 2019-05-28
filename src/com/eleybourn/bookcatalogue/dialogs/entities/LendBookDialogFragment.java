@@ -124,6 +124,7 @@ public class LendBookDialogFragment
         Bundle args = requireArguments();
 
         mDb = new DAO();
+
         final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
@@ -219,7 +220,6 @@ public class LendBookDialogFragment
      * Auto complete list comes from your Contacts.
      */
     private void setPhoneContactsAdapter() {
-        // check security
         //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(
                 getActivity(),

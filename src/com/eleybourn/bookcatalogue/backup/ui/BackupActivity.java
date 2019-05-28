@@ -20,19 +20,21 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
@@ -80,7 +82,7 @@ public class BackupActivity
                                                                             result.file.length()));
 
                                 new AlertDialog.Builder(BackupActivity.this)
-                                        .setTitle(R.string.lbl_backup)
+                                        .setTitle(R.string.lbl_backup_to_archive)
                                         .setMessage(msg)
                                         .setPositiveButton(android.R.string.ok, (d, which) -> {
                                             d.dismiss();
@@ -99,7 +101,7 @@ public class BackupActivity
                                         R.string.error_if_the_problem_persists);
 
                                 new AlertDialog.Builder(BackupActivity.this)
-                                        .setTitle(R.string.lbl_backup)
+                                        .setTitle(R.string.lbl_backup_to_archive)
                                         .setMessage(msg)
                                         .setPositiveButton(android.R.string.ok,
                                                            (d, which) -> d.dismiss())
@@ -114,11 +116,9 @@ public class BackupActivity
                     }
                 }
             };
-
+    private ProgressDialogFragment<Object, ExportOptions> mProgressDialog;
     private final ExportOptionsDialogFragment.OptionsListener mOptionsListener =
             BackupActivity.this::onOptionsSet;
-
-    private ProgressDialogFragment<Object, ExportOptions> mProgressDialog;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -144,17 +144,47 @@ public class BackupActivity
             createFileBrowser(defaultFilename);
         }
 
-        Button confirm = findViewById(R.id.confirm);
-        confirm.setText(R.string.btn_confirm_save);
-        confirm.setOnClickListener(v -> doBackup());
-
-        setTitle(R.string.lbl_backup);
+        setTitle(R.string.title_backup);
     }
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
         if (ExportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
-            ((ExportOptionsDialogFragment)fragment).setListener(mOptionsListener);
+            ((ExportOptionsDialogFragment) fragment).setListener(mOptionsListener);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_SAVE,
+                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
+            .setIcon(R.drawable.ic_save)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.MENU_HIDE_KEYBOARD:
+                Utils.hideKeyboard(getWindow().getDecorView());
+                return true;
+
+            case R.id.MENU_SAVE:
+                doBackup();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -167,8 +197,7 @@ public class BackupActivity
         if (frag != null) {
             File file = frag.getSelectedFile();
             if (file.exists() && !file.isFile()) {
-                //noinspection ConstantConditions
-                UserMessage.showUserMessage(frag.getView(),
+                UserMessage.showUserMessage(frag.requireView(),
                                             R.string.warning_select_a_non_directory);
                 return;
             }
@@ -177,14 +206,15 @@ public class BackupActivity
             options.file = file;
 
             new AlertDialog.Builder(this)
-                    .setTitle(R.string.lbl_backup)
+                    .setTitle(R.string.lbl_backup_to_archive)
                     .setMessage(R.string.export_info_backup_all)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.btn_options, (d, which) -> {
                         // ask user what options they want
                         FragmentManager fm = getSupportFragmentManager();
                         if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
-                            ExportOptionsDialogFragment.newInstance(options).show(fm, ExportOptionsDialogFragment.TAG);
+                            ExportOptionsDialogFragment.newInstance(options).show(fm,
+                                                                                  ExportOptionsDialogFragment.TAG);
                         }
                     })
                     .setPositiveButton(android.R.string.ok, (d, which) -> {

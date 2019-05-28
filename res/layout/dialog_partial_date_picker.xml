@@ -48,7 +48,7 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
             app:layout_constraintEnd_toEndOf="@id/plusYear"
             app:layout_constraintTop_toBottomOf="@id/plusYear"
             app:layout_constraintVertical_weight="1"
-            tools:ignore="Autofill,LabelFor"
+            tools:ignore="Autofill"
             tools:text="1984"
             />
 

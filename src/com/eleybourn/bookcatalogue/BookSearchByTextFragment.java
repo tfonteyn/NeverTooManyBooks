@@ -66,14 +66,13 @@ public class BookSearchByTextFragment
             actionBar.setSubtitle(null);
         }
 
-        View view = getView();
-        //noinspection ConstantConditions
-        mTitleView = view.findViewById(R.id.title);
-        mAuthorView = view.findViewById(R.id.author);
+        View root = requireView();
+        mTitleView = root.findViewById(R.id.title);
+        mAuthorView = root.findViewById(R.id.author);
 
         populateAuthorList();
 
-        view.findViewById(R.id.btn_search).setOnClickListener(v -> {
+        root.findViewById(R.id.btn_search).setOnClickListener(v -> {
             mAuthorSearchText = mAuthorView.getText().toString().trim();
             mTitleSearchText = mTitleView.getText().toString().trim();
             prepareSearch();
@@ -227,7 +226,8 @@ public class BookSearchByTextFragment
         }
 
         // Now get an adapter based on the combined names
-        mAuthorAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+        //noinspection ConstantConditions
+        mAuthorAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                             authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }

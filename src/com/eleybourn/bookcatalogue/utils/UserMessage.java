@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.google.android.material.snackbar.Snackbar;
 
 /**

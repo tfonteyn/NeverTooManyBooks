@@ -1,11 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.app.Activity;
-import android.os.Bundle;
-
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.io.File;
@@ -22,19 +17,7 @@ public abstract class BRBaseActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_file_chooser_base;
-    }
-
-    @CallSuper
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Handle 'Cancel' button
-        findViewById(R.id.cancel).setOnClickListener(v -> {
-            setResult(Activity.RESULT_CANCELED);
-            finish();
-        });
+        return R.layout.activity_main;
     }
 
     /**
@@ -53,7 +36,7 @@ public abstract class BRBaseActivity
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.browser_fragment, frag, FileChooserFragment.TAG)
+                .replace(R.id.main_fragment, frag, FileChooserFragment.TAG)
                 .commit();
     }
 }

@@ -12,7 +12,7 @@
         style="@style/CoverImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@string/lbl_cover"
         tools:src="@drawable/ic_image"
         />
 

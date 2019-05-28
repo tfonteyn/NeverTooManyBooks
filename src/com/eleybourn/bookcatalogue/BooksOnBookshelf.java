@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,8 +51,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -88,13 +87,14 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
+import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -121,21 +121,18 @@ public class BooksOnBookshelf
                                                              getWindow().getDecorView(), this);
                 }
             };
+    private final List<String> mBookshelfNameList = new ArrayList<>();
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLinearLayoutManager;
     /** Multi-type adapter to manage list connection to cursor. */
-    private MultiTypeListCursorAdapter mAdapter;
-
+    private BooklistAdapter mAdapter;
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
-
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** The adapter used to fill the mBookshelfSpinner. */
     private ArrayAdapter<String> mBookshelfSpinnerAdapter;
-    private final List<String> mBookshelfNameList = new ArrayList<>();
-
     /** The number of books in the current list. */
     private TextView mBookCountView;
     /** The ViewModel. */
@@ -319,8 +316,11 @@ public class BooksOnBookshelf
         mListView.setLayoutManager(mLinearLayoutManager);
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, mLinearLayoutManager.getOrientation()));
-        mListView.addItemDecoration(
-                new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
+
+        if (!(mListView instanceof CFSRecyclerView)) {
+            mListView.addItemDecoration(
+                    new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
+        }
 
         // details for the header of the list.
         mBookCountView = findViewById(R.id.book_count);
@@ -345,9 +345,12 @@ public class BooksOnBookshelf
         Tracker.exitOnCreate(this);
     }
 
-    public int initBookshelfNameList(@NonNull final Resources resources) {
+    /**
+     * @return the position that reflects the current bookshelf.
+     */
+    public int initBookshelfNameList() {
         mBookshelfNameList.clear();
-        mBookshelfNameList.add(resources.getString(R.string.bookshelf_all_books));
+        mBookshelfNameList.add(getString(R.string.bookshelf_all_books));
         // default to 'All Books'
         int currentPos = 0;
         // start at 1, as position 0 is 'All Books'
@@ -386,10 +389,11 @@ public class BooksOnBookshelf
     public void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
+        // don't build the list needlessly
         if (App.isRecreating()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit("onResume", "isRecreating",
-                                 LocaleUtils.toDebugString(getResources()));
+                                 LocaleUtils.toDebugString(this));
             }
             return;
         }
@@ -410,37 +414,43 @@ public class BooksOnBookshelf
         }
 
         // Update the list of bookshelves + set the current bookshelf.
-        // This will trigger an initBooklist call ONLY IF the shelf was changed.
-        // to be clear: it will NOT build the list at app startup.
-        boolean rebuildWasRequested = populateBookShelfSpinner();
+        boolean bookshelfChanged = populateBookShelfSpinner();
 
-        // if it did not call a rebuild, see if we need one anyhow,
-        if (!rebuildWasRequested) {
-            // If we got here after onActivityResult, see if we need to force a rebuild.
-            Boolean forceRebuild = mModel.isForceRebuild();
-            if (forceRebuild != null) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                    Logger.debug(this, "onResume", "onActivityResult made us");
-                }
-                // Build the book list according to onActivityResult outcome
-                initBookList(forceRebuild);
+        // If we got here after onActivityResult, see if we need to force a rebuild.
+        Boolean fullOrPartialRebuild = mModel.isForceRebuild();
 
-            } else if (mModel.hasListBeenLoaded()) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                    Logger.debug(this, "onResume", "reusing builder");
-                }
-                // a list has been build previously and we should re-use it.
-                @SuppressWarnings("ConstantConditions")
-                BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
-                displayList(booklistBuilder.getNewListCursor(), null);
-
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                    Logger.debug(this, "onResume", "initial build");
-                }
-                // initial build
-                initBookList(true);
+        if (bookshelfChanged) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                Logger.debug(this, "onResume",
+                             "bookshelf changed, fullRebuild: true");
             }
+            initBookList(true);
+
+        } else if (fullOrPartialRebuild != null) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                Logger.debug(this, "onResume",
+                             "onActivityResult made us do fullRebuild=" + fullOrPartialRebuild);
+            }
+            // Build the book list according to onActivityResult outcome
+            initBookList(fullOrPartialRebuild);
+
+        } else if (mModel.hasListBeenLoaded()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                Logger.debug(this, "onResume",
+                             "reusing existing list");
+            }
+            // a list has been build previously and we should re-use it.
+            //@SuppressWarnings("ConstantConditions")
+//            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
+//            displayList(booklistBuilder.getNewListCursor(), null);
+        initBookList(true);
+
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                Logger.debug(this, "onResume",
+                             "rebuild full for other reason.");
+            }
+            initBookList(true);
         }
 
         // always reset for next iteration.
@@ -458,9 +468,12 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Populate the BookShelf list in the Spinner and switch to the preferred bookshelf/style.
+     * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
+     * <p>
+     * Note: no longer triggers a rebuild, as it was getting messy who/when/where.
+     * Caller takes care now.
      *
-     * @return {@code true} if we caused a bookshelf switch; i.e. if we caused an initBooklist.
+     * @return {@code true} if the selected shelf was changed (or set for the first time).
      */
     private boolean populateBookShelfSpinner() {
 
@@ -469,15 +482,14 @@ public class BooksOnBookshelf
 
         // disable the listener while we add the names.
         mBookshelfSpinner.setOnItemSelectedListener(null);
-        // reload the list of names
-        int currentPos = initBookshelfNameList(getResources());
+        // (re)load the list of names
+        int currentPos = initBookshelfNameList();
         // and tell the adapter about it.
         mBookshelfSpinnerAdapter.notifyDataSetChanged();
+        // Set the current bookshelf.
+        mBookshelfSpinner.setSelection(currentPos);
         // (re-)enable the listener
         mBookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
-        // Set the current bookshelf. As the listener is now active, this triggers an
-        // initBooklist call *IF* the selection is different from the previous one.
-        mBookshelfSpinner.setSelection(currentPos);
 
         String selected = mModel.getCurrentBookshelf().getName();
 
@@ -486,8 +498,8 @@ public class BooksOnBookshelf
                          "previous=" + previous, "selected=" + selected);
         }
 
-        // Flag up if the selection was indeed different; i.e. if initBooklist was called.
-        return (previous != null && !previous.equalsIgnoreCase(selected));
+        // Flag up if the selection was different.
+        return previous == null || !previous.equalsIgnoreCase(selected);
     }
 
     /**
@@ -586,14 +598,14 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_sort_by_alpha)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_filters)
-            .setIcon(R.drawable.ic_undo);
-
         menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
             .setIcon(R.drawable.ic_unfold_more);
 
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
+
+        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_filters)
+            .setIcon(R.drawable.ic_undo);
 
         if (BuildConfig.DEBUG /* always */) {
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
@@ -770,7 +782,7 @@ public class BooksOnBookshelf
                 menuTitle = cursorRow.getTitle();
             } else {
                 // it's a group (level 1,2,3)
-                menuTitle = cursorRow.getLevelText(getResources(), level);
+                menuTitle = cursorRow.getLevelText(this, level);
             }
             // bring up the context menu
             new MenuPicker<>(context, menuTitle, menu, position, (menuItem, pos) -> {
@@ -1198,7 +1210,7 @@ public class BooksOnBookshelf
                         break;
 
                     case Activity.RESULT_OK:
-                        @SuppressWarnings("ConstantConditions")
+                        Objects.requireNonNull(data);
                         long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
                             mModel.setCurrentPositionedBookId(newId);
@@ -1217,8 +1229,8 @@ public class BooksOnBookshelf
 
             case UniqueId.REQ_BOOK_SEARCH:
                 if (resultCode == Activity.RESULT_OK) {
-                    /* don't enforce having an id. We might not have found or added anything.
-                     * but if we do, the data will be what EditBookActivity returns. */
+                    // don't enforce having an id. We might not have found or added anything.
+                    // but if we do, the data will be what EditBookActivity returns.
                     if (data != null) {
                         long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
@@ -1247,13 +1259,11 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
                     // the last edited/inserted shelf
-                    @SuppressWarnings("ConstantConditions")
                     long bookshelfId = data.getLongExtra(DBDefinitions.KEY_ID,
                                                          Bookshelf.DEFAULT_ID);
                     mModel.setCurrentBookshelf(bookshelfId);
-
-                    // bookshelves modified, update everything
                     mModel.setForceRebuild(true);
                 }
                 break;
@@ -1271,7 +1281,7 @@ public class BooksOnBookshelf
                             Bookshelf newBookshelf = Bookshelf.getPreferred(getResources(),
                                                                             mModel.getDb());
                             if (!mModel.getCurrentBookshelf().equals(newBookshelf)) {
-                                // if it was.. then switch to it.
+                                // if it was.. switch to it.
                                 mModel.setCurrentBookshelf(newBookshelf);
                                 mModel.setForceRebuild(true);
                             }
@@ -1301,7 +1311,7 @@ public class BooksOnBookshelf
                         break;
 
                     case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE:
-                        @SuppressWarnings("ConstantConditions")
+                        Objects.requireNonNull(data);
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             // save the new bookshelf/style combination
@@ -1359,13 +1369,13 @@ public class BooksOnBookshelf
         // and set the new list
         mModel.setListCursor(listCursor);
 
-        // Get new handler and adapter since list may be radically different structure
+        // Get new adapter since list may be radically different structure
         // compared to previous time we displayed the list.
-        BooksMultiTypeListHandler listHandler =
-                new BooksMultiTypeListHandler(getLayoutInflater(),
-                                              mModel.getDb(), mModel.getCurrentStyle());
         //noinspection ConstantConditions
-        mAdapter = new MultiTypeListCursorAdapter(this, mModel.getListCursor(), listHandler);
+        mAdapter = new BooklistAdapter(getLayoutInflater(),
+                                       mModel.getDb(),
+                                       mModel.getListCursor(),
+                                       mModel.getCurrentStyle());
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
 
@@ -1475,9 +1485,9 @@ public class BooksOnBookshelf
             @SuppressWarnings("ConstantConditions")
             BooklistCursorRow row = listCursor.getCursorRow();
             if (listCursor.moveToPosition(mModel.getLastTopRow())) {
-                mLevelTextView[0].setText(row.getLevelText(getResources(), 1));
+                mLevelTextView[0].setText(row.getLevelText(this, 1));
                 if (mLevelTextView[1].getVisibility() == View.VISIBLE) {
-                    mLevelTextView[1].setText(row.getLevelText(getResources(), 2));
+                    mLevelTextView[1].setText(row.getLevelText(this, 2));
                 }
             }
         }

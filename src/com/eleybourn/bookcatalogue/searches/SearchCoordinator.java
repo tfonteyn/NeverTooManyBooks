@@ -163,6 +163,25 @@ public class SearchCoordinator {
         }
     };
 
+    /** Controller instance (strong reference) for this specific SearchManager. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final SearchCoordinatorController mController = new SearchCoordinatorController() {
+
+        public void requestAbort() {
+            mTaskManager.cancelAllTasks();
+        }
+
+        /**
+         *
+         * @return the search coordinator.
+         */
+        @NonNull
+        @Override
+        public SearchCoordinator getSearchCoordinator() {
+            return SearchCoordinator.this;
+        }
+    };
+
     /**
      * Constructor.
      *
@@ -172,26 +191,7 @@ public class SearchCoordinator {
     public SearchCoordinator(@NonNull final TaskManager taskManager,
                              @NonNull final SearchFinishedListener searchFinishedListener) {
 
-        /* Controller instance for this specific SearchManager */
-        SearchCoordinatorController controller = new SearchCoordinatorController() {
-            /**
-             *
-             */
-            public void requestAbort() {
-                mTaskManager.cancelAllTasks();
-            }
-
-            /**
-             *
-             * @return the search coordinator.
-             */
-            @NonNull
-            @Override
-            public SearchCoordinator getSearchCoordinator() {
-                return SearchCoordinator.this;
-            }
-        };
-        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
 
         mTaskManager = taskManager;
         MESSAGE_SWITCH.addListener(mMessageSenderId, false, searchFinishedListener);
@@ -491,8 +491,8 @@ public class SearchCoordinator {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.debug(this, "sendResults", "All searches done, preparing results");
         }
-        /* This list will be the actual order of the result we apply, based on the
-         * actual results and the default order. */
+        // This list will be the actual order of the result we apply, based on the
+        // actual results and the default order.
         final List<Integer> results = new ArrayList<>();
 
         if (mHasValidIsbn) {

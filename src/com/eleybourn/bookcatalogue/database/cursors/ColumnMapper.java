@@ -97,8 +97,9 @@ public class ColumnMapper {
      * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final DomainDefinition domain) {
-        //noinspection ConstantConditions
-        return (-1 != mColumnIndexes.get(domain.name));
+        @SuppressWarnings("ConstantConditions")
+        int index = mColumnIndexes.get(domain.name);
+        return (index != -1);
     }
 
     /**

@@ -110,7 +110,7 @@ public class StartupActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocaleUtils.applyPreferred(getResources());
+        LocaleUtils.applyPreferred(this);
 
         // the UI
         setContentView(R.layout.activity_startup);
@@ -255,7 +255,7 @@ public class StartupActivity
         if (decreaseStartupCounters()) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_help_outline)
-                    .setTitle(R.string.lbl_backup_dialog)
+                    .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, which) -> {

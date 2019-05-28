@@ -342,21 +342,24 @@ public class LibraryThingManager
         }
 
         String sizeParam;
-        //noinspection ConstantConditions
-        switch (size) {
-            case SMALL:
-                sizeParam = "small";
-                break;
-            case MEDIUM:
-                sizeParam = "medium";
-                break;
-            case LARGE:
-                sizeParam = "large";
-                break;
+        if (size == null) {
+            sizeParam = "L";
+        } else {
+            switch (size) {
+                case SMALL:
+                    sizeParam = "small";
+                    break;
+                case MEDIUM:
+                    sizeParam = "medium";
+                    break;
+                case LARGE:
+                    sizeParam = "large";
+                    break;
 
-            default:
-                sizeParam = "large";
-                break;
+                default:
+                    sizeParam = "large";
+                    break;
+            }
         }
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).

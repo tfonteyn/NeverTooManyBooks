@@ -11,8 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Entity;
 
 /**
@@ -24,6 +27,8 @@ import com.eleybourn.bookcatalogue.entities.Entity;
  */
 public class RadioGroupRecyclerAdapter<T extends Entity>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
+
+    private final AtomicInteger debugViewCounter = new AtomicInteger();
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -56,8 +61,14 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        View view = mInflater.inflate(R.layout.row_radiobutton,
-                                      parent, false);
+        if (BuildConfig.DEBUG) {
+            debugViewCounter.incrementAndGet();
+            Logger.debug(this, "onCreateViewHolder",
+                         "debugViewCounter=" + debugViewCounter.get(),
+                         "viewType=" + viewType);
+        }
+
+        View view = mInflater.inflate(R.layout.row_radiobutton, parent, false);
         return new Holder(view);
     }
 

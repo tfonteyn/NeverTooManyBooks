@@ -72,10 +72,12 @@ public class TarBackupReader
 
         // Process the INFO entry. Should be first.
         ReaderEntity entity = nextEntity();
-        if (entity == null || entity.getType() != BackupEntityType.Info) {
-            throw new IOException("Not a valid backup");
+        if (entity == null) {
+            throw new IOException("Not a valid backup; entity was NULL");
         }
-
+        if (entity.getType() != BackupEntityType.Info) {
+            throw new IOException("Not a valid backup, entity found: " + entity.getType());
+        }
         // read the INFO
         mInfo = new BackupInfo();
         try (XmlImporter importer = new XmlImporter()) {

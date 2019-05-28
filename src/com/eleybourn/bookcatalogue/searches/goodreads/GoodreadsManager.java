@@ -115,13 +115,13 @@ public class GoodreadsManager
     /** last time we synced with Goodreads. */
     private static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "LastSyncDate";
 
-    /* authorization tokens. */
+    /** authorization tokens. */
     private static final String ACCESS_TOKEN = PREF_PREFIX + "AccessToken.Token";
     private static final String ACCESS_SECRET = PREF_PREFIX + "AccessToken.Secret";
     private static final String REQUEST_TOKEN = PREF_PREFIX + "RequestToken.Token";
     private static final String REQUEST_SECRET = PREF_PREFIX + "RequestToken.Secret";
 
-    /* meta data keys in manifest. */
+    /** meta data keys in manifest. */
     private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
     private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
 

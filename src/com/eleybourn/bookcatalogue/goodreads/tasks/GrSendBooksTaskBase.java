@@ -260,7 +260,7 @@ abstract class GrSendBooksTaskBase
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context.getResources()),
+            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
                                                      eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 

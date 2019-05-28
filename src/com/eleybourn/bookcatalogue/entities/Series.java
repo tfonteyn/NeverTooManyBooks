@@ -180,7 +180,7 @@ public class Series
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
-        mIsComplete = in.readByte() != 0;
+        mIsComplete = in.readInt() != 0;
         //noinspection ConstantConditions
         mNumber = in.readString();
     }
@@ -305,9 +305,8 @@ public class Series
 
                 } else {
                     // See if the one in 'index' also has a num
-                    Series orig = map.get(name);
-                    //noinspection ConstantConditions
-                    if (orig.getNumber() == null || orig.getNumber().trim().isEmpty()) {
+                    Series orig = Objects.requireNonNull(map.get(name));
+                    if (orig.getNumber().trim().isEmpty()) {
                         // Replace with this one, and delete the original
                         map.put(name, series);
                         it.remove();
@@ -351,7 +350,7 @@ public class Series
                               final int flags) {
         dest.writeLong(mId);
         dest.writeString(mName);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+        dest.writeInt(mIsComplete ? 1 : 0);
         dest.writeString(mNumber);
     }
 

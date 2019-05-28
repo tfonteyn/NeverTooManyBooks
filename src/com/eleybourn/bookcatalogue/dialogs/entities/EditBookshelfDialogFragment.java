@@ -32,6 +32,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -84,11 +85,10 @@ public class EditBookshelfDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Context context = getContext();
 
-        Bundle args = requireArguments();
+        mBookshelf = requireArguments().getParcelable(BKEY_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf);
 
-        mBookshelf = args.getParcelable(BKEY_BOOKSHELF);
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             mName = mBookshelf.getName();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);

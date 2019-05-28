@@ -438,7 +438,6 @@ public class UpdateFieldsFromInternetTask
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
-            //noinspection ConstantConditions
             if (!requestedFields.containsKey(key) || !requestedFields.get(key).isSelected()) {
                 toRemove.add(key);
             }

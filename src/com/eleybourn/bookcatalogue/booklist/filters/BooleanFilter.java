@@ -35,9 +35,10 @@ public class BooleanFilter
     public BooleanFilter(@StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final String uuid,
+                         final boolean isPersistent,
                          @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
-        super(key, uuid, P_NOT_USED);
+        super(key, uuid, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;
         mDomain = domain;

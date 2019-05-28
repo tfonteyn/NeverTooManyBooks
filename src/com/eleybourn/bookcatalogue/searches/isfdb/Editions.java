@@ -49,6 +49,7 @@ public class Editions
 
         // do not auto-redirect, handled manually. See the comments inside the loadPage method.
         if (!loadPage(url, false)) {
+            // failed to load, return an empty list.
             return mEditions;
         }
 
@@ -56,8 +57,12 @@ public class Editions
             // We got redirected to a book. Populate with the doc (web page) we got back.
             mEditions.add(new Edition(stripNumber(mDoc.location()), mDoc));
 
-        } else if (mDoc.location().contains("title.cgi")) {
-            // we have multiple editions.
+        } else if (
+                // we might have have multiple editions.
+                // There seem to be two possible location urls:
+                mDoc.location().contains("title.cgi")
+                || mDoc.location().contains("se.cgi")) {
+
             findEntries(mDoc, "tr.table0", "tr.table1");
         }
 

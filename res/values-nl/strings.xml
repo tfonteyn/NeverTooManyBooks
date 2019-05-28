@@ -142,7 +142,7 @@
     <string name="warning_backup_request">
         Wilt u  een back-up van uw database op uw SD kaart maken?
     </string>
-    <string name="lbl_backup_dialog">Back-up maken?</string>
+    <string name="title_backup">Back-up</string>
     <string name="searching_amazon">Zoek bij Amazon</string>
     <string name="searching_google_books">Zoeken bij Google Books</string>
     <string name="searching_library_thing">Zoeken bij LibraryThing</string>
@@ -417,7 +417,7 @@
     <string name="acra_resReportSendSuccessToast">Dank u!</string>
     <string name="lbl_read">Gelezen</string>
     <string name="lbl_unread">Ongelezen</string>
-    <string name="warning_date_not_set">(geen datum)</string>
+    <string name="date_not_set_with_brackets">(geen datum)</string>
     <string name="style_builtin_author_series">Auteur daarna Serie</string>
     <string name="style_builtin_series">Series</string>
     <string name="style_builtin_title_first_letter">Titel eerste letter</string>
@@ -681,7 +681,7 @@
 
     <string name="progress_msg_connecting">Verbinding maken met website…</string>
 
-    <string name="lbl_backup">Back-up naar archief</string>
+    <string name="lbl_backup_to_archive">Back-up naar archief</string>
     <string name="lbl_import_from_archive">Importeren vanuit archief</string>
 
     <string name="export_info_success_archive_details">
@@ -954,4 +954,8 @@
     <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="none">Geen</string>
+    <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
+    <string name="vldt_failure">Validatiefout.</string>
+    <string name="title_import">Importeren</string>
+    <string name="btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
 </resources>

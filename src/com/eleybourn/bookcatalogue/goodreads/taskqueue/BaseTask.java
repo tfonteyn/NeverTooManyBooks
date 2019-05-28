@@ -98,7 +98,7 @@ public abstract class BaseTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
-        Locale locale = LocaleUtils.from(context.getResources());
+        Locale locale = LocaleUtils.from(context);
 
         // Update task info binding
         holder.description.setText(getDescription(context));

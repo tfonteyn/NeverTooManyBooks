@@ -32,6 +32,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -79,11 +80,9 @@ public class EditPublisherDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         mDb = new DAO();
 
-        Bundle args = requireArguments();
-
-        final Publisher publisher = args.getParcelable(DBDefinitions.KEY_PUBLISHER);
+        Publisher publisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
+        Objects.requireNonNull(publisher);
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             mName = publisher.getName();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
@@ -113,7 +112,6 @@ public class EditPublisherDialogFragment
                     }
                     dismiss();
 
-                    //noinspection ConstantConditions
                     if (publisher.getName().equals(mName)) {
                         return;
                     }

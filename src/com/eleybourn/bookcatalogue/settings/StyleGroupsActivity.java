@@ -144,14 +144,15 @@ public class StyleGroupsActivity
         // Build an array list with the groups from the style
         ArrayList<GroupWrapper> groupWrappers = new ArrayList<>(mStyle.groupCount());
         for (BooklistGroup group : mStyle.getGroups()) {
-            groupWrappers.add(new GroupWrapper(group, mStyle.getUuid(), true));
+            groupWrappers.add(new GroupWrapper(group, true));
         }
 
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+        for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle.getUuid(),
+                                                              mStyle.isUserDefined())) {
             if (!mStyle.hasGroupKind(group.getKind())) {
-                groupWrappers.add(new GroupWrapper(group, mStyle.getUuid(), false));
+                groupWrappers.add(new GroupWrapper(group, false));
             }
         }
 
@@ -208,7 +209,7 @@ public class StyleGroupsActivity
 
     /**
      * We build a list of GroupWrappers which is passed to the underlying class for editing.
-     * The wrapper includes extra details needed by this activity.
+     * The wrapper includes extra details (the 'present' flag) needed by this activity.
      */
     public static class GroupWrapper
             implements Serializable, Parcelable {
@@ -229,37 +230,43 @@ public class StyleGroupsActivity
 
         private static final long serialVersionUID = 3108094089675884238L;
 
-        /** The actual group. */
+        /** The actual group. When parceling, we only parcel the kind. */
         @NonNull
         public final BooklistGroup group;
+        /* Needed to reconstruct after parceling. */
         @NonNull
         final String uuid;
-        /** Whether this groups is present in the style. */
+        /* Needed to reconstruct after parceling. */
+        final boolean isUserDefinedStyle;
+
+        /** Whether this group is present in the style. */
         public boolean present;
 
         /** Constructor. */
-        public GroupWrapper(@NonNull final BooklistGroup group,
-                            @NonNull final String uuid,
-                            final boolean present) {
+        GroupWrapper(@NonNull final BooklistGroup group,
+                     final boolean present) {
             this.group = group;
-            this.uuid = uuid;
+            this.uuid = group.getUuid();
+            this.isUserDefinedStyle = group.isUserDefinedStyle();
             this.present = present;
         }
 
         /** {@link Parcelable}. */
         GroupWrapper(@NonNull final Parcel in) {
-            present = in.readByte() != 0;
+            present = in.readInt() != 0;
             //noinspection ConstantConditions
             uuid = in.readString();
+            isUserDefinedStyle = in.readInt() != 0;
             //noinspection ConstantConditions
-            group = BooklistGroup.newInstance(in.readInt(), uuid);
+            group = BooklistGroup.newInstance(in.readInt(), uuid, isUserDefinedStyle);
         }
 
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
-            dest.writeByte((byte) (present ? 1 : 0));
+            dest.writeInt(present ? 1 : 0);
             dest.writeString(uuid);
+            dest.writeInt(isUserDefinedStyle ? 1 : 0);
             dest.writeInt(group.getKind());
         }
 
@@ -299,6 +306,13 @@ public class StyleGroupsActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_booklist_style, parent, false);
             return new Holder(view);

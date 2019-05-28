@@ -169,8 +169,11 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final DomainDefinition DOM_TITLE;
-    /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
-    public static final DomainDefinition DOM_TITLE_LC;
+    /**
+     * 'Order By' for the title. Lowercase, and stripped of spaces etc...
+     * {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}.
+     */
+    static final DomainDefinition DOM_TITLE_OB;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final DomainDefinition DOM_FIRST_PUBLICATION;
     /** {@link #TBL_BOOKS}. */
@@ -180,11 +183,14 @@ public final class DBDefinitions {
     public static final String KEY_DATE_FIRST_PUBLISHED = "first_publication";
     public static final String KEY_DATE_LAST_UPDATED = "last_update_date";
 
+    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
+    private static final String COLUMN_SUFFIX_ORDER_BY = "_ob";
+
     static {
         DOM_TITLE =
                 new DomainDefinition(KEY_TITLE, ColumnInfo.TYPE_TEXT, true);
-        DOM_TITLE_LC =
-                new DomainDefinition(KEY_TITLE + "_lc", ColumnInfo.TYPE_TEXT, true)
+        DOM_TITLE_OB =
+                new DomainDefinition(KEY_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
         DOM_FIRST_PUBLICATION =
                 new DomainDefinition(KEY_DATE_FIRST_PUBLISHED, ColumnInfo.TYPE_DATE, true)
@@ -443,6 +449,9 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final DomainDefinition DOM_BOOK_LOANEE;
 
+    /** Virtual. The type of a TOC entry. See {@link TocEntry#TYPE_TOC} */
+    static final DomainDefinition DOM_TOC_TYPE;
+
     public static final String KEY_SERIES_NUM = "series_num";
     public static final String KEY_LOANEE = "loaned_to";
 
@@ -451,16 +460,21 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_SERIES_NUM, ColumnInfo.TYPE_TEXT);
         DOM_BOOK_LOANEE =
                 new DomainDefinition(KEY_LOANEE, ColumnInfo.TYPE_TEXT, true);
+
+        DOM_TOC_TYPE =
+                new DomainDefinition("type",ColumnInfo.TYPE_TEXT);
     }
 
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final DomainDefinition DOM_BOOK_AUTHOR_POSITION;
+
     /**
      * {@link #TBL_BOOK_SERIES}.
      * The Series position is the order the series show up in a book. Particularly important
      * for "primary series" and in lists where 'all' series are shown.
      */
     public static final DomainDefinition DOM_BOOK_SERIES_POSITION;
+
     /** {@link #TBL_BOOK_TOC_ENTRIES}. */
     static final DomainDefinition DOM_BOOK_TOC_ENTRY_POSITION;
 
@@ -697,7 +711,7 @@ public final class DBDefinitions {
         TBL_BOOKS.addDomains(DOM_PK_ID,
                              // book data
                              DOM_TITLE,
-                             DOM_TITLE_LC,
+                             DOM_TITLE_OB,
                              DOM_BOOK_ISBN,
                              DOM_BOOK_PUBLISHER,
                              DOM_BOOK_DATE_PUBLISHED,
@@ -742,7 +756,7 @@ public final class DBDefinitions {
                              DOM_LAST_UPDATE_DATE)
 
                  .setPrimaryKey(DOM_PK_ID)
-                 .addIndex(DOM_TITLE_LC, false, DOM_TITLE_LC)
+                 .addIndex(DOM_TITLE_OB, false, DOM_TITLE_OB)
                  .addIndex(DOM_BOOK_ISBN, false, DOM_BOOK_ISBN)
                  .addIndex(DOM_BOOK_PUBLISHER, false, DOM_BOOK_PUBLISHER)
                  .addIndex(DOM_BOOK_UUID, true, DOM_BOOK_UUID)
@@ -764,13 +778,13 @@ public final class DBDefinitions {
         TBL_TOC_ENTRIES.addDomains(DOM_PK_ID,
                                    DOM_FK_AUTHOR_ID,
                                    DOM_TITLE,
-                                   DOM_TITLE_LC,
+                                   DOM_TITLE_OB,
                                    DOM_FIRST_PUBLICATION)
                        .setPrimaryKey(DOM_PK_ID)
                        .addReference(TBL_AUTHORS, DOM_FK_AUTHOR_ID)
                        .addIndex(DOM_FK_AUTHOR_ID, false, DOM_FK_AUTHOR_ID)
-                       .addIndex(DOM_TITLE_LC, false, DOM_TITLE_LC)
-                       .addIndex("pk", true, DOM_FK_AUTHOR_ID, DOM_TITLE_LC);
+                       .addIndex(DOM_TITLE_OB, false, DOM_TITLE_OB)
+                       .addIndex("pk", true, DOM_FK_AUTHOR_ID, DOM_TITLE_OB);
         ALL_TABLES.put(TBL_TOC_ENTRIES.getName(), TBL_TOC_ENTRIES);
 
 

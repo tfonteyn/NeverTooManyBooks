@@ -34,7 +34,7 @@ import java.util.Set;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 /**
  * Collection of system-defined and user-defined Book List styles.

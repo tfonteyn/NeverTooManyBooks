@@ -98,7 +98,7 @@
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
     <string name="menu_cover_add_from_gallery">Desde la galería…</string>
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
-    <string name="lbl_backup_dialog">¿Realizar copia?</string>
+    <string name="title_backup">Copia</string>
     <string name="searching_amazon">Buscando en Amazon</string>
     <string name="searching_google_books">Buscando en Google Books</string>
     <string name="searching_library_thing">Buscando en LibraryThing</string>
@@ -275,7 +275,7 @@
     <string name="acra_resReportSendSuccessToast">¡Muchas gracias!</string>
     <string name="lbl_read">Leídos</string>
     <string name="lbl_unread">No leídos</string>
-    <string name="warning_date_not_set">(sin fecha)</string>
+    <string name="date_not_set_with_brackets">(sin fecha)</string>
     <string name="style_builtin_author_series">Primero Autor después Serie</string>
     <string name="style_builtin_series">Serie</string>
     <string name="style_builtin_title_first_letter">Primera letra del título</string>
@@ -504,7 +504,7 @@
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>
 
     <!-- Admin option to import -->
-    <string name="lbl_backup">Backup a fichero</string>
+    <string name="lbl_backup_to_archive">Backup a fichero</string>
     <!-- Admin option to import -->
     <string name="lbl_import_from_archive">Importar de fichero</string>
 
@@ -765,4 +765,8 @@
     <string name="none">Ninguno</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="menu_hide_keyboard">Ocultar teclado</string>
+    <string name="warning_action_requires_isbn">Esta acción requiere un ISBN válido.</string>
+    <string name="vldt_failure">Fallo de validación.</string>
+    <string name="title_import">Importar</string>
+    <string name="btn_drag_handle">Arrástrame para reordenar esta lista.</string>
 </resources>

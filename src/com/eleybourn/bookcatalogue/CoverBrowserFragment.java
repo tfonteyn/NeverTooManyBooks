@@ -49,6 +49,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -145,8 +146,7 @@ public class CoverBrowserFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final Fragment targetFragment = Objects.requireNonNull(getTargetFragment());
 
-        Bundle args = getArguments();
-        @SuppressWarnings("ConstantConditions")
+        Bundle args = requireArguments();
         String isbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
         int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
@@ -383,6 +383,8 @@ public class CoverBrowserFragment
     public class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
+
         private final int mWidth;
         private final int mHeight;
 
@@ -396,6 +398,12 @@ public class CoverBrowserFragment
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
 
             ImageView imageView = new ImageView(parent.getContext());
             imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));

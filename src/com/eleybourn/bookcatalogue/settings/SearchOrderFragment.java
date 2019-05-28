@@ -19,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
@@ -56,8 +58,7 @@ public class SearchOrderFragment
 
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
-        //noinspection ConstantConditions
-        mListView = getView().findViewById(android.R.id.list);
+        mListView = requireView().findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
@@ -119,6 +120,13 @@ public class SearchOrderFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_searchsite, parent, false);
             return new Holder(view);

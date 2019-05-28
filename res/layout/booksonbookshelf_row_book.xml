@@ -16,7 +16,7 @@
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@string/lbl_cover"
         tools:src="@drawable/ic_image"
         />
 
@@ -27,7 +27,7 @@
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@string/lbl_read"
         />
 
     <TextView

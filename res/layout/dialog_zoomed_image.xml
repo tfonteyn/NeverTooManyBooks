@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coverImage"
     style="@style/CoverImage.Zoomed"
-    tools:ignore="ContentDescription"
+    android:contentDescription="@string/lbl_cover"
     tools:src="@drawable/ic_image"
     />

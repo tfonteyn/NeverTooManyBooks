@@ -19,14 +19,15 @@ public class PString
      * @param uuid the style id
      */
     public PString(@NonNull final String key,
-                   @NonNull final String uuid) {
-        super(key, uuid, App.getPrefString(key));
+                   @NonNull final String uuid,
+                   final boolean isPersistent) {
+        super(key, uuid, isPersistent, App.getPrefString(key));
     }
 
     @NonNull
     @Override
     public String get() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // guard against the pref being there, but with value null.

@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.CallSuper;
@@ -182,6 +183,15 @@ public abstract class EditBookBaseFragment<T>
         if (!field.isUsed()) {
             return;
         }
+
+        View fieldButton = requireView().findViewById(fieldButtonId);
+
+        if (list.isEmpty()) {
+            fieldButton.setEnabled(false);
+            return;
+        }
+        // We got a list, set it up.
+
         // Get the list to use in the AutoCompleteTextView
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> adapter =
@@ -189,8 +199,7 @@ public abstract class EditBookBaseFragment<T>
         getFields().setAdapter(field.id, adapter);
 
         // Get the drop-down button for the list and setup dialog
-        //noinspection ConstantConditions
-        getView().findViewById(fieldButtonId).setOnClickListener(v -> {
+        fieldButton.setOnClickListener(v -> {
             FieldPicker<String> picker = new FieldPicker<>(getContext(),
                                                            getString(dialogTitleId),
                                                            field, list);

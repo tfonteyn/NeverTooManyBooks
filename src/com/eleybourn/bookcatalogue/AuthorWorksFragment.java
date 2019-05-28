@@ -19,11 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
+import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
 
 /**
  * Display all TocEntry's for an Author.
@@ -67,9 +70,9 @@ public class AuthorWorksFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        @SuppressWarnings("ConstantConditions")
-        long authorId = getArguments().getLong(DBDefinitions.KEY_ID, 0);
-        boolean withBooks = getArguments().getBoolean(BKEY_WITH_BOOKS, true);
+        Bundle args = requireArguments();
+        long authorId = args.getLong(DBDefinitions.KEY_ID, 0);
+        boolean withBooks = args.getBoolean(BKEY_WITH_BOOKS, true);
 
         mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
         mModel.init(authorId, withBooks);
@@ -78,8 +81,7 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         getActivity().setTitle(title);
 
-        //noinspection ConstantConditions
-        mListView = getView().findViewById(android.R.id.list);
+        mListView = requireView().findViewById(android.R.id.list);
         mListView.setHasFixedSize(true);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(mLinearLayoutManager);
@@ -87,8 +89,10 @@ public class AuthorWorksFragment
         mListView.addItemDecoration(
                 new DividerItemDecoration(getContext(), mLinearLayoutManager.getOrientation()));
 
-        mListView.addItemDecoration(
-                new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
+        if (!(mListView instanceof CFSRecyclerView)) {
+            mListView.addItemDecoration(
+                    new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
+        }
 
         mAdapter = new TocAdapter(getContext(), mModel);
         mListView.setAdapter(mAdapter);
@@ -99,8 +103,8 @@ public class AuthorWorksFragment
      */
     private void gotoBook(@NonNull final TocEntry item) {
         Intent intent;
-        switch (item.getTocType()) {
-            case 'T':
+        switch (item.getType()) {
+            case TocEntry.TYPE_TOC:
                 // see note on dba method about Integer vs. Long
                 final ArrayList<Integer> books = mModel.getBookIds(item);
                 intent = new Intent(getContext(), BooksOnBookshelf.class)
@@ -111,14 +115,14 @@ public class AuthorWorksFragment
                 startActivity(intent);
                 break;
 
-            case 'B':
+            case TocEntry.TYPE_BOOK:
                 intent = new Intent(getContext(), BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_ID, item.getId());
                 startActivity(intent);
                 break;
 
             default:
-                throw new IllegalArgumentException("type=" + item.getTocType());
+                throw new IllegalArgumentException("type=" + item.getType());
         }
 
         //noinspection ConstantConditions
@@ -152,6 +156,8 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements FastScrollerOverlay.SectionIndexerV2 {
 
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
+
         /** Icon to show for a book. */
         private final Drawable sBookIndicator;
         /** Icon to show for not a book. e.g. a short story... */
@@ -175,6 +181,12 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
 
             View itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
             return new Holder(itemView);
@@ -186,19 +198,19 @@ public class AuthorWorksFragment
 
             TocEntry item = mModel.getTocEntries().get(position);
             // decorate the row depending on toc entry or actual book
-            switch (item.getTocType()) {
-                case 'T':
+            switch (item.getType()) {
+                case TocEntry.TYPE_TOC:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             sStoryIndicator, null, null, null);
                     break;
 
-                case 'B':
+                case TocEntry.TYPE_BOOK:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             sBookIndicator, null, null, null);
                     break;
 
                 default:
-                    throw new IllegalArgumentException("type=" + item.getTocType());
+                    throw new IllegalArgumentException("type=" + item.getType());
             }
 
             holder.titleView.setText(item.getTitle());
@@ -230,7 +242,8 @@ public class AuthorWorksFragment
 
         @Nullable
         @Override
-        public String[] getSectionTextForPosition(final int position) {
+        public String[] getSectionText(@NonNull final Context context,
+                                       final int position) {
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
 

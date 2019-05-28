@@ -99,7 +99,7 @@
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="menu_cover_add_from_gallery">Z galerie…</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="lbl_backup_dialog">Zálohovat?</string>
+    <string name="title_backup">Zálohovat</string>
     <string name="searching_amazon">Vyhledávám na Amazonu</string>
     <string name="searching_google_books">Vyhledávám na Google Books</string>
     <string name="searching_library_thing">Vyhledávám na LibraryThing</string>
@@ -270,7 +270,7 @@
     <string name="acra_resReportSendSuccessToast">Děkujeme!</string>
     <string name="lbl_read">Přečteno</string>
     <string name="lbl_unread">Nepřečteno</string>
-    <string name="warning_date_not_set">(žádné datum)</string>
+    <string name="date_not_set_with_brackets">(žádné datum)</string>
     <string name="style_builtin_author_series">Autor, následně série</string>
     <string name="style_builtin_series">Série</string>
     <string name="style_builtin_title_first_letter">První písmeno z titulu</string>
@@ -444,4 +444,19 @@
     <string name="menu_clear_filters">Vymazat filtry</string>
     <string name="menu_copy_database">Zkopírujte databázi</string>
     <string name="menu_internet_update_fields">Aktualizovat pole</string>
+    <string name="warning_action_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
+    <string name="vldt_failure">Selhání ověření.</string>
+    <string name="title_import">Importovat</string>
+    <string name="progress_msg_please_wait">Prosím, čekejte…</string>
+    <string name="up_folder">Nahoru</string>
+    <string name="tab_lbl_notes">Poznámky</string>
+    <string name="tab_lbl_details">Podrobnosti</string>
+    <string name="title_send_mail">Poslat e-mailem…</string>
+    <string name="usage_skip">Vynechat</string>
+    <string name="btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
+    <string name="lbl_currency">Měna</string>
+    <string name="btn_confirm_use">Použití</string>
+    <string name="btn_confirm_open">Otevřeno</string>
+    <string name="btn_confirm_exit">Přestat</string>
+    <string name="done">Hotovo</string>
 </resources>

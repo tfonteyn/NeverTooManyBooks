@@ -68,9 +68,8 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
-        Bundle args = getArguments();
+        Bundle args = requireArguments();
 
-        @SuppressWarnings("ConstantConditions")
         File imageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();

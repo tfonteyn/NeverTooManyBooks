@@ -97,7 +97,7 @@
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>
     <string name="menu_cover_add_from_gallery">Из галереи…</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
-    <string name="lbl_backup_dialog">Резервная копия?</string>
+    <string name="title_backup">Резервная копия</string>
     <string name="searching_amazon">Поиск в Amazon</string>
     <string name="searching_google_books">Поиск в Google Books</string>
     <string name="searching_library_thing">Поиск в LibraryThing</string>
@@ -268,7 +268,7 @@
     <string name="acra_resReportSendSuccessToast">Спасибо!</string>
     <string name="lbl_read">Прочитана</string>
     <string name="lbl_unread">Не прочитана</string>
-    <string name="warning_date_not_set">(без даты)</string>
+    <string name="date_not_set_with_brackets">(без даты)</string>
     <string name="style_builtin_author_series">Сначала автор потом серия</string>
     <string name="style_builtin_series">Серии</string>
     <string name="style_builtin_title_first_letter">Первая буква названия</string>
@@ -456,7 +456,7 @@
     credentials с этого телефона, то воспользуйтесь кнопкой ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
     \n\nПосле сброса credentials пункт меню Goodreads пропадет из главного меню.</string>
     <string name="progress_msg_connecting">Соединение с сайтом…</string>
-    <string name="lbl_backup">Бэкап в архив</string>
+    <string name="lbl_backup_to_archive">Бэкап в архив</string>
     <string name="lbl_import_from_archive">Импорт из архива</string>
     <string name="export_info_success_archive_details">
         Файл %3$s с именем %2$s был создан в папке \“%1$s\” на вашей SD карте.\n
@@ -649,5 +649,12 @@
     <string name="menu_hide_keyboard">Скрыть клавиатуру</string>
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
+    <string name="warning_action_requires_isbn">Для этого действия требуется действительный ISBN.</string>
+    <string name="vldt_failure">Ошибка проверки.</string>
+    <string name="lbl_search_sites">Поиск сайтов</string>
+    <string name="import_export_option_xml_info">Только экспорт XML, без импорта.</string>
+    <string name="title_send_mail">Эл. адрес…</string>
+    <string name="title_import">Импортировать</string>
+    <string name="btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
 
 </resources>

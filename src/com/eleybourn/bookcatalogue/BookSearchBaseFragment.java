@@ -80,8 +80,7 @@ public abstract class BookSearchBaseFragment
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
         }
     }
 
@@ -108,8 +107,7 @@ public abstract class BookSearchBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_HIDE_KEYBOARD:
-                //noinspection ConstantConditions
-                Utils.hideKeyboard(getView());
+                Utils.hideKeyboard(requireView());
                 return true;
 
             case R.id.MENU_PREFS_SEARCH_SITES:
@@ -161,8 +159,7 @@ public abstract class BookSearchBaseFragment
 
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
             return false;
         }
 
@@ -180,8 +177,7 @@ public abstract class BookSearchBaseFragment
 
         } catch (RuntimeException e) {
             Logger.error(this, e);
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_search_failed);
+            UserMessage.showUserMessage(requireView(), R.string.error_search_failed);
 
         }
         mActivity.setResult(Activity.RESULT_CANCELED);

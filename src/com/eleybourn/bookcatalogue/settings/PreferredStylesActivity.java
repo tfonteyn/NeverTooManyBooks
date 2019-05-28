@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -140,7 +141,7 @@ public class PreferredStylesActivity
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
-        if (!style.isBuiltin()) {
+        if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
             menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
@@ -166,11 +167,11 @@ public class PreferredStylesActivity
                 return true;
 
             case R.id.MENU_EDIT:
-                if (style.isBuiltin()) {
+                if (style.isUserDefined()) {
+                    editStyle(style);
+                } else {
                     // editing a system style -> clone it first.
                     editStyle(style.clone(getResources()));
-                } else {
-                    editStyle(style);
                 }
                 return true;
 
@@ -212,7 +213,7 @@ public class PreferredStylesActivity
             case UniqueId.REQ_EDIT_STYLE: {
 
                 if (resultCode == UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE) {
-                    @SuppressWarnings("ConstantConditions")
+                    Objects.requireNonNull(data);
                     BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                     if (style != null) {
                         mModel.handleStyleChange(style);
@@ -267,6 +268,13 @@ public class PreferredStylesActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_booklist_style_groups, parent, false);
             return new Holder(view);
@@ -292,10 +300,10 @@ public class PreferredStylesActivity
             });
 
             holder.groupsView.setText(style.getGroupLabels(getResources()));
-            if (style.isBuiltin()) {
-                holder.kindView.setText(R.string.style_is_builtin);
-            } else {
+            if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
+            } else {
+                holder.kindView.setText(R.string.style_is_builtin);
             }
 
             // long-click -> menu

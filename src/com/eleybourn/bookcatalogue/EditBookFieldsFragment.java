@@ -84,8 +84,7 @@ public class EditBookFieldsFragment
         // do other stuff here that might affect the view.
 
         // Fix up the views
-        //noinspection ConstantConditions
-        ViewUtils.fixFocusSettings(getView());
+        ViewUtils.fixFocusSettings(requireView());
     }
 
     /**
@@ -122,7 +121,7 @@ public class EditBookFieldsFragment
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
-               .getView().setOnClickListener(v -> {
+              .getView().setOnClickListener(v -> {
             String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
@@ -135,7 +134,7 @@ public class EditBookFieldsFragment
 
         // defined, but handled manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
-               .getView().setOnClickListener(v -> {
+              .getView().setOnClickListener(v -> {
             // use the current title.
             String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -177,7 +176,7 @@ public class EditBookFieldsFragment
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
         getField(R.id.coverImage).getView()
-               .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
+                                 .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // Restore default visibility
@@ -208,7 +207,8 @@ public class EditBookFieldsFragment
             }
             if (bookshelf == null) /* || name.isEmpty() */ {
                 // unlikely to be true, but use default just in case
-                bookshelf = Bookshelf.getDefaultBookshelf(getResources(), mBookBaseFragmentModel.getDb());
+                bookshelf = Bookshelf.getDefaultBookshelf(getResources(),
+                                                          mBookBaseFragmentModel.getDb());
             }
 
             getField(R.id.bookshelves).setValue(bookshelf.getName());
@@ -252,7 +252,6 @@ public class EditBookFieldsFragment
                 newText = getString(R.string.btn_set_series);
             }
             getField(R.id.series).setValue(newText);
-
             setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
 
         } else {
@@ -274,9 +273,8 @@ public class EditBookFieldsFragment
                 if (data != null) {
                     if (resultCode == Activity.RESULT_OK
                             && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        //noinspection ConstantConditions
                         ArrayList<Author> list =
-                                data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
                         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
                                                     list != null ? list : new ArrayList<>(0));
 
@@ -298,9 +296,8 @@ public class EditBookFieldsFragment
                 if (data != null) {
                     if (resultCode == Activity.RESULT_OK
                             && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        //noinspection ConstantConditions
                         ArrayList<Series> list =
-                                data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
                         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
                                                     list != null ? list : new ArrayList<>(0));
 

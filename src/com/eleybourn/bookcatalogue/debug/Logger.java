@@ -68,7 +68,7 @@ public final class Logger {
                              @Nullable final Object... params) {
         String msg = (params != null ? '|' + concat(params) : "");
         writeToLog(ERROR, msg, e);
-        if (/* always log */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
         }
     }

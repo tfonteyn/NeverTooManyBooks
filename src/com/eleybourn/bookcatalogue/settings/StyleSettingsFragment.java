@@ -48,16 +48,12 @@ public class StyleSettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
-        Bundle args = requireArguments();
-
-        mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+        mStyle = Objects.requireNonNull(requireArguments().getParcelable(UniqueId.BKEY_STYLE));
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            //noinspection ConstantConditions
-            Logger.debugEnter(this, "onCreatePreferences", mStyle.toString());
+            Logger.debugEnter(this, "onCreatePreferences", mStyle);
         }
 
         // We use the style UUID as the filename for the prefs.
-        //noinspection ConstantConditions
         String uuid = mStyle.getUuid();
         if (!uuid.isEmpty()) {
             getPreferenceManager().setSharedPreferencesName(uuid);
@@ -69,8 +65,7 @@ public class StyleSettingsFragment
         PreferenceScreen screen = getPreferenceScreen();
 
         // doing this in our base class. TODO: use this for all prefs instead of our own code
-//        EditTextPreference np =
-//            screen.findPreference(BookCatalogueApp.getResString(R.string.name));
+//        EditTextPreference np = screen.findPreference(getString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -78,10 +73,9 @@ public class StyleSettingsFragment
             group.addPreferencesTo(screen);
         }
 
-        //noinspection ConstantConditions
-        @NonNull
-        Activity activity = getActivity();
-        ActionBar bar = ((AppCompatActivity) activity).getSupportActionBar();
+
+        @SuppressWarnings("ConstantConditions")
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
         bar.setSubtitle(mStyle.getLabel(getResources()));
         if (mStyle.getId() == 0) {
@@ -238,8 +232,8 @@ public class StyleSettingsFragment
         switch (requestCode) {
             case UniqueId.REQ_EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
                     // replace the current style with the edited copy
-                    //noinspection ConstantConditions
                     mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
                     // refresh summaries on screen
                     updateLocalSummaries();

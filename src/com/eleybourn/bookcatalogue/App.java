@@ -61,7 +61,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -262,7 +262,6 @@ public class App
      *
      * @return resolved attribute
      */
-    @SuppressWarnings("unused")
     public static int getAttr(@AttrRes final int attr) {
         return getAttr(sInstance.getApplicationContext().getTheme(), attr);
     }
@@ -400,91 +399,6 @@ public class App
         return changed;
     }
 
-    /**
-     * DEBUG only.
-     */
-    public static void debugDayNightMode() {
-
-        switch (sCurrentTheme) {
-            case 0:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_DAY_NIGHT");
-                break;
-            case 1:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_DARK");
-                break;
-            case 2:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_LIGHT");
-                break;
-            case 3:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_LIGHT2");
-                break;
-            default:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=eh?");
-                break;
-        }
-
-
-        int defNightMode = AppCompatDelegate.getDefaultNightMode();
-
-        switch (defNightMode) {
-            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_NO:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_NO");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_YES:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_YES");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
-                break;
-            default:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=Twilight Zone");
-                break;
-
-        }
-        int currentNightMode = getAppContext().getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-
-        switch (currentNightMode) {
-            case Configuration.UI_MODE_NIGHT_NO:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_NO");
-                break;
-            case Configuration.UI_MODE_NIGHT_YES:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_YES");
-                break;
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
-                break;
-            default:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=Twilight Zone");
-                break;
-        }
-    }
-
     public static void setNeedsRecreating() {
         sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
     }
@@ -572,11 +486,95 @@ public class App
     private void setSystemLocale() {
         try {
             LocaleUtils.init(Locale.getDefault());
-            LocaleUtils.applyPreferred(getResources());
+            LocaleUtils.applyPreferred(getBaseContext());
         } catch (RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(this, e);
         }
     }
 
+    /**
+     * DEBUG only.
+     */
+    public static void debugDayNightMode() {
+
+        switch (sCurrentTheme) {
+            case 0:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_DAY_NIGHT");
+                break;
+            case 1:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_DARK");
+                break;
+            case 2:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_LIGHT");
+                break;
+            case 3:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=THEME_LIGHT2");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "sCurrentTheme=eh?");
+                break;
+        }
+
+
+        int defNightMode = AppCompatDelegate.getDefaultNightMode();
+
+        switch (defNightMode) {
+            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_NO");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_YES");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
+                break;
+            case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "getDefaultNightMode=Twilight Zone");
+                break;
+
+        }
+        int currentNightMode = getAppContext().getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_NO");
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_YES");
+                break;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
+                break;
+            default:
+                Logger.debug(App.class, "debugDayNightMode",
+                             "currentNightMode=Twilight Zone");
+                break;
+        }
+    }
 }

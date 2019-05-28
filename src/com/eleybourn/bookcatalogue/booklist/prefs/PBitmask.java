@@ -30,8 +30,9 @@ public class PBitmask
      */
     public PBitmask(@NonNull final String key,
                     @NonNull final String uuid,
+                    final boolean isPersistent,
                     final int defaultValue) {
-        super(key, uuid, App.getMultiSelectListPreference(key, defaultValue));
+        super(key, uuid, isPersistent, App.getMultiSelectListPreference(key, defaultValue));
     }
 
     /**
@@ -39,13 +40,12 @@ public class PBitmask
      */
     @Override
     public void set(@Nullable final Integer value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            remove();
         } else {
-            App.getPrefs(mUuid).edit()
-               .putStringSet(getKey(), Utils.toStringSet(value)).apply();
+            App.getPrefs(mUuid).edit().putStringSet(getKey(), Utils.toStringSet(value)).apply();
         }
     }
 
@@ -55,10 +55,10 @@ public class PBitmask
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final Integer value) {
-        if (value != null) {
-            ed.putStringSet(getKey(), Utils.toStringSet(value));
-        } else {
+        if (value == null) {
             ed.remove(getKey());
+        } else {
+            ed.putStringSet(getKey(), Utils.toStringSet(value));
         }
     }
 
@@ -68,7 +68,7 @@ public class PBitmask
     @NonNull
     @Override
     public Integer get() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             Set<String> sValue = App.getPrefs(mUuid).getStringSet(getKey(), null);

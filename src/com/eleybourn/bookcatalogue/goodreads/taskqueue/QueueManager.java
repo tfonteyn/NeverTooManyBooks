@@ -88,8 +88,8 @@ public final class QueueManager {
      */
     private QueueManager() {
         if (sInstance != null) {
-            /* This is an essential requirement because (a) synchronization will not work with
-             more than one and (b) we want to store a static reference in the class. */
+            // This is an essential requirement because (a) synchronization will not work with
+            // more than one and (b) we want to store a static reference in the class.
             throw new IllegalStateException("Only one QueueManager can be present");
         }
         sInstance = this;
@@ -335,7 +335,7 @@ public final class QueueManager {
                 Toast.makeText(App.getAppContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {
-            /* Send message to the handler */
+            // Send message to the handler
             Message msg = mMessageHandler.obtainMessage();
             Bundle bundle = new Bundle();
             bundle.putString(INTERNAL, TOAST);

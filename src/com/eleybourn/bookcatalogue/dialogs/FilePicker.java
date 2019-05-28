@@ -14,8 +14,11 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -52,6 +55,8 @@ public class FilePicker
     private static class FileItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
+
         @NonNull
         final Locale mLocale;
         @NonNull
@@ -68,7 +73,7 @@ public class FilePicker
 
             mInflater = LayoutInflater.from(context);
             mListener = listener;
-            mLocale = LocaleUtils.from(context.getResources());
+            mLocale = LocaleUtils.from(context);
             mList = list;
         }
 
@@ -76,6 +81,13 @@ public class FilePicker
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View root = mInflater.inflate(R.layout.row_file_list_item, parent, false);
             return new Holder(root);
         }

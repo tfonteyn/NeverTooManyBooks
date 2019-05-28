@@ -87,6 +87,21 @@ public abstract class ManagedTask
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg;
 
+    /** Controller instance (strong reference) for this specific ManagedTask. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final ManagedTaskController mController = new ManagedTaskController() {
+        @Override
+        public void requestAbort() {
+            cancelTask();
+        }
+
+        @NonNull
+        @Override
+        public ManagedTask getManagedTask() {
+            return ManagedTask.this;
+        }
+    };
+
     /**
      * Constructor.
      *
@@ -96,24 +111,10 @@ public abstract class ManagedTask
     protected ManagedTask(@NonNull final TaskManager taskManager,
                           @NonNull final String taskName) {
 
-        /* Controller instance for this specific ManagedTask. */
-        ManagedTaskController controller = new ManagedTaskController() {
-            @Override
-            public void requestAbort() {
-                cancelTask();
-            }
-
-            @NonNull
-            @Override
-            public ManagedTask getManagedTask() {
-                return ManagedTask.this;
-            }
-        };
-
         // Set the thread name to something helpful.
         setName(taskName);
 
-        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
         // Save the taskManager for later
         mTaskManager = taskManager;
         // Add myself to my manager

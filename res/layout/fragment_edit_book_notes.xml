@@ -5,14 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border1"
-    android:fadeScrollbars="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/border1"
         >
 
         <TextView
@@ -123,7 +122,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/location"
             app:layout_constraintTop_toTopOf="@id/location"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_location"
             />
 
         <TextView
@@ -177,7 +176,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
             app:layout_constraintTop_toTopOf="@id/price_paid_currency"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_price_paid"
             />
 
         <TextView

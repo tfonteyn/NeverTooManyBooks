@@ -5,14 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border1"
-    android:fadeScrollbars="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/border1"
         >
 
         <ImageView
@@ -22,7 +21,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_cover"
             tools:layout_height="256px"
             tools:layout_width="256px"
             tools:src="@drawable/ic_image"
@@ -141,7 +140,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/genre"
             app:layout_constraintTop_toTopOf="@id/genre"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_genre"
             />
 
         <View
@@ -157,6 +156,7 @@
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
             android:text="@string/lbl_description"
+            android:labelFor="@id/description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes_divider"
             />
@@ -164,7 +164,6 @@
         <EditText
             android:id="@+id/description"
             style="@style/multiLineTextEntry"
-            android:hint="@string/field_not_set"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

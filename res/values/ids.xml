@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
+    <!-- used by {@link BooklistAdapter} for the row details (book, level 1,2,3) -->
     <item name="BLB_ROW_DETAILS" type="id" />
 
     <!-- BEGIN predefined View tags -->

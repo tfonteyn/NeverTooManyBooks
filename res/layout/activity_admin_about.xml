@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".About"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/Toolbar"
-        />
+    <include layout="@layout/inc_appbar" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -183,8 +180,8 @@
             <TextView
                 android:id="@+id/amazon_links_info"
                 style="@style/Blurb.Small"
-                app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
                 app:layout_constraintTop_toBottomOf="@id/amazon"
                 tools:ignore="SelectableText"
                 tools:text="@string/hint_amazon_links_blurb"
@@ -193,4 +190,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

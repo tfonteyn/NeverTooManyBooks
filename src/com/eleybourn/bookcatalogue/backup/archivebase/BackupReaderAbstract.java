@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 

@@ -63,7 +63,7 @@ public class BackupFileDetails
     private BackupFileDetails(@NonNull final Parcel in) {
         mFile = new File(in.readString());
         // flag to indicate the Parcel has the info bundle
-        boolean hasInfo = (in.readByte() != 0);
+        boolean hasInfo = in.readInt() != 0;
         if (hasInfo) {
             mInfo = in.readParcelable(getClass().getClassLoader());
         } else {
@@ -93,7 +93,7 @@ public class BackupFileDetails
             holder.fileDetails.setVisibility(View.GONE);
         } else {
             // Display details
-            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_business_center));
+            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_archive));
             holder.fileDetails.setVisibility(View.VISIBLE);
 
             holder.sizeView.setText(Utils.formatFileSize(resources, mFile.length()));
@@ -153,10 +153,10 @@ public class BackupFileDetails
         dest.writeString(mFile.getAbsolutePath());
         if (mInfo != null) {
             // flag to indicate the Parcel has the info bundle
-            dest.writeByte((byte) 1);
+            dest.writeInt(1);
             dest.writeParcelable(mInfo, flags);
         } else {
-            dest.writeByte((byte) 0);
+            dest.writeInt(0);
         }
     }
 }

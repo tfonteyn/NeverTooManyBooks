@@ -242,6 +242,11 @@ public class BooksOnBookshelfModel
         mCurrentBookshelf.setStyle(mDb, style);
     }
 
+    /**
+     *
+     * @return {@code null} if no rebuild is requested;
+     * {@code true} or {@code false} if we're requesting a full or partial rebuild.
+     */
     @Nullable
     public Boolean isForceRebuild() {
         return mAfterOnActivityResultDoFullRebuild;
@@ -251,6 +256,10 @@ public class BooksOnBookshelfModel
         mAfterOnActivityResultDoFullRebuild = rebuild;
     }
 
+    /**
+     *
+     * @return {@code true} if the last time we build, the list was loaded successfully.
+     */
     public boolean hasListBeenLoaded() {
         return mListHasBeenLoaded;
     }

@@ -99,7 +99,7 @@
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="menu_cover_add_from_gallery">Z galerii…</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="lbl_backup_dialog">Kopia?</string>
+    <string name="title_backup">Kopia</string>
     <string name="searching_amazon">Przeszukiwanie Amazon</string>
     <string name="searching_google_books">Przeszukiwanie Google Books</string>
     <string name="searching_library_thing">Przeszukiwanie LibraryThing</string>
@@ -263,5 +263,26 @@
     <string name="menu_duplicate">Kopia</string>
     <string name="menu_cover_crop">Obciąć</string>
     <string name="menu_internet_update_fields">Aktualizuj pola</string>
+    <string name="warning_action_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
+    <string name="vldt_failure">Błąd walidacji.</string>
+    <string name="title_import">Importuj</string>
+    <string name="progress_msg_please_wait">Proszę czekać…</string>
+    <string name="up_folder">Do góry</string>
+    <string name="tab_lbl_notes">Uwagi</string>
+    <string name="tab_lbl_details">Detale</string>
+    <string name="tab_lbl_content">Treści</string>
+    <string name="unknown">Nieznany</string>
+    <string name="title_send_mail">Wysłać email…</string>
+    <string name="usage_skip">Pomijać</string>
+    <string name="date_not_set_with_brackets">(Brak daty)</string>
+    <string name="btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
+    <string name="lbl_currency">Waluta</string>
+    <string name="menu_show_fewer_ellipsis">Pokaż mniej…</string>
+    <string name="menu_show_more_ellipsis">Pokaż więcej…</string>
+    <string name="btn_confirm_exit">Wyjście</string>
+    <string name="btn_confirm_open">Otwarty</string>
+    <string name="btn_confirm_use">Użyj</string>
+    <string name="done">Gotowe</string>
+    <string name="edit">Adiustować</string>
 
 </resources>

@@ -17,7 +17,7 @@ import java.util.Map;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -93,20 +93,20 @@ public final class ScannerManager {
      * @return A Scanner, or {@code null} if none found
      */
     @Nullable
-    public static Scanner getScanner(@NonNull final Activity activity) {
+    public static Scanner getScanner(@NonNull final Context context) {
         // Find out what the user prefers if any
         int prefScanner = App.getListPreference(Prefs.pk_scanning_preferred_scanner,
                                                 SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = SCANNER_FACTORIES.get(prefScanner);
-        if (psf != null && psf.isIntentAvailable(activity)) {
+        if (psf != null && psf.isIntentAvailable(context)) {
             return psf.newInstance();
         }
 
         // Search all supported scanners; return first working one
         for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
-            if (sf != psf && sf.isIntentAvailable(activity)) {
+            if (sf != psf && sf.isIntentAvailable(context)) {
                 return sf.newInstance();
             }
         }

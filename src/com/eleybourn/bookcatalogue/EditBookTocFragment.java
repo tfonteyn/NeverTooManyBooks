@@ -73,6 +73,7 @@ import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
@@ -98,12 +99,13 @@ public class EditBookTocFragment
     public static final String TAG = EditBookTocFragment.class.getSimpleName();
 
     /** The book. */
+    @Nullable
     private String mIsbn;
     /** primary author of the book. */
     private Author mBookAuthor;
+
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultipleAuthorsView;
-
     /** the rows. */
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
@@ -117,40 +119,41 @@ public class EditBookTocFragment
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
+    @Nullable
     private ArrayList<Editions.Edition> mISFDBEditions;
 
     private boolean mIsCollectSeriesInfoFromToc;
+    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
+            new ConfirmToc.ConfirmTocResults() {
 
+                /**
+                 * The user approved, so add the TOC to the list on screen (still not saved to database).
+                 */
+                public void commitISFDBData(final long tocBitMask,
+                                            @NonNull final List<TocEntry> tocEntries) {
+                    if (tocBitMask != 0) {
+                        Book book = mBookBaseFragmentModel.getBook();
+
+                        book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
+                        getField(R.id.multiple_authors).setValueFrom(book);
+                    }
+
+                    mList.addAll(tocEntries);
+                    mListAdapter.notifyDataSetChanged();
+                }
+
+                /**
+                 * Start a task to get the next edition of this book (that we know of).
+                 */
+                public void getNextEdition() {
+                    // remove the top one, and try again
+                    mISFDBEditions.remove(0);
+                    new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,
+                                         EditBookTocFragment.this).execute();
+                }
+            };
+    @Nullable
     private Integer mEditPosition;
-
-    private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener = new ConfirmToc.ConfirmTocResults() {
-
-        /**
-         * The user approved, so add the TOC to the list on screen (still not saved to database).
-         */
-        public void commitISFDBData(final long tocBitMask,
-                                    @NonNull final List<TocEntry> tocEntries) {
-            if (tocBitMask != 0) {
-                Book book = mBookBaseFragmentModel.getBook();
-
-                book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                getField(R.id.multiple_authors).setValueFrom(book);
-            }
-
-            mList.addAll(tocEntries);
-            mListAdapter.notifyDataSetChanged();
-        }
-
-        /**
-         * Start a task to get the next edition of this book (that we know of).
-         */
-        public void getNextEdition() {
-            // remove the top one, and try again
-            mISFDBEditions.remove(0);
-            new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,
-                                 EditBookTocFragment.this).execute();
-        }
-    };
     private final EditTocEntry.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntry.EditTocEntryResults() {
 
@@ -198,7 +201,14 @@ public class EditBookTocFragment
 
         // Author to use if mMultipleAuthorsView is set to false
         List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        mBookAuthor = authorList.get(0);
+        if (!authorList.isEmpty()) {
+            mBookAuthor = authorList.get(0);
+
+        } else {
+            // not ideal, but oh well.
+            String unknown = getString(R.string.unknown);
+            mBookAuthor = new Author(unknown, unknown);
+        }
 
         // use the preferences
         mIsCollectSeriesInfoFromToc = ISFDBManager.isCollectSeriesInfoFromToc();
@@ -209,8 +219,7 @@ public class EditBookTocFragment
         // do other stuff here that might affect the view.
 
         // Fix up the views
-        //noinspection ConstantConditions
-        ViewUtils.fixFocusSettings(getView());
+        ViewUtils.fixFocusSettings(requireView());
     }
 
     @Override
@@ -231,7 +240,7 @@ public class EditBookTocFragment
         Fields.Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
         fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-               .getView().setOnClickListener(v -> {
+              .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
@@ -239,9 +248,8 @@ public class EditBookTocFragment
         field = fields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
 
-        View view = getView();
+        View view = requireView();
         // adding a new TOC entry
-        //noinspection ConstantConditions
         view.findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
 
         mListView = view.findViewById(android.R.id.list);
@@ -310,9 +318,13 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                //noinspection ConstantConditions
-                UserMessage.showUserMessage(getView(), R.string.progress_msg_connecting);
-                new ISFDBGetEditionsTask(mIsbn, this).execute();
+                if (ISBN.isValid(mIsbn)) {
+                    UserMessage.showUserMessage(requireView(), R.string.progress_msg_connecting);
+                    new ISFDBGetEditionsTask(mIsbn, this).execute();
+                } else {
+                    UserMessage.showUserMessage(requireView(),
+                                                R.string.warning_action_requires_isbn);
+                }
                 return true;
 
             default:
@@ -371,8 +383,7 @@ public class EditBookTocFragment
         if (!mISFDBEditions.isEmpty()) {
             new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc, this).execute();
         } else {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_no_editions);
+            UserMessage.showUserMessage(requireView(), R.string.warning_no_editions);
         }
     }
 
@@ -383,8 +394,7 @@ public class EditBookTocFragment
      */
     private void onGotISFDBBook(@Nullable final Bundle bookData) {
         if (bookData == null) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_book_not_found);
+            UserMessage.showUserMessage(requireView(), R.string.warning_book_not_found);
             return;
         }
 
@@ -415,8 +425,8 @@ public class EditBookTocFragment
         // finally the TOC itself; not saved here but only put on display for the user to approve
         FragmentManager fm = getChildFragmentManager();
         if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
-            ConfirmToc.newInstance(bookData, mISFDBEditions.size() > 1)
-                      .show(fm, ConfirmToc.TAG);
+            boolean hasOtherEditions = (mISFDBEditions != null) && (mISFDBEditions.size() > 1);
+            ConfirmToc.newInstance(bookData, hasOtherEditions).show(fm, ConfirmToc.TAG);
         }
 
     }
@@ -496,9 +506,8 @@ public class EditBookTocFragment
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-            Bundle args = getArguments();
+            Bundle args = requireArguments();
 
-            @SuppressWarnings("ConstantConditions")
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             mTocEntries = args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
@@ -864,6 +873,13 @@ public class EditBookTocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_toc_entry, parent, false);
             return new Holder(view);

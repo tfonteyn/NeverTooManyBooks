@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
@@ -72,6 +73,8 @@ public class BookFragment
         }
     };
 
+    private NestedScrollView mNestedScrollView;
+
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
@@ -104,6 +107,8 @@ public class BookFragment
 
         // parent takes care of loading the book.
         super.onActivityCreated(savedInstanceState);
+
+        mNestedScrollView = requireView().findViewById(R.id.topScroller);
 
         initFlattenedBookList(savedInstanceState);
 
@@ -221,8 +226,7 @@ public class BookFragment
         // ENHANCE: could probably be replaced by a ViewPager
         // finally, enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        //noinspection ConstantConditions
-        getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
+        requireView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
     }
 
     @CallSuper
@@ -379,8 +383,7 @@ public class BookFragment
                 && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Authors.MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
-        View view = getView();
-        @SuppressWarnings("ConstantConditions")
+        View view = requireView();
         View tocLabel = view.findViewById(R.id.lbl_toc);
         View tocButton = view.findViewById(R.id.toc_button);
         LinearLayout tocView = view.findViewById(R.id.toc);
@@ -415,7 +418,10 @@ public class BookFragment
 
             tocButton.setOnClickListener(v -> {
                 if (tocView.getVisibility() == View.VISIBLE) {
+                    // force a scroll; a manual scroll is no longer possible after the TOC closes.
+                    mNestedScrollView.fullScroll(View.FOCUS_UP);
                     tocView.setVisibility(View.GONE);
+
                 } else {
                     tocView.setVisibility(View.VISIBLE);
                 }

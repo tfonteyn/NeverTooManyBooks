@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -58,7 +58,7 @@ public abstract class BaseActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Locale to the configuration before super.onCreate
-        LocaleUtils.applyPreferred(getResources());
+        LocaleUtils.applyPreferred(this);
         // apply the Theme before super.onCreate
         setTheme(App.getThemeResId());
 
@@ -110,7 +110,7 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(getResources()));
+            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(this));
         }
 
         if (App.isInNeedOfRecreating()) {
@@ -304,7 +304,7 @@ public abstract class BaseActivity
                 break;
 
             case Prefs.pk_ui_language:
-                if (LocaleUtils.isChanged(getResources())) {
+                if (LocaleUtils.isChanged(this)) {
                     recreate();
                     App.setIsRecreating();
                 }

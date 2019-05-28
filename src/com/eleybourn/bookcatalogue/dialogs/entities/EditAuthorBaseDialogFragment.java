@@ -106,7 +106,7 @@ public abstract class EditAuthorBaseDialogFragment
                         return;
                     }
                     // Create a new Author as a holder for the changes.
-                    final Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
+                    Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
 
                     confirmChanges(author, newAuthorData);
                 })

@@ -190,6 +190,7 @@ TODO: uniform quotes in all string:
 
     <string name="warning_select_min_1_field">Select at least one field to update</string>
     <string name="warning_editions_require_isbn">Retrieving other editions requires an ISBN</string>
+    <string name="warning_action_requires_isbn">This action requires a valid ISBN</string>
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
 
@@ -206,7 +207,6 @@ TODO: uniform quotes in all string:
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
 
-    <string name="warning_date_not_set">(no date)</string>
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_isbn">‘%1$s’ is not a valid ISBN</string>
@@ -695,6 +695,11 @@ TODO: uniform quotes in all string:
 
     <string name="menu_edit_book">Edit Book</string>
 
+    <!-- Screen title; must be short -->
+    <string name="title_backup">Backup</string>
+    <!-- Screen title; must be short -->
+    <string name="title_import">Import</string>
+
     <!-- a short + a longer description for Administration -->
     <string name="menu_administration">Admin</string>
     <string name="menu_administration_long">Administration Functions</string>
@@ -702,7 +707,7 @@ TODO: uniform quotes in all string:
     <!-- Admin GROUP -->
     <string name="lbl_data_import_export">Data Import/Export</string>
     <!-- Admin -->
-    <string name="lbl_backup">Backup to Archive</string>
+    <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
     <string name="lbl_import_from_archive">Import from Archive</string>
     <!-- Admin export books -->
@@ -892,9 +897,6 @@ TODO: uniform quotes in all string:
     <!-- Individual fields for "original publication date" -->
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
-
-    <!-- displayed during startup of the application -->
-    <string name="lbl_backup_dialog">Backup?</string>
 
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Advanced</string>
@@ -1217,8 +1219,11 @@ TODO: uniform quotes in all string:
 
     <!-- generic hint text for text input fields. -->
     <string name="field_not_set">Not Set</string>
+
     <!-- generic place holder text for Book list rows -->
     <string name="field_not_set_with_brackets">(Not Set)</string>
+
+
 
     <!-- name of virtual bookshelf which displays all books; also used in list filters -->
     <string name="bookshelf_all_books">All Books</string>
@@ -1242,5 +1247,7 @@ TODO: uniform quotes in all string:
     <string name="info_tap_to_edit">Tap here to edit the name</string>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="btn_drag_handle">Drag me to reorder this list.</string>
+    <string name="date_not_set_with_brackets">(no date)</string>
 
 </resources>

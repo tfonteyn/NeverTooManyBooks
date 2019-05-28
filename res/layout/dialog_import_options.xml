@@ -36,7 +36,7 @@
         />
 
     <View
-        android:id="@+id/footer_divider"
+        android:id="@+id/header_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_divider"
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
         >
 
         <RadioButton

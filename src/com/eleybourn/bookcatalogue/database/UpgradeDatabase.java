@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
 
@@ -12,11 +13,13 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.dbsync.TransactionException;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import static com.eleybourn.bookcatalogue.database.DAO.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 
@@ -40,7 +43,9 @@ public final class UpgradeDatabase {
 
     //<editor-fold desc="CREATE TABLE definitions">
 
-    /** */
+    /**
+     *
+     */
     private static final String DATABASE_CREATE_BOOKSHELF_82 =
             "CREATE TABLE bookshelf (_id integer PRIMARY KEY autoincrement,"
                     + " bookshelf text not null"
@@ -292,7 +297,7 @@ public final class UpgradeDatabase {
      * <p>
      * This routine renames all files, if they exist.
      */
-    static void v200_moveCoversToDedicatedDirectory(@NonNull final SynchronizedDb db) {
+    static void v200_moveCoversToDedicatedDirectory(@NonNull final SQLiteDatabase db) {
 
         try (Cursor cur = db.rawQuery("SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS,
                                       null)) {
@@ -307,6 +312,33 @@ public final class UpgradeDatabase {
                 }
                 File destination = StorageUtils.getCoverFile(uuid);
                 StorageUtils.renameFile(source, destination);
+            }
+        }
+    }
+
+    /**
+     * Populate the 'order by' column.
+     * <p>
+     * Note this is a lazy approach using the system Locale, as compared to the DAO code where
+     * we take the book's language/locale into account! The overhead here would be huge.
+     * If the user has any specific book issue, a simple update of the book will fix it.
+     */
+    static void v200_setOrderByColumn(@NonNull final SQLiteDatabase db,
+                                      @NonNull final TableDefinition table,
+                                      @NonNull final DomainDefinition source,
+                                      @NonNull final DomainDefinition destination) {
+
+        SQLiteStatement update = db.compileStatement(
+                "UPDATE " + table + " SET " + destination + "=? WHERE " + DOM_PK_ID + "=?");
+
+        try (Cursor cur = db.rawQuery("SELECT " + DOM_PK_ID + ',' + source + " FROM " + table,
+                                      null)) {
+            while (cur.moveToNext()) {
+                final long id = cur.getLong(0);
+                final String in = cur.getString(1);
+                update.bindString(1, DAO.encodeOrderByColumn(in, LocaleUtils.getSystemLocale()));
+                update.bindLong(2, id);
+                update.executeUpdateDelete();
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.annotation.RawRes;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 public final class SoundManager {
 

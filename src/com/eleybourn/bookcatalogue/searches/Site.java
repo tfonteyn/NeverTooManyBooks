@@ -69,7 +69,7 @@ public class Site
     Site(@NonNull final Parcel in) {
         id = in.readInt();
         mName = SearchSites.getName(id);
-        mEnabled = in.readByte() != 0;
+        mEnabled = in.readInt() != 0;
         mPriority = in.readInt();
         mReliability = in.readInt();
     }
@@ -119,7 +119,7 @@ public class Site
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(id);
-        dest.writeByte((byte) (mEnabled ? 1 : 0));
+        dest.writeInt(mEnabled ? 1 : 0);
         dest.writeInt(mPriority);
         dest.writeInt(mReliability);
     }

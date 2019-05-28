@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -274,7 +275,7 @@ public class EditAuthorListActivity
         }
 
         /**
-         * Handle the edits.
+         * Handle the edits. TOMF: use listener
          *
          * @param author        the original data.
          * @param newAuthorData a holder for the edited data.
@@ -318,6 +319,13 @@ public class EditAuthorListActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_author_list, parent, false);
             return new Holder(view);

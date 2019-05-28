@@ -60,7 +60,7 @@ public final class SearchSites {
      */
     public static final int ISFDB = 1 << 4;
 
-    /* search source to use. */
+    /** search source to use. */
     @SuppressWarnings("WeakerAccess")
     public static final int OPEN_LIBRARY = 1 << 5;
 
@@ -90,7 +90,13 @@ public final class SearchSites {
         /*
          * standard searches for full details.
          */
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(AMAZON, 0, 1));
+
+        // The proxy site has been broken since around April 2019.
+        // 2019-05-26: still broken, disabling Amazon here for now.
+        Site amazon = Site.newSite(AMAZON, 0, 1);
+        amazon.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(amazon);
+
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, 1, 0));
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, 2, 2));
         SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, 3, 3));
@@ -106,11 +112,14 @@ public final class SearchSites {
         /*
          * dedicated cover lookup; does not use a reliability index.
          */
+
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, 0));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, 1));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, 2));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, 3));
-        COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(AMAZON, 4));
+        amazon = Site.newCoverSite(AMAZON, 4);
+        amazon.setEnabled(false);
+        COVER_SEARCH_ORDER_DEFAULTS.add(amazon);
 
         // bottom of the list, and disabled by default
         openLibrary = Site.newCoverSite(OPEN_LIBRARY, 5);

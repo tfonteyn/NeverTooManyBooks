@@ -3,18 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_fragment"
+    android:id="@+id/topScroller"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="@dimen/border1"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -46,7 +44,7 @@
             style="@style/Flag"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_read"
             tools:checked="true"
             />
 
@@ -67,7 +65,7 @@
             android:layout_margin="@dimen/border1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_cover"
             tools:layout_height="500px"
             tools:layout_width="500px"
             tools:src="@drawable/ic_image"
@@ -206,7 +204,7 @@
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
             app:layout_constraintTop_toBottomOf="@id/series"
-            tools:ignore="ContentDescription"
+            android:contentDescription="@string/lbl_table_of_content"
             tools:visibility="visible"
             tools:checked="true"
             />

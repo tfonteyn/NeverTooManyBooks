@@ -115,7 +115,7 @@
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d\'ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
     <string name="menu_cover_add_from_gallery">À partir de Gallery…</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
-    <string name="lbl_backup_dialog">Sauvegarder ?</string>
+    <string name="title_backup">Sauvegarder</string>
     <string name="searching_amazon">Recherche en cours sur Amazon</string>
     <string name="searching_google_books">Recherche en cours sur Google Books</string>
     <string name="searching_library_thing">Recherche en cours sur LibraryThing</string>
@@ -346,7 +346,7 @@
     <string name="acra_resReportSendSuccessToast">Merci !</string>
     <string name="lbl_read">Lu</string>
     <string name="lbl_unread">Non lu</string>
-    <string name="warning_date_not_set">(Pas de date)</string>
+    <string name="date_not_set_with_brackets">(Pas de date)</string>
     <string name="style_builtin_author_series">Auteur puis série</string>
     <string name="style_builtin_series">Séries</string>
     <string name="style_builtin_title_first_letter">Première lettre du titre</string>
@@ -576,7 +576,7 @@
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connection au site…</string>
     <!-- Admin option to import -->
-    <string name="lbl_backup">Sauvegarde des données</string>
+    <string name="lbl_backup_to_archive">Sauvegarde des données</string>
     <!-- Admin option to import -->
     <string name="lbl_import_from_archive">Restauration des données</string>
     <!-- Hint displayed when a Backup is done -->
@@ -828,4 +828,8 @@
     <string name="none">Aucun</string>
     <string name="pt_allow_mobile_data">Autoriser l\'utilisation de données mobiles</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
+    <string name="warning_action_requires_isbn">Cette action nécessite un ISBN valide.</string>
+    <string name="vldt_failure">Échec de validation.</string>
+    <string name="title_import">Importer</string>
+    <string name="btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
 </resources>

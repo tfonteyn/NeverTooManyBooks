@@ -16,8 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Show context menu on a view.
@@ -82,6 +85,8 @@ public class MenuPicker<T>
     private static class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
+
         @NonNull
         final Drawable mSubMenuPointer;
         @NonNull
@@ -116,6 +121,13 @@ public class MenuPicker<T>
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View root = mInflater.inflate(R.layout.row_simple_dialog_list_item, parent, false);
             return new Holder(root);
         }

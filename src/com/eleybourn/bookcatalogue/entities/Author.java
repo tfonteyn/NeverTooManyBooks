@@ -139,26 +139,6 @@ public class Author
     /**
      * Full constructor.
      *
-     * @param id         ID of author in DB (0 if not in DB)
-     * @param familyName Family name
-     * @param givenNames Given names
-     * @param isComplete whether an Author is completed, i.e if the user has all they
-     *                   want from this Author.
-     */
-    @SuppressWarnings("unused")
-    public Author(final long id,
-                  @NonNull final String familyName,
-                  @NonNull final String givenNames,
-                  final boolean isComplete) {
-        mId = id;
-        mFamilyName = familyName.trim();
-        mGivenNames = givenNames.trim();
-        mIsComplete = isComplete;
-    }
-
-    /**
-     * Full constructor.
-     *
      * @param id     ID of the Author in the database.
      * @param mapper for the cursor.
      */
@@ -177,7 +157,7 @@ public class Author
         mFamilyName = in.readString();
         //noinspection ConstantConditions
         mGivenNames = in.readString();
-        mIsComplete = in.readByte() != 0;
+        mIsComplete = in.readInt() != 0;
     }
 
     /**
@@ -285,7 +265,7 @@ public class Author
         dest.writeLong(mId);
         dest.writeString(mFamilyName);
         dest.writeString(mGivenNames);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+        dest.writeInt(mIsComplete ? 1 : 0);
     }
 
     @SuppressWarnings("SameReturnValue")

@@ -8,6 +8,7 @@ onResume should force the enclosing dialog to be big enough:
             dialog.getWindow().setLayout(width, height);
         }
 
+TOMF: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
 ----------------------------------------------------------------------------------------------------
 TODO: New anthology stuff:
  * to think about:

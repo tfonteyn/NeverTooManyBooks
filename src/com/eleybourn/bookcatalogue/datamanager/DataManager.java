@@ -156,6 +156,7 @@ public class DataManager {
                 putBoolean(key, (Boolean) value);
 
             } else if ((value instanceof ArrayList)
+                    && (!((ArrayList) value).isEmpty())
                     && ((ArrayList) value).get(0) instanceof Parcelable) {
                 //noinspection unchecked
                 putParcelableArrayList(key, (ArrayList<Parcelable>) value);

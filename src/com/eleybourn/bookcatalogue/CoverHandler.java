@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDoneException;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -354,7 +354,7 @@ public class CoverHandler {
         if (ISBN.isValid(isbn)) {
             getCoverBrowser(isbn);
         } else {
-            UserMessage.showUserMessage(mCoverView, R.string.warning_editions_require_isbn);
+            UserMessage.showUserMessage(mCoverView, R.string.warning_action_requires_isbn);
         }
     }
 
@@ -384,8 +384,7 @@ public class CoverHandler {
      */
     private void addCoverFromCamera(final int requestCode,
                                     final int resultCode,
-                                    @NonNull final Bundle bundle) {
-        Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
+                                    @Nullable Bitmap bitmap) {
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix matrix = new Matrix();
             matrix.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
@@ -661,21 +660,22 @@ public class CoverHandler {
             // coming back from CoverBrowserFragment with the selected image.
             case UniqueId.REQ_ALT_EDITION:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
+                    Objects.requireNonNull(data);
                     onImageSelected(data.getStringExtra(UniqueId.BKEY_FILE_SPEC));
                 }
                 return true;
 
             case UniqueId.REQ_ACTION_IMAGE_CAPTURE:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
-                    addCoverFromCamera(requestCode, resultCode, data.getExtras());
+                    Objects.requireNonNull(data);
+                    Bitmap bitmap = data.getParcelableExtra(CropImageActivity.BKEY_DATA);
+                    addCoverFromCamera(requestCode, resultCode, bitmap);
                 }
                 return true;
 
             case UniqueId.REQ_ACTION_GET_CONTENT:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
+                    Objects.requireNonNull(data);
                     addCoverFromGallery(data);
                 }
                 return true;

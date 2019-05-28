@@ -33,6 +33,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -41,13 +42,12 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
-import com.eleybourn.bookcatalogue.adapters.MultiTypeListRowHolder;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
@@ -65,6 +65,7 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
@@ -86,12 +87,22 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLIS
  *
  * @author Philip Warner
  */
-public class BooksMultiTypeListHandler
-        implements MultiTypeListCursorAdapter.MultiTypeListHandler {
+public class BooklistAdapter
+        extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
+        implements FastScrollerOverlay.SectionIndexerV2 {
+
+    /** The padding indent (in pixels) added for each level. i.e. padding = level * LEVEL_INDENT. */
+    private static final int LEVEL_INDENT = 4;
+
+    private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
     /** Database access. */
     @NonNull
     private final DAO mDb;
+
+    @NonNull
+    private final Cursor mCursor;
 
     @NonNull
     private final BooklistStyle mStyle;
@@ -99,89 +110,109 @@ public class BooksMultiTypeListHandler
     @NonNull
     private final LayoutInflater mInflater;
 
+    @Nullable
+    private View.OnClickListener mOnItemClick;
+    @Nullable
+    private View.OnLongClickListener mOnItemLongClick;
+
     /**
      * Constructor.
      *
-     * @param db the database
+     * @param db    the database
+     * @param style The style is used by (some) individual rows.
      */
-    public BooksMultiTypeListHandler(@NonNull final LayoutInflater layoutInflater,
-                                     @NonNull final DAO db,
-                                     @NonNull final BooklistStyle style) {
+    public BooklistAdapter(@NonNull final LayoutInflater layoutInflater,
+                           @NonNull final DAO db,
+                           @NonNull final Cursor cursor,
+                           @NonNull final BooklistStyle style) {
         mDb = db;
+        mCursor = cursor;
         mStyle = style;
         mInflater = layoutInflater;
     }
 
-    @Override
-    public int getViewTypeCount() {
-        return BooklistGroup.RowKind.size();
+    public void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
+        mOnItemClick = onItemClick;
     }
 
-    @Override
-    public int getItemViewType(@NonNull final Cursor cursor) {
-        BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
+    public void setOnItemLongClickListener(@NonNull final View.OnLongClickListener onItemLongClick) {
+        mOnItemLongClick = onItemLongClick;
+    }
+
+    public int getItemViewType(final int position) {
+        mCursor.moveToPosition(position);
+        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
         return row.getRowKind();
     }
 
-    @NonNull
-    @Override
-    public View newView(@NonNull final Context context,
-                        @NonNull final Cursor cursor,
-                        @NonNull final ViewGroup parent) {
-        BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
+    public int getItemCount() {
+        return mCursor.getCount();
+    }
 
-        RowViewHolder holder = createHolder(context.getResources(), row);
-        View view = holder.onCreateView(row, mInflater, parent);
-        holder.onCreateViewHolder(row, view);
-        view.setTag(R.id.TAG_VIEW_HOLDER, holder);
+    @NonNull
+    public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                            final int viewType) {
+        if (BuildConfig.DEBUG) {
+            debugNewViewCounter.incrementAndGet();
+            Logger.debug(this, "onCreateViewHolder",
+                         "debugNewViewCounter=" + debugNewViewCounter.get(),
+                         "viewType=" + viewType);
+        }
+
+        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+
+        // The view depends on the viewType + level.
+        View view = createView(parent, viewType, row.getLevel());
+
+        // do holder type dependent init.
+        return createHolder(viewType, view, row);
+    }
+
+    private View createView(@NonNull final ViewGroup parent,
+                            final int viewType,
+                            int level) {
+        @LayoutRes
+        int layoutId;
+
+        // A Book is unlike anything else...
+        if (viewType == RowKind.BOOK) {
+            layoutId = R.layout.booksonbookshelf_row_book;
+
+        } else {
+            // for all other types, the level determines the view
+            switch (level) {
+                case 1:
+                    layoutId = R.layout.booksonbookshelf_row_level_1;
+                    break;
+                case 2:
+                    layoutId = R.layout.booksonbookshelf_row_level_2;
+                    break;
+
+                default:
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
+                        Logger.debug(this, "getLevelLayoutId",
+                                     "level=" + level);
+                    }
+                    // this is in fact either level 3 or 4 for non-Book rows
+                    layoutId = R.layout.booksonbookshelf_row_level_3;
+            }
+        }
+
+        View view = mInflater.inflate(layoutId, parent, false);
 
         // Indent based on level; we assume rows of a given type only occur at the same level
-        view.setPadding((row.getLevel() - 1) * 5, 0, 0, 0);
+        if (level > 0) {
+            --level;
+        }
+        view.setPadding(level * LEVEL_INDENT, 0, 0, 0);
 
         // Scale if necessary
         float scale = mStyle.getScale();
         if (scale != 1.0f) {
             scaleView(scale, view);
         }
-
         return view;
     }
-
-    @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final Cursor cursor) {
-
-        final BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
-        final RowViewHolder holder = (RowViewHolder) view.getTag(R.id.TAG_VIEW_HOLDER);
-        holder.absolutePosition = row.getAbsolutePosition();
-        holder.onBindViewHolder(row, view);
-    }
-
-    /**
-     * @return the *absolute* position of the passed view in the list of books.
-     */
-    public int getAbsolutePosition(@NonNull final View view) {
-        final RowViewHolder holder = (RowViewHolder) view.getTag(R.id.TAG_VIEW_HOLDER);
-        return holder.absolutePosition;
-    }
-
-    /**
-     * Get the text to display for the row at the current cursor position.
-     * <p>
-     * called by {@link MultiTypeListCursorAdapter#getSectionTextForPosition(int)}}
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public String[] getSectionText(@NonNull final Resources resources,
-                                   @NonNull final Cursor cursor) {
-        BooklistCursorRow row = ((BooklistSupportProvider) cursor).getCursorRow();
-        return new String[]{row.getLevelText(resources, 1),
-                            row.getLevelText(resources, 2)};
-    }
-
 
     /**
      * Scale text in a View (and children) as per user preferences.
@@ -225,34 +256,34 @@ public class BooksMultiTypeListHandler
      *
      * @return the holder
      */
-    private RowViewHolder createHolder(@NonNull final Resources resources,
+    private RowViewHolder createHolder(final int viewType,
+                                       @NonNull final View itemView,
                                        @NonNull final BooklistCursorRow row) {
 
-        RowKind rowKind = RowKind.get(row.getRowKind());
-        int rowKindId = rowKind.getKind();
-
         // a BookHolder is based on multiple columns, the holder itself will sort them out.
-        if (rowKindId == RowKind.BOOK) {
-            return new BookHolder(resources, mDb, mStyle);
+        if (viewType == RowKind.BOOK) {
+            return new BookHolder(itemView, mDb, mStyle);
         }
 
-        // other rows are based on a single column (except CheckableStringHolder).
-        String columnName = rowKind.getDisplayDomain().name;
+        // other rows are based on a single column
+        // (except CheckableStringHolder which uses an additional fixed column).
+        String columnName = RowKind.get(viewType).getDisplayDomain().name;
         int columnIndex = row.getColumnIndex(columnName);
         if (columnIndex < 0) {
             throw new ColumnNotPresentException(columnName);
         }
 
-        switch (rowKindId) {
+
+        switch (viewType) {
             // NEWKIND: ROW_KIND_x
 
             case RowKind.AUTHOR:
-                return new CheckableStringHolder(columnIndex,
+                return new CheckableStringHolder(itemView, columnIndex,
                                                  DBDefinitions.DOM_AUTHOR_IS_COMPLETE.name,
                                                  R.string.field_not_set_with_brackets);
 
             case RowKind.SERIES:
-                return new CheckableStringHolder(columnIndex,
+                return new CheckableStringHolder(itemView, columnIndex,
                                                  DBDefinitions.DOM_SERIES_IS_COMPLETE.name,
                                                  R.string.field_not_set_with_brackets);
 
@@ -274,7 +305,8 @@ public class BooksMultiTypeListHandler
             case RowKind.DATE_READ_DAY:
             case RowKind.DATE_LAST_UPDATE_YEAR:
             case RowKind.DATE_LAST_UPDATE_DAY:
-                return new GenericStringHolder(columnIndex, R.string.field_not_set_with_brackets);
+                return new GenericStringHolder(itemView, columnIndex,
+                                               R.string.field_not_set_with_brackets);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -283,19 +315,79 @@ public class BooksMultiTypeListHandler
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
             case RowKind.DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(columnIndex, R.string.field_not_set_with_brackets);
+                return new MonthHolder(itemView, columnIndex, R.string.field_not_set_with_brackets);
 
             // some special formatting holders
             case RowKind.RATING:
-                return new RatingHolder(columnIndex, R.string.field_not_set_with_brackets);
+                return new RatingHolder(itemView, columnIndex,
+                                        R.string.field_not_set_with_brackets);
             case RowKind.LANGUAGE:
-                return new LanguageHolder(columnIndex, R.string.field_not_set_with_brackets);
+                return new LanguageHolder(itemView, columnIndex,
+                                          R.string.field_not_set_with_brackets);
             case RowKind.READ_STATUS:
-                return new ReadUnreadHolder(columnIndex, R.string.field_not_set_with_brackets);
+                return new ReadUnreadHolder(itemView, columnIndex,
+                                            R.string.field_not_set_with_brackets);
 
             default:
-                throw new IllegalTypeException(String.valueOf(rowKindId));
+                throw new IllegalTypeException(String.valueOf(viewType));
         }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final RowViewHolder holder,
+                                 final int position) {
+        if (BuildConfig.DEBUG) {
+            debugBindViewCounter.incrementAndGet();
+            Logger.debug(this, "onBindViewHolder",
+                         "debugBindViewCounter=" + debugBindViewCounter.get());
+        }
+
+        // temp tag for the position, so the click-listeners can get it.
+        holder.itemView.setTag(R.id.TAG_POSITION, position);
+        holder.itemView.setOnClickListener(mOnItemClick);
+        holder.itemView.setOnLongClickListener(mOnItemLongClick);
+
+        // position the data we need to bind.
+        mCursor.moveToPosition(position);
+        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
+        holder.onBindViewHolder(row);
+    }
+
+    /**
+     * @return the *absolute* position of the passed view in the list of books.
+     */
+    int getAbsolutePosition(@NonNull final View view) {
+        final RowViewHolder holder = (RowViewHolder) view.getTag(R.id.TAG_VIEW_HOLDER);
+        return holder.absolutePosition;
+    }
+
+    /**
+     * Get the text to display for the row at the current cursor position.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public String[] getSectionText(@NonNull final Context context,
+                                   final int position) {
+
+        // sanity check.
+        if (position < 0 || position >= getItemCount()) {
+            return null;
+        }
+
+        String[] section;
+
+        // temporary move the cursor to the requested position, restore after we got the text.
+        synchronized (mCursor) {
+            final int savedPos = mCursor.getPosition();
+            mCursor.moveToPosition(position);
+            BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+            section = row.getLevelText(context);
+            mCursor.moveToPosition(savedPos);
+        }
+        return section;
     }
 
     /**
@@ -452,17 +544,26 @@ public class BooksMultiTypeListHandler
     /**
      * Base for all row 'holder' classes.
      */
-    private abstract static class RowViewHolder
-            implements MultiTypeListRowHolder<BooklistCursorRow> {
+    public abstract static class RowViewHolder
+            extends RecyclerView.ViewHolder {
 
         /** Absolute position of this row. */
         int absolutePosition;
+
+        RowViewHolder(@NonNull final View itemView) {
+            super(itemView);
+        }
+
+        @CallSuper
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            absolutePosition = rowData.getAbsolutePosition();
+        }
     }
 
     /**
      * Holder for a {@link RowKind#BOOK} row.
      */
-    private static class BookHolder
+    public static class BookHolder
             extends RowViewHolder {
 
         /** Database access. */
@@ -547,46 +648,33 @@ public class BooksMultiTypeListHandler
         /**
          * Constructor.
          *
-         * @param resources for strings; not cached, only used in constructor.
-         * @param db        the database.
+         * @param db the database.
          */
-        BookHolder(@NonNull final Resources resources,
+        BookHolder(@NonNull final View itemView,
                    @NonNull final DAO db,
                    @NonNull final BooklistStyle style) {
+            super(itemView);
             mDb = db;
             mStyle = style;
 
+            Resources resources = itemView.getResources();
             // fetch once and re-use later.
             mName_colon_value = resources.getString(R.string.name_colon_value);
             mShelvesLabel = resources.getString(R.string.lbl_bookshelves);
             mLocationLabel = resources.getString(R.string.lbl_location);
-        }
-
-        @Override
-        public View onCreateView(@NonNull final BooklistCursorRow rowData,
-                                 @NonNull final LayoutInflater inflater,
-                                 @NonNull final ViewGroup parent) {
-            // level==3; but all book rows have the same type of view.
-            return inflater.inflate(R.layout.booksonbookshelf_row_book, parent, false);
-        }
-
-
-        @Override
-        public void onCreateViewHolder(@NonNull final BooklistCursorRow rowData,
-                                       @NonNull final View view) {
 
             // always visible
-            titleView = view.findViewById(R.id.title);
+            titleView = itemView.findViewById(R.id.title);
 
             // visibility is independent from actual data, so set here.
-            readView = view.findViewById(R.id.read);
+            readView = itemView.findViewById(R.id.read);
             readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
                                                                       : View.GONE);
 
             int extraFields = mStyle.getExtraFieldsStatus();
 
             // visibility is independent from actual data, so set here.
-            coverView = view.findViewById(R.id.coverImage);
+            coverView = itemView.findViewById(R.id.coverImage);
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 coverView.setVisibility(View.VISIBLE);
@@ -595,49 +683,41 @@ public class BooksMultiTypeListHandler
             }
 
             // visibility depends on actual data
-            seriesNumView = view.findViewById(R.id.series_num);
-            seriesNumLongView = view.findViewById(R.id.series_num_long);
+            seriesNumView = itemView.findViewById(R.id.series_num);
+            seriesNumLongView = itemView.findViewById(R.id.series_num_long);
 
             // visibility depends on actual data, but we need to set initial visibility
             // as actual visibility is postponed to a background task.
             //
             // iow: they are (and stay) hidden when not in use;
             // and we'll hide the used ones if empty.
-            bookshelvesView = view.findViewById(R.id.shelves);
+            bookshelvesView = itemView.findViewById(R.id.shelves);
             bookshelvesView.setVisibility((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0
                                           ? View.VISIBLE : View.GONE);
 
-            authorView = view.findViewById(R.id.author);
+            authorView = itemView.findViewById(R.id.author);
             authorView.setVisibility((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0
                                      ? View.VISIBLE : View.GONE);
 
-            locationView = view.findViewById(R.id.location);
+            locationView = itemView.findViewById(R.id.location);
             locationView.setVisibility((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0
                                        ? View.VISIBLE : View.GONE);
 
-            publisherView = view.findViewById(R.id.publisher);
+            publisherView = itemView.findViewById(R.id.publisher);
             publisherView.setVisibility((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0
                                         ? View.VISIBLE : View.GONE);
 
-            formatView = view.findViewById(R.id.format);
+            formatView = itemView.findViewById(R.id.format);
             formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
                                      ? View.VISIBLE : View.GONE);
 
-            // The default is to indent all views based on the level, but with book covers on
-            // the far left, it looks better if we 'out-dent' one step.
-            int level = rowData.getLevel();
-            if (level > 0) {
-                --level;
-            }
-            view.setPadding(level * 5, 0, 0, 0);
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
 
             int extraFields = mStyle.getExtraFieldsStatus();
-            final int imageMaxSize = mStyle.getScaledCoverImageMaxSize(view.getContext());
+            final int imageMaxSize = mStyle.getScaledCoverImageMaxSize(itemView.getContext());
 
             // Title
             titleView.setText(rowData.getTitle());
@@ -698,7 +778,7 @@ public class BooksMultiTypeListHandler
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.
-                new GetBookExtrasTask(view.getContext().getResources(),
+                new GetBookExtrasTask(itemView.getContext().getResources(),
                                       mDb, rowData.getBookId(), mTaskListener, mStyle)
                         .execute();
             }
@@ -709,7 +789,7 @@ public class BooksMultiTypeListHandler
      * Holder to handle any field that can be displayed as a simple string.
      * Assumes there is a 'name' TextView and an optional enclosing ViewGroup called ROW_INFO.
      */
-    private static class GenericStringHolder
+    public static class GenericStringHolder
             extends RowViewHolder {
 
         /** Index of related data column. */
@@ -719,11 +799,9 @@ public class BooksMultiTypeListHandler
         final int mNoDataId;
 
         /*** View to populate. */
-        @SuppressWarnings("NullableProblems")
         @NonNull
         TextView mTextView;
         /** Pointer to the container of all info for this row. */
-        @SuppressWarnings("NullableProblems")
         @NonNull
         private View mRowDetailsView;
         /**
@@ -739,56 +817,22 @@ public class BooksMultiTypeListHandler
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
-        GenericStringHolder(final int columnIndex,
+        GenericStringHolder(@NonNull final View itemView,
+                            final int columnIndex,
                             @StringRes final int noDataId) {
+            super(itemView);
             mSourceCol = columnIndex;
             mNoDataId = noDataId;
-        }
 
-        /**
-         * Used to get the 'default' layout to use for differing row levels.
-         *
-         * @param level Level of layout
-         *
-         * @return Layout ID
-         */
-        @LayoutRes
-        private int getDefaultLayoutId(final int level) {
-            switch (level) {
-                case 1:
-                    return R.layout.booksonbookshelf_row_level_1;
-                case 2:
-                    return R.layout.booksonbookshelf_row_level_2;
-                default:
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                        Logger.debug(this, "getDefaultLayoutId",
-                                     "level=" + level);
-                    }
-                    // this is in fact either level 3 or 4 for non-Book rows
-                    return R.layout.booksonbookshelf_row_level_3;
-            }
-        }
-
-        @Override
-        public View onCreateView(@NonNull final BooklistCursorRow rowData,
-                                 @NonNull final LayoutInflater inflater,
-                                 @NonNull final ViewGroup parent) {
-
-            return inflater.inflate(getDefaultLayoutId(rowData.getLevel()), parent, false);
-        }
-
-        @Override
-        public void onCreateViewHolder(@NonNull final BooklistCursorRow rowData,
-                                       @NonNull final View view) {
-            mRowDetailsView = view.findViewById(R.id.BLB_ROW_DETAILS);
-            mTextView = view.findViewById(R.id.name);
+            mRowDetailsView = itemView.findViewById(R.id.BLB_ROW_DETAILS);
+            mTextView = itemView.findViewById(R.id.name);
             // optional
             mVisibilityControlView = mRowDetailsView.findViewById(R.id.group);
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             setText(rowData.getString(mSourceCol), rowData.getLevel());
         }
 
@@ -851,7 +895,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'rating'.
      */
-    private static class RatingHolder
+    public static class RatingHolder
             extends GenericStringHolder {
 
         /**
@@ -860,21 +904,23 @@ public class BooksMultiTypeListHandler
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
-        RatingHolder(final int columnIndex,
+        RatingHolder(@NonNull final View itemView,
+                     final int columnIndex,
                      @StringRes final int noDataId) {
-            super(columnIndex, noDataId);
+            super(itemView, columnIndex, noDataId);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             String s = rowData.getString(mSourceCol);
             if (s != null) {
                 try {
                     int i = (int) Float.parseFloat(s);
                     // If valid, format the description
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        s = view.getResources().getQuantityString(R.plurals.n_stars, i, i);
+                        s = itemView.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (NumberFormatException e) {
                     Logger.error(this, e);
@@ -887,7 +933,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'language'.
      */
-    private static class LanguageHolder
+    public static class LanguageHolder
             extends GenericStringHolder {
 
         /**
@@ -896,17 +942,19 @@ public class BooksMultiTypeListHandler
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
-        LanguageHolder(final int columnIndex,
+        LanguageHolder(@NonNull final View itemView,
+                       final int columnIndex,
                        @StringRes final int noDataId) {
-            super(columnIndex, noDataId);
+            super(itemView, columnIndex, noDataId);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             String s = rowData.getString(mSourceCol);
             if (s != null && !s.isEmpty()) {
-                s = LocaleUtils.getDisplayName(view.getContext().getResources(), s);
+                s = LocaleUtils.getDisplayName(itemView.getContext(), s);
             }
             setText(s, rowData.getLevel());
         }
@@ -915,7 +963,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'read/unread' (as text) status.
      */
-    private static class ReadUnreadHolder
+    public static class ReadUnreadHolder
             extends GenericStringHolder {
 
         /**
@@ -924,14 +972,16 @@ public class BooksMultiTypeListHandler
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
-        ReadUnreadHolder(final int columnIndex,
+        ReadUnreadHolder(@NonNull final View itemView,
+                         final int columnIndex,
                          @StringRes final int noDataId) {
-            super(columnIndex, noDataId);
+            super(itemView, columnIndex, noDataId);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             if (Datum.toBoolean(rowData.getString(mSourceCol), true)) {
                 setText(R.string.lbl_read, rowData.getLevel());
             } else {
@@ -944,7 +994,7 @@ public class BooksMultiTypeListHandler
      * Holder for a row that displays a 'month'.
      * This code turns a month number into a locale-based month name.
      */
-    private static class MonthHolder
+    public static class MonthHolder
             extends GenericStringHolder {
 
         /**
@@ -953,17 +1003,19 @@ public class BooksMultiTypeListHandler
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
-        MonthHolder(final int columnIndex,
+        MonthHolder(@NonNull final View itemView,
+                    final int columnIndex,
                     @StringRes final int noDataId) {
-            super(columnIndex, noDataId);
+            super(itemView, columnIndex, noDataId);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             String s = rowData.getString(mSourceCol);
             if (s != null) {
-                Locale locale = LocaleUtils.from(view.getContext().getResources());
+                Locale locale = LocaleUtils.from(itemView.getContext());
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the short name
@@ -981,7 +1033,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
      */
-    private static class CheckableStringHolder
+    public static class CheckableStringHolder
             extends GenericStringHolder {
 
         /** Column name of related boolean column. */
@@ -994,17 +1046,18 @@ public class BooksMultiTypeListHandler
          * @param isLockedSource Column name to use for the boolean 'lock' status
          * @param noDataId       String ID to use when data is blank
          */
-        CheckableStringHolder(final int columnIndex,
+        CheckableStringHolder(@NonNull final View itemView,
+                              final int columnIndex,
                               @NonNull final String isLockedSource,
                               @StringRes final int noDataId) {
-            super(columnIndex, noDataId);
+            super(itemView, columnIndex, noDataId);
             mIsLockedSourceCol = isLockedSource;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final View view) {
-            super.onBindViewHolder(rowData, view);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+            super.onBindViewHolder(rowData);
+
             if (isVisible()) {
                 Drawable lock = null;
                 if (rowData.getBoolean(mIsLockedSourceCol)) {

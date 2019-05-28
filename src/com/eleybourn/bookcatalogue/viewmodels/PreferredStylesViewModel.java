@@ -44,10 +44,10 @@ public class PreferredStylesViewModel
      */
     public void handleStyleChange(@NonNull final BooklistStyle style) {
         // based on the uuid, find the style in the list.
-        // We can't use the object, as it was parcelled along the way.
+        // Don't use 'indexOf' though, as the incoming style object was parcelled along the way.
         int editedRow = -1;
         for (int i=0; i < mList.size(); i++) {
-            if (mList.get(i).getUuid().equals(style.getUuid())) {
+            if (mList.get(i).equals(style)) {
                 editedRow = i;
                 break;
             }
@@ -61,8 +61,11 @@ public class PreferredStylesViewModel
         } else {
             // Existing Style edited.
             BooklistStyle origStyle = mList.get(editedRow);
-            if (!origStyle.getUuid().equals(style.getUuid())) {
-                if (origStyle.isBuiltin()) {
+            if (!origStyle.equals(style)) {
+                if (origStyle.isUserDefined()) {
+                    // A clone of an user-defined. Put it directly after the user-defined
+                    mList.add(editedRow, style);
+                } else {
                     // Working on a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // Replace the original row with the new one
@@ -76,9 +79,6 @@ public class PreferredStylesViewModel
                         // Try to put it directly after original
                         mList.add(editedRow, style);
                     }
-                } else {
-                    // A clone of an user-defined. Put it directly after the user-defined
-                    mList.add(editedRow, style);
                 }
             } else {
                 mList.set(editedRow, style);

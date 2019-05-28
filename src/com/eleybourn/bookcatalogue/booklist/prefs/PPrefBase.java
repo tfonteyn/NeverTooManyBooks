@@ -7,10 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class for a generic Preference.
+ * <p>
+ * Note that the methods that take a SharedPreferences.Editor do not need to check
+ * on uuid or persistence as obviously that is decided by the caller.
  *
  * @param <T> type of the value to store
  */
@@ -30,6 +32,10 @@ public abstract class PPrefBase<T>
     /** key for the Preference */
     @NonNull
     private final String mKey;
+
+    /** Flag to indicate the value is persisted. */
+    protected boolean mIsPersistent;
+
     /** in memory value used for non-persistence situations. */
     @Nullable
     T mNonPersistedValue;
@@ -39,20 +45,18 @@ public abstract class PPrefBase<T>
      *
      * @param key          key of preference
      * @param uuid         of the style
+     * @param isPersistent {@code true} to have the value persisted.
+     *                     {@code false} for in-memory only.
      * @param defaultValue in memory default
      */
     PPrefBase(@NonNull final String key,
               @NonNull final String uuid,
+              final boolean isPersistent,
               @NonNull final T defaultValue) {
         mKey = key;
         mUuid = uuid;
+        mIsPersistent = isPersistent;
         mDefaultValue = defaultValue;
-
-        // Should never happen, but paranoia...
-        //noinspection ConstantConditions
-        if (uuid == null) {
-            Logger.debugWithStackTrace(this, "constructor", "uuid was NULL for key=" + key);
-        }
     }
 
     @NonNull
@@ -63,7 +67,7 @@ public abstract class PPrefBase<T>
 
     @Override
     public void remove() {
-        if (!mUuid.isEmpty()) {
+        if (mIsPersistent) {
             App.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
@@ -75,7 +79,7 @@ public abstract class PPrefBase<T>
      */
     @Override
     public void set(@Nullable final T value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             mNonPersistedValue = value;
         } else if (value == null) {
             App.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -92,10 +96,10 @@ public abstract class PPrefBase<T>
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final T value) {
-        if (value != null) {
-            ed.putString(getKey(), value.toString());
-        } else {
+        if (value == null) {
             ed.remove(getKey());
+        } else {
+            ed.putString(getKey(), value.toString());
         }
     }
 
@@ -110,14 +114,14 @@ public abstract class PPrefBase<T>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (mUuid.isEmpty()) {
-            // builtin ? then write the in-memory value to the parcel
-            // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
-        } else {
+        if (mIsPersistent) {
             // write the actual value, this could be the default if we have no value, but that
             // is what we want for user-defined styles anyhow.
             dest.writeValue(get());
+        } else {
+            // builtin ? then write the in-memory value to the parcel
+            // do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
         }
     }
 

@@ -20,27 +20,30 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
+import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.RestoreTask;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Lets the user choose an archive file to import from.
@@ -110,11 +113,9 @@ public class RestoreActivity
                     }
                 }
             };
-
+    private ProgressDialogFragment<Object, ImportOptions> mProgressDialog;
     private final ImportOptionsDialogFragment.OptionsListener mOptionsListener =
             RestoreActivity.this::onOptionsSet;
-
-    private ProgressDialogFragment<Object, ImportOptions> mProgressDialog;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -134,17 +135,46 @@ public class RestoreActivity
             createFileBrowser("");
         }
 
-        Button confirm = findViewById(R.id.confirm);
-        confirm.setText(R.string.btn_confirm_open);
-        confirm.setOnClickListener(v -> doRestore());
-
-        setTitle(R.string.lbl_import_from_archive);
+        setTitle(R.string.title_import);
     }
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
         if (ImportOptionsDialogFragment.TAG.equals(fragment.getTag())) {
-            ((ImportOptionsDialogFragment)fragment).setListener(mOptionsListener);
+            ((ImportOptionsDialogFragment) fragment).setListener(mOptionsListener);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+
+        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
+                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+            .setIcon(R.drawable.ic_keyboard_hide)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        menu.add(Menu.NONE, R.id.MENU_USE,
+                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_open)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.MENU_HIDE_KEYBOARD:
+                Utils.hideKeyboard(getWindow().getDecorView());
+                return true;
+
+            case R.id.MENU_USE:
+                doRestore();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -157,8 +187,7 @@ public class RestoreActivity
         if (frag != null) {
             File file = frag.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                //noinspection ConstantConditions
-                UserMessage.showUserMessage(frag.getView(),
+                UserMessage.showUserMessage(frag.requireView(),
                                             R.string.warning_select_an_existing_file);
                 return;
             }
@@ -174,7 +203,8 @@ public class RestoreActivity
                         // ask user what options they want
                         FragmentManager fm = getSupportFragmentManager();
                         if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
-                            ImportOptionsDialogFragment.newInstance(options).show(fm, ImportOptionsDialogFragment.TAG);
+                            ImportOptionsDialogFragment.newInstance(options).show(fm,
+                                                                                  ImportOptionsDialogFragment.TAG);
                         }
                     })
                     .setPositiveButton(android.R.string.ok, (d, which) -> {

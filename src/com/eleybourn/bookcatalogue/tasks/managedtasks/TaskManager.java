@@ -149,6 +149,21 @@ public class TaskManager {
      */
     private boolean mIsClosing;
 
+    /** Controller instance (strong reference) for this specific SearchManager. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private final TaskManagerController mController = new TaskManagerController() {
+
+        public void requestAbort() {
+            cancelAllTasks();
+        }
+
+        @Override
+        @NonNull
+        public TaskManager getTaskManager() {
+            return TaskManager.this;
+        }
+    };
+
     /**
      * Constructor.
      */
@@ -156,19 +171,8 @@ public class TaskManager {
 
         mContext = context;
 
-        // Controller instance for this specific SearchManager
-        TaskManagerController controller = new TaskManagerController() {
-            public void requestAbort() {
-                cancelAllTasks();
-            }
 
-            @Override
-            @NonNull
-            public TaskManager getTaskManager() {
-                return TaskManager.this;
-            }
-        };
-        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
 
     }
 

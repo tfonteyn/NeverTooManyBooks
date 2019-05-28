@@ -102,8 +102,7 @@ public class CheckListDialogFragment<T>
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        @SuppressWarnings("ConstantConditions")
+        Bundle args = requireArguments();
         int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 

@@ -34,10 +34,10 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
-import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
-import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -57,9 +57,6 @@ public class AdminFragment
      * collected results from all started activities, which we'll pass on up in our own setResult.
      */
     private final Intent mResultData = new Intent();
-
-    private ProgressDialogFragment<Object, Integer> mProgressDialog;
-
     private final TaskListener<Object, Integer> mListener = new TaskListener<Object, Integer>() {
         /**
          * The result of the task is not used here.
@@ -76,8 +73,7 @@ public class AdminFragment
                     if (success) {
                         onExportFinished();
                     } else {
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(getView(), e.getLocalizedMessage());
+                        UserMessage.showUserMessage(requireView(), e.getLocalizedMessage());
                     }
                     break;
 
@@ -85,27 +81,27 @@ public class AdminFragment
                     if (!success) {
                         String msg;
                         if (e instanceof FormattedMessageException) {
-                            msg = ((FormattedMessageException) e).getFormattedMessage(getResources());
+                            msg = ((FormattedMessageException) e).getFormattedMessage(
+                                    getResources());
                         } else if (e != null) {
                             msg = e.getLocalizedMessage();
                         } else {
                             msg = getString(R.string.error_import_failed);
                         }
-                        //noinspection ConstantConditions
-                        UserMessage.showUserMessage(getView(), msg);
+                        UserMessage.showUserMessage(requireView(), msg);
                     }
                     break;
 
                 case R.id.TASK_ID_GR_IMPORT:
                 case R.id.TASK_ID_GR_SEND_BOOKS:
                 case R.id.TASK_ID_GR_REQUEST_AUTH:
-                    //noinspection ConstantConditions
                     GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                             getView(), this);
+                                                             requireView(), this);
                     break;
             }
         }
     };
+    private ProgressDialogFragment<Object, Integer> mProgressDialog;
 
     @Nullable
     @Override
@@ -128,109 +124,107 @@ public class AdminFragment
 //            mProgressDialog.setOnUserCancelledListener(this);
         }
 
-        View root = getView();
-        View v;
+        View root = requireView();
 
         // Export (backup) to Archive
-        //noinspection ConstantConditions
-        v = root.findViewById(R.id.lbl_backup);
-        v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), BackupActivity.class);
-            startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
-        });
+        root.findViewById(R.id.lbl_backup)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), BackupActivity.class);
+                startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
+            });
 
         // Import from Archive - Start the restore activity
-        v = root.findViewById(R.id.lbl_import_from_archive);
-        v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), RestoreActivity.class);
-            startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
-        });
+        root.findViewById(R.id.lbl_import_from_archive)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), RestoreActivity.class);
+                startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
+            });
 
         // Export to CSV
-        v = root.findViewById(R.id.lbl_export);
-        v.setOnClickListener(v1 -> exportToCSV());
+        root.findViewById(R.id.lbl_export)
+            .setOnClickListener(v -> exportToCSV());
 
         // Import From CSV
-        v = root.findViewById(R.id.lbl_import);
-        v.setOnClickListener(v1 -> {
-            // Verify - this can be a dangerous operation
-            //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
-                    .setMessage(R.string.warning_import_be_cautious)
-                    .setTitle(R.string.title_import_book_data)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
-                    .create()
-                    .show();
-        });
+        root.findViewById(R.id.lbl_import)
+            .setOnClickListener(v -> {
+                // Verify - this can be a dangerous operation
+                //noinspection ConstantConditions
+                new AlertDialog.Builder(getContext())
+                        .setMessage(R.string.warning_import_be_cautious)
+                        .setTitle(R.string.title_import_book_data)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
+                        .create()
+                        .show();
+            });
 
 
         // Goodreads Import Synchronize
-        v = root.findViewById(R.id.lbl_sync_with_goodreads);
-        v.setOnClickListener(v1 -> {
-            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsTasks.ImportTask(true, mListener).execute();
-        });
+        root.findViewById(R.id.lbl_sync_with_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                new GoodreadsTasks.ImportTask(true, mListener).execute();
+            });
 
         // Goodreads Import All
-        v = root.findViewById(R.id.lbl_import_all_from_goodreads);
-        v.setOnClickListener(v1 -> {
-            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsTasks.ImportTask(false, mListener).execute();
-        });
+        root.findViewById(R.id.lbl_import_all_from_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                new GoodreadsTasks.ImportTask(false, mListener).execute();
+            });
 
         // Goodreads Export Updated
-        v = root.findViewById(R.id.lbl_send_updated_books_to_goodreads);
-        v.setOnClickListener(v1 -> {
-            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsTasks.SendBooksTask(true, mListener).execute();
-        });
+        root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                new GoodreadsTasks.SendBooksTask(true, mListener).execute();
+            });
 
         // Goodreads Export All
-        v = root.findViewById(R.id.lbl_send_all_books_to_goodreads);
-        v.setOnClickListener(v1 -> {
-            UserMessage.showUserMessage(v1, R.string.progress_msg_connecting);
-            new GoodreadsTasks.SendBooksTask(false, mListener).execute();
-        });
+        root.findViewById(R.id.lbl_send_all_books_to_goodreads)
+            .setOnClickListener(v -> {
+                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                new GoodreadsTasks.SendBooksTask(false, mListener).execute();
+            });
 
         /* Start the activity that shows the active GoodReads tasks. */
-        v = root.findViewById(R.id.lbl_background_tasks);
-        v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
-            startActivity(intent);
-        });
+        root.findViewById(R.id.lbl_background_tasks)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
+                startActivity(intent);
+            });
 
 
 
         /* Automatically Update Fields from internet*/
-        v = root.findViewById(R.id.lbl_update_internet);
-        v.setOnClickListener(v1 -> {
-            Intent intent = new Intent(getContext(), UpdateFieldsFromInternetActivity.class);
-            startActivity(intent);
-        });
+        root.findViewById(R.id.lbl_update_internet)
+            .setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), UpdateFieldsFromInternetActivity.class);
+                startActivity(intent);
+            });
 
         /* Reset Hints */
-        v = root.findViewById(R.id.lbl_reset_hints);
-        v.setOnClickListener(v1 -> {
-            HintManager.resetHints();
-            UserMessage.showUserMessage(v1, R.string.hints_have_been_reset);
-        });
+        root.findViewById(R.id.lbl_reset_hints)
+            .setOnClickListener(v -> {
+                HintManager.resetHints();
+                UserMessage.showUserMessage(v, R.string.hints_have_been_reset);
+            });
 
         /* Erase cover cache */
-        v = root.findViewById(R.id.lbl_erase_cover_cache);
-        v.setOnClickListener(v1 -> {
-            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                coversDBAdapter.deleteAll();
-            }
-        });
+        root.findViewById(R.id.lbl_erase_cover_cache)
+            .setOnClickListener(v -> {
+                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
+                    coversDBAdapter.deleteAll();
+                }
+            });
 
         /* Copy database for tech support */
-        v = root.findViewById(R.id.lbl_copy_database);
-        v.setOnClickListener(v1 -> {
-            StorageUtils.exportDatabaseFiles();
-            UserMessage.showUserMessage(v1, R.string.progress_end_backup_success);
-        });
+        root.findViewById(R.id.lbl_copy_database)
+            .setOnClickListener(v -> {
+                StorageUtils.exportDatabaseFiles();
+                UserMessage.showUserMessage(v, R.string.progress_end_backup_success);
+            });
     }
 
     /**
@@ -263,8 +257,7 @@ public class AdminFragment
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.import_error_csv_file_not_found);
+            UserMessage.showUserMessage(requireView(), R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -385,8 +378,7 @@ public class AdminFragment
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (NullPointerException e) {
             Logger.error(this, e);
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_email_failed);
+            UserMessage.showUserMessage(requireView(), R.string.error_email_failed);
         }
     }
 }

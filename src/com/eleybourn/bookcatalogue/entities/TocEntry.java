@@ -70,6 +70,9 @@ public class TocEntry
     /** String encoding use. */
     private static final char FIELD_SEPARATOR = '*';
 
+    public static final char TYPE_TOC = 'T';
+    public static final char TYPE_BOOK = 'B';
+
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
      * <p>
@@ -91,8 +94,8 @@ public class TocEntry
     @NonNull
     private String mFirstPublicationDate;
 
-    /** in-memory use only. Indicates this is a 'B' == "book title", or 'T' == "toc" */
-    private char mType;
+    /** in-memory use only. Type of entry. */
+    private char mType = TYPE_TOC;
 
     /**
      * Constructor.
@@ -116,15 +119,18 @@ public class TocEntry
      * @param author          Author of title
      * @param title           Title
      * @param publicationDate year of first publication
+     * @param type            TYPE_TOC or TYPE_BOOK
      */
     public TocEntry(final long id,
                     @NonNull final Author author,
                     @NonNull final String title,
-                    @NonNull final String publicationDate) {
+                    @NonNull final String publicationDate,
+                    final char type) {
         mId = id;
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
+        setType(type);
     }
 
     /** {@link Parcelable}. */
@@ -193,16 +199,16 @@ public class TocEntry
     /**
      * @return 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
      */
-    public char getTocType() {
+    public char getType() {
         return mType;
     }
 
     /**
      * @param type 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
      */
-    public void setTocType(final char type) {
+    public void setType(final char type) {
         if (BuildConfig.DEBUG) {
-            if (type != 'B' && type != 'T') {
+            if (type != TYPE_BOOK && type != TYPE_TOC) {
                 throw new IllegalTypeException("type=`" + type + '`');
             }
         }

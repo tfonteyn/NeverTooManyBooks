@@ -45,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
+        android:contentDescription="@string/btn_drag_handle"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

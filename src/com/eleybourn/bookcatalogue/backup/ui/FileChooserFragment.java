@@ -43,7 +43,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -142,10 +144,9 @@ public class FileChooserFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        View view = getView();
-        //noinspection ConstantConditions
-        mCurrentFolderView = view.findViewById(R.id.current_folder);
-        mFilenameView = view.findViewById(R.id.file_name);
+        View root = requireView();
+        mCurrentFolderView = root.findViewById(R.id.current_folder);
+        mFilenameView = root.findViewById(R.id.file_name);
 
         Bundle args = requireArguments();
 
@@ -172,7 +173,7 @@ public class FileChooserFragment
         }
 
         // 'up' directory
-        view.findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+        root.findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
         mCurrentFolderView.setOnClickListener(onPathUpClickListener);
 
         //noinspection ConstantConditions
@@ -199,8 +200,7 @@ public class FileChooserFragment
             return;
         }
 
-        //noinspection ConstantConditions
-        UserMessage.showUserMessage(getView(), R.string.progress_msg_reading_directory);
+        UserMessage.showUserMessage(requireView(), R.string.progress_msg_reading_directory);
         new FileListerTask(root, mListener).execute();
     }
 
@@ -216,8 +216,7 @@ public class FileChooserFragment
 
         @SuppressWarnings("ConstantConditions")
         FileDetailsAdapter adapter = new FileDetailsAdapter(getContext(), mDir);
-        @SuppressWarnings("ConstantConditions")
-        RecyclerView listView = getView().findViewById(android.R.id.list);
+        RecyclerView listView = requireView().findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
         listView.addItemDecoration(
@@ -310,6 +309,8 @@ public class FileChooserFragment
     protected class FileDetailsAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
+
         @NonNull
         private final LayoutInflater mInflater;
 
@@ -327,6 +328,13 @@ public class FileChooserFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View view = mInflater.inflate(R.layout.row_file_chooser, parent, false);
             return new Holder(view);
         }

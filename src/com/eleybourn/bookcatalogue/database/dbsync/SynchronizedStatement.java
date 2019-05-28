@@ -29,7 +29,7 @@ public class SynchronizedStatement
     /** Synchronizer from database. */
     @NonNull
     private final Synchronizer mSync;
-    /** Underlying statement. */
+    /** Underlying statement. This class is final, so we cannot extend it. */
     private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean mIsReadOnly;
@@ -39,8 +39,7 @@ public class SynchronizedStatement
     private boolean mCloseWasCalled;
 
     /**
-     * Constructor.
-     * Do not use directly!
+     * Constructor. Do not use directly!
      * <p>
      * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
      * (why? -> compileStatement uses locks)
@@ -62,23 +61,12 @@ public class SynchronizedStatement
 
     /**
      * Wrapper for underlying method on SQLiteStatement.
-     */
-    @SuppressWarnings("unused")
-    public void bindDouble(final int index,
-                           final double value) {
-        mStatement.bindDouble(index, value);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
-     */
-    public void bindLong(final int index,
-                         final long value) {
-        mStatement.bindLong(index, value);
-    }
-
-    /**
-     * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Bind a String value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind
+     * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
      */
     public void bindString(final int index,
                            @Nullable final String value) {
@@ -94,6 +82,41 @@ public class SynchronizedStatement
 
     /**
      * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Bind a long value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind
+     * @param value The value to bind
+     */
+    public void bindLong(final int index,
+                         final long value) {
+        mStatement.bindLong(index, value);
+    }
+
+    /**
+     * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Bind a double value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind
+     * @param value The value to bind
+     */
+    @SuppressWarnings("unused")
+    public void bindDouble(final int index,
+                           final double value) {
+        mStatement.bindDouble(index, value);
+    }
+
+    /**
+     * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Bind a byte array value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind
+     * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
      */
     @SuppressWarnings("unused")
     void bindBlob(final int index,
@@ -107,6 +130,11 @@ public class SynchronizedStatement
 
     /**
      * Wrapper for underlying method on SQLiteStatement.
+     * <p>
+     * Bind a NULL value to this statement. The value remains bound until
+     * {@link #clearBindings} is called.
+     *
+     * @param index The 1-based index to the parameter to bind null to
      */
     public void bindNull(final int index) {
         mStatement.bindNull(index);
@@ -114,6 +142,8 @@ public class SynchronizedStatement
 
     /**
      * Wrapper for underlying method on SQLiteStatement.
+     *
+     * Clears all existing bindings. Unset bindings are treated as NULL.
      */
     @SuppressWarnings("unused")
     public void clearBindings() {

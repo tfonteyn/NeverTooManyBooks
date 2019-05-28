@@ -110,7 +110,7 @@
     <string name="warning_backup_request">
         Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;
     </string>
-    <string name="lbl_backup_dialog">Δημιουργία αντιγράφου;</string>
+    <string name="title_backup">Αντιγράφων ασφαλείας</string>
     <string name="searching_amazon">Αναζήτηση στο Amazon</string>
     <string name="searching_google_books">Αναζήτηση στο Google Books</string>
     <string name="searching_library_thing">Αναζήτηση στο LibraryThing</string>
@@ -284,7 +284,7 @@
     <string name="acra_resReportSendSuccessToast">Ευχαριστούμε!</string>
     <string name="lbl_read">Αναγνωσμένα</string>
     <string name="lbl_unread">Μη αναγνωσμένα</string>
-    <string name="warning_date_not_set">(χωρίς ημερομηνία)</string>
+    <string name="date_not_set_with_brackets">(χωρίς ημερομηνία)</string>
     <string name="style_builtin_author_series">Συγγραφέας μετά σειρά</string>
     <string name="style_builtin_series">Σειρά</string>
     <string name="style_builtin_title_first_letter">Πρώτο γράμμα τίτλου</string>
@@ -482,7 +482,7 @@
     </string>
 
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
-    <string name="tab_lbl_details">Λεπτομ.</string>
+    <string name="tab_lbl_details">Λεπτομ</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
     <string name="X_tab_lbl_loan">Δανεισ.</string>
 
@@ -499,7 +499,7 @@
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
 
     <!-- Admin option to import -->
-    <string name="lbl_backup">Αντίγραφο ασφαλείας στο Αρχείο</string>
+    <string name="lbl_backup_to_archive">Αντίγραφο ασφαλείας στο Αρχείο</string>
     <!-- Admin option to import -->
     <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
 
@@ -663,5 +663,18 @@
     <string name="info_tap_on_image_to_select">Πατήστε τη μεγάλη εικόνα για να επιλέξετε</string>
     <string name="menu_clear_filters">Διαγραφή φίλτρων</string>
     <string name="menu_internet_update_fields">Ενημέρωση πεδίων</string>
+    <string name="warning_action_requires_isbn">Αυτή η ενέργεια απαιτεί έγκυρο ISBN.</string>
+    <string name="vldt_failure">Αποτυχία επικύρωσης.</string>
+    <string name="title_import">εισάγω</string>
+    <string name="title_send_mail">Να στείλετε e-mail…</string>
+    <string name="tab_lbl_notes">Σημειώσεις</string>
+    <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
+    <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
+    <string name="usage_skip">Παραλείπω</string>
+    <string name="btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
+    <string name="lbl_currency">Νομίσματα</string>
+    <string name="btn_confirm_use">Χρήση</string>
+    <string name="done">Εγινε</string>
+    <string name="btn_options">Επιλογές</string>
 
 </resources>

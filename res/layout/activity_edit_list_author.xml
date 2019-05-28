@@ -49,7 +49,7 @@
         />
 
     <View
-        android:id="@+id/header_divider"
+        android:id="@+id/list_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -62,7 +62,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:layout_constraintTop_toBottomOf="@id/list_divider"
         tools:listitem="@layout/row_edit_author_list"
         />
 

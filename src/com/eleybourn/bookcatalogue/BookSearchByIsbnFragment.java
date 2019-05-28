@@ -121,7 +121,7 @@ public class BookSearchByIsbnFragment
                     }
                     try {
                         if (!wasCancelled) {
-                            Intent intent = new Intent(mActivity, EditBookActivity.class)
+                            Intent intent = new Intent(getContext(), EditBookActivity.class)
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
@@ -189,7 +189,8 @@ public class BookSearchByIsbnFragment
             initUI(root);
         } else {
             // otherwise we're scanning
-            mScanner = ScannerManager.getScanner(mActivity);
+            //noinspection ConstantConditions
+            mScanner = ScannerManager.getScanner(getContext());
             if (mScanner == null) {
                 ScannerManager.promptForScannerInstallAndFinish(mActivity, true);
                 // Prevent our activity to finish.
@@ -305,8 +306,7 @@ public class BookSearchByIsbnFragment
      */
     private void initKeypadButton(@IdRes final int id,
                                   @NonNull final String text) {
-        //noinspection ConstantConditions
-        getView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
+        requireView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
     }
 
     /**
@@ -344,7 +344,8 @@ public class BookSearchByIsbnFragment
         if (!ISBN.isValid(mIsbnSearchText) && (!allowAsin || !ISBN.isValidAsin(mIsbnSearchText))) {
             if (mScanMode) {
                 // Optionally beep if scan failed.
-                SoundManager.beepLow(mActivity);
+                //noinspection ConstantConditions
+                SoundManager.beepLow(getContext());
             }
             int msg;
             if (allowAsin) {
@@ -364,7 +365,8 @@ public class BookSearchByIsbnFragment
         // at this point, we have a valid isbn/asin.
         if (mScanMode) {
             // Optionally beep if scan was valid.
-            SoundManager.beepHigh(mActivity);
+            //noinspection ConstantConditions
+            SoundManager.beepHigh(getContext());
         }
 
         // See if ISBN already exists in our database, if not then start the search and get details.
@@ -461,8 +463,9 @@ public class BookSearchByIsbnFragment
     @Override
     public void onPause() {
         super.onPause();
-        //noinspection ConstantConditions
-        mIsbnSearchText = mIsbnView.getText().toString().trim();
+        if (mIsbnView != null) {
+            mIsbnSearchText = mIsbnView.getText().toString().trim();
+        }
     }
 
     @Override

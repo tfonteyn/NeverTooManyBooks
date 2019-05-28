@@ -27,14 +27,14 @@ import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
  * <p>
  * We support two options:
  * <ol>
- * <li>Using a standard RecyclerView
+ * <li>Using a standard RecyclerView:
  * <ul>
  * <li>Set the standard FastScroller attributes on your RecyclerView xml</li>
  * <li>Use {@link RecyclerView#addItemDecoration} to add this class</li>
- * <li>WARNING: USES REFLECTION!</li>
+ * <li>WARNING: USES REFLECTION TO GET THE 'mState' MEMBER OF THE FastScroller!</li>
  * </ul>
  * </li>
- * <li>Use a custom {@link CFSRecyclerView}, do not add as an ItemDecorator.
+ * <li>Use a custom {@link CFSRecyclerView}:
  * <ul>
  *     <li>Must set {@link CFSRecyclerView} attributes for enabling the FastScroller.</li>
  *     <li>Do NOT add this class as an ItemDecorator</li>
@@ -43,6 +43,11 @@ import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
  * </ul>
  * </li>
  * </ol>
+ * <strong>
+ * The current code in this app checks on the view NOT being a CFSRecyclerView
+ * before it adds the decorator.
+ * So switching between the two solutions is limited to editing the XML.
+ * </strong>
  * <p>
  * Dimensions used for 1st and 2nd lines of text:
  * <ul>
@@ -236,7 +241,7 @@ public class FastScrollerOverlay
         int position = firstPosition + ((lastPosition - firstPosition) / 2);
 
         // the unformatted line(s) of text to display.
-        String[] rawText = sectionIndexerV2.getSectionTextForPosition(position);
+        String[] rawText = sectionIndexerV2.getSectionText(parent.getContext(), position);
         if (rawText != null && rawText.length != 0) {
             // ellipsize and "un-null" as needed.
             String[] formattedText = new String[rawText.length];
@@ -337,6 +342,7 @@ public class FastScrollerOverlay
     public interface SectionIndexerV2 {
 
         @Nullable
-        String[] getSectionTextForPosition(int position);
+        String[] getSectionText(@NonNull Context context,
+                                int position);
     }
 }

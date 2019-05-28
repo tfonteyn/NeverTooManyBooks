@@ -11,9 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * @param <T> type of the actual Object that is represented by a row in the selection list.
@@ -50,6 +53,8 @@ public class FieldPicker<T>
 
     private static class FieldListAdapter<T>
             extends RecyclerView.Adapter<Holder> {
+
+        private final AtomicInteger debugViewCounter = new AtomicInteger();
 
         @NonNull
         private final List<T> mItems;
@@ -96,6 +101,13 @@ public class FieldPicker<T>
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            if (BuildConfig.DEBUG) {
+                debugViewCounter.incrementAndGet();
+                Logger.debug(this, "onCreateViewHolder",
+                             "debugViewCounter=" + debugViewCounter.get(),
+                             "viewType=" + viewType);
+            }
+
             View root = mInflater.inflate(R.layout.row_simple_dialog_list_item, parent, false);
             return new Holder(root);
         }

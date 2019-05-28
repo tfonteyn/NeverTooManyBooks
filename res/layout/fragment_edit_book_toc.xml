@@ -41,7 +41,7 @@
         />
 
     <View
-        android:id="@+id/header_divider"
+        android:id="@+id/list_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,14 +52,12 @@
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fadeScrollbars="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        app:layout_constraintTop_toBottomOf="@id/list_divider"
         tools:listitem="@layout/row_edit_toc_entry"
-
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

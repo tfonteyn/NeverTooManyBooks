@@ -31,7 +31,8 @@
  * Code taken from  "recyclerview-1.1.0-alpha05-sources.jar"
  * androidx/recyclerview/widget/FastScroller.java
  * <p>
- * Added this to the end of onDrawOver
+ * Added this to the end of
+ * {@link com.eleybourn.bookcatalogue.widgets.cfs.CFSFastScroller#onDrawOver}
  * <pre>
  *       // BEGIN - CFSRecyclerView
  *       if (mRecyclerView instanceof CFSRecyclerView) {
@@ -41,12 +42,5 @@
  *       }
  *       // END - CFSRecyclerView
  * </pre>
- *
- * <p>
- * Minimal changes made to enhance this with ability to display an overlay.
- * see:
- * {@link com.eleybourn.bookcatalogue.widgets.cfs.CFSFastScroller#onDrawOver}
- * where the {@link com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView#drawIndexerOverlay}
- * is requested to draw the overlay.
  */
 package com.eleybourn.bookcatalogue.widgets.cfs;

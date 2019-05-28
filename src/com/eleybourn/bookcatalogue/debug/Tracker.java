@@ -218,10 +218,9 @@ public final class Tracker {
                     return "Exit";
                 case Running:
                     return "Running";
-                //noinspection UnnecessaryDefault
-                default:
-                    return "";
             }
+
+            return null;
         }
     }
 

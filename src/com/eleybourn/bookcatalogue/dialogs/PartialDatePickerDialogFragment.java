@@ -173,13 +173,11 @@ public class PartialDatePickerDialogFragment
     private void checkAndSend() {
 
         if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(),
+            UserMessage.showUserMessage(requireView(),
                                         R.string.warning_if_day_set_month_and_year_must_be);
 
         } else if (mMonth != null && mMonth > 0 && mYear == null) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(),
+            UserMessage.showUserMessage(requireView(),
                                         R.string.warning_if_month_set_year_must_be);
 
         } else {
@@ -631,15 +629,12 @@ public class PartialDatePickerDialogFragment
                 return;
             }
 
-            /* Default order is {year, month, date} so if that's the order then do nothing.
-             */
+            // Default order is {year, month, date} so if that's the order then do nothing.
             if ((order[0] == 'y') && (order[1] == 'M')) {
                 return;
             }
 
-            /* Remove the 3 pickers from their parent and then add them back in the
-             * required order.
-             */
+            // Remove the 3 pickers from their parent and then add them back in the required order.
             ViewGroup parent = root.findViewById(R.id.dateSelector);
             // Get the three views
             View y = root.findViewById(R.id.yearSelector);

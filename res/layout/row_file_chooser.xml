@@ -13,7 +13,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:padding="@dimen/border1"
-        android:src="@drawable/ic_business_center"
+        android:src="@drawable/ic_archive"
         app:layout_constraintEnd_toStartOf="@id/filename"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -79,15 +80,13 @@ public class UpdateFieldsFromInternetFragment
                     // 0 if we did 'all books' or the id of the (hopefully) updated book.
                     .putExtra(DBDefinitions.KEY_ID, mBookId);
 
-            Activity activity = getActivity();
+            Activity activity = requireActivity();
             if (mBookId == 0) {
                 // task cancelled does not mean that nothing was done.
                 // Books *will* be updated until the cancelling happened
-                //noinspection ConstantConditions
                 activity.setResult(Activity.RESULT_OK, data);
             } else {
                 // but if a single book was cancelled, flag that up
-                //noinspection ConstantConditions
                 activity.setResult(Activity.RESULT_CANCELED, data);
             }
             activity.finish();
@@ -129,12 +128,11 @@ public class UpdateFieldsFromInternetFragment
                 mTitle = args.getString(DBDefinitions.KEY_TITLE);
             }
         }
-        View root = getView();
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_select_fields);
 
-        @SuppressWarnings("ConstantConditions")
+        View root = requireView();
         TextView authorView = root.findViewById(R.id.author);
         TextView titleView = root.findViewById(R.id.title);
         // we're only requesting ONE book to be updated.
@@ -167,8 +165,7 @@ public class UpdateFieldsFromInternetFragment
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
         }
     }
 
@@ -329,7 +326,7 @@ public class UpdateFieldsFromInternetFragment
             // no changes committed, we got data to use temporarily
             case REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
+                    Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
                                                     mSearchSites);
                 }
@@ -369,8 +366,7 @@ public class UpdateFieldsFromInternetFragment
     private void handleConfirm() {
         // sanity check
         if (!hasSelections()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_select_min_1_field);
+            UserMessage.showUserMessage(requireView(), R.string.warning_select_min_1_field);
             return;
         }
 
@@ -410,8 +406,7 @@ public class UpdateFieldsFromInternetFragment
 
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
             return;
         }
 

@@ -134,8 +134,7 @@ public class EditBookFragment
                                                  getString(R.string.tab_lbl_content)));
         }
 
-        //noinspection ConstantConditions
-        mViewPager = getView().findViewById(R.id.tab_fragment);
+        mViewPager = requireView().findViewById(R.id.tab_fragment);
         mViewPager.setAdapter(mPagerAdapter);
 
         // note that the tab bar lives in the activity layout in the AppBarLayout!
@@ -175,6 +174,7 @@ public class EditBookFragment
 
         menu.add(Menu.NONE, R.id.MENU_SAVE,
                  MenuHandler.MENU_ORDER_SAVE, saveOrAddText)
+            .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
@@ -206,8 +206,7 @@ public class EditBookFragment
                 return true;
 
             case R.id.MENU_HIDE_KEYBOARD:
-                //noinspection ConstantConditions
-                Utils.hideKeyboard(getView());
+                Utils.hideKeyboard(requireView());
                 return true;
 
             default:
@@ -264,14 +263,12 @@ public class EditBookFragment
         // However, there is some data that we really do require...
         if (!book.containsKey(DBDefinitions.KEY_TITLE)
                 || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_required_title);
+            UserMessage.showUserMessage(requireView(), R.string.warning_required_title);
             return;
         }
 
         if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-            //noinspection ConstantConditions
-            UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
+            UserMessage.showUserMessage(requireView(), R.string.warning_required_author_long);
             return;
         }
 

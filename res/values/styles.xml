@@ -104,15 +104,10 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:hint">@string/field_not_set</item>
     </style>
 
     <!-- base style for all AutoCompleteTextView; not to be used directly in layouts. -->
     <style name="EditText.AutoComplete">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:hint">@string/field_not_set</item>
     </style>
 
     <style name="EditText.SeriesNumber">
@@ -144,6 +139,10 @@
     <style name="EditText.Isbn.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:layout_margin">@dimen/border2</item>
+    </style>
+
+    <style name="EditText.FileName">
+        <item name="android:inputType">text</item>
     </style>
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
@@ -415,11 +414,19 @@
         <item name="android:layout_margin">@dimen/fab_margin</item>
     </style>
 
-    <!-- Keys on the isbn search keyboard -->
-    <style name="IsbnSearchKey">
+    <!-- Keys on the isbn search keyboard.
+     Must extend system style so Button/ImageButton (the 'del' key) look the same -->
+    <style name="IsbnSearchKey" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">75dp</item>
+        <item name="android:layout_marginTop">@dimen/border1</item>
+        <item name="android:layout_marginStart">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="IsbnSearchKey.Del">
+        <item name="android:src">@drawable/ic_backspace</item>
+        <item name="android:tint">?attr/colorOnPrimary</item>
     </style>
 
     <!-- 'plus' and 'minus' buttons on the PartialDatePicker dialog.-->
@@ -481,7 +488,6 @@
     <style name="priceTextEntry" parent="@style/EditText">
         <item name="android:inputType">numberDecimal</item>
     </style>
-
 
     <!-- *************************************************************************************** -->
 

@@ -22,8 +22,9 @@ public class PBoolean
      * @param uuid the style id
      */
     public PBoolean(@NonNull final String key,
-                    @NonNull final String uuid) {
-        super(key, uuid, App.getPrefs().getBoolean(key, false));
+                    @NonNull final String uuid,
+                    final boolean isPersistent) {
+        super(key, uuid, isPersistent, App.getPrefs().getBoolean(key, false));
     }
 
     /**
@@ -36,16 +37,17 @@ public class PBoolean
      */
     public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
+                    final boolean isPersistent,
                     @NonNull final Boolean defaultValue) {
-        super(key, uuid, App.getPrefs().getBoolean(key, defaultValue));
+        super(key, uuid, isPersistent, App.getPrefs().getBoolean(key, defaultValue));
     }
 
     @Override
     public void set(@Nullable final Boolean value) {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            remove();
         } else {
             App.getPrefs(mUuid).edit().putBoolean(getKey(), value).apply();
         }
@@ -54,17 +56,17 @@ public class PBoolean
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final Boolean value) {
-        if (value != null) {
-            ed.putBoolean(getKey(), value);
-        } else {
+        if (value == null) {
             ed.remove(getKey());
+        } else {
+            ed.putBoolean(getKey(), value);
         }
     }
 
     @NonNull
     @Override
     public Boolean get() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             return App.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);

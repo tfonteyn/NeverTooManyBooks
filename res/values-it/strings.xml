@@ -97,7 +97,7 @@
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
     <string name="menu_cover_add_from_gallery">Dalla Galleria…</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
-    <string name="lbl_backup_dialog">Backup?</string>
+    <string name="title_backup">Backup</string>
     <string name="searching_amazon">Ricerca in Amazon</string>
     <string name="searching_google_books">Ricerca in Google Books</string>
     <string name="searching_library_thing">Ricerca in LibraryThing</string>
@@ -271,7 +271,7 @@
     <string name="acra_resReportSendSuccessToast">Grazie!</string>
     <string name="lbl_read">Letto</string>
     <string name="lbl_unread">Non letto</string>
-    <string name="warning_date_not_set">(data non indicata)</string>
+    <string name="date_not_set_with_brackets">(data non indicata)</string>
     <string name="style_builtin_author_series">Autore e Collana</string>
     <string name="style_builtin_series">Collana</string>
     <string name="style_builtin_title_first_letter">Titolo (prima lettera)</string>
@@ -495,7 +495,7 @@
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
 
     <!-- Admin option to import -->
-    <string name="lbl_backup">Crea Backup</string>
+    <string name="lbl_backup_to_archive">Crea Backup</string>
     <!-- Admin option to import -->
     <string name="lbl_import_from_archive">Importa da Backup</string>
 
@@ -743,5 +743,9 @@
     <string name="none">Nessuna</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="menu_hide_keyboard">Nascondi tastiera</string>
+    <string name="warning_action_requires_isbn">Questa azione richiede un codice ISBN valido.</string>
+    <string name="vldt_failure">Errore di convalida.</string>
+    <string name="title_import">Importa</string>
+    <string name="btn_drag_handle">Trascina per riordinare questo elenco.</string>
 
 </resources>

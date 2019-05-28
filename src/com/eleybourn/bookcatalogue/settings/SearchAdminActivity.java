@@ -132,6 +132,7 @@ public class SearchAdminActivity
         } else {
             menu.add(Menu.NONE, R.id.MENU_SAVE,
                      MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
+                .setIcon(R.drawable.ic_save)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 

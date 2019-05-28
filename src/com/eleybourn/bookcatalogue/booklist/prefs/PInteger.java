@@ -21,8 +21,9 @@ public class PInteger
      * @param uuid the style id
      */
     public PInteger(@NonNull final String key,
-                    @NonNull final String uuid) {
-        super(key, uuid, App.getListPreference(key, 0));
+                    @NonNull final String uuid,
+                    final boolean isPersistent) {
+        super(key, uuid, isPersistent, App.getListPreference(key, 0));
     }
 
     /**
@@ -35,14 +36,15 @@ public class PInteger
      */
     protected PInteger(@NonNull final String key,
                        @NonNull final String uuid,
+                       final boolean isPersistent,
                        @NonNull final Integer defaultValue) {
-        super(key, uuid, App.getListPreference(key, defaultValue));
+        super(key, uuid, isPersistent, App.getListPreference(key, defaultValue));
     }
 
     @NonNull
     @Override
     public Integer get() {
-        if (mUuid.isEmpty()) {
+        if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // Use a workaround for the real default value not being a String.

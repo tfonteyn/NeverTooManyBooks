@@ -369,7 +369,6 @@ public final class ImageUtils {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int len;
-                //noinspection ConstantConditions
                 while ((len = con.inputStream.read(buffer)) >= 0) {
                     out.write(buffer, 0, len);
                 }

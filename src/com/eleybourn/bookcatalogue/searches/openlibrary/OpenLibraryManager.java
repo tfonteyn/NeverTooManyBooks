@@ -114,21 +114,24 @@ public class OpenLibraryManager
         }
 
         String sizeParam;
-        //noinspection ConstantConditions
-        switch (size) {
-            case SMALL:
-                sizeParam = "S";
-                break;
-            case MEDIUM:
-                sizeParam = "M";
-                break;
-            case LARGE:
-                sizeParam = "L";
-                break;
+        if (size == null) {
+            sizeParam = "L";
+        } else {
+            switch (size) {
+                case SMALL:
+                    sizeParam = "S";
+                    break;
+                case MEDIUM:
+                    sizeParam = "M";
+                    break;
+                case LARGE:
+                    sizeParam = "L";
+                    break;
 
-            default:
-                sizeParam = "L";
-                break;
+                default:
+                    sizeParam = "L";
+                    break;
+            }
         }
 
         // Fetch, then save it with a suffix

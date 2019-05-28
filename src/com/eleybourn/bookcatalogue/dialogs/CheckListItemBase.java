@@ -36,7 +36,7 @@ public abstract class CheckListItemBase<T>
      * Subclass must handle the {@link #item}.
      */
     protected CheckListItemBase(@NonNull final Parcel in) {
-        mSelected = in.readByte() != 0;
+        mSelected = in.readInt() != 0;
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class CheckListItemBase<T>
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeByte((byte) (mSelected ? 1 : 0));
+        dest.writeInt(mSelected ? 1 : 0);
     }
 
     @SuppressWarnings("SameReturnValue")

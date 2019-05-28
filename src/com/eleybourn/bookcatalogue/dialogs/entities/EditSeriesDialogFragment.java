@@ -33,6 +33,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -83,11 +84,9 @@ public class EditSeriesDialogFragment
 
         mDb = new DAO();
 
-        Bundle args = requireArguments();
-
-        final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
+        Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
+        Objects.requireNonNull(series);
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             mName = series.getName();
             mIsComplete = series.isComplete();
         } else {
@@ -123,7 +122,6 @@ public class EditSeriesDialogFragment
                     mIsComplete = mIsCompleteView.isChecked();
                     dismiss();
 
-                    //noinspection ConstantConditions
                     if (series.getName().equals(mName)
                             && series.isComplete() == mIsComplete) {
                         return;
