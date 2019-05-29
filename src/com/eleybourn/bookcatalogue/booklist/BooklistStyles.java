@@ -225,7 +225,7 @@ public final class BooklistStyles {
                                   R.string.style_builtin_compact,
                                   BooklistGroup.RowKind.AUTHOR);
         builtinStyles.put(style.getUuid(), style);
-        style.setScale(BooklistStyle.SCALE_SIZE_SMALLER);
+        style.setScaleFactor(BooklistStyle.SCALE_SMALLER);
         style.setShowThumbnails(false);
 
         // Title

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -120,10 +121,11 @@ public class SearchOrderFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 

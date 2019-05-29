@@ -28,7 +28,8 @@ import com.eleybourn.bookcatalogue.entities.Entity;
 public class RadioGroupRecyclerAdapter<T extends Entity>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
-    private final AtomicInteger debugViewCounter = new AtomicInteger();
+    private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -62,9 +63,9 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
         if (BuildConfig.DEBUG) {
-            debugViewCounter.incrementAndGet();
+            debugNewViewCounter.incrementAndGet();
             Logger.debug(this, "onCreateViewHolder",
-                         "debugViewCounter=" + debugViewCounter.get(),
+                         "debugNewViewCounter=" + debugNewViewCounter.get(),
                          "viewType=" + viewType);
         }
 
@@ -75,6 +76,12 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @Override
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
+
+        if (BuildConfig.DEBUG) {
+            debugBindViewCounter.incrementAndGet();
+            Logger.debug(this, "onBindViewHolder",
+                         "debugBindViewCounter=" + debugBindViewCounter.get());
+        }
 
         T item = mItems.get(position);
         holder.buttonView.setTag(R.id.TAG_ITEM, item);

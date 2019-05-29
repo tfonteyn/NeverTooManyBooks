@@ -383,7 +383,8 @@ public class CoverBrowserFragment
     public class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugViewCounter = new AtomicInteger();
+        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
         private final int mWidth;
         private final int mHeight;
@@ -399,9 +400,9 @@ public class CoverBrowserFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 
@@ -414,6 +415,12 @@ public class CoverBrowserFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+
+            if (BuildConfig.DEBUG) {
+                debugBindViewCounter.incrementAndGet();
+                Logger.debug(this, "onBindViewHolder",
+                             "debugBindViewCounter=" + debugBindViewCounter.get());
+            }
 
             // fetch an image based on the isbn
             @SuppressWarnings("ConstantConditions")

@@ -108,7 +108,7 @@ public class BooksOnBookshelf
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
-    private final TextView[] mLevelTextView = new TextView[2];
+    private final TextView[] mHeaderTextView = new TextView[2];
     /** Listener for GoodreadsTasks. */
     private final TaskListener<Object, Integer> mOnGoodreadsTaskListener =
             new TaskListener<Object, Integer>() {
@@ -324,8 +324,8 @@ public class BooksOnBookshelf
 
         // details for the header of the list.
         mBookCountView = findViewById(R.id.book_count);
-        mLevelTextView[0] = findViewById(R.id.level_1_text);
-        mLevelTextView[1] = findViewById(R.id.level_2_text);
+        mHeaderTextView[0] = findViewById(R.id.level_1_text);
+        mHeaderTextView[1] = findViewById(R.id.level_2_text);
 
         // Setup the bookshelf spinner and adapter.
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
@@ -1408,10 +1408,10 @@ public class BooksOnBookshelf
         }
 
         // setup the level-text's at the top of the list
-        final boolean showLevelTexts = setLevelTextVisibility(mModel.getCurrentStyle());
+        final boolean showHeaderTexts = setHeaderTextVisibility(mModel.getCurrentStyle());
         // Set the initial details to the current first visible row.
-        if (count > 0 && showLevelTexts) {
-            setLevelText(mModel.getTopRow());
+        if (count > 0 && showHeaderTexts) {
+            setHeaderText(mModel.getTopRow());
         }
 
         // Define a scroller to update header detail when the top row changes
@@ -1425,8 +1425,8 @@ public class BooksOnBookshelf
                 // activity terminates and closes cursor
                 if (mModel.getLastTopRow() != firstVisibleItem
                         && !isDestroyed()
-                        && showLevelTexts) {
-                    setLevelText(firstVisibleItem);
+                        && showHeaderTexts) {
+                    setHeaderText(firstVisibleItem);
                 }
             }
 
@@ -1456,26 +1456,26 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if the style supports any level at all.
      */
-    private boolean setLevelTextVisibility(@NonNull final BooklistStyle style) {
+    private boolean setHeaderTextVisibility(@NonNull final BooklistStyle style) {
 
         // for level, set the visibility of the views.
         for (int level = 1; level <= 2; level++) {
 
             int index = level - 1;
 
-            // a level is visible if
+            // a header is visible if
             // 1. the cursor provides the data for this level, and
             // 2. the style defined the level.
             //noinspection ConstantConditions
-            if (mModel.getListCursor().levels() > level && style.hasSummaryForLevel(level)) {
-                mLevelTextView[index].setVisibility(View.VISIBLE);
-                mLevelTextView[index].setText("");
+            if (mModel.getListCursor().levels() > level && style.hasHeaderForLevel(level)) {
+                mHeaderTextView[index].setVisibility(View.VISIBLE);
+                mHeaderTextView[index].setText("");
             } else {
-                mLevelTextView[index].setVisibility(View.GONE);
+                mHeaderTextView[index].setVisibility(View.GONE);
             }
         }
         // do we show any levels?
-        return style.hasSummaryForLevel(1) || style.hasSummaryForLevel(2);
+        return style.hasHeaderForLevel(1) || style.hasHeaderForLevel(2);
     }
 
     /**
@@ -1483,20 +1483,20 @@ public class BooksOnBookshelf
      *
      * @param firstVisibleItem Top row which is visible
      */
-    private void setLevelText(@IntRange(from = 0) final int firstVisibleItem) {
+    private void setHeaderText(@IntRange(from = 0) final int firstVisibleItem) {
         if (firstVisibleItem >= 0) {
             mModel.setLastTopRow(firstVisibleItem);
         } else {
             mModel.setLastTopRow(0);
         }
-        if (mLevelTextView[0].getVisibility() == View.VISIBLE) {
+        if (mHeaderTextView[0].getVisibility() == View.VISIBLE) {
             BooklistPseudoCursor listCursor = mModel.getListCursor();
             @SuppressWarnings("ConstantConditions")
             BooklistCursorRow row = listCursor.getCursorRow();
             if (listCursor.moveToPosition(mModel.getLastTopRow())) {
-                mLevelTextView[0].setText(row.getLevelText(this, 1));
-                if (mLevelTextView[1].getVisibility() == View.VISIBLE) {
-                    mLevelTextView[1].setText(row.getLevelText(this, 2));
+                mHeaderTextView[0].setText(row.getLevelText(this, 1));
+                if (mHeaderTextView[1].getVisibility() == View.VISIBLE) {
+                    mHeaderTextView[1].setText(row.getLevelText(this, 2));
                 }
             }
         }

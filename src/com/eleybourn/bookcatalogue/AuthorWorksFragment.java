@@ -156,7 +156,8 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements FastScrollerOverlay.SectionIndexerV2 {
 
-        private final AtomicInteger debugViewCounter = new AtomicInteger();
+        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
         /** Icon to show for a book. */
         private final Drawable sBookIndicator;
@@ -181,10 +182,10 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 
@@ -195,6 +196,11 @@ public class AuthorWorksFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
+                debugBindViewCounter.incrementAndGet();
+                Logger.debug(this, "onBindViewHolder",
+                             "debugBindViewCounter=" + debugBindViewCounter.get());
+            }
 
             TocEntry item = mModel.getTocEntries().get(position);
             // decorate the row depending on toc entry or actual book

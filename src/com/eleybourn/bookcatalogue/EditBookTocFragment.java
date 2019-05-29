@@ -226,8 +226,8 @@ public class EditBookTocFragment
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (ConfirmToc.TAG.equals(childFragment.getTag())) {
             ((ConfirmToc) childFragment).setListener(mConfirmTocResultsListener);
-        }
-        if (EditTocEntry.TAG.equals(childFragment.getTag())) {
+
+        } else if (EditTocEntry.TAG.equals(childFragment.getTag())) {
             ((EditTocEntry) childFragment).setListener(mEditTocEntryResultsListener);
         }
     }
@@ -874,9 +874,9 @@ public class EditBookTocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 

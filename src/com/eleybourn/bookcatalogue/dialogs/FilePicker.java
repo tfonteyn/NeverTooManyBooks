@@ -55,7 +55,8 @@ public class FilePicker
     private static class FileItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugViewCounter = new AtomicInteger();
+        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
         @NonNull
         final Locale mLocale;
@@ -82,9 +83,9 @@ public class FilePicker
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 
@@ -95,6 +96,12 @@ public class FilePicker
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+
+            if (BuildConfig.DEBUG) {
+                debugBindViewCounter.incrementAndGet();
+                Logger.debug(this, "onBindViewHolder",
+                             "debugBindViewCounter=" + debugBindViewCounter.get());
+            }
 
             Context context = mInflater.getContext();
 

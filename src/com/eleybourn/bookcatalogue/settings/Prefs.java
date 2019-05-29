@@ -266,9 +266,9 @@ public final class Prefs {
                         break;
 
                     case "BookList.Condensed":
-                        int con = (Boolean) oldValue ? BooklistStyle.SCALE_SIZE_SMALLER
-                                                     : BooklistStyle.SCALE_SIZE_NORMAL;
-                        // this is now a PInteger, stored as a string
+                        int con = (Boolean) oldValue ? BooklistStyle.SCALE_SMALLER
+                                                     : BooklistStyle.SCALE_NORMAL;
+                        // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_item_size, String.valueOf(con));
                         break;
 

@@ -34,7 +34,8 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
 
-
+    /** Checks that a RecyclerView is indeed recycling its views. */
+    public static final boolean RECYCLER_VIEW_IS_RECYCLING = true;
 
     /** Global replace author/series/... */
     public static final boolean DBA_GLOBAL_REPLACE = false;
@@ -66,7 +67,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOOKLIST_BUILDER = false;
 
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor}. */
-    public static final boolean PSEUDO_CURSOR = false;
+    public static final boolean PSEUDO_CURSOR = true;
 
     /** {@link BooksOnBookshelf}. */
     public static final boolean BOOKS_ON_BOOKSHELF = false;

@@ -129,11 +129,11 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_AUTHOR = 1 << 4;
 
+    /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
+    public static final int EXTRAS_LOWER16 = 0xFF;
 
     /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_THUMBNAIL = 1 << 16;
-
-    public static final int EXTRAS_LOWER16 = 0x11111111;
+    public static final int EXTRAS_THUMBNAIL = 0x100;
 
     /**
      * the amount of details to show in the header.
@@ -143,20 +143,22 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_COUNT = 1;
     /** the amount of details to show in the header. */
+    @SuppressWarnings("WeakerAccess")
     public static final Integer SUMMARY_SHOW_LEVEL_1 = 1 << 1;
     /** the amount of details to show in the header. */
+    @SuppressWarnings("WeakerAccess")
     public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_ALL =
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
-    /** Scaling of text and images. */
-    public static final int SCALE_SIZE_NORMAL = 1;
-    /** Scaling of text and images. */
-    public static final int SCALE_SIZE_SMALLER = 2;
-    /** Scaling of text and images. */
+    /** Scaling of text. No scaling. */
+    public static final int SCALE_NORMAL = 1;
+    /** Scaling of text. */
+    public static final int SCALE_SMALLER = 2;
+    /** Scaling of text. */
     @SuppressWarnings("WeakerAccess")
-    public static final int SCALE_SIZE_LARGER = 3;
+    public static final int SCALE_LARGER = 3;
 
     /**
      * Unique name. This is a stored in our preference file (with the same name)
@@ -202,7 +204,7 @@ public class BooklistStyle
      * replaced by {@link #mDisplayName}.
      * Do not rename.
      */
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings("unused")
     private String mName;
 
     /**
@@ -228,7 +230,7 @@ public class BooklistStyle
      * Relative size of list text/images.
      * ==1 being 'normal' size
      */
-    private transient PInteger mScaleSize;
+    private transient PInteger mScaleFontSize;
 
     /** Use normal or large thumbnails. */
     private transient PBoolean mUseLargeThumbnails;
@@ -347,7 +349,7 @@ public class BooklistStyle
         }
 
         mIsPreferred.set(in);
-        mScaleSize.set(in);
+        mScaleFontSize.set(in);
         mUseLargeThumbnails.set(in);
         mShowHeaderInfo.set(in);
 
@@ -398,7 +400,7 @@ public class BooklistStyle
         mStyleGroups = new PStyleGroups(mUuid, isUserDefined());
 
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
-        mScaleSize = new PInteger(Prefs.pk_bob_item_size, mUuid, isUserDefined());
+        mScaleFontSize = new PInteger(Prefs.pk_bob_item_size, mUuid, isUserDefined());
         mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
                                        SUMMARY_SHOW_ALL);
 
@@ -454,7 +456,7 @@ public class BooklistStyle
         mDisplayName.writeToParcel(dest);
 
         mIsPreferred.writeToParcel(dest);
-        mScaleSize.writeToParcel(dest);
+        mScaleFontSize.writeToParcel(dest);
         mUseLargeThumbnails.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
 
@@ -563,7 +565,7 @@ public class BooklistStyle
         // is a preferred style
         map.put(mIsPreferred.getKey(), mIsPreferred);
         // relative scaling of fonts
-        map.put(mScaleSize.getKey(), mScaleSize);
+        map.put(mScaleFontSize.getKey(), mScaleFontSize);
         // size of thumbnails to use.
         map.put(mUseLargeThumbnails.getKey(), mUseLargeThumbnails);
         // list header information shown
@@ -628,7 +630,7 @@ public class BooklistStyle
      *
      * @return {@code true} if this style can show the desired level
      */
-    public boolean hasSummaryForLevel(@IntRange(from = 1, to = 2) final int level) {
+    public boolean hasHeaderForLevel(@IntRange(from = 1, to = 2) final int level) {
         switch (level) {
             case 1:
                 return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0;
@@ -642,18 +644,18 @@ public class BooklistStyle
     }
 
     /**
-     * @return scaling factor to apply if needed.
+     * @return scaling factor to apply to text size if needed.
      */
-    public float getScale() {
-        switch (mScaleSize.get()) {
-            case SCALE_SIZE_NORMAL:
+    public float getScaleFactor() {
+        switch (mScaleFontSize.get()) {
+            case SCALE_NORMAL:
                 return 1.0f;
-            case SCALE_SIZE_SMALLER:
+            case SCALE_SMALLER:
                 return 0.8f;
-            case SCALE_SIZE_LARGER:
+            case SCALE_LARGER:
                 return 1.2f;
             default:
-                return SCALE_SIZE_NORMAL;
+                return SCALE_NORMAL;
         }
     }
 
@@ -661,8 +663,8 @@ public class BooklistStyle
      * Used by built-in styles only.
      */
     @SuppressWarnings("SameParameterValue")
-    void setScale(@IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) final int size) {
-        mScaleSize.set(size);
+    void setScaleFactor(@IntRange(from = SCALE_NORMAL, to = SCALE_LARGER) final int size) {
+        mScaleFontSize.set(size);
     }
 
     /**
@@ -683,7 +685,7 @@ public class BooklistStyle
             maxSize = 60;
         }
 
-        maxSize *= getScale();
+        maxSize *= getScaleFactor();
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
@@ -933,9 +935,9 @@ public class BooklistStyle
         Object tmpCondensed = in.readObject();
         // up to and including v4: Boolean: null=='use-defaults', false='normal', true='condensed'
         if (tmpCondensed == null) {
-            mScaleSize.set(ed, SCALE_SIZE_NORMAL);
+            mScaleFontSize.set(ed, SCALE_NORMAL);
         } else {
-            mScaleSize.set(ed, (Boolean) tmpCondensed ? SCALE_SIZE_SMALLER : SCALE_SIZE_NORMAL);
+            mScaleFontSize.set(ed, (Boolean) tmpCondensed ? SCALE_SMALLER : SCALE_NORMAL);
         }
 
         // v2
@@ -1068,7 +1070,7 @@ public class BooklistStyle
                 + "\nmDisplayName=" + mDisplayName
                 + "\nmName=`" + mName + '`'
                 + "\nmIsPreferred=" + mIsPreferred
-                + "\nmScaleSize=" + mScaleSize
+                + "\nmScaleFontSize=" + mScaleFontSize
                 + "\nmShowHeaderInfo=" + mShowHeaderInfo
                 + "\nmSortAuthor=" + mSortAuthor
                 + "\nmExtraShowThumbnails=" + mExtraShowThumbnails

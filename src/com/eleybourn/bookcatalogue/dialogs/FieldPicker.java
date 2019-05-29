@@ -54,7 +54,8 @@ public class FieldPicker<T>
     private static class FieldListAdapter<T>
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugViewCounter = new AtomicInteger();
+        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
+        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
         @NonNull
         private final List<T> mItems;
@@ -102,9 +103,9 @@ public class FieldPicker<T>
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             if (BuildConfig.DEBUG) {
-                debugViewCounter.incrementAndGet();
+                debugNewViewCounter.incrementAndGet();
                 Logger.debug(this, "onCreateViewHolder",
-                             "debugViewCounter=" + debugViewCounter.get(),
+                             "debugNewViewCounter=" + debugNewViewCounter.get(),
                              "viewType=" + viewType);
             }
 
@@ -115,6 +116,13 @@ public class FieldPicker<T>
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+
+            if (BuildConfig.DEBUG) {
+                debugBindViewCounter.incrementAndGet();
+                Logger.debug(this, "onBindViewHolder",
+                             "debugBindViewCounter=" + debugBindViewCounter.get());
+            }
+
             T item = mItems.get(position);
             holder.textView.setText(mField.format(item.toString()));
 

@@ -61,7 +61,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -91,8 +90,8 @@ public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
         implements FastScrollerOverlay.SectionIndexerV2 {
 
-    /** The padding indent (in pixels) added for each level: padding = (level-1) * LEVEL_INDENT. */
-    private static final int LEVEL_INDENT = 4;
+    /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
+    private final int mLevelIndent;
 
     private final AtomicInteger debugNewViewCounter = new AtomicInteger();
     private final AtomicInteger debugBindViewCounter = new AtomicInteger();
@@ -129,6 +128,9 @@ public class BooklistAdapter
         mCursor = cursor;
         mStyle = style;
         mInflater = layoutInflater;
+
+        mLevelIndent = layoutInflater.getContext().getResources()
+                                     .getDimensionPixelSize(R.dimen.booklist_level_indent);
     }
 
     void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
@@ -152,7 +154,7 @@ public class BooklistAdapter
     @NonNull
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             final int viewType) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
             debugNewViewCounter.incrementAndGet();
             Logger.debug(this, "onCreateViewHolder",
                          "debugNewViewCounter=" + debugNewViewCounter.get(),
@@ -170,13 +172,21 @@ public class BooklistAdapter
 
     private View createView(@NonNull final ViewGroup parent,
                             final int viewType,
-                            int level) {
+                            final int level) {
         @LayoutRes
         int layoutId;
 
-        // A Book is unlike anything else...
+        // Indent (0..) based on level (1..)
+        // we assume rows of a given type only occur at the same level
+        int indent = level - 1;
+
+        // A Book occurs always at the lowest level regardless of the groups in the style.
         if (viewType == RowKind.BOOK) {
             layoutId = R.layout.booksonbookshelf_row_book;
+            // "out-dent" books. Looks better.
+            if (indent > 0) {
+                --indent;
+            }
 
         } else {
             // for all other types, the level determines the view
@@ -193,60 +203,57 @@ public class BooklistAdapter
                         Logger.debug(this, "getLevelLayoutId",
                                      "level=" + level);
                     }
-                    // this is in fact either level 3 or 4 for non-Book rows
+                    // level 3 and higher all use the same layout.
                     layoutId = R.layout.booksonbookshelf_row_level_3;
             }
         }
 
         View view = mInflater.inflate(layoutId, parent, false);
 
-        // Indent based on level; we assume rows of a given type only occur at the same level
-        if (level > 0) {
-            --level;
-        }
-        view.setPadding(level * LEVEL_INDENT, 0, 0, 0);
+        view.setPadding(indent * mLevelIndent, 0, 0, 0);
 
-        // Scale if necessary
-        float scale = mStyle.getScale();
+        // Scale text if required
+        float scale = mStyle.getScaleFactor();
         if (scale != 1.0f) {
-            scaleView(scale, view);
+            scaleTextViews(scale, view);
         }
         return view;
     }
 
     /**
      * Scale text in a View (and children) as per user preferences.
+     * <p>
+     * Note that ImageView experiments from the original code never worked.
+     * Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
+     * but will NOT scale up to fill the provided space. This means scaling needs to be done
+     * at bind time (as we need <strong>actual</strong> size of the image), not at create time
+     * of the view.
+     * <br>So this method only deals with TextView instances.
      *
      * @param scale to use, with 1.0f no scaling.
      * @param root  the view (and its children) we'll scale
      */
-    private void scaleView(final float scale,
-                           @NonNull final View root) {
+    private void scaleTextViews(final float scale,
+                                @NonNull final View root) {
 
+        // text gets scaled
         if (root instanceof TextView) {
             TextView textView = (TextView) root;
             float px = textView.getTextSize();
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
-
         }
-//        else if (root instanceof ImageView) {
-        // experiments from the original code never worked.
-        // Bottom line is that Android will scale *down* (i.e. image to big ? make it smaller)
-        // but will NOT scale up to fill the provided space. This means scaling needs to be done
-        // at bind time, not at create time of the view. Which in turn means we might as well
-        // do the scaling at the time of actual population of the view.
-//        }
 
+        // all elements get scaled padding.
         root.setPadding((int) (scale * root.getPaddingLeft()),
                         (int) (scale * root.getPaddingTop()),
                         (int) (scale * root.getPaddingRight()),
                         (int) (scale * root.getPaddingBottom()));
 
-        // go recursive if needed.
+        // go recursive if needed
         if (root instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) root;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                scaleView(scale, viewGroup.getChildAt(i));
+                scaleTextViews(scale, viewGroup.getChildAt(i));
             }
         }
     }
@@ -273,7 +280,6 @@ public class BooklistAdapter
             throw new ColumnNotPresentException(columnName);
         }
 
-
         switch (viewType) {
             // NEWKIND: ROW_KIND_x
 
@@ -286,27 +292,6 @@ public class BooklistAdapter
                 return new CheckableStringHolder(itemView, columnIndex,
                                                  DBDefinitions.DOM_SERIES_IS_COMPLETE.name,
                                                  R.string.field_not_set_with_brackets);
-
-            // plain old Strings
-            case RowKind.TITLE_LETTER:
-            case RowKind.PUBLISHER:
-            case RowKind.GENRE:
-            case RowKind.FORMAT:
-            case RowKind.LOCATION:
-            case RowKind.LOANED:
-            case RowKind.BOOKSHELF:
-            case RowKind.DATE_PUBLISHED_YEAR:
-            case RowKind.DATE_FIRST_PUBLICATION_YEAR:
-            case RowKind.DATE_ACQUIRED_YEAR:
-            case RowKind.DATE_ACQUIRED_DAY:
-            case RowKind.DATE_ADDED_YEAR:
-            case RowKind.DATE_ADDED_DAY:
-            case RowKind.DATE_READ_YEAR:
-            case RowKind.DATE_READ_DAY:
-            case RowKind.DATE_LAST_UPDATE_YEAR:
-            case RowKind.DATE_LAST_UPDATE_DAY:
-                return new GenericStringHolder(itemView, columnIndex,
-                                               R.string.field_not_set_with_brackets);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -328,15 +313,34 @@ public class BooklistAdapter
                 return new ReadUnreadHolder(itemView, columnIndex,
                                             R.string.field_not_set_with_brackets);
 
+            // plain old Strings
+//            case RowKind.TITLE_LETTER:
+//            case RowKind.PUBLISHER:
+//            case RowKind.GENRE:
+//            case RowKind.FORMAT:
+//            case RowKind.LOCATION:
+//            case RowKind.LOANED:
+//            case RowKind.BOOKSHELF:
+//            case RowKind.DATE_PUBLISHED_YEAR:
+//            case RowKind.DATE_FIRST_PUBLICATION_YEAR:
+//            case RowKind.DATE_ACQUIRED_YEAR:
+//            case RowKind.DATE_ACQUIRED_DAY:
+//            case RowKind.DATE_ADDED_YEAR:
+//            case RowKind.DATE_ADDED_DAY:
+//            case RowKind.DATE_READ_YEAR:
+//            case RowKind.DATE_READ_DAY:
+//            case RowKind.DATE_LAST_UPDATE_YEAR:
+//            case RowKind.DATE_LAST_UPDATE_DAY:
             default:
-                throw new IllegalTypeException(String.valueOf(viewType));
+                return new GenericStringHolder(itemView, columnIndex,
+                                               R.string.field_not_set_with_brackets);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
             debugBindViewCounter.incrementAndGet();
             Logger.debug(this, "onBindViewHolder",
                          "debugBindViewCounter=" + debugBindViewCounter.get());

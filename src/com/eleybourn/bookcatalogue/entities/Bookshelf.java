@@ -21,7 +21,6 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 
 /**
