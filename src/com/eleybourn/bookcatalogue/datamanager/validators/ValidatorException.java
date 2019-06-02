@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.validators;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -51,7 +51,7 @@ public class ValidatorException
     }
 
     @NonNull
-    public String getFormattedMessage(@NonNull final Resources resources) {
-        return resources.getString(mStringId, mArgs);
+    public String getFormattedMessage(@NonNull final Context context) {
+        return context.getString(mStringId, mArgs);
     }
 }

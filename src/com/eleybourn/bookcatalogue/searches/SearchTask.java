@@ -20,7 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -91,9 +91,9 @@ public class SearchTask
      * Constructor. Will search according to passed parameters. If an ISBN
      * is provided that will be used to the exclusion of all others.
      *
-     * @param manager           TaskHandler implementation
-     * @param taskId            identifier
-     * @param taskName          thread name, used for debug only really.
+     * @param manager      TaskHandler implementation
+     * @param taskId       identifier
+     * @param taskName     thread name, used for debug only really.
      * @param searchEngine the search site manager
      */
     SearchTask(@NonNull final TaskManager manager,
@@ -244,22 +244,22 @@ public class SearchTask
      */
     private void setFinalError(@StringRes final int error,
                                @NonNull final Object... args) {
-        Resources res = getResources();
-        mFinalMessage = res.getString(R.string.error_search_exception,
-                                      res.getString(mProgressTitleResId),
-                                      res.getString(error, args));
+        Context context = getContext();
+        mFinalMessage = context.getString(R.string.error_search_exception,
+                                          context.getString(mProgressTitleResId),
+                                          context.getString(error, args));
     }
 
     /**
      * Show an unexpected exception message after task finish.
      */
     private void setFinalError(@NonNull final Exception e) {
-        Resources res = getResources();
+        Context context = getContext();
         String s;
         try {
             if (e instanceof FormattedMessageException) {
                 // we have a clean user message.
-                s = ((FormattedMessageException) e).getFormattedMessage(res);
+                s = ((FormattedMessageException) e).getFormattedMessage(context);
             } else {
                 // best shot
                 s = e.getLocalizedMessage();
@@ -267,8 +267,8 @@ public class SearchTask
         } catch (RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
-        mFinalMessage = res.getString(R.string.error_search_exception,
-                                      res.getString(mProgressTitleResId), s);
+        mFinalMessage = context.getString(R.string.error_search_exception,
+                                          context.getString(mProgressTitleResId), s);
     }
 
 }

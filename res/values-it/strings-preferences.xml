@@ -123,11 +123,22 @@
     <string name="X_pt_bob_preferred_style">Preferito</string>
 
     <!-- Preference - Use scaled text and images -->
-    <string name="pt_bob_item_size">Dimensione degli elementi dell\'elenco libri</string>
-    <string-array name="pe_bob_item_size">
-        <item>Normale</item>
-        <item>Più piccolo</item>
-        <item>Più grandi</item>
+    <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
+    <string-array name="pe_bob_text_size">
+        <item>Piccolo</item>
+        <item>Medio</item>
+        <item>Grande</item>
+    </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Dimensione miniature in elenchi</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Small</item>
+        <item>Medio</item>
+        <item>Grande</item>
+        <item>X-Grande</item>
+        <item>2X-Grande</item>
+        <item>3X-Grande</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->
@@ -140,8 +151,6 @@
 
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Mostra miniature grandi</string>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>

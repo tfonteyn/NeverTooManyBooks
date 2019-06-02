@@ -27,8 +27,6 @@ public class CursorAdapterWrapper
     @SuppressWarnings("WeakerAccess")
     @NonNull
     protected final CursorAdapter mCursorAdapter;
-    private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
     /** The context that was used to create the CursorAdapter. */
     @NonNull
@@ -50,12 +48,6 @@ public class CursorAdapterWrapper
     @Override
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        if (BuildConfig.DEBUG) {
-            debugNewViewCounter.incrementAndGet();
-            Logger.debug(this, "onCreateViewHolder",
-                         "debugNewViewCounter=" + debugNewViewCounter.get(),
-                         "viewType=" + viewType);
-        }
 
         View itemView = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
         return new Holder(itemView);
@@ -65,12 +57,6 @@ public class CursorAdapterWrapper
     @CallSuper
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
-
-        if (BuildConfig.DEBUG) {
-            debugBindViewCounter.incrementAndGet();
-            Logger.debug(this, "onBindViewHolder",
-                         "debugBindViewCounter=" + debugBindViewCounter.get());
-        }
 
         mCursorAdapter.getCursor().moveToPosition(position);
         mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());

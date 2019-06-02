@@ -46,7 +46,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -93,22 +92,16 @@ public class BooklistAdapter
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
 
-    private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
     /** Database access. */
     @NonNull
     private final DAO mDb;
-
-    @NonNull
-    private final Cursor mCursor;
-
-    @NonNull
-    private final BooklistStyle mStyle;
-
     @NonNull
     private final LayoutInflater mInflater;
-
+    /** The cursor is the equivalent of the 'list of items'. */
+    @Nullable
+    private Cursor mCursor;
+    @NonNull
+    private BooklistStyle mStyle;
     @Nullable
     private View.OnClickListener mOnItemClick;
     @Nullable
@@ -117,20 +110,40 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param db    the database
      * @param style The style is used by (some) individual rows.
+     * @param db    the database
      */
     public BooklistAdapter(@NonNull final LayoutInflater layoutInflater,
+                           @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
-                           @NonNull final Cursor cursor,
-                           @NonNull final BooklistStyle style) {
+                           @Nullable final Cursor cursor) {
+
+        mInflater = layoutInflater;
         mDb = db;
         mCursor = cursor;
         mStyle = style;
-        mInflater = layoutInflater;
 
         mLevelIndent = layoutInflater.getContext().getResources()
                                      .getDimensionPixelSize(R.dimen.booklist_level_indent);
+    }
+
+    /**
+     * Sets the cursor and notifies the adapter.
+     *
+     * @param cursor to use.
+     */
+    public void setCursor(@Nullable final Cursor cursor) {
+        mCursor = cursor;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Set the (new) style.
+     *
+     * @param style to use
+     */
+    public void setStyle(@NonNull final BooklistStyle style) {
+        mStyle = style;
     }
 
     void setOnItemClickListener(@NonNull final View.OnClickListener onItemClick) {
@@ -141,26 +154,39 @@ public class BooklistAdapter
         mOnItemLongClick = onItemLongClick;
     }
 
+
     public int getItemViewType(final int position) {
-        mCursor.moveToPosition(position);
-        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
-        return row.getRowKind();
+        //
+        // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
+        // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
+        // This code attempts to gather more details of how this error occurs.
+        //
+        // NOTE: It DOES NOT fix the error; just gathers more debug info
+        //
+        if (mCursor == null) {
+            return 0;
+        } else if (mCursor.isClosed()) {
+            throw new RuntimeException(
+                    "Attempt to get type of item on closed cursor (" + mCursor + ")");
+        } else if (position >= mCursor.getCount()) {
+            throw new RuntimeException(
+                    "Attempt to get type of item beyond end of cursor (" + mCursor + ")");
+        } else {
+            mCursor.moveToPosition(position);
+            BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+            return row.getRowKind();
+        }
     }
 
     public int getItemCount() {
-        return mCursor.getCount();
+        return mCursor == null ? 0 : mCursor.getCount();
     }
 
     @NonNull
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             final int viewType) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
-            debugNewViewCounter.incrementAndGet();
-            Logger.debug(this, "onCreateViewHolder",
-                         "debugNewViewCounter=" + debugNewViewCounter.get(),
-                         "viewType=" + viewType);
-        }
 
+        //noinspection ConstantConditions
         BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
 
         // The view depends on the viewType + level.
@@ -177,12 +203,25 @@ public class BooklistAdapter
         int layoutId;
 
         // Indent (0..) based on level (1..)
-        // we assume rows of a given type only occur at the same level
         int indent = level - 1;
 
         // A Book occurs always at the lowest level regardless of the groups in the style.
         if (viewType == RowKind.BOOK) {
-            layoutId = R.layout.booksonbookshelf_row_book;
+            switch (mStyle.getThumbnailScaleFactor()) {
+
+                case BooklistStyle.SCALE_3X_LARGE:
+                    layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
+                    break;
+
+                case BooklistStyle.SCALE_2X_LARGE:
+                    layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
+                    break;
+
+                default:
+                    layoutId = R.layout.booksonbookshelf_row_book;
+                    break;
+            }
+
             // "out-dent" books. Looks better.
             if (indent > 0) {
                 --indent;
@@ -199,10 +238,6 @@ public class BooklistAdapter
                     break;
 
                 default:
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                        Logger.debug(this, "getLevelLayoutId",
-                                     "level=" + level);
-                    }
                     // level 3 and higher all use the same layout.
                     layoutId = R.layout.booksonbookshelf_row_level_3;
             }
@@ -230,8 +265,7 @@ public class BooklistAdapter
      * of the view.
      * <br>So this method only deals with TextView instances.
      *
-     * @param scale to use, with 1.0f no scaling.
-     * @param root  the view (and its children) we'll scale
+     * @param root the view (and its children) we'll scale
      */
     private void scaleTextViews(final float scale,
                                 @NonNull final View root) {
@@ -340,11 +374,6 @@ public class BooklistAdapter
     @Override
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
-            debugBindViewCounter.incrementAndGet();
-            Logger.debug(this, "onBindViewHolder",
-                         "debugBindViewCounter=" + debugBindViewCounter.get());
-        }
 
         // tag for the position, so the click-listeners can get it.
         holder.itemView.setTag(R.id.TAG_POSITION, position);
@@ -352,10 +381,11 @@ public class BooklistAdapter
         holder.itemView.setOnLongClickListener(mOnItemLongClick);
 
         // position the data we need to bind.
+        //noinspection ConstantConditions
         mCursor.moveToPosition(position);
         BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
-        holder.onBindViewHolder(row);
+        holder.onBindViewHolder(row, mStyle);
     }
 
     /**
@@ -369,7 +399,7 @@ public class BooklistAdapter
                                    final int position) {
 
         // sanity check.
-        if (position < 0 || position >= getItemCount()) {
+        if (mCursor == null || position < 0 || position >= getItemCount()) {
             return null;
         }
 
@@ -435,19 +465,19 @@ public class BooklistAdapter
          * @param taskListener View holder for the book, used as callback for task results.
          */
         @UiThread
-        GetBookExtrasTask(@NonNull final Resources resources,
+        GetBookExtrasTask(@NonNull final Context context,
                           @NonNull final DAO db,
                           final long bookId,
                           @NonNull final GetBookExtrasTaskFinishedListener taskListener,
-                          @NonNull final BooklistStyle style) {
+                          final int extraFields) {
 
-            mLocale = resources.getConfiguration().locale;
+            mLocale = LocaleUtils.from(context);
             mDb = db;
             mBookId = bookId;
             mTaskListener = new WeakReference<>(taskListener);
-            mExtraFields = style.getExtraFieldsStatus();
+            mExtraFields = extraFields;
 
-            mA_bracket_b_bracket = resources.getString(R.string.a_bracket_b_bracket);
+            mA_bracket_b_bracket = context.getString(R.string.a_bracket_b_bracket);
         }
 
         @Override
@@ -551,7 +581,8 @@ public class BooklistAdapter
         }
 
         @CallSuper
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
             absolutePosition = rowData.getAbsolutePosition();
         }
     }
@@ -566,8 +597,6 @@ public class BooklistAdapter
         @NonNull
         private final DAO mDb;
 
-        @NonNull
-        private final BooklistStyle mStyle;
         /** Bookshelves label resource string. */
         @NonNull
         private final String mShelvesLabel;
@@ -651,7 +680,6 @@ public class BooklistAdapter
                    @NonNull final BooklistStyle style) {
             super(itemView);
             mDb = db;
-            mStyle = style;
 
             Resources resources = itemView.getResources();
             // fetch once and re-use later.
@@ -667,7 +695,7 @@ public class BooklistAdapter
             readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
                                                                       : View.GONE);
 
-            int extraFields = mStyle.getExtraFieldsStatus();
+            int extraFields = style.getExtraFieldsStatus();
 
             // visibility is independent from actual data, so set here.
             coverView = itemView.findViewById(R.id.coverImage);
@@ -709,11 +737,12 @@ public class BooklistAdapter
 
         }
 
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
-            int extraFields = mStyle.getExtraFieldsStatus();
-            final int imageMaxSize = mStyle.getScaledCoverImageMaxSize(itemView.getContext());
+            int extraFields = style.getExtraFieldsStatus();
+            int imageMaxSize = style.getScaledCoverImageMaxSize(itemView.getContext());
 
             // Title
             titleView.setText(rowData.getTitle());
@@ -774,8 +803,8 @@ public class BooklistAdapter
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.
-                new GetBookExtrasTask(itemView.getContext().getResources(),
-                                      mDb, rowData.getBookId(), mTaskListener, mStyle)
+                new GetBookExtrasTask(itemView.getContext(), mDb, rowData.getBookId(),
+                                      mTaskListener, extraFields)
                         .execute();
             }
         }
@@ -826,8 +855,9 @@ public class BooklistAdapter
             mVisibilityControlView = mRowDetailsView.findViewById(R.id.group);
         }
 
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             setText(rowData.getString(mSourceCol), rowData.getLevel());
         }
@@ -907,8 +937,9 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             String s = rowData.getString(mSourceCol);
             if (s != null) {
@@ -945,8 +976,9 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             String s = rowData.getString(mSourceCol);
             if (s != null && !s.isEmpty()) {
@@ -975,8 +1007,9 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             if (Datum.toBoolean(rowData.getString(mSourceCol), true)) {
                 setText(R.string.lbl_read, rowData.getLevel());
@@ -1006,8 +1039,9 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             String s = rowData.getString(mSourceCol);
             if (s != null) {
@@ -1051,8 +1085,9 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData) {
-            super.onBindViewHolder(rowData);
+        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                                     @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
 
             if (isVisible()) {
                 Drawable lock = null;

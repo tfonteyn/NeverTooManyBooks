@@ -103,9 +103,14 @@ public class FastScrollerOverlay
     private int oldw;
     /** previous height of the RecyclerView. Used to avoid recomputing coordinates. */
     private int oldh;
-    private Object mFastScroller;
-    private Field mFastScrollerStateField;
+
+    /** Whether we have Reflection access to the scroller <strong>and</strong> the mState. */
     private Boolean mHasFastScroller;
+    /** Reflection access. */
+    private Object mFastScroller;
+    /** Reflection access. */
+    private Field mFastScrollerStateField;
+
 
 
     /**
@@ -318,8 +323,8 @@ public class FastScrollerOverlay
 
             for (int index = 0; index < recyclerView.getItemDecorationCount(); index++) {
                 RecyclerView.ItemDecoration decor = recyclerView.getItemDecorationAt(index);
-                if (decor.getClass().getName().equals(
-                        "androidx.recyclerview.widget.FastScroller")) {
+                if (decor.getClass()
+                         .getName().equals("androidx.recyclerview.widget.FastScroller")) {
                     mFastScroller = decor;
                     mFastScrollerStateField = mFastScroller.getClass().getDeclaredField("mState");
                     mFastScrollerStateField.setAccessible(true);

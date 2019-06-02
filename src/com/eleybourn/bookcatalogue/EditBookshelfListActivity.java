@@ -42,13 +42,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditBookshelfDialogFragment;
@@ -187,9 +185,6 @@ public class EditBookshelfListActivity
     public class BookshelfAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         @NonNull
         private final LayoutInflater mInflater;
 
@@ -213,12 +208,6 @@ public class EditBookshelfListActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = mInflater.inflate(R.layout.row_bookshelf, parent, false);
             return new Holder(view);
@@ -227,11 +216,6 @@ public class EditBookshelfListActivity
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (BuildConfig.DEBUG) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
 
             Bookshelf bookshelf = mList.get(position);
 

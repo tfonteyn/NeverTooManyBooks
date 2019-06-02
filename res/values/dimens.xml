@@ -13,6 +13,10 @@
     <!-- Application icon size on the nav panel and startup splash-->
     <dimen name="app_icon">100dp</dimen>
 
+    <!-- The base size for cover images. Get's multiplied with the image-scale preference.
+         A 'normal' size thus becomes 60dp, a 'large' is 90dp. (and so on...) -->
+    <dimen name="cover_base_size">30dp</dimen>
+
     <!-- Spacing either for all around, or for bottom/top.
     But NOT for start/end, for the latter use 'indent' -->
     <dimen name="border1">4dp</dimen>
@@ -44,7 +48,6 @@
     <dimen name="fso_text_primary">22sp</dimen>
     <!-- FastScrollerOverlay line 2 - equivalent size from ?android:attr/textAppearanceMedium -->
     <dimen name="fso_text_secondary">18sp</dimen>
-
 
 
 </resources>

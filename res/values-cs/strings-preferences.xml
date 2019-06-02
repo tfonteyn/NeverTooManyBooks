@@ -77,11 +77,22 @@
     <!-- ========== Book list style preferences ========== -->
 
     <!-- Preference - Use scaled text and images -->
-    <string name="pt_bob_item_size">Velikost položek na seznamu knih</string>
-    <string-array name="pe_bob_item_size">
-        <item>Normální</item>
-        <item>Menší</item>
-        <item>Větší</item>
+    <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
+    <string-array name="pe_bob_text_size">
+        <item>Malý</item>
+        <item>Střední</item>
+        <item>Velký</item>
+    </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Velikost miniatur v seznamech</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Malý</item>
+        <item>Střední</item>
+        <item>Velký</item>
+        <item>X-Velký</item>
+        <item>2X-Velký</item>
+        <item>3X-Velký</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->
@@ -90,8 +101,6 @@
 
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Preferovat velké náhledy</string>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>

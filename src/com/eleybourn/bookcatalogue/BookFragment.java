@@ -141,34 +141,34 @@ public class BookFragment
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
         fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
-               .setShowHtml(true);
+              .setShowHtml(true);
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-               .setFormatter(new Fields.LanguageFormatter());
+              .setFormatter(new Fields.LanguageFormatter());
 
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-               .setFormatter((field, source) -> {
-                   if (source != null && !source.isEmpty() && !"0".equals(source)) {
-                       try {
-                           int pages = Integer.parseInt(source);
-                           return getString(R.string.lbl_x_pages, pages);
-                       } catch (NumberFormatException ignore) {
-                           // don't log, both formats are valid.
-                       }
-                       // stored pages was alphanumeric.
-                       return source;
-                   }
-                   return "";
-               });
+              .setFormatter((field, source) -> {
+                  if (source != null && !source.isEmpty() && !"0".equals(source)) {
+                      try {
+                          int pages = Integer.parseInt(source);
+                          return getString(R.string.lbl_x_pages, pages);
+                      } catch (NumberFormatException ignore) {
+                          // don't log, both formats are valid.
+                      }
+                      // stored pages was alphanumeric.
+                      return source;
+                  }
+                  return "";
+              });
         fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-               .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter);
         fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
-               .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter);
         fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
-               .setFormatter(new Fields.PriceFormatter());
+              .setFormatter(new Fields.PriceFormatter());
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR);
@@ -190,25 +190,25 @@ public class BookFragment
 
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
-               .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter);
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
-               .setFormatter(new Fields.PriceFormatter());
+              .setFormatter(new Fields.PriceFormatter());
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-               .setFormatter(new Fields.BookEditionsFormatter());
+              .setFormatter(new Fields.BookEditionsFormatter());
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         fields.add(R.id.rating, DBDefinitions.KEY_RATING);
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
-               .setShowHtml(true);
+              .setShowHtml(true);
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
-               .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter);
         fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
-               .setFormatter(dateFormatter);
+              .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
-               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getResources()));
+              .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()));
 
         // defined, but handled manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
@@ -274,7 +274,7 @@ public class BookFragment
         // ENHANCE: {@link Fields.ImageViewAccessor}
         // allow the field to known the uuid of the book, so it can load 'itself'
         getField(R.id.coverImage)
-               .getView().setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
+                .getView().setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields

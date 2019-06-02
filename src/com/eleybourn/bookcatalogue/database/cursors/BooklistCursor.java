@@ -85,4 +85,13 @@ public class BooklistCursor
         }
         return mRowView;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BooklistCursor{"
+                + "mBuilder=" + mBuilder
+                + "mRowView.getId()=" + (mRowView != null ? mRowView.getId() : "null")
+                + '}';
+    }
 }

@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -83,43 +83,45 @@ public class BackupFileDetails
 
     @Override
     public void onBindViewHolder(@NonNull final FileChooserFragment.Holder holder,
-                                 @NonNull final Resources resources) {
+                                 @NonNull final Context context) {
 
         holder.filenameView.setText(mFile.getName());
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
-            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_folder));
+            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
             holder.fileDetails.setVisibility(View.GONE);
         } else {
             // Display details
-            holder.imageView.setImageDrawable(resources.getDrawable(R.drawable.ic_archive));
+            holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_archive));
             holder.fileDetails.setVisibility(View.VISIBLE);
 
-            holder.sizeView.setText(Utils.formatFileSize(resources, mFile.length()));
+            holder.sizeView.setText(Utils.formatFileSize(context, mFile.length()));
 
 
-            Locale locale = LocaleUtils.from(resources);
+            Locale locale = LocaleUtils.from(context);
             if (mInfo != null) {
                 List<String> args = new ArrayList<>();
                 if (mInfo.hasBookCount()) {
-                    args.add(resources.getQuantityString(R.plurals.n_books, mInfo.getBookCount(),
-                                                         mInfo.getBookCount()));
+                    args.add(context.getResources().getQuantityString(R.plurals.n_books,
+                                                                      mInfo.getBookCount(),
+                                                                      mInfo.getBookCount()));
                 } else if (mInfo.hasBooks()) {
-                    args.add(resources.getString(R.string.lbl_books));
+                    args.add(context.getString(R.string.lbl_books));
                 }
                 if (mInfo.hasCoverCount()) {
-                    args.add(resources.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(),
-                                                         mInfo.getCoverCount()));
+                    args.add(context.getResources().getQuantityString(R.plurals.n_covers,
+                                                                      mInfo.getCoverCount(),
+                                                                      mInfo.getCoverCount()));
                 } else if (mInfo.hasCovers()) {
-                    args.add(resources.getString(R.string.lbl_covers));
+                    args.add(context.getString(R.string.lbl_covers));
                 }
 
                 if (mInfo.hasPreferences()) {
-                    args.add(resources.getString(R.string.lbl_settings));
+                    args.add(context.getString(R.string.lbl_settings));
                 }
                 if (mInfo.hasBooklistStyles()) {
-                    args.add(resources.getString(R.string.lbl_styles));
+                    args.add(context.getString(R.string.lbl_styles));
                 }
 
                 // needs RTL
@@ -131,8 +133,8 @@ public class BackupFileDetails
                 }
                 holder.fileContentView.setVisibility(View.VISIBLE);
             } else {
-                holder.dateView.setText(
-                        DateUtils.toPrettyDateTime(locale, new Date(mFile.lastModified())));
+                holder.dateView.setText(DateUtils.toPrettyDateTime(locale,
+                                                                   new Date(mFile.lastModified())));
                 holder.fileContentView.setVisibility(View.GONE);
             }
         }

@@ -122,11 +122,22 @@
     <string name="X_pt_bob_preferred_style">Voorkeursstijlen</string>
 
     <!-- Preference - Use scaled text and images -->
-    <string name="pt_bob_item_size">Grootte van boekenlijst elementen</string>
-    <string-array name="pe_bob_item_size">
-        <item>Normaal</item>
-        <item>Kleiner</item>
-        <item>Groter</item>
+    <string name="pt_bob_text_size">Grootte van boekenlijst tekst</string>
+    <string-array name="pe_bob_text_size">
+        <item>Klein</item>
+        <item>Medium</item>
+        <item>Groot</item>
+    </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Miniaturen grootte in lijsten</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Klein</item>
+        <item>Medium</item>
+        <item>Groot</item>
+        <item>X-Groot</item>
+        <item>2X-Groot</item>
+        <item>3X-Groot</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->
@@ -139,8 +150,6 @@
 
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Prefereer grote miniaturen</string>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>

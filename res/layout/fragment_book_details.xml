@@ -66,8 +66,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             android:contentDescription="@string/lbl_cover"
-            tools:layout_height="500px"
-            tools:layout_width="500px"
+            tools:layout_height="172dp"
+            tools:layout_width="114dp"
             tools:src="@drawable/ic_image"
             />
 

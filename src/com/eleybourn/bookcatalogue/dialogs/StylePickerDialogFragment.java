@@ -127,7 +127,7 @@ public class StylePickerDialogFragment
             mListener.get().onStyleChanged(style);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onStyleSelected",
+                Logger.debug(this, "onStyleChanged",
                              "WeakReference to listener was dead");
             }
         }

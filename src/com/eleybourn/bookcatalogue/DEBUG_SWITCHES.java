@@ -21,9 +21,6 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
  */
 public final class DEBUG_SWITCHES {
 
-    /** to be removed soon. */
-    public static final boolean TMP_ANTHOLOGY = true;
-
     /* ****************************************************************************************** */
 
     /** Enable strict mode reporting on network,disc,... usage. */
@@ -34,18 +31,11 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
 
-    /** Checks that a RecyclerView is indeed recycling its views. */
-    public static final boolean RECYCLER_VIEW_IS_RECYCLING = true;
-
-    /** Global replace author/series/... */
-    public static final boolean DBA_GLOBAL_REPLACE = false;
-
     /** Log the full flow of {@link Activity#recreate()}. */
     public static final boolean RECREATE_ACTIVITY = false;
 
     /** track the flow & values on startActivityForResult & onActivityResult. */
-    public static final boolean ON_ACTIVITY_RESULT = false;
-
+    public static final boolean ON_ACTIVITY_RESULT = true;
 
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
@@ -58,22 +48,16 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
 
-    /** Where listeners are held in a WeakReference, we can log dead references. */
+    /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
 
     /* ****************************************************************************************** */
 
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
-    public static final boolean BOOKLIST_BUILDER = false;
+    public static final boolean BOOKLIST_BUILDER = true;
 
-    /** {@link com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor}. */
-    public static final boolean PSEUDO_CURSOR = true;
-
-    /** {@link BooksOnBookshelf}. */
-    public static final boolean BOOKS_ON_BOOKSHELF = false;
-
-    /** {@link BooksOnBookshelf}. Inserting into the link tables between a Book and X. */
-    public static final boolean BOB_INSERT_BOOK_LINKS = false;
+    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
+    public static final boolean BOB_FIX_POSITION = false;
 
     /** {@link com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel#initBookList}. */
     public static final boolean BOB_INIT_BOOK_LIST = true;
@@ -105,7 +89,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SEARCH_INTERNET = false;
 
     /**
-     * GoodReads search, but also the sync API.
+     * GoodReads search + the sync API.
      * {@link com.eleybourn.bookcatalogue.searches.goodreads}.
      */
     public static final boolean GOODREADS = false;
@@ -122,25 +106,34 @@ public final class DEBUG_SWITCHES {
 
     /* ****************************************************************************************** */
 
+    /** {@link DAO}. Check for leaking instances. */
+    public static final boolean DAO_INSTANCE_COUNT = false;
+
+    /** {@link BooksOnBookshelf}. Inserting into the link tables between a Book and X. */
+    public static final boolean DAO_INSERT_BOOK_LINKS = false;
+
+    /** Global replace author/series/... */
+    public static final boolean DAO_GLOBAL_REPLACE = false;
+
+    /** Insert & update TOC entries. */
+    public static final boolean DAO_TOC = true;
+
+    /* ****************************************************************************************** */
+
     /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
 
-    /** {@link DAO}. */
-    public static final boolean DB_ADAPTER = false;
+    /**
+     * Dump SQL CREATE / DROP strings to the log.
+     * {@link com.eleybourn.bookcatalogue.database.definitions.TableDefinition}
+     * {@link com.eleybourn.bookcatalogue.database.definitions.IndexDefinition}
+     */
+    public static final boolean SQL_DDL = false;
+
 
     /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
     public static final boolean DB_SYNC = false;
     public static final boolean DB_SYNC_LOCKING = false;
-
-
-    /* ****************************************************************************************** */
-
-    /**
-     * Dump SQL CREATE strings to the log.
-     * {@link com.eleybourn.bookcatalogue.database.definitions.TableDefinition}
-     * {@link com.eleybourn.bookcatalogue.database.definitions.IndexDefinition}
-     */
-    public static final boolean SQL_CREATE = false;
 
     /**
      * Dump execSQL strings to the log.

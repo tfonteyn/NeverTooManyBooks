@@ -383,7 +383,7 @@ public class MessageSwitch<T, U> {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                             Logger.debug(this, "deliver",
                                          "queueIterator",
-                                         "|listener=" + listener,
+                                         "listener=" + listener,
                                          "msg=" + message.toString());
                         }
                         if (message.deliver(listener)) {

@@ -1,20 +1,21 @@
 package com.eleybourn.bookcatalogue.viewmodels;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -277,5 +278,18 @@ public class BookBaseFragmentModel
             mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
+    }
+
+    public Bookshelf getBookshelf(@NonNull final Context context) {
+        Bookshelf bookshelf = null;
+        String name = App.getPrefs().getString(Bookshelf.PREF_BOOKSHELF_CURRENT, null);
+        if (name != null && !name.isEmpty()) {
+            bookshelf = mDb.getBookshelfByName(name);
+        }
+        if (bookshelf == null) /* || name.isEmpty() */ {
+            // unlikely to be true, but use default just in case
+            bookshelf = Bookshelf.getDefaultBookshelf(context, mDb);
+        }
+        return bookshelf;
     }
 }

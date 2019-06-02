@@ -128,7 +128,7 @@ public class StyleGroupsActivity
         bar.setTitle(R.string.title_edit_style);
         bar.setSubtitle(getString(R.string.name_colon_value,
                                   getString(R.string.pg_groupings),
-                                  mStyle.getLabel(getResources())));
+                                  mStyle.getLabel(this)));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -306,12 +306,6 @@ public class StyleGroupsActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_booklist_style, parent, false);
@@ -325,7 +319,7 @@ public class StyleGroupsActivity
 
             GroupWrapper groupWrapper = getItem(position);
 
-            holder.nameView.setText(groupWrapper.group.getName(getContext().getResources()));
+            holder.nameView.setText(groupWrapper.group.getName(getContext()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(groupWrapper.present);

@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -22,9 +23,9 @@ public class BooleanFilter
         extends PInteger
         implements Filter {
 
-    private static final Integer P_TRUE = 1;
-    private static final Integer P_FALSE = 0;
-    private static final Integer P_NOT_USED = -1;
+    public static final Integer P_TRUE = 1;
+    public static final Integer P_FALSE = 0;
+    public static final Integer P_NOT_USED = -1;
 
     @StringRes
     private final int mLabelId;
@@ -46,8 +47,8 @@ public class BooleanFilter
 
     @NonNull
     @Override
-    public String getLabel(@NonNull final Resources resources) {
-        return resources.getString(mLabelId);
+    public String getLabel(@NonNull final Context context) {
+        return context.getString(mLabelId);
     }
 
     public void set(final boolean value) {

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.settings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -130,32 +129,6 @@ public class PreferredStylesActivity
     }
 
     /**
-     * Bring up the context menu for a row (style).
-     * <p>
-     * Reminder: the item row itself has to have:  android:longClickable="true".
-     * Otherwise the click will only work on the 'blank' bits of the row.
-     */
-    private void onCreateContextMenu(@NonNull final BooklistStyle style) {
-
-        Menu menu = MenuPicker.createMenu(this);
-        menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
-
-        if (style.isUserDefined()) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
-            menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
-        }
-
-        // display the menu
-        String menuTitle = style.getLabel(getResources());
-        final MenuPicker<BooklistStyle> picker = new MenuPicker<>(this, menuTitle, menu, style,
-                                                                  this::onContextItemSelected);
-        picker.show();
-    }
-
-    /**
      * Using {@link ValuePicker} for context menus.
      */
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
@@ -163,7 +136,7 @@ public class PreferredStylesActivity
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_CLONE:
-                editStyle(style.clone(getResources()));
+                editStyle(style.clone(this));
                 return true;
 
             case R.id.MENU_EDIT:
@@ -171,7 +144,7 @@ public class PreferredStylesActivity
                     editStyle(style);
                 } else {
                     // editing a system style -> clone it first.
-                    editStyle(style.clone(getResources()));
+                    editStyle(style.clone(this));
                 }
                 return true;
 
@@ -255,25 +228,23 @@ public class PreferredStylesActivity
         }
     }
 
-    private class BooklistStylesAdapter
+    private static class BooklistStylesAdapter
             extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
 
-        BooklistStylesAdapter(@NonNull final Context context,
+        @NonNull
+        private final PreferredStylesActivity mActivity;
+
+        BooklistStylesAdapter(@NonNull final PreferredStylesActivity activity,
                               @NonNull final ArrayList<BooklistStyle> items,
                               @NonNull final StartDragListener dragStartListener) {
-            super(context, items, dragStartListener);
+            super(activity, items, dragStartListener);
+            mActivity = activity;
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_booklist_style_groups, parent, false);
@@ -287,7 +258,7 @@ public class PreferredStylesActivity
 
             BooklistStyle style = getItem(position);
 
-            holder.nameView.setText(style.getLabel(getResources()));
+            holder.nameView.setText(style.getLabel(getContext()));
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(style.isPreferred());
@@ -299,7 +270,7 @@ public class PreferredStylesActivity
                 notifyItemChanged(position);
             });
 
-            holder.groupsView.setText(style.getGroupLabels(getResources()));
+            holder.groupsView.setText(style.getGroupLabels(getContext()));
             if (style.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {
@@ -308,7 +279,24 @@ public class PreferredStylesActivity
 
             // long-click -> menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(style);
+
+                Menu menu = MenuPicker.createMenu(getContext());
+                menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
+                    .setIcon(R.drawable.ic_content_copy);
+
+                if (style.isUserDefined()) {
+                    menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+                        .setIcon(R.drawable.ic_edit);
+                    menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+                        .setIcon(R.drawable.ic_delete);
+                }
+
+                // display the menu
+                String menuTitle = style.getLabel(getContext());
+                final MenuPicker<BooklistStyle> picker =
+                        new MenuPicker<>(getContext(), menuTitle, menu,
+                                         style, mActivity::onContextItemSelected);
+                picker.show();
                 return true;
             });
         }

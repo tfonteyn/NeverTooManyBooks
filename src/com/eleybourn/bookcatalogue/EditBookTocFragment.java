@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -555,7 +556,7 @@ public class EditBookTocFragment
                 mListener.get().commitISFDBData(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
+                    Logger.debug(this, "onCommitToc",
                                  "WeakReference to listener was dead");
                 }
             }
@@ -567,7 +568,7 @@ public class EditBookTocFragment
                 mListener.get().getNextEdition();
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
+                    Logger.debug(this, "onGetNext",
                                  "WeakReference to listener was dead");
                 }
             }
@@ -714,7 +715,7 @@ public class EditBookTocFragment
                 mListener.get().addOrUpdateEntry(mTocEntry);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
+                    Logger.debug(this, "onConfirm",
                                  "WeakReference to listener was dead");
                 }
             }
@@ -808,7 +809,10 @@ public class EditBookTocFragment
         protected Bundle doInBackground(final Void... params) {
             Thread.currentThread().setName("ISFDBGetBookTask");
             try {
-                return new ISFDBBook().fetch(mEditions, new Bundle(), mAddSeriesFromToc, false);
+                //TODO: do not use Application Context for String resources
+                Resources resources = App.getAppContext().getResources();
+
+                return new ISFDBBook().fetch(mEditions, mAddSeriesFromToc, false, resources);
             } catch (SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
@@ -873,12 +877,6 @@ public class EditBookTocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = getLayoutInflater()
                     .inflate(R.layout.row_edit_toc_entry, parent, false);

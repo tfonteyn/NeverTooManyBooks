@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 
@@ -84,12 +85,12 @@ public final class UpgradeMessageManager {
     /**
      * Get the upgrade message for the running app instance; caches the result for later use.
      *
-     * @param resources for locale specific strings
+     * @param context for locale specific strings
      *
      * @return Upgrade message (or blank string)
      */
     @NonNull
-    public static String getUpgradeMessage(@NonNull final Resources resources) {
+    public static String getUpgradeMessage(@NonNull final Context context) {
         // If cached version exists, return it
         if (sMessage != null) {
             return sMessage;
@@ -107,7 +108,7 @@ public final class UpgradeMessageManager {
                     message.append('\n');
                 }
                 first = false;
-                message.append(resources.getString(msg[1]));
+                message.append(context.getString(msg[1]));
             }
         }
 

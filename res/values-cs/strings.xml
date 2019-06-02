@@ -459,4 +459,5 @@
     <string name="btn_confirm_open">Otevřeno</string>
     <string name="btn_confirm_exit">Přestat</string>
     <string name="done">Hotovo</string>
+    <string name="gr_btn_delete_credentials">Odebrat pověření</string>
 </resources>

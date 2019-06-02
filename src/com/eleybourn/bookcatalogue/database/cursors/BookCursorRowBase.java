@@ -108,7 +108,7 @@ public class BookCursorRowBase {
      *
      * @return a boolean from underlying cursor.
      */
-    public boolean getBoolean(final String columnName) {
+    public boolean getBoolean(@NonNull final String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
         if (position < 0) {
             throw new ColumnNotPresentException(columnName);

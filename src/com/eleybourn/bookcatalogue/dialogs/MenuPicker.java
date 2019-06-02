@@ -85,9 +85,6 @@ public class MenuPicker<T>
     private static class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         @NonNull
         final Drawable mSubMenuPointer;
         @NonNull
@@ -122,12 +119,6 @@ public class MenuPicker<T>
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View root = mInflater.inflate(R.layout.row_simple_dialog_list_item, parent, false);
             return new Holder(root);
@@ -136,12 +127,6 @@ public class MenuPicker<T>
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
-            if (BuildConfig.DEBUG) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
 
             MenuItem item = mList.get(position);
             holder.textView.setText(item.getTitle());

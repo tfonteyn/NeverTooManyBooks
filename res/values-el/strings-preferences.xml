@@ -119,11 +119,22 @@
     <!-- ========== Book list style preferences ========== -->
 
     <!-- Preference - Use scaled text and images -->
-    <string name="pt_bob_item_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
-    <string-array name="pe_bob_item_size">
-        <item>Κανονικό</item>
-        <item>Μικρότερο</item>
-        <item>Μεγαλύτερος</item>
+    <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
+    <string-array name="pe_bob_text_size">
+        <item>Μικρό</item>
+        <item>Μεσαίο</item>
+        <item>Μεγάλο</item>
+    </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Μικρογραφεί μέγεθος σε λίστες</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Μικρό</item>
+        <item>Μεσαίο</item>
+        <item>Μεγάλο</item>
+        <item>X-Μεγάλο</item>
+        <item>2X-Μεγάλο</item>
+        <item>3X-Μεγάλο</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->
@@ -136,8 +147,6 @@
 
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Προτίμησε μεγάλες μικρογραφίες</string>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>

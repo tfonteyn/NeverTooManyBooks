@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -139,6 +140,11 @@ public abstract class ManagedTask
         return mTaskManager.getContext().getResources();
     }
 
+    @NonNull
+    protected Context getContext() {
+        return mTaskManager.getContext();
+    }
+
     /**
      * Executed in main task thread.
      */
@@ -159,11 +165,11 @@ public abstract class ManagedTask
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                                    Logger.debug(ManagedTask.this, "run",
+                                    Logger.debug(this, "run",
                                                  "ManagedTask=" + getName(),
                                                  "Delivering 'onTaskFinished' to: " + listener);
                                 }
-                                listener.onTaskFinished(ManagedTask.this);
+                                listener.onTaskFinished(this);
                                 return false;
                             }
         );

@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -161,23 +160,23 @@ public final class Utils {
      * <p>
      * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
      *
-     * @param resources Current context
+     * @param context Current context
      * @param bytes   to format
      *
      * @return formatted # bytes
      */
     @NonNull
-    public static String formatFileSize(@NonNull final Resources resources,
+    public static String formatFileSize(@NonNull final Context context,
                                         final float bytes) {
         if (bytes < 3_000) {
             // Show 'bytes' if < 3k
-            return resources.getString(R.string.bytes, bytes);
+            return context.getString(R.string.bytes, bytes);
         } else if (bytes < 250_000) {
             // Show Kb if less than 250kB
-            return resources.getString(R.string.kilobytes, bytes / 1_000);
+            return context.getString(R.string.kilobytes, bytes / 1_000);
         } else {
             // Show MB otherwise...
-            return resources.getString(R.string.megabytes, bytes / 1_000_000);
+            return context.getString(R.string.megabytes, bytes / 1_000_000);
         }
     }
 

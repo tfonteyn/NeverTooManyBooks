@@ -32,7 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * @author Paul Burke (ipaulpro)
  */
-public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
+public class SimpleItemTouchHelperCallback
+        extends ItemTouchHelper.Callback {
 
     private static final float ALPHA_FULL = 1.0f;
 
@@ -46,22 +47,22 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         mAdapter = adapter;
     }
 
-    public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
-        mIsLongPressDragEnabled = longPressDragEnabled;
-    }
-
-    public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
-        mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
-    }
-
     @Override
     public boolean isLongPressDragEnabled() {
         return mIsLongPressDragEnabled;
     }
 
+    public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
+        mIsLongPressDragEnabled = longPressDragEnabled;
+    }
+
     @Override
     public boolean isItemViewSwipeEnabled() {
         return mIsItemViewSwipeEnabled;
+    }
+
+    public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
+        mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
     }
 
     @Override

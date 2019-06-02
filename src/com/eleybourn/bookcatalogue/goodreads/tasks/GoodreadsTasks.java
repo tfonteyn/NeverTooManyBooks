@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Wrapper / single point of access to Goodreads tasks.
- *
+ * <p>
  * These are AsyncTask classes that run a network and authorization check first.
  * If successful, an actual GoodReadsTasks is kicked of.
  * <p>
@@ -192,7 +192,7 @@ public final class GoodreadsTasks {
                 String msg = context.getString(result);
                 if (e instanceof FormattedMessageException) {
                     msg += ' ' + ((FormattedMessageException) e)
-                            .getFormattedMessage(context.getResources());
+                            .getFormattedMessage(context);
                 } else if (e != null) {
                     msg += ' ' + e.getLocalizedMessage();
                 }

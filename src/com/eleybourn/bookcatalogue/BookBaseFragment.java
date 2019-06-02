@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
@@ -242,7 +243,7 @@ public abstract class BookBaseFragment
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
-                    @SuppressWarnings("ConstantConditions")
+                    Objects.requireNonNull(data);
                     long bookId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
@@ -250,7 +251,7 @@ public abstract class BookBaseFragment
                         mBookBaseFragmentModel.setBook(bookId);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                            Logger.debug("onActivityResult",
+                            Logger.debug("BookBaseFragment.onActivityResult",
                                          "wasCancelled= " + data.getBooleanExtra(
                                                  UniqueId.BKEY_CANCELED, false));
                         }
@@ -496,8 +497,7 @@ public abstract class BookBaseFragment
                 Map<Integer, View> vh = new HashMap<>();
                 getViews(root, vh);
 
-                for (Map.Entry<Integer, View> ve : vh.entrySet()) {
-                    final View v = ve.getValue();
+                for (View v : vh.values()) {
                     if (v.getVisibility() == View.VISIBLE) {
                         fixNextView(vh, v, getDown);
                         fixNextView(vh, v, getUp);

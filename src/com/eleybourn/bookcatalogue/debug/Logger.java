@@ -237,8 +237,8 @@ public final class Logger {
         }
     }
 
-    static void debugExtras(@NonNull final Object a,
-                            @NonNull final String methodName) {
+    static void debugArguments(@NonNull final Object a,
+                               @NonNull final String methodName) {
         if (a instanceof Activity) {
             Bundle extras = ((Activity) a).getIntent().getExtras();
             if (extras != null) {

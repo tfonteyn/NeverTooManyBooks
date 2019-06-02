@@ -451,10 +451,12 @@
     </string>
     <string name="tab_lbl_details">Детали</string>
     <string name="X_tab_lbl_loan">Долг</string>
-    <string name="gr_btn_forget_credentials">Убрать credentials</string>
-    <string name="gr_auth_blurb_part4">Похоже, что Вы уже авторизовали приложение. Если Вы хотите удалить
-    credentials с этого телефона, то воспользуйтесь кнопкой ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
-    \n\nПосле сброса credentials пункт меню Goodreads пропадет из главного меню.</string>
+    <string name="gr_btn_delete_credentials">Удалить учетные данные</string>
+    <string name="gr_auth_blurb_part4">
+        Похоже, вы уже авторизовали это приложение. Если вы хотите удалить
+        учетные данные с этого телефона, то вы можете сделать это, нажав кнопку ниже.
+        В этом случае не забудьте деавторизировать приложение на сайте Goodreads.
+    </string>
     <string name="progress_msg_connecting">Соединение с сайтом…</string>
     <string name="lbl_backup_to_archive">Бэкап в архив</string>
     <string name="lbl_import_from_archive">Импорт из архива</string>

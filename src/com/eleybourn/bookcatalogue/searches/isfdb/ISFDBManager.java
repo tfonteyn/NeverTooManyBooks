@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -90,30 +91,29 @@ public class ISFDBManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Bundle bookData = new Bundle();
-
         if (ISBN.isValid(isbn)) {
             List<Editions.Edition> editions = new Editions().fetch(isbn);
             if (!editions.isEmpty()) {
-                new ISFDBBook().fetch(editions, bookData, isCollectSeriesInfoFromToc(), fetchThumbnail);
+                //TODO: do not use Application Context for String resources
+                Resources resources = App.getAppContext().getResources();
+                return new ISFDBBook().fetch(editions, isCollectSeriesInfoFromToc(),
+                                      fetchThumbnail, resources);
             }
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
 
-            //replace spaces in author/title with %20
             //TODO: implement ISFDB search by author/title
+            //replace spaces in author/title with %20
             String urlText = getBaseURL() + "/cgi-bin/adv_search_results.cgi?" +
                     "title_title%3A" + encodeSpaces(title) +
                     "%2B" +
                     "author_canonical%3A" + encodeSpaces(author);
             throw new UnsupportedOperationException(urlText);
 
-        } else {
-            return new Bundle();
         }
 
         //TODO: only let IOExceptions out (except RTE's)
-        return bookData;
+        return new Bundle();
     }
 
     /**

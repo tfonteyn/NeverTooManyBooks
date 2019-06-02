@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -219,7 +221,7 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
+                    Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
                                                     mSearchSites);
                 }

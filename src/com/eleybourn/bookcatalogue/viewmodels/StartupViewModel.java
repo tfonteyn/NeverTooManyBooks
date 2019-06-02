@@ -124,9 +124,7 @@ public class StartupViewModel
         try {
             mDb = new DAO();
         } catch (DBHelper.UpgradeException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Logger.warn(this, "startTasks", e.getLocalizedMessage());
-            }
+            Logger.warn(this, "startTasks", e.getLocalizedMessage());
             mTaskException.setValue(e);
             return;
         }

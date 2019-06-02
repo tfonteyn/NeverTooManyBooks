@@ -24,14 +24,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -377,7 +374,7 @@ public class Fields {
      * passed to each defined cross-validator.
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
-     * Use {@link #getValidationExceptionMessage(Resources)} for the results.
+     * Use {@link #getValidationExceptionMessage} for the results.
      *
      * @param values The Bundle collection to fill
      *
@@ -459,7 +456,7 @@ public class Fields {
      * @return the text message associated with the last validation exception to occur.
      */
     @NonNull
-    public String getValidationExceptionMessage(@NonNull final Resources res) {
+    public String getValidationExceptionMessage(@NonNull final Context context) {
         if (mValidationExceptions.isEmpty()) {
             return "No error";
         } else {
@@ -468,12 +465,12 @@ public class Fields {
             int cnt = 1;
             if (iterator.hasNext()) {
                 message.append('(').append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(res));
+                        iterator.next().getFormattedMessage(context));
             }
             while (iterator.hasNext()) {
                 cnt++;
                 message.append(" (").append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(res)).append('\n');
+                        iterator.next().getFormattedMessage(context)).append('\n');
             }
             return message.toString();
         }
@@ -811,8 +808,7 @@ public class Fields {
                     //FIXME: not very efficient... gets called whenever the field content is set
                     // This includes when the device is rotated, when a tab is changed...
                     if (BuildConfig.DEBUG) {
-                        Logger.debug(this,
-                                     "afterTextChanged",
+                        Logger.debug(this,"afterTextChanged",
                                      "s=`" + s.toString() + '`',
                                      "extract=`" + field.extract(s.toString()) + '`'
                         );
@@ -935,11 +931,8 @@ public class Fields {
          * @param context Current context
          */
         ImageViewAccessor(@NonNull final Context context) {
-            //FIXME: arbitrary default; it was the hardcoded value for Booklist cover images.
-            float max = 60;
-            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-            int maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, max,
-                                                           metrics));
+            int maxSize = 2 * (int) context.getResources().getDimension(R.dimen.cover_base_size);
+
             mMaxHeight = maxSize;
             mMaxWidth = maxSize;
         }
@@ -1148,11 +1141,11 @@ public class Fields {
         private final String mNo;
 
         /**
-         * @param resources for string
+         * @param context for strings
          */
-        public BinaryYesNoEmptyFormatter(@NonNull final Resources resources) {
-            mYes = resources.getString(R.string.yes);
-            mNo = resources.getString(R.string.no);
+        public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
+            mYes = context.getString(R.string.yes);
+            mNo = context.getString(R.string.no);
         }
 
         /**

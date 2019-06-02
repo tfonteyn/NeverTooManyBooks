@@ -479,16 +479,14 @@
     <!-- Hint displayed when an export or database backup is done -->
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
-    <string name="gr_btn_forget_credentials">Cancella Credenziali</string>
+    <string name="gr_btn_delete_credentials">Rimuovi credenziali</string>
 
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         Questa applicazione sembra essere già stata autorizzata.
         Se desideri cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto.
         Ricordati altresì che occorre anche rimuovere l\'autorizzazione all\'applicazione nel
-        sito di Goodreads.\n
-        \nCancellando le credenziali qui eliminerà le opzioni relative a Goodreads nel menu
-        principale dell\'applicazione.
+        sito di Goodreads.
     </string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
@@ -747,5 +745,6 @@
     <string name="vldt_failure">Errore di convalida.</string>
     <string name="title_import">Importa</string>
     <string name="btn_drag_handle">Trascina per riordinare questo elenco.</string>
+    <string name="book_format_digest">Digest</string>
 
 </resources>

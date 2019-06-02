@@ -199,17 +199,8 @@ public class EditBookFieldsFragment
                 book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
 
         if (list.isEmpty()) {
-
-            Bookshelf bookshelf = null;
-            String name = App.getPrefs().getString(Bookshelf.PREF_BOOKSHELF_CURRENT, null);
-            if (name != null && !name.isEmpty()) {
-                bookshelf = mBookBaseFragmentModel.getDb().getBookshelfByName(name);
-            }
-            if (bookshelf == null) /* || name.isEmpty() */ {
-                // unlikely to be true, but use default just in case
-                bookshelf = Bookshelf.getDefaultBookshelf(getResources(),
-                                                          mBookBaseFragmentModel.getDb());
-            }
+            //noinspection ConstantConditions
+            Bookshelf bookshelf = mBookBaseFragmentModel.getBookshelf(getContext());
 
             getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.

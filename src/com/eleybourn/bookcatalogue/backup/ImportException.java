@@ -1,13 +1,13 @@
 package com.eleybourn.bookcatalogue.backup;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 /**
  * Importing data can give a mor detailed reason of failure.
-  * String ID and args are stored for later retrieval.
+ * String ID and args are stored for later retrieval.
  * The messages will be shown to the user, hence the need for a String resource.
  */
 public class ImportException
@@ -30,7 +30,7 @@ public class ImportException
 
     @NonNull
     @Override
-    public String getFormattedMessage(@NonNull final Resources resources) {
-        return resources.getString(mStringId, mArgs);
+    public String getFormattedMessage(@NonNull final Context context) {
+        return context.getString(mStringId, mArgs);
     }
 }

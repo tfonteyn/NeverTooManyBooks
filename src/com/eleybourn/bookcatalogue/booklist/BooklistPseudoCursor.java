@@ -175,6 +175,7 @@ public class BooklistPseudoCursor
 
                 // Remove any stale cursors
                 purgeOldCursors();
+
             } else {
                 // Bring to top of MRU list, if present. It may not be in the MRU list if it was
                 // preserved because it was in the window
@@ -221,19 +222,18 @@ public class BooklistPseudoCursor
                     }
                     mMruList[mMruListPos] = cursorId;
                 }
+            }
 
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.PSEUDO_CURSOR) {
-                Logger.debug(this, "onMove", "MRU: ");
-                for (int i = 0; i < MRU_LIST_SIZE; i++) {
-                    Logger.debug(this, "onMove",
-                                 mMruList[(mMruListPos + 1 + i) % MRU_LIST_SIZE] + " ");
-                }
-            }
             // Set the active cursor, and set its position correctly
             mActiveCursor = mCursors.get(cursorId);
             //noinspection ConstantConditions
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.debugExit(this, "onMove",
+                             "cursorId=" + cursorId,
+                             "mActiveCursor=" + mActiveCursor);
+            }
         }
         return true;
     }
@@ -245,13 +245,12 @@ public class BooklistPseudoCursor
         // List of cursors to purge
         ArrayList<Integer> toPurge = new ArrayList<>();
         // Loop the hash
-        for (Entry<Integer, BooklistCursor> cursorEntry : mCursors.entrySet()) {
+        for (Integer key : mCursors.keySet()) {
             // If it is more than 3 'pages' from the current position, it's a candidate
-            final Integer thisKey = cursorEntry.getKey();
-            if (Math.abs(thisKey) > PAGES_AWAY_FOR_PURGE) {
+            if (Math.abs(key) > PAGES_AWAY_FOR_PURGE) {
                 // Must not be in the MRU list
-                if (!checkMru(thisKey)) {
-                    toPurge.add(thisKey);
+                if (!checkMru(key)) {
+                    toPurge.add(key);
                 }
             }
         }
@@ -356,6 +355,10 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public boolean requery() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            Logger.debugEnter(this, "requery ", this);
+        }
+
         clearCursors();
         mPseudoCount = null;
         onMove(getPosition(), getPosition());
@@ -364,14 +367,12 @@ public class BooklistPseudoCursor
     }
 
     private void clearCursors() {
-        for (Entry<Integer, BooklistCursor> cursorEntry : mCursors.entrySet()) {
-            cursorEntry.getValue().close();
-        }
-        mCursors.clear();
-//        if (mActiveCursor != null) {
-//            mActiveCursor.close();
-//        }
 
+        for (BooklistCursor cursor : mCursors.values()) {
+            cursor.close();
+        }
+
+        mCursors.clear();
         mActiveCursor = null;
 
         for (int i = 0; i < mMruList.length; i++) {
@@ -385,22 +386,19 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debugEnter(this, "Close ", this);
-        }
+        Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
         super.close();
-
         clearCursors();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debugExit(this, "Close ", this);
-        }
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BooklistPseudoCursor{"
+                + "mBuilder=" + mBuilder
+                + "mActiveCursor=" + mActiveCursor
                 + "mCursors=" + mCursors
+                + super.toString()
                 + '}';
     }
 }

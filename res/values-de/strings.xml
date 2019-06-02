@@ -678,12 +678,11 @@
     "Loan Book" is too long. -->
     <string name="X_tab_lbl_loan">Leihen</string>
 
-    <string name="gr_btn_forget_credentials">Zugangsdaten löschen</string>
+    <string name="gr_btn_delete_credentials">Zugangsdaten löschen</string>
     <string name="gr_auth_blurb_part4">
         Sie haben diese App anscheinend bereits autorisiert. Wenn Sie die Zugangsdaten von
         diesem Gerät löschen möchten, klicken Sie bitte den untenstehenden Knopf. Vergessen Sie
         nicht, diese App auch auf der Goodreads-Website zu de-autorisieren.\n
-        Das Löschen der Zugangsdaten entfernt die Goodreads-Option aus dem  Hauptmenü.
     </string>
     <string name="progress_msg_connecting">Verbinde mit der Website…</string>
     <string name="lbl_backup_to_archive">Sichern ins Archiv</string>

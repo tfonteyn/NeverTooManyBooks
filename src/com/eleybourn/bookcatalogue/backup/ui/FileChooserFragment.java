@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -69,6 +68,16 @@ public class FileChooserFragment
     /** Value holder for the root and its content. */
     @Nullable
     private FileChooserFragment.DirectoryContent mDir;
+    /** User clicks on the 'up' button. */
+    private final OnClickListener onPathUpClickListener = v -> {
+        String parent = mDir.root.getParent();
+        if (parent == null) {
+            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        mDir = new FileChooserFragment.DirectoryContent(parent);
+        onPathChanged(mDir.root);
+    };
     private EditText mFilenameView;
     private TextView mCurrentFolderView;
     private final TaskListener<Object, FileChooserFragment.DirectoryContent> mListener =
@@ -93,16 +102,6 @@ public class FileChooserFragment
                     }
                 }
             };
-    /** User clicks on the 'up' button. */
-    private final OnClickListener onPathUpClickListener = v -> {
-        String parent = mDir.root.getParent();
-        if (parent == null) {
-            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
-            return;
-        }
-        mDir = new FileChooserFragment.DirectoryContent(parent);
-        onPathChanged(mDir.root);
-    };
 
     /**
      * Constructor.
@@ -248,8 +247,8 @@ public class FileChooserFragment
         @NonNull
         File getFile();
 
-        void onBindViewHolder(@NonNull final Holder holder,
-                              @NonNull Resources resources);
+        void onBindViewHolder(@NonNull Holder holder,
+                              @NonNull Context context);
     }
 
     /**
@@ -309,9 +308,6 @@ public class FileChooserFragment
     protected class FileDetailsAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         @NonNull
         private final LayoutInflater mInflater;
 
@@ -329,12 +325,6 @@ public class FileChooserFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = mInflater.inflate(R.layout.row_file_chooser, parent, false);
             return new Holder(view);
@@ -344,15 +334,10 @@ public class FileChooserFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            if (BuildConfig.DEBUG) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
-
             final FileDetails item = mItems.files.get(position);
 
-            item.onBindViewHolder(holder, getResources());
+            //noinspection ConstantConditions
+            item.onBindViewHolder(holder, getContext());
 
             holder.itemView.setOnClickListener(v -> {
                 if (item.getFile().isDirectory()) {

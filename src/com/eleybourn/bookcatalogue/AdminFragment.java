@@ -72,7 +72,7 @@ public class AdminFragment
                 case R.id.TASK_ID_CSV_EXPORT:
                     if (success) {
                         onExportFinished();
-                    } else {
+                    } else if (e != null) {
                         UserMessage.showUserMessage(requireView(), e.getLocalizedMessage());
                     }
                     break;
@@ -81,8 +81,8 @@ public class AdminFragment
                     if (!success) {
                         String msg;
                         if (e instanceof FormattedMessageException) {
-                            msg = ((FormattedMessageException) e).getFormattedMessage(
-                                    getResources());
+                            //noinspection ConstantConditions
+                            msg = ((FormattedMessageException) e).getFormattedMessage(getContext());
                         } else if (e != null) {
                             msg = e.getLocalizedMessage();
                         } else {

@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.booklist;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,8 +54,9 @@ import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.settings.Prefs;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -285,10 +285,10 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param resources (NOT cached, just used in the constructor)
-     * @param style     Book list style to use
+     * @param context (NOT cached, just used in the constructor)
+     * @param style   Book list style to use
      */
-    public BooklistBuilder(@NonNull final Resources resources,
+    public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             Logger.debugEnter(this, "BooklistBuilder",
@@ -297,7 +297,7 @@ public class BooklistBuilder
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
-        mUnknown = resources.getString(R.string.unknown).toUpperCase();
+        mUnknown = context.getString(R.string.unknown).toUpperCase(LocaleUtils.from(context));
 
         // Get the database and create a statements collection
         mDb = new DAO();
@@ -621,7 +621,8 @@ public class BooklistBuilder
     public void build(final int preferredState,
                       final long previouslySelectedBookId) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debugEnter(this, "build", mBooklistBuilderId);
+            Logger.debugEnter(this, "build",
+                              "mBooklistBuilderId=" + mBooklistBuilderId);
         }
 
         // We can not use triggers to fill in headings in API < 8 since
@@ -708,8 +709,7 @@ public class BooklistBuilder
             summary.addDomain(DOM_BL_NODE_LEVEL, null, SummaryBuilder.FLAG_SORTED);
 
             // Finished. Ensure any caller-specified extras (e.g. title) are added at the end.
-            for (Entry<String, ExtraDomainDetails> d : mExtraDomains.entrySet()) {
-                ExtraDomainDetails info = d.getValue();
+            for (ExtraDomainDetails info : mExtraDomains.values()) {
                 int flags = info.isSorted ? SummaryBuilder.FLAG_SORTED
                                           : SummaryBuilder.FLAG_NONE;
                 summary.addDomain(info.domain, info.sourceExpression, flags);
@@ -819,9 +819,8 @@ public class BooklistBuilder
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                    Logger.debug(this,
-                                 "build", "add|" + STMT_NAV_IX_1
-                                         + '|' + ixStmt1.toString());
+                    Logger.debug(this, "build", "add",
+                                 STMT_NAV_IX_1, ixStmt1.toString());
                 }
                 mLevelBuildStmts.add(ixStmt1);
                 ixStmt1.execute();
@@ -837,9 +836,8 @@ public class BooklistBuilder
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                    Logger.debug(this,
-                                 "build", "add|" + STMT_NAV_IX_2
-                                         + '|' + ixStmt2.toString());
+                    Logger.debug(this, "build", "add",
+                                 STMT_NAV_IX_2, ixStmt2.toString());
                 }
                 mLevelBuildStmts.add(ixStmt2);
                 ixStmt2.execute();
@@ -938,9 +936,8 @@ public class BooklistBuilder
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this,
-                         "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
-                                 + '|' + navStmt.toString());
+            Logger.debug(this, "populateNavigationTable", "add",
+                         STMT_NAV_TABLE_INSERT, navStmt.toString());
         }
         mLevelBuildStmts.add(navStmt);
 
@@ -1088,9 +1085,9 @@ public class BooklistBuilder
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this,
-                             "baseBuildWithoutTriggers",
-                             "add|" + "Level" + i + '|' + stmt.toString());
+                Logger.debug(this, "baseBuildWithoutTriggers", "add",
+                             "Level" + i,
+                             stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
@@ -1130,9 +1127,8 @@ public class BooklistBuilder
 //                    + ',' + DOM_BL_ROOT_KEY + ')';
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this,
-                             "baseBuildWithoutTriggers",
-                             "add|" + STMT_IX_1 + '|' + stmt.toString());
+                Logger.debug(this, "baseBuildWithoutTriggers", "add",
+                             STMT_IX_1, stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1142,8 +1138,7 @@ public class BooklistBuilder
             for (
                     int i = 0; i < mStyle.groupCount();
                     i++) {
-                Logger.debug(this,
-                             "baseBuildWithoutTriggers",
+                Logger.debug(this, "baseBuildWithoutTriggers",
                              "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
             }
         }
@@ -1339,9 +1334,8 @@ public class BooklistBuilder
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this,
-                             "makeNestedTriggers",
-                             "add|" + tgName + '|' + stmt.toString());
+                Logger.debug(this, "makeNestedTriggers", "add",
+                             tgName, stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1362,9 +1356,8 @@ public class BooklistBuilder
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this,
-                         "makeNestedTriggers",
-                         "add", currentValueTriggerName, stmt);
+            Logger.debug(this, "makeNestedTriggers", "add",
+                         currentValueTriggerName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -1515,9 +1508,8 @@ public class BooklistBuilder
                 mStatements.add(tgForwardName, oneBigTrigger.toString());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this,
-                         "makeSingleTrigger",
-                         "add", tgForwardName, stmt);
+            Logger.debug(this, "makeSingleTrigger", "add",
+                         tgForwardName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -1694,8 +1686,7 @@ public class BooklistBuilder
         final String prefix = mListTable.getAlias() + '.';
 
         for (DomainDefinition domain : mListTable.getDomains()) {
-            domains.append(prefix)
-                   .append(domain.name)
+            domains.append(prefix).append(domain.name)
                    .append(" AS ").append(domain.name).append(',');
         }
 
@@ -1898,8 +1889,7 @@ public class BooklistBuilder
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.debug(this,
-                             "expandAll",
+                Logger.debug(this, "expandAll",
                              (System.nanoTime() - t0) + "nano");
             }
 
@@ -2091,6 +2081,15 @@ public class BooklistBuilder
             close();
         }
         super.finalize();
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BooklistBuilder{" +
+                "mBooklistBuilderId=" + mBooklistBuilderId +
+                ", mCloseWasCalled=" + mCloseWasCalled +
+                '}';
     }
 
     public static class CompatibilityMode {

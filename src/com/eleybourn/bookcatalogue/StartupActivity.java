@@ -224,7 +224,7 @@ public class StartupActivity
             return;
         }
         // Display upgrade message if necessary, otherwise go on to next stage
-        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(getResources());
+        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
         if (upgradeMessage.isEmpty()) {
             startNextStage();
             return;

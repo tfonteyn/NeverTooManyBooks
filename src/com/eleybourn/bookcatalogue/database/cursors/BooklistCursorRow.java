@@ -210,8 +210,8 @@ public class BooklistCursorRow
     /**
      * Perform any special formatting for a row group.
      *
-     * @param level Level of the row group
-     * @param s     Source value
+     * @param level  Level of the row group
+     * @param source Source value
      *
      * @return Formatted string, or original string when no special format
      * was needed or on any failure
@@ -219,9 +219,14 @@ public class BooklistCursorRow
     @Nullable
     private String formatRowGroup(@NonNull final Context context,
                                   @IntRange(from = 1) final int level,
-                                  @Nullable final String s) {
-        if (s == null) {
+                                  @Nullable final String source) {
+        if (source == null) {
             return null;
+        }
+
+        // BooklistBuilder will insert 'UNKNOWN' in the SQL row returned if the data is not set.
+        if (source.equalsIgnoreCase(context.getString(R.string.unknown))) {
+            return source;
         }
 
         // sanity check.
@@ -236,23 +241,20 @@ public class BooklistCursorRow
 
         switch (mBuilder.getStyle().getGroupKindAt(index)) {
             case BooklistGroup.RowKind.READ_STATUS:
-                switch (s) {
+                switch (source) {
                     case "0":
                         return context.getString(R.string.lbl_unread);
                     case "1":
                         return context.getString(R.string.lbl_read);
                     default:
-                        if (BuildConfig.DEBUG /* WARN */) {
-                            Logger.warn(this,
-                                        "formatRowGroup",
-                                        "Unknown read status=" + s);
-                        }
+                        Logger.warn(this, "formatRowGroup",
+                                    "Unknown read status=" + source);
                         break;
                 }
-                return s;
+                return source;
 
             case BooklistGroup.RowKind.LANGUAGE:
-                LocaleUtils.getDisplayName(locale, s);
+                LocaleUtils.getDisplayName(locale, source);
                 break;
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
@@ -261,7 +263,7 @@ public class BooklistCursorRow
             case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
             case BooklistGroup.RowKind.DATE_READ_MONTH:
                 try {
-                    int i = Integer.parseInt(s);
+                    int i = Integer.parseInt(source);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
                         return DateUtils.getMonthName(locale, i, false);
@@ -273,7 +275,7 @@ public class BooklistCursorRow
 
             case BooklistGroup.RowKind.RATING:
                 try {
-                    int i = Integer.parseInt(s);
+                    int i = Integer.parseInt(source);
                     // If valid, get the name
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
@@ -284,6 +286,6 @@ public class BooklistCursorRow
                 break;
 
         }
-        return s;
+        return source;
     }
 }

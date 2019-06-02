@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border2"
-                android:text="@string/gr_btn_forget_credentials"
+                android:text="@string/gr_btn_delete_credentials"
                 />
 
         </LinearLayout>

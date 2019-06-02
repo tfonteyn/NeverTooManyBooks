@@ -129,9 +129,8 @@ public class IndexDefinition {
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
            .append('(').append(Csv.join(",", mDomains)).append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE) {
-            Logger.debugExit(this, "getSqlCreateStatement",
-                             sql.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
+            Logger.debugExit(this, "getSqlCreateStatement", sql.toString());
         }
         return sql.toString();
     }

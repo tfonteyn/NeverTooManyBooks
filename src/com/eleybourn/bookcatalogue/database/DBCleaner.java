@@ -120,8 +120,7 @@ public class DBCleaner {
         for (String name : names) {
             if (name != null && name.length() > 3) {
                 String iso = LocaleUtils.getISO3Language(name);
-                Logger.debug(this,
-                             "updateLanguages",
+                Logger.debug(this, "updateLanguages",
                              "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {
                     mDb.updateLanguage(name, iso);

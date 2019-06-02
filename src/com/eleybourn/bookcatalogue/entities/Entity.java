@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -23,11 +24,11 @@ public interface Entity {
     /**
      * Optional.
      *
-     * @param resources for locale specific strings
+     * @param context for locale specific strings
      *
      * @return the label to use.
      */
-    default String getLabel(@NonNull final Resources resources) {
+    default String getLabel(@NonNull final Context context) {
         return getLabel();
     }
 }

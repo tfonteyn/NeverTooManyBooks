@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.datamanager;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -166,7 +166,9 @@ public class DataManager {
 
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.debugWithStackTrace(this, "putAll", "key=`" + key + "`, value=" + value);
+                Logger.debugWithStackTrace(this, "putAll",
+                                           "key=`" + key + '`',
+                                           "value=" + value);
                 if (value != null) {
                     putString(key, value.toString());
                 }
@@ -319,8 +321,8 @@ public class DataManager {
     }
 
     /**
-     *  @return an int value.
-     *  */
+     * @return an int value.
+     */
     public int getInt(@NonNull final String key) {
         return mDatumMap.get(key).getInt(this, mRawData);
     }
@@ -342,8 +344,8 @@ public class DataManager {
     }
 
     /**
-     *  @return a long value.
-     *  */
+     * @return a long value.
+     */
     public long getLong(@NonNull final String key) {
         return mDatumMap.get(key).getLong(this, mRawData);
     }
@@ -525,7 +527,7 @@ public class DataManager {
      * Loop through and apply validators.
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
-     * Use {@link #getValidationExceptionMessage(Resources)} for the results.
+     * Use {@link #getValidationExceptionMessage} for the results.
      *
      * @return {@code true} if all validation passed.
      */
@@ -623,12 +625,12 @@ public class DataManager {
     /**
      * Retrieve the text message associated with the validation exceptions (if any).
      *
-     * @param res The resource manager to use when looking up strings.
+     * @param context for looking up strings.
      *
      * @return a user displayable list of error messages, or {@code null} if none present
      */
     @Nullable
-    public String getValidationExceptionMessage(@NonNull final Resources res) {
+    public String getValidationExceptionMessage(@NonNull final Context context) {
         if (mValidationExceptions.isEmpty()) {
             return null;
         } else {
@@ -636,7 +638,7 @@ public class DataManager {
             int cnt = 0;
             for (ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++cnt).append(") ")
-                       .append(e.getFormattedMessage(res))
+                       .append(e.getFormattedMessage(context))
                        .append('\n');
             }
             return message.toString();

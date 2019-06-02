@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,6 @@ import java.util.regex.Pattern;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -193,13 +193,16 @@ public class ISFDBBook
      * @param editions         List of ISFDB native book id
      * @param addSeriesFromToc whether to add any series found in the TOC to the book series.
      * @param fetchThumbnail   whether to get thumbnails as well
+     * @param resources        for locale strings
      */
-    @Nullable
+    @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
-                        @NonNull final Bundle /* out */ bookData,
                         final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail)
+                        final boolean fetchThumbnail,
+                        @NonNull final Resources resources)
             throws SocketTimeoutException {
+
+        Bundle bookData = new Bundle();
 
         mEditions = editions;
 
@@ -212,7 +215,7 @@ public class ISFDBBook
         } else {
             // nop, go get it.
             if (!loadPage(mPath, true)) {
-                return null;
+                return bookData;
             }
         }
 
@@ -344,9 +347,7 @@ public class ISFDBBook
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_FORMAT,
-                                       //TODO: do not use Application Context for String resources
-                                       Format.map(App.getAppContext().getResources(), tmp));
+                    bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(resources, tmp));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();

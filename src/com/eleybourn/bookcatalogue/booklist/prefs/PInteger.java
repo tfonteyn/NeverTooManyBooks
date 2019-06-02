@@ -34,10 +34,10 @@ public class PInteger
      * @param uuid         the style id
      * @param defaultValue default to use if there is no global default
      */
-    protected PInteger(@NonNull final String key,
-                       @NonNull final String uuid,
-                       final boolean isPersistent,
-                       @NonNull final Integer defaultValue) {
+    public PInteger(@NonNull final String key,
+                    @NonNull final String uuid,
+                    final boolean isPersistent,
+                    @NonNull final Integer defaultValue) {
         super(key, uuid, isPersistent, App.getListPreference(key, defaultValue));
     }
 

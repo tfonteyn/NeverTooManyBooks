@@ -118,15 +118,11 @@ TODO: uniform quotes in all string:
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
-    <string name="error_search_configuration">
-        Configuration error. Please open the Settings page and check your Search Site preferences.
-    </string>
+    <string name="error_search_configuration">"         Configuration error. Please open the Settings page and check your Search Site preferences.     "</string>
     <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
     <!-- Users of versions older than 4.0.0 need to upgrade to 5.x first -->
-    <string name="error_database_upgrade_failed">
-        Cannot upgrade from a version older than 4.0.0
-    </string>
+    <string name="error_database_upgrade_failed">"         Cannot upgrade from a version older than 4.0.0     "</string>
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -270,9 +266,7 @@ TODO: uniform quotes in all string:
         This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
-    <string name="confirm_merge_bookshelves">
-        The bookshelf you are renaming already exists. Would you like to merge them?
-    </string>
+    <string name="confirm_merge_bookshelves">"         The bookshelf you are renaming already exists. Would you like to merge them?     "</string>
     <string name="confirm_duplicate_book_message">
         The book you are trying to add already exists in the database,
         are you sure you want to add another copy?
@@ -353,7 +347,6 @@ TODO: uniform quotes in all string:
     <string name="searching_isfdb">Searching ISFDB</string>
     <string name="searching_open_library">Searching OpenLibrary</string>
 
-
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
     <!-- ####################################################################################### -->
@@ -413,9 +406,7 @@ TODO: uniform quotes in all string:
     <string name="gr_auth_blurb_part4">
         It looks like you have already authorized this app. If you would like to delete the
         credentials from this phone, then you can do so by pressing the button below. But it is
-        also important to de-authorize the application at the Goodreads website as well.\n
-        Forgetting the credentials here will remove the Goodreads option from the main
-        application menu.
+        also important to delete the application\'s registration on the Goodreads website as well.
     </string>
     <string name="gr_access_error">
         There was a network problem while accessing Goodreads. Please check if the Goodreads web
@@ -424,17 +415,17 @@ TODO: uniform quotes in all string:
     <string name="gr_title_auth_access">Authorize Access</string>
     <string name="gr_auth_access_already_auth">
         It looks like you have already authorized this application.
-        All Goodreads functions should be available already
+        All Goodreads functions should already be available.
     </string>
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
-    <string name="gr_btn_forget_credentials">Forget Credentials</string>
+    <string name="gr_btn_delete_credentials">Remove Credentials</string>
 
     <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
     <string name="gr_auth_check">Goodreads authorization check</string>
     <string name="gr_auth_successful">Goodreads authorization successful</string>
     <string name="gr_import_all_from_goodreads">Import all from Goodreads</string>
     <string name="gr_action_cannot_be_completed">
-        This action can not be completed until this application is authorized via the Goodreads
+        This action can not be completed until this application is authorized on the Goodreads
         web site. Once you have authorized this application, please retry.\n
         \nDo you want to authorize it now?
     </string>
@@ -478,7 +469,7 @@ TODO: uniform quotes in all string:
     </string>
 
     <!-- ####################################################################################### -->
-    <!-- == GoodReads Task & Event related; translation is not really needed but feel free == -->
+    <!-- == GoodReads Task & Event related; translation is not really important but feel free == -->
     <!-- ####################################################################################### -->
 
     <string name="gr_tq_title_task_errors">Task Errors</string>

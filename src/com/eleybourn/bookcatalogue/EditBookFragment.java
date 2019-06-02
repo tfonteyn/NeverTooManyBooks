@@ -254,7 +254,7 @@ public class EditBookFragment
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.vldt_failure)
-                    .setMessage(book.getValidationExceptionMessage(getResources()))
+                    .setMessage(book.getValidationExceptionMessage(getContext()))
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .create()
                     .show();

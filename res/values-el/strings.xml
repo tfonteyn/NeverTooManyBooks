@@ -487,13 +487,13 @@
     <string name="X_tab_lbl_loan">Δανεισ.</string>
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
-    <string name="gr_btn_forget_credentials">Να ξεχαστούν τα διαπιστευτήρια</string>
+    <string name="gr_btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
 
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε
-    τα διαπιστευτήρια από αυτό το τηλέφωνο, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό
-    να ακυρώσετε την άδεια της εφαρμογής και στην ιστοσελίδα του Goodreads.
-    \n\nΑν ξεχαστούν τα διαπιστευτήρια από εδώ θα διαγραφεί η επιλογή Goodreads από το κεντρικό μενού της εφαρμογής.</string>
+    τα διαπιστευτήρια από αυτό το τηλέφωνο, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί.
+    Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.
+    </string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
@@ -676,5 +676,6 @@
     <string name="btn_confirm_use">Χρήση</string>
     <string name="done">Εγινε</string>
     <string name="btn_options">Επιλογές</string>
+    <string name="book_format_paperback">"βιβλίο τσέπης "</string>
 
 </resources>

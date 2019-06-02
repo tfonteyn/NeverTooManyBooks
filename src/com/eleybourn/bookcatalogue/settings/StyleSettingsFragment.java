@@ -24,7 +24,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
@@ -77,7 +76,7 @@ public class StyleSettingsFragment
         @SuppressWarnings("ConstantConditions")
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
-        bar.setSubtitle(mStyle.getLabel(getResources()));
+        bar.setSubtitle(mStyle.getLabel(getContext()));
         if (mStyle.getId() == 0) {
             bar.setTitle(R.string.title_clone_style);
         } else {
@@ -162,7 +161,8 @@ public class StyleSettingsFragment
         // the 'filters' in use
         preference = findPreference(getString(R.string.pg_filters));
         if (preference != null) {
-            labels = mStyle.getFilterLabels(getResources(), false);
+            //noinspection ConstantConditions
+            labels = mStyle.getFilterLabels(getContext(), false);
             if (labels.isEmpty()) {
                 preference.setSummary(getString(R.string.none));
             } else {
@@ -173,7 +173,8 @@ public class StyleSettingsFragment
         // the 'groups' in use.
         preference = findPreference(getString(R.string.pg_groupings));
         if (preference != null) {
-            preference.setSummary(mStyle.getGroupLabels(getResources()));
+            //noinspection ConstantConditions
+            preference.setSummary(mStyle.getGroupLabels(getContext()));
             preference.getIntent().putExtra(UniqueId.BKEY_STYLE, (Parcelable) mStyle);
             preference.setOnPreferenceClickListener(p -> {
                 startActivityForResult(p.getIntent(), UniqueId.REQ_EDIT_STYLE_GROUPS);

@@ -19,10 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
@@ -44,11 +42,7 @@ public class AuthorWorksFragment
 
     private AuthorWorksModel mModel;
 
-    private RecyclerView mListView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private TocAdapter mAdapter;
-
-//    @Override
+    //    @Override
 //    @CallSuper
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
@@ -81,21 +75,21 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         getActivity().setTitle(title);
 
-        mListView = requireView().findViewById(android.R.id.list);
-        mListView.setHasFixedSize(true);
-        mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(mLinearLayoutManager);
+        RecyclerView listView = requireView().findViewById(android.R.id.list);
+        listView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        listView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        mListView.addItemDecoration(
-                new DividerItemDecoration(getContext(), mLinearLayoutManager.getOrientation()));
+        listView.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
 
-        if (!(mListView instanceof CFSRecyclerView)) {
-            mListView.addItemDecoration(
+        if (!(listView instanceof CFSRecyclerView)) {
+            listView.addItemDecoration(
                     new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
         }
 
-        mAdapter = new TocAdapter(getContext(), mModel);
-        mListView.setAdapter(mAdapter);
+        TocAdapter adapter = new TocAdapter(getContext(), mModel);
+        listView.setAdapter(adapter);
     }
 
     /**
@@ -156,9 +150,6 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements FastScrollerOverlay.SectionIndexerV2 {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         /** Icon to show for a book. */
         private final Drawable sBookIndicator;
         /** Icon to show for not a book. e.g. a short story... */
@@ -182,12 +173,6 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
             return new Holder(itemView);
@@ -196,11 +181,6 @@ public class AuthorWorksFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECYCLER_VIEW_IS_RECYCLING) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
 
             TocEntry item = mModel.getTocEntries().get(position);
             // decorate the row depending on toc entry or actual book

@@ -49,7 +49,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -268,7 +267,7 @@ public class CoverBrowserFragment
 
     /**
      * handle result from the {@link CoverBrowserViewModel.GetGalleryImageTask}.
-     *
+     * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      *
      * @param task     the task that finished
@@ -282,7 +281,7 @@ public class CoverBrowserFragment
         Objects.requireNonNull(mGalleryAdapter);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "update",
+            Logger.debug(this, "updateGallery",
                          "position=" + position,
                          "fileSpec=" + fileSpec);
         }
@@ -383,9 +382,6 @@ public class CoverBrowserFragment
     public class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         private final int mWidth;
         private final int mHeight;
 
@@ -399,12 +395,6 @@ public class CoverBrowserFragment
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             ImageView imageView = new ImageView(parent.getContext());
             imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
@@ -415,12 +405,6 @@ public class CoverBrowserFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-
-            if (BuildConfig.DEBUG) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
 
             // fetch an image based on the isbn
             @SuppressWarnings("ConstantConditions")

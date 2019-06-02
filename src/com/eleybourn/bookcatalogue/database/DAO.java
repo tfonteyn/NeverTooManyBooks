@@ -329,7 +329,7 @@ public class DAO
         // statements are instance based/managed
         mStatements = new SqlStatementManager(sSyncedDb);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSTANCE_COUNT) {
             debugAddInstance(this);
         }
     }
@@ -606,7 +606,7 @@ public class DAO
             mStatements.close();
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSTANCE_COUNT) {
             debugRemoveInstance(this);
         }
         mCloseWasCalled = true;
@@ -698,7 +698,8 @@ public class DAO
         String obTitle = encodeOrderByColumn(title, locale);
         // the title 'processed' and suited for comparing with the OrderBy column.
         //TODO: should be using a user context.
-        String obPreprocessedTitle = encodeOrderByColumn(preprocessTitle(App.getAppContext(), title, locale), locale);
+        String obPreprocessedTitle = encodeOrderByColumn(
+                preprocessTitle(App.getAppContext(), title, locale), locale);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         // the check of preprocessTitle is unconditional as it's an OR.
@@ -731,7 +732,8 @@ public class DAO
             params = new String[]{authorIdStr, authorIdStr};
         } else {
             sql = SqlSelectList.GET_TOC_ENTRIES_BY_AUTHOR_ID
-                    + " ORDER BY " + DOM_TITLE_OB + COLLATION;;
+                    + " ORDER BY " + DOM_TITLE_OB + COLLATION;
+            ;
             params = new String[]{authorIdStr};
         }
 
@@ -918,10 +920,9 @@ public class DAO
             return true;
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-            Logger.debug(this,
-                         "globalReplaceAuthor",
-                         "from=" + from.getId() + ", to=" + to.getId());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
+            Logger.debug(this, "globalReplaceAuthor",
+                         "from=" + from.getId(), "to=" + to.getId());
         }
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
@@ -1210,8 +1211,8 @@ public class DAO
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG /* always. */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
-                                 "KEY_AUTHOR_FORMATTED|inserting author: "
-                                         + author.stringEncoded());
+                                 "KEY_AUTHOR_FORMATTED",
+                                 "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author);
             }
@@ -1230,8 +1231,8 @@ public class DAO
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG /* always. */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
-                                 "KEY_AUTHOR_FAMILY_NAME|inserting author: "
-                                         + author.stringEncoded());
+                                 "KEY_AUTHOR_FAMILY_NAME",
+                                 "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author);
             }
@@ -1570,7 +1571,7 @@ public class DAO
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
-                Logger.debug(this, "updateBook", book.getRawData().toString());
+                Logger.debug(this, "updateBook", book.getRawData());
             }
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
@@ -1812,9 +1813,8 @@ public class DAO
             int position = 0;
             for (Series series : list) {
                 if (series.fixupId(this) == 0) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
-                        Logger.debug(this,
-                                     "insertBookSeries",
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
+                        Logger.debug(this, "insertBookSeries",
                                      "inserting series: " + series.stringEncoded());
                     }
                     insertSeries(series);
@@ -1894,18 +1894,16 @@ public class DAO
         }
 
         for (TocEntry tocEntry : list) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
-                Logger.debug(this,
-                             "updateOrInsertTOC",
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
+                Logger.debug(this, "updateOrInsertTOC",
                              "Adding TocEntryByBookId: " + tocEntry);
             }
 
             // handle the author.
             Author author = tocEntry.getAuthor();
             if (author.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
-                    Logger.debug(this,
-                                 "updateOrInsertTOC",
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
+                    Logger.debug(this, "updateOrInsertTOC",
                                  "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author);
@@ -1913,9 +1911,8 @@ public class DAO
 
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
-                    Logger.debug(this,
-                                 "updateOrInsertTOC",
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
+                    Logger.debug(this, "updateOrInsertTOC",
                                  "inserting tocEntry: " + tocEntry.stringEncoded());
                 }
                 // Be cautious; other threads may use the cached stmt, and set parameters.
@@ -1965,14 +1962,13 @@ public class DAO
                 insertBookTocStmt.executeInsert();
             }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                 Logger.debug(this, "updateOrInsertTOC",
                              "\n     bookId   : " + bookId,
                              "\n     authorId : " + author.getId(),
                              "\n     position : " + position);
             }
         }
-
     }
 
     /**
@@ -2018,7 +2014,7 @@ public class DAO
             for (Author author : list) {
                 // find/insert the author
                 if (author.fixupId(this) == 0) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookAuthors",
                                      "inserting author: " + author.stringEncoded());
                     }
@@ -2103,9 +2099,8 @@ public class DAO
             }
 
             if (bookshelf.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INSERT_BOOK_LINKS) {
-                    Logger.debug(this,
-                                 "insertBookBookshelf",
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
+                    Logger.debug(this, "insertBookBookshelf",
                                  "inserting bookshelf: " + bookshelf.stringEncoded());
                 }
                 insertBookshelf(bookshelf);
@@ -2226,9 +2221,8 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                Logger.debug(this,
-                             "globalReplacePositionedBookItem",
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
+                Logger.debug(this, "globalReplacePositionedBookItem",
                              "Re-position, total count=" + cursor.getCount());
             }
 
@@ -2266,7 +2260,7 @@ public class DAO
                 replacementIdPosStmt.bindLong(1, bookId);
                 replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                     Logger.debug(this, "globalReplacePositionedBookItem",
                                  "id=" + bookId,
                                  "to=" + toId,
@@ -2280,7 +2274,7 @@ public class DAO
                 // If the deleted object was more prominent than the new object,
                 // move the new one up
                 if (replacementIdPos > pos) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                         Logger.debug(this, "globalReplacePositionedBookItem",
                                      "id=" + bookId, "pos=" + pos,
                                      "replacementIdPos=" + replacementIdPos);
@@ -2300,9 +2294,8 @@ public class DAO
                 long minPos = checkMinStmt.simpleQueryForLong();
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                        Logger.debug(this,
-                                     "globalReplacePositionedBookItem",
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
+                        Logger.debug(this, "globalReplacePositionedBookItem",
                                      "id=" + bookId, "pos to 1, minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
@@ -3365,9 +3358,8 @@ public class DAO
             return true;
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-            Logger.debug(this,
-                         "globalReplaceSeries",
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
+            Logger.debug(this, "globalReplaceSeries",
                          "from=" + from.getId() + ", to=" + to.getId());
         }
 
@@ -3916,8 +3908,7 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this,
-                         "rebuildFts",
+            Logger.debug(this, "rebuildFts",
                          (System.nanoTime() - t0) + "nano");
         }
     }

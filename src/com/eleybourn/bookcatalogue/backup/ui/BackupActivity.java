@@ -78,7 +78,7 @@ public class BackupActivity
                                 String msg = getString(R.string.export_info_success_archive_details,
                                                        result.file.getParent(),
                                                        result.file.getName(),
-                                                       Utils.formatFileSize(getResources(),
+                                                       Utils.formatFileSize(BackupActivity.this,
                                                                             result.file.length()));
 
                                 new AlertDialog.Builder(BackupActivity.this)

@@ -610,7 +610,7 @@ public class XmlImporter
          * Constructor.
          * <p>
          * Important: a tag called "item" will trigger pre-v200 parsing: the 'type' attribute will
-         * be read and be used as the tagname.
+         * be read and be used as the tag-name.
          *
          * @param elementContext of the XML tag
          */
@@ -628,10 +628,8 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (NumberFormatException e) {
-                    if (BuildConfig.DEBUG /* WARN */) {
                         Logger.warn(this, "TagInfo",
                                     "invalid id in xml t: " + name);
-                    }
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);

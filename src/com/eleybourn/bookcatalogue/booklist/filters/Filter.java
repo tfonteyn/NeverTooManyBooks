@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,7 @@ public interface Filter {
      * @return a human readable label/name for this filter, or {@code null} if none.
      */
     @Nullable
-    default String getLabel(@NonNull Resources resources) {
+    default String getLabel(@NonNull Context context) {
         return null;
     }
 

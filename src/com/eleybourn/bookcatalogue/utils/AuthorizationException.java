@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -33,11 +33,11 @@ public class AuthorizationException
     }
 
     /**
-     * Use {@link #getFormattedMessage(Resources)} directly if possible.
+     * Use {@link #getFormattedMessage} directly if possible.
      */
     @Override
     public String getLocalizedMessage() {
-        return getFormattedMessage(App.getAppContext().getResources());
+        return getFormattedMessage(App.getAppContext());
     }
 
     /**
@@ -45,7 +45,7 @@ public class AuthorizationException
      */
     @NonNull
     @Override
-    public String getFormattedMessage(@NonNull final Resources resources) {
-        return resources.getString(R.string.error_authorization_failed, resources.getString(mSite));
+    public String getFormattedMessage(@NonNull final Context context) {
+        return context.getString(R.string.error_authorization_failed, context.getString(mSite));
     }
 }

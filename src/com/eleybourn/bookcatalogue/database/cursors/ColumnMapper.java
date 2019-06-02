@@ -25,8 +25,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * Tip: when using a ColumnMapper as a parameter to a constructor, e.g.
  * {@link com.eleybourn.bookcatalogue.entities.Bookshelf#Bookshelf(long, ColumnMapper)}
- * always pass the id separately. This gives the calling code a change to use for example
- * the foreign key id.
+ * always pass the id additionally/separately. This gives the calling code a change to use
+ * for example the foreign key id.
  */
 public class ColumnMapper {
 
@@ -66,7 +66,6 @@ public class ColumnMapper {
      *
      * @param domains a list of domains
      */
-    @SuppressWarnings("WeakerAccess")
     public void addDomains(@Nullable final DomainDefinition... domains)
             throws IllegalArgumentException {
         if (domains != null) {
@@ -97,26 +96,24 @@ public class ColumnMapper {
      * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final DomainDefinition domain) {
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        return (index != -1);
+        Integer index = mColumnIndexes.get(domain.name);
+        return (index != null) && (index != -1);
     }
 
     /**
-     * @param domain the name of the domain to get
+     * @param domainName the name of the domain to get
      *
      * @return the string value of the column. A {@code null} value will be returned as an empty String.
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
     @NonNull
-    public String getString(@NonNull final String domain)
+    public String getString(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain);
-        if (index == -1) {
-            throw new ColumnNotPresentException(domain);
+        Integer index = mColumnIndexes.get(domainName);
+        if ((index == null) || (index == -1)) {
+            throw new ColumnNotPresentException(domainName);
         }
         if (mCursor.isNull(index)) {
             return "";
@@ -135,9 +132,8 @@ public class ColumnMapper {
     public String getString(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
         if (mCursor.isNull(index)) {
@@ -156,9 +152,8 @@ public class ColumnMapper {
     public boolean getBoolean(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
 //        if (mCursor.isNull(index)) {
@@ -177,9 +172,8 @@ public class ColumnMapper {
     public int getInt(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
 //        if (mCursor.isNull(index)) {
@@ -198,9 +192,8 @@ public class ColumnMapper {
     public long getLong(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
 //        if (mCursor.isNull(index)) {
@@ -220,9 +213,8 @@ public class ColumnMapper {
     public double getDouble(final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
 //        if (mCursor.isNull(index)) {
@@ -243,9 +235,8 @@ public class ColumnMapper {
     public byte[] getBlob(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
-        @SuppressWarnings("ConstantConditions")
-        int index = mColumnIndexes.get(domain.name);
-        if (index == -1) {
+        Integer index = mColumnIndexes.get(domain.name);
+        if ((index == null) || (index == -1)) {
             throw new ColumnNotPresentException(domain.name);
         }
         return mCursor.getBlob(index);

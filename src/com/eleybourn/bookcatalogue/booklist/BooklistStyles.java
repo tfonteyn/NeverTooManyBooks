@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
@@ -225,7 +226,7 @@ public final class BooklistStyles {
                                   R.string.style_builtin_compact,
                                   BooklistGroup.RowKind.AUTHOR);
         builtinStyles.put(style.getUuid(), style);
-        style.setScaleFactor(BooklistStyle.SCALE_SMALLER);
+        style.setScaleFactor(BooklistStyle.SCALE_SMALL);
         style.setShowThumbnails(false);
 
         // Title
@@ -517,17 +518,17 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to a uuid.
      *
-     * @param resources for locale specific strings
+     * @param context for locale specific strings
      * @param name      of the style
      *
      * @return style uuid
      */
-    public static BooklistStyle getStyle(@NonNull final Resources resources,
+    public static BooklistStyle getStyle(@NonNull final Context context,
                                          @NonNull final String name) {
 
         // check builtin first.
         for (BooklistStyle style : getBuiltinStyles().values()) {
-            if (style.getLabel(resources).equals(name)) {
+            if (style.getLabel(context).equals(name)) {
                 return style;
             }
         }
@@ -535,7 +536,7 @@ public final class BooklistStyles {
         // try user-defined
         try (DAO db = new DAO()) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
-                if (style.getLabel(resources).equals(name)) {
+                if (style.getLabel(context).equals(name)) {
                     return style;
                 }
             }

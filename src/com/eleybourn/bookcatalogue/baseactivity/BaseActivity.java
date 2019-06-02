@@ -231,7 +231,7 @@ public abstract class BaseActivity
 
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
-                    Logger.debug(this, "onActivityResult",
+                    Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_SETTINGS");
                 }
                 //noinspection SwitchStatementWithTooFewBranches
@@ -245,7 +245,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "onActivityResult",
+                    Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
@@ -253,7 +253,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "onActivityResult",
+                    Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
@@ -261,7 +261,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.debug(this, "onActivityResult",
+                    Logger.debug(this, "BaseActivity.onActivityResult",
                                  "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
@@ -270,7 +270,7 @@ public abstract class BaseActivity
             // logging only
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.warn(this, "onActivityResult",
+                    Logger.warn(this, "BaseActivity.onActivityResult",
                                 "NOT HANDLED",
                                 "requestCode=" + requestCode,
                                 "resultCode=" + resultCode);

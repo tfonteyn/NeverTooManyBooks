@@ -125,11 +125,10 @@ public final class CoversDAO
                     + " WHERE " + DOM_CACHE_ID + "=?";
 
     /**
-     * NOT DEBUG: close() will only really close if INSTANCE_COUNTER == 0 is reached.
+     * NOT DEBUG: close() will only really close all statements if INSTANCE_COUNTER == 0 is reached.
      */
     @NonNull
     private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
-
 
     /**
      * We *try* to connect in the Constructor. But this can fail.
@@ -173,7 +172,7 @@ public final class CoversDAO
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
         if (BuildConfig.DEBUG /* always */) {
-            Logger.debug(sInstance, "getInstance", "instances created: " + noi);
+            Logger.debug(sInstance, "getInstance", "instances in use=" + noi);
         }
         return sInstance;
     }
@@ -233,8 +232,7 @@ public final class CoversDAO
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this,
-                             "close",
+                Logger.debug(this,"close",
                              "instances left: " + INSTANCE_COUNTER);
             }
 
@@ -405,7 +403,7 @@ public final class CoversDAO
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debugEnter(this, "onCreate", "database: " + db.getPath());
+                Logger.debugEnter(this, "onCreate", "database=" + db.getPath());
             }
             TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }

@@ -1,6 +1,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -172,7 +172,7 @@ public class Bookshelf
      *
      * @return the preferred bookshelf.
      */
-    public static Bookshelf getPreferred(@NonNull final Resources resources,
+    public static Bookshelf getPreferred(@NonNull final Context context,
                                          @NonNull final DAO db) {
         String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
         if (bookshelfName != null && !bookshelfName.isEmpty()) {
@@ -182,11 +182,11 @@ public class Bookshelf
                 return bookshelf;
             }
             // shelf must have been deleted, switch to 'all book'
-            return getAllBooksBookshelf(resources, db);
+            return getAllBooksBookshelf(context, db);
 
         } else {
             // no current shelf, start with initial shelf
-            return getDefaultBookshelf(resources, db);
+            return getDefaultBookshelf(context, db);
         }
     }
 
@@ -197,10 +197,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getDefaultBookshelf(@NonNull final Resources resources,
+    public static Bookshelf getDefaultBookshelf(@NonNull final Context context,
                                                 @NonNull final DAO db) {
         return new Bookshelf(DEFAULT_ID,
-                             resources.getString(R.string.bookshelf_my_books),
+                             context.getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db));
     }
 
@@ -211,10 +211,10 @@ public class Bookshelf
      *
      * @return shelf
      */
-    public static Bookshelf getAllBooksBookshelf(@NonNull final Resources resources,
+    public static Bookshelf getAllBooksBookshelf(@NonNull final Context context,
                                                  @NonNull final DAO db) {
         return new Bookshelf(ALL_BOOKS,
-                             resources.getString(R.string.bookshelf_all_books),
+                             context.getString(R.string.bookshelf_all_books),
                              BooklistStyles.getDefaultStyle(db));
     }
 

@@ -87,9 +87,8 @@ public class TrackedCursor
         super(driver, editTable, query, sync);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-            Logger.debug(this,
-                         "TrackedCursor", "instances created: "
-                                 + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+            Logger.debug(this, "TrackedCursor", "instances created: "
+                    + DEBUG_INSTANCE_COUNTER.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
 
@@ -161,8 +160,7 @@ public class TrackedCursor
                 Logger.debug(TrackedCursor.class, "dumpCursors", "No cursors");
             } else {
                 for (TrackedCursor c : cursors) {
-                    Logger.debug(TrackedCursor.class,
-                                 "dumpCursors",
+                    Logger.debug(TrackedCursor.class, "dumpCursors",
                                  "Cursor " + c.getCursorId());
                     for (StackTraceElement s : c.getStackTrace()) {
                         Logger.debug(TrackedCursor.class, "dumpCursors",
@@ -209,15 +207,14 @@ public class TrackedCursor
                 removeCursor();
                 mCloseWasCalled = true;
             }
-            Logger.debug(this,
-                         "close", "instances left: "
-                                 + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+            Logger.debug(this, "close", "instances left: "
+                    + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }
 
     /**
      * DEBUG only.
-     *
+     * <p>
      * Setting a break here can catch the exact moment that
      * a cursor is deleted before being closed.
      */

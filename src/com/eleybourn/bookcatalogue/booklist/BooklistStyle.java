@@ -23,11 +23,8 @@ package com.eleybourn.bookcatalogue.booklist;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -152,13 +149,23 @@ public class BooklistStyle
     public static final Integer SUMMARY_SHOW_ALL =
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
-    /** Scaling of text. No scaling. */
-    public static final int SCALE_NORMAL = 1;
-    /** Scaling of text. */
-    public static final int SCALE_SMALLER = 2;
-    /** Scaling of text. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int SCALE_LARGER = 3;
+    /* Scaling of text and thumbnails in booklist views. */
+    /** Scaling. Not in use, but keeping '0' as a spare value. */
+    @SuppressWarnings("unused")
+    public static final int SCALE_X_SMALL = 0;
+    /** Scaling. Text/Thumbnails. */
+    public static final int SCALE_SMALL = 1;
+    /** Scaling. Text/Thumbnails. */
+    public static final int SCALE_MEDIUM = 2;
+    /** Scaling. Text/Thumbnails. */
+    public static final int SCALE_LARGE = 3;
+
+    /** Scaling. Thumbnails. */
+    public static final int SCALE_X_LARGE = 6;
+    /** Scaling. Thumbnails. */
+    public static final int SCALE_2X_LARGE = 9;
+    /** Scaling. Thumbnails. */
+    public static final int SCALE_3X_LARGE = 12;
 
     /**
      * Unique name. This is a stored in our preference file (with the same name)
@@ -233,7 +240,7 @@ public class BooklistStyle
     private transient PInteger mScaleFontSize;
 
     /** Use normal or large thumbnails. */
-    private transient PBoolean mUseLargeThumbnails;
+    private transient PInteger mThumbnailScale;
 
     /**
      * Show list header info.
@@ -242,7 +249,7 @@ public class BooklistStyle
      */
     private transient PBitmask mShowHeaderInfo;
     /** Sorting. */
-    private transient PBoolean mSortAuthor;
+    private transient PBoolean mSortAuthorGivenNameFirst;
     /** Show a thumbnail on each book row in the list. */
     private transient PBoolean mExtraShowThumbnails;
 
@@ -315,15 +322,15 @@ public class BooklistStyle
     /**
      * Custom Parcelable constructor which allows cloning/new.
      *
-     * @param in        Parcel to read the object from
-     * @param isNew     when set to true, partially override the incoming data so we get
-     *                  a 'new' object but with the settings from the Parcel.
-     *                  The new id will be 0, and the uuid will be newly generated.
-     * @param resources for locale specific strings, will be {@code null} when doNew==false !
+     * @param in      Parcel to read the object from
+     * @param isNew   when set to true, partially override the incoming data so we get
+     *                a 'new' object but with the settings from the Parcel.
+     *                The new id will be 0, and the uuid will be newly generated.
+     * @param context for locale specific strings, will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
                             final boolean isNew,
-                            @Nullable final Resources resources) {
+                            @Nullable final Context context) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
@@ -342,7 +349,7 @@ public class BooklistStyle
         if (isNew) {
             // get a copy of the name first
             //noinspection ConstantConditions
-            setName(getLabel(resources));
+            setName(getLabel(context));
             // now reset the other identifiers.
             mId = 0;
             mNameResId = 0;
@@ -350,7 +357,7 @@ public class BooklistStyle
 
         mIsPreferred.set(in);
         mScaleFontSize.set(in);
-        mUseLargeThumbnails.set(in);
+        mThumbnailScale.set(in);
         mShowHeaderInfo.set(in);
 
         mStyleGroups.set(in);
@@ -362,7 +369,7 @@ public class BooklistStyle
         mExtraShowPublisher.set(in);
         mExtraShowFormat.set(in);
 
-        mSortAuthor.set(in);
+        mSortAuthorGivenNameFirst.set(in);
 
         mFilterRead.set(in);
         mFilterSigned.set(in);
@@ -400,14 +407,17 @@ public class BooklistStyle
         mStyleGroups = new PStyleGroups(mUuid, isUserDefined());
 
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
-        mScaleFontSize = new PInteger(Prefs.pk_bob_item_size, mUuid, isUserDefined());
+
+        mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid, isUserDefined());
+
         mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
                                        SUMMARY_SHOW_ALL);
 
-        mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid, isUserDefined());
+        mScaleFontSize = new PInteger(Prefs.pk_bob_text_size, mUuid, isUserDefined(),
+                                      SCALE_MEDIUM);
 
-        mUseLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid,
-                                           isUserDefined());
+        mThumbnailScale = new PInteger(Prefs.pk_bob_cover_size, mUuid, isUserDefined(),
+                                       SCALE_LARGE);
 
         // all extra details for book-rows.
         mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, isUserDefined(),
@@ -457,7 +467,7 @@ public class BooklistStyle
 
         mIsPreferred.writeToParcel(dest);
         mScaleFontSize.writeToParcel(dest);
-        mUseLargeThumbnails.writeToParcel(dest);
+        mThumbnailScale.writeToParcel(dest);
         mShowHeaderInfo.writeToParcel(dest);
 
         mStyleGroups.writeToParcel(dest);
@@ -469,7 +479,7 @@ public class BooklistStyle
         mExtraShowPublisher.writeToParcel(dest);
         mExtraShowFormat.writeToParcel(dest);
 
-        mSortAuthor.writeToParcel(dest);
+        mSortAuthorGivenNameFirst.writeToParcel(dest);
 
         mFilterRead.writeToParcel(dest);
         mFilterSigned.writeToParcel(dest);
@@ -500,16 +510,16 @@ public class BooklistStyle
 
     @Override
     public String getLabel() {
-        throw new IllegalStateException("Use getLabel(Resources)");
+        throw new IllegalStateException("Use getLabel(Context)");
     }
 
     /**
      * @return the system name or user-defined name based on kind of style this object defines.
      */
     @NonNull
-    public String getLabel(@NonNull final Resources resources) {
+    public String getLabel(@NonNull final Context context) {
         if (mNameResId != 0) {
-            return resources.getString(mNameResId);
+            return context.getString(mNameResId);
         } else {
             return mDisplayName.get();
         }
@@ -567,7 +577,7 @@ public class BooklistStyle
         // relative scaling of fonts
         map.put(mScaleFontSize.getKey(), mScaleFontSize);
         // size of thumbnails to use.
-        map.put(mUseLargeThumbnails.getKey(), mUseLargeThumbnails);
+        map.put(mThumbnailScale.getKey(), mThumbnailScale);
         // list header information shown
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
@@ -580,7 +590,7 @@ public class BooklistStyle
         map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
 
         // sorting
-        map.put(mSortAuthor.getKey(), mSortAuthor);
+        map.put(mSortAuthorGivenNameFirst.getKey(), mSortAuthorGivenNameFirst);
 
         // the groups that are used by the style
         map.put(mStyleGroups.getKey(), mStyleGroups);
@@ -616,7 +626,7 @@ public class BooklistStyle
     }
 
     boolean sortAuthorByGiven() {
-        return mSortAuthor.isTrue();
+        return mSortAuthorGivenNameFirst.isTrue();
     }
 
     public int getShowHeaderInfo() {
@@ -648,48 +658,41 @@ public class BooklistStyle
      */
     public float getScaleFactor() {
         switch (mScaleFontSize.get()) {
-            case SCALE_NORMAL:
-                return 1.0f;
-            case SCALE_SMALLER:
+            case SCALE_SMALL:
                 return 0.8f;
-            case SCALE_LARGER:
+            case SCALE_MEDIUM:
+                return 1.0f;
+            case SCALE_LARGE:
                 return 1.2f;
             default:
-                return SCALE_NORMAL;
+                return SCALE_MEDIUM;
         }
     }
 
     /**
-     * Used by built-in styles only.
+     * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
-    void setScaleFactor(@IntRange(from = SCALE_NORMAL, to = SCALE_LARGER) final int size) {
+    void setScaleFactor(@IntRange(from = SCALE_SMALL, to = SCALE_LARGE) final int size) {
         mScaleFontSize.set(size);
     }
 
+    public int getThumbnailScaleFactor() {
+        return mThumbnailScale.get();
+    }
+
     /**
-     * Note that 60 as a base is a good size for scaling.
+     * Get the scaled maximum size (height/width) in pixels to be used for images.
      *
-     * @return the scaled maximum size (height/width) to be used for images
-     * or zero if covers should not be shown.
+     * @return the max size, or zero if covers should not be shown.
      */
     public int getScaledCoverImageMaxSize(@NonNull final Context context) {
         if (mExtraShowThumbnails.isFalse()) {
             return 0;
         }
 
-        int maxSize;
-        if (mUseLargeThumbnails.isTrue()) {
-            maxSize = 90;
-        } else {
-            maxSize = 60;
-        }
-
-        maxSize *= getScaleFactor();
-
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
-        return maxSize;
+        return mThumbnailScale.get() * (int) context.getResources()
+                                                    .getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -729,7 +732,7 @@ public class BooklistStyle
     }
 
     /**
-     * Used by built-in styles only.
+     * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
     void setShowAuthor(final boolean show) {
@@ -737,7 +740,7 @@ public class BooklistStyle
     }
 
     /**
-     * Used by built-in styles only.
+     * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
     void setShowThumbnails(final boolean show) {
@@ -810,8 +813,8 @@ public class BooklistStyle
      * @return a list of in-use group names in a human readable format.
      */
     @NonNull
-    public String getGroupLabels(@NonNull final Resources resources) {
-        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getName(resources));
+    public String getGroupLabels(@NonNull final Context context) {
+        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getName(context));
     }
 
     /**
@@ -858,12 +861,12 @@ public class BooklistStyle
      *
      * @return the list of in-use filter names in a human readable format.
      */
-    public List<String> getFilterLabels(@NonNull final Resources resources,
+    public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
         List<String> labels = new ArrayList<>();
         for (Filter filter : mFilters.values()) {
             if (filter.isActive() || all) {
-                labels.add(filter.getLabel(resources));
+                labels.add(filter.getLabel(context));
             }
         }
         Collections.sort(labels);
@@ -871,7 +874,7 @@ public class BooklistStyle
     }
 
     /**
-     * Used by built-in styles only.
+     * Used by built-in styles only. Set by user via preferences screen.
      */
     @SuppressWarnings("SameParameterValue")
     void setFilter(@NonNull final String key,
@@ -908,36 +911,44 @@ public class BooklistStyle
         SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
-        mUseLargeThumbnails.set(ed, (Boolean) in.readObject());
+
+        Boolean legacyThumbnailScale = (Boolean)in.readObject();
+        // Boolean: null=='use-defaults', false='normal', true='large'
+        if (legacyThumbnailScale == null) {
+            mThumbnailScale.set(ed, SCALE_MEDIUM);
+        } else {
+            mThumbnailScale.set(ed, legacyThumbnailScale ? SCALE_LARGE : SCALE_MEDIUM);
+        }
 
         mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
         mExtraShowLocation.set(ed, (Boolean) in.readObject());
         mExtraShowPublisher.set(ed, (Boolean) in.readObject());
         mExtraShowAuthor.set(ed, (Boolean) in.readObject());
 
-        //	public static final int FILTER_READ = 1; => true => 1
-        //	public static final int FILTER_UNREAD = 2; => false => 0
-        //	public static final int FILTER_READ_AND_UNREAD = 3; => not set => -1
+        //	public static final int FILTER_READ = 1; => true
+        //	public static final int FILTER_UNREAD = 2; => false
+        //	public static final int FILTER_READ_AND_UNREAD = 3; => not set
         Integer legacyExtraReadUnreadAll = (Integer) in.readObject();
         switch (legacyExtraReadUnreadAll) {
             case 1:
+                legacyExtraReadUnreadAll = BooleanFilter.P_TRUE;
                 break;
             case 2:
-                legacyExtraReadUnreadAll = 0;
+                legacyExtraReadUnreadAll = BooleanFilter.P_FALSE;
                 break;
             default:
-                legacyExtraReadUnreadAll = -1;
+                legacyExtraReadUnreadAll = BooleanFilter.P_NOT_USED;
                 break;
         }
         mFilterRead.set(ed, legacyExtraReadUnreadAll);
 
         // v1 'condensed' was a Boolean.
-        Object tmpCondensed = in.readObject();
-        // up to and including v4: Boolean: null=='use-defaults', false='normal', true='condensed'
-        if (tmpCondensed == null) {
-            mScaleFontSize.set(ed, SCALE_NORMAL);
+        Boolean legacyCondensed = (Boolean) in.readObject();
+        // Boolean: null=='use-defaults', false='normal', true='condensed'
+        if (legacyCondensed == null) {
+            mScaleFontSize.set(ed, SCALE_MEDIUM);
         } else {
-            mScaleFontSize.set(ed, (Boolean) tmpCondensed ? SCALE_SMALLER : SCALE_NORMAL);
+            mScaleFontSize.set(ed, legacyCondensed ? SCALE_SMALL : SCALE_MEDIUM);
         }
 
         // v2
@@ -977,10 +988,10 @@ public class BooklistStyle
      * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param resources needed for the 'name' of the style.
+     * @param context needed for the 'name' of the style.
      */
     @NonNull
-    public BooklistStyle clone(@NonNull final Resources resources) {
+    public BooklistStyle clone(@NonNull final Context context) {
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -989,7 +1000,7 @@ public class BooklistStyle
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(parcel, true, resources);
+        BooklistStyle clone = new BooklistStyle(parcel, true, context);
         parcel.recycle();
 
         return clone;
@@ -1072,9 +1083,9 @@ public class BooklistStyle
                 + "\nmIsPreferred=" + mIsPreferred
                 + "\nmScaleFontSize=" + mScaleFontSize
                 + "\nmShowHeaderInfo=" + mShowHeaderInfo
-                + "\nmSortAuthor=" + mSortAuthor
+                + "\nmSortAuthorGivenNameFirst=" + mSortAuthorGivenNameFirst
                 + "\nmExtraShowThumbnails=" + mExtraShowThumbnails
-                + "\nmUseLargeThumbnails=" + mUseLargeThumbnails
+                + "\nmThumbnailScale=" + mThumbnailScale
                 + "\nmExtraShowBookshelves=" + mExtraShowBookshelves
                 + "\nmExtraShowLocation=" + mExtraShowLocation
                 + "\nmExtraShowAuthor=" + mExtraShowAuthor

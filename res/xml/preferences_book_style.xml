@@ -10,10 +10,10 @@
         >
 
         <EditTextPreference
-            android:hint="@string/info_tap_to_edit"
+            android:icon="@drawable/ic_edit"
             android:key="BookList.Style.Name"
-            android:selectAllOnFocus="true"
             android:title="@string/name"
+            android:selectAllOnFocus="true"
             />
 
         <PreferenceScreen
@@ -70,15 +70,16 @@
             >
 
             <SwitchPreference
-                android:defaultValue="false"
-                android:key="BookList.Style.Show.Bookshelves"
-                android:title="@string/lbl_bookshelves_long"
+                android:defaultValue="true"
+                android:icon="@drawable/ic_image"
+                android:key="BookList.Style.Show.Thumbnails"
+                android:title="@string/pt_bob_thumbnails_show"
                 />
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="BookList.Style.Show.Location"
-                android:title="@string/lbl_location"
+                android:key="BookList.Style.Show.Format"
+                android:title="@string/lbl_format"
                 />
 
             <SwitchPreference
@@ -89,8 +90,14 @@
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="BookList.Style.Show.Format"
-                android:title="@string/lbl_format"
+                android:key="BookList.Style.Show.Bookshelves"
+                android:title="@string/lbl_bookshelves_long"
+                />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="BookList.Style.Show.Location"
+                android:title="@string/lbl_location"
                 />
 
             <SwitchPreference
@@ -109,17 +116,20 @@
             android:title="@string/pt_bob_header"
             />
 
+        <!-- default == index '1' == value '1' == MEDIUM -->
         <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_bob_item_size"
-            android:entryValues="@array/pv_bob_item_size"
+            android:defaultValue="1"
+            android:entries="@array/pe_bob_text_size"
+            android:entryValues="@array/pv_bob_text_size"
             android:icon="@drawable/ic_format_size"
             android:key="BookList.Style.Scaling"
-            android:title="@string/pt_bob_item_size"
+            android:title="@string/pt_bob_text_size"
             />
 
     </PreferenceCategory>
 
+    <!-- technically speaking, thumbnails fall under 'Extra Book Details'
+        But ths is more user-friendly. -->
     <PreferenceCategory
         android:key="@string/pg_thumbnails"
         android:title="@string/pg_thumbnails"
@@ -132,11 +142,14 @@
             android:title="@string/pt_bob_thumbnails_show"
             />
 
-        <SwitchPreference
-            android:defaultValue="false"
+        <!-- default == index '2' == value '3' == LARGE -->
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_bob_cover_size"
+            android:entryValues="@array/pv_bob_cover_size"
             android:icon="@drawable/ic_photo_size_select_large"
-            android:key="BookList.Style.Show.LargeThumbnails"
-            android:title="@string/pt_bob_thumbnails_show_large"
+            android:key="BookList.Style.Scaling.Thumbnails"
+            android:title="@string/pt_bob_cover_size"
             />
 
     </PreferenceCategory>

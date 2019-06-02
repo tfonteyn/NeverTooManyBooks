@@ -99,7 +99,7 @@ public final class LocaleUtils {
     public static boolean isChanged(@NonNull final Context context) {
         boolean changed = !from(context).equals(getPreferredLocal());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debug(LocaleUtils.class, "isChanged", "==false");
+            Logger.debug(LocaleUtils.class, "isChanged", "=" + changed);
         }
         return changed;
     }
@@ -137,7 +137,7 @@ public final class LocaleUtils {
         createLanguageMappingCache(userLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugExit(LocaleUtils.class, "applyPreferred", "==true",
+            Logger.debugExit(LocaleUtils.class, "applyPreferred",
                              toDebugString(context));
         }
 
@@ -189,16 +189,6 @@ public final class LocaleUtils {
         } else {
             return LocaleUtils.from(lang);
         }
-    }
-
-    /**
-     * syntax sugar...
-     *
-     * @return the current Locale for the passed resources.
-     */
-    @NonNull
-    public static Locale from(@NonNull final Resources resources) {
-        return resources.getConfiguration().locale;
     }
 
     /**
@@ -285,8 +275,7 @@ public final class LocaleUtils {
     public static String getDisplayName(@NonNull final Context context,
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(LocaleUtils.class,
-                              "getLabel",
+            Logger.debugEnter(LocaleUtils.class,"getLabel",
                               "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);

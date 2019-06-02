@@ -29,6 +29,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 
 /**
@@ -48,7 +50,7 @@ public class BookSearchActivity
         super.onCreate(savedInstanceState);
 
         Bundle args = getIntent().getExtras();
-        @SuppressWarnings("ConstantConditions")
+        Objects.requireNonNull(args);
         String tag = args.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
 
         FragmentManager fm = getSupportFragmentManager();

@@ -28,9 +28,6 @@ import com.eleybourn.bookcatalogue.entities.Entity;
 public class RadioGroupRecyclerAdapter<T extends Entity>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
-    private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
@@ -62,12 +59,6 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        if (BuildConfig.DEBUG) {
-            debugNewViewCounter.incrementAndGet();
-            Logger.debug(this, "onCreateViewHolder",
-                         "debugNewViewCounter=" + debugNewViewCounter.get(),
-                         "viewType=" + viewType);
-        }
 
         View view = mInflater.inflate(R.layout.row_radiobutton, parent, false);
         return new Holder(view);
@@ -77,16 +68,10 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     public void onBindViewHolder(@NonNull final Holder holder,
                                  final int position) {
 
-        if (BuildConfig.DEBUG) {
-            debugBindViewCounter.incrementAndGet();
-            Logger.debug(this, "onBindViewHolder",
-                         "debugBindViewCounter=" + debugBindViewCounter.get());
-        }
-
         T item = mItems.get(position);
         holder.buttonView.setTag(R.id.TAG_ITEM, item);
 
-        holder.buttonView.setText(item.getLabel(mContext.getResources()));
+        holder.buttonView.setText(item.getLabel(mContext));
         // only 'check' the pre-selected item.
         holder.buttonView.setChecked(item.getId() == mSelectedItem.getId());
         holder.buttonView.setOnClickListener(this::itemCheckChanged);

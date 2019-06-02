@@ -1,12 +1,15 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -45,15 +48,14 @@ public final class Format {
     /**
      * Try to map website terminology to our own localised.
      *
-     * @param resources Current context
-     * @param source  string to map
+     * @param source string to map
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
     public static String map(@NonNull final Resources resources,
                              @NonNull final String source) {
 
-        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getSystemLocale()));
+        Integer resId = MAPPER.get(source.toLowerCase(resources.getConfiguration().locale));
         return resId != null ? resources.getString(resId)
                              : source;
     }

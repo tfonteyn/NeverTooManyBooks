@@ -25,6 +25,7 @@ public class BookFragmentModel
     @Override
     protected void onCleared() {
         if (mFlattenedBooklist != null) {
+            mFlattenedBooklist.close();
             mFlattenedBooklist.deleteData();
         }
 

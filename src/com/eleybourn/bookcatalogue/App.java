@@ -60,8 +60,8 @@ import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.settings.Prefs;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -80,7 +80,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 @AcraDialog(
         resText = R.string.acra_resDialogText,
         resTitle = R.string.app_name,
-        resTheme = R.style.AppTheme_Light_Blue,
+        resTheme = R.style.AppTheme_DayNight,
         resIcon = R.drawable.ic_warning,
         resCommentPrompt = R.string.acra_resDialogCommentPrompt)
 @AcraCore(reportContent = {
@@ -431,69 +431,6 @@ public class App
     }
 
     /**
-     * Initialize ACRA for a given Application.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(base);
-
-        ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
-        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
-    }
-
-    @Override
-    @CallSuper
-    public void onCreate() {
-        // Get the preferred locale as soon as possible
-        setSystemLocale();
-
-        // load the preferred theme from preferences.
-        isThemeChanged(App.getAppContext());
-
-        // create the singleton QueueManager
-        QueueManager.init();
-
-        super.onCreate();
-    }
-
-    /**
-     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
-     *
-     * @param newConfig The new device configuration.
-     */
-    @Override
-    @CallSuper
-    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        // same as in onCreate
-        setSystemLocale();
-
-        // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocal());
-        // propagate to registered callbacks.
-        super.onConfigurationChanged(newConfig);
-
-        if (BuildConfig.DEBUG /* always */) {
-            //API 24: newConfig.getLocales().get(0)
-            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
-        }
-
-    }
-
-    private void setSystemLocale() {
-        try {
-            LocaleUtils.init(Locale.getDefault());
-            LocaleUtils.applyPreferred(getBaseContext());
-        } catch (RuntimeException e) {
-            // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.error(this, e);
-        }
-    }
-
-    /**
      * DEBUG only.
      */
     public static void debugDayNightMode() {
@@ -575,6 +512,69 @@ public class App
                 Logger.debug(App.class, "debugDayNightMode",
                              "currentNightMode=Twilight Zone");
                 break;
+        }
+    }
+
+    /**
+     * Initialize ACRA for a given Application.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    protected void attachBaseContext(@NonNull final Context base) {
+        super.attachBaseContext(base);
+
+        ACRA.init(this);
+        ACRA.getErrorReporter().putCustomData("TrackerEventsInfo", Tracker.getEventsInfo());
+        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+    }
+
+    @Override
+    @CallSuper
+    public void onCreate() {
+        // Get the preferred locale as soon as possible
+        setSystemLocale();
+
+        // load the preferred theme from preferences.
+        isThemeChanged(App.getAppContext());
+
+        // create the singleton QueueManager
+        QueueManager.init();
+
+        super.onCreate();
+    }
+
+    /**
+     * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
+     *
+     * @param newConfig The new device configuration.
+     */
+    @Override
+    @CallSuper
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
+        // same as in onCreate
+        setSystemLocale();
+
+        // override in the new config
+        newConfig.setLocale(LocaleUtils.getPreferredLocal());
+        // propagate to registered callbacks.
+        super.onConfigurationChanged(newConfig);
+
+        if (BuildConfig.DEBUG /* always */) {
+            //API 24: newConfig.getLocales().get(0)
+            Logger.debug(this, "onConfigurationChanged", newConfig.locale);
+        }
+
+    }
+
+    private void setSystemLocale() {
+        try {
+            LocaleUtils.init(Locale.getDefault());
+            LocaleUtils.applyPreferred(getBaseContext());
+        } catch (RuntimeException e) {
+            // Not much we can do...we want locale set early, but not fatal if it fails.
+            Logger.error(this, e);
         }
     }
 }

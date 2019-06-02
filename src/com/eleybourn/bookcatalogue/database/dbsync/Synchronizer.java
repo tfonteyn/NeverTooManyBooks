@@ -69,9 +69,9 @@ public class Synchronizer {
     @NonNull
     SyncLock getSharedLock() {
         final Thread thread = Thread.currentThread();
-        //Logger.debug(t.getName() + " requesting SHARED lock");
+//        Logger.debug(this, "getSharedLock", thread.getName() + " requesting SHARED lock");
         mLock.lock();
-        //Logger.info(t.getName() + " locked lock held by " + mLock.getHoldCount());
+//        Logger.debug(this, "getSharedLock", thread.getName() + " locked lock held by " + mLock.getHoldCount());
         purgeOldLocks();
         try {
             Integer count = mSharedOwners.get(thread);
@@ -81,11 +81,11 @@ public class Synchronizer {
                 count = 1;
             }
             mSharedOwners.put(thread, count);
-            //Logger.info(t.getName() + " " + count + " SHARED threads");
+//            Logger.debug(this, "getSharedLock", thread.getName() + " " + count + " SHARED threads");
             return mSharedLock;
         } finally {
             mLock.unlock();
-            //Logger.info(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
+//            Logger.debug(this, "getSharedLock", thread.getName() + " unlocked lock held by " + mLock.getHoldCount());
         }
     }
 

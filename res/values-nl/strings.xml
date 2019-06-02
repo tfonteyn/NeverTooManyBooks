@@ -671,12 +671,11 @@
     </string>
     <string name="tab_lbl_details">Details</string>
     <string name="X_tab_lbl_loan">Uitlenen</string>
-    <string name="gr_btn_forget_credentials">Vergeet inloggegevens</string>
+    <string name="gr_btn_delete_credentials">Verwijder inloggegevens</string>
     <string name="gr_auth_blurb_part4">
         Het lijkt er op dat u deze app al heeft geautoriseerd. als u de inloggegevens op dit
         apparaat wilt wissen kunt u dat doen door op de knop hieronder te drukken. Maar het is
         ook belangrijk de autorisatie van de applicatie op de website van Goodreads te verwijderen.
-        \n\nWissen van de inloggegevens hier zal de goodread optie uit het hoofdmenu verwijderen.
     </string>
 
     <string name="progress_msg_connecting">Verbinding maken met website…</string>

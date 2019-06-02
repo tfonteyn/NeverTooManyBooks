@@ -55,7 +55,7 @@ public class EditSeriesDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+    public static final String TAG = EditSeriesDialogFragment.class.getSimpleName();
 
     /** Database access. */
     private DAO mDb;

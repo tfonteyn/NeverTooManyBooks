@@ -492,13 +492,12 @@
     <string name="X_tab_lbl_loan">Préstamo</string>
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
-    <string name="gr_btn_forget_credentials">Olvidar credenciales</string>
+    <string name="gr_btn_delete_credentials">Eliminar credenciales</string>
 
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">Parece que ya ha autorizado esta aplicación. Si quiere
     eliminar los datos de acceso (credenciales) de este dispositivo, puede hacerlo pulsando el botón siguiente. También es
-    importante que elimine la autorización para esta aplicación en el sitio web de Goodreads.
-    \n\nAl eliminar las credenciales se eliminará la opción Goodreads del menú principal de la aplicación.</string>
+    importante que elimine la autorización para esta aplicación en el sitio web de Goodreads.</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>
@@ -769,4 +768,5 @@
     <string name="vldt_failure">Fallo de validación.</string>
     <string name="title_import">Importar</string>
     <string name="btn_drag_handle">Arrástrame para reordenar esta lista.</string>
+    <string name="book_format_digest">Digest</string>
 </resources>

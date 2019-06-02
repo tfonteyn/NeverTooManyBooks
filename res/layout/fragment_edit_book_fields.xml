@@ -22,8 +22,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:contentDescription="@string/lbl_cover"
-            tools:layout_height="256px"
-            tools:layout_width="256px"
+            tools:layout_height="115dp"
+            tools:layout_width="76dp"
             tools:src="@drawable/ic_image"
             />
 

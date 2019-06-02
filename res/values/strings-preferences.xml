@@ -12,6 +12,7 @@
     <string name="pg_general">General</string>
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
+
     <string name="pt_ui_field_visibility">Field Visibility</string>
 
     <!-- Preference Category -->
@@ -198,14 +199,14 @@
 
     <!-- ========== Book list style preferences ========== -->
 
-    <!-- Preference - Use scaled text and images (not boolean, as we might add more size-options -->
-    <string name="pt_bob_item_size">Size of book list items</string>
-    <string-array name="pe_bob_item_size">
-        <item>Normal</item>
-        <item>Smaller</item>
-        <item>Larger</item>
+    <!-- Preference - Scale text. -->
+    <string name="pt_bob_text_size">Size of book list text</string>
+    <string-array name="pe_bob_text_size">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
     </string-array>
-    <string-array name="pv_bob_item_size">
+    <string-array name="pv_bob_text_size">
         <item translatable="false">1</item>
         <item translatable="false">2</item>
         <item translatable="false">3</item>
@@ -229,8 +230,25 @@
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
 
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Prefer large thumbnails</string>
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Thumbnails size in lists</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>X-Large</item>
+        <item>2X-Large</item>
+        <item>3X-Large</item>
+    </string-array>
+    <!-- the values are multipliers and must match the ones in {@link BooklistStyle#SCALE_*} -->
+    <string-array name="pv_bob_cover_size">
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+        <item translatable="false">3</item>
+        <item translatable="false">6</item>
+        <item translatable="false">9</item>
+        <item translatable="false">12</item>
+    </string-array>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>

@@ -206,12 +206,6 @@ public class GoodreadsSearchResultsActivity
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View view = getLayoutInflater().inflate(R.layout.goodreads_work_item, parent, false);
             return new Holder(view);

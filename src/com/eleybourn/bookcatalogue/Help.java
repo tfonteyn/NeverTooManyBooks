@@ -90,7 +90,7 @@ public class Help
             cleanupBtn.setVisibility(View.VISIBLE);
             cleanupTxt.setVisibility(View.VISIBLE);
             cleanupTxt.setText(getString(R.string.info_cleanup_files_text,
-                                         Utils.formatFileSize(getResources(), space)));
+                                         Utils.formatFileSize(this, space)));
         }
     }
 }

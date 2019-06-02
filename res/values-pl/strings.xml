@@ -75,7 +75,6 @@
     <string name="error_search_exception">Wyszukiwanie nie powiodło się: %1$s: %2$s</string>
     <string name="menu_delete">Usuń</string>
     <string name="help">Pomoc</string>
-    <string name="pt_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -191,7 +190,7 @@
     <string name="btn_more_info">Więcej informacji.</string>
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="lt_reset_messages_info">Od czasu do czasu program może wyświetlać komunikaty z LibraryThing. Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
-    <string name="btn_reset">Reset</string>
+    <string name="btn_reset">Nastawić</string>
     <string name="debug_send_info_text">Naciśnij przycisk poniżej, by zebrać informacje o problemach i błędach i wysłać je do programistów. Zostanie wykonana kopia danych i logów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
     <string name="about_send_info">Wyślij</string>
     <string name="info_cleanup_files_text">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij \‘Wyślij \’ najpierw.</string>
@@ -206,7 +205,6 @@
     <string name="lbl_x_pages">%1$d stron</string>
     <string name="lbl_location_long">Lokalizacja książki</string>
     <string name="lbl_publication">Publikacja</string>
-    <string name="pg_general">Ogólne</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -284,5 +282,15 @@
     <string name="btn_confirm_use">Użyj</string>
     <string name="done">Gotowe</string>
     <string name="edit">Adiustować</string>
+    <string name="error_email_failed">E-mail nie mógł zostać wysłany.</string>
+    <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
+    <string name="gr_btn_delete_credentials">Usuń poświadczenia</string>
+    <string name="gr_tq_requested_task_is_already_queued">Żądane zadanie jest już w kolejce</string>
+    <string name="hint_reset_all_hints">Zresetuj wskazówki</string>
+    <string name="gr_tq_queued">W kolejce</string>
+    <string name="menu_search_internet">Szukaj w Internecie</string>
+    <string name="title_select_an_action">Wybierz akcję</string>
+    <string name="lbl_search_sites">Witryny wyszukiwania</string>
+
 
 </resources>

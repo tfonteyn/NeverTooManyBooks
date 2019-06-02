@@ -118,12 +118,24 @@
     <!-- ========== Book list style preferences ========== -->
 
     <!-- Preference - Use scaled text and images -->
-    <string name="pt_bob_item_size">Kitap dizelgesi öğeleri boyutu</string>
-    <string-array name="pe_bob_item_size">
-        <item>Olağan</item>
-        <item>Daha ufak</item>
-        <item>Daha büyük</item>
+    <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
+    <string-array name="pe_bob_text_size">
+        <item>Küçük</item>
+        <item>Orta</item>
+        <item>Büyük</item>
     </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Listelerdeki görüntü boyutu</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Küçük</item>
+        <item>Orta</item>
+        <item>Büyük</item>
+        <item>X-Büyük</item>
+        <item>2X-Büyük</item>
+        <item>3X-Büyük</item>
+    </string-array>
+
     <!-- Preference - Determines what is show in book list header -->
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string-array name="pe_bob_header">
@@ -134,8 +146,6 @@
 
     <!-- Preference - Show thumbnail image for each book -->
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
-    <!-- Preference - Show large thumbnail if thumbnails are shown -->
-    <string name="pt_bob_thumbnails_show_large">Büyük resimleri yeğle</string>
 
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>

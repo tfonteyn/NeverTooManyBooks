@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperAdapter;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
@@ -31,9 +28,6 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewViewHolderBase>
         extends RecyclerView.Adapter<VHT>
         implements ItemTouchHelperAdapter {
-
-    protected final AtomicInteger debugNewViewCounter = new AtomicInteger();
-    private final AtomicInteger debugBindViewCounter = new AtomicInteger();
 
     @NonNull
     private final List<Item> mItems;
@@ -73,12 +67,6 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     @CallSuper
     public void onBindViewHolder(@NonNull final VHT holder,
                                  final int position) {
-
-        if (BuildConfig.DEBUG) {
-            debugBindViewCounter.incrementAndGet();
-            Logger.debug(this, "onBindViewHolder",
-                         "debugBindViewCounter=" + debugBindViewCounter.get());
-        }
 
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {

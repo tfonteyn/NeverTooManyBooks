@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -88,7 +87,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTE
  * <p>
  * IMPORTANT: The {@link #mDomains} must be set at runtime each time but that is ok as
  * they are only needed at list build time. They are NOT stored.
- *
+ * <p>
  * (Small) note: the way preferences are implemented means that all groups will add their
  * properties to the persisted state of a style. Not just the groups which are active/present
  * for that state. This is fine, as they won't get used unless activated.
@@ -227,6 +226,17 @@ public class BooklistGroup
         return mUuid;
     }
 
+    /**
+     * Limited use for de-serialisation from a pre-v200 archive support.
+     * Once the groups are processed, the UUID needs to be set manually
+     * during de-serialization of the Style itself.
+     *
+     * @param uuid to set (from the Style)
+     */
+    public void setUuid(@NonNull final String uuid) {
+        mUuid = uuid;
+    }
+
     public boolean isUserDefinedStyle() {
         return mIsUserDefinedStyle;
     }
@@ -235,8 +245,8 @@ public class BooklistGroup
         return kind;
     }
 
-    public String getName(@NonNull final Resources resources) {
-        return RowKind.get(kind).getName(resources);
+    public String getName(@NonNull final Context context) {
+        return RowKind.get(kind).getName(context);
     }
 
     @NonNull
@@ -296,17 +306,6 @@ public class BooklistGroup
         mUuid = "";
         initPrefs();
         in.defaultReadObject();
-    }
-
-    /**
-     * Limited use for de-serialisation from a pre-v200 archive support.
-     * Once the groups are processed, the UUID needs to be set manually
-     * during de-serialization of the Style itself.
-     *
-     * @param uuid to set (from the Style)
-     */
-    public void setUuid(@NonNull final String uuid) {
-        mUuid = uuid;
     }
 
     /**
@@ -856,15 +855,15 @@ public class BooklistGroup
         }
 
         @NonNull
-        String getName(@NonNull final Resources resources) {
-            return resources.getString(mLabelId);
+        String getName(@NonNull final Context context) {
+            return context.getString(mLabelId);
         }
 
         @Override
         @NonNull
         public String toString() {
             return "RowKind{"
-                    + "name=" + getName(App.getAppContext().getResources())
+                    + "name=" + getName(App.getAppContext())
                     + '}';
         }
     }

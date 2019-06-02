@@ -62,21 +62,21 @@ public final class Prefs {
     public static final String pk_bob_thumbnails_generating_mode = "BookList.ThumbnailsInBackground";
     public static final String pk_bob_thumbnails_cache_resized = "BookList.ThumbnailsCached";
 
-
-    public static final String pk_bob_thumbnails_show_large = "BookList.Style.Show.LargeThumbnails";
-    public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
-
     public static final String pk_bob_style_name = "BookList.Style.Name";
     public static final String pk_bob_groups = "BookList.Style.Groups";
     public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
-    public static final String pk_bob_item_size = "BookList.Style.Scaling";
     public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
+
+    public static final String pk_bob_text_size = "BookList.Style.Scaling";
+    public static final String pk_bob_cover_size = "BookList.Style.Scaling.Thumbnails";
 
     public static final String pk_bob_books_under_multiple_authors = "BookList.Style.Group.Authors.ShowAll";
     public static final String pk_bob_books_under_multiple_series = "BookList.Style.Group.Series.ShowAll";
     public static final String pk_bob_format_author_name = "BookList.Style.Group.Authors.DisplayFirstThenLast";
     public static final String pk_bob_sort_author_name = "BookList.Style.Sort.Author.GivenFirst";
 
+    /** Show the cover image for each book. */
+    public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
     /** Show list of bookshelves for each book. */
     public static final String pk_bob_show_bookshelves = "BookList.Style.Show.Bookshelves";
     /** Show location for each book. */
@@ -246,7 +246,10 @@ public final class Prefs {
                         break;
 
                     case "BookList.LargeThumbnails":
-                        ed.putBoolean(pk_bob_thumbnails_show_large, (Boolean) oldValue);
+                        int tSize = (Boolean) oldValue ? BooklistStyle.SCALE_LARGE
+                                                       : BooklistStyle.SCALE_MEDIUM;
+                        // this is now a PInteger (a ListPreference), stored as a string
+                        ed.putString(pk_bob_cover_size, String.valueOf(tSize));
                         break;
 
                     case "BookList.ShowLocation":
@@ -266,10 +269,10 @@ public final class Prefs {
                         break;
 
                     case "BookList.Condensed":
-                        int con = (Boolean) oldValue ? BooklistStyle.SCALE_SMALLER
-                                                     : BooklistStyle.SCALE_NORMAL;
+                        int con = (Boolean) oldValue ? BooklistStyle.SCALE_SMALL
+                                                     : BooklistStyle.SCALE_MEDIUM;
                         // this is now a PInteger (a ListPreference), stored as a string
-                        ed.putString(pk_bob_item_size, String.valueOf(con));
+                        ed.putString(pk_bob_text_size, String.valueOf(con));
                         break;
 
                     case "BookList.ShowHeaderInfo":
@@ -319,7 +322,7 @@ public final class Prefs {
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
                         ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyle(context.getResources(), styleName).getUuid());
+                                   BooklistStyles.getStyle(context, styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -328,7 +331,7 @@ public final class Prefs {
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
                             styleName = style.substring(0, style.length() - 2);
-                            uuidSet.add(BooklistStyles.getStyle(context.getResources(), styleName).getUuid());
+                            uuidSet.add(BooklistStyles.getStyle(context, styleName).getUuid());
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
                                      Csv.join(",", uuidSet));

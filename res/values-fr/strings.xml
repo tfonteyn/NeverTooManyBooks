@@ -565,13 +565,12 @@
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
     <string name="X_tab_lbl_loan">Prêt</string>
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
-    <string name="gr_btn_forget_credentials">Suppr. les données de connexion</string>
+    <string name="gr_btn_delete_credentials">Suppr. les données de connexion</string>
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer
         vos données de connexion, vos pouvez cliquer sur le bouton ci-dessous. Mais, il est aussi
-        important  d\'enlever cette autoristation sur le site de Goodreads également.\n
-        \nSupprimer les données de connection enlevera l\'option Goodreads du menu principal.
+        important  d\'enlever cette autoristation sur le site de Goodreads également.
     </string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connection au site…</string>
@@ -832,4 +831,5 @@
     <string name="vldt_failure">Échec de validation.</string>
     <string name="title_import">Importer</string>
     <string name="btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
+    <string name="book_format_digest">Petit format</string>
 </resources>

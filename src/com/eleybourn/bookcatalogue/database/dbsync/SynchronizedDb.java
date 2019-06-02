@@ -110,21 +110,17 @@ public class SynchronizedDb {
                 f.setAccessible(true);
                 int refs = (Integer) f.get(db);
                 if (msg != null) {
-                    Logger.debug(SynchronizedDb.class,
-                                 "printRefCount",
+                    Logger.debug(SynchronizedDb.class, "printRefCount",
                                  "DBRefs (" + msg + "): " + refs);
 //                    if (refs < 100) {
-//                        Logger.debug(SynchronizedDb.class,
-//                              "printRefCount",
-//                                             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+//                        Logger.debug(SynchronizedDb.class, "printRefCount",
+//                                     "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
 //                    } else if (refs < 1001) {
-//                        Logger.debug(SynchronizedDb.class,
-//                              "printRefCount",
-//                                             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+//                        Logger.debug(SynchronizedDb.class, "printRefCount",
+//                                     "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
 //                    } else {
-//                        Logger.debug(SynchronizedDb.class,
-//                              "printRefCount",
-//                                             "DBRefs (" + msg + "): " + refs);
+//                        Logger.debug(SynchronizedDb.class, "printRefCount",
+//                                     "DBRefs (" + msg + "): " + refs);
 //                    }
 
                 }
@@ -167,9 +163,8 @@ public class SynchronizedDb {
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.debug(this,
-                                 "openWithRetries",
-                                 db.getPath() + "|retriesLeft=" + retriesLeft);
+                    Logger.debug(this, "openWithRetries",
+                                 db.getPath(), "retriesLeft=" + retriesLeft);
                     debugDumpInfo(db);
                 }
                 return db;
@@ -205,8 +200,7 @@ public class SynchronizedDb {
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
-                    Logger.debug(this,
-                                 "debugDumpInfo",
+                    Logger.debug(this, "debugDumpInfo",
                                  s + " => " + cursor.getString(0));
                 }
             }
@@ -500,7 +494,6 @@ public class SynchronizedDb {
      *
      * @return {@code true} if the current thread is in a transaction.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
         return mSqlDb.inTransaction();
     }
@@ -588,8 +581,7 @@ public class SynchronizedDb {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Logger.debug(this,
-                             "isCollationCaseSensitive",
+                Logger.debug(this, "isCollationCaseSensitive",
                              sIsCollationCaseSensitive);
             }
         }

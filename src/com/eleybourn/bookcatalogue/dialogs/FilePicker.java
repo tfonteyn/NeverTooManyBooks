@@ -14,11 +14,8 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -55,9 +52,6 @@ public class FilePicker
     private static class FileItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final AtomicInteger debugNewViewCounter = new AtomicInteger();
-        private final AtomicInteger debugBindViewCounter = new AtomicInteger();
-
         @NonNull
         final Locale mLocale;
         @NonNull
@@ -82,12 +76,6 @@ public class FilePicker
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            if (BuildConfig.DEBUG) {
-                debugNewViewCounter.incrementAndGet();
-                Logger.debug(this, "onCreateViewHolder",
-                             "debugNewViewCounter=" + debugNewViewCounter.get(),
-                             "viewType=" + viewType);
-            }
 
             View root = mInflater.inflate(R.layout.row_file_list_item, parent, false);
             return new Holder(root);
@@ -97,18 +85,12 @@ public class FilePicker
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            if (BuildConfig.DEBUG) {
-                debugBindViewCounter.incrementAndGet();
-                Logger.debug(this, "onBindViewHolder",
-                             "debugBindViewCounter=" + debugBindViewCounter.get());
-            }
-
             Context context = mInflater.getContext();
 
             File item = mList.get(position);
             holder.name.setText(item.getName());
             holder.path.setText(item.getParent());
-            holder.size.setText(Utils.formatFileSize(context.getResources(), item.length()));
+            holder.size.setText(Utils.formatFileSize(context, item.length()));
             holder.lastModDate.setText(DateUtils.toPrettyDateTime(mLocale,
                                                                   new Date(item.lastModified())));
 

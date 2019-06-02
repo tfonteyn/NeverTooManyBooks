@@ -115,7 +115,7 @@ public class TableDefinition
      */
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
             Logger.debug(TableDefinition.class, "drop", "TABLE:" + name);
         }
         db.execSQL("DROP TABLE IF EXISTS " + name);
@@ -211,17 +211,15 @@ public class TableDefinition
                 .setPrimaryKey(mPrimaryKey)
                 .setType(mType);
 
-        for (Map.Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
-            FkReference fk = fkEntry.getValue();
+        for (FkReference fk : mParents.values()) {
             newTbl.addReference(fk.mParent, fk.mDomains);
         }
-        for (Map.Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
-            FkReference fk = fkEntry.getValue();
+        for (FkReference fk : mChildren.values()) {
             fk.mChild.addReference(newTbl, fk.mDomains);
         }
-        for (Map.Entry<String, IndexDefinition> e : mIndexes.entrySet()) {
-            IndexDefinition index = e.getValue();
-            newTbl.addIndex(e.getKey(), index.getUnique(), index.getDomains());
+        for (Map.Entry<String, IndexDefinition> entry : mIndexes.entrySet()) {
+            IndexDefinition index = entry.getValue();
+            newTbl.addIndex(entry.getKey(), index.getUnique(), index.getDomains());
         }
         return newTbl;
     }
@@ -238,8 +236,7 @@ public class TableDefinition
 
         // Need to make local copies to avoid 'collection modified' errors
         List<TableDefinition> tmpParents = new ArrayList<>();
-        for (Map.Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
-            FkReference fk = fkEntry.getValue();
+        for (FkReference fk : mParents.values()) {
             tmpParents.add(fk.mParent);
         }
         for (TableDefinition parent : tmpParents) {
@@ -248,8 +245,7 @@ public class TableDefinition
 
         // Need to make local copies to avoid 'collection modified' errors
         List<TableDefinition> tmpChildren = new ArrayList<>();
-        for (Map.Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
-            FkReference fk = fkEntry.getValue();
+        for (FkReference fk : mChildren.values()) {
             tmpChildren.add(fk.mChild);
         }
         for (TableDefinition child : tmpChildren) {
@@ -767,9 +763,8 @@ public class TableDefinition
         // end of column/constraint list
         sql.append(')');
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE) {
-            Logger.debugExit(this, "getSqlCreateStatement",
-                             sql.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_DDL) {
+            Logger.debugExit(this, "getSqlCreateStatement", sql.toString());
         }
         return sql.toString();
     }

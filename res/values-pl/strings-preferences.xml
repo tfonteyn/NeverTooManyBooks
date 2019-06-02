@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Preference Category -->
+    <string name="pg_general">Ogólne</string>
+    <!-- Preference Category -->
+    <string name="pg_ui">Interfejs użytkownika</string>
+
+    <string name="pt_ui_field_visibility">Dostosuj widoczność pól</string>
+
+    <!-- Preference Category -->
+    <string name="pg_thumbnails">Miniatury</string>
+    <!-- Preference Category -->
+    <string name="pg_scanning">Skaner</string>
+
+    <!-- Preference Category -->
+    <string name="pg_booklist">Listy książek</string>
+    <!-- Preference Category; filters in booklist style -->
+    <string name="pg_filters">Filtry</string>
+    <!-- Preference Category; groups (RowKinds) in booklist style -->
+    <string name="pg_groupings">Grupowanie</string>
+
+
+
+
+
+    <!-- Preference - Scale text. -->
+    <string name="pt_bob_text_size">Rozmiar tekstu listy książek</string>
+    <string-array name="pe_bob_text_size">
+        <item>Mały</item>
+        <item>Średni</item>
+        <item>Duży</item>
+    </string-array>
+
+    <!-- Preference - Scale thumbnails in the list view. -->
+    <string name="pt_bob_cover_size">Rozmiar obrazu na listach</string>
+    <string-array name="pe_bob_cover_size">
+        <item>Mały</item>
+        <item>Średni</item>
+        <item>Duży</item>
+        <item>X-Duży</item>
+        <item>2X-Duży</item>
+        <item>3X-Duży</item>
+    </string-array>
+
+</resources>
