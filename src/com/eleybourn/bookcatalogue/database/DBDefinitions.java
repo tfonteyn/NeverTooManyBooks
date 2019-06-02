@@ -173,7 +173,7 @@ public final class DBDefinitions {
      * 'Order By' for the title. Lowercase, and stripped of spaces etc...
      * {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}.
      */
-    static final DomainDefinition DOM_TITLE_OB;
+    public static final DomainDefinition DOM_TITLE_OB;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final DomainDefinition DOM_FIRST_PUBLICATION;
     /** {@link #TBL_BOOKS}. */

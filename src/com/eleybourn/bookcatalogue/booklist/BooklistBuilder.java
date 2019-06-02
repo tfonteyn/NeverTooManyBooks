@@ -101,7 +101,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANED_TO_S
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKSHELF;
@@ -299,12 +299,13 @@ public class BooklistBuilder
 
         mUnknown = context.getString(R.string.unknown).toUpperCase(LocaleUtils.from(context));
 
+        // Save the requested style
+        mStyle = style;
+
         // Get the database and create a statements collection
         mDb = new DAO();
         mSyncedDb = mDb.getUnderlyingDatabase();
         mStatements = new SqlStatementManager(mSyncedDb);
-        // Save the requested style
-        mStyle = style;
     }
 
     /**
@@ -363,8 +364,9 @@ public class BooklistBuilder
     /**
      * Add a domain to the resulting flattened list based on the details provided.
      *
-     * @param domain           Domain to add (used for name)
-     * @param sourceExpression Expression to generate date for this column
+     * @param domain           Domain to add
+     * @param orderByDomain    [optional] domain to sort by instead of actual domain.
+     * @param sourceExpression Expression to use in deriving domain value
      * @param isSorted         Indicates if it should be added to the sort key
      *
      * @return The builder (to allow chaining)
@@ -372,13 +374,12 @@ public class BooklistBuilder
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain,
-                                         @NonNull final String sourceExpression,
+                                         @Nullable final DomainDefinition orderByDomain,
+                                         @Nullable final String sourceExpression,
                                          final boolean isSorted) {
         // Save the details
-        ExtraDomainDetails info = new ExtraDomainDetails();
-        info.domain = domain;
-        info.sourceExpression = sourceExpression;
-        info.isSorted = isSorted;
+        ExtraDomainDetails info = new ExtraDomainDetails(domain, orderByDomain,
+                                                         sourceExpression, isSorted);
 
         // Check if it already exists
         if (mExtraDomains.containsKey(domain.name)) {
@@ -398,7 +399,7 @@ public class BooklistBuilder
             if (!ok) {
                 throw new IllegalStateException(
                         "Required domain `" + domain.name + '`'
-                                + " added with differing source expression");
+                                + " added with differing sourceExpression");
             }
         } else {
             mExtraDomains.put(domain.name, info);
@@ -712,7 +713,7 @@ public class BooklistBuilder
             for (ExtraDomainDetails info : mExtraDomains.values()) {
                 int flags = info.isSorted ? SummaryBuilder.FLAG_SORTED
                                           : SummaryBuilder.FLAG_NONE;
-                summary.addDomain(info.domain, info.sourceExpression, flags);
+                summary.addDomain(info.domain, info.orderByDomain, info.sourceExpression, flags);
             }
 
             final long t3 = System.nanoTime();
@@ -992,12 +993,12 @@ public class BooklistBuilder
     }
 
     /**
-     * Process the 'sort-by' columns into a list suitable for a sort-by statement, or index.
+     * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement, or index.
      * <p>
      * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
      *
      * @param sortedColumns the list of sorted domains from the builder
-     * @param collationIsCs if {@code true} then we'll adjust the case ourselves
+     * @param collationIsCs if {@code true} then we'll adjust the case here
      * @param sqlCmp        will be updated with the sorting information
      */
     private void processSortColumns(@NonNull final List<SortedDomainInfo> sortedColumns,
@@ -1011,12 +1012,19 @@ public class BooklistBuilder
             if (sdi.domain.isText()) {
                 indexCols.append(DAO.COLLATION);
 
-                // *If* collations is case-sensitive, handle it.
-                if (collationIsCs) {
+                if (sdi.isPreparedOrderByColumn) {
+                    // always use as-is
+                    sortCols.append(sdi.domain.name);
+
+                } else if (collationIsCs) {
+                    // *If* collations is case-sensitive, lowercase it.
                     sortCols.append("lower(").append(sdi.domain.name).append(')');
+
                 } else {
+                    // hope for the best. This case might not handle non-[A..Z0..9] as expected
                     sortCols.append(sdi.domain.name);
                 }
+
                 sortCols.append(DAO.COLLATION);
             } else {
                 sortCols.append(sdi.domain.name);
@@ -2138,22 +2146,6 @@ public class BooklistBuilder
     }
 
     /**
-     * A domain + desc/asc sorting flag.
-     */
-    public static class SortedDomainInfo {
-
-        @NonNull
-        final DomainDefinition domain;
-        final boolean isDescending;
-
-        SortedDomainInfo(@NonNull final DomainDefinition domain,
-                         final boolean isDescending) {
-            this.domain = domain;
-            this.isDescending = isDescending;
-        }
-    }
-
-    /**
      * Structure used to store components of the SQL required to build the list.
      * We use this for experimenting with alternate means of construction.
      */
@@ -2212,22 +2204,54 @@ public class BooklistBuilder
     }
 
     /**
+     * A domain + desc/asc sorting flag.
+     */
+    public static class SortedDomainInfo {
+
+        @NonNull
+        final DomainDefinition domain;
+        final boolean isDescending;
+        /**
+         * if the domain is a prepared order-by column in the database;
+         * e.g. {@link DBDefinitions#DOM_TITLE_OB} instead of {@link DBDefinitions#DOM_TITLE}
+         */
+        final boolean isPreparedOrderByColumn;
+
+        SortedDomainInfo(@NonNull final DomainDefinition domain,
+                         final boolean isPreparedOrderByColumn,
+                         final boolean isDescending) {
+            this.domain = domain;
+            this.isPreparedOrderByColumn = isPreparedOrderByColumn;
+            this.isDescending = isDescending;
+        }
+    }
+
+    /**
      * Details of extra domain requested by caller before the build() method is called.
      */
     private static class ExtraDomainDetails {
 
-        /**
-         * Domain definition of domain to add.
-         */
-        DomainDefinition domain;
-        /**
-         * Expression to use in deriving domain value.
-         */
-        String sourceExpression;
-        /**
-         * Indicates if domain is to be part of the list sort key.
-         */
-        boolean isSorted;
+        /** Domain definition of domain to add. */
+        @NonNull
+        final DomainDefinition domain;
+        /** Optional ORDER-BY domain definition of domain to add. */
+        @Nullable
+        final DomainDefinition orderByDomain;
+        /** Expression to use in deriving domain value. */
+        @Nullable
+        final String sourceExpression;
+        /** Indicates if domain is to be part of the list sort key. */
+        final boolean isSorted;
+
+        ExtraDomainDetails(@NonNull final DomainDefinition domain,
+                           @Nullable final DomainDefinition orderByDomain,
+                           @Nullable final String sourceExpression,
+                           final boolean isSorted) {
+            this.domain = domain;
+            this.orderByDomain = orderByDomain;
+            this.sourceExpression = sourceExpression;
+            this.isSorted = isSorted;
+        }
     }
 
     /**
@@ -2272,17 +2296,35 @@ public class BooklistBuilder
          * may contain more than just the key
          */
         private final ArrayList<SortedDomainInfo> mSortedColumns = new ArrayList<>();
+        /** The set is used as a simple mechanism to prevent duplicate domains. */
         private final Set<DomainDefinition> mSortedColumnsSet = new HashSet<>();
 
         /**
          * Add a domain and source expression to the summary.
          *
-         * @param domain     Domain to add
-         * @param expression Source Expression
-         * @param flags      Flags indicating attributes of new domain
+         * @param domain           Domain to add
+         * @param sourceExpression Source Expression
+         * @param flags            Flags indicating attributes of new domain
          */
         void addDomain(@NonNull final DomainDefinition domain,
-                       @Nullable final String expression,
+                       @Nullable final String sourceExpression,
+                       final int flags) {
+            addDomain(domain, null, sourceExpression, flags);
+        }
+
+        /**
+         * Add a domain and source expression to the summary.
+         * Optionally an ORDER-BY domain can be specified; e.g. {@link DBDefinitions#DOM_TITLE_OB}
+         * when the actual domain is {@link DBDefinitions#DOM_TITLE}
+         *
+         * @param domain           Domain to add
+         * @param orderByDomain    [optional] domain to sort by instead of actual domain.
+         * @param sourceExpression Source Expression
+         * @param flags            Flags indicating attributes of new domain
+         */
+        void addDomain(@NonNull final DomainDefinition domain,
+                       @Nullable final DomainDefinition orderByDomain,
+                       @Nullable final String sourceExpression,
                        final int flags) {
             // Add to various collections. We use a map to improve lookups and ArrayLists
             // so we can preserve order. Order preservation makes reading the SQL easier
@@ -2290,14 +2332,17 @@ public class BooklistBuilder
 
             // Add to table
             mListTable.addDomain(domain);
+            if (orderByDomain != null) {
+                mListTable.addDomain(orderByDomain);
+            }
 
             // Domains and Expressions must be synchronized; we should probably use a map.
-            // For now, just check if mExpression is null. If it IS null, it means that
+            // For now, just check if expression is {@code null}. If it IS null, it means that
             // the domain is just for the lowest level of the hierarchy.
-            if (expression != null) {
+            if (sourceExpression != null) {
                 mDomains.add(domain);
-                mExpressions.add(expression);
-                mExpressionMap.put(domain, expression);
+                mExpressions.add(sourceExpression);
+                mExpressionMap.put(domain, sourceExpression);
             }
 
             // Based on the flags, add the domain to other lists.
@@ -2306,8 +2351,15 @@ public class BooklistBuilder
             }
 
             if ((flags & FLAG_SORTED) != 0 && !mSortedColumnsSet.contains(domain)) {
-                mSortedColumns.add(
-                        new SortedDomainInfo(domain, (flags & FLAG_SORT_DESCENDING) != 0));
+                SortedDomainInfo sdi;
+                if (orderByDomain == null) {
+                    sdi = new SortedDomainInfo(domain, false,
+                                               (flags & FLAG_SORT_DESCENDING) != 0);
+                } else {
+                    sdi = new SortedDomainInfo(orderByDomain, true,
+                                               (flags & FLAG_SORT_DESCENDING) != 0);
+                }
+                mSortedColumns.add(sdi);
                 mSortedColumnsSet.add(domain);
             }
 
@@ -2476,7 +2528,8 @@ public class BooklistBuilder
 
                 case BooklistGroup.RowKind.TITLE_LETTER:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE) + ",1,1)",
+                              // use the OrderBy column!
+                              "SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1)",
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     break;
 

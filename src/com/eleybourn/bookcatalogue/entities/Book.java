@@ -507,6 +507,27 @@ public class Book
     }
 
     /**
+     * Get the Book's locale (based on its language)
+     *
+     * @return the locale, or the users preferred locale if no language was set.
+     */
+    @NonNull
+    public Locale getLocale() {
+        return getLocale(false);
+    }
+
+    /**
+     * Validate the locale (based on the Book's language) and reset the language if needed.
+     *
+     * @return the locale, or the users preferred locale if no language was set.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public Locale updateLocale() {
+        return getLocale(true);
+    }
+
+    /**
      * Use the book's language setting to determine the Locale.
      *
      * @param updateLanguage {@code true} to update the language field with the iso3 code
@@ -515,7 +536,7 @@ public class Book
      * @return the locale, or the users preferred locale if no language was set.
      */
     @NonNull
-    public Locale getLocale(final boolean updateLanguage) {
+    private Locale getLocale(final boolean updateLanguage) {
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);

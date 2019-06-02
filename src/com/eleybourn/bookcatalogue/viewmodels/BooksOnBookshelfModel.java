@@ -360,11 +360,11 @@ public class BooksOnBookshelfModel
             // get a new builder and add the required extra domains
             bookListBuilder = new BooklistBuilder(context, mCurrentBookshelf.getStyle(mDb));
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE,
+            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE, DBDefinitions.DOM_TITLE_OB,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
                                           true);
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,null,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                                           false);
 

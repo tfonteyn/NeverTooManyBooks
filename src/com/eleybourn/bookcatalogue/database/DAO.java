@@ -1098,14 +1098,14 @@ public class DAO
                 //TODO: should be using a user context.
                 String title = preprocessTitle(App.getAppContext(),
                                                book.getString(DBDefinitions.KEY_TITLE),
-                                               book.getLocale(false)
+                                               book.getLocale()
                 );
                 book.putString(DBDefinitions.KEY_TITLE, title);
             }
-            // both new and updates: set the 'order by' field
+            // both new and updates: set the 'ORDER BY' field
             book.putString(DOM_TITLE_OB.name,
                            encodeOrderByColumn(book.getString(DBDefinitions.KEY_TITLE),
-                                               book.getLocale(false)));
+                                               book.getLocale()));
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
@@ -1248,7 +1248,7 @@ public class DAO
      * But they use our app set to the locale German.
      * And the book they have is Spanish.
      * <p>
-     * The passed context should be based on German, the locale should be Spanish.
+     * The passed 'userContext' should be based on German, the 'titleLocale' should be Spanish.
      *
      * @param userContext the context with the locale in which the user runs our app.
      * @param title       to format
@@ -1478,9 +1478,8 @@ public class DAO
             txLock = sSyncedDb.beginTransaction(true);
         }
 
-        // Handle Language field FIRST, we might need it for 'order by LC' fields.
-        // 'true': try to update the language field of the book to the iso3 code.
-        book.getLocale(true);
+        // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
+        book.updateLocale();
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
@@ -1565,9 +1564,8 @@ public class DAO
             txLock = sSyncedDb.beginTransaction(true);
         }
 
-        // Handle Language field FIRST, we might need it for 'order by LC' fields.
-        // 'true': try to update the language field of the book to the iso3 code.
-        book.getLocale(true);
+        // Handle Language field FIRST, we might need it for 'ORDER BY' fields.
+        book.updateLocale();
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
@@ -1921,9 +1919,9 @@ public class DAO
                     //TODO: should be using a user context.
                     String title = preprocessTitle(App.getAppContext(),
                                                    tocEntry.getTitle(),
-                                                   book.getLocale(false));
+                                                   book.getLocale());
 
-                    String obTitle = encodeOrderByColumn(title, book.getLocale(false));
+                    String obTitle = encodeOrderByColumn(title, book.getLocale());
 
                     insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
                     insertTocStmt.bindString(2, title);
@@ -1940,7 +1938,7 @@ public class DAO
                 // as the find was done on the DOM_TITLE_OB field.
                 // and we update the DOM_TITLE_OB as well obviously.
                 String title = tocEntry.getTitle();
-                String obTitle = encodeOrderByColumn(title, book.getLocale(false));
+                String obTitle = encodeOrderByColumn(title, book.getLocale());
 
                 ContentValues cv = new ContentValues();
                 cv.put(DOM_TITLE.name, title);

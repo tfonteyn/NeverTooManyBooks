@@ -139,7 +139,7 @@ public class DataManager {
                 putString(key, (String) value);
 
             } else if (value instanceof Integer) {
-                //TOMF: use putLong?
+                //TODO: use putLong?
                 putInt(key, (Integer) value);
 
             } else if (value instanceof Long) {
@@ -149,7 +149,7 @@ public class DataManager {
                 putDouble(key, (Double) value);
 
             } else if (value instanceof Float) {
-                //TOMF: use putDouble?
+                //TODO: use putDouble?
                 putFloat(key, (Float) value);
 
             } else if (value instanceof Boolean) {

@@ -214,7 +214,7 @@ public class BooklistAdapter
                     break;
 
                 case BooklistStyle.SCALE_2X_LARGE:
-                    layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
+                    layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
                     break;
 
                 default:
