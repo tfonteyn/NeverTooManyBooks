@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -229,11 +228,11 @@ public class BooklistPseudoCursor
             //noinspection ConstantConditions
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debugExit(this, "onMove",
-                             "cursorId=" + cursorId,
-                             "mActiveCursor=" + mActiveCursor);
-            }
+//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+//                Logger.debugExit(this, "onMove",
+//                             "cursorId=" + cursorId,
+//                             "mActiveCursor=" + mActiveCursor);
+//            }
         }
         return true;
     }
@@ -386,7 +385,7 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
+        //Logger.debugWithStackTrace(this,"close" , "closing cursor: " + this);
         super.close();
         clearCursors();
     }

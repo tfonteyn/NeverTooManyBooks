@@ -205,6 +205,7 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES;
+    public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_IS_COMPLETE;
     /** "FamilyName, GivenName". */
@@ -228,6 +229,11 @@ public final class DBDefinitions {
         DOM_AUTHOR_GIVEN_NAMES =
                 new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
+
+        DOM_AUTHOR_GIVEN_NAMES_OB =
+                new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+
         DOM_AUTHOR_IS_COMPLETE =
                 new DomainDefinition(KEY_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN, true)
                         .setDefault(0);
@@ -701,10 +707,12 @@ public final class DBDefinitions {
                                DOM_AUTHOR_FAMILY_NAME,
                                DOM_AUTHOR_FAMILY_NAME_OB,
                                DOM_AUTHOR_GIVEN_NAMES,
+                               DOM_AUTHOR_GIVEN_NAMES_OB,
                                DOM_AUTHOR_IS_COMPLETE)
                    .setPrimaryKey(DOM_PK_ID)
                    .addIndex(DOM_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                    .addIndex(DOM_AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
+                   .addIndex(DOM_AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
                    .addIndex(DOM_AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
 
@@ -1019,10 +1027,10 @@ public final class DBDefinitions {
             Set<String> tAliases = new HashSet<>();
             for (TableDefinition table : ALL_TABLES.values()) {
                 if (!tNames.add(table.getName())) {
-                    throw new IllegalStateException("Duplicate table name");
+                    throw new IllegalStateException("Duplicate table name: " + table.getName());
                 }
                 if (!tAliases.add(table.getAlias())) {
-                    throw new IllegalStateException("Duplicate table alias");
+                    throw new IllegalStateException("Duplicate table alias: " + table.getAlias());
                 }
             }
         }

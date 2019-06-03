@@ -88,6 +88,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMI
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
@@ -783,7 +784,8 @@ public class DAO
             stmt.bindString(1, author.getFamilyName());
             stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), locale));
             stmt.bindString(3, author.getGivenNames());
-            stmt.bindLong(4, author.isComplete() ? 1 : 0);
+            stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), locale));
+            stmt.bindLong(5, author.isComplete() ? 1 : 0);
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
@@ -804,6 +806,7 @@ public class DAO
         cv.put(DOM_AUTHOR_FAMILY_NAME.name, author.getFamilyName());
         cv.put(DOM_AUTHOR_FAMILY_NAME_OB.name, encodeOrderByColumn(author.getFamilyName(), locale));
         cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.getGivenNames());
+        cv.put(DOM_AUTHOR_GIVEN_NAMES_OB.name, encodeOrderByColumn(author.getGivenNames(), locale));
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
 
         return sSyncedDb.update(TBL_AUTHORS.getName(), cv,
@@ -4197,17 +4200,20 @@ public class DAO
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_GIVEN_NAMES =
-                "SELECT DISTINCT " + DOM_AUTHOR_GIVEN_NAMES + " FROM " + TBL_AUTHORS
-                        + " ORDER BY lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION;
+                "SELECT DISTINCT " + DOM_AUTHOR_GIVEN_NAMES
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                        + " FROM " + TBL_AUTHORS
+                        + " ORDER BY lower(" + DOM_AUTHOR_GIVEN_NAMES_OB + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_WITH_FORMATTED_NAMES =
                 "SELECT "
                         + SqlColumns.AUTHOR_FORMATTED
                         + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
                         + " FROM " + TBL_AUTHORS.ref()
                         + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
-                        + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION;
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String SERIES_NAME =
@@ -4274,6 +4280,7 @@ public class DAO
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME_OB)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES_OB)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
                         + ',' + SqlColumns.AUTHOR_FORMATTED
                         + ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
@@ -4282,7 +4289,7 @@ public class DAO
                         + " ORDER BY "
                         + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC"
                         + ',' + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION + "ASC"
-                        + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION + "ASC";
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION + "ASC";
 
         /**
          * All Series for a Book; ordered by position, name.
@@ -4605,8 +4612,9 @@ public class DAO
                         + '(' + DOM_AUTHOR_FAMILY_NAME
                         + ',' + DOM_AUTHOR_FAMILY_NAME_OB
                         + ',' + DOM_AUTHOR_GIVEN_NAMES
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
                         + ',' + DOM_AUTHOR_IS_COMPLETE
-                        + ") VALUES (?,?,?,?)";
+                        + ") VALUES (?,?,?,?,?)";
 
         static final String SERIES =
                 "INSERT INTO " + TBL_SERIES

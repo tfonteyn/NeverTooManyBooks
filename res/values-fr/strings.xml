@@ -358,7 +358,7 @@
     <string name="field_not_set_with_brackets">(vide)</string>
     <string name="lbl_bookshelves">Rayons</string>
     <string name="lbl_credentials">Certificats</string>
-    <string name="lbl_data_import_export">Import ou export de données</string>
+    <string name="lbl_data_import_export">Import/Export</string>
     <string name="X_unrecognized_task">Tâche non reconnue</string>
     <string name="progress_msg_rebuilding_search_index">Construction de l\'index de recherche en cours…</string>
     <string name="progress_msg_optimizing">Optimisation de bases de données en cours…</string>

@@ -118,11 +118,11 @@ TODO: uniform quotes in all string:
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
-    <string name="error_search_configuration">"         Configuration error. Please open the Settings page and check your Search Site preferences.     "</string>
+    <string name="error_search_configuration">Configuration error. Please open the Settings page and check your Search Site preferences.</string>
     <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
     <!-- Users of versions older than 4.0.0 need to upgrade to 5.x first -->
-    <string name="error_database_upgrade_failed">"         Cannot upgrade from a version older than 4.0.0     "</string>
+    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 4.0.0</string>
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -265,7 +265,9 @@ TODO: uniform quotes in all string:
         This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
-    <string name="confirm_merge_bookshelves">"         The bookshelf you are renaming already exists. Would you like to merge them?     "</string>
+    <string name="confirm_merge_bookshelves">
+        The bookshelf you are renaming already exists. Would you like to merge them?
+    </string>
     <string name="confirm_duplicate_book_message">
         The book you are trying to add already exists in the database,
         are you sure you want to add another copy?
@@ -695,7 +697,7 @@ TODO: uniform quotes in all string:
     <string name="menu_administration_long">Administration Functions</string>
 
     <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Data Import/Export</string>
+    <string name="lbl_data_import_export">Import/Export</string>
     <!-- Admin -->
     <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
@@ -841,7 +843,7 @@ TODO: uniform quotes in all string:
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
     <string name="lbl_edition_book_club">Bookclub edition</string>
-    <string name="lbl_edition_limited">Limited Edition</string>
+    <string name="lbl_edition_limited">Limited</string>
 
     <!-- Update Fields from internet choices -->
     <string name="lbl_update_fields">Automatically Update Fields</string>
@@ -865,13 +867,13 @@ TODO: uniform quotes in all string:
     <string name="lbl_month">Month</string>
     <string name="lbl_day">Day</string>
     <!-- Individual fields for "date added" -->
-    <string name="lbl_added_year">Added Year</string>
-    <string name="lbl_added_month">Added Month</string>
-    <string name="lbl_added_day">Added Day</string>
+    <string name="lbl_added_year">Year Added</string>
+    <string name="lbl_added_month">Month Added</string>
+    <string name="lbl_added_day">Day Added</string>
     <!-- Individual fields for "date read" -->
-    <string name="lbl_read_year">Read Year</string>
-    <string name="lbl_read_month">Read Month</string>
-    <string name="lbl_read_day">Read Day</string>
+    <string name="lbl_read_year">Year read</string>
+    <string name="lbl_read_month">Month read</string>
+    <string name="lbl_read_day">Day read</string>
     <!-- Individual fields for "date last updated" -->
     <string name="lbl_update_year">Update Year</string>
     <string name="lbl_update_month">Update Month</string>
@@ -926,12 +928,12 @@ TODO: uniform quotes in all string:
     <string name="style_builtin_loaned">Lending</string>
     <string name="style_builtin_read_and_unread">Read/Unread</string>
     <string name="style_builtin_publication_date">Pub. Date</string>
-    <string name="style_builtin_added_date">Added date</string>
+    <string name="style_builtin_added_date">Date added</string>
     <string name="style_builtin_author_year">Author,Year</string>
     <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_read_date">Date Read</string>
-    <string name="style_builtin_unread">Unread (Auth/Ser)</string>
-    <string name="style_builtin_update_date">Update date</string>
+    <string name="style_builtin_unread">Unread (Author/Series)</string>
+    <string name="style_builtin_update_date">Date updated</string>
     <string name="style_builtin_acquired_date">Acquired</string>
 
     <!-- ####################################################################################### -->
@@ -1228,7 +1230,7 @@ TODO: uniform quotes in all string:
     <string name="search_isbn">ISBN Search</string>
     <string name="search_with_text">Search: %1$s</string>
     <string name="show_results">Show Results</string>
-    <string name="rebuild_fts">Rebuild FTS\n(Experimental!)</string>
+    <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
     <string name="cleanup_files">Cleanup Files</string>
     <string name="read_amp_unread">Read &amp; Unread</string>

@@ -434,7 +434,7 @@
     <string name="lbl_bookshelves">Regale</string>
     <string name="lbl_location">Standort</string>
     <string name="lbl_credentials">Zugangsdaten</string>
-    <string name="lbl_data_import_export">Daten-Import/Export</string>
+    <string name="lbl_data_import_export">Import/Export</string>
     <string name="X_unrecognized_task">Unbekannte Aufgabe</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>

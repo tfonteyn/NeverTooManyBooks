@@ -736,5 +736,9 @@
     <string name="search_with_text">Ara: %1$s</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>
     <string name="menu_set_unread">Okunmamış olarak işaretle</string>
+    <string name="X_isbn_found">ISBN Tarandı. İnternet aranıyor.</string>
+    <string name="menu_internet_update_fields">Alanları Güncelle</string>
+    <string name="lbl_date_acquired_year">Kazanılan Yıl</string>
+    <string name="lbl_first_publication">İlk yayın</string>
 
 </resources>

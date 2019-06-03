@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
@@ -745,8 +746,13 @@ public class DBHelper
 
             db.execSQL("ALTER TABLE " + TBL_AUTHORS
                                + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_FAMILY_NAME_OB);
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
+                                                  DOM_AUTHOR_FAMILY_NAME_OB);
 
+            db.execSQL("ALTER TABLE " + TBL_AUTHORS
+                               + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
+                                                  DOM_AUTHOR_GIVEN_NAMES_OB);
 
             // add the UUID field for the move of styles to SharedPreferences
             db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES

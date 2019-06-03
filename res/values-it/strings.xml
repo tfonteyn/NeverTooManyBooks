@@ -285,7 +285,7 @@
     <string name="lbl_bookshelves">Librerie</string>
     <string name="lbl_location">Locazione</string>
     <string name="lbl_credentials">Credenziali</string>
-    <string name="lbl_data_import_export">Importa/Esporta dati</string>
+    <string name="lbl_data_import_export">Importa/Esporta</string>
     <string name="X_unrecognized_task">Comando sconosciuto</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>

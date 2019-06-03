@@ -419,7 +419,7 @@
     <string name="date_not_set_with_brackets">(geen datum)</string>
     <string name="style_builtin_author_series">Auteur daarna Serie</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_title_first_letter">Titel eerste letter</string>
+    <string name="style_builtin_title_first_letter">Eerste letter v/d titel</string>
     <string name="style_builtin_genre">Genrenaam</string>
     <string name="style_builtin_loaned">Uitlenen</string>
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
@@ -431,7 +431,7 @@
     <string name="lbl_bookshelves">Planken</string>
     <string name="lbl_location">Locatie</string>
     <string name="lbl_credentials">Inloggegevens</string>
-    <string name="lbl_data_import_export">Gegevens Import/Export</string>
+    <string name="lbl_data_import_export">Import/Export</string>
     <string name="X_unrecognized_task">Onherkenbare taak</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
@@ -618,7 +618,7 @@
     <string name="warning_cover_copy_failed">Kon afbeelding niet kopiëren</string>
     <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
-    <string name="lbl_allow_asin">Toestaan ASIN</string>
+    <string name="lbl_allow_asin">ASIN aanvaarden</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is geen geldig ISBN of ASIN</string>
     <string name="lbl_read_year">Jaar</string>
     <string name="lbl_read_month">Maand</string>
@@ -865,7 +865,7 @@
     <string name="menu_set_unread">Markeer als ongelezen</string>
     <string name="tab_lbl_content">Inhoud</string>
     <string name="done">Klaar</string>
-    <string name="lbl_first_publication">Eerste pub.</string>
+    <string name="lbl_first_publication">Eerste uitgave</string>
     <string name="menu_internet_update_fields">Bijwerken velden</string>
     <string name="X_error_no_style_found">Juiste stijl niet gevonden</string>
     <string name="lbl_search_sites">Zoek-webpaginas</string>

@@ -59,8 +59,10 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_SORT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ABSOLUTE_POSITION;
@@ -112,7 +114,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LIST_N
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_ROW_NAVIGATOR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
 
 /**
@@ -133,16 +134,41 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
 
     /**
-     * SQL column: which gets formatted author names in 'Last, Given' form.
+     * SQL column: SORT author names in 'lastgiven' form.
+     * Uses the OB field.
+     * Not used for display.
+     */
+    private static final String X_AUTHOR_SORT_LAST_FIRST = "CASE"
+            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
+            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB) + "||"
+            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB)
+            + " END";
+    /**
+     * SQL column: SORT author names in 'givenlast' form.
+     * Uses the OB field.
+     * Not used for display.
+     */
+    private static final String X_AUTHOR_SORT_FIRST_LAST = "CASE"
+            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
+            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "||"
+            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+            + " END";
+
+    /**
+     * SQL column: formatted author names in 'Last, Given' form.
+     * Used for display.
      */
     private static final String X_AUTHOR_FORMATTED_LAST_FIRST = "CASE"
             + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
             + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ',' || "
+            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ', ' || "
             + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
             + " END";
     /**
      * SQL column: formatted author names in 'Given Last' form.
+     * Used for display.
      */
     private static final String X_AUTHOR_FORMATTED_FIRST_LAST = "CASE"
             + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
@@ -2153,11 +2179,10 @@ public class BooklistBuilder
         String orderByColumns;
         /** List of column names appropriate for 'CREATE INDEX' column list. */
         String sortIndexColumnList;
-
     }
 
     /**
-     * Record containing details of the positions of all instances of a single book.
+     * A data class containing details of the positions of all instances of a single book.
      */
     public static class BookRowInfo {
 
@@ -2175,15 +2200,16 @@ public class BooklistBuilder
     }
 
     /**
-     * A Holder class used to pass around multiple variables.
+     * A data class used to pass around multiple variables.
      * Allowed us to break up the big 'build' method as it existed in the original code.
      */
     private static class BuildInfoHolder {
 
-        /** Will be set to appropriate Group if a Series group exists in style. */
-        BooklistGroup.BooklistSeriesGroup seriesGroup;
         /** Will be set to appropriate Group if an Author group exists in style. */
         BooklistGroup.BooklistAuthorGroup authorGroup;
+        /** Will be set to appropriate Group if a Series group exists in style. */
+        BooklistGroup.BooklistSeriesGroup seriesGroup;
+
         /** Will be set to {@code true} if a LOANED group exists in style. */
         boolean hasGroupLOANED;
         /** Will be set to {@code true} if a BOOKSHELF group exists in style. */
@@ -2191,7 +2217,7 @@ public class BooklistBuilder
     }
 
     /**
-     * A domain + desc/asc sorting flag.
+     * A data class for domain + desc/asc sorting flag.
      */
     public static class SortedDomainInfo {
 
@@ -2214,7 +2240,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Details of extra domain requested by caller before the build() method is called.
+     * A data class of extra domains requested by caller before the build() method is called.
      */
     private static class ExtraDomainDetails {
 
@@ -2378,13 +2404,15 @@ public class BooklistBuilder
                     buildInfoHolder.authorGroup = (BooklistGroup.BooklistAuthorGroup) booklistGroup;
 
                     // Always group & sort by DOM_AUTHOR_SORT and user preference order; see #696
+                    // The expression uses the OB column, so there is no need to set the OB
+                    // explicitly.
                     addDomain(DOM_AUTHOR_SORT,
                               mStyle.sortAuthorByGiven()
-                              ? X_AUTHOR_FORMATTED_FIRST_LAST
-                              : X_AUTHOR_FORMATTED_LAST_FIRST,
+                              ? X_AUTHOR_SORT_FIRST_LAST
+                              : X_AUTHOR_SORT_LAST_FIRST,
                               SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
 
-                    // Add the 'formatted' field of the requested type
+                    // Add the 'formatted' field of the requested type for displaying.
                     addDomain(DOM_AUTHOR_FORMATTED,
                               buildInfoHolder.authorGroup.showGivenNameFirst()
                               ? X_AUTHOR_FORMATTED_FIRST_LAST
