@@ -65,7 +65,7 @@
     <string name="lbl_price_listed">Seznam cen</string>
     <string name="lbl_update_fields">Automaticky aktualizovat pole</string>
 
-    <string name="lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
+    <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="lbl_select_fields">Zvolit pole</string>
 
     <string name="info_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
@@ -168,7 +168,6 @@
     <string name="warning_unable_to_find_book">Nepodařilo se nalézt zadanou knihu</string>
     <string name="list_and">a</string>
     <string name="confirm_delete_book">Tímto kompletně odstraníte knihu \‘%1$s\’ od %2$s. Určitě chcete pokračovat?</string>
-    <string name="warning_editions_require_isbn">Pro získání dalších edicí je vyžadován ISBN kód</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="progress_msg_finding_editions">Hledání edicí…</string>
     <string name="info_tap_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>

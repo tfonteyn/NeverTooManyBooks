@@ -394,6 +394,7 @@ public class XmlExporter
                         break;
                     default:
                         sb.append(c);
+                        break;
                 }
                 pos++;
 

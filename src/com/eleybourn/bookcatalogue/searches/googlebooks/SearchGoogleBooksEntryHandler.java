@@ -305,6 +305,7 @@ class SearchGoogleBooksEntryHandler
                     Logger.warn(this, "endElement",
                                 "Skipping: " + localName + "->`" + mBuilder + '`');
                 }
+                break;
 
         }
 

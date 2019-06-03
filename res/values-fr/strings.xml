@@ -74,7 +74,7 @@
     <string name="menu_about">À propos de cette application</string>
     <string name="lbl_price_listed">Liste de prix</string>
     <string name="lbl_update_fields">Mise à jour automatique des champs</string>
-    <string name="lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
+    <string name="X_lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
     <string name="lbl_select_fields">Sélection des champs</string>
 
     <string name="info_select_fields_to_update">
@@ -202,7 +202,6 @@
         Cela effacera totalement le livre intitulé ‘%1$s’ par %2$s.
         Êtes vous sûr de vouloir poursuivre ?
     </string>
-    <string name="warning_editions_require_isbn">Retrouver les autres éditions nécessite un ISBN</string>
     <string name="warning_no_editions">Aucune information d\'édition supplémentaire disponible</string>
     <string name="progress_msg_finding_editions">Éditions en cours de recherche…</string>
     <string name="info_tap_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
@@ -747,7 +746,7 @@
     <string name="menu_set_unread">Maqué comme non lu</string>
     <string name="tab_lbl_content">Contenu</string>
     <string name="warning_thing_already_exists">%1$s existe déjà</string>
-    <string name="info_tap_to_edit">Appuyez ici pour éditer le nom</string>
+    <string name="X_info_tap_to_edit">Appuyez ici pour éditer le nom</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
     <string name="X_error_no_style_found">Impossible de trouver le style approprié</string>

@@ -338,27 +338,14 @@ public class BooklistBuilder
     }
 
     /**
-     * @return a flattened table of ordered book IDs based on the underlying list.
+     * Create a flattened table of ordered book IDs based on the underlying list.
+     *
+     * @return the name of the created table.
      */
     @NonNull
-    public FlattenedBooklist createFlattenedBooklist() {
-        int flatId = FLAT_LIST_ID_COUNTER.getAndIncrement();
-
-        TableDefinition flat = TBL_ROW_NAVIGATOR_FLATTENED.clone();
-        flat.setName(flat.getName() + '_' + flatId);
-        // no indexes, no constraints!
-        flat.create(mSyncedDb, false);
-
-        String sql = flat.getInsert(false, DOM_PK_ID, DOM_FK_BOOK_ID)
-                + " SELECT " + mNavTable.dot(DOM_PK_ID)
-                + ',' + mListTable.dot(DOM_FK_BOOK_ID)
-                + " FROM " + mListTable.ref() + mListTable.join(mNavTable)
-                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"
-                + " ORDER BY " + mNavTable.dot(DOM_PK_ID);
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-            stmt.executeInsert();
-        }
-        return new FlattenedBooklist(mSyncedDb, flat);
+    public String createFlattenedBooklist() {
+        return FlattenedBooklist.createTable(mDb, mNavTable, mListTable,
+                                             FLAT_LIST_ID_COUNTER.getAndIncrement());
     }
 
     /**

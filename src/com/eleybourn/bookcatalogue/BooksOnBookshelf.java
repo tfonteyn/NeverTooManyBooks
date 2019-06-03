@@ -539,13 +539,7 @@ public class BooksOnBookshelf
             }
             return;
         }
-
-        // Try to prevent null-pointer errors for rapidly pressing 'back'; this
-        // is in response to errors reporting NullPointerException when, most likely,
-        // a null is returned by getResources(). The most likely explanation for that
-        // is the call occurs after Activity is destroyed.
-        //
-        // we also need to make sure we don't start the initBookList task in these cases.
+        // don't build the list needlessly
         if (isFinishing() || isDestroyed()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "onResume",
@@ -840,14 +834,11 @@ public class BooksOnBookshelf
                         App.getPrefs().getBoolean(Prefs.pk_bob_open_book_read_only, true);
 
                 if (openInReadOnly) {
-                    String listTable = listCursor.getBuilder()
-                                                 .createFlattenedBooklist()
-                                                 .getTable()
-                                                 .getName();
+                    String listTableName = listCursor.getBuilder().createFlattenedBooklist();
 
                     Intent intent = new Intent(this, BookDetailsActivity.class)
                             .putExtra(DBDefinitions.KEY_ID, bookId)
-                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST, listTable)
+                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST, listTableName)
                             .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST_POSITION, position);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
@@ -869,6 +860,7 @@ public class BooksOnBookshelf
                     listCursor.requery();
                     mAdapter.notifyDataSetChanged();
                 }
+                break;
         }
     }
 

@@ -240,6 +240,7 @@ public class BooklistAdapter
                 default:
                     // level 3 and higher all use the same layout.
                     layoutId = R.layout.booksonbookshelf_row_level_3;
+                    break;
             }
         }
 

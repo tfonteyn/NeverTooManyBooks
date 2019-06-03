@@ -333,25 +333,14 @@ public class AdminFragment
      * Callback for the CSV export task.
      */
     private void onExportFinished() {
-        @SuppressWarnings("ConstantConditions")
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> emailCSVFile())
-                .create();
-
-        try {
-            //noinspection ConstantConditions
-            if (!getActivity().isFinishing()) {
-                // Catch errors resulting from 'back' being pressed multiple times so that
-                // the activity is destroyed before the dialog can be shown.
-                // See http://code.google.com/p/android/issues/detail?id=3953
-                dialog.show();
-            }
-        } catch (RuntimeException e) {
-            Logger.error(this, e);
-        }
+                .create()
+                .show();
     }
 
     /**

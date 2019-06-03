@@ -43,18 +43,20 @@ public class BookFragmentModel
             if (args == null) {
                 return;
             }
-            String list = args.getString(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST);
-            if (list == null || list.isEmpty()) {
+            // no list ?
+            String listTableName = args.getString(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST);
+            if (listTableName == null || listTableName.isEmpty()) {
                 return;
             }
 
             // looks like we have a list, but...
-            mFlattenedBooklist = new FlattenedBooklist(mDb, list);
+            mFlattenedBooklist = new FlattenedBooklist(mDb, listTableName);
             // Check to see it really exists. The underlying table disappeared once in testing
             // which is hard to explain; it theoretically should only happen if the app closes
             // the database or if the activity pauses with 'isFinishing()' returning true.
             if (!mFlattenedBooklist.exists()) {
                 mFlattenedBooklist.close();
+                //mFlattenedBooklist.deleteData();
                 mFlattenedBooklist = null;
                 return;
             }
@@ -73,6 +75,7 @@ public class BookFragmentModel
             if (mFlattenedBooklist.getBookId() != bookId) {
                 // book not found ? eh? give up...
                 mFlattenedBooklist.close();
+                mFlattenedBooklist.deleteData();
                 mFlattenedBooklist = null;
                 return;
             }

@@ -63,7 +63,7 @@
     <string name="menu_about">Riguardo questa app</string>
     <string name="lbl_price_listed">Prezzo di listino</string>
     <string name="lbl_update_fields">Aggiorna i campi automaticamente</string>
-    <string name="lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
+    <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="lbl_select_fields">Seleziona i campi</string>
 
     <string name="info_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
@@ -166,7 +166,6 @@
     <string name="warning_unable_to_find_book">Impossibile trovare il libro specificato</string>
     <string name="list_and">e</string>
     <string name="confirm_delete_book">Il libro intitolato ‘%1$s’ verrà completamente cancellato da %2$s. Procedere?</string>
-    <string name="warning_editions_require_isbn">Il recupero di altre edizioni richiede l codice ISBN</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
     <string name="info_tap_on_thumb">Clicca sulla miniatura per visualizzare l\'immagine ingrandita</string>
@@ -655,7 +654,7 @@
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Contenuto</string>
     <string name="warning_thing_already_exists">%1$s già presente in elenco</string>
-    <string name="info_tap_to_edit">Tocca qui per modificare il nome</string>
+    <string name="X_info_tap_to_edit">Tocca qui per modificare il nome</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
     <string name="X_error_no_style_found">Impossibile trovare lo stile appropriato</string>

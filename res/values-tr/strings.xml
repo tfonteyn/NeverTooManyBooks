@@ -63,7 +63,7 @@
     <string name="menu_about">Uygulama hakkında</string>
     <string name="lbl_price_listed">Fiyatı</string>
     <string name="lbl_update_fields">Alanları kendiliğinden doldur</string>
-    <string name="lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
+    <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="lbl_select_fields">Alanları seçin</string>
 
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
@@ -164,7 +164,6 @@
     <string name="warning_unable_to_find_book">Belirtilen kitap bulunamıyor</string>
     <string name="list_and">and</string>
     <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: \‘%1$s\’ - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
-    <string name="warning_editions_require_isbn">Diğer sürümlere ulaşmak bir ISBN gerektirir</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
     <string name="info_tap_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
@@ -728,7 +727,7 @@
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_edition_book_club">Kitap Kulübü baskısı</string>
     <string name="lbl_signed">İmzalanmış</string>
-    <string name="info_tap_to_edit">Adı düzenlemek için buraya dokunun</string>
+    <string name="X_info_tap_to_edit">Adı düzenlemek için buraya dokunun</string>
     <string name="gr_tq_events_recorded">(%1$d etkinlik kaydedildi)</string>
     <string name="book_format_ebook">E-kitap</string>
     <string name="menu_set_complete">Tamamlandı</string>

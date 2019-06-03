@@ -202,6 +202,7 @@ public final class DBDefinitions {
 
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME;
+    public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES;
     /** {@link #TBL_AUTHORS}. */
@@ -219,6 +220,10 @@ public final class DBDefinitions {
     static {
         DOM_AUTHOR_FAMILY_NAME =
                 new DomainDefinition(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT, true);
+
+        DOM_AUTHOR_FAMILY_NAME_OB =
+                new DomainDefinition(DOM_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
 
         DOM_AUTHOR_GIVEN_NAMES =
                 new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT, true)
@@ -694,9 +699,11 @@ public final class DBDefinitions {
 
         TBL_AUTHORS.addDomains(DOM_PK_ID,
                                DOM_AUTHOR_FAMILY_NAME,
+                               DOM_AUTHOR_FAMILY_NAME_OB,
                                DOM_AUTHOR_GIVEN_NAMES,
                                DOM_AUTHOR_IS_COMPLETE)
                    .setPrimaryKey(DOM_PK_ID)
+                   .addIndex(DOM_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
                    .addIndex(DOM_AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
                    .addIndex(DOM_AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
@@ -960,8 +967,6 @@ public final class DBDefinitions {
                                    .setPrimaryKey(DOM_PK_ID);
     }
 
-    /* ========================================================================================== */
-
     /** FTS primary key. */
     static final DomainDefinition DOM_PK_DOCID;
 
@@ -1001,8 +1006,6 @@ public final class DBDefinitions {
                                  DOM_BOOK_LOCATION
         );
     }
-
-    /* ========================================================================================== */
 
     private DBDefinitions() {
     }

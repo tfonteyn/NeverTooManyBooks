@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -106,17 +107,16 @@ public class DBHelper
 
     /**
      * Indexes which have not been added to the TBL definitions yet.
+     * For now, there is no API to add an index with a collation suffix.
+     * <p>
+     * These (should) speed up SQL where we lookup the id by name/title.
      */
     private static final String[] DATABASE_CREATE_INDICES = {
-            // for now, there is no API to add an index with a collation suffix.
-            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
-            // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
                     + " (" + DOM_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
+            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
+                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
 
-            // for now, there is no API to add an index with a collation suffix.
-            // TOMF: is this needed after adding the _lc column?
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + DAO.COLLATION + ')',
             };
@@ -734,7 +734,7 @@ public class DBHelper
             db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
 
 
-            // add the 'order by' title columns
+            // add the 'ORDER BY' columns
             db.execSQL("ALTER TABLE " + TBL_BOOKS
                                + " ADD " + DOM_TITLE_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
@@ -742,6 +742,10 @@ public class DBHelper
             db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
                                + " ADD " + DOM_TITLE_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
+
+            db.execSQL("ALTER TABLE " + TBL_AUTHORS
+                               + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_FAMILY_NAME_OB);
 
 
             // add the UUID field for the move of styles to SharedPreferences

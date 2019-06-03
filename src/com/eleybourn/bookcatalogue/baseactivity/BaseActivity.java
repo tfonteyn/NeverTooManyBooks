@@ -266,16 +266,20 @@ public abstract class BaseActivity
                 }
                 return;
 
-
             // logging only
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.warn(this, "BaseActivity.onActivityResult",
-                                "NOT HANDLED",
-                                "requestCode=" + requestCode,
-                                "resultCode=" + resultCode);
+                    // codes for fragments have upper 16 bits in use, don't log those.
+                    // the super call will redirect those.
+                    if ((requestCode & 0xFF) != 0) {
+                        Logger.warn(this, "BaseActivity.onActivityResult",
+                                    "NOT HANDLED",
+                                    "requestCode=" + requestCode,
+                                    "resultCode=" + resultCode);
+                    }
                 }
                 super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
 
         Tracker.exitOnActivityResult(this);

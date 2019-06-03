@@ -90,7 +90,7 @@
     <string name="menu_about">Over deze App</string>
     <string name="lbl_price_listed">Prijs</string>
     <string name="lbl_update_fields">Automatisch Velden bijwerken</string>
-    <string name="lbl_select_fields_to_update">Selecteer bij te werken velden</string>
+    <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="lbl_select_fields">Selecteer velden</string>
 
     <string name="info_select_fields_to_update">
@@ -254,7 +254,6 @@
         Dit zal het boek met de titel ‘%1$s’ door %2$s compleet verwijderen.
         Weet u zeker dat u door wilt gaan?
     </string>
-    <string name="warning_editions_require_isbn">Andere uitgaven ophalen vereist een ISBN</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
     <string name="info_tap_on_thumb">Tik op een miniatuur voor vergroting</string>
@@ -923,7 +922,7 @@
     <string name="lbl_first_publication_month">Eerste uitg. Maand</string>
     <string name="lbl_first_publication_year">Eerste uitg. Dag</string>
     <string name="X_pt_bob_filter_read">Selecteer op \‘Gelezen\’ status</string>
-    <string name="info_tap_to_edit">Tik hier om de naam te bewerken</string>
+    <string name="X_info_tap_to_edit">Tik hier om de naam te bewerken</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>

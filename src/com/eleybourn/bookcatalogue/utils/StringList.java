@@ -233,6 +233,7 @@ public class StringList<E> {
                         sb.append('\\');
                     }
                     sb.append(c);
+                    break;
             }
         }
         return sb.toString().trim();
@@ -311,11 +312,10 @@ public class StringList<E> {
                                 list.add(mFactory.decode(source));
                             }
                             sb.setLength(0);
-                            break;
                         } else {
                             sb.append(c);
-                            break;
                         }
+                        break;
                 }
             }
         }

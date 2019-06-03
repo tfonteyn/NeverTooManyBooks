@@ -610,25 +610,9 @@ public class BookFragment
         }
     }
 
-    /**
-     * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     * <p>
-     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
-     * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
-     * the database being closed by the deeply dodgy auto-close code in Android.
-     * </p>
-     * <br>
-     * {@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onPause() {
-        FlattenedBooklist fbl = mBookFragmentModel.getFlattenedBooklist();
-        if (fbl != null) {
-            // release resources (statements)
-            fbl.close();
-        }
-
         //  set the current visible book id as the result data.
         Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
                                             mBookBaseFragmentModel.getBook().getId());

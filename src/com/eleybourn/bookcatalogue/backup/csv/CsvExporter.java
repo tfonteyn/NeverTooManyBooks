@@ -356,6 +356,7 @@ public class CsvExporter
                         break;
                     default:
                         sb.append(c);
+                        break;
                 }
                 pos++;
 

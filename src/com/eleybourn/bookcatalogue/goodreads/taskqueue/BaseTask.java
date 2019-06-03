@@ -110,11 +110,13 @@ public abstract class BaseTask
                 holder.retry_info.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
+
             case STATUS_FAILED:
                 statusText = context.getString(R.string.gr_tq_failed);
                 holder.retry_info.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
                 break;
+
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
                 String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getRetryDate());
@@ -123,6 +125,7 @@ public abstract class BaseTask
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
+
             default:
                 statusText = context.getString(R.string.unknown);
                 holder.retry_info.setVisibility(View.GONE);

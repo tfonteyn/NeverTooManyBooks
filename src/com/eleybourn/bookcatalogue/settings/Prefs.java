@@ -189,6 +189,7 @@ public final class Prefs {
                                 break;
                             default:
                                 compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
+                                break;
                         }
                         ed.putString(pk_bob_list_generation, String.valueOf(compatMode));
                         break;
@@ -385,6 +386,7 @@ public final class Prefs {
                                     ed.putBoolean(key.replace("field_visibility_",
                                                               App.PREFS_FIELD_VISIBILITY),
                                                   (Boolean) oldValue);
+                                    break;
                             }
 
                         } else if (!key.startsWith("state_current_group")) {

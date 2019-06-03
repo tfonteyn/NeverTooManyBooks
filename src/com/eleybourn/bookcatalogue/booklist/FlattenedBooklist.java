@@ -11,12 +11,22 @@ import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.debug.Logger;
+
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book IDs in
  * the same order as an underlying book list.
+ * <p>
+ * Construction is done in two steps:
+ * <ol>
+ * <li>Create the table, fill it with data<br>
+ * {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
+ * <li>Use the normal constructor to start using the table</li>
+ * </ol>
  *
  * @author pjw
  */
@@ -33,14 +43,17 @@ public class FlattenedBooklist
     private static final String STMT_POSITION = "position";
 
     /** Underlying temporary table definition. */
+    @NonNull
     private TableDefinition mTable;
     /** The underlying database. We need this to keep the table alive. */
+    @NonNull
     private SynchronizedDb mSyncedDb;
-    /** Default position (before start). */
+    /** Default position (before first element). */
     private long mPosition = -1;
     /** Book ID from the currently selected row. */
     private long mBookId;
     /** Collection of statements compiled for this object. */
+    @NonNull
     private SqlStatementManager mStatements;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
@@ -48,46 +61,51 @@ public class FlattenedBooklist
     /**
      * Constructor.
      *
-     * @param db    Database connection
-     * @param table Table definition
-     */
-    FlattenedBooklist(@NonNull final SynchronizedDb db,
-                      @NonNull final TableDefinition table) {
-        init(db, table.clone());
-    }
-
-    /**
-     * Constructor.
-     *
      * @param db        Database connection
-     * @param tableName Name of underlying table
+     * @param tableName Name of underlying and <strong>existing</strong> table
      */
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
-        TableDefinition flat = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
-        flat.setName(tableName);
-        //RELEASE MUST use TableTypes.Temporary
-        flat.setType(TableTypes.Temporary);
+        TableDefinition table = TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        table.setName(tableName);
 
-        init(db.getUnderlyingDatabase(), flat);
-    }
-
-    /**
-     * Shared constructor.
-     *
-     * @param db    Database connection
-     * @param table Table definition
-     */
-    private void init(@NonNull final SynchronizedDb db,
-                      @NonNull final TableDefinition table) {
-        mSyncedDb = db;
+        mSyncedDb = db.getUnderlyingDatabase();
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
     }
 
+    /**
+     * Create a flattened table of ordered book IDs based on the underlying list.
+     *
+     * @param db Database connection
+     * @param id counter which will be used to create the table name
+     *
+     * @return the name of the created table.
+     */
     @NonNull
-    public TableDefinition getTable() {
-        return mTable;
+    static String createTable(@NonNull final DAO db,
+                              @NonNull final TableDefinition navTable,
+                              @NonNull final TableDefinition listTable,
+                              final int id) {
+
+        SynchronizedDb syncedDb = db.getUnderlyingDatabase();
+
+        TableDefinition table = TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        table.setName(table.getName() + '_' + id);
+        // no indexes, no constraints!
+        table.create(syncedDb, false);
+
+        String sql = table.getInsert(false, DOM_PK_ID, DOM_FK_BOOK_ID)
+                + " SELECT " + navTable.dot(DOM_PK_ID) + ',' + listTable.dot(DOM_FK_BOOK_ID)
+                + " FROM " + listTable.ref() + listTable.join(navTable)
+                + " WHERE " + listTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"
+                + " ORDER BY " + navTable.dot(DOM_PK_ID);
+
+        try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
+            stmt.executeInsert();
+        }
+
+        return table.getName();
     }
 
     public long getBookId() {
@@ -131,12 +149,11 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
-                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
+                    + " WHERE " + mTable.dot(DOM_PK_ID) + ">?"
+                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -158,12 +175,11 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
-                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
+                    + " WHERE " + mTable.dot(DOM_PK_ID) + "<?"
+                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -187,10 +203,9 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
+                    + " WHERE " + mTable.dot(DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
@@ -248,7 +263,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
+                    + " WHERE " + mTable.dot(DOM_PK_ID) + "<=?";
             stmt = mStatements.add(STMT_POSITION, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -266,14 +281,14 @@ public class FlattenedBooklist
 
     /**
      * Cleanup the underlying table.
-     * It's a temp table, but cleaning up properly is a good thing.
+     * It's a temp table, but cleaning up prevents 'old' tables hanging around far to long.
      */
     public void deleteData() {
-        if (mTable != null) {
-            mTable.drop(mSyncedDb);
-            mTable.clear();
-            mTable = null;
-        }
+        mTable.drop(mSyncedDb);
+        mTable.clear();
+        // force to null, so if we access the table again, we'll crash on purpose!
+        //noinspection ConstantConditions
+        mTable = null;
     }
 
     @Override

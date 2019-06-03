@@ -43,6 +43,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
@@ -238,7 +239,8 @@ public class EditAuthorListActivity
                              d.dismiss();
 
                              mGlobalReplacementsMade = mDb.globalReplaceAuthor(author,
-                                                                               newAuthorData);
+                                                                               newAuthorData,
+                                                                               LocaleUtils.getPreferredLocal());
 
                              author.copyFrom(newAuthorData);
                              Utils.pruneList(mDb, mList);

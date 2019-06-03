@@ -64,7 +64,7 @@
     <string name="menu_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_update_fields">Αυτόματη ενημέρωση πεδίων</string>
-    <string name="lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
+    <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="lbl_select_fields">Επιλεγξτε πεδία</string>
 
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
@@ -179,7 +179,6 @@
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="list_and">και</string>
     <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \‘%1$s\’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
-    <string name="warning_editions_require_isbn">Η ανάκτηση άλλων εκδόσεων απαιτεί ISBN</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="info_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>

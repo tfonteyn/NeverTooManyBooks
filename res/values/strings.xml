@@ -185,7 +185,6 @@ TODO: uniform quotes in all string:
     </string>
 
     <string name="warning_select_min_1_field">Select at least one field to update</string>
-    <string name="warning_editions_require_isbn">Retrieving other editions requires an ISBN</string>
     <string name="warning_action_requires_isbn">This action requires a valid ISBN</string>
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
@@ -846,7 +845,6 @@ TODO: uniform quotes in all string:
 
     <!-- Update Fields from internet choices -->
     <string name="lbl_update_fields">Automatically Update Fields</string>
-    <string name="lbl_select_fields_to_update">Select Fields to Update</string>
     <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_add_extra">Appends extra data</string>
@@ -1173,10 +1171,12 @@ TODO: uniform quotes in all string:
     <string name="X_import_error_failed_is_csv_file_location_correct">
         Import of data failed. Is the file in the correct place?
     </string>
+    <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
 
     <!-- e.g. "in a folder" -->
     <string name="X_in">In</string>
 
+    <string name="X_info_tap_to_edit">Tap here to edit the name</string>
     <string name="X_updated">Updated</string>
     <string name="X_file_size">Size</string>
     <string name="X_anthology_titles">Anthology Titles</string>
@@ -1214,8 +1214,6 @@ TODO: uniform quotes in all string:
     <!-- generic place holder text for Book list rows -->
     <string name="field_not_set_with_brackets">(Not Set)</string>
 
-
-
     <!-- name of virtual bookshelf which displays all books; also used in list filters -->
     <string name="bookshelf_all_books">All Books</string>
     <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
@@ -1235,7 +1233,6 @@ TODO: uniform quotes in all string:
     <string name="cleanup_files">Cleanup Files</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
-    <string name="info_tap_to_edit">Tap here to edit the name</string>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="btn_drag_handle">Drag me to reorder this list.</string>

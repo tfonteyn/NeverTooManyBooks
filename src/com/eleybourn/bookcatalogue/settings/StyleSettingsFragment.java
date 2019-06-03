@@ -72,7 +72,6 @@ public class StyleSettingsFragment
             group.addPreferencesTo(screen);
         }
 
-
         @SuppressWarnings("ConstantConditions")
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
@@ -245,6 +244,7 @@ public class StyleSettingsFragment
 
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 }

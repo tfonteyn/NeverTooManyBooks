@@ -84,6 +84,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -771,7 +772,8 @@ public class DAO
      * @return the row ID of the newly inserted Author, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    private long insertAuthor(@NonNull final Author /* in/out */ author) {
+    private long insertAuthor(@NonNull final Author /* in/out */ author,
+                              @NonNull final Locale locale) {
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
             stmt = mStatements.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
@@ -779,8 +781,9 @@ public class DAO
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
             stmt.bindString(1, author.getFamilyName());
-            stmt.bindString(2, author.getGivenNames());
-            stmt.bindLong(3, author.isComplete() ? 1 : 0);
+            stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), locale));
+            stmt.bindString(3, author.getGivenNames());
+            stmt.bindLong(4, author.isComplete() ? 1 : 0);
             long iId = stmt.executeInsert();
             if (iId > 0) {
                 author.setId(iId);
@@ -794,10 +797,12 @@ public class DAO
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateAuthor(@NonNull final Author author) {
+    private int updateAuthor(@NonNull final Author author,
+                             @NonNull final Locale locale) {
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_AUTHOR_FAMILY_NAME.name, author.getFamilyName());
+        cv.put(DOM_AUTHOR_FAMILY_NAME_OB.name, encodeOrderByColumn(author.getFamilyName(), locale));
         cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.getGivenNames());
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
 
@@ -814,14 +819,15 @@ public class DAO
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsertAuthor(@NonNull final /* in/out */ Author author) {
+    public boolean updateOrInsertAuthor(@NonNull final /* in/out */ Author author,
+                                        @NonNull final Locale locale) {
 
         if (author.getId() != 0) {
-            return updateAuthor(author) > 0;
+            return updateAuthor(author, locale) > 0;
         } else {
             // try to find first.
             if (author.fixupId(this) == 0) {
-                return insertAuthor(author) > 0;
+                return insertAuthor(author, locale) > 0;
             }
         }
         return false;
@@ -902,10 +908,11 @@ public class DAO
      * @return {@code true} for success.
      */
     public boolean globalReplaceAuthor(@NonNull final Author from,
-                                       @NonNull final Author to) {
+                                       @NonNull final Author to,
+                                       @NonNull final Locale locale) {
 
         // process the destination Author
-        if (!updateOrInsertAuthor(to)) {
+        if (!updateOrInsertAuthor(to, locale)) {
             Logger.warnWithStackTrace(this, "Could not update", "author=" + to);
             return false;
         }
@@ -1214,7 +1221,7 @@ public class DAO
                                  "KEY_AUTHOR_FORMATTED",
                                  "inserting author: " + author.stringEncoded());
                 }
-                insertAuthor(author);
+                insertAuthor(author, book.getLocale());
             }
             book.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
 
@@ -1234,7 +1241,7 @@ public class DAO
                                  "KEY_AUTHOR_FAMILY_NAME",
                                  "inserting author: " + author.stringEncoded());
                 }
-                insertAuthor(author);
+                insertAuthor(author, book.getLocale());
             }
             book.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
         }
@@ -1904,7 +1911,9 @@ public class DAO
                     Logger.debug(this, "updateOrInsertTOC",
                                  "inserting author: " + author.stringEncoded());
                 }
-                insertAuthor(author);
+                // this basically will only happen if a multi-author anthology is added,
+                // with an entry by an Author from whom we have no Books.
+                insertAuthor(author, book.getLocale());
             }
 
             // As an entry can exist in multiple books, try to find the entry.
@@ -2016,7 +2025,7 @@ public class DAO
                         Logger.debug(this, "insertBookAuthors",
                                      "inserting author: " + author.stringEncoded());
                     }
-                    insertAuthor(author);
+                    insertAuthor(author, book.getLocale());
                 }
 
                 // we use the id as the KEY here, so yes, a String.
@@ -4149,12 +4158,15 @@ public class DAO
         /** {@link Book}, all columns. */
         private static final String BOOKS =
                 "SELECT * FROM " + TBL_BOOKS;
+
         /** {@link Author}, all columns. */
         private static final String AUTHORS =
                 "SELECT * FROM " + TBL_AUTHORS;
+
         /** {@link Series}, all columns. */
         private static final String SERIES =
                 "SELECT * FROM " + TBL_SERIES;
+
         /** {@link Bookshelf} all columns. */
         private static final String BOOKSHELVES = "SELECT "
                 + TBL_BOOKSHELF.dot(DOM_PK_ID)
@@ -4162,19 +4174,26 @@ public class DAO
                 + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE_ID)
                 + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
+
         /** {@link Bookshelf} all columns. Ordered, will be displayed to user. */
         private static final String BOOKSHELVES_ORDERED = BOOKSHELVES
                 + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
+
         /** {@link BooklistStyle} all columns. */
         private static final String BOOKLIST_STYLES =
                 "SELECT * FROM " + TBL_BOOKLIST_STYLES;
+
         /** Book UUID only, for accessing all cover image files. */
         private static final String BOOK_ALL_UUID =
                 "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
+
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FAMILY_NAMES =
-                "SELECT DISTINCT " + DOM_AUTHOR_FAMILY_NAME + " FROM " + TBL_AUTHORS
-                        + " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION;
+                "SELECT DISTINCT "
+                        + DOM_AUTHOR_FAMILY_NAME
+                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                        + " FROM " + TBL_AUTHORS
+                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_GIVEN_NAMES =
@@ -4183,9 +4202,11 @@ public class DAO
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_WITH_FORMATTED_NAMES =
-                "SELECT " + SqlColumns.AUTHOR_FORMATTED
+                "SELECT "
+                        + SqlColumns.AUTHOR_FORMATTED
+                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
                         + " FROM " + TBL_AUTHORS.ref()
-                        + " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION
+                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
                         + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
@@ -4251,6 +4272,7 @@ public class DAO
         private static final String AUTHORS_BY_BOOK_ID =
                 "SELECT DISTINCT " + TBL_AUTHORS.dotAs(DOM_PK_ID)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME_OB)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
                         + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
                         + ',' + SqlColumns.AUTHOR_FORMATTED
@@ -4258,9 +4280,9 @@ public class DAO
                         + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
                         + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?"
                         + " ORDER BY "
-                        + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC,"
-                        + " lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION + "ASC,"
-                        + " lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION + "ASC";
+                        + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC"
+                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION + "ASC"
+                        + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION + "ASC";
 
         /**
          * All Series for a Book; ordered by position, name.
@@ -4361,6 +4383,7 @@ public class DAO
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKLIST_STYLES
                         + " WHERE " + DOM_UUID + "=?";
 
+        //TOMF: use DOM_AUTHOR_FAMILY_NAME_OB ? But given name part will still force a table scan
         static final String AUTHOR_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_AUTHORS
                         + " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ")=lower(?)" + COLLATION
@@ -4580,9 +4603,10 @@ public class DAO
         static final String AUTHOR =
                 "INSERT INTO " + TBL_AUTHORS
                         + '(' + DOM_AUTHOR_FAMILY_NAME
+                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
                         + ',' + DOM_AUTHOR_GIVEN_NAMES
                         + ',' + DOM_AUTHOR_IS_COMPLETE
-                        + ") VALUES (?,?,?)";
+                        + ") VALUES (?,?,?,?)";
 
         static final String SERIES =
                 "INSERT INTO " + TBL_SERIES

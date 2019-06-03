@@ -680,13 +680,13 @@ public class TableDefinition
      * or
      * format: INSERT into [table-name] ( [domain-list] ) VALUES(?,...?)
      *
-     * @param withValues set to {@code true} to add the VALUES part
-     * @param domains    List of domains to use
+     * @param withValuesClause set to {@code true} to add the VALUES part
+     * @param domains          List of domains to use
      *
      * @return SQL fragment
      */
     @NonNull
-    public String getInsert(final boolean withValues,
+    public String getInsert(final boolean withValuesClause,
                             @NonNull final DomainDefinition... domains) {
         StringBuilder sql = new StringBuilder("INSERT INTO ")
                 .append(mName)
@@ -694,7 +694,7 @@ public class TableDefinition
                 .append(Csv.join(",", Arrays.asList(domains)))
                 .append(')');
 
-        if (withValues) {
+        if (withValuesClause) {
             sql.append(" VALUES (")
                .append(Csv.join(",", "?", domains.length))
                .append(')');

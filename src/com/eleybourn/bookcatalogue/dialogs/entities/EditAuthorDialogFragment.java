@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.EditAuthorListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Dialog to edit an existing single author.
@@ -66,7 +67,7 @@ public class EditAuthorDialogFragment
     protected void confirmChanges(@NonNull final Author author,
                                   @NonNull final Author newAuthorData) {
         author.copyFrom(newAuthorData);
-        mDb.updateOrInsertAuthor(author);
+        mDb.updateOrInsertAuthor(author, LocaleUtils.getPreferredLocal());
 
         Bundle data = new Bundle();
         data.putLong(DBDefinitions.KEY_AUTHOR, author.getId());

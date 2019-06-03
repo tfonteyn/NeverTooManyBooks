@@ -84,7 +84,7 @@
     <string name="menu_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
-    <string name="lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
+    <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="lbl_select_fields">Felder auswählen</string>
 
     <string name="info_select_fields_to_update">
@@ -250,9 +250,6 @@
     <string name="confirm_delete_book">
         Dieser Vorgang löscht das Buch mit dem Titel ‘%1$s’ von ‘%2$s’ vollständig.
         Wollen Sie das Buch löschen?
-    </string>
-    <string name="warning_editions_require_isbn">
-        Um andere Ausgaben abzurufen, ist eine ISBN notwendig
     </string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar</string>
     <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
@@ -878,7 +875,7 @@
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Inhalt</string>
     <string name="warning_thing_already_exists">%1$s existiert bereits</string>
-    <string name="info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
+    <string name="X_info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>

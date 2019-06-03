@@ -63,7 +63,7 @@
     <string name="menu_about">О приложении…</string>
     <string name="lbl_price_listed">Список цен</string>
     <string name="lbl_update_fields">Автоматическое обновление полей</string>
-    <string name="lbl_select_fields_to_update">Выберите поля для обновления</string>
+    <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="lbl_select_fields">Выберите поля</string>
 
     <string name="info_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>
@@ -166,7 +166,6 @@
     <string name="warning_unable_to_find_book">Поиск указанной книги не удался</string>
     <string name="list_and">и</string>
     <string name="confirm_delete_book">Книга с названием \‘%1$s\’ будет полностью удалена %2$s. Вы уверены?</string>
-    <string name="warning_editions_require_isbn">Для получения других изданий требуется ISBN</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
     <string name="info_tap_on_thumb">Щёлкните по миниатюре для просмотра большого изображения</string>
@@ -589,7 +588,7 @@
     <string name="error_storage_not_available">SD-карта недоступна</string>
     <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>
     <string name="import_export_option_xml">Все данные в формате XML</string>
-    <string name="info_tap_to_edit">Нажмите здесь, чтобы изменить имя.</string>
+    <string name="X_info_tap_to_edit">Нажмите здесь, чтобы изменить имя.</string>
     <string name="btn_confirm_use">использование</string>
     <string name="confirm_merge_bookshelves">Книжная полка, которую вы переименовываете, уже существует. Вы хотите объединить их?</string>
     <string name="warning_required_title_and_author">Название и / или автор отсутствует.</string>
