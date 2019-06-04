@@ -150,6 +150,7 @@ public final class GoodreadsTasks {
                                                  @Nullable final Exception e,
                                                  @NonNull final View view,
                                                  @NonNull final TaskListener<Object, Integer> listener) {
+
         //Reminder:  'success' only means the call itself was successful.
         // It still depends on the 'result' code what the next step is.
 

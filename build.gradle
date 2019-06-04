@@ -101,7 +101,7 @@ dependencies {
     implementation 'androidx.viewpager:viewpager:1.0.0'
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-alpha03'
     //
-    implementation 'com.google.android.material:material:1.1.0-alpha06'
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
     //
     implementation 'ch.acra:acra-mail:5.3.0'
     implementation 'ch.acra:acra-toast:5.3.0'
@@ -112,6 +112,7 @@ dependencies {
     //    implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.3'
     //TODO: apache http is removed from API: 23
+    // pull apache http explicitly. Signpost would get an older version otherwise.
     implementation 'org.apache.httpcomponents:httpcore:4.4.11'
     implementation 'org.apache.httpcomponents:httpmime:4.5.8'
     // but SignPost requires/favours apache http client.
@@ -125,4 +126,9 @@ dependencies {
     implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
 }
 
+configurations {
+    all {
+        exclude module: 'commons-logging'
+    }
+}
 

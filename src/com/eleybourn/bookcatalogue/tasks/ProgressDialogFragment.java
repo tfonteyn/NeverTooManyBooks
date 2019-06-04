@@ -68,8 +68,6 @@ public class ProgressDialogFragment<Progress, Result>
 
     @Nullable
     private WeakReference<TaskListener<Progress, Result>> mTaskListener;
-    @Nullable
-    private WeakReference<UserCancelledListener> mOnProgressCancelledListener;
 
     /**
      * @param titelId         Titel for the dialog, can be 0 for no title.
@@ -94,47 +92,8 @@ public class ProgressDialogFragment<Progress, Result>
         return frag;
     }
 
-    /**
-     * This constructor is meant to be shared between all tasks used by:
-     * {@link com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks}.
-     * and should not be used/needed elsewhere.
-     *
-     * @param titelId         Titel for the dialog, can be 0 for no title.
-     * @param isIndeterminate type of progress
-     * @param maxValue        maximum value for progress if isIndeterminate==false
-     *                        Pass in 0 to keep the max as set in the layout file.
-     * @param message         initial message
-     * @param currentValue    initial value
-     *
-     * @return the fragment.
-     */
-    @NonNull
-    @UiThread
-    public static <Results>
-    ProgressDialogFragment<Object, Results> newInstance(@StringRes final int titelId,
-                                                        final boolean isIndeterminate,
-                                                        final int maxValue,
-                                                        @Nullable final String message,
-                                                        final int currentValue) {
-        ProgressDialogFragment<Object, Results> frag = new ProgressDialogFragment<>();
-        Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
-        args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
-        if (message != null) {
-            args.putString(BKEY_CURRENT_MESSAGE, message);
-        }
-        args.putInt(BKEY_CURRENT_VALUE, currentValue);
-        args.putInt(BKEY_MAX, maxValue);
-        frag.setArguments(args);
-        return frag;
-    }
-
     public void setTaskListener(@Nullable final TaskListener<Progress, Result> taskListener) {
         mTaskListener = new WeakReference<>(taskListener);
-    }
-
-    public void setUserCancelledListener(@Nullable final UserCancelledListener listener) {
-        mOnProgressCancelledListener = new WeakReference<>(listener);
     }
 
     @Override
@@ -264,11 +223,17 @@ public class ProgressDialogFragment<Progress, Result>
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
+
+        Integer tmpTaskId = mTaskId;
+        // invalidate the current task as its finished. The dialog can be reused.
+        mTaskId = null;
+        mTask = null;
+
         // Tell the caller we're done. mTaskId will be null if there is no task.
-        if (mOnProgressCancelledListener != null) {
-            UserCancelledListener listener = mOnProgressCancelledListener.get();
+        if (mTaskListener != null) {
+            TaskListener<Progress, Result> listener = mTaskListener.get();
             if (listener != null) {
-                listener.onProgressDialogCancelled(mTaskId);
+                listener.onTaskCancelled(tmpTaskId);
             } else {
                 // keep this as a throw, as not having the listener here would be bug
                 throw new RuntimeException("WeakReference to listener was dead");
@@ -384,16 +349,5 @@ public class ProgressDialogFragment<Progress, Result>
             getDialog().setDismissMessage(null);
         }
         super.onDestroyView();
-    }
-
-    /**
-     * Used when the USER cancels.
-     */
-    public interface UserCancelledListener {
-
-        /**
-         * @param taskId for the task; {@code null} if there was no embedded task.
-         */
-        void onProgressDialogCancelled(@Nullable Integer taskId);
     }
 }

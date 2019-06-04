@@ -17,13 +17,13 @@ import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
-import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.backup.ui.BRBaseActivity.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
- * Implementation of {@link FileDetails} that collects data about backup files
+ * Implementation of {@link FileDetails} that collects data about backup mFileDetails
  * in a background thread.
  *
  * @author pjw
@@ -82,7 +82,7 @@ public class BackupFileDetails
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final FileChooserFragment.Holder holder,
+    public void onBindViewHolder(@NonNull final BRBaseActivity.Holder holder,
                                  @NonNull final Context context) {
 
         holder.filenameView.setText(mFile.getName());

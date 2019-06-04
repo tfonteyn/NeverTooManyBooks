@@ -90,6 +90,7 @@ public class BooksOnBookshelfModel
      */
     private final TaskListener<Object, BuilderHolder> mOnGetBookListTaskListener =
             new TaskListener<Object, BuilderHolder>() {
+
                 @Override
                 public void onTaskFinished(final int taskId,
                                            final boolean success,
@@ -364,7 +365,7 @@ public class BooksOnBookshelfModel
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
                                           true);
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,null,
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ, null,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                                           false);
 
@@ -801,7 +802,7 @@ public class BooksOnBookshelfModel
             cleanup();
 
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onTaskCancelled(mTaskId, result, mException);
+                mTaskListener.get().onTaskCancelled(mTaskId);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCancelled",

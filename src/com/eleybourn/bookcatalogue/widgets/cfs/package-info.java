@@ -42,5 +42,31 @@
  *       }
  *       // END - CFSRecyclerView
  * </pre>
+ *
+ * A secondary issue is fixed by:
+ * https://issuetracker.google.com/issues/64729576
+ * https://github.com/caarmen/RecyclerViewBug/blob/hack/app/src/main/java/android/support/v7/widget/HackFastScroller.java
+ *
+ * Class member:
+ * <pre>
+ *     private int mMinVerticalThumbHeight;
+ * </pre>
+ *
+ * Constructor:
+ * <pre>
+ *     // BEGIN - CFSRecyclerView
+ *     mMinVerticalThumbHeight = recyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.cfs_fast_scroll_min_thumb_height);
+ *     // END - CFSRecyclerView
+ * </pre>
+ *
+ * At the end of
+ * {@link com.eleybourn.bookcatalogue.widgets.cfs.CFSFastScroller#updateScrollPosition(int, int)}
+ * <pre>
+ *     // BEGIN - CFSRecyclerView
+ *     if (mVerticalThumbHeight < mMinVerticalThumbHeight) {
+ *         mVerticalThumbHeight = mMinVerticalThumbHeight;
+ *     }
+ *         // END - CFSRecyclerView
+ * </pre>
  */
 package com.eleybourn.bookcatalogue.widgets.cfs;

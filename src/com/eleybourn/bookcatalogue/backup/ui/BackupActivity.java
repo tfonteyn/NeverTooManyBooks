@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,6 +59,13 @@ public class BackupActivity
 
     private final TaskListener<Object, ExportOptions> mTaskListener =
             new TaskListener<Object, ExportOptions>() {
+
+                @Override
+                public void onTaskCancelled(@Nullable final Integer taskId) {
+                    UserMessage.showUserMessage(BackupActivity.this,
+                                                R.string.progress_end_cancelled);
+                }
+
                 /**
                  * Listener for tasks.
                  *
@@ -97,8 +106,8 @@ public class BackupActivity
                             } else {
                                 String msg = getString(R.string.error_backup_failed)
                                         + ' ' + getString(R.string.error_storage_not_writable)
-                                        + "\n\n" + getString(
-                                        R.string.error_if_the_problem_persists);
+                                        + "\n\n"
+                                        + getString(R.string.error_if_the_problem_persists);
 
                                 new AlertDialog.Builder(BackupActivity.this)
                                         .setTitle(R.string.lbl_backup_to_archive)
@@ -116,9 +125,11 @@ public class BackupActivity
                     }
                 }
             };
+    private EditText mFilenameView;
     private ProgressDialogFragment<Object, ExportOptions> mProgressDialog;
+
     private final ExportOptionsDialogFragment.OptionsListener mOptionsListener =
-            BackupActivity.this::onOptionsSet;
+            this::onOptionsSet;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -131,20 +142,21 @@ public class BackupActivity
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTaskListener(mTaskListener);
-//            mProgressDialog.setOnUserCancelledListener(this);
-        }
-
-        if (fm.findFragmentByTag(FileChooserFragment.TAG) == null) {
-            String defaultFilename = getString(R.string.app_name) + '-'
-                    + DateUtils.localSqlDateForToday()
-                               .replace(" ", "-")
-                               .replace(":", "")
-                    + BackupManager.ARCHIVE_EXTENSION;
-
-            createFileBrowser(defaultFilename);
         }
 
         setTitle(R.string.title_backup);
+
+        String defaultFilename = getString(R.string.app_name) + '-'
+                + DateUtils.localSqlDateForToday()
+                           .replace(" ", "-")
+                           .replace(":", "")
+                + BackupManager.ARCHIVE_EXTENSION;
+
+        mFilenameView = findViewById(R.id.file_name);
+        mFilenameView.setVisibility(View.VISIBLE);
+        mFilenameView.setText(defaultFilename);
+
+        setupList(savedInstanceState);
     }
 
     @Override
@@ -155,7 +167,7 @@ public class BackupActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
                  MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
@@ -169,7 +181,6 @@ public class BackupActivity
 
         return super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -189,42 +200,48 @@ public class BackupActivity
     }
 
     /**
+     * The user selected a file.
+     *
+     * @param file selected
+     */
+    protected void onFileSelected(@NonNull final File file) {
+        // Put the name of the selected file into the filename field
+        mFilenameView.setText(file.getName());
+    }
+
+    /**
      * Local handler for 'Save'. Perform basic validation, and pass on.
      */
     private void doBackup() {
-        FileChooserFragment frag = (FileChooserFragment)
-                getSupportFragmentManager().findFragmentByTag(FileChooserFragment.TAG);
-        if (frag != null) {
-            File file = frag.getSelectedFile();
-            if (file.exists() && !file.isFile()) {
-                UserMessage.showUserMessage(frag.requireView(),
-                                            R.string.warning_select_a_non_directory);
-                return;
-            }
-
-            final ExportOptions options = new ExportOptions();
-            options.file = file;
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.lbl_backup_to_archive)
-                    .setMessage(R.string.export_info_backup_all)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setNeutralButton(R.string.btn_options, (d, which) -> {
-                        // ask user what options they want
-                        FragmentManager fm = getSupportFragmentManager();
-                        if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
-                            ExportOptionsDialogFragment.newInstance(options).show(fm,
-                                                                                  ExportOptionsDialogFragment.TAG);
-                        }
-                    })
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        // User wants to backup all.
-                        options.what = ExportOptions.ALL;
-                        onOptionsSet(options);
-                    })
-                    .create()
-                    .show();
+        File file = new File(mRootDir.getAbsolutePath() +
+                                     File.separator + mFilenameView.getText().toString().trim());
+        if (file.exists() && !file.isFile()) {
+            UserMessage.showUserMessage(mListView, R.string.warning_select_a_non_directory);
+            return;
         }
+
+        final ExportOptions options = new ExportOptions();
+        options.file = file;
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.lbl_backup_to_archive)
+                .setMessage(R.string.export_info_backup_all)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                    // ask user what options they want
+                    FragmentManager fm = getSupportFragmentManager();
+                    if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
+                        ExportOptionsDialogFragment.newInstance(options).show(fm,
+                                                                              ExportOptionsDialogFragment.TAG);
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    // User wants to backup all.
+                    options.what = ExportOptions.ALL;
+                    onOptionsSet(options);
+                })
+                .create()
+                .show();
     }
 
     /**
@@ -263,6 +280,5 @@ public class BackupActivity
             task.execute();
         }
         mProgressDialog.setTaskListener(mTaskListener);
-//        mProgressDialog.setOnUserCancelledListener(this);
     }
 }

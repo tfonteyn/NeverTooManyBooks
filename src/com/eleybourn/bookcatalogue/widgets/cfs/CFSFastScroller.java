@@ -35,6 +35,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.eleybourn.bookcatalogue.R;
+
 /**
  * Class responsible to animate and provide a fast scroller.
 
@@ -108,6 +110,8 @@ class CFSFastScroller
     private int mRecyclerViewHeight = 0;
 
     private RecyclerView mRecyclerView;
+    private int mMinVerticalThumbHeight;
+
     /**
      * Whether the document is long/wide enough to require scrolling. If not, we don't show the
      * relevant scroller.
@@ -159,6 +163,10 @@ class CFSFastScroller
 
         mShowHideAnimator.addListener(new AnimatorListener());
         mShowHideAnimator.addUpdateListener(new AnimatorUpdater());
+
+        // BEGIN - CFSRecyclerView
+        mMinVerticalThumbHeight = recyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.cfs_fast_scroll_min_thumb_height);
+        // END - CFSRecyclerView
 
         attachToRecyclerView(recyclerView);
     }
@@ -383,6 +391,12 @@ class CFSFastScroller
         if (mState == STATE_HIDDEN || mState == STATE_VISIBLE) {
             setState(STATE_VISIBLE);
         }
+
+        // BEGIN - CFSRecyclerView
+        if (mVerticalThumbHeight < mMinVerticalThumbHeight) {
+            mVerticalThumbHeight = mMinVerticalThumbHeight;
+        }
+        // END - CFSRecyclerView
     }
 
     @Override

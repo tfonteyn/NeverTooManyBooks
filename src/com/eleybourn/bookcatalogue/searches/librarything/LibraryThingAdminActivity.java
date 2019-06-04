@@ -66,6 +66,7 @@ public class LibraryThingAdminActivity
                                    final boolean success,
                                    final Integer result,
                                    @Nullable final Exception e) {
+
             UserMessage.showUserMessage(mDevKeyView, result);
         }
     };

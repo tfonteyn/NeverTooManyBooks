@@ -1,42 +1,268 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public abstract class BRBaseActivity
         extends BaseActivity {
 
+    /** Fragment manager tag. */
+    public static final String TAG = BRBaseActivity.class.getSimpleName();
+
+    private static final String BKEY_ROOT_PATH = TAG + ":root";
+    private static final String BKEY_FILE_LIST = TAG + ":list";
+    @NonNull
+    private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
+    protected File mRootDir;
+    RecyclerView mListView;
+    /** User clicks on the 'up' button. */
+    private final View.OnClickListener onPathUpClickListener = v -> {
+        String parent = mRootDir.getParent();
+        if (parent == null) {
+            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        onPathChanged(new File(parent));
+    };
+    FileDetailsAdapter mAdapter;
+    private TextView mCurrentFolderView;
+    private final TaskListener<Object, ArrayList<FileDetails>> mListener =
+            new TaskListener<Object, ArrayList<FileDetails>>() {
+
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           @NonNull final ArrayList<FileDetails> result,
+                                           @Nullable final Exception e) {
+                    //noinspection SwitchStatementWithTooFewBranches
+                    switch (taskId) {
+                        case R.id.TASK_ID_FILE_LISTER:
+                            onGotFileList(result);
+                            break;
+
+                        default:
+                            Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
+                            break;
+                    }
+                }
+            };
+
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_backup_restore;
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mCurrentFolderView = findViewById(R.id.current_folder);
+        mCurrentFolderView.setOnClickListener(onPathUpClickListener);
+        findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+
+        mListView = findViewById(android.R.id.list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(linearLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
+        mListView.setHasFixedSize(true);
+
+        mAdapter = new FileDetailsAdapter(this);
+        mListView.setAdapter(mAdapter);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+                                             | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
+
+    protected void setupList(@Nullable final Bundle args) {
+
+        // populate with the existing content if we have it
+        if (args != null) {
+            mRootDir = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
+            ArrayList<FileDetails> list = Objects.requireNonNull(
+                    args.getParcelableArrayList(BKEY_FILE_LIST));
+            onGotFileList(list);
+
+        } else {
+            // use lastBackupFile as the root directory for the browser.
+            String lastBackupFile =
+                    App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
+                                             StorageUtils.getSharedStorage().getAbsolutePath());
+            File rootDir = new File(Objects.requireNonNull(lastBackupFile));
+            // Turn the File into a directory
+            if (rootDir.isDirectory()) {
+                rootDir = new File(rootDir.getAbsolutePath());
+            } else {
+                rootDir = new File(rootDir.getParent());
+            }
+            if (!rootDir.exists()) {
+                // fall back to default
+                rootDir = StorageUtils.getSharedStorage();
+            }
+            mCurrentFolderView.setText(rootDir.getAbsolutePath());
+
+            // start the task to get the content
+            onPathChanged(rootDir);
+        }
     }
 
     /**
-     * Create the file lister fragment.
+     * A new root directory is selected.
+     * <p>
+     * Rebuild the file list in background.
      *
-     * @param defaultFilename for the user input field.
+     * @param rootDir the new root
      */
-    void createFileBrowser(@NonNull final String defaultFilename) {
-        // use lastBackupFile as the root directory for the browser.
-        String lastBackupFile =
-                App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                         StorageUtils.getSharedStorage().getAbsolutePath());
-        File root = new File(Objects.requireNonNull(lastBackupFile));
+    private void onPathChanged(@NonNull final File rootDir) {
+        if (rootDir.isDirectory()) {
+            UserMessage.showUserMessage(mListView, R.string.progress_msg_reading_directory);
+            mRootDir = rootDir;
+            new FileListerTask(mRootDir, mListener).execute();
+        }
+    }
 
-        FileChooserFragment frag = FileChooserFragment.newInstance(root, defaultFilename);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_fragment, frag, FileChooserFragment.TAG)
-                .commit();
+    /**
+     * The user selected a file.
+     *
+     * @param file selected
+     */
+    protected abstract void onFileSelected(@NonNull final File file);
+
+    /**
+     * Display the list.
+     * Can be called from the background task, or from onCreate after a re-create.
+     *
+     * @param fileDetails List of FileDetails
+     */
+    private void onGotFileList(@NonNull final ArrayList<FileDetails> fileDetails) {
+        mCurrentFolderView.setText(mRootDir.getAbsolutePath());
+
+        mFileDetails.clear();
+        mFileDetails.addAll(fileDetails);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Save our root path and list.
+     */
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BKEY_ROOT_PATH, mRootDir.getAbsolutePath());
+        outState.putParcelableArrayList(BKEY_FILE_LIST, mFileDetails);
+    }
+
+    /**
+     * Interface for details of mFileDetails in current directory.
+     */
+    public interface FileDetails
+            extends Parcelable {
+
+        /** Get the underlying File object. */
+        @NonNull
+        File getFile();
+
+        void onBindViewHolder(@NonNull Holder holder,
+                              @NonNull Context context);
+    }
+
+    public static class Holder
+            extends RecyclerView.ViewHolder {
+
+        final TextView filenameView;
+        final ImageView imageView;
+
+        final androidx.constraintlayout.widget.Group fileDetails;
+        final TextView fileContentView;
+        final TextView dateView;
+        final TextView sizeView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            filenameView = itemView.findViewById(R.id.filename);
+            imageView = itemView.findViewById(R.id.icon);
+
+            fileDetails = itemView.findViewById(R.id.file_details);
+            fileContentView = itemView.findViewById(R.id.file_content);
+            dateView = itemView.findViewById(R.id.date);
+            sizeView = itemView.findViewById(R.id.size);
+        }
+    }
+
+    /**
+     * List Adapter for FileDetails objects.
+     */
+    protected class FileDetailsAdapter
+            extends RecyclerView.Adapter<Holder> {
+
+        @NonNull
+        private final LayoutInflater mInflater;
+
+
+        FileDetailsAdapter(@NonNull final Context context) {
+            mInflater = LayoutInflater.from(context);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+
+            View view = mInflater.inflate(R.layout.row_file_chooser, parent, false);
+            return new Holder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+
+            FileDetails item = mFileDetails.get(position);
+            item.onBindViewHolder(holder, mInflater.getContext());
+
+            File file = item.getFile();
+
+            holder.itemView.setOnClickListener(v -> {
+                if (file.isDirectory()) {
+                    // descend into the selected directory
+                    onPathChanged(file);
+                } else {
+                    onFileSelected(file);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mFileDetails.size();
+        }
     }
 }

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -19,25 +20,25 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
-import com.eleybourn.bookcatalogue.backup.ui.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.backup.ui.BRBaseActivity.FileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * Object to provide a FileListerFragmentTask specific to archive files.
+ * Object to provide a FileListerFragmentTask specific to archive mFileDetails.
  *
  * @author pjw
  */
 public class FileListerTask
-        extends AsyncTask<Void, Object, FileChooserFragment.DirectoryContent> {
+        extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
 
     /** Used by the {@link ProgressDialogFragment} for this task. */
     public static final String TAG = FileListerTask.class.getSimpleName();
 
     /**
-     * Perform case-insensitive sorting using system locale (i.e. files are system objects).
+     * Perform case-insensitive sorting using system locale (i.e. mFileDetails are system objects).
      */
     private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
             (o1, o2) -> o1.getFile().getName().toLowerCase(LocaleUtils.getSystemLocale())
@@ -45,10 +46,11 @@ public class FileListerTask
                                   LocaleUtils.getSystemLocale()));
 
     @NonNull
-    private final WeakReference<TaskListener<Object, FileChooserFragment.DirectoryContent>> mTaskListener;
+    private final WeakReference<TaskListener<Object, ArrayList<FileDetails>>> mTaskListener;
 
     @NonNull
-    private final FileChooserFragment.DirectoryContent mDir;
+    private final File mRootDir;
+
     private final int mTaskId = R.id.TASK_ID_FILE_LISTER;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -60,36 +62,37 @@ public class FileListerTask
     /**
      * Constructor.
      *
-     * @param root folder to list
+     * @param rootDir folder to list
      */
     @UiThread
-    FileListerTask(@NonNull final File root,
-                   @NonNull final TaskListener<Object, FileChooserFragment.DirectoryContent> taskListener) {
+    FileListerTask(@NonNull final File rootDir,
+                   @NonNull final TaskListener<Object, ArrayList<FileDetails>> taskListener) {
+        mRootDir = rootDir;
         mTaskListener = new WeakReference<>(taskListener);
-
-        mDir = new FileChooserFragment.DirectoryContent(root);
     }
 
     @Override
-    @Nullable
+    @NonNull
     @WorkerThread
-    protected FileChooserFragment.DirectoryContent doInBackground(final Void... params) {
+    protected ArrayList<FileDetails> doInBackground(final Void... params) {
         Thread.currentThread().setName("FileListerTask");
 
-        // Filter for directories and our own archive files.
+        ArrayList<FileDetails> fileDetails = new ArrayList<>();
+
+        // Filter for directories and our own archives.
         FileFilter fileFilter = pathname ->
                 (pathname.isDirectory() && pathname.canWrite())
                         || (pathname.isFile() && BackupManager.isArchive(pathname));
 
         // Get a file list
-        File[] files = mDir.root.listFiles(fileFilter);
+        File[] files = mRootDir.listFiles(fileFilter);
         if (files == null) {
-            return mDir;
+            return fileDetails;
         }
 
         for (File file : files) {
             BackupFileDetails fd = new BackupFileDetails(file);
-            mDir.files.add(fd);
+            fileDetails.add(fd);
             if (BackupManager.isArchive(file)) {
                 try (BackupReader reader = BackupManager.getReader(file)) {
                     fd.setInfo(reader.getInfo());
@@ -99,8 +102,8 @@ public class FileListerTask
             }
         }
 
-        Collections.sort(mDir.files, FILE_DETAILS_COMPARATOR);
-        return mDir;
+        Collections.sort(fileDetails, FILE_DETAILS_COMPARATOR);
+        return fileDetails;
     }
 
     /**
@@ -111,7 +114,7 @@ public class FileListerTask
      */
     @Override
     @UiThread
-    protected void onPostExecute(@Nullable final FileChooserFragment.DirectoryContent result) {
+    protected void onPostExecute(@NonNull final ArrayList<FileDetails> result) {
         if (mTaskListener.get() != null) {
             mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
         } else {

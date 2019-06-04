@@ -58,6 +58,12 @@ public class AdminFragment
      */
     private final Intent mResultData = new Intent();
     private final TaskListener<Object, Integer> mListener = new TaskListener<Object, Integer>() {
+
+        @Override
+        public void onTaskCancelled(@Nullable final Integer taskId) {
+            UserMessage.showUserMessage(requireView(), R.string.progress_end_cancelled);
+        }
+
         /**
          * The result of the task is not used here.
          * <p>
@@ -98,7 +104,13 @@ public class AdminFragment
                     GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
                                                              requireView(), this);
                     break;
+
+                default:
+                    Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
+                    break;
             }
+
+
         }
     };
     private ProgressDialogFragment<Object, Integer> mProgressDialog;
@@ -121,7 +133,6 @@ public class AdminFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTaskListener(mListener);
-//            mProgressDialog.setOnUserCancelledListener(this);
         }
 
         View root = requireView();
@@ -247,7 +258,6 @@ public class AdminFragment
             task.execute();
         }
         mProgressDialog.setTaskListener(mListener);
-        //mProgressDialog.setOnUserCancelledListener(this);
     }
 
     /**
@@ -298,7 +308,6 @@ public class AdminFragment
             task.execute();
         }
         mProgressDialog.setTaskListener(mListener);
-        //mProgressDialog.setOnUserCancelledListener(this);
     }
 
     @Override

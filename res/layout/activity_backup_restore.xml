@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <include layout="@layout/inc_appbar" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/border1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <EditText
+            android:id="@+id/file_name"
+            style="@style/EditText.FileName"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill,LabelFor"
+            tools:visibility="visible"
+            tools:text="my_library-2019-03-08.bcbk"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_path_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/up_folder"
+            android:padding="@dimen/border2"
+            android:src="@drawable/ic_folder_open"
+            app:layout_constraintEnd_toStartOf="@id/current_folder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/file_name"
+            />
+
+        <TextView
+            android:id="@+id/current_folder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="start"
+            android:padding="@dimen/border2"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="false"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_path_up"
+            app:layout_constraintTop_toBottomOf="@id/file_name"
+            tools:text="/storage/emulated/0/MyDirectory/sub"
+            />
+
+        <View
+            android:id="@+id/list_divider"
+            style="@style/SectionDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_folder"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@android:id/list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/list_divider"
+            tools:listitem="@layout/row_file_chooser"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--
+        FloatingActionButton fab = mActivity.findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_cloud_download);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> doSomething());
+    -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FloatingActionButton"
+        android:visibility="gone"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

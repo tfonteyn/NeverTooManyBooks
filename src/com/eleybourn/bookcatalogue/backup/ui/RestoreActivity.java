@@ -22,8 +22,6 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +31,6 @@ import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
-import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
@@ -43,7 +40,6 @@ import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Lets the user choose an archive file to import from.
@@ -55,6 +51,14 @@ public class RestoreActivity
 
     private final TaskListener<Object, ImportOptions> mTaskListener =
             new TaskListener<Object, ImportOptions>() {
+
+                @Override
+                public void onTaskCancelled(@Nullable final Integer taskId) {
+                    UserMessage.showUserMessage(RestoreActivity.this,
+                                                R.string.progress_end_cancelled);
+                    //TOMF: add to the message that partial imports might have been done... blah blah
+                }
+
                 /**
                  * Listener for tasks.
                  *
@@ -94,8 +98,8 @@ public class RestoreActivity
                             } else {
                                 String msg = getString(R.string.error_import_failed)
                                         + ' ' + getString(R.string.error_storage_not_readable)
-                                        + "\n\n" + getString(
-                                        R.string.error_if_the_problem_persists);
+                                        + "\n\n"
+                                        + getString(R.string.error_if_the_problem_persists);
 
                                 new AlertDialog.Builder(RestoreActivity.this)
                                         .setTitle(R.string.lbl_import_from_archive)
@@ -113,29 +117,27 @@ public class RestoreActivity
                     }
                 }
             };
+
     private ProgressDialogFragment<Object, ImportOptions> mProgressDialog;
+
     private final ImportOptionsDialogFragment.OptionsListener mOptionsListener =
-            RestoreActivity.this::onOptionsSet;
+            this::onOptionsSet;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         FragmentManager fm = getSupportFragmentManager();
-
         //noinspection unchecked
         mProgressDialog = (ProgressDialogFragment<Object, ImportOptions>)
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTaskListener(mTaskListener);
-//            mProgressDialog.setOnUserCancelledListener(this);
-        }
-
-        if (fm.findFragmentByTag(FileChooserFragment.TAG) == null) {
-            createFileBrowser("");
         }
 
         setTitle(R.string.title_import);
+
+        setupList(savedInstanceState);
     }
 
     @Override
@@ -145,76 +147,48 @@ public class RestoreActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_USE,
-                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_open)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.MENU_HIDE_KEYBOARD:
-                Utils.hideKeyboard(getWindow().getDecorView());
-                return true;
-
-            case R.id.MENU_USE:
-                doRestore();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    /**
+     * The user selected a file.
+     *
+     * @param file selected
+     */
+    protected void onFileSelected(@NonNull final File file) {
+        doRestore(file);
     }
 
     /**
      * Local handler for 'Open'. Perform basic validation, and pass on.
      */
-    private void doRestore() {
-        FileChooserFragment frag = (FileChooserFragment)
-                getSupportFragmentManager().findFragmentByTag(FileChooserFragment.TAG);
-        if (frag != null) {
-            File file = frag.getSelectedFile();
-            if (!file.exists() || !file.isFile()) {
-                UserMessage.showUserMessage(frag.requireView(),
-                                            R.string.warning_select_an_existing_file);
-                return;
-            }
-
-            final ImportOptions options = new ImportOptions();
-            options.file = file;
-
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.lbl_import_from_archive)
-                    .setMessage(R.string.import_option_info_all_books)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                    .setNeutralButton(R.string.btn_options, (d, which) -> {
-                        // ask user what options they want
-                        FragmentManager fm = getSupportFragmentManager();
-                        if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
-                            ImportOptionsDialogFragment.newInstance(options).show(fm,
-                                                                                  ImportOptionsDialogFragment.TAG);
-                        }
-                    })
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        // User wants to import all.
-                        options.what = ImportOptions.ALL;
-                        onOptionsSet(options);
-                    })
-                    .create()
-                    .show();
+    private void doRestore(@NonNull final File file) {
+        // sanity check
+        if (!file.exists() || !file.isFile()) {
+            UserMessage.showUserMessage(mListView, R.string.warning_select_an_existing_file);
+            return;
         }
+
+        final ImportOptions options = new ImportOptions();
+        options.file = file;
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.lbl_import_from_archive)
+                .setMessage(R.string.import_option_info_all_books)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                    // ask user what options they want
+                    FragmentManager fm = getSupportFragmentManager();
+                    if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
+                        ImportOptionsDialogFragment.newInstance(options).show(fm,
+                                                                              ImportOptionsDialogFragment.TAG);
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    // User wants to import all.
+                    options.what = ImportOptions.ALL;
+                    onOptionsSet(options);
+                })
+                .create()
+                .show();
+
     }
 
     /**
@@ -238,6 +212,5 @@ public class RestoreActivity
             task.execute();
         }
         mProgressDialog.setTaskListener(mTaskListener);
-//        mProgressDialog.setOnUserCancelledListener(this);
     }
 }

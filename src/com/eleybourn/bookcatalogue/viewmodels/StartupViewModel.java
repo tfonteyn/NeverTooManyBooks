@@ -68,10 +68,11 @@ public class StartupViewModel
         @UiThread
         @Override
         public void onTaskProgress(final int taskId,
-                                   final String... values) {
+                                   @NonNull final String... values) {
             mTaskProgressMessage.setValue(values[0]);
         }
     };
+
     /** Database access. */
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */

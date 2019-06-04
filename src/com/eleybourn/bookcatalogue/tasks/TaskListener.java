@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.tasks;
 
 import android.os.AsyncTask;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -46,21 +47,19 @@ public interface TaskListener<Progress, Result> {
      *
      * @param taskId id for the task which was provided at construction time.
      * @param values progress objects from the {@link AsyncTask}.
-     *               Nullable/NonNull is up to the implementation.
      */
     default void onTaskProgress(int taskId,
-                                Progress[] values) {
+                                @NonNull Progress[] values) {
         // do nothing.
     }
 
     /**
-     * Optional cancellation callback. By default calls onTaskCancelled with success==false
+     * Optional cancellation callback.
      *
-     * @param taskId id for the task which was provided at construction time.
+     * @param taskId id for the task which was provided at construction time, or {@code null}
+     *               if the task was cancelled before it even started.
      */
-    default void onTaskCancelled(int taskId,
-                                 Result result,
-                                 @Nullable final Exception e) {
-        onTaskFinished(taskId, false, result, e);
+    default void onTaskCancelled(@Nullable Integer taskId) {
+        // do nothing.
     }
 }

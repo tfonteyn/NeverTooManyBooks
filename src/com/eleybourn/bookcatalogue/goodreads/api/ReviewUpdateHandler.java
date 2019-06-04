@@ -94,7 +94,8 @@ public class ReviewUpdateHandler
             parameters.add(new BasicNameValuePair("review[rating]", String.valueOf(rating)));
         }
 
-        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
+//        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
+        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
 
         //ReviewUpdateParser handler = new ReviewUpdateParser();
         mManager.execute(post, null, true);

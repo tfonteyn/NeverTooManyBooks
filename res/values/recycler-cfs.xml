@@ -29,4 +29,6 @@
     <dimen name="cfs_margin">0dp</dimen>
     <dimen name="cfs_minimum_range">50dp</dimen>
 
+    <dimen name="cfs_fast_scroll_min_thumb_height">48dp</dimen>
+
 </resources>
