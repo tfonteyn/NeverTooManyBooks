@@ -40,7 +40,6 @@ public abstract class TaskWithProgress<Progress, Result>
     @Override
     protected void onPreExecute() {
         mProgressDialog.setTask(mTaskId, this);
-//        Logger.debug(this, "onPreExecute", "taskId=" + mTaskId);
     }
 
     /**
@@ -50,10 +49,6 @@ public abstract class TaskWithProgress<Progress, Result>
     @Override
     @UiThread
     protected void onProgressUpdate(@NonNull final Object... values) {
-//        Logger.debug(this, "onProgressUpdate", "taskId=" + mTaskId,
-//                     "values[0]=" + values[0],
-//                     "values[1]=" + values[1]);
-
         mProgressDialog.onProgress((Integer) values[0], values[1]);
     }
 
@@ -66,7 +61,6 @@ public abstract class TaskWithProgress<Progress, Result>
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final Result result) {
-//        Logger.debug(this, "onPostExecute", "taskId=" + mTaskId);
-        mProgressDialog.onTaskFinished(mException == null, result, mException);
+        mProgressDialog.onTaskFinished(mTaskId,mException == null, result, mException);
     }
 }

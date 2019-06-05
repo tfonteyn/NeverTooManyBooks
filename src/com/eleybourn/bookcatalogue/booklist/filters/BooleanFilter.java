@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

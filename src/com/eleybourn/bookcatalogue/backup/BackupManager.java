@@ -40,7 +40,7 @@ public final class BackupManager {
     public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
     /** Last full backup file path. */
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
-    /** @see #isArchive(File) */
+    /** @see #isArchive(File). */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
 
     private BackupManager() {
@@ -100,7 +100,10 @@ public final class BackupManager {
      * @return {@code true} if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
-        return file.getName().toLowerCase(LocaleUtils.getSystemLocale())
-                   .endsWith(ARCHIVE_EXTENSION);
+        String name = file.getName().toLowerCase(LocaleUtils.getSystemLocale());
+        // our own extension
+        return name.endsWith(ARCHIVE_EXTENSION)
+                // TarBackupContainer reads (duh) .tar files.
+                || name.endsWith(".tar");
     }
 }

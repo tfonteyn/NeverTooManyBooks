@@ -44,6 +44,8 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 /**
  * Implementation of TAR-specific reader functions.
  *
+ * Peeking is no longer used, but leaving it in for now.
+ *
  * @author pjw
  */
 public class TarBackupReader
@@ -51,7 +53,7 @@ public class TarBackupReader
 
     /** The data stream for the archive. */
     @NonNull
-    private final TarArchiveInputStream mInput;
+    private TarArchiveInputStream mInput;
     /** The INFO data read from the start of the archive. */
     @NonNull
     private final BackupInfo mInfo;
@@ -67,16 +69,13 @@ public class TarBackupReader
     TarBackupReader(@NonNull final TarBackupContainer container)
             throws IOException {
         // Open the file and create the archive stream
-        final FileInputStream in = new FileInputStream(container.getFile());
+        FileInputStream in = new FileInputStream(container.getFile());
         mInput = new TarArchiveInputStream(in);
 
-        // Process the INFO entry. Should be first.
-        ReaderEntity entity = nextEntity();
+        // Find and process the INFO entry.
+        ReaderEntity entity = findEntity(BackupEntityType.Info);
         if (entity == null) {
-            throw new IOException("Not a valid backup; entity was NULL");
-        }
-        if (entity.getType() != BackupEntityType.Info) {
-            throw new IOException("Not a valid backup, entity found: " + entity.getType());
+            throw new IOException("Not a valid backup; no INFO entity found");
         }
         // read the INFO
         mInfo = new BackupInfo();
@@ -84,18 +83,48 @@ public class TarBackupReader
             importer.doBackupInfoBlock(entity, mInfo);
         }
 
-        // Skip any following INFOs. Later versions may store more.
-        while (entity != null && entity.getType() == BackupEntityType.Info) {
-            entity = nextEntity();
+        // close and re-open.
+        mInput.close();
+        in.close();
+        in = new FileInputStream(container.getFile());
+        mInput = new TarArchiveInputStream(in);
+    }
+
+    /**
+     * Scan the input for the desired entity type.
+     * It's the responsibility of the caller to reset the input stream as/if needed.
+     *
+     * @param type to get
+     *
+     * @return the entity if found, or {@code null} if not found.
+     *
+     * @throws IOException on failure
+     */
+    private ReaderEntity findEntity(@NonNull final BackupEntityType type)
+            throws IOException {
+
+        TarArchiveEntry entry;
+
+        while (true) {
+            entry = mInput.getNextTarEntry();
+            if (entry == null) {
+                return null;
+            }
+
+            // Based on the file name, determine entity type
+            BackupEntityType found = getBackupEntityType(entry);
+            if (type.equals(found)) {
+                return new TarBackupReaderEntity(type, this, entry);
+            }
         }
-        // Save the 'peeked' entity
-        mPushedEntity = entity;
     }
 
     /**
      * Get the next entity (allowing for peeking).
      *
      * @return the next entity found.
+     *
+     * @throws IOException on failure
      */
     @Override
     @Nullable

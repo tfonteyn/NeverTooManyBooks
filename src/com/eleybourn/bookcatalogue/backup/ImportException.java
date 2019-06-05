@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 /**
- * Importing data can give a mor detailed reason of failure.
+ * Importing data can give a more detailed reason of failure.
  * String ID and args are stored for later retrieval.
  * The messages will be shown to the user, hence the need for a String resource.
  */

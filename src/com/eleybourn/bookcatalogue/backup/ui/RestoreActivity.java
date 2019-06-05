@@ -153,13 +153,6 @@ public class RestoreActivity
      * @param file selected
      */
     protected void onFileSelected(@NonNull final File file) {
-        doRestore(file);
-    }
-
-    /**
-     * Local handler for 'Open'. Perform basic validation, and pass on.
-     */
-    private void doRestore(@NonNull final File file) {
         // sanity check
         if (!file.exists() || !file.isFile()) {
             UserMessage.showUserMessage(mListView, R.string.warning_select_an_existing_file);

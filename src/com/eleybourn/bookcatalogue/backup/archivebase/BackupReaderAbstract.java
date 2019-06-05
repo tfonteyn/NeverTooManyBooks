@@ -199,7 +199,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case Info:
-                        // skip, already handled, should in fact not be seen.
+                        // skip, already handled
                         break;
                 }
                 entity = nextEntity();

@@ -171,7 +171,6 @@ public class BookSearchByTextFragment
         }
     };
 
-
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,

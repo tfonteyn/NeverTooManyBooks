@@ -26,9 +26,11 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
- * Progress support for {@link AsyncTask}.
+ * Progress support for {@link AsyncTask}. There can only be ONE task at a time.
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
+ *
+ * TODO: all in all.. this was a bad design. Redo!
  */
 public class ProgressDialogFragment<Progress, Result>
         extends DialogFragment {
@@ -183,7 +185,8 @@ public class ProgressDialogFragment<Progress, Result>
      * @param e       if the task finished with an exception, or {@code null}.
      */
     @UiThread
-    public void onTaskFinished(final boolean success,
+    public void onTaskFinished(final int taskId,
+                               final boolean success,
                                @Nullable final Result result,
                                @Nullable final Exception e) {
         // Make sure we check if it is resumed (running) because we will crash if trying to dismiss
@@ -195,13 +198,6 @@ public class ProgressDialogFragment<Progress, Result>
             dismiss();
         }
 
-        // sanity check
-        if (mTaskId == null) {
-            throw new IllegalArgumentException("task id was NULL");
-        }
-
-
-        Integer tmpTaskId = mTaskId;
         // invalidate the current task as its finished. The dialog can be reused.
         mTaskId = null;
         mTask = null;
@@ -210,7 +206,7 @@ public class ProgressDialogFragment<Progress, Result>
         if (mTaskListener != null) {
             TaskListener<Progress, Result> listener = mTaskListener.get();
             if (listener != null) {
-                listener.onTaskFinished(tmpTaskId, success, result, e);
+                listener.onTaskFinished(taskId, success, result, e);
             } else {
                 // keep this as a throw, as not having the listener here would be bug
                 throw new RuntimeException("WeakReference to listener was dead");
@@ -223,6 +219,10 @@ public class ProgressDialogFragment<Progress, Result>
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
+
+        if (mTask != null) {
+            mTask.cancel(true);
+        }
 
         Integer tmpTaskId = mTaskId;
         // invalidate the current task as its finished. The dialog can be reused.

@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;

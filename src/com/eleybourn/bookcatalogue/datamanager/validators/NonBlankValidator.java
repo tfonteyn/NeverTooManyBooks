@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.datamanager.validators;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;

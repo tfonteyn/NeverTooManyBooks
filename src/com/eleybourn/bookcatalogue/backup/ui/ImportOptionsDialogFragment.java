@@ -14,7 +14,6 @@ import androidx.fragment.app.DialogFragment;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;

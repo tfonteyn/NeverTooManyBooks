@@ -35,7 +35,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean RECREATE_ACTIVITY = false;
 
     /** track the flow & values on startActivityForResult & onActivityResult. */
-    public static final boolean ON_ACTIVITY_RESULT = true;
+    public static final boolean ON_ACTIVITY_RESULT = false;
 
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
@@ -54,13 +54,13 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
-    public static final boolean BOOKLIST_BUILDER = true;
+    public static final boolean BOOKLIST_BUILDER = false;
 
     /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
     public static final boolean BOB_FIX_POSITION = false;
 
     /** {@link com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel#initBookList}. */
-    public static final boolean BOB_INIT_BOOK_LIST = true;
+    public static final boolean BOB_INIT_BOOK_LIST = false;
 
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
@@ -116,7 +116,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean DAO_GLOBAL_REPLACE = false;
 
     /** Insert & update TOC entries. */
-    public static final boolean DAO_TOC = true;
+    public static final boolean DAO_TOC = false;
 
     /* ****************************************************************************************** */
 

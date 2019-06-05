@@ -80,9 +80,9 @@ public class FileListerTask
         ArrayList<FileDetails> fileDetails = new ArrayList<>();
 
         // Filter for directories and our own archives.
-        FileFilter fileFilter = pathname ->
-                (pathname.isDirectory() && pathname.canWrite())
-                        || (pathname.isFile() && BackupManager.isArchive(pathname));
+        FileFilter fileFilter = file ->
+                (file.isDirectory() && file.canWrite())
+                        || (file.isFile() && BackupManager.isArchive(file));
 
         // Get a file list
         File[] files = mRootDir.listFiles(fileFilter);

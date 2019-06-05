@@ -9,11 +9,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 /**
  * A fairly simple {@link RecyclerView.Adapter} wrapper around {@link CursorAdapter}.
  * Not all methods are exposed, just enough to have it working for most usages.

@@ -735,7 +735,6 @@ public class DAO
         } else {
             sql = SqlSelectList.GET_TOC_ENTRIES_BY_AUTHOR_ID
                     + " ORDER BY " + DOM_TITLE_OB + COLLATION;
-            ;
             params = new String[]{authorIdStr};
         }
 
@@ -4365,7 +4364,6 @@ public class DAO
         private static final String GET_WORKS_BY_AUTHOR_ID =
                 GET_BOOK_TITLES_BY_AUTHOR_ID + " UNION " + GET_TOC_ENTRIES_BY_AUTHOR_ID
                         + " ORDER BY " + DOM_TITLE_OB + COLLATION;
-        ;
     }
 
     /**

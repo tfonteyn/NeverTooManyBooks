@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * <p>
  * This does mean that the creator of the AsyncTask must:
  * <ul>
- * <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this</li>
+ * <li>implemented the interface on the caller itself, and pass the caller; i.e. 'this'</li>
  * <li>or create an instance variable in the caller of the listener type, and pass that</li>
  * </ul>
  * <strong>Do NOT simply pass a lambda, or anonymous class.</strong>
@@ -43,6 +43,16 @@ public interface TaskListener<Progress, Result> {
                         @Nullable final Exception e);
 
     /**
+     * Optional cancellation callback.
+     *
+     * @param taskId id for the task which was provided at construction time, or {@code null}
+     *               if the task was cancelled before it even started.
+     */
+    default void onTaskCancelled(@Nullable Integer taskId) {
+        // do nothing.
+    }
+
+    /**
      * Optional progress messages.
      *
      * @param taskId id for the task which was provided at construction time.
@@ -50,16 +60,6 @@ public interface TaskListener<Progress, Result> {
      */
     default void onTaskProgress(int taskId,
                                 @NonNull Progress[] values) {
-        // do nothing.
-    }
-
-    /**
-     * Optional cancellation callback.
-     *
-     * @param taskId id for the task which was provided at construction time, or {@code null}
-     *               if the task was cancelled before it even started.
-     */
-    default void onTaskCancelled(@Nullable Integer taskId) {
         // do nothing.
     }
 }
