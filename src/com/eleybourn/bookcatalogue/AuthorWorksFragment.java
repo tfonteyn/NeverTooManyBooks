@@ -165,7 +165,7 @@ public class AuthorWorksFragment
             mModel = model;
 
             sBookIndicator = context.getDrawable(R.drawable.ic_book);
-            sStoryIndicator = context.getDrawable(R.drawable.ic_lens);
+            sStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
             mInflater = LayoutInflater.from(context);
         }
 
