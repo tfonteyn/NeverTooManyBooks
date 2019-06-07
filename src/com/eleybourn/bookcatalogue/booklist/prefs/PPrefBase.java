@@ -34,7 +34,7 @@ public abstract class PPrefBase<T>
     private final String mKey;
 
     /** Flag to indicate the value is persisted. */
-    protected boolean mIsPersistent;
+    protected final boolean mIsPersistent;
 
     /** in memory value used for non-persistence situations. */
     @Nullable

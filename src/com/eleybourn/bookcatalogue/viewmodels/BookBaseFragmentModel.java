@@ -176,7 +176,7 @@ public class BookBaseFragmentModel
      * @return the current/new 'read' status.
      */
     public boolean toggleRead() {
-        return (mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ)));
+        return mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ));
     }
 
     public void refreshAuthorList() {

@@ -385,6 +385,9 @@ public class CoverBrowserFragment
         private final int mWidth;
         private final int mHeight;
 
+        /**
+         * Constructor.
+         */
         GalleryAdapter(final int width,
                        final int height) {
             mWidth = width;

@@ -37,9 +37,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
@@ -125,7 +127,7 @@ public class BooklistGroup
     @NonNull
     String mUuid;
     /** Flag indicating the style is user-defined -> our prefs must be persisted. */
-    boolean mIsUserDefinedStyle;
+    final boolean mIsUserDefinedStyle;
 
     /**
      * The domains represented by this group.
@@ -754,16 +756,25 @@ public class BooklistGroup
 
             // NEWKIND: ROW_KIND_x
 
-            // Sanity check as our code relies on this
+            // Developer sanity check (for() loop starting at 1)
+            if (BOOK != 0) {
+                throw new IllegalStateException("BOOK was " + BOOK);
+            }
+
+            // Developer sanity check
+            Set<String> prefixes = new HashSet<>();
             for (int kind = 0; kind <= ROW_KIND_MAX; kind++) {
                 if (!ALL_KINDS.containsKey(kind)) {
                     throw new IllegalStateException("Missing kind " + kind);
                 }
+
+                //noinspection ConstantConditions
+                String prefix = ALL_KINDS.get(kind).mCompoundKey.prefix;
+                if (!prefixes.add(prefix)) {
+                    throw new IllegalStateException("Duplicate prefix " + prefix);
+                }
             }
-            // Sanity check as our code relies on this (for() loop starting at 1)
-            if (BOOK != 0) {
-                throw new IllegalStateException("BOOK was " + BOOK);
-            }
+
         }
 
         @IntRange(from = 0, to = RowKind.ROW_KIND_MAX)

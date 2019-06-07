@@ -330,8 +330,8 @@ public class App
      */
     @NonNull
     public static String getPrefString(@NonNull final String key) {
-        String sValue = getPrefs().getString(key, null);
-        return sValue != null ? sValue : "";
+        String value = getPrefs().getString(key, null);
+        return value != null ? value : "";
     }
 
     /**
@@ -342,11 +342,11 @@ public class App
      */
     public static int getListPreference(@NonNull final String key,
                                         final int defaultValue) {
-        String sValue = getPrefs().getString(key, null);
-        if (sValue == null || sValue.isEmpty()) {
+        String value = getPrefs().getString(key, null);
+        if (value == null || value.isEmpty()) {
             return defaultValue;
         }
-        return Integer.parseInt(sValue);
+        return Integer.parseInt(value);
     }
 
     /**
@@ -357,11 +357,11 @@ public class App
      */
     public static Integer getMultiSelectListPreference(@NonNull final String key,
                                                        final int defaultValue) {
-        Set<String> sValue = getPrefs().getStringSet(key, null);
-        if (sValue == null || sValue.isEmpty()) {
+        Set<String> value = getPrefs().getStringSet(key, null);
+        if (value == null || value.isEmpty()) {
             return defaultValue;
         }
-        return Utils.toInteger(sValue);
+        return Utils.toInteger(value);
     }
 
     /**

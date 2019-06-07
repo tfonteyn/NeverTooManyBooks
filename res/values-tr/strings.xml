@@ -188,9 +188,9 @@
     <string name="lt_reset_messages_info">Bazen bu uygulama LibraryThing\'den isteğe bağlı iletiler gösterebilir. Devre dışı kalmış olabilecek bu iletileri sıfırlamak için aşağıdaki düğmeye dokunun.</string>
     <string name="btn_reset">Sıfırla</string>
     <string name="debug_send_info_text">Son zamanda oluşan çökmelerle ilgili bilgi toplamak ve bunu geliştiricilerimizden birine göndermek için aşağıdaki butonu dokunun. Bu veritabanınızın ve oluşturulan günlük dosyalarının bir yedeğini oluşturacaktır. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
-    <string name="about_send_info">Bilgi gönder</string>
+    <string name="lbl_send_info">Hata Ayıklama Bilgilerini Gönder</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle \‘Bilgi gönder\’ düğmesini kullanmayı deneyin.</string>
-    <string name="cleanup_files">Dosyaları temizle</string>
+    <string name="lbl_cleanup_files">Dosyaları temizle</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
@@ -207,7 +207,6 @@
     <string name="gr_tq_menu_delete_event">Olayı sil</string>
     <string name="gr_tq_menu_delete_task">Görevi sil</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
-    <string name="X_loan_return_edit_book">Ödünç ver, geri al veya kitabı düzenle</string>
     <string name="gr_menu_send_to_goodreads">Goodreads\'e gönder</string>
     <string name="gr_auth_blurb_part1">
         Goodreads, ağ sayfasında belirtildiği üzere ereği \“kişilerin sevdiği kitapları bulmasına
@@ -251,14 +250,14 @@
     <string name="info_authorized">Yetkilendirilmiş</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
     <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
-    <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki Yardım bölümünden destek ile iletişime geçin.</string>
+    <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki ‘Ayarlar’ bölümünden destek ile iletişime geçin.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="search_please_enter_criteria">Lütfen arama kriteri girin</string>
     <string name="gr_error_while_searching">Arama sırasında hata</string>
     <string name="gr_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
     <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$d</string>
-    <string name="erase_cover_cache">Kapak önbelleğini sil</string>
+    <string name="lbl_erase_cover_cache">Kapak önbelleğini sil</string>
     <string name="acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; çöktü</string>
     <string name="acra_resNotifTitle">&APP_NAME; çöktü</string>
@@ -284,7 +283,6 @@
     <string name="lbl_location">Konum</string>
     <string name="lbl_credentials">Kimlik</string>
     <string name="lbl_data_import_export">Veri içe/dışa aktarma</string>
-    <string name="X_unrecognized_task">Tanımlanamayan görev</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
@@ -315,7 +313,7 @@
         Bu ekranı seçilen kitap dizgesi biçeminin özelliklerini değiştirmek üzere kullanabilirsiniz.\n
         \nBuradan adını değiştirelibilr, hiyerarşiyi değiştirmek için öbeklendirmeyi
         düzenleyebilir ve kullanışlı bir biçem yaratmak için diğer ayarları yapabilirsiniz.\n
-        \n\'Kitap süzgeçleri\' ayarlarını kullanarak kitap dizgelerinde görüntülenecek seçimleri
+        \n‘Kitap süzgeçleri’ ayarlarını kullanarak kitap dizgelerinde görüntülenecek seçimleri
         ayarlayabilirsiniz, örneğin yalnızca okumadığınız kitapları vb. seçebilirsiniz.
     </string>
     <string name="X_hint_booklist_global_properties">
@@ -330,12 +328,11 @@
     <string name="title_edit_style">Biçemi düzenle</string>
     <string name="title_clone_style">Biçemi çoğalt</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
-    <string name="X_pt_bob_filter_read">\‘Okunma\’ durumuna göre seç</string>
     <string name="title_select_style">Biçem seç</string>
     <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
     <string name="lbl_settings">Yeğlenenler</string>
-    <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \‘Yardım\’ seçeneğinden bize gönderin</string>
+    <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki ‘Ayarlar’ seçeneğinden bize gönderin</string>
     <string name="menu_duplicate">Çift</string>
     <string name="about_dash_or_dash">- Veya -</string>
     <string name="about_donate_paypal">PayPal bağışı</string>
@@ -390,7 +387,7 @@
     <string name="gr_explain_goodreads_no_match">
         Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır:
         Ya kitap için girdiğiniz veri hatalı (ISBN\'yi kontrol edin) veya kitap Goodreads\'te bulunmuyor.
-        \n\nEğer &APP_NAME;\'de herhangi bir veriyi değiştirirseniz, yalnızca \'Yeniden dene\' düğmesine basın
+        \n\nEğer &APP_NAME;\'de herhangi bir veriyi değiştirirseniz, yalnızca ‘Yeniden dene’ düğmesine basın
         ve oluşan ardalan görevinin başarıyla tamamlanıp tamamlanmadığına bakın.
         \n\nEğer veri doğru olup, ancak kitap hala bulunamıyorsa bu kitabın ISBN\'si ile birlikte Goodreads\'e el ile
         ağ sayfasından eklenmesi gerekmektedir. Bu yapıldıktan sonra kitabı yeniden göndermeyi deneyebilirsiniz.
@@ -416,7 +413,7 @@
     <string name="X_error_starting_import_arg">İçe aktarmaya başlarken bir hata oluştu: %1$s</string>
     <string name="hint_booklist_style_menu">
         Bu seçke size dizelge biçemini seçmenize olanak tanır.\n
-        \nEk olarak dizelgenin sonundaki \'Kişiselleştir\' düğmesini kullanarak bu seçkeyi
+        \nEk olarak dizelgenin sonundaki ‘Kişiselleştir’ düğmesini kullanarak bu seçkeyi
         kişiselleştirebilir ve hatta kendi dizelge biçemlerinizi oluşturabilirsiniz.
     </string>
     <string name="warning_required_name">Ad kısmı boş olamaz</string>
@@ -425,7 +422,6 @@
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
     <string name="X_lbl_loan_book_available">Uygun</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s geçerli birISBN değil</string>
-    <string name="X_warning_cover_not_found2">Resim bulunamadı</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
     <string name="menu_add_book_by_barcode_scan">Barkod/ISBN tara</string>
     <string name="menu_add_book_by_isbn">ISBN gir</string>
@@ -439,14 +435,11 @@
     <string name="warning_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="btn_confirm_exit">Çıkış</string>
     <string name="btn_continue_editing">Düzenlemeyi sürdür</string>
-    <string name="X_warning_title_already_exists">Bu kitap adı zaten var</string>
     <string name="lbl_year">Yıl</string>
     <string name="lbl_month">Ay</string>
     <string name="lbl_day">Gün</string>
     <string name="menu_edit">Düzenle…</string>
-    <string name="X_progress_msg_getting_books">Kitaplar alınıyor…</string>
     <string name="gr_tq_last_error_e">Son hata: %1$s</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">Aramara belirtilen ISBN \‘%1$s\’ geçersiz</string>
     <string name="warning_if_day_set_month_and_year_must_be">Eğer gün belirtmiş iseniz hem ay hem yıl bölümlerini de doldurmalısınız.</string>
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="hint_autorotate_camera_images">Eğer kendinizi sürekli kamera resimlerini aynı doğrultuda döndürüyor buluyorsanız uygulama ayarlarını sürekli bir yöne görselleri kendiliğinden döndürecek biçimde ayarlayabilirsiniz.</string>
@@ -481,7 +474,6 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Ayrıntılar</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="X_tab_lbl_loan">Ödünç ver</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
@@ -524,20 +516,19 @@
     <string name="warning_select_a_non_directory">Bir dizin değil de bir dosya seçmeniz gerek</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Veritabanını Ver</string>
+    <string name="lbl_copy_database">Veritabanını Ver</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_writable">SD kartın üstüne yazılabilir ve yeterli boş alanı olduğundan emin olun.</string>
+    <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_readable">SD kartın erişilebilir olduğundan emin olun.</string>
+    <string name="error_storage_not_readable">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Dil</string>
 
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="X_title_import_books_blurb">Arşivdeki kitaplar içe aktarılacaktır. Aktarmaya başlamak için iki seçenekten birini seçin, iptal etmek için ise \‘geri\’ düğmesine basın:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Arşivdeki tüm kitaplar içe aktarılacak; var olan kitaplar güncellenip yeni olanlar eklenecektir.</string>
     <!-- Menu text for the 'import/export new & changed' option -->
@@ -550,10 +541,6 @@
     <string name="progress_msg_n_created_m_updated">%1$d oluşturuldu, %2$d güncellendi</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="X_title_export_books">
-        Kataloğunuzdaki kitaplar dışa aktarılacaktır. Aktarmaya başlamak için iki seçenekten
-        birini seçin, iptal etmek için ise için ‘geri’ düğmesine basın:
-    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
@@ -568,16 +555,10 @@
     <!-- Text for button -->
     <string name="import_export_option_csv">Kitap ayrıntıları (CSV)</string>
     <!-- Brief description -->
-    <string name="X_import_export_info_book_details">Kitapların ayrıntılarını gösterir</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Kapak görselleri</string>
     <!-- Brief description -->
-    <string name="X_export_info_cover_images">
-        Seçilen kitaplar için kapak resimlerini gösterir. Dışarı aktarım boyutunu arttıracaktır.
-    </string>
     <!-- Brief description -->
-    <string name="X_import_export_info_preferences">
-        Yeğlenenler ve kullanıcı tanımlı dizelge biçemleri</string>
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">
         Seçeneğe bağlı olarak, dışarı aktarılacak kitaplarda ve/veya kapak görsellerinde kullanılacak bir günay seçin:
@@ -632,8 +613,8 @@
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">Kitap Kataloğu birçok kişinin emeğinin ürünü olan bir yazılım.
         Burada gönüllü çevirmenlerimizin katkılarını belirtmeden olmaz; onların çabaları olmadan bu
-        kadar fazla kişiye ulaşamazdık. Bu güzel insanlar: Eugenio Davolio, José M. Galdo, Imkal,
-        Gideon van Melle, Emir Sarı, Nick Silin ve Robert Wetzlmayr (eğer unuttuğumuz birisi var ise lütfen belirtin).
+        kadar fazla kişiye ulaşamazdık. Bu güzel insanlar
+        (eğer unuttuğumuz birisi var ise lütfen belirtin):
     </string>
 
     <!-- A hint describing the benefit of following the Amazon links -->
@@ -670,9 +651,9 @@
     <string name="lbl_style">Stil</string>
     <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
     <string name="lbl_search_site_order">Sekans</string>
-    <string name="book_format_paperback">"Ciltsiz "</string>
+    <string name="book_format_paperback">Ciltsiz</string>
     <string name="tab_lbl_notes">Notlar</string>
-    <string name="book_format_hardcover">"Ciltli "</string>
+    <string name="book_format_hardcover">Ciltli</string>
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_lending">Ödünç verilmiş</string>
     <string name="lbl_edition_first_edition">1. baskı</string>
@@ -710,9 +691,8 @@
     <string name="error_database_upgrade_failed">4.0.0\'dan daha eski bir sürümden yükseltme yapılamıyor</string>
     <string name="error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_configuration">Yapılandırma hatası. Lütfen Ayarlar sayfasını açın ve Arama Sitesi tercihlerinizi kontrol edin.</string>
-    <string name="error_storage_no_access">SD Karta erişilemiyor</string>
-    <string name="error_storage_no_space_left">SD Kartta yeterli yer yok</string>
-    <string name="error_storage_not_available">SD Kart mevcut değil</string>
+    <string name="error_storage_not_accessible">Depolama erişilebilir değil</string>
+    <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
     <string name="gr_btn_delete_credentials">Kimlik Bilgilerini Kaldır</string>
     <string name="gr_auth_blurb_part4">Bu uygulamayı zaten yetkilendirmiş görünüyorsunuz. Kimlik bilgilerini bu telefondan silmek istiyorsanız, aşağıdaki düğmeye basarak bunu yapabilirsiniz. Ancak, başvurunun Goodreads web sitesindeki kaydını silmek önemlidir.</string>
     <string name="lbl_search_sites">Siteleri Ara</string>
@@ -727,10 +707,9 @@
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_edition_book_club">Kitap Kulübü baskısı</string>
     <string name="lbl_signed">İmzalanmış</string>
-    <string name="X_info_tap_to_edit">Adı düzenlemek için buraya dokunun</string>
     <string name="gr_tq_events_recorded">(%1$d etkinlik kaydedildi)</string>
     <string name="book_format_ebook">E-kitap</string>
-    <string name="menu_set_complete">Tamamlandı</string>
+    <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
     <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
     <string name="search_with_text">Ara: %1$s</string>
@@ -740,5 +719,8 @@
     <string name="menu_internet_update_fields">Alanları Güncelle</string>
     <string name="lbl_date_acquired_year">Kazanılan Yıl</string>
     <string name="lbl_first_publication">İlk yayın</string>
+    <string name="gr_tq_generic_task_info">%1$d görev kimliği, %2$s sırada</string>
+    <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
+    <string name="info_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
 
 </resources>

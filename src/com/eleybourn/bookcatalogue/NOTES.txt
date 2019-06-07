@@ -8,7 +8,6 @@ onResume should force the enclosing dialog to be big enough:
             dialog.getWindow().setLayout(width, height);
         }
 
-TOMF: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
 ----------------------------------------------------------------------------------------------------
 TODO: New anthology stuff:
  * to think about:
@@ -25,9 +24,10 @@ TODO: Review database stuff
  * could global replace of author/series be optimized ? For now it's cumbersome and long-winded.
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
- * Performance? Better 'Collation' setting?'. LIKE operator ?
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
- * force table creation to use NOCASE ? but what about current LOCALIZED then ?
+ * 'order by' columns have been added to TITLE and AUTHOR name fields.
+ * TOMF: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
+
 
 ENHANCE: move Publisher, Location, Format ... to separate tables ?
 

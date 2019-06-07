@@ -125,7 +125,8 @@ public class BookSearchByIsbnFragment
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
-                            // Clear the data entry fields ready for the next one (mScanMode has no view)
+                            // Clear the data entry fields ready for the next one
+                            // (mScanMode has no view)
                             if (mIsbnView != null) {
                                 mIsbnView.setText("");
                             }
@@ -386,9 +387,9 @@ public class BookSearchByIsbnFragment
     private void isbnAlreadyPresent(final long existingId) {
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setMessage(R.string.confirm_duplicate_book_message)
                 .setTitle(R.string.title_duplicate_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setMessage(R.string.confirm_duplicate_book_message)
                 .create();
 
         // User wants to add regardless

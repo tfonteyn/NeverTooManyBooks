@@ -65,13 +65,6 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
-
 /**
  * Handles all views in a multi-type list showing books, authors, series etc.
  * <p>
@@ -493,32 +486,32 @@ public class BooklistAdapter
                 }
 
                 ColumnMapper mapper = new ColumnMapper(cursor, null,
-                                                       DOM_AUTHOR_FORMATTED,
-                                                       DOM_BOOK_LOCATION,
-                                                       DOM_BOOK_FORMAT,
-                                                       DOM_BOOK_PUBLISHER,
-                                                       DOM_BOOK_DATE_PUBLISHED,
-                                                       DOM_BOOKSHELF);
+                                                       DBDefinitions.DOM_AUTHOR_FORMATTED,
+                                                       DBDefinitions.DOM_BOOK_LOCATION,
+                                                       DBDefinitions.DOM_BOOK_FORMAT,
+                                                       DBDefinitions.DOM_BOOK_PUBLISHER,
+                                                       DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                                                       DBDefinitions.DOM_BOOKSHELF);
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                    mAuthor = mapper.getString(DOM_AUTHOR_FORMATTED);
+                    mAuthor = mapper.getString(DBDefinitions.DOM_AUTHOR_FORMATTED);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    mLocation = mapper.getString(DOM_BOOK_LOCATION);
+                    mLocation = mapper.getString(DBDefinitions.DOM_BOOK_LOCATION);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mFormat = mapper.getString(DOM_BOOK_FORMAT);
+                    mFormat = mapper.getString(DBDefinitions.DOM_BOOK_FORMAT);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    mShelves = mapper.getString(DOM_BOOKSHELF);
+                    mShelves = mapper.getString(DBDefinitions.DOM_BOOKSHELF);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mPublisher = mapper.getString(DOM_BOOK_PUBLISHER);
-                    String tmpPubDate = mapper.getString(DOM_BOOK_DATE_PUBLISHED);
+                    mPublisher = mapper.getString(DBDefinitions.DOM_BOOK_PUBLISHER);
+                    String tmpPubDate = mapper.getString(DBDefinitions.DOM_BOOK_DATE_PUBLISHED);
                     // over optimisation ?
                     if (tmpPubDate.length() == 4) {
                         // 4 digits is just the year.
@@ -609,17 +602,17 @@ public class BooklistAdapter
         private final String mName_colon_value;
 
         /** Pointer to the view that stores the related book field. */
-        TextView titleView;
+        final TextView titleView;
         /** Pointer to the view that stores the related book field. */
-        TextView authorView;
+        final TextView authorView;
         /** Pointer to the view that stores the related book field. */
-        TextView bookshelvesView;
+        final TextView bookshelvesView;
         /** Pointer to the view that stores the related book field. */
-        TextView locationView;
+        final TextView locationView;
         /** Pointer to the view that stores the related book field. */
-        TextView publisherView;
+        final TextView publisherView;
         /** Pointer to the view that stores the related book field. */
-        TextView formatView;
+        final TextView formatView;
         private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
                 new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
                     @Override
@@ -663,13 +656,13 @@ public class BooklistAdapter
                     }
                 };
         /** Pointer to the view that stores the series number when it is a short piece of text. */
-        TextView seriesNumView;
+        final TextView seriesNumView;
         /** Pointer to the view that stores the series number when it is a long piece of text. */
-        TextView seriesNumLongView;
+        final TextView seriesNumLongView;
         /** The "I've read it" checkbox. */
-        CompoundButton readView;
+        final CompoundButton readView;
         /** Pointer to the view that stores the related book field. */
-        private ImageView coverView;
+        private final ImageView coverView;
 
         /**
          * Constructor.
@@ -826,16 +819,17 @@ public class BooklistAdapter
 
         /*** View to populate. */
         @NonNull
+        final
         TextView mTextView;
         /** Pointer to the container of all info for this row. */
         @NonNull
-        private View mRowDetailsView;
+        private final View mRowDetailsView;
         /**
          * (optional) Pointer to the constraint group that controls visibility of all widgets
          * inside a ViewGroup. Used with ConstraintLayout only.
          */
         @Nullable
-        private View mVisibilityControlView;
+        private final View mVisibilityControlView;
 
         /**
          * Constructor.

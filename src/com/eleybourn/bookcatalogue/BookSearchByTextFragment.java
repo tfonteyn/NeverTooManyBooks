@@ -39,6 +39,42 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
+    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
+            new SearchCoordinator.SearchFinishedListener() {
+                /**
+                 * results of search.
+                 * <p>
+                 * The details will get sent to {@link EditBookActivity}
+                 * <p>
+                 * <br>{@inheritDoc}
+                 */
+                @Override
+                public void onSearchFinished(final boolean wasCancelled,
+                                             @NonNull final Bundle bookData) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+                        Logger.debugEnter(this, "onSearchFinished",
+                                          "SearchManagerId=" + mSearchManagerId);
+                    }
+                    try {
+                        if (!wasCancelled) {
+                            mActivity.getTaskManager().sendHeaderUpdate(
+                                    R.string.progress_msg_adding_book);
+                            Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+
+                            // Clear the data entry fields ready for the next one
+                            mAuthorView.setText("");
+                            mTitleView.setText("");
+                        }
+                    } finally {
+                        // Clean up
+                        mSearchManagerId = 0;
+                        // Make sure the base message will be empty.
+                        mActivity.getTaskManager().sendHeaderUpdate(null);
+                    }
+                }
+            };
     @NonNull
     private String mAuthorSearchText = "";
     @NonNull
@@ -55,12 +91,13 @@ public class BookSearchByTextFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
         @SuppressWarnings("ConstantConditions")
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.title_search_for);
             actionBar.setSubtitle(null);
@@ -135,42 +172,6 @@ public class BookSearchByTextFragment
         return mSearchFinishedListener;
     }
 
-    private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
-            new SearchCoordinator.SearchFinishedListener() {
-        /**
-         * results of search.
-         * <p>
-         * The details will get sent to {@link EditBookActivity}
-         * <p>
-         * <br>{@inheritDoc}
-         */
-        @Override
-        public void onSearchFinished(final boolean wasCancelled,
-                                     @NonNull final Bundle bookData) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                Logger.debugEnter(this, "onSearchFinished",
-                                  "SearchManagerId=" + mSearchManagerId);
-            }
-            try {
-                if (!wasCancelled) {
-                    mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
-                    Intent intent = new Intent(getContext(), EditBookActivity.class)
-                            .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-
-                    // Clear the data entry fields ready for the next one
-                    mAuthorView.setText("");
-                    mTitleView.setText("");
-                }
-            } finally {
-                // Clean up
-                mSearchManagerId = 0;
-                // Make sure the base message will be empty.
-                mActivity.getTaskManager().sendHeaderUpdate(null);
-            }
-        }
-    };
-
     @Override
     @CallSuper
     public void onActivityResult(final int requestCode,
@@ -226,7 +227,8 @@ public class BookSearchByTextFragment
 
         // Now get an adapter based on the combined names
         //noinspection ConstantConditions
-        mAuthorAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
+        mAuthorAdapter = new ArrayAdapter<>(getContext(),
+                                            android.R.layout.simple_dropdown_item_1line,
                                             authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }

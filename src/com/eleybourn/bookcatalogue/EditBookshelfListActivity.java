@@ -222,10 +222,10 @@ public class EditBookshelfListActivity
             holder.nameView.setText(bookshelf.getName());
 
             // click -> edit
-            holder.nameView.setOnClickListener((view) -> editItem(bookshelf));
+            holder.nameView.setOnClickListener(v -> editItem(bookshelf));
 
             // long-click -> menu
-            holder.nameView.setOnLongClickListener((view) -> {
+            holder.nameView.setOnLongClickListener(v -> {
                 Menu menu = MenuPicker.createMenu(holder.nameView.getContext());
                 menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);

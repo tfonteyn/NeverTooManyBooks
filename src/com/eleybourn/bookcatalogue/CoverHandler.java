@@ -384,18 +384,18 @@ public class CoverHandler {
      */
     private void addCoverFromCamera(final int requestCode,
                                     final int resultCode,
-                                    @Nullable Bitmap bitmap) {
+                                    @Nullable final Bitmap bitmap) {
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix matrix = new Matrix();
             matrix.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                                         bitmap.getWidth(), bitmap.getHeight(),
-                                         matrix, true);
+            Bitmap result = Bitmap.createBitmap(bitmap, 0, 0,
+                                                bitmap.getWidth(), bitmap.getHeight(),
+                                                matrix, true);
 
             File cameraFile = StorageUtils.getTempCoverFile("camera" + sTempImageCounter);
             // Create a file to copy the image into
             try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                result.compress(Bitmap.CompressFormat.PNG, 100, out);
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
                 Logger.error(this, e);
                 return;
@@ -451,9 +451,10 @@ public class CoverHandler {
                 UserMessage.showUserMessage(mCoverView, msg);
             }
         } else {
-            /* Deal with the case where the chooser returns a {@code null} intent. This seems to happen
-             * when the filename is not properly understood by the chooser (e.g. an apostrophe in
-             * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
+            /* Deal with the case where the chooser returns a {@code null} intent.
+             * This seems to happen when the filename is not properly understood
+             * by the chooser (e.g. an apostrophe in the file name confuses
+             * ES File Explorer in the current version as of 23-Sep-2012. */
             UserMessage.showUserMessage(mCoverView, R.string.warning_cover_copy_failed);
         }
     }
@@ -652,7 +653,6 @@ public class CoverHandler {
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {

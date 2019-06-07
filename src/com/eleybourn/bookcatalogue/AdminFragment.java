@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.eleybourn.bookcatalogue.backup.csv.ImportCSVTask;
 import com.eleybourn.bookcatalogue.backup.ui.BackupActivity;
 import com.eleybourn.bookcatalogue.backup.ui.RestoreActivity;
 import com.eleybourn.bookcatalogue.database.CoversDAO;
+import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.FilePicker;
@@ -41,6 +43,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 public class AdminFragment
         extends Fragment {
@@ -161,9 +164,9 @@ public class AdminFragment
                 // Verify - this can be a dangerous operation
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
-                        .setMessage(R.string.warning_import_be_cautious)
                         .setTitle(R.string.title_import_book_data)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setMessage(R.string.warning_import_be_cautious)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
                         .create()
@@ -229,6 +232,14 @@ public class AdminFragment
                     coversDBAdapter.deleteAll();
                 }
             });
+
+        /* Cleanup files */
+        root.findViewById(R.id.lbl_cleanup_files)
+            .setOnClickListener(v -> cleanupFiles());
+
+        /* Send debug info */
+        root.findViewById(R.id.lbl_send_info)
+            .setOnClickListener(v -> sendDebugInfo());
 
         /* Copy database for tech support */
         root.findViewById(R.id.lbl_copy_database)
@@ -378,5 +389,34 @@ public class AdminFragment
             Logger.error(this, e);
             UserMessage.showUserMessage(requireView(), R.string.error_email_failed);
         }
+    }
+
+    private void cleanupFiles() {
+        //noinspection ConstantConditions
+        String msg = getString(R.string.info_cleanup_files_text,
+                               Utils.formatFileSize(getContext(), StorageUtils.purgeFiles(false)));
+
+        new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.lbl_cleanup_files)
+                .setMessage(msg)
+                .setNegativeButton(android.R.string.cancel, (d,which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok,
+                                   (dialog, which) -> StorageUtils.purgeFiles(true))
+                .create()
+                .show();
+    }
+
+    private void sendDebugInfo() {
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.debug)
+                .setMessage(R.string.debug_send_info_text)
+                .setNegativeButton(android.R.string.cancel, (d,which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok,
+                                   (dialog, which) -> DebugReport.sendDebugInfo(getActivity()))
+                .create()
+                .show();
     }
 }

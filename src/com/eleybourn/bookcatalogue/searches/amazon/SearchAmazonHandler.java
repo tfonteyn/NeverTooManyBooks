@@ -247,7 +247,7 @@ public class SearchAmazonHandler
     private static final String XML_AMOUNT = "Amount";
 
     /** flag if we should fetch a thumbnail. */
-    private static boolean sFetchThumbnail;
+    private boolean mFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -313,7 +313,7 @@ public class SearchAmazonHandler
     SearchAmazonHandler(@NonNull final Bundle bookData,
                         final boolean fetchThumbnail) {
         mBookData = bookData;
-        sFetchThumbnail = fetchThumbnail;
+        mFetchThumbnail = fetchThumbnail;
     }
 
     @Nullable
@@ -532,7 +532,7 @@ public class SearchAmazonHandler
     @Override
     @CallSuper
     public void endDocument() {
-        if (sFetchThumbnail && !mThumbnailUrl.isEmpty()) {
+        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveImage(mThumbnailUrl, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList =

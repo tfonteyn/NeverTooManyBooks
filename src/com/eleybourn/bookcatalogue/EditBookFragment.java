@@ -254,6 +254,7 @@ public class EditBookFragment
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.vldt_failure)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(book.getValidationExceptionMessage(getContext()))
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .create()
@@ -280,8 +281,8 @@ public class EditBookFragment
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.title_duplicate_book)
-                        .setMessage(R.string.confirm_duplicate_book_message)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setMessage(R.string.confirm_duplicate_book_message)
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, which) ->
                                 mActivity.finish())

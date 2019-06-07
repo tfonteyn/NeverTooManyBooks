@@ -130,7 +130,7 @@ public abstract class EditBookBaseFragment<T>
     /**
      * <br>{@inheritDoc}
      * <br>
-     * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
+     * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}.
      */
     @Override
     public final void saveFields() {
@@ -154,6 +154,7 @@ public abstract class EditBookBaseFragment<T>
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.vldt_failure)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(getFields().getValidationExceptionMessage(getContext()))
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .create()
@@ -239,7 +240,8 @@ public abstract class EditBookBaseFragment<T>
      */
     void initCheckListEditor(@NonNull final Fields.Field field,
                              @StringRes final int dialogTitleId,
-                             @NonNull final CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
+                             @NonNull final CheckListDialogFragment
+                                     .CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
         if (!field.isUsed()) {
             return;

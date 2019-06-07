@@ -20,7 +20,6 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
-import com.eleybourn.bookcatalogue.Help;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -182,10 +181,6 @@ public abstract class BaseActivity
 
             case R.id.nav_about:
                 startActivity(new Intent(this, About.class));
-                return true;
-
-            case R.id.nav_help:
-                startActivity(new Intent(this, Help.class));
                 return true;
 
             default:

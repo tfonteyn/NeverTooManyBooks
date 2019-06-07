@@ -168,9 +168,9 @@ public final class GoodreadsTasks {
         // ask to register
         if (result == GR_RESULT_CODE_AUTHORIZATION_NEEDED) {
             new AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_security)
                     .setTitle(R.string.gr_title_auth_access)
                     .setMessage(R.string.gr_action_cannot_be_completed)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setNegativeButton(android.R.string.cancel,
                                        (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
@@ -226,7 +226,6 @@ public final class GoodreadsTasks {
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("GR.RequestAuthTask");
 
-            //FIXME: should be done BEFORE starting the task
             if (!NetworkUtils.isNetworkAvailable()) {
                 return R.string.error_no_internet_connection;
             }
@@ -308,7 +307,6 @@ public final class GoodreadsTasks {
             Thread.currentThread().setName("GR.SendOneBookTask");
 
             try {
-                //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
                     return R.string.error_no_internet_connection;
                 }
@@ -380,7 +378,6 @@ public final class GoodreadsTasks {
             Thread.currentThread().setName("GR.SendBooksTask");
 
             try {
-                //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
                     return R.string.error_no_internet_connection;
                 }
@@ -453,7 +450,6 @@ public final class GoodreadsTasks {
             Thread.currentThread().setName("GR.ImportTask");
 
             try {
-                //FIXME: should be done BEFORE starting the task
                 if (!NetworkUtils.isNetworkAvailable()) {
                     return R.string.error_no_internet_connection;
                 }

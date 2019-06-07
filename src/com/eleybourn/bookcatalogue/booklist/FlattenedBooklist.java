@@ -46,14 +46,14 @@ public class FlattenedBooklist
     private TableDefinition mTable;
     /** The underlying database. We need this to keep the table alive. */
     @NonNull
-    private SynchronizedDb mSyncedDb;
+    private final SynchronizedDb mSyncedDb;
     /** Default position (before first element). */
     private long mPosition = -1;
     /** Book ID from the currently selected row. */
     private long mBookId;
     /** Collection of statements compiled for this object. */
     @NonNull
-    private SqlStatementManager mStatements;
+    private final SqlStatementManager mStatements;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
 

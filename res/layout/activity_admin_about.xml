@@ -39,7 +39,7 @@
                     android:text="@string/app_name"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textStyle="bold"
-                    tools:text="NeverToManyBooks"
+                    tools:text="@string/app_name"
                     />
 
                 <TextView
@@ -74,6 +74,16 @@
                 tools:text="sourcecode url"
                 />
 
+            <TextView
+                android:id="@+id/help_page"
+                style="@style/Url"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sourcecode"
+                tools:ignore="SelectableText"
+                tools:text="help url"
+                />
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/indents"
                 android:layout_width="wrap_content"
@@ -87,7 +97,7 @@
                 style="@style/SectionHeader"
                 android:text="@string/about_lbl_contacts"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sourcecode"
+                app:layout_constraintTop_toBottomOf="@id/help_page"
                 />
 
             <TextView
@@ -124,11 +134,20 @@
                 />
 
             <TextView
+                android:id="@+id/translators"
+                style="@style/Blurb.Small"
+                android:text="@string/translators"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/indents"
+                app:layout_constraintTop_toBottomOf="@id/b1"
+                />
+
+            <TextView
                 android:id="@+id/donate"
                 style="@style/SectionHeader"
                 android:text="@string/about_lbl_donate"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/b1"
+                app:layout_constraintTop_toBottomOf="@id/translators"
                 />
 
             <TextView

@@ -244,7 +244,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_publication_section"
             tools:ignore="SelectableText"
-            tools:text="Printed Paper Press Inc. 2  Inc. kilo jsjssd  per Press Inc. 2rfefw vev"
+            tools:text="Printed Paper Press Inc."
             />
 
         <!-- date published -->

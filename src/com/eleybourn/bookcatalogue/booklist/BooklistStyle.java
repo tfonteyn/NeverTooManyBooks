@@ -1172,7 +1172,7 @@ public class BooklistStyle
         }
 
         @Override
-        public void add(@NonNull final Integer value) {
+        public void add(@NonNull final Integer element) {
             throw new IllegalStateException("use add(BooklistGroup) instead");
         }
 
@@ -1194,7 +1194,7 @@ public class BooklistStyle
         }
 
         @Override
-        public void remove(@NonNull final Integer value) {
+        public void remove(@NonNull final Integer element) {
             throw new IllegalStateException("use remove(BooklistGroup) instead");
         }
 

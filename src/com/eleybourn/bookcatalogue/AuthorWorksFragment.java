@@ -151,9 +151,9 @@ public class AuthorWorksFragment
             implements FastScrollerOverlay.SectionIndexerV2 {
 
         /** Icon to show for a book. */
-        private final Drawable sBookIndicator;
+        private final Drawable mBookIndicator;
         /** Icon to show for not a book. e.g. a short story... */
-        private final Drawable sStoryIndicator;
+        private final Drawable mStoryIndicator;
 
         private final LayoutInflater mInflater;
 
@@ -164,8 +164,8 @@ public class AuthorWorksFragment
 
             mModel = model;
 
-            sBookIndicator = context.getDrawable(R.drawable.ic_book);
-            sStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
+            mBookIndicator = context.getDrawable(R.drawable.ic_book);
+            mStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
             mInflater = LayoutInflater.from(context);
         }
 
@@ -187,12 +187,12 @@ public class AuthorWorksFragment
             switch (item.getType()) {
                 case TocEntry.TYPE_TOC:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            sStoryIndicator, null, null, null);
+                            mStoryIndicator, null, null, null);
                     break;
 
                 case TocEntry.TYPE_BOOK:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            sBookIndicator, null, null, null);
+                            mBookIndicator, null, null, null);
                     break;
 
                 default:

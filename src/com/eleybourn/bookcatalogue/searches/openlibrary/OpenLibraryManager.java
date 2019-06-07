@@ -45,7 +45,8 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
  * <li> response format: jscmd=data:<br>
- * Does not return all the info that is known to be present. (use the website itself to look up an isbn)
+ * Does not return all the info that is known to be present.
+ * (use the website itself to look up an isbn)
  * Example: "physical_format": "Paperback" is NOT part of the response.</li>
  * <li>response format: jscmd=detail:<br>
  * The docs state: "It is advised to use jscmd=data instead of this as that is more stable format."
@@ -58,8 +59,10 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <ul>
  * <li>"data" does not contain all information that the site has.</li>
  * <li>"details" seems, by their own admission, not to be stable yet.</li>
- * <li>both: dates are not structured, but {@link DateUtils#parseDate(String)} can work around that.</li>
- * <li>last update dates on the website & api docs are sometimes from years ago. Is this still developed ?</li>
+ * <li>both: dates are not structured, but {@link DateUtils#parseDate(String)}
+ * can work around that.</li>
+ * <li>last update dates on the website & api docs are sometimes from years ago.
+ * Is this still developed ?</li>
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */

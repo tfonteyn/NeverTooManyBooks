@@ -104,6 +104,7 @@ public class EditBookshelfDialogFragment
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
@@ -181,6 +182,7 @@ public class EditBookshelfDialogFragment
 
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
+                .setIcon(R.drawable.ic_edit)
                 .setTitle(R.string.title_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
                 .setNegativeButton(android.R.string.cancel, ((d, which) -> d.dismiss()))

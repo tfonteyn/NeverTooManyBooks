@@ -85,6 +85,7 @@ public abstract class EditAuthorBaseDialogFragment
         mIsCompleteView.setChecked(mIsComplete);
 
         return new AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_author)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())

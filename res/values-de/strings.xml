@@ -302,7 +302,7 @@
         Sicherheitskopie Ihrer gesamten Datenbank und der Log-Dateien. Wenn Sie eine dieser
         Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.
     </string>
-    <string name="about_send_info">Sende Informationen</string>
+    <string name="lbl_send_info">Debug-Informationen senden</string>
     <string name="info_cleanup_files_text">
         Die Dateien belegen %1$s Speicherplatz auf der SD-Karte.
         Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder
@@ -310,7 +310,7 @@
         Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten,
         ziehen Sie bitte in Betracht, den ‘Sende Informationen’ Knopf zuerst zu benutzen.
     </string>
-    <string name="cleanup_files">Dateien bereinigen</string>
+    <string name="lbl_cleanup_files">Dateien bereinigen</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
@@ -332,7 +332,6 @@
     <string name="gr_tq_menu_delete_event">Ereignis löschen</string>
     <string name="gr_tq_menu_delete_task">Aufgabe löschen</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
-    <string name="X_loan_return_edit_book">Buch verleihen, zurückgeben oder bearbeiten</string>
     <string name="gr_menu_send_to_goodreads">Zu Goodreads senden</string>
     <string name="gr_auth_blurb_part1">
         Goodreads ist eine Website, deren ausgewiesener Zweck es ist, “Menschen zu helfen,
@@ -391,7 +390,7 @@
     <string name="info_not_authorized">Nicht autorisiert</string>
     <string name="gr_auth_error">Die Autorisierung bei Goodreads endete fehlerhaft</string>
     <string name="error_if_the_problem_persists">
-        Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü “Hilfe”
+        Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü “Verwaltung”
     </string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="search_please_enter_criteria">Bitte geben Sie die Suchkriterien ein</string>
@@ -402,7 +401,7 @@
     </string>
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="gr_send_book_to_goodreads">Buch %1$d an Goodreads senden</string>
-    <string name="erase_cover_cache">Zwischenspeicher für Cover-Bilder löschen</string>
+    <string name="lbl_erase_cover_cache">Zwischenspeicher für Cover-Bilder löschen</string>
     <string name="acra_resToastText">
         &APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App,
         indem Sie diesen Absturz melden.
@@ -435,7 +434,6 @@
     <string name="lbl_location">Standort</string>
     <string name="lbl_credentials">Zugangsdaten</string>
     <string name="lbl_data_import_export">Import/Export</string>
-    <string name="X_unrecognized_task">Unbekannte Aufgabe</string>
     <string name="progress_msg_rebuilding_search_index">Suchindex wird regeneriert…</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_starting_up">Gleich geht\'s los…</string>
@@ -487,7 +485,6 @@
     <string name="title_edit_style">Bearbeite Stil</string>
     <string name="title_clone_style">Stil klonen</string>
     <string name="pg_filters">Buchfilter</string>
-    <string name="X_pt_bob_filter_read">Auswahl auf Basis des Status \‘Gelesen\’</string>
 
     <string name="title_select_style">Stil wählen</string>
     <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
@@ -495,7 +492,7 @@
     <string name="lbl_settings">Einstellungen</string>
     <string name="error_unexpected_error">
         Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support
-        über den  Eintrag ‘Hilfe’ in Hauptmenü
+        über den  Eintrag ‘Verwaltung’ in Hauptmenü
     </string>
     <string name="menu_duplicate">Vervielfältigen</string>
     <string name="about_dash_or_dash">- Oder -</string>
@@ -611,7 +608,6 @@
     </string>
     <string name="X_lbl_loan_book_available">Verfügbar</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s ist keine gültige ISBN</string>
-    <string name="X_warning_cover_not_found2">Kein Bild gefunden</string>
     <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren</string>
     <string name="menu_add_book_by_barcode_scan">Barcode/ISBN scannen</string>
     <string name="menu_add_book_by_isbn">ISBN eingeben</string>
@@ -630,14 +626,11 @@
     </string>
     <string name="btn_confirm_exit">Beenden</string>
     <string name="btn_continue_editing">Bearbeiten fortsetzen</string>
-    <string name="X_warning_title_already_exists">Der Titel existiert bereits</string>
     <string name="lbl_year">Jahr</string>
     <string name="lbl_month">Monat</string>
     <string name="lbl_day">Tag</string>
     <string name="menu_edit">Bearbeiten…</string>
-    <string name="X_progress_msg_getting_books">Hole Bücher…</string>
     <string name="gr_tq_last_error_e">Letzter Fehler: %1$s</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">Ungültige ISBN ‘%1$s’ gesucht</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         Wenn der Tag angegeben wird, muss auch Monat und Jahr angegeben werden.
     </string>
@@ -673,7 +666,6 @@
     <string name="tab_lbl_details">Details</string>
     <!-- This is the heading of the ‘Loan’ tab when editing a book. It needs to be short.
     "Loan Book" is too long. -->
-    <string name="X_tab_lbl_loan">Leihen</string>
 
     <string name="gr_btn_delete_credentials">Zugangsdaten löschen</string>
     <string name="gr_auth_blurb_part4">
@@ -712,25 +704,17 @@
     <string name="warning_select_a_non_directory">
         Bitte wählen Sie eine Datei, kein Verzeichnis
     </string>
-    <string name="menu_copy_database">Datenbank exportieren</string>
+    <string name="lbl_copy_database">Datenbank exportieren</string>
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import gescheitert.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_writable">
-        Bitte überprüfen Sie, ob die SD-Karte beschreibbar ist und genügend freien Platz aufweist.
-    </string>
+    <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_readable">
-        Bitte überprüfen Sie, ob auf die SD-Karte zugegriffen werden kann.
-    </string>
+    <string name="error_storage_not_readable">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
 
     <!-- Short Heading for ‘Language’ field in book details -->
     <string name="lbl_language">Sprache</string>
     <!--  Explanatory text for ‘import’ dialogue -->
-    <string name="X_title_import_books_blurb">
-        Die Bücher aus diesem Archiv werden importiert. Tippen Sie auf eine der beiden Optionen,
-        um den Import zu starten, oder auf ‘Zurück’, um abzubrechen:
-    </string>
     <!-- Description of the ‘import all books’ option -->
     <string name="import_option_info_all_books">
         Alle Bücher aus diesem Archiv werden importiert. Vorhandene Bücher werden aktualisiert
@@ -750,10 +734,6 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
     <!--  Explanatory text for ‘export’ dialogue -->
-    <string name="X_title_export_books">
-        Die Bücher aus Ihrem Katalog werden exportiert. Tippen Sie auf eine der beiden Optionen,
-        um den Export zu starten, oder auf ‘Zurück’, um abzubrechen:
-    </string>
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
         %1$d Cover bearbeitet (%2$d fehlen, %3$d übersprungen)
@@ -771,17 +751,10 @@
     <!-- Text for button -->
     <string name="import_export_option_csv">Bücher (CSV)</string>
     <!-- Brief description -->
-    <string name="X_import_export_info_book_details">Die Details der Bücher</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Cover-Bilder</string>
     <!-- Brief description -->
-    <string name="X_export_info_cover_images">
-        Cover-Bilder für alle ausgewählten Bücher. Der Export wird dadurch viel größer.
-    </string>
     <!-- Brief description -->
-    <string name="X_import_export_info_preferences">
-        Einstellungen und benutzerdefinierte Stile
-    </string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">
@@ -846,9 +819,8 @@
     <!-- Credits in the ‘about’ dialog -->
     <string name="about_translators">
         &APP_NAME; ist das Ergebnis der Arbeit vieler Personen und würde nicht so weit
-        verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer:
-        Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin
-        und Robert Wetzlmayr (falls wir jemanden vergessen haben, geben Sie uns bitte Bescheid).
+        verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer
+        (falls wir jemanden vergessen haben, geben Sie uns bitte Bescheid):
     </string>
 
     <!-- A hint describing the benefit of following the Amazon links -->
@@ -875,7 +847,6 @@
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Inhalt</string>
     <string name="warning_thing_already_exists">%1$s existiert bereits</string>
-    <string name="X_info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
@@ -941,18 +912,14 @@
     <string name="error_not_available">%1$s nicht verfügbar</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
     <string name="warning_required_title_and_author">Der Titel und / oder Autor fehlt.</string>
-    <string name="error_storage_no_access">Kann nicht auf die SD-Karte zugreifen</string>
-    <string name="error_storage_no_space_left">
-        Nicht genügend Speicherplatz auf der SD-Karte
-    </string>
-    <string name="error_storage_not_available">Die SD-Karte ist nicht verfügbar</string>
+    <string name="error_storage_not_accessible">Speicher nicht zugänglich</string>
+    <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
     <string name="menu_clear_filters">Filter löschen</string>
     <string name="searching_isfdb">Suche bei ISFDB</string>
     <string name="searching_open_library">Suche bei OpenLibrary</string>
     <string name="import_export_option_xml_info">XML ist nur Export, kein Import.</string>
     <string name="import_export_option_xml">Alle Daten im XML-Format</string>
     <string name="lbl_covers">Buchumschläge</string>
-    <string name="X_events_found">%1$d Ereignisse gefunden</string>
     <string name="gr_tq_events_recorded">(%1$d Ereignisse aufgezeichnet)</string>
     <string name="lbl_first_publication_month">Erstveröffentlichungsmonat</string>
     <string name="lbl_first_publication_year">Erstes Veröffentlichungsjahr</string>

@@ -2719,9 +2719,7 @@ public class BooklistBuilder
         @NonNull
         @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> cloneGroups() {
-            //TOMF TODO: shallow copy, is that enough or a bug ? check calling code
-            //      Returns a shallow copy of this ArrayList instance.
-            //     (The elements themselves are not copied.)
+            //shallow copy, is enough
             return (ArrayList<DomainDefinition>) mGroupedDomains.clone();
         }
 

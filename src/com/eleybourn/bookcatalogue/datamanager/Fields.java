@@ -221,7 +221,7 @@ public class Fields {
     /**
      * Accessor for related FieldsContext.
      * <p>
-     * Provides acces to {@link FieldsContext#findViewById(int)}
+     * Provides access to {@link FieldsContext#findViewById(int)}
      *
      * @return FieldsContext for this collection.
      */
@@ -1019,8 +1019,8 @@ public class Fields {
                                       @NonNull final Bundle values) {
             RatingBar bar = field.getView();
             if (field.formatter != null) {
-                String sValue = field.formatter.extract(field, String.valueOf(bar.getRating()));
-                values.putString(field.mColumn, sValue);
+                String value = field.formatter.extract(field, String.valueOf(bar.getRating()));
+                values.putString(field.mColumn, value);
             } else {
                 values.putFloat(field.mColumn, bar.getRating());
             }
@@ -1030,8 +1030,8 @@ public class Fields {
                                       @NonNull final DataManager values) {
             RatingBar bar = field.getView();
             if (field.formatter != null) {
-                String sValue = field.formatter.extract(field, String.valueOf(bar.getRating()));
-                values.putString(field.mColumn, sValue);
+                String value = field.formatter.extract(field, String.valueOf(bar.getRating()));
+                values.putString(field.mColumn, value);
             } else {
                 values.putFloat(field.mColumn, bar.getRating());
             }

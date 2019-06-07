@@ -266,10 +266,13 @@ public class EditBookFieldsFragment
                             && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
                         ArrayList<Author> list =
                                 data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                                    list != null ? list : new ArrayList<>(0));
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
 
                         mBookBaseFragmentModel.setDirty(true);
+
                     } else {
                         // Even though the dialog was terminated,
                         // some authors MAY have been modified.
@@ -289,11 +292,14 @@ public class EditBookFieldsFragment
                             && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
                         ArrayList<Series> list =
                                 data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                                                    list != null ? list : new ArrayList<>(0));
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
 
                         populateSeriesListField();
                         mBookBaseFragmentModel.setDirty(true);
+
                     } else {
                         // Even though the dialog was terminated,
                         // some series MAY have been modified.

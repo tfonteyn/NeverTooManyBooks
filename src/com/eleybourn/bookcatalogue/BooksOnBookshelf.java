@@ -210,11 +210,12 @@ public class BooksOnBookshelf
                     mModel.getCurrentBookshelf().setAsPreferred();
                     mModel.setCurrentStyle(style);
 
-                    /* Set the rebuild state like this is the first time in, which it sort of is, given we
-                     * are changing style. There is very little ability to preserve position when going from
+                    /* Set the rebuild state like this is the first time in, which it sort of is,
+                     * given we are changing style.
+                     * There is very little ability to preserve position when going from
                      * a list sorted by author/series to on sorted by unread/addedDate/publisher.
-                     * Keeping the current row/pos is probably the most useful thing we can do since we *may*
-                     * come back to a similar list.
+                     * Keeping the current row/pos is probably the most useful thing we can
+                     * do since we *may* come back to a similar list.
                      */
                     int topRowOffset;
                     View view = mListView.getChildAt(0);
@@ -638,13 +639,12 @@ public class BooksOnBookshelf
         }
 
         if (mModel.hasListBeenLoaded()) {
-            mModel.savePosition(mListView.getChildAt(0),
-                                mLinearLayoutManager.findFirstVisibleItemPosition());
+            mModel.savePosition(mListView, mLinearLayoutManager.findFirstVisibleItemPosition());
         }
     }
 
     /**
-     * android.intent.action.SEARCH
+     * android.intent.action.SEARCH.
      */
     private void handleStandardSearchIntent() {
         String searchText = "";
@@ -710,7 +710,7 @@ public class BooksOnBookshelf
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0,
-                        R.string.menu_copy_database);
+                        R.string.lbl_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }

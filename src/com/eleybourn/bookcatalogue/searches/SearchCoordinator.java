@@ -230,22 +230,22 @@ public class SearchCoordinator {
                        @NonNull final String isbn,
                        final boolean fetchThumbnail) {
 
-        // dev sanity check
+        // Developer sanity check
         if (!NetworkUtils.isNetworkAvailable()) {
             throw new IllegalStateException("network should be checked before starting search");
         }
 
-        // dev sanity check
+        // Developer sanity check
         if (!mManagedTasks.isEmpty()) {
             throw new IllegalStateException("don't start a new search while a search is running");
         }
 
-        // dev sanity check
+        // Developer sanity check
         if ((searchFlags & SearchSites.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
 
-        // dev sanity check
+        // Developer sanity check
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one criteria non-empty:"
                                                        + " isbn=" + isbn

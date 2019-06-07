@@ -86,6 +86,7 @@ public abstract class EditStringBaseDialog {
         }
 
         new AlertDialog.Builder(mActivity)
+                .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(title)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())

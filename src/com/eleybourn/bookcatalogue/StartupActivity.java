@@ -67,7 +67,7 @@ public class StartupActivity
     /** Number of times the app has been started. */
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
+    public static final String PREF_STARTUP_COUNTDOWN = "Startup.StartCountdown";
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 50;
     /** Number of app startup's between displaying the Amazon hint. */
@@ -296,14 +296,14 @@ public class StartupActivity
      * @return {@code true} when counter reached 0
      */
     private boolean decreaseStartupCounters() {
-        int opened = App.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int opened = App.getPrefs().getInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         int startCount = App.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
 
         final SharedPreferences.Editor ed = App.getPrefs().edit();
         if (opened == 0) {
-            ed.putInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+            ed.putInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         } else {
-            ed.putInt(PREFS_STARTUP_COUNTDOWN, opened - 1);
+            ed.putInt(PREF_STARTUP_COUNTDOWN, opened - 1);
         }
         ed.putInt(PREF_STARTUP_COUNT, startCount)
           .apply();

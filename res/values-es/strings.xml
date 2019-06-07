@@ -193,9 +193,9 @@
     <string name="lt_reset_messages_info">Esta aplicación puede mostrar, de vez en cuando, mensajes relacionados con LibraryThing. Pulse el botón siguiente para resetear cualquiera de los mensajes que hayan sido deshabilitados.</string>
     <string name="btn_reset">Reiniciar</string>
     <string name="debug_send_info_text">Pulse el botón siguiente para recopilar información sobre cualquier fallo reciente y enviarlo al equipo de desarrollo. Se creará una copia de seguridad de su base de datos y de los archivos de registro. Si no desea enviar alguno de estos ficheros, elimine los correspondientes adjuntos antes de enviar el correo que se generará.</string>
-    <string name="about_send_info">Enviar información</string>
+    <string name="lbl_send_info">Enviar información de depuración</string>
     <string name="info_cleanup_files_text">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de \‘Enviar información\’.</string>
-    <string name="cleanup_files">Borrar ficheros</string>
+    <string name="lbl_cleanup_files">Borrar ficheros</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
@@ -213,7 +213,6 @@
     <string name="gr_tq_menu_delete_task">Eliminar Tarea</string>
 
     <string name="bookshelf_my_books">Mis Libros</string>
-    <string name="X_loan_return_edit_book">Prestar, Devolver o Editar Libro</string>
     <string name="gr_menu_send_to_goodreads">Enviar a Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads es un sitio web cuya misión es “ayudar a la gente a encontrar y compartir los libros que les gustan”.
@@ -256,7 +255,7 @@
     <string name="info_authorized">Autorizado</string>
     <string name="info_not_authorized">No Autorizado</string>
     <string name="gr_auth_error">Error de autorización en Goodreads.</string>
-    <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de Ayuda del menú principal.</string>
+    <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de ‘Admin’ del menú principal.</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
     <string name="search_please_enter_criteria">Por favor, introduzca un criterio de búsqueda</string>
     <string name="gr_error_while_searching">Error buscando.</string>
@@ -264,7 +263,7 @@
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="gr_send_book_to_goodreads">Enviar libro %1$d a Goodreads</string>
 
-    <string name="erase_cover_cache">Borrar caché de portadas</string>
+    <string name="lbl_erase_cover_cache">Borrar caché de portadas</string>
     <string name="acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; se ha detenido</string>
     <string name="acra_resNotifTitle">Error de &APP_NAME;</string>
@@ -290,7 +289,6 @@
     <string name="lbl_location">Ubicación</string>
     <string name="lbl_credentials">Credenciales</string>
     <string name="lbl_data_import_export">Importación/Exportación de datos</string>
-    <string name="X_unrecognized_task">Tarea no reconocida</string>
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_starting_up">Arrancando…</string>
@@ -321,7 +319,7 @@
         Puede utilizar esta opción para configurar las características de un determinado estilo de listado.
         \n\nPuede cambiar el nombre, editar los grupos para cambiar la jerarquía y modificar otros parámetros para
         configurar un estilo que le resulte útil.
-        \n\nTambién se pueden utilizar \'Filtrar libros\' para modificar la selección de libros que se mostrarán en
+        \n\nTambién se pueden utilizar ‘Filtrar libros’ para modificar la selección de libros que se mostrarán en
         el listado, por ejemplo, para mostrar únicamente libros no leídos.
     </string>
     <string name="X_hint_booklist_global_properties">
@@ -336,12 +334,11 @@
     <string name="title_edit_style">Editar estilo</string>
     <string name="title_clone_style">Duplicar estilo</string>
     <string name="pg_filters">Filtros adicionales</string>
-    <string name="X_pt_bob_filter_read">Seleccionar en función del estado \‘Leído\’</string>
     <string name="title_select_style">Seleccionar Estilo</string>
     <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>
     <string name="lbl_settings">Preferencias</string>
-    <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción \‘Help\’ del menú principal</string>
+    <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción ‘Admin’ del menú principal</string>
     <string name="menu_duplicate">Duplicar</string>
     <string name="about_dash_or_dash">- O -</string>
     <string name="about_donate_paypal">Donación PayPal</string>
@@ -407,7 +404,7 @@
         El ISBN del libro seleccionado no se pudo localizar en Goodreads.
         Esto puede ocurrir por dos motivos:
         los datos del libro son erróneos (debería comprobar el ISBN), o el libro no está en Goodreads.\n
-        \nSi modifica los datos en &APP_NAME;, pulse el botón \'Retry\' y compruebe si la tarea de
+        \nSi modifica los datos en &APP_NAME;, pulse el botón ‘Retry’ y compruebe si la tarea de
         fondo creada termina con éxito.\n
         \nSi los datos son correctos y el libro sigue sin aparecer, entonces debe añadir un libro con ese ISBN de forma manual en
         el sitio web de Goodreads. Una vez haya hecho eso, puede volver a intentar enviar el libro.
@@ -430,7 +427,7 @@
     <string name="X_error_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
     <string name="hint_booklist_style_menu">
         Esta opción le permite seleccionar el estilo de los listados.\n
-        \nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando \'Configurar\' al final de la lista.
+        \nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando ‘Configurar’ al final de la lista.
     </string>
     <string name="warning_required_name">El nombre no puede ser blanco</string>
     <string name="progress_msg_export_starting">Empezando exportación…</string>
@@ -439,7 +436,6 @@
     <string name="X_lbl_loan_book_available">Disponible</string>
 
     <string name="warning_x_is_not_a_valid_isbn">%1$s no es un ISBN válido</string>
-    <string name="X_warning_cover_not_found2">No se ha encontrado imagen</string>
     <string name="warning_cover_copy_failed">No se pudo copiar la imagen</string>
     <string name="menu_add_book_by_barcode_scan">Escanear código de barras/ISBN</string>
     <string name="menu_add_book_by_isbn">Introducir ISBN</string>
@@ -453,14 +449,11 @@
     <string name="warning_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
     <string name="btn_confirm_exit">Salir</string>
     <string name="btn_continue_editing">Continuar editando</string>
-    <string name="X_warning_title_already_exists">El título ya existe</string>
     <string name="lbl_year">Año</string>
     <string name="lbl_month">Mes</string>
     <string name="lbl_day">Día</string>
     <string name="menu_edit">Editar…</string>
-    <string name="X_progress_msg_getting_books">Obteniendo libros…</string>
     <string name="gr_tq_last_error_e">Último error: %1$s</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">ISBN no válido \‘%1$s\’ en la búsqueda</string>
     <string name="warning_if_day_set_month_and_year_must_be">Si se especifica un día, deben especificarse también el mes y el año.</string>
     <string name="warning_if_month_set_year_must_be">Si se especifica el mes, debe especificarse también el año.</string>
     <string name="progress_end_cancelled">Cancelado</string>
@@ -488,7 +481,6 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Detalles</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="X_tab_lbl_loan">Préstamo</string>
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_delete_credentials">Eliminar credenciales</string>
@@ -543,20 +535,19 @@
     <string name="warning_select_a_non_directory">Por favor, seleccione un fichero, no un directorio</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Exportar base de datos</string>
+    <string name="lbl_copy_database">Exportar base de datos</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">La importación falló.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_writable">Compruebe que se puede escribir en la tarjeta SD, y que tiene suficiente espacio.</string>
+    <string name="error_storage_not_writable">Por favor, compruebe que el almacenamiento es grabable y tiene espacio suficiente.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_readable">Compruebe que se puede acceder a la tarjeta SD.</string>
+    <string name="error_storage_not_readable">Por favor, compruebe que el almacenamiento es accesible.</string>
 
     <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Idioma</string>
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="X_title_import_books_blurb">Se importarán los libros de este fichero. Seleccione una de las dos opciones propuestas para empezar la importación, o pulse \‘Atrás\’ para cancelar:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Importar todos los libros del fichero, actualizando los que existan y añadiendo los nuevos.</string>
     <!-- Menu text for the 'import/export new & changed' option -->
@@ -569,10 +560,6 @@
     <string name="progress_msg_n_created_m_updated">%1$d creados, %2$d actualizados</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="X_title_export_books">
-        Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la
-        exportación, o pulse \‘Atrás\’ para cancelar:
-    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
@@ -590,18 +577,10 @@
     <!-- Text for button -->
     <string name="import_export_option_csv">Los libros (CSV)</string>
     <!-- Brief description -->
-    <string name="X_import_export_info_book_details">Todos los datos de todos los libros</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Portadas</string>
     <!-- Brief description -->
-    <string name="X_export_info_cover_images">
-        Portadas de todos los libros seleccionadas.
-        La exportación requerirá mucho más tiempo.
-    </string>
     <!-- Brief description -->
-    <string name="X_import_export_info_preferences">
-        Preferencias y estilos definidos por el usuario.
-    </string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">
@@ -658,7 +637,11 @@
     <string name="about_lbl_special_thanks">Agradecimientos</string>
 
     <!-- Credits in the 'about' dialog -->
-    <string name="about_translators">&APP_NAME; es fruto del esfuerzo de muchas personas, y no tendría un uso tan extendido sin la generosa aportación de nuestros traductores (voluntarios): Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin y Robert Wetzlmayr (si nos hemos olvidado de alguien, por favor, díganoslo).</string>
+    <string name="about_translators">
+        &APP_NAME; es fruto del esfuerzo de muchas personas, y no tendría un uso tan extendido
+        sin la generosa aportación de nuestros traductores (voluntarios)
+        (si nos hemos olvidado de alguien, por favor, díganoslo):
+    </string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
     <string name="hint_amazon_links_blurb"><![CDATA[
@@ -679,7 +662,6 @@
 
     <string name="tab_lbl_content">Contenido</string>
     <string name="warning_thing_already_exists">%1$s ya existe</string>
-    <string name="X_info_tap_to_edit">Toque aquí para editar el nombre</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
     <string name="X_error_no_style_found">No se pudo encontrar el estilo apropiado</string>
@@ -738,9 +720,8 @@
     <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 4.0.0</string>
     <string name="error_not_available">%1$s no disponible</string>
-    <string name="error_storage_no_access">No puedo acceder a la tarjeta SD</string>
-    <string name="error_storage_no_space_left">No hay suficiente espacio en la tarjeta SD</string>
-    <string name="error_storage_not_available">La tarjeta SD no está disponible</string>
+    <string name="error_storage_not_accessible">Almacenamiento no accesible</string>
+    <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible</string>
     <string name="gr_tq_events_recorded">(%1$d eventos registrados)</string>
     <string name="gr_tq_generic_task_info">ID de tarea %1$d, En cola en %2$s</string>
     <string name="hint_autorotate_camera_images">Si siempre está girando las imágenes de la cámara en la misma dirección, intente cambiar las preferencias de la aplicación para especificar una rotación que se aplique automáticamente.</string>
@@ -757,7 +738,6 @@
     <string name="menu_author_details">Todas las obras de este autor.</string>
     <string name="progress_msg_please_wait">Por favor espera…</string>
     <string name="warning_required_title_and_author">Falta el título y / o el autor.</string>
-    <string name="X_events_found">%1$d eventos encontrados</string>
     <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
     <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
     <string name="none">Ninguno</string>

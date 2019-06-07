@@ -324,7 +324,6 @@ public class EditSeriesListActivity
                         mSeriesNumber = mNumberView.getText().toString().trim();
                         dismiss();
 
-                        // TOMF: use listener
                         //noinspection ConstantConditions
                         ((EditSeriesListActivity) getActivity())
                                 .processChanges(series, mSeriesName, mSeriesIsComplete,

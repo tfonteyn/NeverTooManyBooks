@@ -220,6 +220,7 @@ public class BookFragment
     @SuppressLint("ClickableViewAccessibility")
     private void initFlattenedBookList(@Nullable final Bundle savedInstanceState) {
         mBookFragmentModel = ViewModelProviders.of(this).get(BookFragmentModel.class);
+
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
 

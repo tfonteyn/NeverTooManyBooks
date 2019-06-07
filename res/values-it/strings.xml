@@ -190,9 +190,9 @@
     <string name="lt_reset_messages_info">Ogni tanto questa applicazione può visualizzare messaggi riguardanti LibraryThing. Premi il pulsante qui sotto per ripristinare i messaggi eventualmente disattivati.</string>
     <string name="btn_reset">Ripristina</string>
     <string name="debug_send_info_text">Clicca sul pulsante qui sotto per raccogliere informazioni sui crash recenti o altri errori e inviarli allo sviluppatore. Verrà creata una copia di backup dell\'intero database e di tutti i file di log. Cancella i file che non vuoi allegare alla email prima di inviarla.</string>
-    <string name="about_send_info">Invia informazioni</string>
+    <string name="lbl_send_info">Invia informazioni di debug</string>
     <string name="info_cleanup_files_text">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\‘applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante \’Invia informazioni\' prima di eliminarli.</string>
-    <string name="cleanup_files">Cancella i file</string>
+    <string name="lbl_cleanup_files">Cancella i file</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
@@ -204,12 +204,11 @@
     <string name="menu_share_this">Condividi</string>
     <string name="export_csv_email">Inviare il file di esportazione per email?</string>
     <string name="menu_cover_crop">Ritaglia</string>
-    <string name="gr_tq_title_task_errors">Task Errors</string>
+    <string name="gr_tq_title_task_errors">Errori di attività</string>
     <string name="retry">Riprova</string>
     <string name="gr_tq_menu_delete_event">Cancella evento</string>
     <string name="gr_tq_menu_delete_task">Cancella operazione</string>
     <string name="bookshelf_my_books">I miei libri</string>
-    <string name="X_loan_return_edit_book">Presta, ritorna o modifica libro</string>
     <string name="gr_menu_send_to_goodreads">Invia a Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads è un sito Internet la cui missione è \“aiutare le persone a trovare e condividere i libri che amano\”.
@@ -253,14 +252,14 @@
     <string name="info_authorized">Autorizzato</string>
     <string name="info_not_authorized">Non autorizzato</string>
     <string name="gr_auth_error">Errore durante l\'autorizzazione di Goodreads.</string>
-    <string name="error_if_the_problem_persists">Se il problema persiste, contatta il supporto dalla voce Aiuto del menu principale.</string>
+    <string name="error_if_the_problem_persists">Se il problema persiste, contatta il supporto dalla voce ‘Amministratore’ del menu principale.</string>
     <string name="warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="search_please_enter_criteria">Indica il criterio di ricerca</string>
     <string name="gr_error_while_searching">Errore durante la ricerca.</string>
     <string name="gr_send_all_books_results">%1$d libri esaminati: %2$d inviati correttamente, %3$d sprovvisti di ISBN e %4$d con ISBN ma non trovato in Goodreads</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="gr_send_book_to_goodreads">Invia il libro %1$d a Goodreads</string>
-    <string name="erase_cover_cache">Cancella cache copertina</string>
+    <string name="lbl_erase_cover_cache">Cancella cache copertina</string>
     <string name="acra_resToastText">&APP_NAME; si è bloccato in modo anomalo. Aiutaci a migliorare il programma informandoci del problema.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; si è bloccato</string>
     <string name="acra_resNotifTitle">Blocco di &APP_NAME;</string>
@@ -286,7 +285,6 @@
     <string name="lbl_location">Locazione</string>
     <string name="lbl_credentials">Credenziali</string>
     <string name="lbl_data_import_export">Importa/Esporta</string>
-    <string name="X_unrecognized_task">Comando sconosciuto</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
     <string name="progress_msg_starting_up">Avvio…</string>
@@ -317,7 +315,7 @@
         In questa schermata è possibile scegliere le caratteristiche di uno specifico stile di elencazione dei libri.
         \n\nÈ possibile cambiarne il nome, modificare i raggruppamenti per cambiare la struttura, e regolare una varietà di
         altri parametri per ottenere lo stile desiderato.
-        \n\nÈ anche possibile utilizzare \'Filtra Libri\' per modificare la selezione di libri da mostrare nell\'elenco, ad es.
+        \n\nÈ anche possibile utilizzare ‘Filtra Libri’ per modificare la selezione di libri da mostrare nell\'elenco, ad es.
         per cercare solo i libri non ancora letti.
     </string>
     <string name="X_hint_booklist_global_properties">
@@ -332,12 +330,11 @@
     <string name="title_edit_style">Modifica stile</string>
     <string name="title_clone_style">Duplica stile</string>
     <string name="pg_filters">Filtra libri</string>
-    <string name="X_pt_bob_filter_read">Seleziona in base allo stato \‘Letto\’</string>
     <string name="title_select_style">Seleziona Stile</string>
     <string name="X_warning_required_field_x">%1$s deve contenere un valore</string>
     <string name="edit">Modifica</string>
     <string name="lbl_settings">Preferenze</string>
-    <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\‘Assistenza usando l\’opzione \‘Aiuto\’ nel menu principale</string>
+    <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\‘Assistenza usando l\’opzione ‘Amministratore’ nel menu principale</string>
     <string name="menu_duplicate">Duplicare</string>
     <string name="about_dash_or_dash">- Oppure -</string>
     <string name="about_donate_paypal">Donazione con PayPal</string>
@@ -392,7 +389,7 @@
     <string name="gr_explain_goodreads_no_match">
         Il codice ISBN del libro selezionato non è stato trovato in Goodreads. Le possibili cause di ciò sono due:
         il codice ISBN del libro è sbagliato (si consiglia di verificarlo), o il libro non è presente in Goodreads.
-        \n\nSe effettui una qualsiasi modifica ai dati presenti in &APP_NAME;, è sufficiente premere il pulsante \'Riprova\' e verificare se le risultanti
+        \n\nSe effettui una qualsiasi modifica ai dati presenti in &APP_NAME;, è sufficiente premere il pulsante ‘Riprova’ e verificare se le risultanti
         attività in sottofondo si concludono con successo.
         \n\nSe i dati sembrano corretti e ugualmente il libro non viene trovato, occorre allora inserire manualmente in Goodreads un libro con quel codice ISBN
         sul loro sito web. Una volta fatto, si può riprovare ad inviare il libro.
@@ -415,7 +412,7 @@
     <string name="X_error_starting_import_arg">Si è verificato un problema all\'avvio dell\'importazione: %1$s</string>
     <string name="hint_booklist_style_menu">
         Questo menu permette di scegliere lo stile dell\'elenco.\n
-        \nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su \'Personalizza\' in fondo dell\'elenco.
+        \nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su ‘Personalizza’ in fondo dell\'elenco.
     </string>
     <string name="warning_required_name">Il nome non può essere vuoto</string>
     <string name="progress_msg_export_starting">Inizio esportazione…</string>
@@ -424,7 +421,6 @@
     <string name="X_lbl_loan_book_available">Disponibile</string>
 
     <string name="warning_x_is_not_a_valid_isbn">%1$s non è un codice ISBN valido</string>
-    <string name="X_warning_cover_not_found2">Nessuna immagine trovata</string>
     <string name="warning_cover_copy_failed">Impossibile copiare l\'immagine</string>
     <string name="menu_add_book_by_barcode_scan">Acquisisci codice a barre/ISBN</string>
     <string name="menu_add_book_by_isbn">Inserisci codice ISBN</string>
@@ -438,14 +434,11 @@
     <string name="warning_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
     <string name="btn_confirm_exit">Esci</string>
     <string name="btn_continue_editing">Annulla</string>
-    <string name="X_warning_title_already_exists">Titolo già presente in elenco</string>
     <string name="lbl_year">Anno</string>
     <string name="lbl_month">Mese</string>
     <string name="lbl_day">Giorno</string>
     <string name="menu_edit">Modifica…</string>
-    <string name="X_progress_msg_getting_books">Sto acquisendo i libri…</string>
     <string name="gr_tq_last_error_e">Ultimo Errore: %1$s</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">Codice ISBN non valido \‘%1$s\’ specificato nella ricerca</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
     <string name="hint_autorotate_camera_images">Se ti trovi a ruotare le immagini acquisite sempre nella stessa direzione, puoi provare a modificare le impostazioni dell\'applicazione specificando una rotazione di default da applicare automaticamente.</string>
@@ -473,7 +466,6 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Dettagli</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="X_tab_lbl_loan">Prestito</string>
 
     <!-- Hint displayed when an export or database backup is done -->
 
@@ -533,19 +525,18 @@
     <string name="warning_select_a_non_directory">Prego selezionare un file, non una cartella</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Copia Archivio (per supporto tecnico)</string>
+    <string name="lbl_copy_database">Copia Archivio (per supporto tecnico)</string>
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Importazione fallita.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_writable">Prego verificare che sia possibile scrivere sulla SD card e che vi sia spazio sufficiente.</string>
+    <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_readable">Prego verificare che la SD card sia accessibile.</string>
+    <string name="error_storage_not_readable">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
 
     <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Lingua</string>
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="X_title_import_books_blurb">I libri di questo archivio saranno importati. Seleziona uno delle due opzioni per avviare l\‘importazione, o premi \’back\' per annullare:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Tutti i libri nell\'archivio saranno importati, aggiornando i libri già presenti e aggiungendo quelli nuovi.</string>
     <!-- Menu text for the 'import/export new & changed' option -->
@@ -558,10 +549,6 @@
     <string name="progress_msg_n_created_m_updated">%1$d creati, %2$d aggiornati</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="X_title_export_books">
-        I libri del tuo catalogo saranno esportati. Seleziona uno delle due opzioni
-        per avviare l\'esportazione, o premi ‘back’ per annullare:
-    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
@@ -575,13 +562,10 @@
     <!-- Text for button -->
     <string name="import_export_option_csv">Libri (CSV)</string>
     <!-- Brief description -->
-    <string name="X_import_export_info_book_details">Le informazioni dettagliate stesse</string>
     <!-- Text for button -->
     <string name="lbl_cover_images">Immagini delle copertine</string>
     <!-- Brief description -->
-    <string name="X_export_info_cover_images">Copertine di tutti i libri selezionati. Ciò renderà l\'esportazione molto più pesante.</string>
     <!-- Brief description -->
-    <string name="X_import_export_info_preferences">Preferenze e stili di elencazione personalizzati</string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
@@ -646,15 +630,12 @@
     <string name="about_translators">
         &APP_NAME; è il prodotto degli sforzi di molte persone,
         e non sarebbe così largamente utilizzato senza il generoso aiuto dei nostri traduttori
-        volontari: Eugenio Davolio, José M. Galdo, Imkal, Dimitris Klisiari, Gideon van Melle,
-        Emir Sarı, Nick Silin, e Robert Wetzlmayr (se abbiamo dimenticato qualcuno,
-        grazie per comunicarcelo).
+        volontari (se abbiamo dimenticato qualcuno, grazie per comunicarcelo):
     </string>
 
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Contenuto</string>
     <string name="warning_thing_already_exists">%1$s già presente in elenco</string>
-    <string name="X_info_tap_to_edit">Tocca qui per modificare il nome</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
     <string name="X_error_no_style_found">Impossibile trovare lo stile appropriato</string>
@@ -711,9 +692,7 @@
     <string name="searching_isfdb">Ricerca in ISFDB</string>
     <string name="searching_open_library">Ricerca in OpenLibrary</string>
     <string name="error_not_available">%1$s non disponibile</string>
-    <string name="error_storage_no_access">Impossibile accedere alla scheda SD</string>
-    <string name="error_storage_no_space_left">Spazio insufficiente sulla SD</string>
-    <string name="error_storage_not_available">La scheda SD non è disponibile</string>
+    <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
     <string name="import_export_option_xml">Tutti i dati in formato XML</string>
     <string name="import_export_option_xml_info">XML è solo esportazione, non importa.</string>
     <string name="menu_clear_filters">Cancella filtri</string>
@@ -728,7 +707,6 @@
     <string name="info_share_book_im_reading">Sto leggendo “%1$s” di %2$s %3$s %4$s</string>
     <string name="progress_msg_please_wait">Attendere prego…</string>
     <string name="warning_required_title_and_author">Manca il titolo e / o l\'autore.</string>
-    <string name="X_events_found">%1$d trovati</string>
     <string name="error_database_upgrade_failed">Impossibile eseguire l\'aggiornamento da una versione precedente alla 4.0.0</string>
     <string name="book_format_hardcover">Rilegato</string>
     <string name="book_format_paperback">Paperback</string>
@@ -745,5 +723,6 @@
     <string name="title_import">Importa</string>
     <string name="btn_drag_handle">Trascina per riordinare questo elenco.</string>
     <string name="book_format_digest">Digest</string>
+    <string name="error_storage_not_accessible">Archiviazione non accessibile</string>
 
 </resources>

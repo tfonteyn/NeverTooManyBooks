@@ -38,9 +38,8 @@ import com.eleybourn.bookcatalogue.settings.Prefs;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
- * <p>
- * TOMF: negative id's to be scrapped now we have uuids for builtin.
- * The id won't matter at all.. we just will use whatever was inserted into the database.
+ *
+ * The UUID's should never be changed.
  *
  * @author Philip Warner
  */
@@ -62,7 +61,8 @@ public final class BooklistStyles {
 
 
     private static final int BUILTIN_AUTHOR_THEN_SERIES = -1;
-    private static final String BUILTIN_AUTHOR_THEN_SERIES_UUID = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
+    private static final String BUILTIN_AUTHOR_THEN_SERIES_UUID
+            = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
     /**
      * Hardcoded initial/default style. Avoids having the create the full set of styles just
      * to load the default one.
@@ -76,47 +76,65 @@ public final class BooklistStyles {
 
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = BUILTIN_AUTHOR_THEN_SERIES;
-    public static final String DEFAULT_STYLE_UUID = BUILTIN_AUTHOR_THEN_SERIES_UUID;
+    private static final String DEFAULT_STYLE_UUID = BUILTIN_AUTHOR_THEN_SERIES_UUID;
 
     private static final int BUILTIN_UNREAD_AUTHOR_THEN_SERIES = -2;
-    private static final String BUILTIN_UNREAD_AUTHOR_THEN_SERIES_UUID = "f479e979-c43f-4b0b-9c5b-6942964749df";
+    private static final String BUILTIN_UNREAD_AUTHOR_THEN_SERIES_UUID
+            = "f479e979-c43f-4b0b-9c5b-6942964749df";
     private static final int BUILTIN_COMPACT = -3;
-    private static final String BUILTIN_COMPACT_UUID = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
+    private static final String BUILTIN_COMPACT_UUID
+            = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
     private static final int BUILTIN_TITLE_FIRST_LETTER = -4;
-    private static final String BUILTIN_TITLE_FIRST_LETTER_UUID = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
+    private static final String BUILTIN_TITLE_FIRST_LETTER_UUID
+            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
     private static final int BUILTIN_SERIES = -5;
-    private static final String BUILTIN_SERIES_UUID = "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335";
+    private static final String BUILTIN_SERIES_UUID
+            = "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335";
 
     private static final int BUILTIN_GENRE = -6;
-    private static final String BUILTIN_GENRE_UUID = "edc5c178-60f0-40e7-9674-e08445b6c942";
+    private static final String BUILTIN_GENRE_UUID
+            = "edc5c178-60f0-40e7-9674-e08445b6c942";
     private static final int BUILTIN_LENDING = -7;
-    private static final String BUILTIN_LENDING_UUID = "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3";
+    private static final String BUILTIN_LENDING_UUID
+            = "e4f1c364-2cbe-467e-a0c1-3ae71bd56fa3";
     private static final int BUILTIN_READ_AND_UNREAD = -8;
-    private static final String BUILTIN_READ_AND_UNREAD_UUID = "e3678890-7785-4870-9213-333a68293a49";
+    private static final String BUILTIN_READ_AND_UNREAD_UUID
+            = "e3678890-7785-4870-9213-333a68293a49";
     private static final int BUILTIN_PUBLICATION_DATA = -9;
-    private static final String BUILTIN_PUBLICATION_DATA_UUID = "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796";
+    private static final String BUILTIN_PUBLICATION_DATA_UUID
+            = "182f5d3c-8fd7-4f3a-b5b0-0c93551d1796";
     private static final int BUILTIN_DATE_ADDED = -10;
-    private static final String BUILTIN_DATE_ADDED_UUID = "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521";
+    private static final String BUILTIN_DATE_ADDED_UUID
+            = "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521";
 
     private static final int BUILTIN_DATE_ACQUIRED = -11;
-    private static final String BUILTIN_DATE_ACQUIRED_UUID = "b3255b1f-5b07-4b3e-9700-96c0f8f35a58";
+    private static final String BUILTIN_DATE_ACQUIRED_UUID
+            = "b3255b1f-5b07-4b3e-9700-96c0f8f35a58";
     private static final int BUILTIN_AUTHOR_AND_YEAR = -12;
-    private static final String BUILTIN_AUTHOR_AND_YEAR_UUID = "7c9ad91e-df7c-415a-a205-cdfabff5465d";
+    private static final String BUILTIN_AUTHOR_AND_YEAR_UUID
+            = "7c9ad91e-df7c-415a-a205-cdfabff5465d";
     private static final int BUILTIN_FORMAT = -13;
-    private static final String BUILTIN_FORMAT_UUID = "bdc43f17-2a95-42ef-b0f8-c750ef920f28";
+    private static final String BUILTIN_FORMAT_UUID
+            = "bdc43f17-2a95-42ef-b0f8-c750ef920f28";
     private static final int BUILTIN_DATE_READ = -14;
-    private static final String BUILTIN_DATE_READ_UUID = "034fe547-879b-4fa0-997a-28d769ba5a84";
+    private static final String BUILTIN_DATE_READ_UUID
+            = "034fe547-879b-4fa0-997a-28d769ba5a84";
     private static final int BUILTIN_LOCATION = -15;
-    private static final String BUILTIN_LOCATION_UUID = "e21a90c9-5150-49ee-a204-0cab301fc5a1";
+    private static final String BUILTIN_LOCATION_UUID
+            = "e21a90c9-5150-49ee-a204-0cab301fc5a1";
 
     private static final int BUILTIN_LANGUAGE = -16;
-    private static final String BUILTIN_LANGUAGE_UUID = "00379d95-6cb2-40e6-8c3b-f8278f34750a";
+    private static final String BUILTIN_LANGUAGE_UUID
+            = "00379d95-6cb2-40e6-8c3b-f8278f34750a";
     private static final int BUILTIN_RATING = -17;
-    private static final String BUILTIN_RATING_UUID = "20a2ebdf-81a7-4eca-a3a9-7275062b907a";
+    private static final String BUILTIN_RATING_UUID
+            = "20a2ebdf-81a7-4eca-a3a9-7275062b907a";
     private static final int BUILTIN_BOOKSHELF = -18;
-    private static final String BUILTIN_BOOKSHELF_UUID = "999d383e-6e76-416a-86f9-960c729aa718";
+    private static final String BUILTIN_BOOKSHELF_UUID
+            = "999d383e-6e76-416a-86f9-960c729aa718";
     private static final int BUILTIN_DATE_LAST_UPDATE = -19;
-    private static final String BUILTIN_DATE_LAST_UPDATE_UUID = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
+    private static final String BUILTIN_DATE_LAST_UPDATE_UUID
+            = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
 
 
     /** Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used. */

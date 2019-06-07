@@ -46,7 +46,7 @@ public class PreferredStylesViewModel
         // based on the uuid, find the style in the list.
         // Don't use 'indexOf' though, as the incoming style object was parcelled along the way.
         int editedRow = -1;
-        for (int i=0; i < mList.size(); i++) {
+        for (int i = 0; i < mList.size(); i++) {
             if (mList.get(i).equals(style)) {
                 editedRow = i;
                 break;

@@ -119,14 +119,28 @@
             android:id="@+id/lbl_erase_cover_cache"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_close"
-            android:text="@string/erase_cover_cache"
+            android:text="@string/lbl_erase_cover_cache"
+            />
+
+        <TextView
+            android:id="@+id/lbl_cleanup_files"
+            style="@style/OptionRow.Menu"
+            android:drawableStart="@drawable/ic_adjust"
+            android:text="@string/lbl_cleanup_files"
+            />
+
+        <TextView
+            android:id="@+id/lbl_send_info"
+            style="@style/OptionRow.Menu"
+            android:drawableStart="@drawable/ic_send"
+            android:text="@string/lbl_send_info"
             />
 
         <TextView
             android:id="@+id/lbl_copy_database"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_save"
-            android:text="@string/menu_copy_database"
+            android:text="@string/lbl_copy_database"
             />
 
     </LinearLayout>

@@ -80,12 +80,12 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
 
     <string name="error_unexpected_error">
-        An unexpected error has occurred, please send the details to support via “Help” page from
-        the main menu.
+        An unexpected error has occurred, please send the details to support
+        via the “Admin” page from the main menu.
     </string>
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_if_the_problem_persists">
-        If the problem persists, contact support via “Help” page from the main menu.
+        If the problem persists, contact support via the “Admin” page from the main menu.
     </string>
     <string name="error_search_failed">
         Searching for the book failed. Please check your network settings.
@@ -101,16 +101,13 @@ TODO: uniform quotes in all string:
     <string name="error_backup_failed">Backup Failed</string>
 
     <!-- Displayed when any read operation from Shared Storage fails -->
-    <string name="error_storage_not_readable">Please check that the SD Card is accessible.</string>
+    <string name="error_storage_not_readable">Please check that storage is accessible.</string>
     <!-- Displayed when any write operation to Shared Storage fails -->
-    <string name="error_storage_not_writable">Please check that the SD Card is writable,
-        and has sufficient space.</string>
-    <!-- Shared Storage is not available (it's not mounted, busy, USB locked it, etc.... -->
-    <string name="error_storage_not_available">The SD Card is not available</string>
-    <!-- Shared Storage file system access fails for some reason (but is is available) -->
-    <string name="error_storage_no_access">Cannot access the SD Card</string>
-    <!-- you're out of Shared Storage space... buy a bigger SDCard -->
-    <string name="error_storage_no_space_left">Not enough space on the SD Card</string>
+    <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
+    <!-- Shared Storage file system access fails for some reason -->
+    <string name="error_storage_not_accessible">Storage not accessible</string>
+    <!-- you're out of Shared Storage space... buy a bigger SD Card -->
+    <string name="error_storage_no_space_left">Insufficient storage available</string>
 
     <string name="error_not_available">%1$s not available</string>
 
@@ -313,7 +310,6 @@ TODO: uniform quotes in all string:
     <string name="progress_msg_adding_book">Adding book…</string>
     <string name="progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
-    <string name="X_progress_msg_getting_books">Getting books…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting to web site…</string>
     <string name="progress_msg_saving_image">Saving image…</string>
@@ -470,7 +466,7 @@ TODO: uniform quotes in all string:
     </string>
 
     <!-- ####################################################################################### -->
-    <!-- == GoodReads Task & Event related; translation is not really important but feel free == -->
+    <!-- == GoodReads Task & Event related == -->
     <!-- ####################################################################################### -->
 
     <string name="gr_tq_title_task_errors">Task Errors</string>
@@ -485,10 +481,10 @@ TODO: uniform quotes in all string:
     </string>
     <string name="gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
     <string name="gr_tq_export_task_is_already_queued">
-        An export task is already queued and must compete before this task can run
+        An export task is already queued and must complete before this task can run
     </string>
     <string name="gr_tq_import_task_is_already_queued">
-        An import task is already queued and must compete before this task can run
+        An import task is already queued and must complete before this task can run
     </string>
     <string name="gr_tq_completed">Completed</string>
     <string name="gr_tq_failed">Failed</string>
@@ -515,33 +511,32 @@ TODO: uniform quotes in all string:
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
-        default styles menu.\n
-        \nA “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice
-        versa.\n\nIf no styles are ticked, then all styles will be shown.\n
-        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row
-        up or down.\n\nLong-pressing anywhere else in a row will allow you to edit or clone the
-        details of a specific style.\n
-        If you cloned a style, and changed your mind, you will need to delete it yourself.
+        default styles menu. A “tick” indicates the style will be shown in the list,
+        “un-tick” to hide it and vice versa.  If no styles are ticked, then all styles will be
+        shown. You can re-order the hierarchy by dragging the icon at the extreme right of each
+        row up or down. Long-pressing anywhere else in a row will allow you to edit or clone
+        the details of a specific style. If you cloned a style, and changed your mind, you
+        will need to delete it yourself.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
-        You can use this screen to modify the hierarchy of headings for a specific book list
-        style.\n\nA “tick” indicates the heading will be shown in the list, “un-tick” to hide it
-        and vice versa.\n\nYou can re-order the hierarchy by dragging the icon at the extreme
+        You can use this screen to modify the hierarchy of headings for a specific book list style.
+        A “tick” indicates the heading will be shown in the list, “un-tick” to hide it
+        and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme
         right of each row up or down.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
-        You can use this screen to set the characteristics of a specific book list style.\n
-        \nYou can change the name, edit the groupings to change the hierarchy, and adjust a
-        variety of other preferences to build a style that you find useful.\n
-        \nIt is also possible to use “Filters” to modify the selection of books that will
-        be displayed in	the list. e.g. to only retrieve books you have not read yet and more.
+        You can use this screen to set the characteristics of a specific book list style.
+        You can change the name, edit the groupings to change the hierarchy, and adjust a
+        variety of other preferences to build a style that you find useful.
+        It is also possible to use “Filters” to modify the selection of books that will be
+        displayed in the list. e.g. to only retrieve books you have not read yet and more.
     </string>
 
     <string name="hint_authors_book_may_appear_more_than_once">
-        If shown for every author, a single book may appear more than once in a list. In such a
-        case deleting one of those books will delete all instances from the list.
+        If shown for every author, a single book may appear more than once in a list.
+        In such a case deleting one of those books will delete all instances from the list.
     </string>
     <string name="hint_series_book_may_appear_more_than_once">
         If shown in every series, a single book may appear more than once in a list.
@@ -557,9 +552,8 @@ TODO: uniform quotes in all string:
         will allow you to perform a variety of actions appropriate for that event.
     </string>
     <string name="hint_booklist_style_menu">
-        This menu allows you to select the style of the list.\n
-        \nYou can also customize this menu, as well as create your own list styles, by tapping
-        “Customize” at the end of the list.
+        This menu allows you to select the style of the list. You can also customize this menu,
+        as well as create your own list styles, by tapping “Customize” at the end of the list.
     </string>
     <string name="hint_autorotate_camera_images">
         If you find yourself always rotating camera images in the same direction,
@@ -573,8 +567,8 @@ TODO: uniform quotes in all string:
     <!-- Hint text displayed when user enters the 'read-only' book view -->
     <string name="hint_view_only_help">
         This is the non-editable book details screen; you can swipe left or right to navigate
-        to other books, and you can edit the book via the options menu using the menu button or
-        overflow menu icon.
+        to other books, and you can edit the book via the options menu using the menu button
+        or overflow menu icon.
     </string>
     <!-- Hint text displayed when user enters the book list -->
     <string name="hint_book_list">
@@ -645,8 +639,8 @@ TODO: uniform quotes in all string:
 
     <string name="menu_set_read">Set as read</string>
     <string name="menu_set_unread">Set as unread</string>
-    <string name="menu_set_complete">Set complete</string>
-    <string name="menu_set_incomplete">Set incomplete</string>
+    <string name="menu_set_complete">Set “complete”</string>
+    <string name="menu_set_incomplete">Set “incomplete”</string>
 
     <string name="menu_edit_book_notes">My Comments</string>
 
@@ -708,9 +702,9 @@ TODO: uniform quotes in all string:
     <string name="lbl_import_from_csv">Import from CSV File</string>
 
     <!-- Admin advanced - clear the cached images -->
-    <string name="erase_cover_cache">Erase cover cache</string>
+    <string name="lbl_erase_cover_cache">Erase cover cache</string>
     <!-- Admin advanced - make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Export Database</string>
+    <string name="lbl_copy_database">Export Database</string>
 
 
 
@@ -768,6 +762,9 @@ TODO: uniform quotes in all string:
 
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
+
+    <!-- hint text for the drag handle button in re-order-able lists -->
+    <string name="btn_drag_handle">Drag me to reorder this list.</string>
 
     <!-- 'use' the preferences/settings, but do not save them. -->
     <string name="btn_confirm_use">Use</string>
@@ -897,6 +894,9 @@ TODO: uniform quotes in all string:
     <string name="lbl_search_for_books">Search for Books</string>
     <string name="lbl_details_have_changed">Details have changed</string>
 
+    <string name="lbl_send_info">Send Debug Information</string>
+    <string name="lbl_cleanup_files">Cleanup Files</string>
+
     <!-- ####################################################################################### -->
     <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
     <!-- ####################################################################################### -->
@@ -963,9 +963,8 @@ TODO: uniform quotes in all string:
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">
         &APP_NAME; is the product of the efforts of many people, and would not have such wide
-        use without the generous help of our volunteer translators: Eugenio Davolio, José M. Galdo,
-        Imkal, Dimitris Klisiari, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr
-        (if we have forgotten someone, please tell us).
+        use without the generous help of our volunteer translators
+        (if we have forgotten someone, please tell us):
     </string>
     <string name="about_donate">
         If you would like to support the development of this application, please donate using a
@@ -977,7 +976,6 @@ TODO: uniform quotes in all string:
     <string name="about_donate_paypal">PayPal Donation</string>
 
     <string name="about_help_tap_here">Please tap here to access the online help pages</string>
-    <string name="about_send_info">Send Information</string>
 
     <!-- ####################################################################################### -->
     <!-- == strings specific to loaning a book == -->
@@ -1117,11 +1115,6 @@ TODO: uniform quotes in all string:
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
     <string name="X_warning_required_series">Series field is blank</string>
     <string name="X_warning_required_author">Author field is blank</string>
-    <string name="X_warning_cover_not_found2">No image found</string>
-    <string name="X_warning_title_already_exists">The title already exists</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">
-        Invalid ISBN “%1$s” specified in search
-    </string>
     <!-- some field was blank while it should not be -->
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_warning_no_isbn_no_editions">
@@ -1148,13 +1141,6 @@ TODO: uniform quotes in all string:
 
     <string name="X_title_select_cover">Select Cover</string>
     <string name="X_title_cover_detail">Cover Detail</string>
-    <string name="X_title_export_books">
-        The books in your catalogue will be exported. Select on one of two options to start
-        the export, or press “back” to cancel:</string>
-    <string name="X_title_import_books_blurb">
-        The books in this archive will be imported. Select one of two options to start the
-        import, or press “back” to cancel:
-    </string>
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
 
@@ -1165,11 +1151,6 @@ TODO: uniform quotes in all string:
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="X_lbl_loaned_to_long">This book has been lend to:</string>
 
-    <string name="X_import_export_info_book_details">The details of the books themselves</string>
-    <string name="X_import_export_info_preferences">Preferences and user-defined list styles</string>
-    <string name="X_export_info_cover_images">
-        Cover images for all selected books. Will make the export much larger.
-    </string>
     <string name="X_import_error_failed_is_csv_file_location_correct">
         Import of data failed. Is the file in the correct place?
     </string>
@@ -1178,19 +1159,13 @@ TODO: uniform quotes in all string:
     <!-- e.g. "in a folder" -->
     <string name="X_in">In</string>
 
-    <string name="X_info_tap_to_edit">Tap here to edit the name</string>
     <string name="X_updated">Updated</string>
     <string name="X_file_size">Size</string>
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="X_select_bookshelves">Select Bookshelves</string>
     <string name="X_nobody">Nobody</string>
-    <string name="X_loan_return_edit_book">Loan, Return or Edit Book</string>
     <string name="X_search_title">Search Results</string>
-    <string name="X_unrecognized_task">Unrecognized Task</string>
-    <string name="X_events_found">%1$d events found</string>
-    <string name="X_tab_lbl_loan">Loan</string>
-    <string name="X_pt_bob_filter_read">Select based on “Read” status</string>
     <string name="X_pt_bob_preferred_style">Preferred</string>
     <string name="X_lbl_series_num_long">Series #</string>
     <string name="X_results_found">Results Found</string>
@@ -1232,12 +1207,10 @@ TODO: uniform quotes in all string:
     <string name="show_results">Show Results</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
-    <string name="cleanup_files">Cleanup Files</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
     <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="btn_drag_handle">Drag me to reorder this list.</string>
     <string name="date_not_set_with_brackets">(no date)</string>
 
 </resources>

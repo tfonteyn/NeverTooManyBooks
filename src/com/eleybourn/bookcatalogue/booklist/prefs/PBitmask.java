@@ -71,11 +71,11 @@ public class PBitmask
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            Set<String> sValue = App.getPrefs(mUuid).getStringSet(getKey(), null);
-            if (sValue == null || sValue.isEmpty()) {
+            Set<String> value = App.getPrefs(mUuid).getStringSet(getKey(), null);
+            if (value == null || value.isEmpty()) {
                 return mDefaultValue;
             }
-            return Utils.toInteger(sValue);
+            return Utils.toInteger(value);
         }
     }
 

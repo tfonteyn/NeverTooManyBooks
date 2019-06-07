@@ -75,6 +75,11 @@ public class About
                 getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
+        view = findViewById(R.id.help_page);
+        view.setText(Utils.linkifyHtml(
+                getString(R.string.url_help, getString(R.string.help))));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+
         view = findViewById(R.id.contact1);
         view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
 

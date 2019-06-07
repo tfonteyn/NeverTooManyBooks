@@ -152,8 +152,9 @@ class SearchGoogleBooksEntryHandler
     private static final String XML_GENRE = "subject";
     private static final String XML_DESCRIPTION = "description";
     private static final String XML_LANGUAGE = "language";
+
     /** flag if we should fetch a thumbnail. */
-    private static boolean sFetchThumbnail;
+    private boolean mFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -172,7 +173,7 @@ class SearchGoogleBooksEntryHandler
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
                                   final boolean fetchThumbnail) {
         mBookData = bookData;
-        sFetchThumbnail = fetchThumbnail;
+        mFetchThumbnail = fetchThumbnail;
     }
 
     private void addIfNotPresent(@NonNull final String key,
@@ -207,7 +208,7 @@ class SearchGoogleBooksEntryHandler
         super.startElement(uri, localName, qName, attributes);
 
         // the url is an attribute of the xml element; not the content
-        if (sFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
+        if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
             if ("http://schemas.google.com/books/2008/thumbnail"
                     .equals(attributes.getValue("", "rel"))) {
 
@@ -278,9 +279,9 @@ class SearchGoogleBooksEntryHandler
 
             case XML_FORMAT:
                 /*
-                 * 		<dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
-                 * 		<dc:format>288 pages</dc:format>
-                 * 		<dc:format>book</dc:format>
+                 * <dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
+                 * <dc:format>288 pages</dc:format>
+                 * <dc:format>book</dc:format>
                  */
                 String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");

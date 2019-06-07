@@ -172,13 +172,22 @@ public class GoodreadsManager
 
     /**
      * Constructor.
+     * <p>
+     * Original:
+     * BASE_URL + "/oauth/request_token",
+     * BASE_URL + "/oauth/access_token",
+     * BASE_URL + "/oauth/authorize"
+     * <p>
+     * 2019-06-05: https://www.goodreads.com/api/documentation
+     * <p>
+     * /oauth/authorize?mobile=1
      */
     public GoodreadsManager() {
         mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
         mProvider = new CommonsHttpOAuthProvider(
                 BASE_URL + "/oauth/request_token",
                 BASE_URL + "/oauth/access_token",
-                BASE_URL + "/oauth/authorize");
+                BASE_URL + "/oauth/authorize?mobile=1");
 
         if (hasCredentials()) {
             mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
@@ -815,7 +824,7 @@ public class GoodreadsManager
 
     /**
      * Search for a book.
-     *
+     * <p>
      * The search will in fact search/find a list of 'works' but we only return the first one.
      *
      * @return first book found, or an empty bundle if none found.
@@ -1019,7 +1028,7 @@ public class GoodreadsManager
         // Don't do this; this is just part of OAuth and not the Goodreads API
         //waitUntilRequestAllowed();
 
-        // Get the URL
+        // Get the URL to send the user to so they can authenticate.
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer,
                                                      GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);

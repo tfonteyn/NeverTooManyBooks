@@ -698,7 +698,7 @@ public final class StorageUtils {
             // should we check on other states ? do we care ?
 
             default:
-                return R.string.error_storage_not_available;
+                return R.string.error_storage_not_accessible;
         }
     }
 

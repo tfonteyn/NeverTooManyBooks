@@ -43,19 +43,19 @@ public class PIntList
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
-            if (sValues == null || sValues.isEmpty()) {
+            String values = App.getPrefs(mUuid).getString(getKey(), null);
+            if (values == null || values.isEmpty()) {
                 return mDefaultValue;
             }
 
-            return getAsList(sValues);
+            return getAsList(values);
         }
     }
 
     @NonNull
-    private List<Integer> getAsList(@NonNull final String sValues) {
+    private List<Integer> getAsList(@NonNull final String values) {
         List<Integer> list = new ArrayList<>();
-        for (String s : sValues.split(DELIM)) {
+        for (String s : values.split(DELIM)) {
             list.add(Integer.parseInt(s));
         }
         return list;

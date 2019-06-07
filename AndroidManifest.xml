@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- for the 'loan' functionality -->
+    <!-- for the LOAN functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -81,7 +81,7 @@
             </intent-filter>
         </activity>
 
-        <!-- The 'real' main activity; it's also the one that accepts search requests -->
+        <!-- The real main activity; it's also the one that accepts search requests -->
         <activity android:name=".BooksOnBookshelf">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -95,7 +95,6 @@
         </activity>
 
         <!-- Admin pages -->
-        <activity android:name=".Help" />
         <activity android:name=".About" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".settings.SettingsActivity" />

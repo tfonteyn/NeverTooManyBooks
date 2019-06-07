@@ -864,6 +864,8 @@ public class DAO
     }
 
     /**
+     * Uses the <strong>exact</strong> names of the Author to find the id.
+     *
      * @return author id, or 0 (e.g. 'new') when not found
      */
     public long getAuthorIdByName(@NonNull final String familyName,
@@ -1564,6 +1566,7 @@ public class DAO
      *
      * @return the number of rows affected, should be 1 for success.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int updateBook(final long bookId,
                           @NonNull final Book book,
                           final int flags) {
@@ -4388,7 +4391,6 @@ public class DAO
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKLIST_STYLES
                         + " WHERE " + DOM_UUID + "=?";
 
-        //TOMF: use DOM_AUTHOR_FAMILY_NAME_OB ? But given name part will still force a table scan
         static final String AUTHOR_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_AUTHORS
                         + " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ")=lower(?)" + COLLATION

@@ -14,6 +14,7 @@ import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -114,8 +115,8 @@ public class BooksOnBookshelfModel
                         mTotalBooks = result.resultTotalBooks;
                         mUniqueBooks = result.resultUniqueBooks;
 
-                        // do not copy the result.resultListCursor, as it might be null in which case we
-                        // will use the old value in mListCursor
+                        // do not copy the result.resultListCursor, as it might be null
+                        // in which case we will use the old value in mListCursor
                     }
 
                     // always call back, even if there is no new list.
@@ -199,11 +200,14 @@ public class BooksOnBookshelfModel
      * Deleting a book by 'n' authors from the last author in list results in the list decreasing
      * in length by, potentially, n*2 items. The current code will return to the old position
      * in the list after such an operation...which will be too far down.
+     *
+     * @param topRow the position of the top visible row in the list
      */
-    public void savePosition(@Nullable final View topView,
+    public void savePosition(@NonNull final RecyclerView listView,
                              final int topRow) {
 
         mTopRow = topRow;
+        View topView = listView.getChildAt(0);
         if (topView != null) {
             mTopRowOffset = topView.getTop();
         } else {
@@ -293,7 +297,7 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Request a full or partial rebuild at the next onResume
+     * Request a full or partial rebuild at the next onResume.
      *
      * @param fullRebuild {@code true} for a full rebuild; {@code false} for a partial rebuild;
      *                    {@code null} for no rebuild.
@@ -396,7 +400,7 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * The result of {@link GetBookListTask}
+     * The result of {@link GetBookListTask}.
      *
      * @return a BuilderHolder with result fields populated.
      */

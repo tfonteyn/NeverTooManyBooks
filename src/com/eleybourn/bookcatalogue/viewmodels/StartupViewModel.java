@@ -43,8 +43,7 @@ public class StartupViewModel
 
     private final TaskListener<String, Void> mTaskListener = new TaskListener<String, Void>() {
         /**
-         * Called in the UI thread when any startup task completes. If no more tasks, flag it up
-         * for the activity to continue.
+         * Called when any startup task completes. If no more tasks, let the activity to know.
          *
          * @param taskId a task identifier.
          */

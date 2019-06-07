@@ -122,9 +122,9 @@ public final class ScannerManager {
                                   : R.string.warning_bad_scanner;
 
         final AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setIcon(R.drawable.ic_scanner)
                 .setTitle(R.string.title_install_scan)
                 .setMessage(messageId)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         // we use POS and NEG for scanner choice. If we ever support 3, redo this lazy hack.

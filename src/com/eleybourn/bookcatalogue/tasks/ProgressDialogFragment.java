@@ -155,7 +155,8 @@ public class ProgressDialogFragment<Progress, Result>
         if (titleId != 0) {
             dialog.setTitle(titleId);
         }
-        //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
+        // this is really needed, as it would be to easy to cancel without.
+        // Cancel by 'back' press only.
         dialog.setCanceledOnTouchOutside(false);
 
         Tracker.exitOnCreateDialog(this);

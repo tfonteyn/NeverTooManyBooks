@@ -515,7 +515,7 @@ public class CropImageActivity
             // stat the filesystem
             long freeSpace = StorageUtils.getSharedStorageFreeSpace();
             if (freeSpace == StorageUtils.ERROR_CANNOT_STAT) {
-                msgId = R.string.error_storage_no_access;
+                msgId = R.string.error_storage_not_accessible;
             } else {
                 // make an educated guess how many pics we can store.
                 if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {

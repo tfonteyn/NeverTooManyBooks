@@ -91,33 +91,33 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Add a new element to the end of the list
      *
-     * @param value to add
+     * @param element to add
      */
-    public void add(@NonNull final E value) {
+    public void add(@NonNull final E element) {
         if (!mIsPersistent) {
             //noinspection ConstantConditions
-            mNonPersistedValue.add(value);
+            mNonPersistedValue.add(element);
         } else {
-            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
-            if (sValues == null) {
-                sValues = String.valueOf(value);
+            String value = App.getPrefs(mUuid).getString(getKey(), null);
+            if (value == null) {
+                value = String.valueOf(element);
             } else {
-                sValues += DELIM + value;
+                value += DELIM + element;
             }
-            App.getPrefs(mUuid).edit().putString(getKey(), sValues).apply();
+            App.getPrefs(mUuid).edit().putString(getKey(), value).apply();
         }
     }
 
-    public void remove(@NonNull final E value) {
+    public void remove(@NonNull final E element) {
         if (!mIsPersistent) {
             //noinspection ConstantConditions
-            mNonPersistedValue.remove(value);
+            mNonPersistedValue.remove(element);
         } else {
-            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
-            if (sValues != null && !sValues.isEmpty()) {
+            String values = App.getPrefs(mUuid).getString(getKey(), null);
+            if (values != null && !values.isEmpty()) {
                 List<String> newList = new ArrayList<>();
-                for (String e : sValues.split(DELIM)) {
-                    if (!e.equals(String.valueOf(value))) {
+                for (String e : values.split(DELIM)) {
+                    if (!e.equals(String.valueOf(element))) {
                         newList.add(e);
                     }
                 }

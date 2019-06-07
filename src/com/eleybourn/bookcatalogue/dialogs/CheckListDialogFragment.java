@@ -106,7 +106,7 @@ public class CheckListDialogFragment<T>
         int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
-        args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        args = savedInstanceState == null ? args : savedInstanceState;
         mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
 
         @SuppressWarnings("ConstantConditions")

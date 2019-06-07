@@ -177,7 +177,7 @@
     <string name="progress_end_backup_success">Back-up gelukt</string>
     <string name="error_backup_failed">Back-up mislukt</string>
     <string name="X_error_file_must_contain_column">
-        Import bestand moet een kolom met de naam \'%1$s\' bevatten.
+        Import bestand moet een kolom met de naam ‘%1$s’ bevatten.
     </string>
     <string name="import_error_csv_file_must_contain_any_column">
         Import bestand moet een kolom met de volgende namen bevatten: %1$s
@@ -302,7 +302,7 @@
         database en van alle log-bestanden. Als u deze bestanden niet wilt opsturen, kunt u ze
         van de bijlagen lijst in het e-mailbericht verwijderen voordat u dit verstuurt.
     </string>
-    <string name="about_send_info">Zend informatie</string>
+    <string name="lbl_send_info">Zend debug informatie</string>
     <string name="info_cleanup_files_text">
         Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag.
         Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade,
@@ -310,7 +310,7 @@
         hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u veel
         crashes ondervindt of ander fouten, overweeg dan de  ‘Zend Informatie’
         knop eerst te gebruiken.</string>
-    <string name="cleanup_files">Bestanden opschonen</string>
+    <string name="lbl_cleanup_files">Bestanden opschonen</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="bytes">%.0fB</string>
@@ -330,7 +330,6 @@
     <string name="gr_tq_menu_delete_event">Verwijder gebeurtenis</string>
     <string name="gr_tq_menu_delete_task">Verwijder taak</string>
     <string name="bookshelf_my_books">Mijn Boeken</string>
-    <string name="X_loan_return_edit_book">boeken bewerken, uitlenen of terugbrengen</string>
     <string name="gr_menu_send_to_goodreads">Zend naar Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads is een website met de missie: “mensen helpen boeken te vinden en te delen met
@@ -387,7 +386,8 @@
     <string name="info_not_authorized">Niet geautoriseerd</string>
     <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
     <string name="error_if_the_problem_persists">
-        Als het probleem aanhoud, maak dan contact met ondersteuning via Help in het hoofdmenu.
+        Als het probleem aanhoud, maak dan contact met ondersteuning via de ‘Admin’ optie
+        in het hoofdmenu.
     </string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="search_please_enter_criteria">Vul de zoekcriteria in</string>
@@ -398,7 +398,7 @@
     </string>
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
-    <string name="erase_cover_cache">Wis boekomslag cache</string>
+    <string name="lbl_erase_cover_cache">Wis boekomslag cache</string>
     <string name="acra_resToastText">
         &APP_NAME; is onverwacht gecrasht.
         Help ons aub de toepassing beter te maken door deze crash te melden.
@@ -432,7 +432,6 @@
     <string name="lbl_location">Locatie</string>
     <string name="lbl_credentials">Inloggegevens</string>
     <string name="lbl_data_import_export">Import/Export</string>
-    <string name="X_unrecognized_task">Onherkenbare taak</string>
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
@@ -495,7 +494,7 @@
     <string name="lbl_settings">Instellingen</string>
     <string name="error_unexpected_error">
         Er is een onverwachte fout opgetreden.
-        Zend ons aub de details via de ‘Help’ optie in het hoofdmenu.
+        Zend ons aub de details via de ‘Admin’ optie in het hoofdmenu.
     </string>
     <string name="menu_duplicate">Dupliceer</string>
     <string name="about_dash_or_dash">- Of -</string>
@@ -614,7 +613,6 @@
     <string name="X_lbl_loan_book_available">Beschikbaar</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s is geen geldige ISBN</string>
-    <string name="X_warning_cover_not_found2">Geen afbeelding gevonden</string>
     <string name="warning_cover_copy_failed">Kon afbeelding niet kopiëren</string>
     <string name="menu_add_book_by_barcode_scan">Scan streepjescode/ISBN</string>
     <string name="menu_add_book_by_isbn">Invullen ISBN</string>
@@ -627,15 +625,11 @@
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
     <string name="btn_confirm_exit">Afsluiten</string>
     <string name="btn_continue_editing">Doorgaan met bewerken</string>
-    <string name="X_warning_title_already_exists">De titel bestaat al</string>
     <string name="lbl_year">Jaar</string>
     <string name="lbl_month">Maand</string>
     <string name="lbl_day">Dag</string>
     <string name="menu_edit">Bewerken…</string>
-    <string name="X_progress_msg_getting_books">Verkrijgen van boeken…</string>
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
-    <string name="X_warning_invalid_isbn_x_specified_in_search">
-        Ongeldig ISBN \‘%1$s\’ gespecificeerd in zoekveld</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.
     </string>
@@ -669,7 +663,6 @@
         te maken van de menuknop of overvloeiend menu-pictogram.
     </string>
     <string name="tab_lbl_details">Details</string>
-    <string name="X_tab_lbl_loan">Uitlenen</string>
     <string name="gr_btn_delete_credentials">Verwijder inloggegevens</string>
     <string name="gr_auth_blurb_part4">
         Het lijkt er op dat u deze app al heeft geautoriseerd. als u de inloggegevens op dit
@@ -677,7 +670,7 @@
         ook belangrijk de autorisatie van de applicatie op de website van Goodreads te verwijderen.
     </string>
 
-    <string name="progress_msg_connecting">Verbinding maken met website…</string>
+    <string name="progress_msg_connecting">Website contacteren…</string>
 
     <string name="lbl_backup_to_archive">Back-up naar archief</string>
     <string name="lbl_import_from_archive">Importeren vanuit archief</string>
@@ -691,7 +684,7 @@
     <string name="progress_msg_covers">%1$d boekomslagen verwerkt (%2$d missend)</string>
     <string name="lbl_advanced_options">Geavanceerde opties</string>
     <string name="progress_msg_backing_up">Aan \'t Back-uppen…</string>
-    <string name="progress_msg_importing">Aan \'t Importeren…</string>
+    <string name="progress_msg_importing">Importeren…</string>
 
     <string name="up_folder">Omhoog</string>
     <string name="warning_no_parent_directory_found">Geen bovenliggende map gevonden</string>
@@ -709,26 +702,20 @@
 
     <!-- Displayed in Admin menu advanced options
     (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Exporteer Database</string>
+    <string name="lbl_copy_database">Exporteer Database</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import mislukt.</string>
     <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_storage_not_writable">
-        Controleer aub of de SD Kaart beschrijfbaar is en voldoende vrije ruimte heeft.
+        Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.
     </string>
     <!-- Displayed when any write operation to the sd card fails -->
-    <string name="error_storage_not_readable">
-        Controleer aub of de SD Kaart toegankelijk is.
-    </string>
+    <string name="error_storage_not_readable">Controleer aub of opslag toegankelijk is.</string>
 
     <!-- Short Heading for ‘Language’ field in book details -->
     <string name="lbl_language">Taal</string>
 
-    <string name="X_title_import_books_blurb">
-        De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties
-        om de import te starten of druk op ‘terug’ om te annuleren:
-    </string>
     <!-- Description of the ‘import all books’ option -->
     <string name="import_option_info_all_books">
         Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken
@@ -747,11 +734,6 @@
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d toegevoegd, %2$d bijgewerkt</string>
 
-    <string name="X_title_export_books">
-        De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties
-        om de export te starten of druk op ‘terug’ om te annuleren:
-    </string>
-
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
         %1$d boekomslagen verwerkt (%2$d missend, %3$d overgeslagen)
@@ -768,15 +750,7 @@
     </string>
 
     <string name="import_export_option_csv">Boeken (CSV)</string>
-    <string name="X_import_export_info_book_details">De details van het boek zelf</string>
     <string name="lbl_cover_images">Omslagafbeeldingen</string>
-    <string name="X_export_info_cover_images">
-        Omslagafbeeldingen voor alle geselecteerde boeken.
-        Dit zal de export aanzienlijk groter maken.
-    </string>
-    <string name="X_import_export_info_preferences">
-        Voorkeuren en aangepaste boekenlijst stijlen
-    </string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">
@@ -842,9 +816,8 @@
     <!-- Credits in the ‘about’ dialog -->
     <string name="about_translators">
         &APP_NAME; is het resultaat van de inspanning van vele personen en zou niet zo\'n
-        grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers:
-        Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin,
-        and Robert Wetzlmayr (als we iemand zijn vergeten, laat het ons aub weten).
+        grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers
+        (als we iemand zijn vergeten, laat het ons aub weten):
     </string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
@@ -873,9 +846,8 @@
     <string name="search_with_text">Zoeken: %1$s</string>
     <string name="searching_isfdb">Zoeken bij ISFDB</string>
     <string name="title_send_mail">Bericht versturen…</string>
-    <string name="error_storage_no_access">Opslag niet beschikbaar</string>
-    <string name="error_storage_no_space_left">Niet genoeg opslag</string>
-    <string name="error_storage_not_available">Klaarmaken opslag</string>
+    <string name="error_storage_not_accessible">Opslag niet toegankelijk</string>
+    <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
     <string name="lbl_table_of_content">Inhouds tabel</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_edition">Editie</string>
@@ -921,14 +893,11 @@
     <string name="lbl_signed">Gesigneerd</string>
     <string name="lbl_first_publication_month">Eerste uitg. Maand</string>
     <string name="lbl_first_publication_year">Eerste uitg. Dag</string>
-    <string name="X_pt_bob_filter_read">Selecteer op \‘Gelezen\’ status</string>
-    <string name="X_info_tap_to_edit">Tik hier om de naam te bewerken</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Boeken</string>
-    <string name="lbl_covers">Omslagen</string>
     <string name="lbl_styles">Stijl</string>
     <string name="menu_clear_filters">Filters verwijderen</string>
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
@@ -944,7 +913,6 @@
     <string name="error_database_upgrade_failed">
         Upgraden vanaf een versie ouder dan 4.0.0 is niet ondersteunt
     </string>
-    <string name="X_events_found">%1$d gebeurtenissen gevonden</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
@@ -956,4 +924,5 @@
     <string name="vldt_failure">Validatiefout.</string>
     <string name="title_import">Importeren</string>
     <string name="btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
+    <string name="lbl_covers">Omslagen</string>
 </resources>

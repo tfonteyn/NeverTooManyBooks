@@ -179,10 +179,10 @@ public class EditAuthorListActivity
         String allBooks = getString(R.string.bookshelf_all_books);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.confirm_apply_author_changed,
-                                      author.getSortName(), newAuthorData.getSortName(), allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setMessage(getString(R.string.confirm_apply_author_changed,
+                                      author.getSortName(), newAuthorData.getSortName(), allBooks))
                 .create();
 
         /*
@@ -276,7 +276,7 @@ public class EditAuthorListActivity
         }
 
         /**
-         * Handle the edits. TOMF: use listener
+         * Handle the edits.
          *
          * @param author        the original data.
          * @param newAuthorData a holder for the edited data.

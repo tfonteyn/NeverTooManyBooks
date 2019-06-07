@@ -296,7 +296,7 @@ public final class Prefs {
                      * Internal settings
                      */
                     case "state_opened":
-                        ed.putInt(StartupActivity.PREFS_STARTUP_COUNTDOWN,
+                        ed.putInt(StartupActivity.PREF_STARTUP_COUNTDOWN,
                                   (Integer) oldValue);
                         break;
 
