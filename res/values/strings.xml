@@ -217,10 +217,10 @@ TODO: uniform quotes in all string:
     </string>
 
     <string name="warning_book_was_deleted_uc">THIS BOOK HAS BEEN DELETED</string>
-    <string name="warning_book_no_longer_exists">The specified book no longer exists</string>
+    <string name="warning_book_no_longer_exists">The specified book no longer exists.</string>
 
     <string name="warning_toc_confirm">
-        Please confirm that these titles are (mostly) correct
+        Please confirm that these titles are (mostly) correct.
     </string>
     <string name="warning_backup_request">
         Would you like to backup your database to your sdcard?
@@ -228,9 +228,9 @@ TODO: uniform quotes in all string:
 
     <!-- Displayed when a user tries to browse higher than the root directory,
      or if the parent is unable to be read -->
-    <string name="warning_no_parent_directory_found">No parent directory found</string>
+    <string name="warning_no_parent_directory_found">No parent directory found.</string>
     <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
-    <string name="warning_select_an_existing_file">Please select an existing file</string>
+    <string name="warning_select_an_existing_file">Please select an existing file.</string>
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_select_a_non_directory">
         Please select a file that is not a directory.
@@ -270,8 +270,8 @@ TODO: uniform quotes in all string:
         are you sure you want to add another copy?
     </string>
     <string name="confirm_overwrite_thumbnail">
-        This will update the selected fields as shown, but Thumbnails can optionally be downloaded
-        for ALL books.\n\nDo you want to overwrite all existing thumbnails?
+        This will update the selected fields as shown, but images can optionally be downloaded
+        for ALL books.\n\nDo you want to overwrite all existing images?
         Warning, this may take a long time.
     </string>
     <string name="confirm_apply_author_changed">
@@ -598,6 +598,7 @@ TODO: uniform quotes in all string:
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
     <string name="none">None</string>
+    <string name="clear">Clear</string>
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -1107,7 +1108,6 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
-    <string name="X_error_no_style_found">Could not find appropriate style</string>
     <string name="X_error_starting_import_arg">There was a problem starting the import: %1$s</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
@@ -1173,12 +1173,11 @@ TODO: uniform quotes in all string:
     <string name="X_use_default_setting">Use default</string>
 
     <string name="X_hint_booklist_global_properties">
-        You can use this screen to set the default characteristics of all book list styles.\n
-        \nMost properties can be overridden by individual styles, but the default values are
-        defined here.\n\n You can change the background, change how lists are displayed at
-        startup, and adjust a variety of other preferences that will be applied to all your
-        styles when possible.\n
-        \nYou can also edit the styles menu, and the styles themselves from here.
+        You can use this screen to set the default characteristics of all book list styles.
+        Most properties can be overridden by individual styles, but the default values are
+        defined here. You can change how lists are displayed at startup, and adjust a
+        variety of other preferences that will be applied to all your styles when possible.
+        You can also edit the styles menu, and the styles themselves.
     </string>
 
     <!-- ####################################################################################### -->

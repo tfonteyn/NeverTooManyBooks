@@ -392,11 +392,11 @@
         například pouze vrácené knihy, které nemáte dosud přečtené.
     </string>
     <string name="X_hint_booklist_global_properties">
-        Na této obrazovce máte možnost nastavit defaultní charakteristiky pro všechny styly seznamu knih.\n
-        \nVětšina charakteristik může být předefinována přímo u jednotlivých stylů, ale defalutní hodnoty můžete nastavit zde.\n
-        \nMůžete nastavit pozadí, měnit způsob jak bude seznam zobrazen při spuštění a rovněž využít celou řadu dalších
-        nastavení, která budou aplikována na všechny Vaše styly.\n
-        \nMůžete zde rovněž upravit podobu menu stylů.
+        Na této obrazovce máte možnost nastavit defaultní charakteristiky pro všechny styly
+        seznamu knih. Většina charakteristik může být předefinována přímo u jednotlivých stylů,
+        ale defalutní hodnoty můžete nastavit zde. Můžete změnit způsob zobrazení seznamu při
+        spuštění a další nastavení, která budou použita pro všechny vaše styly.
+        Můžete zde rovněž upravit podobu menu stylů.
     </string>
     <string name="lbl_preferred_styles">Preferované styly</string>
     <string name="title_edit_style">Upravit styl</string>
@@ -620,4 +620,17 @@
         bez velkorysé pomoci našich dobrovolných překladatelů
         (Pokud jsme na někoho zapomněli, sdělte nám to prosím):
     </string>
+    <string name="clear">Jasné</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Načíst obrázky okamžitě (rolování bude pomalejší)</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Použít úlohu na pozadí k načtení obrázků (rolování bude rychlejší, obrázky mohou být zpožděny)</string>
+    <string name="pt_bob_thumbnails_generating_mode">Chcete-li načíst obrázky, použijte úkol na pozadí</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
+    <string name="warning_required_at_least_one">Alespoň jedno pole nemůže být prázdné</string>
+    <string name="X_pt_bob_preferred_style">Výhodné</string>
+    <string name="X_select_bookshelves">Vyberte si regály</string>
+    <string name="warning_select_a_non_directory">Vyberte soubor, který není adresářem.</string>
+    <string name="warning_no_parent_directory_found">Nadřazený adresář nebyl nalezen</string>
+    <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
 </resources>

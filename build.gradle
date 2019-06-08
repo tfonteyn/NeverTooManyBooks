@@ -51,6 +51,9 @@ android {
         }
     }
 
+//    dataBinding {
+//        enabled true
+//    }
     lintOptions {
         disable 'MissingTranslation'
     }

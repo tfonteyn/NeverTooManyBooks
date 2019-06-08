@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 /**
  *
- * TOMF: this is overkill... I must have been tired. Redo using {@link com.eleybourn.bookcatalogue.entities.Entity}
+ * TODO: this is overkill... Redo using {@link com.eleybourn.bookcatalogue.entities.Entity}
  *
  * @param <T> - type of item in the checklist
  */

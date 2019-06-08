@@ -41,11 +41,12 @@ import com.eleybourn.bookcatalogue.R;
 class CropHighlightView {
 
     static final int GROW_NONE = 1;
-    static final int MOVE = (1 << 5);
-    private static final int GROW_LEFT_EDGE = (1 << 1);
-    private static final int GROW_RIGHT_EDGE = (1 << 2);
-    private static final int GROW_TOP_EDGE = (1 << 3);
-    private static final int GROW_BOTTOM_EDGE = (1 << 4);
+    static final int MOVE = 1 << 5;
+    private static final int GROW_LEFT_EDGE = 1 << 1;
+    private static final int GROW_RIGHT_EDGE = 1 << 2;
+    private static final int GROW_TOP_EDGE = 1 << 3;
+    private static final int GROW_BOTTOM_EDGE = 1 << 4;
+
     /** The View displaying the image. */
     @NonNull
     private final View mImageView;
@@ -54,15 +55,15 @@ class CropHighlightView {
     private final Paint mNoFocusPaint = new Paint();
     private final Paint mOutlinePaint = new Paint();
     boolean mIsFocused;
-    /** in screen space */
+    /** in screen space. */
     Rect mDrawRect;
-    /** in image space */
+    /** in image space. */
     RectF mCropRect;
     Matrix mMatrix;
     private boolean mHidden;
     @NonNull
     private ModifyMode mMode = ModifyMode.None;
-    /*** in image space */
+    /*** in image space. */
     private RectF mImageRect;
     private boolean mMaintainAspectRatio = false;
     private float mInitialAspectRatio;
@@ -99,13 +100,6 @@ class CropHighlightView {
 
         mInitialAspectRatio = mCropRect.width() / mCropRect.height();
         mDrawRect = computeLayout();
-
-        mFocusPaint.setARGB(125, 50, 50, 50);
-        mNoFocusPaint.setARGB(125, 50, 50, 50);
-        mOutlinePaint.setStrokeWidth(3F);
-        mOutlinePaint.setStyle(Paint.Style.STROKE);
-        mOutlinePaint.setAntiAlias(true);
-
         mMode = ModifyMode.None;
 
         // use the context so the theme is used: getResources().getDrawable(id, getTheme());
@@ -114,6 +108,12 @@ class CropHighlightView {
         mResizeDrawableDiagonal = context.getDrawable(R.drawable.ic_crop);
 
         Resources res = context.getResources();
+
+        mFocusPaint.setColor(res.getColor(R.color.CropHighlightView_focusPaint));
+        mNoFocusPaint.setColor(res.getColor(R.color.CropHighlightView_noFocusPaint));
+        mOutlinePaint.setStrokeWidth(3F);
+        mOutlinePaint.setStyle(Paint.Style.STROKE);
+        mOutlinePaint.setAntiAlias(true);
         mOutlinePaintNoFocus = res.getColor(R.color.CropHighlightView_outlinePaint_noFocus);
         mOutlinePaintCircle = res.getColor(R.color.CropHighlightView_outlinePaint_circle);
         mOutlinePaintRectangle = res.getColor(R.color.CropHighlightView_outlinePaint_rectangle);
@@ -127,7 +127,7 @@ class CropHighlightView {
         mIsFocused = f;
     }
 
-    public void setHidden(final boolean hidden) {
+    void setHidden(@SuppressWarnings("SameParameterValue") final boolean hidden) {
         mHidden = hidden;
     }
 
@@ -364,13 +364,15 @@ class CropHighlightView {
         // the cropping rectangle.
         RectF rect = new RectF(mCropRect);
         if (dx > 0F && rect.width() + 2 * dx > mImageRect.width()) {
-            dx = (mImageRect.width() - rect.width()) / 2F; // adjustment
+            // adjustment
+            dx = (mImageRect.width() - rect.width()) / 2F;
             if (mMaintainAspectRatio) {
                 dy = dx / mInitialAspectRatio;
             }
         }
         if (dy > 0F && rect.height() + 2 * dy > mImageRect.height()) {
-            dy = (mImageRect.height() - rect.height()) / 2F; // adjustment
+            // adjustment
+            dy = (mImageRect.height() - rect.height()) / 2F;
             if (mMaintainAspectRatio) {
                 dx = dy * mInitialAspectRatio;
             }
@@ -415,6 +417,7 @@ class CropHighlightView {
     }
 
     /** Maps the cropping rectangle from image space to screen space. */
+    @NonNull
     private Rect computeLayout() {
         RectF r = new RectF(mCropRect.left, mCropRect.top, mCropRect.right,
                             mCropRect.bottom);

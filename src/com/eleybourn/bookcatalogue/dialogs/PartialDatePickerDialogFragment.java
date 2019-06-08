@@ -57,8 +57,6 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
- * <p>
- * ENHANCE: add a 'clear' button.
  *
  * @author pjw
  */
@@ -156,6 +154,8 @@ public class PartialDatePickerDialogFragment
             dialog.setTitle(titleId);
         }
 
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.clear),
+                         (d, which) -> clearAndSend());
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                          (d, which) -> dismiss());
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
@@ -189,6 +189,19 @@ public class PartialDatePickerDialogFragment
                     Logger.debug(this, "onPartialDatePickerSave",
                                  "WeakReference to listener was dead");
                 }
+            }
+        }
+    }
+
+    private void clearAndSend() {
+
+        dismiss();
+        if (mListener.get() != null) {
+            mListener.get().onPartialDatePickerSave(mDestinationFieldId, null, null, null);
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Logger.debug(this, "onPartialDatePickerSave",
+                             "WeakReference to listener was dead");
             }
         }
     }
@@ -250,7 +263,7 @@ public class PartialDatePickerDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final PartialDatePickerResultsListener listener) {
+    public void setListener(@NonNull final PartialDatePickerResultsListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
@@ -487,8 +500,9 @@ public class PartialDatePickerDialogFragment
             if (yearVal.isEmpty()) {
                 mYearView.requestFocus();
                 //noinspection ConstantConditions
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-                                                     | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                getWindow().setSoftInputMode(
+                        WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+                                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             }
 
             if (mMonth == null || mMonth == 0) {

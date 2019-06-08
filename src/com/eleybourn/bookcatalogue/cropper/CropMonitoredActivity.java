@@ -82,17 +82,17 @@ abstract class CropMonitoredActivity
     @SuppressWarnings({"EmptyMethod", "unused"})
     interface LifeCycleListener {
 
-        void onActivityCreated(@NonNull final CropMonitoredActivity activity);
+        void onActivityCreated(@NonNull CropMonitoredActivity activity);
 
-        void onActivityDestroyed(@NonNull final CropMonitoredActivity activity);
+        void onActivityDestroyed(@NonNull CropMonitoredActivity activity);
 
-        void onActivityPaused(@NonNull final CropMonitoredActivity activity);
+        void onActivityPaused(@NonNull CropMonitoredActivity activity);
 
-        void onActivityResumed(@NonNull final CropMonitoredActivity activity);
+        void onActivityResumed(@NonNull CropMonitoredActivity activity);
 
-        void onActivityStarted(@NonNull final CropMonitoredActivity activity);
+        void onActivityStarted(@NonNull CropMonitoredActivity activity);
 
-        void onActivityStopped(@NonNull final CropMonitoredActivity activity);
+        void onActivityStopped(@NonNull CropMonitoredActivity activity);
     }
 
     public static class LifeCycleAdapter

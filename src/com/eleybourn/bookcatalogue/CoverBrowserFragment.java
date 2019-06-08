@@ -370,6 +370,7 @@ public class CoverBrowserFragment
     private static class Holder
             extends RecyclerView.ViewHolder {
 
+        /** Keep an extra copy, to avoid casting. */
         @NonNull
         final ImageView imageView;
 

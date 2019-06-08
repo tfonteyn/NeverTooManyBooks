@@ -64,7 +64,7 @@ public class StylePickerDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final StyleChangedListener listener) {
+    public void setListener(@NonNull final StyleChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
@@ -95,7 +95,8 @@ public class StylePickerDialogFragment
 
         //noinspection ConstantConditions
         RadioGroupRecyclerAdapter<BooklistStyle> adapter =
-                new RadioGroupRecyclerAdapter<>(getContext(), list, mCurrentStyle, this::onStyleSelected);
+                new RadioGroupRecyclerAdapter<>(getContext(), list, mCurrentStyle,
+                                                this::onStyleSelected);
 
         listView.setAdapter(adapter);
 
@@ -120,7 +121,7 @@ public class StylePickerDialogFragment
                 .create();
     }
 
-    private void onStyleSelected(View v) {
+    private void onStyleSelected(@NonNull final View v) {
         BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
         if (mListener.get() != null) {
             mListener.get().onStyleChanged(style);
@@ -136,6 +137,6 @@ public class StylePickerDialogFragment
 
     public interface StyleChangedListener {
 
-        void onStyleChanged(@NonNull final BooklistStyle style);
+        void onStyleChanged(@NonNull BooklistStyle style);
     }
 }

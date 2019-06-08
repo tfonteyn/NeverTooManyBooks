@@ -295,12 +295,12 @@
     <string name="hint_reset_all_hints">İpuçlarını sıfırla</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="hint_booklist_styles_editor">
-        Bu ekranı öntanımlı biçemler seçkesinde görüntülenecek biçemler dizelgesini düzenlemek için kullanabilirsiniz.\n
-        \nYeşil onay simgesi biçemin listede görüntüleneceğini, kırmızı artı ise görüntülenmeyeceğini belirtir.
-        Yeşil onay simgesine dokunmak onu kırmızı artıya dönüştürür, tersi de onay simgesi için geçerlidir.\n
-        \nEğer onay simgeli bir biçem yoksa tüm biçemler gösterilir.\n
-        \nIt is also possible to re-order the items by dragging the icon at the extreme right of each row.\n
-        \nBir satırda herhangi bir yere dokunmak o biçemin ayrıntılarını düzenleme olanağı tanır
+        Bu ekranı öntanımlı biçemler seçkesinde görüntülenecek biçemler dizelgesini düzenlemek için kullanabilirsiniz.
+        Yeşil onay simgesi biçemin listede görüntüleneceğini, kırmızı artı ise görüntülenmeyeceğini belirtir.
+        Yeşil onay simgesine dokunmak onu kırmızı artıya dönüştürür, tersi de onay simgesi için geçerlidir.
+        Eğer onay simgeli bir biçem yoksa tüm biçemler gösterilir.
+        It is also possible to re-order the items by dragging the icon at the extreme right of each row.
+        Bir satırda herhangi bir yere dokunmak o biçemin ayrıntılarını düzenleme olanağı tanır
         (veya çoğaltır, eğer yerleşik bir biçemse).
     </string>
     <string name="hint_booklist_style_groups">
@@ -310,19 +310,18 @@
         \nHiyerarşiyi sağ uçtaki simgeyi yukarı-aşağı taşıyarak değiştirebilirsiniz.
     </string>
     <string name="hint_booklist_style_properties">
-        Bu ekranı seçilen kitap dizgesi biçeminin özelliklerini değiştirmek üzere kullanabilirsiniz.\n
-        \nBuradan adını değiştirelibilr, hiyerarşiyi değiştirmek için öbeklendirmeyi
-        düzenleyebilir ve kullanışlı bir biçem yaratmak için diğer ayarları yapabilirsiniz.\n
-        \n‘Kitap süzgeçleri’ ayarlarını kullanarak kitap dizgelerinde görüntülenecek seçimleri
+        Bu ekranı seçilen kitap dizgesi biçeminin özelliklerini değiştirmek üzere kullanabilirsiniz.
+        Buradan adını değiştirelibilr, hiyerarşiyi değiştirmek için öbeklendirmeyi
+        düzenleyebilir ve kullanışlı bir biçem yaratmak için diğer ayarları yapabilirsiniz.
+        ‘Kitap süzgeçleri’ ayarlarını kullanarak kitap dizgelerinde görüntülenecek seçimleri
         ayarlayabilirsiniz, örneğin yalnızca okumadığınız kitapları vb. seçebilirsiniz.
     </string>
     <string name="X_hint_booklist_global_properties">
-        Bu ekranı tüm kitap dizgesi biçeminin özelliklerini değiştirmek üzere kullanabilirsiniz.\n
-        \nÇoğu özellikler kişisel biçemlerle değiştirilebilir, ancak öntanımlı değerler burada
-        tanımlanmışlardır.\n
-        \nArdalanı değiştirebilir, dizelgelerin başlangıçta nasıl görüntüleneceğini seçebilir ve
-        diğer tüm biçemlerinize uygulanacak çoğu ayarı buradan yapabilirsiniz.\n
-        \nAynı zamanda biçemler seçkesini ve biçemlerin kendisini dedüzenleyebilirsiniz.
+        Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz.
+         Çoğu özellik ayrı stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler
+         burada tanımlanmıştır. Listelerin başlangıçta nasıl görüntülendiğini değiştirebilir ve
+         mümkün olduğunda tüm stillerinize uygulanacak diğer tercihlerin çeşitliliği.
+         Ayrıca stiller menüsünü ve stillerin kendilerini düzenleyebilirsiniz.
     </string>
     <string name="lbl_preferred_styles">Yeğlenen biçemler</string>
     <string name="title_edit_style">Biçemi düzenle</string>
@@ -722,5 +721,8 @@
     <string name="gr_tq_generic_task_info">%1$d görev kimliği, %2$s sırada</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="info_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
+    <string name="clear">Silme</string>
+    <string name="X_pt_bob_preferred_style">Tercihli</string>
+    <string name="X_select_bookshelves">Raflardan seçin</string>
 
 </resources>

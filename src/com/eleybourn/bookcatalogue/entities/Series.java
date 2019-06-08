@@ -36,14 +36,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 
 /**
  * Class to hold book-related series data.
@@ -165,11 +162,11 @@ public class Series
     public Series(final long id,
                   @NonNull final ColumnMapper mapper) {
         mId = id;
-        mName = mapper.getString(DOM_SERIES_TITLE);
-        mIsComplete = mapper.getBoolean(DOM_SERIES_IS_COMPLETE);
+        mName = mapper.getString(DBDefinitions.DOM_SERIES_TITLE);
+        mIsComplete = mapper.getBoolean(DBDefinitions.DOM_SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (mapper.contains(DOM_BOOK_SERIES_NUM)) {
-            mNumber = mapper.getString(DOM_BOOK_SERIES_NUM);
+        if (mapper.contains(DBDefinitions.DOM_BOOK_SERIES_NUM)) {
+            mNumber = mapper.getString(DBDefinitions.DOM_BOOK_SERIES_NUM);
         } else {
             mNumber = "";
         }

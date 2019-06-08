@@ -326,7 +326,7 @@
         Puede utilizar esta opción para configurar las características por defecto de todos los estilos de listados de libros.
         \n\nLa mayoría de las propiedades se pueden modificar para cada estilo individual, pero los valores por defecto se
         definen aquí.
-        \n\nPuede cambiar el fondo, la forma en que los listados se muestran de inicio, y modificar otros parámetros
+        \n\nPuede cambiar la forma en que los listados se muestran de inicio, y modificar otros parámetros
         que se aplicarán a todos sus estilos cuando sea posible.
         \n\nTambién puede editar desde aquí el menú de estilos, y los propios estilos.
     </string>
@@ -664,7 +664,6 @@
     <string name="warning_thing_already_exists">%1$s ya existe</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
-    <string name="X_error_no_style_found">No se pudo encontrar el estilo apropiado</string>
     <string name="done">Hecho</string>
     <string name="lbl_edition">Edición</string>
     <string name="lbl_currency">Moneda</string>
@@ -748,4 +747,5 @@
     <string name="title_import">Importar</string>
     <string name="btn_drag_handle">Arrástrame para reordenar esta lista.</string>
     <string name="book_format_digest">Digest</string>
+    <string name="clear">Claro</string>
 </resources>

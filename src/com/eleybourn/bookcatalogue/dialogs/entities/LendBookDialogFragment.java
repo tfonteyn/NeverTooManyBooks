@@ -213,7 +213,7 @@ public class LendBookDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final BookChangedListener listener) {
+    public void setListener(@NonNull final BookChangedListener listener) {
         mBookChangedListener = new WeakReference<>(listener);
     }
 

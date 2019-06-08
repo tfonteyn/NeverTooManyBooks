@@ -476,12 +476,10 @@
     </string>
     <string name="X_hint_booklist_global_properties">
         U kunt dit scherm gebruiken om de standaard eigenschappen van alle boekenlijststijlen
-        in te stellen.\n
-        \nDe meeste eigenschappen kunnen worden overschreven door individuele stijlen,
-        maar de standaardwaarden worden hier gedefinieerd.\n
-        \nU kunt hier de achtergrond veranderen, hoe de lijsten worden weer te geven bij het
-        opstarten en een aantal andere instellingen veranderen die, waar mogelijk, toegepast
-        worden op alle stijlen.\n
+        in te stellen. De meeste eigenschappen kunnen worden overschreven door individuele stijlen,
+        maar de standaardwaarden worden hier gedefinieerd. U kunt hier aangeven hoe de lijsten
+        worden weergegeven bij het opstarten en een aantal andere instellingen veranderen die,
+        waar mogelijk, toegepast worden op alle stijlen.\n
         \nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
     </string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
@@ -840,7 +838,6 @@
     <string name="done">Klaar</string>
     <string name="lbl_first_publication">Eerste uitgave</string>
     <string name="menu_internet_update_fields">Bijwerken velden</string>
-    <string name="X_error_no_style_found">Juiste stijl niet gevonden</string>
     <string name="lbl_search_sites">Zoek-webpaginas</string>
     <string name="lbl_search_site_order">Volgorde</string>
     <string name="search_with_text">Zoeken: %1$s</string>
@@ -925,4 +922,5 @@
     <string name="title_import">Importeren</string>
     <string name="btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="lbl_covers">Omslagen</string>
+    <string name="clear">Wissen</string>
 </resources>

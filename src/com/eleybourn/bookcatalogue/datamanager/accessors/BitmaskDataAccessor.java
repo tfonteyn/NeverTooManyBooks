@@ -24,6 +24,9 @@ public class BitmaskDataAccessor
     private final int mBit;
 
     /**
+     * Constructor.
+     *
+     * @param key The key for the actual data
      * @param bit to manage
      */
     public BitmaskDataAccessor(@NonNull final String key,

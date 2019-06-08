@@ -474,12 +474,12 @@
         Bücher in der Listenanzeige verändert wird, etwa um nur ungelesenen Bücher anzuzeigen.
     </string>
     <string name="X_hint_booklist_global_properties">
-        Sie können hier die Standardcharakteristik aller Bücherlistenstile bestimmen.\n
-        \nDie meisten Eigenschaften können in individuellen Stilen übersteuert werden,
-        aber die Standardeinstellungen werden hier definiert.\n
-        \nSie können den Hintergrund, die Anzeige von Listen beim Start und eine Vielzahl
-        anderer Einstellungen anpassen, die nach Möglichkeit auf alle Stile angewendet werden.\n
-        \nEbenso können Sie hier das Stilmenü und die Stile selbst bearbeiten.
+        Sie können hier die Standardcharakteristik aller Bücherlistenstile bestimmen.
+        Die meisten Eigenschaften können in individuellen Stilen übersteuert werden,
+        aber die Standardeinstellungen werden hier definiert.
+        Sie können die Anzeige von Listen beim Start und eine Vielzahl
+        anderer Einstellungen anpassen, die nach Möglichkeit auf alle Stile angewendet werden.
+        Ebenso können Sie hier das Stilmenü und die Stile selbst bearbeiten.
     </string>
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
     <string name="title_edit_style">Bearbeite Stil</string>
@@ -850,7 +850,6 @@
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
-    <string name="X_error_no_style_found">Konnte den passenden Stil nicht finden</string>
     <string name="done">Erledigt</string>
     <string name="lbl_edition">Auflage</string>
     <string name="lbl_currency">Devisen</string>
@@ -941,5 +940,6 @@
     <string name="vldt_failure">Validierungsfehler.</string>
     <string name="title_import">Importieren</string>
     <string name="btn_drag_handle">Ziehen Sie, um diese Liste neu zu ordnen.</string>
+    <string name="clear">Klar</string>
 
 </resources>

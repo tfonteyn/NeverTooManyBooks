@@ -30,6 +30,9 @@ class CropImageView
     private float mLastY;
     private int mMotionEdge;
 
+    /**
+     * Constructor used by the xml inflater.
+     */
     public CropImageView(@NonNull final Context context,
                          @NonNull final AttributeSet attrs) {
         super(context, attrs);

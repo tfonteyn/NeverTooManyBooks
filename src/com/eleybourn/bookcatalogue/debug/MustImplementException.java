@@ -20,7 +20,7 @@ public class MustImplementException
 
     public MustImplementException(@NonNull final Context context,
                                   @NonNull final Class clazz) {
-        super("Class " + context.getClass().getCanonicalName() +
-                      " must implement " + clazz.getCanonicalName());
+        super("Class " + context.getClass().getCanonicalName()
+                      + " must implement " + clazz.getCanonicalName());
     }
 }

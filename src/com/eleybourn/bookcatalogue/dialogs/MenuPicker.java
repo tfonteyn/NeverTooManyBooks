@@ -48,7 +48,7 @@ public class MenuPicker<T>
                       @NonNull final ContextItemSelected<T> listener) {
         super(context, title, null);
 
-        mAdapter = new MenuItemListAdapter(context, menu, (menuItem) -> {
+        mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {
                 setTitle(menuItem.getTitle());
                 mAdapter.setMenu(menuItem.getSubMenu());

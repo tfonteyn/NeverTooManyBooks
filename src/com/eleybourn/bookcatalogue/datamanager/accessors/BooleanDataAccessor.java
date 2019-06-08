@@ -17,6 +17,8 @@ public class BooleanDataAccessor
     private final String mKey;
 
     /**
+     * Constructor.
+     *
      * @param key The key for the actual data
      */
     public BooleanDataAccessor(@NonNull final String key) {

@@ -41,7 +41,7 @@ public class FieldPicker<T>
         super(context, title, null);
 
         final FieldListAdapter<T> adapter =
-                new FieldListAdapter<>(context, field, list, (item) -> {
+                new FieldListAdapter<>(context, field, list, item -> {
                     dismiss();
                     field.setValue(item.toString());
                 });
@@ -63,6 +63,14 @@ public class FieldPicker<T>
         private final PickListener<T> mListener;
         private int mPreSelectedPosition = -1;
 
+        /**
+         * Constructor.
+         *
+         * @param context  Current context
+         * @param field    the Field
+         * @param items    list of items
+         * @param listener where to send the result back to
+         */
         FieldListAdapter(@NonNull final Context context,
                          @NonNull final Fields.Field field,
                          @NonNull final List<T> items,
@@ -109,7 +117,7 @@ public class FieldPicker<T>
             holder.textView.setText(mField.format(item.toString()));
 
             // onClick on the whole view.
-            holder.itemView.setOnClickListener((v) -> mListener.onPicked(item));
+            holder.itemView.setOnClickListener(v -> mListener.onPicked(item));
         }
 
         @Override

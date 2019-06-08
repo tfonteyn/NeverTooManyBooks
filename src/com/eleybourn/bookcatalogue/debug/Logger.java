@@ -66,7 +66,12 @@ public final class Logger {
     public static void error(@NonNull final Object tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
-        String msg = (params != null ? '|' + concat(params) : "");
+        String msg;
+        if (params != null) {
+            msg = '|' + concat(params);
+        } else {
+            msg = "";
+        }
         writeToLog(ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
@@ -176,8 +181,8 @@ public final class Logger {
     }
 
     private static String tag(@NonNull final Object object) {
-        return (object.getClass().isAnonymousClass() ? "AnonymousClass"
-                                                     : object.getClass().getCanonicalName());
+        return object.getClass().isAnonymousClass() ? "AnonymousClass"
+                                                     : object.getClass().getCanonicalName();
     }
 
     private static String concat(@NonNull final Object[] params) {
@@ -213,8 +218,12 @@ public final class Logger {
                                    @Nullable final Throwable e) {
         try (FileWriter fw = new FileWriter(StorageUtils.getErrorLog(), true);
              BufferedWriter out = new BufferedWriter(fw)) {
-            String exMsg = e != null ?
-                           '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e) : "";
+            String exMsg;
+            if (e != null) {
+                exMsg = '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e);
+            } else {
+                exMsg = "";
+            }
 
             out.write(DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {

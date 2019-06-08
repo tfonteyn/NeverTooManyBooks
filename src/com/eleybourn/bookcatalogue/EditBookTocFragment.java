@@ -499,7 +499,7 @@ public class EditBookTocFragment
          *
          * @param listener the object to send the result to.
          */
-        public void setListener(final ConfirmTocResults listener) {
+        public void setListener(@NonNull final ConfirmTocResults listener) {
             mListener = new WeakReference<>(listener);
         }
 
@@ -630,7 +630,7 @@ public class EditBookTocFragment
          *
          * @param listener the object to send the result to.
          */
-        public void setListener(final EditTocEntryResults listener) {
+        public void setListener(@NonNull final EditTocEntryResults listener) {
             mListener = new WeakReference<>(listener);
         }
 
@@ -765,7 +765,7 @@ public class EditBookTocFragment
 
         @Override
         @UiThread
-        protected void onPostExecute(final ArrayList<Editions.Edition> result) {
+        protected void onPostExecute(@Nullable final ArrayList<Editions.Edition> result) {
             // always send result, even if empty
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGotISFDBEditions(result);

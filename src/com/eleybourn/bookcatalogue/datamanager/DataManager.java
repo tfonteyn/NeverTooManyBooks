@@ -648,12 +648,12 @@ public class DataManager {
     @Override
     @NonNull
     public String toString() {
-        return "DataManager{" +
-                "mRawData=" + mRawData +
-                ", mDatumMap=" + mDatumMap +
-                ", mValidationExceptions=" + mValidationExceptions +
-                ", mCrossValidators=" + mCrossValidators +
-                '}';
+        return "DataManager{"
+                + "mRawData=" + mRawData
+                + ", mDatumMap=" + mDatumMap
+                + ", mValidationExceptions=" + mValidationExceptions
+                + ", mCrossValidators=" + mCrossValidators
+                + '}';
     }
 
     /**

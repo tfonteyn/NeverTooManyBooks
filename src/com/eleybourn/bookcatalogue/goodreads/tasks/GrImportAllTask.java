@@ -133,7 +133,7 @@ class GrImportAllTask
      *
      * @return {@code true} if the name does NOT contain the string 'nocover'
      */
-    private static boolean hasCover(final String imageName) {
+    private static boolean hasCover(@Nullable final String imageName) {
         return imageName != null
                 && !imageName.toLowerCase(LocaleUtils.getSystemLocale())
                              .contains(GoodreadsTasks.NO_COVER);

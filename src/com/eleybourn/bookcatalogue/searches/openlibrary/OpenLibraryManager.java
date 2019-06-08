@@ -382,7 +382,7 @@ public class OpenLibraryManager
      *
      * @throws JSONException upon any error
      */
-    private Bundle handleResponse(final JSONObject jsonObject,
+    private Bundle handleResponse(@NonNull final JSONObject jsonObject,
                                   final boolean fetchThumbnail)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
@@ -401,9 +401,9 @@ public class OpenLibraryManager
         return null;
     }
 
-    private Bundle handleBook(final String isbn,
+    private Bundle handleBook(@NonNull final String isbn,
                               final boolean fetchThumbnail,
-                              final JSONObject result)
+                              @NonNull final JSONObject result)
             throws JSONException {
         Bundle bookData = new Bundle();
 

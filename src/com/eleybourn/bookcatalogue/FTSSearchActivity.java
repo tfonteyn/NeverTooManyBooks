@@ -67,9 +67,9 @@ public class FTSSearchActivity
     /** Database access. */
     private DAO mDb;
 
-    private String mAuthorSearchText = null;
-    private String mTitleSearchText = null;
-    private String mGenericSearchText = null;
+    private String mAuthorSearchText;
+    private String mTitleSearchText;
+    private String mGenericSearchText;
 
     /** search field. */
     private EditText mAuthorView;
@@ -188,7 +188,7 @@ public class FTSSearchActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 

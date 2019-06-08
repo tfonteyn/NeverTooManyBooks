@@ -27,6 +27,14 @@ public class FieldUsage {
     public Usage usage;
 
 
+    /**
+     * Constructor.
+     *
+     * @param fieldId      key
+     * @param nameStringId label to show to the user.
+     * @param usage        how to use this field.
+     * @param isList       {@code true} if this field is a list type.
+     */
     public FieldUsage(@NonNull final String fieldId,
                       @StringRes final int nameStringId,
                       @NonNull final Usage usage,
@@ -38,13 +46,15 @@ public class FieldUsage {
     }
 
     public boolean isSelected() {
-        return (usage != Usage.Skip);
+        return usage != Usage.Skip;
     }
 
+    @NonNull
     public String getLabel(@NonNull final Context context) {
         return context.getString(mNameStringId);
     }
 
+    @NonNull
     public String getUsageInfo(@NonNull final Context context) {
         return context.getString(usage.getStringId());
     }

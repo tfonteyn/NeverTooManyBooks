@@ -119,7 +119,7 @@ public abstract class EditAuthorBaseDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final BookChangedListener listener) {
+    public void setListener(@NonNull final BookChangedListener listener) {
         mBookChangedListener = new WeakReference<>(listener);
     }
 
@@ -129,8 +129,8 @@ public abstract class EditAuthorBaseDialogFragment
      * @param author        the original data.
      * @param newAuthorData a holder for the edited data.
      */
-    protected abstract void confirmChanges(@NonNull final Author author,
-                                           @NonNull final Author newAuthorData);
+    protected abstract void confirmChanges(@NonNull Author author,
+                                           @NonNull Author newAuthorData);
 
     @Override
     public void onPause() {

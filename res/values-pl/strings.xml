@@ -528,6 +528,25 @@
     <string name="about_donate_paypal">Dotacja PayPal</string>
     <string name="acra_resNotifTitle">&APP_NAME; Wypadek</string>
     <string name="acra_resNotifTickerText">&APP_NAME; uległo awarii</string>
+    <string name="clear">Wyczyść</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Użyj zadania w tle, aby załadować obrazy (przewijanie będzie szybsze, obrazy mogą być opóźnione)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Natychmiastowe ładowanie obrazów (przewijanie będzie wolniejsze)</string>
+    <string name="pt_bob_thumbnails_generating_mode">Użyj zadania w tle, aby załadować obrazy</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
+    <string name="warning_required_at_least_one">Co najmniej jedno pole nie może być puste</string>
+    <string name="X_updated">Zaktualizowano</string>
+    <string name="X_use_default_setting">Zastosowanie domyślne</string>
+    <string name="X_pt_bob_preferred_style">Preferowane</string>
+    <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
+    <string name="X_select_bookshelves">Wybierz półki na książki</string>
+    <string name="warning_select_a_non_directory">Wybierz plik, który nie jest katalogiem.</string>
+    <string name="warning_no_parent_directory_found">Nie znaleziono katalogu nadrzędnego</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Pod głównym tylko %1$s</string>
+    <string name="X_error_starting_import_arg">Podczas uruchamiania importu wystąpił problem: %1$s</string>
+    <string name="X_hint_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
+    <string name="pt_bob_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
 
 
 </resources>

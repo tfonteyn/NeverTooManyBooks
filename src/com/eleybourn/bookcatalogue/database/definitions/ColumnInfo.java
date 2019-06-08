@@ -49,6 +49,11 @@ public class ColumnInfo {
     private final String defaultValue;
 
 
+    /**
+     * Constructor.
+     *
+     * @param cursor with the column information details.
+     */
     ColumnInfo(@NonNull final Cursor cursor) {
         position = cursor.getInt(0);
         name = cursor.getString(1);

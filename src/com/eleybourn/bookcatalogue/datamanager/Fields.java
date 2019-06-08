@@ -808,7 +808,7 @@ public class Fields {
                     //FIXME: not very efficient... gets called whenever the field content is set
                     // This includes when the device is rotated, when a tab is changed...
                     if (BuildConfig.DEBUG) {
-                        Logger.debug(this,"afterTextChanged",
+                        Logger.debug(this, "afterTextChanged",
                                      "s=`" + s.toString() + '`',
                                      "extract=`" + field.extract(s.toString()) + '`'
                         );
@@ -1230,8 +1230,8 @@ public class Fields {
                 return currencyInstance.format(price);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") IllegalArgumentException e) {
-                Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`," +
-                        " source=`" + source + '`');
+                Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
+                        + " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;
             }
         }
@@ -1444,7 +1444,6 @@ public class Fields {
             if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
-                //TOMF: this emphasizes the need for having an actual type for the field.
                 mFieldDataAccessor = new CheckableAccessor();
                 addTouchSignalsDirty(view);
 
@@ -1490,17 +1489,17 @@ public class Fields {
         @Override
         @NonNull
         public String toString() {
-            return "Field{" +
-                    "id=" + id +
-//                    ", mFields=" + mFields +
-                    ", group='" + group + '\'' +
-                    ", mColumn='" + mColumn + '\'' +
-                    ", formatter=" + formatter +
-                    ", mIsUsed=" + mIsUsed +
-                    ", mDoNoFetch=" + mDoNoFetch +
-                    ", mFieldValidator=" + mFieldValidator +
-                    ", mFieldDataAccessor=" + mFieldDataAccessor +
-                    '}';
+            return "Field{"
+                    + "id=" + id
+                    //+ ", mFields=" + mFields
+                    + ", group='" + group + '\''
+                    + ", mColumn='" + mColumn + '\''
+                    + ", formatter=" + formatter
+                    + ", mIsUsed=" + mIsUsed
+                    + ", mDoNoFetch=" + mDoNoFetch
+                    + ", mFieldValidator=" + mFieldValidator
+                    + ", mFieldDataAccessor=" + mFieldDataAccessor
+                    + '}';
         }
 
         /**
@@ -1706,7 +1705,8 @@ public class Fields {
          *
          * @param s String to format
          *
-         * @return The formatted value. If the source is {@code null}, should return "" (and log an error)
+         * @return The formatted value. If the source is {@code null},
+         * should return "" (and log an error)
          */
         @NonNull
         public String format(@Nullable final String s) {

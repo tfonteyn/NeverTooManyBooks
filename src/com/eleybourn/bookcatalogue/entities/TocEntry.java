@@ -89,7 +89,9 @@ public class TocEntry
             Pattern.compile("\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
 
     private long mId;
+    @NonNull
     private Author mAuthor;
+    @NonNull
     private String mTitle;
     @NonNull
     private String mFirstPublicationDate;
@@ -136,7 +138,9 @@ public class TocEntry
     /** {@link Parcelable}. */
     protected TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
+        //noinspection ConstantConditions
         mAuthor = in.readParcelable(getClass().getClassLoader());
+        //noinspection ConstantConditions
         mTitle = in.readString();
         //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();

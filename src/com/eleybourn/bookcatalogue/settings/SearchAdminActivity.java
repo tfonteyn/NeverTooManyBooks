@@ -124,7 +124,7 @@ public class SearchAdminActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         if (mUseScenario) {
             menu.add(Menu.NONE, R.id.MENU_USE, 0, R.string.btn_confirm_use)

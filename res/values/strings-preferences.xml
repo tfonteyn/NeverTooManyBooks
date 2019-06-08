@@ -184,18 +184,14 @@
     </string-array>
 
     <!-- Preference - Thumbnails are fetched in a background task -->
-    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch thumbnails</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">
-        Use background thread (lists scroll faster, images may be delayed)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">
-        Generate immediately (lists scroll slower, images will be displayed immediately)</string>
+    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch images</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Use background task to load images (scrolling will be faster, images may be delayed)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Load images immediately (scrolling will be slower)</string>
 
     <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
-    <string name="pt_bob_thumbnails_cache_resized">Cache resized thumbnails</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">
-        Resize each time they are needed (uses less storage, scrolling will be slower)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">
-        Cache resized thumbnails (uses more storage, lists will scroll faster)</string>
+    <string name="pt_bob_thumbnails_cache_resized">Resized images are cached</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
 
     <!-- ========== Book list style preferences ========== -->
 

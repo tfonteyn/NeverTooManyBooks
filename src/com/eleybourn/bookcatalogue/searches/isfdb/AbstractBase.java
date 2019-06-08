@@ -52,7 +52,7 @@ abstract class AbstractBase {
      *
      * @return {@code true} when fetched and parsed ok.
      */
-    boolean loadPage(final String url,
+    boolean loadPage(@NonNull final String url,
                      final boolean redirect)
             throws SocketTimeoutException {
         if (mDoc == null) {

@@ -90,7 +90,7 @@ public class ImportOptionsDialogFragment
         return dialog;
     }
 
-    public void setListener(final OptionsListener listener) {
+    public void setListener(@NonNull final OptionsListener listener) {
         mListener = new WeakReference<>(listener);
     }
 

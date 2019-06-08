@@ -178,7 +178,7 @@ public class CheckListDialogFragment<T>
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final CheckListResultsListener<T> listener) {
+    public void setListener(@NonNull final CheckListResultsListener<T> listener) {
         mListener = new WeakReference<>(listener);
     }
 

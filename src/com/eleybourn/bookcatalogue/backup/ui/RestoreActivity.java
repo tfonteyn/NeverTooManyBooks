@@ -56,7 +56,7 @@ public class RestoreActivity
                 public void onTaskCancelled(@Nullable final Integer taskId) {
                     UserMessage.showUserMessage(RestoreActivity.this,
                                                 R.string.progress_end_cancelled);
-                    //TOMF: add to the message that partial imports might have been done... blah blah
+                    //TODO: add to the message that partial imports might have been done... blah blah
                 }
 
                 /**

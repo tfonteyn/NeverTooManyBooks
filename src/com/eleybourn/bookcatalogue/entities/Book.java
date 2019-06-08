@@ -436,7 +436,8 @@ public class Book
     }
 
     /**
-     * @return name of the first author in the list of authors for this book, or {@code null} if none
+     * @return name of the first author in the list of authors for this book,
+     * or {@code null} if none
      */
     @Nullable
     public String getPrimaryAuthor() {
@@ -507,16 +508,6 @@ public class Book
     }
 
     /**
-     * Get the Book's locale (based on its language)
-     *
-     * @return the locale, or the users preferred locale if no language was set.
-     */
-    @NonNull
-    public Locale getLocale() {
-        return getLocale(false);
-    }
-
-    /**
      * Validate the locale (based on the Book's language) and reset the language if needed.
      *
      * @return the locale, or the users preferred locale if no language was set.
@@ -525,6 +516,16 @@ public class Book
     @NonNull
     public Locale updateLocale() {
         return getLocale(true);
+    }
+
+    /**
+     * Get the Book's locale (based on its language).
+     *
+     * @return the locale, or the users preferred locale if no language was set.
+     */
+    @NonNull
+    public Locale getLocale() {
+        return getLocale(false);
     }
 
     /**
@@ -553,7 +554,7 @@ public class Book
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }
         }
-        return bookLocale == null ? LocaleUtils.getPreferredLocal() : bookLocale;
+        return bookLocale != null ? bookLocale : LocaleUtils.getPreferredLocal();
     }
 
     /**
@@ -604,7 +605,8 @@ public class Book
                                             TocEntry.Authors.MULTIPLE_AUTHORS));
     }
 
-    public String getLoanee(final DAO db) {
+    @Nullable
+    public String getLoanee(@NonNull final DAO db) {
         return db.getLoaneeByBookId(getId());
     }
 

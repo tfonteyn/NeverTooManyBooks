@@ -373,7 +373,7 @@ public abstract class ShowBookApiHandler
      *
      * @return {@code true} if the name DOES contain the string 'nocover'
      */
-    private static boolean hasNoCover(final String imageName) {
+    private static boolean hasNoCover(@Nullable final String imageName) {
         return imageName != null
                 && imageName.toLowerCase(LocaleUtils.getSystemLocale())
                             .contains(GoodreadsTasks.NO_COVER);

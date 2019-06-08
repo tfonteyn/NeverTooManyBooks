@@ -109,6 +109,6 @@ public abstract class EditStringBaseDialog {
         saveChanges(mCurrentText, newText);
     }
 
-    protected abstract void saveChanges(@NonNull final String from,
-                                        @NonNull final String to);
+    protected abstract void saveChanges(@NonNull String from,
+                                        @NonNull String to);
 }

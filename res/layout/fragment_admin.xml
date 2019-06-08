@@ -125,7 +125,7 @@
         <TextView
             android:id="@+id/lbl_cleanup_files"
             style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_adjust"
+            android:drawableStart="@drawable/ic_close"
             android:text="@string/lbl_cleanup_files"
             />
 

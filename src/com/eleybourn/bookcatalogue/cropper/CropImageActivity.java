@@ -255,12 +255,6 @@ public class CropImageActivity
     /**
      * Note: setting Window.FEATURE_NO_TITLE + WindowManager.LayoutParams.FLAG_FULLSCREEN
      * is now done in the manifest using a theme on this activity.
-     * <p>
-     * intent.putExtra(CropIImage.BKEY_SCALE, true);
-     * intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
-     * intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
-     * intent.putExtra(CropIImage.BKEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
-     * intent.putExtra(CropIImage.BKEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
      */
     @Override
     @CallSuper
@@ -524,6 +518,6 @@ public class CropImageActivity
             }
         }
 
-    return msgId;
+        return msgId;
     }
 }

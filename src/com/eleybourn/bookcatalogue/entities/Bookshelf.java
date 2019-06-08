@@ -15,13 +15,11 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 
 /**
  * Represents a Bookshelf.
@@ -116,8 +114,8 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final ColumnMapper mapper) {
         mId = id;
-        mName = mapper.getString(DOM_BOOKSHELF);
-        mStyleUuid = mapper.getString(DOM_UUID);
+        mName = mapper.getString(DBDefinitions.DOM_BOOKSHELF);
+        mStyleUuid = mapper.getString(DBDefinitions.DOM_UUID);
 //        mCachedStyle = null;
     }
 
@@ -343,6 +341,11 @@ public class Bookshelf
         return true;
     }
 
+
+    public boolean isDefault() {
+        return mId == DEFAULT_ID;
+    }
+
     /**
      * Equality.
      * <p>
@@ -370,9 +373,5 @@ public class Bookshelf
     @Override
     public int hashCode() {
         return Objects.hash(mId, mName);
-    }
-
-    public boolean isDefault() {
-        return mId == DEFAULT_ID;
     }
 }

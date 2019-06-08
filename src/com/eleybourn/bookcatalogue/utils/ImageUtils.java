@@ -671,7 +671,7 @@ public final class ImageUtils {
 
         @Override
         @UiThread
-        protected void onPostExecute(final Void result) {
+        protected void onPostExecute(@Nullable final Void result) {
 
             if (mException != null) {
                 return;

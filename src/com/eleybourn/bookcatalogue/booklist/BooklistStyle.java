@@ -79,9 +79,6 @@ import com.eleybourn.bookcatalogue.utils.Csv;
  * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
- * ENHANCE: when a style is deleted, the prefs are cleared. But the actual file is not removed.
- * How to do this in a device independent manner? Easy answer: don't bother.
- * <p>
  * How to add a new Group:
  * <p>
  * 1. add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX
@@ -1036,7 +1033,7 @@ public class BooklistStyle
         }
 
         db.deleteBooklistStyle(mId);
-        // API: 24 -> App.getAppContext().deleteSharedPreferences(mUuid);
+        // ENHANCE: API: 24 -> App.getAppContext().deleteSharedPreferences(mUuid);
         App.getPrefs(mUuid).edit().clear().apply();
     }
 
@@ -1047,7 +1044,7 @@ public class BooklistStyle
      * - the uuid is the same.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(@Nullable final Object obj) {
         if (this == obj) {
             return true;
         }

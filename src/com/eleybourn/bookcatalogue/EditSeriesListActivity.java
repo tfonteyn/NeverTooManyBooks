@@ -64,12 +64,8 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 public class EditSeriesListActivity
         extends EditObjectListActivity<Series> {
 
-    /** Main screen Series name field. */
-    private AutoCompleteTextView mSeriesNameView;
     /** Main screen Series Number field. */
     private TextView mSeriesNumberView;
-    /** AutoCompleteTextView for mSeriesNameView and the EditView in the dialog box. */
-    private ArrayAdapter<String> mSeriesAdapter;
 
     /**
      * Constructor.
@@ -89,25 +85,25 @@ public class EditSeriesListActivity
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
-        mSeriesAdapter = new ArrayAdapter<>(this,
-                                            android.R.layout.simple_dropdown_item_1line,
-                                            mDb.getAllSeriesNames());
+        mAutoCompleteAdapter = new ArrayAdapter<>(this,
+                                                  android.R.layout.simple_dropdown_item_1line,
+                                                  mDb.getAllSeriesNames());
 
-        mSeriesNameView = findViewById(R.id.series);
-        mSeriesNameView.setAdapter(mSeriesAdapter);
+        mAutoCompleteTextView = findViewById(R.id.series);
+        mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
 
         mSeriesNumberView = findViewById(R.id.series_num);
     }
 
     @Override
     protected void onAdd(@NonNull final View target) {
-        String title = mSeriesNameView.getText().toString().trim();
-        if (title.isEmpty()) {
-            UserMessage.showUserMessage(mSeriesNameView, R.string.warning_required_name);
+        String name = mAutoCompleteTextView.getText().toString().trim();
+        if (name.isEmpty()) {
+            UserMessage.showUserMessage(mAutoCompleteTextView, R.string.warning_required_name);
             return;
         }
 
-        Series newSeries = new Series(title);
+        Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
 
         // see if it already exists
@@ -115,7 +111,7 @@ public class EditSeriesListActivity
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
-                UserMessage.showUserMessage(mSeriesNameView,
+                UserMessage.showUserMessage(mAutoCompleteTextView,
                                             R.string.warning_series_already_in_list);
                 return;
             }
@@ -125,13 +121,13 @@ public class EditSeriesListActivity
         mListAdapter.notifyDataSetChanged();
 
         // and clear the form for next entry.
-        mSeriesNameView.setText("");
+        mAutoCompleteTextView.setText("");
         mSeriesNumberView.setText("");
     }
 
     @Override
     protected boolean onSave(@NonNull final Intent data) {
-        String name = mSeriesNameView.getText().toString().trim();
+        String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
             // no current edit, so we're good to go.
             return true;
@@ -140,7 +136,7 @@ public class EditSeriesListActivity
         // if the user had enter a (partial) new name, check if it's ok to leave
         StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
             // runs when user clicks 'exit anyway'
-            mSeriesNameView.setText("");
+            mAutoCompleteTextView.setText("");
             doSave();
         });
 
@@ -148,8 +144,9 @@ public class EditSeriesListActivity
     }
 
     @Override
-    protected RecyclerViewAdapterBase createListAdapter(@NonNull final ArrayList<Series> list,
-                                                        @NonNull final StartDragListener dragStartListener) {
+    protected RecyclerViewAdapterBase
+    createListAdapter(@NonNull final ArrayList<Series> list,
+                      @NonNull final StartDragListener dragStartListener) {
         return new SeriesListAdapter(this, list, dragStartListener);
     }
 
@@ -249,7 +246,7 @@ public class EditSeriesListActivity
         private String mSeriesNumber;
 
         /**
-         * (syntax sugar for newInstance)
+         * syntax sugar for newInstance.
          */
         public static void show(@NonNull final FragmentManager fm,
                                 @NonNull final Series series) {
@@ -297,7 +294,7 @@ public class EditSeriesListActivity
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
             mNameView.setText(mSeriesName);
-            mNameView.setAdapter(((EditSeriesListActivity) getActivity()).mSeriesAdapter);
+            mNameView.setAdapter(((EditSeriesListActivity) getActivity()).mAutoCompleteAdapter);
 
             mIsCompleteView = root.findViewById(R.id.is_complete);
             if (mIsCompleteView != null) {

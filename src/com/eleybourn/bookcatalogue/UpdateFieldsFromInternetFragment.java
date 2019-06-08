@@ -270,7 +270,6 @@ public class UpdateFieldsFromInternetFragment
             cb.setText(usage.getUsageInfo(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
-                // ENHANCE: The check is really a FOUR-state.
                 final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isSelected());

@@ -165,7 +165,7 @@ public class CoverHandler {
         }
     }
 
-    private void getCoverBrowser(final String isbn) {
+    private void getCoverBrowser(@NonNull final String isbn) {
         // we must use the same fragment manager as the hosting fragment.
         mCoverBrowserFragment = (CoverBrowserFragment)
                 mFragmentManager.findFragmentByTag(CoverBrowserFragment.TAG);

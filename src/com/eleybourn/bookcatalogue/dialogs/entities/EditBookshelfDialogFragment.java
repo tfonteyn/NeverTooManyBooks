@@ -185,7 +185,7 @@ public class EditBookshelfDialogFragment
                 .setIcon(R.drawable.ic_edit)
                 .setTitle(R.string.title_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
-                .setNegativeButton(android.R.string.cancel, ((d, which) -> d.dismiss()))
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(R.string.btn_merge, (d, which) -> {
                     d.dismiss();
 
@@ -217,7 +217,7 @@ public class EditBookshelfDialogFragment
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(final BookshelfChangedListener listener) {
+    public void setListener(@NonNull final BookshelfChangedListener listener) {
         mListener = new WeakReference<>(listener);
     }
 

@@ -166,7 +166,6 @@ public class CsvImporter
         // (e.g. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
         // (i.e. if not an update)
-        // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
 
         // need either ID or UUID
         requireColumnOrThrow(book, DBDefinitions.KEY_ID, DBDefinitions.KEY_BOOK_UUID);

@@ -32,13 +32,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 
 /**
  * Class to hold author data.
@@ -145,9 +142,9 @@ public class Author
     public Author(final long id,
                   @NonNull final ColumnMapper mapper) {
         mId = id;
-        mFamilyName = mapper.getString(DOM_AUTHOR_FAMILY_NAME);
-        mGivenNames = mapper.getString(DOM_AUTHOR_GIVEN_NAMES);
-        mIsComplete = mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
+        mFamilyName = mapper.getString(DBDefinitions.DOM_AUTHOR_FAMILY_NAME);
+        mGivenNames = mapper.getString(DBDefinitions.DOM_AUTHOR_GIVEN_NAMES);
+        mIsComplete = mapper.getBoolean(DBDefinitions.DOM_AUTHOR_IS_COMPLETE);
     }
 
     /** {@link Parcelable}. */

@@ -27,6 +27,8 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -78,13 +80,17 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** flag indicating global changes were made. Used in setResult. */
     protected boolean mGlobalReplacementsMade;
 
-    /** The adapter for the list. */
-    protected RecyclerViewAdapterBase mListAdapter;
+    /** AutoCompleteTextView adapter. */
+    protected ArrayAdapter<String> mAutoCompleteAdapter;
+    /** Main screen name field. */
+    protected AutoCompleteTextView mAutoCompleteTextView;
 
     /** The View for the list. */
     protected RecyclerView mListView;
-
     protected LinearLayoutManager mLayoutManager;
+    /** The adapter for the list. */
+    protected RecyclerViewAdapterBase mListAdapter;
+
 
     @Nullable
     protected String mBookTitle;
@@ -155,8 +161,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        menu.add(Menu.NONE, R.id.MENU_SAVE,
-                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
+        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
             .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 

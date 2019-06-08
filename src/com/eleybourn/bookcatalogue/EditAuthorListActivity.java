@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -51,7 +50,8 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
- * Activity to edit a list of authors provided in an ArrayList and return an updated list.
+ * Activity to edit a list of authors provided in an {@code ArrayList<Author>}
+ * and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
  *
@@ -59,13 +59,6 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
  */
 public class EditAuthorListActivity
         extends EditObjectListActivity<Author> {
-
-    /** Main screen Author name field. */
-    private AutoCompleteTextView mAuthorNameView;
-
-    /** Adapter for mAuthorNameView. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private ArrayAdapter<String> mAuthorAdapter;
 
     /**
      * Constructor.
@@ -85,29 +78,29 @@ public class EditAuthorListActivity
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
-        mAuthorAdapter = new ArrayAdapter<>(this,
-                                            android.R.layout.simple_dropdown_item_1line,
-                                            mDb.getAuthorsFormattedName());
+        mAutoCompleteAdapter = new ArrayAdapter<>(this,
+                                                  android.R.layout.simple_dropdown_item_1line,
+                                                  mDb.getAuthorsFormattedName());
 
-        mAuthorNameView = findViewById(R.id.author);
-        mAuthorNameView.setAdapter(mAuthorAdapter);
+        mAutoCompleteTextView = findViewById(R.id.author);
+        mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
     }
 
     @Override
     protected void onAdd(@NonNull final View target) {
-        String authorName = mAuthorNameView.getText().toString().trim();
-        if (authorName.isEmpty()) {
-            UserMessage.showUserMessage(mAuthorNameView, R.string.warning_required_name);
+        String name = mAutoCompleteTextView.getText().toString().trim();
+        if (name.isEmpty()) {
+            UserMessage.showUserMessage(mAutoCompleteTextView, R.string.warning_required_name);
             return;
         }
 
-        Author newAuthor = Author.fromString(authorName);
+        Author newAuthor = Author.fromString(name);
         // see if it already exists
         newAuthor.fixupId(mDb);
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
-                UserMessage.showUserMessage(mAuthorNameView,
+                UserMessage.showUserMessage(mAutoCompleteTextView,
                                             R.string.warning_author_already_in_list);
                 return;
             }
@@ -117,14 +110,13 @@ public class EditAuthorListActivity
         mListAdapter.notifyDataSetChanged();
 
         // and clear the form for next entry.
-        mAuthorNameView.setText("");
+        mAutoCompleteTextView.setText("");
     }
 
     @Override
     protected boolean onSave(@NonNull final Intent data) {
-        final AutoCompleteTextView view = findViewById(R.id.author);
-        String str = view.getText().toString().trim();
-        if (str.isEmpty()) {
+        String name = mAutoCompleteTextView.getText().toString().trim();
+        if (name.isEmpty()) {
             // no current edit, so we're good to go.
             return true;
         }
@@ -132,9 +124,10 @@ public class EditAuthorListActivity
         // if the user had enter a (partial) new name, check if it's ok to leave
         StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
             // runs when user clicks 'exit anyway'
-            view.setText("");
+            mAutoCompleteTextView.setText("");
             doSave();
         });
+
         return false;
     }
 
@@ -234,18 +227,16 @@ public class EditAuthorListActivity
          *
          * TODO: speculate if this can be simplified.
          */
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
-                         (d, which) -> {
-                             d.dismiss();
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
+            d.dismiss();
 
-                             mGlobalReplacementsMade = mDb.globalReplaceAuthor(author,
-                                                                               newAuthorData,
-                                                                               LocaleUtils.getPreferredLocal());
+            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData,
+                                                              LocaleUtils.getPreferredLocal());
 
-                             author.copyFrom(newAuthorData);
-                             Utils.pruneList(mDb, mList);
-                             mListAdapter.notifyDataSetChanged();
-                         });
+            author.copyFrom(newAuthorData);
+            Utils.pruneList(mDb, mList);
+            mListAdapter.notifyDataSetChanged();
+        });
 
         dialog.show();
     }

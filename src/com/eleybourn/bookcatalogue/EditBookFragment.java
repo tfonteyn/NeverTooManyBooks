@@ -225,7 +225,8 @@ public class EditBookFragment
      *
      * <br>Validation is done in two steps:
      * <ol>
-     * <li>The data in the fields, done on a per-fragment base in {@link EditBookBaseFragment#onSaveFieldsToBook()}<br>
+     * <li>The data in the fields, done on a per-fragment base in
+     * {@link EditBookBaseFragment#onSaveFieldsToBook()}<br>
      * Limited to one cross-validation between start/end dates for reading</li>
      * <li>the book data, done here.<br>
      * These are *data* checks, e.g. date formats, boolean, ...</li>
@@ -246,9 +247,6 @@ public class EditBookFragment
 
         Book book = mBookBaseFragmentModel.getBook();
 
-        // Ignore validation failures; but we still validate to get the current values updated.
-        //book.validate();
-
         // validate the book data
         if (!book.validate()) {
             //noinspection ConstantConditions
@@ -260,6 +258,9 @@ public class EditBookFragment
                     .create()
                     .show();
         }
+
+        // Ignore validation failures; but we still validate to get the current values updated.
+        //book.validate();
 
         // However, there is some data that we really do require...
         if (!book.containsKey(DBDefinitions.KEY_TITLE)
@@ -325,7 +326,7 @@ public class EditBookFragment
         @Override
         @NonNull
         public Fragment getItem(final int position) {
-            return mFragmentList.get(position).fragment;
+            return mFragmentList.get(position).getFragment();
         }
 
         @Override
@@ -340,44 +341,56 @@ public class EditBookFragment
         @Override
         @NonNull
         public CharSequence getPageTitle(final int position) {
-            return mFragmentList.get(position).title;
+            return mFragmentList.get(position).getTitle();
         }
     }
 
     private static class FragmentHolder {
 
         @NonNull
-        final String title;
+        private final String mTitle;
         @NonNull
-        Fragment fragment;
+        private Fragment mFragment;
 
         /**
          * Constructor.
          *
-         * @param fm FragmentManager
+         * @param fm    FragmentManager
+         * @param tag   of the fragment to create
+         * @param title the title/label to put on the tab
          */
         FragmentHolder(@NonNull final FragmentManager fm,
                        @NonNull final String tag,
                        @NonNull final String title) {
-            this.title = title;
+            mTitle = title;
 
             //noinspection ConstantConditions
-            fragment = fm.findFragmentByTag(tag);
-            if (fragment == null) {
+            mFragment = fm.findFragmentByTag(tag);
+            if (mFragment == null) {
                 if (EditBookFieldsFragment.TAG.equals(tag)) {
-                    fragment = new EditBookFieldsFragment();
+                    mFragment = new EditBookFieldsFragment();
 
                 } else if (EditBookPublicationFragment.TAG.equals(tag)) {
-                    fragment = new EditBookPublicationFragment();
+                    mFragment = new EditBookPublicationFragment();
 
                 } else if (EditBookNotesFragment.TAG.equals(tag)) {
-                    fragment = new EditBookNotesFragment();
+                    mFragment = new EditBookNotesFragment();
 
                 } else if (EditBookTocFragment.TAG.equals(tag)) {
-                    fragment = new EditBookTocFragment();
+                    mFragment = new EditBookTocFragment();
 
                 }
             }
+        }
+
+        @NonNull
+        public String getTitle() {
+            return mTitle;
+        }
+
+        @NonNull
+        public Fragment getFragment() {
+            return mFragment;
         }
     }
 }

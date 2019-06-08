@@ -40,6 +40,7 @@ public abstract class CropImageViewTouchBase
         extends AppCompatImageView {
 
     private static final float SCALE_RATE = 1.25F;
+
     /** Maximum upscaling for a viewed image. */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
     /** The current bitmap being displayed. */
@@ -70,24 +71,16 @@ public abstract class CropImageViewTouchBase
     private final Matrix mDisplayMatrix = new Matrix();
     /** Temporary buffer used for getting the values out of a matrix. */
     private final float[] mMatrixValues = new float[9];
-    protected int mLastXTouchPos;
-    protected int mLastYTouchPos;
-    int mScrollY;
-    int mScrollX;
     int mLeft;
     int mRight;
     int mTop;
     int mBottom;
-    int mPaddingTop;
-    int mPaddingBottom;
-    int mPaddingLeft;
-    int mPaddingRight;
     private int mThisWidth = -1;
     private int mThisHeight = -1;
     private float mMaxZoom;
     private Recycler mRecycler;
     @Nullable
-    private Runnable mOnLayoutRunnable = null;
+    private Runnable mOnLayoutRunnable;
 
     public CropImageViewTouchBase(@NonNull final Context context) {
         super(context);
@@ -169,7 +162,7 @@ public abstract class CropImageViewTouchBase
     @Override
     @CallSuper
     public boolean onKeyDown(final int keyCode,
-                             final KeyEvent event) {
+                             @NonNull final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
             // If we're large in, pressing Back jumps out to show the entire
             // image, otherwise Back returns the user to the gallery.
@@ -262,7 +255,8 @@ public abstract class CropImageViewTouchBase
         float height = rect.height();
         float width = rect.width();
 
-        float deltaX = 0, deltaY = 0;
+        float deltaX = 0;
+        float deltaY = 0;
 
         if (vertical) {
             int viewHeight = getHeight();

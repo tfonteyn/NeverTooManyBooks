@@ -247,7 +247,7 @@ public class SearchAmazonHandler
     private static final String XML_AMOUNT = "Amount";
 
     /** flag if we should fetch a thumbnail. */
-    private boolean mFetchThumbnail;
+    private final boolean mFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;

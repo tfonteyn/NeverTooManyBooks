@@ -120,7 +120,7 @@ public class ElementContext {
     /**
      * @param body of the tag.
      */
-    public void setBody(final String body) {
+    public void setBody(@NonNull final String body) {
         mBody = body.trim();
     }
 
@@ -130,7 +130,7 @@ public class ElementContext {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void setUserArg(final Object userArg) {
+    public void setUserArg(@Nullable final Object userArg) {
         mUserArg = userArg;
     }
 

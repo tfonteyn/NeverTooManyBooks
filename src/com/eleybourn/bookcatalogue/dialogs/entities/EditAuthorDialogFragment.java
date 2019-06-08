@@ -48,6 +48,8 @@ public class EditAuthorDialogFragment
      * Constructor.
      *
      * @param author to edit.
+     *
+     * @return the instance
      */
     public static EditAuthorDialogFragment newInstance(@NonNull final Author author) {
         EditAuthorDialogFragment frag = new EditAuthorDialogFragment();

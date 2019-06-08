@@ -210,7 +210,7 @@ public class ColumnMapper {
      * @throws ColumnNotPresentException if the column was not present.
      */
     @SuppressWarnings("WeakerAccess")
-    public double getDouble(final DomainDefinition domain)
+    public double getDouble(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
         Integer index = mColumnIndexes.get(domain.name);

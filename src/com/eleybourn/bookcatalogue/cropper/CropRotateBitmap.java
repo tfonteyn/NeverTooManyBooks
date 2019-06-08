@@ -39,13 +39,11 @@ class CropRotateBitmap {
         return mRotation;
     }
 
-    public void setRotation(int rotation) {
+    public void setRotation(final int rotation) {
         mRotation = rotation;
     }
 
     /**
-     * Can return {@code null}
-     *
      * @see #recycle()
      */
     @Nullable

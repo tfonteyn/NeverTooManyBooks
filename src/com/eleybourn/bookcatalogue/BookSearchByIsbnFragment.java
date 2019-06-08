@@ -113,6 +113,7 @@ public class BookSearchByIsbnFragment
                  * <p>
                  * <br>{@inheritDoc}
                  */
+                @Override
                 public void onSearchFinished(final boolean wasCancelled,
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {

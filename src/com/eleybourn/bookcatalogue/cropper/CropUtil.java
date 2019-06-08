@@ -39,12 +39,6 @@ final class CropUtil {
      * minSideLength is used to specify that minimal width or height of a bitmap.
      * maxNumOfPixels is used to specify the maximal size in pixels that are tolerable
      * in terms of memory usage.
-     * <p>
-     * The function returns a sample size based on the constraints. Both size and minSideLength
-     * can be passed in as {@link CropIImage#UNCONSTRAINED}, which indicates no care of
-     * the corresponding constraint.
-     * The functions prefers returning a sample size that generates a smaller bitmap,
-     * unless minSideLength = {@link CropIImage#UNCONSTRAINED}.
      */
     static Bitmap transform(@NonNull Matrix matrix,
                             @NonNull final Bitmap source,
@@ -60,19 +54,20 @@ final class CropUtil {
              * possible into the target and leaving the top/bottom or left/right
              * (or both) black.
              */
-            Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight,
-                                            Bitmap.Config.ARGB_8888);
+            Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b2);
 
             int deltaXHalf = Math.max(0, deltaX / 2);
             int deltaYHalf = Math.max(0, deltaY / 2);
-            Rect src = new Rect(deltaXHalf, deltaYHalf, deltaXHalf
-                    + Math.min(targetWidth, source.getWidth()), deltaYHalf
-                                        + Math.min(targetHeight, source.getHeight()));
+            Rect src = new Rect(deltaXHalf, deltaYHalf,
+                                deltaXHalf + Math.min(targetWidth, source.getWidth()),
+                                deltaYHalf + Math.min(targetHeight, source.getHeight()));
+
             int dstX = (targetWidth - src.width()) / 2;
             int dstY = (targetHeight - src.height()) / 2;
-            Rect dst = new Rect(dstX, dstY, targetWidth - dstX, targetHeight
-                    - dstY);
+            Rect dst = new Rect(dstX, dstY,
+                                targetWidth - dstX,
+                                targetHeight - dstY);
             c.drawBitmap(source, src, dst, null);
             return b2;
         }
@@ -101,8 +96,9 @@ final class CropUtil {
         Bitmap b1;
         if (matrix != null) {
             // this is used for mini thumb and crop, so we want to filter here.
-            b1 = Bitmap.createBitmap(source, 0, 0, source.getWidth(),
-                                     source.getHeight(), matrix, true);
+            b1 = Bitmap.createBitmap(source, 0, 0,
+                                     source.getWidth(), source.getHeight(),
+                                     matrix, true);
         } else {
             b1 = source;
         }
@@ -110,8 +106,7 @@ final class CropUtil {
         int dx1 = Math.max(0, b1.getWidth() - targetWidth);
         int dy1 = Math.max(0, b1.getHeight() - targetHeight);
 
-        Bitmap b2 = Bitmap.createBitmap(b1, dx1 / 2, dy1 / 2, targetWidth,
-                                        targetHeight);
+        Bitmap b2 = Bitmap.createBitmap(b1, dx1 / 2, dy1 / 2, targetWidth, targetHeight);
 
         if (b1 != source) {
             b1.recycle();
@@ -128,9 +123,60 @@ final class CropUtil {
         // Make the progress dialog not-cancelable, so that we can guarantee
         // the thread will be done before the activity getting destroyed.
         @Deprecated
-        ProgressDialog progressDialog = ProgressDialog.show(activity,
-                                                            title, message, true, false);
+        ProgressDialog progressDialog =
+                ProgressDialog.show(activity, title, message, true, false);
         new Thread(new BackgroundJob(activity, job, progressDialog, handler)).start();
+    }
+
+    /**
+     * Rotates the bitmap by the specified degree.
+     * If a new bitmap is created, the original bitmap is recycled.
+     */
+    public static Bitmap rotate(@Nullable Bitmap bm,
+                                final int degrees) {
+        if (degrees != 0 && bm != null) {
+            Matrix matrix = new Matrix();
+            matrix.setRotate(degrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+            try {
+                Bitmap b2 = Bitmap.createBitmap(bm, 0, 0,
+                                                bm.getWidth(), bm.getHeight(),
+                                                matrix, true);
+                if (bm != b2) {
+                    bm.recycle();
+                    bm = b2;
+                }
+            } catch (OutOfMemoryError e) {
+                // We have no memory to rotate. Return the original bitmap.
+            }
+        }
+        return bm;
+    }
+
+    /**
+     * Creates a centered bitmap of the desired size. Recycles the input when requested.
+     */
+    public static Bitmap extractMiniThumb(@Nullable final Bitmap source,
+                                          final int width,
+                                          final int height,
+                                          final boolean recycle) {
+        if (source == null) {
+            return null;
+        }
+
+        float scale;
+        if (source.getWidth() < source.getHeight()) {
+            scale = width / (float) source.getWidth();
+        } else {
+            scale = height / (float) source.getHeight();
+        }
+        Matrix matrix = new Matrix();
+        matrix.setScale(scale, scale);
+        Bitmap miniThumbnail = transform(matrix, source, width, height, false);
+
+        if (recycle && miniThumbnail != source) {
+            source.recycle();
+        }
+        return miniThumbnail;
     }
 
     private static class BackgroundJob
@@ -193,104 +239,4 @@ final class CropUtil {
             mDialog.show();
         }
     }
-
-
-//    /**
-//     * Rotates the bitmap by the specified degree.
-//     * If a new bitmap is created, the original bitmap is recycled.
-//     */
-//    public static Bitmap rotate(Bitmap b, int degrees) {
-//        if (degrees != 0 && b != null) {
-//            Matrix matrix = new Matrix();
-//            matrix.setRotate(degrees, (float) b.getWidth() / 2, (float) b.getHeight() / 2);
-//            try {
-//                Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(),
-//                        b.getHeight(), matrix, true);
-//                if (b != b2) {
-//                    b.recycle();
-//                    b = b2;
-//                }
-//            } catch (OutOfMemoryError ex) {
-//                // We have no memory to rotate. Return the original bitmap.
-//            }
-//        }
-//        return b;
-//    }
-
-//	/**
-//	 * Creates a centered bitmap of the desired size. Recycles the input.
-//	 */
-//	public static Bitmap extractMiniThumb(Bitmap source, int width, int height, boolean recycle) {
-//		if (source == null) {
-//			return null;
-//		}
-//
-//		float SCALE;
-//		if (source.getWidth() < source.getHeight()) {
-//			SCALE = width / (float) source.getWidth();
-//		} else {
-//			SCALE = height / (float) source.getHeight();
-//		}
-//		Matrix matrix = new Matrix();
-//		matrix.setScale(SCALE, SCALE);
-//		Bitmap miniThumbnail = transform(matrix, source, width, height, false);
-//
-//		if (recycle && miniThumbnail != source) {
-//			source.recycle();
-//		}
-//		return miniThumbnail;
-//	}
-
-//	/**
-//	 * Create a video thumbnail for a video. May return {@code null} if the video is
-//	 * corrupt.
-//	 *
-//	 * @param filePath
-//	 */
-//    public static Bitmap createVideoThumbnail(String filePath) {
-//        Bitmap bitmap = null;
-//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//        try {
-//            retriever.setMode(MediaMetadataRetriever.MODE_CAPTURE_FRAME_ONLY);
-//            retriever.setDataSource(filePath);
-//            bitmap = retriever.captureFrame();
-//        } catch (RuntimeException ignore) {
-//            // Assume this is a corrupt video file.
-//        } finally {
-//            try {
-//                retriever.release();
-//            } catch (RuntimeException ignore) {
-//            }
-//            return bitmap;
-//        }
-
-//	public static <T> int indexOf(T[] array, T s) {
-//		for (int i = 0; i < array.length; i++) {
-//			if (array[i].equals(s)) {
-//				return i;
-//			}
-//		}
-//		return -1;
-//	}
-
-//    /**
-//     * Make a bitmap from a given Uri.
-//     */
-//     private static ParcelFileDescriptor makeInputStream(Uri uri, ContentResolver cr) {
-//         try {
-//            return cr.openFileDescriptor(uri, "r");
-//         } catch (IOException ex) {
-//            return null;
-//         }
-//     }
-
-//	public static synchronized OnClickListener getNullOnClickListener() {
-//		if (sNullOnClickListener == null) {
-//			sNullOnClickListener = new OnClickListener() {
-//				public void onClick(@NonNull final View v) {
-//				}
-//			};
-//		}
-//		return sNullOnClickListener;
-//	}
 }

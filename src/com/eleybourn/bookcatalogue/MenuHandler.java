@@ -159,8 +159,8 @@ public final class MenuHandler {
      * @param menu Root menu
      * @param book the current book
      */
-    static void prepareAmazonSearchSubMenu(final Menu menu,
-                                           final Book book) {
+    static void prepareAmazonSearchSubMenu(@NonNull final Menu menu,
+                                           @NonNull final Book book) {
         boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
         boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
         menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);

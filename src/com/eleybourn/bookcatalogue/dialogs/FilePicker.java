@@ -42,7 +42,7 @@ public class FilePicker
                       @NonNull final PickListener<File> handler) {
         super(context, title, message);
 
-        final FileItemListAdapter adapter = new FileItemListAdapter(context, files, (item) -> {
+        final FileItemListAdapter adapter = new FileItemListAdapter(context, files, item -> {
             dismiss();
             handler.onPicked(item);
         });
@@ -53,7 +53,7 @@ public class FilePicker
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
-        final Locale mLocale;
+        private final Locale mLocale;
         @NonNull
         private final List<File> mList;
         @NonNull
@@ -88,11 +88,11 @@ public class FilePicker
             Context context = mInflater.getContext();
 
             File item = mList.get(position);
-            holder.name.setText(item.getName());
-            holder.path.setText(item.getParent());
-            holder.size.setText(Utils.formatFileSize(context, item.length()));
-            holder.lastModDate.setText(DateUtils.toPrettyDateTime(mLocale,
-                                                                  new Date(item.lastModified())));
+            holder.nameView.setText(item.getName());
+            holder.pathView.setText(item.getParent());
+            holder.sizeView.setText(Utils.formatFileSize(context, item.length()));
+            holder.lastModDateView.setText(DateUtils.toPrettyDateTime(mLocale,
+                                                                      new Date(item.lastModified())));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));
@@ -108,22 +108,22 @@ public class FilePicker
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final TextView name;
+        final TextView nameView;
         @NonNull
-        final TextView path;
+        final TextView pathView;
         @NonNull
-        final TextView size;
+        final TextView sizeView;
         @NonNull
-        final TextView lastModDate;
+        final TextView lastModDateView;
 
 
         Holder(@NonNull final View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.name);
-            path = itemView.findViewById(R.id.path);
-            size = itemView.findViewById(R.id.size);
-            lastModDate = itemView.findViewById(R.id.date);
+            nameView = itemView.findViewById(R.id.name);
+            pathView = itemView.findViewById(R.id.path);
+            sizeView = itemView.findViewById(R.id.size);
+            lastModDateView = itemView.findViewById(R.id.date);
         }
     }
 }
