@@ -214,7 +214,6 @@ public class App
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
         } catch (PackageManager.NameNotFoundException ignore) {
-
         }
         return packageInfo;
     }

@@ -9,7 +9,7 @@
     android:layout_marginTop="@dimen/border1"
     >
 
-    <!-- tools sizes are set to scale==LARGE (default is actually MEDIUM) -->
+    <!-- tools sizes are set to scale==LARGE -->
     <ImageView
         android:id="@+id/coverImage"
         style="@style/CoverImage"

@@ -32,7 +32,7 @@ public class StylePickerDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = StylePickerDialogFragment.class.getSimpleName();
+    public static final String TAG = "StylePickerDialogFragment";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
@@ -121,8 +121,7 @@ public class StylePickerDialogFragment
                 .create();
     }
 
-    private void onStyleSelected(@NonNull final View v) {
-        BooklistStyle style = (BooklistStyle) v.getTag(R.id.TAG_ITEM);
+    private void onStyleSelected(@NonNull final BooklistStyle style) {
         if (mListener.get() != null) {
             mListener.get().onStyleChanged(style);
         } else {

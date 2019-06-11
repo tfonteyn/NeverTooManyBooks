@@ -808,4 +808,6 @@
     <string name="error_storage_no_space_left">Stockage insuffisant disponible</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu’il dispose d’un espace suffisant.</string>
     <string name="clear">Effacer</string>
+    <string name="btn_confirm_new">Nouveau</string>
+    <string name="title_edit_book_authors">Modifier les auteurs du livre</string>
 </resources>

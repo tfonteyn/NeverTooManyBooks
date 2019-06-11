@@ -76,7 +76,8 @@ public class EditAuthorListActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(mBookTitle);
+
+        setTitle(R.string.title_edit_book_authors);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
                                                   android.R.layout.simple_dropdown_item_1line,
@@ -249,7 +250,9 @@ public class EditAuthorListActivity
             extends EditAuthorBaseDialogFragment {
 
         /** Fragment manager tag. */
-        public static final String TAG = EditBookAuthorDialogFragment.class.getSimpleName();
+        public static final String TAG = "EditBookAuthorDialogFragment";
+
+        private EditAuthorListActivity mActivity;
 
         /**
          * Constructor.
@@ -266,6 +269,13 @@ public class EditAuthorListActivity
             return frag;
         }
 
+        @Override
+        public void onAttach(@NonNull final Context context) {
+            super.onAttach(context);
+            //TOMF: use interface
+            mActivity = (EditAuthorListActivity) getActivity();
+        }
+
         /**
          * Handle the edits.
          *
@@ -274,8 +284,7 @@ public class EditAuthorListActivity
          */
         protected void confirmChanges(@NonNull final Author author,
                                       @NonNull final Author newAuthorData) {
-            //noinspection ConstantConditions
-            ((EditAuthorListActivity) getActivity()).processChanges(author, newAuthorData);
+            mActivity.processChanges(author, newAuthorData);
         }
     }
 

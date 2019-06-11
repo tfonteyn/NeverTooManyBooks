@@ -123,12 +123,13 @@ public class StyleGroupsActivity
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
 
-        ActionBar bar = getSupportActionBar();
-        //noinspection ConstantConditions
-        bar.setTitle(R.string.title_edit_style);
-        bar.setSubtitle(getString(R.string.name_colon_value,
-                                  getString(R.string.pg_groupings),
-                                  mStyle.getLabel(this)));
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.title_edit_style);
+            actionBar.setSubtitle(
+                    getString(R.string.name_colon_value,
+                              getString(R.string.pg_groupings), mStyle.getLabel(this)));
+        }
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),

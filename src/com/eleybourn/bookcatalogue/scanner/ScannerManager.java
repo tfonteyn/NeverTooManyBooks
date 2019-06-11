@@ -29,9 +29,9 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public final class ScannerManager {
 
     /** Unique IDs to associate with each supported scanner intent. */
-    private static final int SCANNER_ZXING_COMPATIBLE = 0;
-    private static final int SCANNER_PIC2SHOP = 1;
-    private static final int SCANNER_ZXING = 2;
+    public static final int SCANNER_ZXING_COMPATIBLE = 0;
+    public static final int SCANNER_ZXING = 1;
+    public static final int SCANNER_PIC2SHOP = 2;
 
     /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")

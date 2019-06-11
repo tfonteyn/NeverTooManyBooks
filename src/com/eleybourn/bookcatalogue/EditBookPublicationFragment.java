@@ -40,7 +40,7 @@ public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookPublicationFragment.class.getSimpleName();
+    public static final String TAG = "EditBookPublicationFragment";
 
     @Override
     @Nullable

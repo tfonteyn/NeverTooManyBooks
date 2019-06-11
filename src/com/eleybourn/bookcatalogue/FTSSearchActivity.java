@@ -80,7 +80,7 @@ public class FTSSearchActivity
     /** show the number of results. */
     private TextView mBooksFound;
     /** The results list. */
-    private ArrayList<Integer> mBookIdsFound;
+    private ArrayList<Long> mBookIdsFound;
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -240,7 +240,7 @@ public class FTSSearchActivity
                 }
                 mBookIdsFound = new ArrayList<>(cursor.getCount());
                 while (cursor.moveToNext()) {
-                    mBookIdsFound.add(cursor.getInt(0));
+                    mBookIdsFound.add(cursor.getLong(0));
                 }
 
             }

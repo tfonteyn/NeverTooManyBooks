@@ -34,7 +34,7 @@ public abstract class BRBaseActivity
         extends BaseActivity {
 
     /** Fragment manager tag. */
-    public static final String TAG = BRBaseActivity.class.getSimpleName();
+    public static final String TAG = "BRBaseActivity";
 
     private static final String BKEY_ROOT_PATH = TAG + ":root";
     private static final String BKEY_FILE_LIST = TAG + ":list";

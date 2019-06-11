@@ -941,5 +941,7 @@
     <string name="title_import">Importieren</string>
     <string name="btn_drag_handle">Ziehen Sie, um diese Liste neu zu ordnen.</string>
     <string name="clear">Klar</string>
+    <string name="btn_confirm_new">Neu</string>
+    <string name="title_edit_book_authors">Buchautoren bearbeiten</string>
 
 </resources>

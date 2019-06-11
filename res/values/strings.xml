@@ -718,6 +718,7 @@ TODO: uniform quotes in all string:
     <string name="title_delete_series">Delete Series</string>
     <string name="title_duplicate_book">Duplicate Book</string>
     <string name="title_edit_book_series">Edit Book Series</string>
+    <string name="title_edit_book_authors">Edit Book Authors</string>
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
     <string name="title_edit_bookshelf">Edit Bookshelf</string>
     <string name="title_edit_style">Edit style</string>
@@ -745,6 +746,7 @@ TODO: uniform quotes in all string:
 
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_add">Add</string>
+    <string name="btn_confirm_new">New</string>
     <string name="btn_confirm_update">Update</string>
 
     <!-- For saving and opening exports or backups -->

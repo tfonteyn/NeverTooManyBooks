@@ -53,7 +53,7 @@ public class EditPublisherDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
+    public static final String TAG = "EditPublisherDialogFragment";
 
     /** Database access. */
     private DAO mDb;

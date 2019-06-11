@@ -1,6 +1,8 @@
 package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -26,7 +28,7 @@ public abstract class EditStringBaseDialog {
     protected final DAO mDb;
 
     @NonNull
-    private final Activity mActivity;
+    private final Context mContext;
     @Nullable
     protected final BookChangedListener mListener;
 
@@ -41,10 +43,10 @@ public abstract class EditStringBaseDialog {
      *
      * @param listener Runnable to be started after user confirming
      */
-    EditStringBaseDialog(@NonNull final Activity activity,
+    EditStringBaseDialog(@NonNull final Context context,
                          @NonNull final DAO db,
                          @Nullable final BookChangedListener listener) {
-        mActivity = activity;
+        mContext = context;
         mDb = db;
         mListener = listener;
         mAdapter = null;
@@ -56,14 +58,14 @@ public abstract class EditStringBaseDialog {
      * @param list      for the AutoCompleteTextView
      * @param listener BookChangedListener
      */
-    EditStringBaseDialog(@NonNull final Activity activity,
+    EditStringBaseDialog(@NonNull final Context context,
                          @NonNull final DAO db,
                          @NonNull final List<String> list,
                          @Nullable final BookChangedListener listener) {
-        mActivity = activity;
+        mContext = context;
         mDb = db;
         mListener = listener;
-        mAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, list);
+        mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, list);
     }
 
     /**
@@ -76,7 +78,7 @@ public abstract class EditStringBaseDialog {
                         @StringRes final int title) {
 
         // Build the base dialog
-        final View root = mActivity.getLayoutInflater().inflate(dialogLayoutId, null);
+        final View root = LayoutInflater.from(mContext).inflate(dialogLayoutId, null);
 
         mCurrentText = currentText;
         mEditText = root.findViewById(R.id.name);
@@ -85,7 +87,7 @@ public abstract class EditStringBaseDialog {
             ((AutoCompleteTextView) mEditText).setAdapter(mAdapter);
         }
 
-        new AlertDialog.Builder(mActivity)
+        new AlertDialog.Builder(mContext)
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(title)

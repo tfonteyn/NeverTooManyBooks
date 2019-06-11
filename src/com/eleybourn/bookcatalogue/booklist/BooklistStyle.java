@@ -542,7 +542,7 @@ public class BooklistStyle
     }
 
     /**
-     * @param isPreferred set to {@code true} if the style is among preferred styles.
+     * @param isPreferred set to {@code true} if the style should become a preferred style.
      */
     public void setPreferred(final boolean isPreferred) {
         mIsPreferred.set(isPreferred);
@@ -904,7 +904,6 @@ public class BooklistStyle
             object = in.readObject();
         } // else it's a pre-version object, just use it
 
-
         SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
@@ -970,6 +969,10 @@ public class BooklistStyle
                 mShowHeaderInfo.set(ed, i & SUMMARY_SHOW_ALL);
             }
         }
+
+        // During migration, simply set all custom styles to being 'preferred'
+        // This is a lazy solution but good enough.
+        mIsPreferred.set(true);
 
         // base class de-serialized the groups to legacy format, convert them to current format.
         for (BooklistGroup group : mGroups) {

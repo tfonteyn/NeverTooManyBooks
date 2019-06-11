@@ -35,7 +35,7 @@ public class FileListerTask
         extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
 
     /** Used by the {@link ProgressDialogFragment} for this task. */
-    public static final String TAG = FileListerTask.class.getSimpleName();
+    public static final String TAG = "FileListerTask";
 
     /**
      * Perform case-insensitive sorting using system locale (i.e. mFileDetails are system objects).

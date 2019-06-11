@@ -14,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -25,16 +22,20 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.utils.Csv;
+import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 
 /**
  * The preference key names here are the ones that define USER settings.
  * See {@link com.eleybourn.bookcatalogue.settings.SettingsActivity} and children.
- *
+ * <p>
  * These keys *MUST* be kept in sync with "res/xml/preferences*.xml"
- *
+ * <p>
  * Application internal settings are done where they are needed/used.
- *
+ * <p>
  * The pre-v200 migration method {@link #migratePreV200preferences} is also located here.
  */
 public final class Prefs {
@@ -169,7 +170,20 @@ public final class Prefs {
                         break;
 
                     case "BookList.Global.BooklistState":
-                        ed.putString(pk_bob_list_state, String.valueOf((Integer) oldValue - 1));
+                        int bobState = (Integer) oldValue;
+                        switch (bobState) {
+                            case 1:
+                                bobState = BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED;
+                                break;
+                            case 2:
+                                bobState = BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_COLLAPSED;
+                                break;
+                            case 3:
+                                bobState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
+                                break;
+
+                        }
+                        ed.putString(pk_bob_list_state, String.valueOf(bobState));
                         break;
 
                     case "App.BooklistGenerationMode":
@@ -203,12 +217,23 @@ public final class Prefs {
                         break;
 
                     case "ScannerManager.PreferredScanner":
-                        ed.putString(key, String.valueOf((Integer) oldValue - 1));
+                        int scanner = (Integer) oldValue;
+                        switch (scanner) {
+                            case 1:
+                                scanner = ScannerManager.SCANNER_ZXING_COMPATIBLE;
+                                break;
+                            case 2:
+                                scanner = ScannerManager.SCANNER_PIC2SHOP;
+                                break;
+                            case 3:
+                                scanner = ScannerManager.SCANNER_ZXING;
+                                break;
+                        }
+                        ed.putString(key, String.valueOf(scanner));
                         break;
 
                     case "App.CropFrameWholeImage":
-                        ed.putBoolean(pk_thumbnails_crop_whole_image,
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_thumbnails_crop_whole_image, (Boolean) oldValue);
                         break;
 
                     case "App.UseExternalImageCropper":
@@ -288,7 +313,7 @@ public final class Prefs {
                     case "lt_devkey":
                         String tmpDevKey = (String) oldValue;
                         if (!tmpDevKey.isEmpty()) {
-                            ed.putString(LibraryThingManager.PREFS_DEV_KEY, (String) oldValue);
+                            ed.putString(LibraryThingManager.PREFS_DEV_KEY, tmpDevKey);
                         }
                         break;
 
@@ -296,8 +321,7 @@ public final class Prefs {
                      * Internal settings
                      */
                     case "state_opened":
-                        ed.putInt(StartupActivity.PREF_STARTUP_COUNTDOWN,
-                                  (Integer) oldValue);
+                        ed.putInt(StartupActivity.PREF_STARTUP_COUNTDOWN, (Integer) oldValue);
                         break;
 
                     case StartupActivity.PREF_STARTUP_COUNT:
@@ -316,14 +340,15 @@ public final class Prefs {
                         break;
 
                     case "BooksOnBookshelf.TOP_ROW_TOP":
-                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET, (Integer) oldValue);
+                        ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET,
+                                  (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
                         ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyle(context, styleName).getUuid());
+                                     BooklistStyles.getStyle(context, styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":

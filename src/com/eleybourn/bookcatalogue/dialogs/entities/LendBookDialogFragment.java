@@ -63,7 +63,7 @@ public class LendBookDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = LendBookDialogFragment.class.getSimpleName();
+    public static final String TAG = "LendBookDialogFragment";
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -222,19 +222,19 @@ public class LendBookDialogFragment
      */
     private void setPhoneContactsAdapter() {
         //noinspection ConstantConditions
-        if (ContextCompat.checkSelfPermission(
-                getActivity(),
-                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(),
-                    new String[]{Manifest.permission.READ_CONTACTS},
-                    UniqueId.REQ_ANDROID_PERMISSIONS);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            //noinspection ConstantConditions
+            ActivityCompat.requestPermissions(getActivity(),
+                                              new String[]{Manifest.permission.READ_CONTACTS},
+                                              UniqueId.REQ_ANDROID_PERMISSIONS);
             return;
         }
+
         // call secured method
         ArrayList<String> contacts = getPhoneContacts();
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line,
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                    contacts);
         mLoaneeView.setAdapter(adapter);
     }
@@ -252,7 +252,7 @@ public class LendBookDialogFragment
             throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         @SuppressWarnings("ConstantConditions")
-        ContentResolver cr = getActivity().getContentResolver();
+        ContentResolver cr = getContext().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                                               null, null, null)) {
             if (contactsCursor != null) {

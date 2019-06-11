@@ -48,7 +48,7 @@ public class AdminFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = AdminFragment.class.getSimpleName();
+    public static final String TAG = "AdminFragment";
 
     /** requestCode for making a backup to archive. */
     private static final int REQ_ARCHIVE_BACKUP = 0;
@@ -111,7 +111,6 @@ public class AdminFragment
                     Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
                     break;
             }
-
 
         }
     };
@@ -398,7 +397,7 @@ public class AdminFragment
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_cleanup_files)
                 .setMessage(msg)
-                .setNegativeButton(android.R.string.cancel, (d,which) -> d.dismiss())
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok,
                                    (dialog, which) -> StorageUtils.purgeFiles(true))
                 .create()
@@ -411,9 +410,13 @@ public class AdminFragment
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.debug)
                 .setMessage(R.string.debug_send_info_text)
-                .setNegativeButton(android.R.string.cancel, (d,which) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok,
-                                   (dialog, which) -> DebugReport.sendDebugInfo(getActivity()))
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    if (!DebugReport.sendDebugInfo(getContext())) {
+                        //noinspection ConstantConditions
+                        UserMessage.showUserMessage(getView(), R.string.error_email_failed);
+                    }
+                })
                 .create()
                 .show();
     }

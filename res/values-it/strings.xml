@@ -726,5 +726,7 @@
     <string name="book_format_digest">Digest</string>
     <string name="error_storage_not_accessible">Archiviazione non accessibile</string>
     <string name="clear">Pulire</string>
+    <string name="btn_confirm_new">Nuovo</string>
+    <string name="title_edit_book_authors">Modifica autori di libri</string>
 
 </resources>

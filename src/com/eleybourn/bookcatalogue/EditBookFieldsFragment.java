@@ -51,7 +51,7 @@ public class EditBookFieldsFragment
         extends EditBookBaseFragment<Bookshelf> {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookFieldsFragment.class.getSimpleName();
+    public static final String TAG = "EditBookFieldsFragment";
 
     private static final int REQ_EDIT_AUTHORS = 0;
     private static final int REQ_EDIT_SERIES = 1;
@@ -110,7 +110,7 @@ public class EditBookFieldsFragment
 //        field = fields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
         Field coverImageField = fields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
         //noinspection ConstantConditions
-        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getActivity());
+        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
@@ -125,7 +125,7 @@ public class EditBookFieldsFragment
             String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
-            Intent intent = new Intent(getActivity(), EditAuthorListActivity.class)
+            Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
                     .putExtra(DBDefinitions.KEY_ID, book.getId())
                     .putExtra(DBDefinitions.KEY_TITLE, title)
                     .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, list);
@@ -139,7 +139,7 @@ public class EditBookFieldsFragment
             String title = fields.getField(R.id.title).getValue().toString().trim();
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
-            Intent intent = new Intent(getActivity(), EditSeriesListActivity.class)
+            Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
                     .putExtra(DBDefinitions.KEY_ID, book.getId())
                     .putExtra(DBDefinitions.KEY_TITLE, title)
                     .putExtra(UniqueId.BKEY_SERIES_ARRAY, list);

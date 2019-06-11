@@ -38,7 +38,7 @@ public class StyleSettingsFragment
         extends BaseSettingsFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = StyleSettingsFragment.class.getSimpleName();
+    public static final String TAG = "StyleSettingsFragment";
 
     /** Style we are editing. */
     private BooklistStyle mStyle;
@@ -73,13 +73,15 @@ public class StyleSettingsFragment
         }
 
         @SuppressWarnings("ConstantConditions")
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        bar.setSubtitle(mStyle.getLabel(getContext()));
-        if (mStyle.getId() == 0) {
-            bar.setTitle(R.string.title_clone_style);
-        } else {
-            bar.setTitle(R.string.title_edit_style);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            if (mStyle.getId() == 0) {
+                actionBar.setTitle(R.string.title_clone_style);
+            } else {
+                actionBar.setTitle(R.string.title_edit_style);
+            }
+            //noinspection ConstantConditions
+            actionBar.setSubtitle(mStyle.getLabel(getContext()));
         }
 
         // Display hint if required

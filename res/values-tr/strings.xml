@@ -724,5 +724,7 @@
     <string name="clear">Silme</string>
     <string name="X_pt_bob_preferred_style">Tercihli</string>
     <string name="X_select_bookshelves">Raflardan seçin</string>
+    <string name="btn_confirm_new">Yeni</string>
+    <string name="title_edit_book_authors">Kitap Yazarlarını Düzenle</string>
 
 </resources>

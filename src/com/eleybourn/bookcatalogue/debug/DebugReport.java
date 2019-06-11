@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.debug;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -28,10 +27,9 @@ import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
-import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.settings.Prefs;
+import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public final class DebugReport {
 
@@ -101,36 +99,36 @@ public final class DebugReport {
      * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(@NonNull final Activity activity) {
+    public static boolean sendDebugInfo(@NonNull final Context context) {
+
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
         StorageUtils.exportFile(DBHelper.getDatabasePath(), tmpDbFile.getName());
 
         // setup the mail message
-        String subject = '[' + activity.getString(R.string.app_name) + "] "
-                + activity.getString(R.string.debug_subject);
+        String subject = '[' + context.getString(R.string.app_name) + "] "
+                + context.getString(R.string.debug_subject);
         final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                 .setType("plain/text")
                 .putExtra(Intent.EXTRA_SUBJECT, subject)
-                .putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug)
-                                                      .split(";"));
+                .putExtra(Intent.EXTRA_EMAIL, context.getString(R.string.email_debug)
+                                                     .split(";"));
         StringBuilder message = new StringBuilder();
 
-        try {
-            // Get app info
-            PackageManager manager = activity.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo(activity.getPackageName(), 0);
+
+        // Get app info
+        PackageInfo appInfo = App.getPackageInfo(0);
+        if (appInfo != null) {
             message.append("App: ")
                    .append(appInfo.packageName).append('\n')
                    .append("Version: ")
                    .append(appInfo.versionName)
                    // versionCode deprecated and new method in API: 28, till then ignore...
                    .append(" (").append(appInfo.versionCode).append(")\n");
-        } catch (PackageManager.NameNotFoundException ignore) {
-            // Not much we can do inside error logger...
+        } else {
+            message.append("PackageInfo == null?");
         }
-
 
         message.append("SDK: ").append(Build.VERSION.RELEASE)
                .append(" (").append(Build.VERSION.SDK_INT)
@@ -141,7 +139,7 @@ public final class DebugReport {
                .append("Phone Product: ").append(Build.PRODUCT).append('\n')
                .append("Phone Brand: ").append(Build.BRAND).append('\n')
                .append("Phone ID: ").append(Build.ID).append('\n')
-               .append("Signed-By: ").append(signedBy(activity)).append('\n')
+               .append("Signed-By: ").append(signedBy(context)).append('\n')
                .append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
 
         // Scanners installed
@@ -158,7 +156,7 @@ public final class DebugReport {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);
                 final List<ResolveInfo> resolved =
-                        activity.getPackageManager().queryIntentActivities(mainIntent, 0);
+                        context.getPackageManager().queryIntentActivities(mainIntent, 0);
 
                 if (!resolved.isEmpty()) {
                     for (ResolveInfo r : resolved) {
@@ -193,7 +191,7 @@ public final class DebugReport {
         message.append(GoogleBooksManager.getBaseURL()).append('\n');
 
         message.append("Details:\n\n")
-               .append(activity.getString(R.string.debug_body)).append("\n\n");
+               .append(context.getString(R.string.debug_body)).append("\n\n");
 
         if (BuildConfig.DEBUG /* always */) {
             Logger.debug(DebugReport.class, "sendDebugInfo", message);
@@ -214,19 +212,21 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    attachmentUris.add(FileProvider.getUriForFile(activity,
+                    attachmentUris.add(FileProvider.getUriForFile(context,
                                                                   GenericFileProvider.AUTHORITY,
                                                                   file));
                 }
             }
 
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
-            activity.startActivity(
-                    Intent.createChooser(intent, activity.getString(R.string.title_send_mail)));
+            context.startActivity(
+                    Intent.createChooser(intent, context.getString(R.string.title_send_mail)));
+
+            return true;
 
         } catch (NullPointerException e) {
             Logger.error(DebugReport.class, e);
-            UserMessage.showUserMessage(activity, R.string.error_email_failed);
+            return false;
         }
     }
 

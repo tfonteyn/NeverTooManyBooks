@@ -2369,16 +2369,13 @@ public class DAO
      * @param tocId id of the entry (story)
      *
      * @return id-of-book list
-     * <p>
-     * ENHANCE: we use Integer here, but a primary key can be 8 bytes, i.e. a Long
-     * On the other hand, the autoincrement reaching 33 bit long values....
      */
-    public ArrayList<Integer> getBookIdsByTocEntry(final long tocId) {
-        ArrayList<Integer> list = new ArrayList<>();
+    public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
+        ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
                                                 new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
-                list.add(cursor.getInt(0));
+                list.add(cursor.getLong(0));
             }
         }
         return list;

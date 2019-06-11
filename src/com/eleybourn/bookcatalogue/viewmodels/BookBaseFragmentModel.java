@@ -78,11 +78,12 @@ public class BookBaseFragmentModel
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
                     mBook = new Book(bookData);
+
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
                     long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
                     // If the id is valid, load from database.
-                    // or if it's 0, create a new 'empty' book. Because paranoia.
+                    // or if it's 0, create a new 'empty' book.
                     mBook = new Book(bookId, mDb);
                 }
             } else {

@@ -40,7 +40,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
@@ -169,6 +168,10 @@ public class BooksOnBookshelf
                 }
             };
 
+    /**
+     * Sure, this could al be condensed to initBookList,
+     * but the intention is to make the rebuild fine grained.
+     */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
 
         // changes were made to a single book
@@ -197,41 +200,17 @@ public class BooksOnBookshelf
         }
     };
 
+    /**
+     * Apply the style that a user has selected.
+     */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
-                /**
-                 * Apply the style that a user has selected.
-                 *
-                 * @param style that was selected
-                 */
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
-
-                    // save the new bookshelf/style combination
-                    mModel.getCurrentBookshelf().setAsPreferred();
-                    mModel.setCurrentStyle(style);
-
-                    /* Set the rebuild state like this is the first time in, which it sort of is,
-                     * given we are changing style.
-                     * There is very little ability to preserve position when going from
-                     * a list sorted by author/series to on sorted by unread/addedDate/publisher.
-                     * Keeping the current row/pos is probably the most useful thing we can
-                     * do since we *may* come back to a similar list.
-                     */
-                    int topRowOffset;
-                    View view = mListView.getChildAt(0);
-                    if (view != null) {
-                        topRowOffset = view.getTop();
-                    } else {
-                        topRowOffset = 0;
-                    }
-
-                    mModel.setTopRow(mLinearLayoutManager.findFirstVisibleItemPosition());
-                    mModel.setTopRowOffset(topRowOffset);
-
-                    // New style, so use the user-pref for rebuild
-                    mModel.setRebuildState(BooklistBuilder.getListRebuildState());
-
-                    // Do a rebuild
+                    // store the new data
+                    mModel.onStyleChanged(style,
+                                          mLinearLayoutManager.findFirstVisibleItemPosition(),
+                                          mListView);
+                    // and do a rebuild
                     initBookList(true);
                 }
             };
@@ -253,10 +232,8 @@ public class BooksOnBookshelf
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        Bundle args = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
-
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
-        mModel.init(args);
+        mModel.init(getIntent().getExtras(), savedInstanceState);
 
         // Restore bookshelf
         mModel.setCurrentBookshelf(Bookshelf.getPreferred(this, mModel.getDb()));
@@ -310,14 +287,6 @@ public class BooksOnBookshelf
 
         // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
-    }
-
-    private void setActivityTitle() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(mModel.getCurrentStyle().getLabel(this));
-            actionBar.setSubtitle(null);
-        }
     }
 
     /**
@@ -447,7 +416,7 @@ public class BooksOnBookshelf
         }
 
         // Update the activity title using the current style name.
-        setActivityTitle();
+        setTitle(mModel.getCurrentStyle().getLabel(this));
 
         mProgressBar.setVisibility(View.GONE);
 
@@ -638,9 +607,7 @@ public class BooksOnBookshelf
             return;
         }
 
-        if (mModel.hasListBeenLoaded()) {
-            mModel.savePosition(mListView, mLinearLayoutManager.findFirstVisibleItemPosition());
-        }
+        mModel.savePosition(mLinearLayoutManager.findFirstVisibleItemPosition(), mListView);
     }
 
     /**
@@ -709,6 +676,9 @@ public class BooksOnBookshelf
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_settings);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_BOB_TABLES, 0,
+                        R.string.debug_bob_tables);
+
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0,
                         R.string.lbl_copy_database);
         }
@@ -759,6 +729,11 @@ public class BooksOnBookshelf
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
                             Logger.debug(this, "onOptionsItemSelected",
                                          Tracker.getEventsInfo());
+                            return true;
+
+                        case R.id.MENU_DEBUG_DUMP_BOB_TABLES:
+                            Logger.debug(this, "onOptionsItemSelected",
+                                         mModel.debugBuilderTables());
                             return true;
 
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
@@ -1207,17 +1182,18 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonSearchPage.open(this, mModel.getAuthorFromRow(row), null);
+                AmazonSearchPage.open(this, mListView,
+                                      mModel.getAuthorFromRow(row), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonSearchPage.open(this, null, mModel.getSeriesFromRow(row));
+                AmazonSearchPage.open(this, mListView,
+                                      null, mModel.getSeriesFromRow(row));
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonSearchPage.open(this,
-                                      mModel.getAuthorFromRow(row),
-                                      mModel.getSeriesFromRow(row));
+                AmazonSearchPage.open(this, mListView,
+                                      mModel.getAuthorFromRow(row), mModel.getSeriesFromRow(row));
                 return true;
 
             default:
@@ -1309,7 +1285,7 @@ public class BooksOnBookshelf
                     if (data != null) {
                         Bundle extras = data.getExtras();
                         if (extras != null) {
-                            mModel.getSearchCriteria().from(extras);
+                            mModel.getSearchCriteria().from(extras, true);
                             initSearchField(mModel.getSearchCriteria().getKeywords());
                         }
                         mModel.setFullRebuild(true);

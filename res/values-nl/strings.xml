@@ -923,4 +923,6 @@
     <string name="btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="lbl_covers">Omslagen</string>
     <string name="clear">Wissen</string>
+    <string name="btn_confirm_new">Nieuw</string>
+    <string name="title_edit_book_authors">Bewerk boek auteurs</string>
 </resources>

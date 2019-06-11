@@ -1,9 +1,9 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.view.View;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * Provides the {@link #open(Activity, String, String)} api.
+ * Provides the {@link #open(Context, String, String)} api.
  * This class is used by the (sub) menu "Search Amazon" to look for authors, series.
  * <p>
  * It is NOT used by the ISBN lookup/search engine,
@@ -55,25 +55,29 @@ public final class AmazonSearchPage {
      * @param author to search for
      * @param series to search for
      */
-    public static void open(@NonNull final Activity activity,
-                            @Nullable final String author,
-                            @Nullable final String series) {
+    public static boolean open(@NonNull final Context context,
+                               @NonNull final View view,
+                               @Nullable final String author,
+                               @Nullable final String series) {
 
         try {
             String cAuthor = cleanupSearchString(author);
             String cSeries = cleanupSearchString(series);
 
-            // if no key, don't even bother with the AssociatesAPI.
+            // if no key, don't bother with the AssociatesAPI.
             if (mAmazonAppKey.isEmpty()) {
-                openIntent(activity, buildUrl(cAuthor, cSeries));
+                openIntent(context, buildUrl(cAuthor, cSeries));
             } else {
-                openLink(activity, cAuthor, cSeries);
+                openLink(context, cAuthor, cSeries);
             }
+
+            return true;
 
         } catch (RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(AmazonSearchPage.class, e, "Unable to call the Amazon API");
-            UserMessage.showUserMessage(activity, R.string.error_unexpected_error);
+            UserMessage.showUserMessage(view, R.string.error_unexpected_error);
+            return false;
         }
     }
 

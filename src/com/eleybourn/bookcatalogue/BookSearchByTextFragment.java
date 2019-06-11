@@ -12,8 +12,6 @@ import android.widget.EditText;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +28,7 @@ public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = BookSearchByTextFragment.class.getSimpleName();
+    public static final String TAG = "BookSearchByTextFragment";
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
@@ -39,6 +37,7 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
+
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
                 /**
@@ -57,7 +56,7 @@ public class BookSearchByTextFragment
                     }
                     try {
                         if (!wasCancelled) {
-                            mActivity.getTaskManager().sendHeaderUpdate(
+                            mTaskManager.sendHeaderUpdate(
                                     R.string.progress_msg_adding_book);
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
@@ -71,7 +70,7 @@ public class BookSearchByTextFragment
                         // Clean up
                         mSearchManagerId = 0;
                         // Make sure the base message will be empty.
-                        mActivity.getTaskManager().sendHeaderUpdate(null);
+                        mTaskManager.sendHeaderUpdate(null);
                     }
                 }
             };
@@ -85,7 +84,10 @@ public class BookSearchByTextFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
+        View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
+        mTitleView = view.findViewById(R.id.title);
+        mAuthorView = view.findViewById(R.id.author);
+        return view;
     }
 
     @Override
@@ -96,20 +98,12 @@ public class BookSearchByTextFragment
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
-        @SuppressWarnings("ConstantConditions")
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.title_search_for);
-            actionBar.setSubtitle(null);
-        }
-
-        View root = requireView();
-        mTitleView = root.findViewById(R.id.title);
-        mAuthorView = root.findViewById(R.id.author);
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.title_search_for);
 
         populateAuthorList();
 
-        root.findViewById(R.id.btn_search).setOnClickListener(v -> {
+        requireView().findViewById(R.id.btn_search).setOnClickListener(v -> {
             mAuthorSearchText = mAuthorView.getText().toString().trim();
             mTitleSearchText = mTitleView.getText().toString().trim();
             prepareSearch();

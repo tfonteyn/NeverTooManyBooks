@@ -26,7 +26,7 @@ public class ZoomedImageDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = ZoomedImageDialogFragment.class.getSimpleName();
+    private static final String TAG = "ZoomedImageDialogFragment";
 
     /**
      * (syntax sugar for newInstance)

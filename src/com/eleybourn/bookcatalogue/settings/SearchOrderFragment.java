@@ -32,7 +32,7 @@ public class SearchOrderFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = SearchOrderFragment.class.getSimpleName();
+    public static final String TAG = "SearchOrderFragment";
 
     private ArrayList<Site> mList;
     @SuppressWarnings("FieldCanBeLocal")
@@ -40,12 +40,23 @@ public class SearchOrderFragment
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;
 
+    private SearchAdminActivity mActivity;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        //TOMF: use interface
+        mActivity= (SearchAdminActivity) getActivity();
+    }
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_search_order, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_search_order, container, false);
+        mListView = view.findViewById(android.R.id.list);
+        return view;
     }
 
     @Override
@@ -56,7 +67,6 @@ public class SearchOrderFragment
 
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
-        mListView = requireView().findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
@@ -71,8 +81,7 @@ public class SearchOrderFragment
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
-                //noinspection ConstantConditions
-                ((SearchAdminActivity) getActivity()).setDirty(true);
+                mActivity.setDirty(true);
             }
         });
         mListView.setAdapter(mListAdapter);

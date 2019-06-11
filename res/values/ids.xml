@@ -14,8 +14,10 @@
     <item name="TAG_GR_TASK_HOLDER" type="id" />
     <!-- Goodreads. -->
     <item name="TAG_GR_BOOK_EVENT_HOLDER" type="id" />
-    <!-- only used in {@link GoodreadsWork} but the Tagger class wants a @IdRes -->
+    <!-- Goodreads - {@link GoodreadsWork} -->
     <item name="TAG_GR_WORK" type="id" />
+    <!-- Goodreads - for storing a 'holder' with the view itself. -->
+    <item name="TAG_GR_VIEW_HOLDER" type="id" />
 
 
     <!-- tags a Cover Image View with the task responsible to fetch the image -->
@@ -28,9 +30,6 @@
     <item name="TAG_UUID" type="id" />
 
     <item name="TAG_POSITION" type="id" />
-
-    <!-- for storing a 'holder' with the view itself. -->
-    <item name="TAG_VIEW_HOLDER" type="id" />
 
     <!-- Updating fields from the internet.  -->
     <item name="TAG_FIELD_USAGE" type="id" />
@@ -115,6 +114,7 @@
     <item name="MENU_DEBUG_DUMP_PREFS" type="id" />
     <item name="MENU_DEBUG_DUMP_STYLE" type="id" />
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id" />
+    <item name="MENU_DEBUG_DUMP_BOB_TABLES" type="id" />
     <item name="MENU_DEBUG_EXPORT_DATABASE" type="id" />
     <item name="MENU_DEBUG_RUN_TEST" type="id" />
 

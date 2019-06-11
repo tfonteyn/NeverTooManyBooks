@@ -19,11 +19,9 @@
  */
 package com.eleybourn.bookcatalogue.dialogs;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
@@ -32,21 +30,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
-/**
- * ENHANCE: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
- * TODO: Snackbar: when using the activity/getDecorView it's always at the bottom of the screen.
- */
 public final class StandardDialogs {
 
     private StandardDialogs() {
     }
 
     /**
-     * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
+     * Show a dialog asking if unsaved edits should be ignored.
      */
-    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
-                                                     @Nullable final Runnable onConfirm) {
-        new AlertDialog.Builder(activity)
+    public static void showConfirmUnsavedEditsDialog(@NonNull final Context context,
+                                                     @NonNull final Runnable onConfirm) {
+        new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
@@ -55,21 +49,18 @@ public final class StandardDialogs {
                 .setNegativeButton(R.string.btn_continue_editing, (d, which) -> d.dismiss())
                 .setPositiveButton(R.string.btn_confirm_exit, (d, which) -> {
                     d.dismiss();
-                    if (onConfirm != null) {
-                        onConfirm.run();
-                    } else {
-                        activity.setResult(Activity.RESULT_CANCELED);
-                        activity.finish();
-                    }
+                    onConfirm.run();
                 })
                 .create()
                 .show();
     }
 
+    /**
+     * Ask the user to confirm a delete.
+     */
     public static void deleteSeriesAlert(@NonNull final Context context,
                                          @NonNull final Series series,
                                          @NonNull final Runnable onDoDelete) {
-
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
@@ -84,6 +75,9 @@ public final class StandardDialogs {
                 .show();
     }
 
+    /**
+     * Ask the user to confirm a delete.
+     */
     public static void deleteBookAlert(@NonNull final Context context,
                                        @NonNull final String title,
                                        @NonNull final List<Author> authorList,

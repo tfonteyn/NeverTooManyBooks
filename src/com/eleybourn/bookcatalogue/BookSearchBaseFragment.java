@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.settings.SearchAdminActivity;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -33,7 +35,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    private static final String TAG = BookSearchBaseFragment.class.getSimpleName();
+    public static final String TAG = "BookSearchBaseFragment";
 
     /** stores an active search id, or 0 when none active. */
     private static final String BKEY_SEARCH_MANAGER_ID = TAG + ":SearchManagerId";
@@ -45,6 +47,8 @@ public abstract class BookSearchBaseFragment
     protected DAO mDb;
     /** hosting activity. */
     BookSearchActivity mActivity;
+    TaskManager mTaskManager;
+
     /** Objects managing current search. */
     long mSearchManagerId;
     /** The last Intent returned as a result of creating a book. */
@@ -56,6 +60,15 @@ public abstract class BookSearchBaseFragment
     abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
 
     @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        //TOMF: use interface
+        mActivity = (BookSearchActivity) getActivity();
+        //noinspection ConstantConditions
+        mTaskManager = mActivity.getTaskManager();
+    }
+
+    @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +78,6 @@ public abstract class BookSearchBaseFragment
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mActivity = (BookSearchActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
         mDb = new DAO();
@@ -168,10 +180,10 @@ public abstract class BookSearchBaseFragment
         try {
             // Start the lookup in a background search task.
             final SearchCoordinator searchCoordinator =
-                    new SearchCoordinator(mActivity.getTaskManager(), getSearchFinishedListener());
+                    new SearchCoordinator(mTaskManager, getSearchFinishedListener());
             mSearchManagerId = searchCoordinator.getId();
 
-            mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_searching);
+            mTaskManager.sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
             searchCoordinator.search(mSearchSites, authorSearchText, titleSearchText,
                                      isbnSearchText, true);

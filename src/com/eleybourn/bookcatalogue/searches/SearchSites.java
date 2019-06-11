@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 public final class SearchSites {
 
     /** tag. */
-    public static final String TAG = SearchSites.class.getSimpleName();
+    public static final String TAG = "SearchSites";
     public static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
 
     /** search source to use. */

@@ -24,6 +24,7 @@
             android:key="App.Theme"
             android:title="@string/pt_ui_theme" />
 
+        <!-- default snackbar == 1 -->
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/pe_ui_messages_use"
@@ -178,6 +179,7 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_bob_open_book_read_only" />
 
+        <!-- default BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
@@ -186,6 +188,7 @@
             android:key="BookList.ListRebuildState"
             android:title="@string/pt_bob_list_state" />
 
+        <!-- default BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_generation"
@@ -214,6 +217,7 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
 
+        <!-- default ScannerManager.SCANNER_ZXING_COMPATIBLE == 0 -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_scanning_preferred_scanner"
@@ -258,6 +262,7 @@
             android:summaryOn="@string/pe_bob_thumbnails_generating_mode_background"
             android:title="@string/pt_bob_thumbnails_generating_mode" />
 
+        <!-- default rotate 0 degrees -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_thumbnails_rotate_auto"
@@ -266,8 +271,9 @@
             android:key="Image.Camera.Autorotate"
             android:title="@string/pt_thumbnails_rotate_auto" />
 
+        <!-- default CropImageViewTouchBase.LAYER_TYPE_USE_DEFAULT == -1 -->
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="-1"
             android:dialogIcon="@drawable/ic_warning"
             android:entries="@array/pe_thumbnails_cropper_layer_type"
             android:entryValues="@array/pv_thumbnails_cropper_layer_type"

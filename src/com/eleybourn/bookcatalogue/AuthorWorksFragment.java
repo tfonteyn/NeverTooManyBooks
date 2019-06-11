@@ -34,7 +34,7 @@ public class AuthorWorksFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = AuthorWorksFragment.class.getSimpleName();
+    public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Also show the authors book. Defaults to {@code true}. */
     @SuppressWarnings("WeakerAccess")
@@ -100,13 +100,22 @@ public class AuthorWorksFragment
         switch (item.getType()) {
             case TocEntry.TYPE_TOC:
                 // see note on dba method about Integer vs. Long
-                final ArrayList<Integer> books = mModel.getBookIds(item);
-                intent = new Intent(getContext(), BooksOnBookshelf.class)
-                        // clear the back-stack. We want to keep BooksOnBookshelf on top
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        // bring up list, filtered on the book id's
-                        .putExtra(UniqueId.BKEY_ID_LIST, books);
-                startActivity(intent);
+                final ArrayList<Long> bookIds = mModel.getBookIds(item);
+                // story in one book, goto that book.
+                if (bookIds.size() == 1) {
+                    intent = new Intent(getContext(), BookDetailsActivity.class)
+                            .putExtra(DBDefinitions.KEY_ID, bookIds.get(0));
+                    startActivity(intent);
+
+                } else {
+                    // multiple books, go to the list, filtering on the books.
+                    intent = new Intent(getContext(), BooksOnBookshelf.class)
+                            // clear the back-stack. We want to keep BooksOnBookshelf on top
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            // bring up list, filtered on the book id's
+                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
+                    startActivity(intent);
+                }
                 break;
 
             case TocEntry.TYPE_BOOK:

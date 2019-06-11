@@ -15,7 +15,7 @@ public class GlobalSettingsFragment
         extends BaseSettingsFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = GlobalSettingsFragment.class.getSimpleName();
+    public static final String TAG = "GlobalSettingsFragment";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,

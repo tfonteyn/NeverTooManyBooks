@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -27,7 +29,6 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -56,7 +57,7 @@ public class BookFragment
         extends BookBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = BookFragment.class.getSimpleName();
+    public static final String TAG = "BookFragment";
 
     public static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
     public static final String REQUEST_BKEY_FLAT_BOOKLIST = "FBL";
@@ -85,12 +86,22 @@ public class BookFragment
     /** Contains the flattened book list for next/previous paging. */
     private BookFragmentModel mBookFragmentModel;
 
+    private AppCompatActivity mActivity;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mActivity = (AppCompatActivity) getActivity();
+    }
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_book_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_book_details, container, false);
+        mNestedScrollView = view.findViewById(R.id.topScroller);
+        return view;
     }
 
     /**
@@ -104,11 +115,8 @@ public class BookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-
         // parent takes care of loading the book.
         super.onActivityCreated(savedInstanceState);
-
-        mNestedScrollView = requireView().findViewById(R.id.topScroller);
 
         initFlattenedBookList(savedInstanceState);
 
@@ -520,9 +528,7 @@ public class BookFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        @SuppressWarnings("ConstantConditions")
-        @NonNull
-        BaseActivity activity = (BaseActivity) getActivity();
+
         Book book = mBookBaseFragmentModel.getBook();
 
         switch (item.getItemId()) {
@@ -540,8 +546,8 @@ public class BookFragment
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookBaseFragmentModel.getDb().deleteBook(book.getId());
-                    activity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                    activity.finish();
+                    mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                    mActivity.finish();
                 });
                 return true;
 
@@ -573,13 +579,15 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_SHARE:
-                Intent shareIntent = Intent.createChooser(book.getShareBookIntent(activity),
+                //noinspection ConstantConditions
+                Intent shareIntent = Intent.createChooser(book.getShareBookIntent(getContext()),
                                                           getString(R.string.menu_share_this));
                 startActivity(shareIntent);
                 return true;
 
             default:
-                if (MenuHandler.handleAmazonSearchSubMenu(activity, item, book)) {
+                //noinspection ConstantConditions
+                if (MenuHandler.handleAmazonSearchSubMenu(getContext(), getView(), item, book)) {
                     return true;
                 }
                 // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
@@ -617,8 +625,7 @@ public class BookFragment
         //  set the current visible book id as the result data.
         Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
                                             mBookBaseFragmentModel.getBook().getId());
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, data);
+        mActivity.setResult(Activity.RESULT_OK, data);
         super.onPause();
     }
 

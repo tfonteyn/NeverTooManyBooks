@@ -42,7 +42,7 @@ public class EditAuthorDialogFragment
         extends EditAuthorBaseDialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+    public static final String TAG = "EditAuthorDialogFragment";
 
     /**
      * Constructor.

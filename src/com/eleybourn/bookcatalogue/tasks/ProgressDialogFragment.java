@@ -39,7 +39,7 @@ public class ProgressDialogFragment<Progress, Result>
      * Fragment manager tag used if no custom tag is needed; e.g. when this dialog is shared
      * among multiple tasks.
      */
-    public static final String TAG = ProgressDialogFragment.class.getSimpleName();
+    public static final String TAG = "ProgressDialogFragment";
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
     private static final String BKEY_MAX = TAG + ":max";

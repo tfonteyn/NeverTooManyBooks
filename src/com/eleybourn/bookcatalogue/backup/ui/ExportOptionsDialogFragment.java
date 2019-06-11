@@ -26,7 +26,7 @@ public class ExportOptionsDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = ExportOptionsDialogFragment.class.getSimpleName();
+    public static final String TAG = "ExportOptionsDialogFragment";
 
     private ExportOptions mOptions;
 

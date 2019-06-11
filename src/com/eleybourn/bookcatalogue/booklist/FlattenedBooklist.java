@@ -94,7 +94,7 @@ public class FlattenedBooklist
         // no indexes, no constraints!
         table.create(syncedDb, false);
 
-        String sql = table.getInsert(false, DOM_PK_ID, DOM_FK_BOOK_ID)
+        String sql = table.getInsert(DOM_PK_ID, DOM_FK_BOOK_ID)
                 + " SELECT " + navTable.dot(DOM_PK_ID) + ',' + listTable.dot(DOM_FK_BOOK_ID)
                 + " FROM " + listTable.ref() + listTable.join(navTable)
                 + " WHERE " + listTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"

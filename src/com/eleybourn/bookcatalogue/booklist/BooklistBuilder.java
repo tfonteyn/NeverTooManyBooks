@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
@@ -337,7 +338,7 @@ public class BooklistBuilder
     /**
      * @return the current preferred rebuild state for the list.
      */
-    public static int getListRebuildState() {
+    public static int getPreferredListRebuildState() {
         return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
     }
 
@@ -422,6 +423,78 @@ public class BooklistBuilder
     }
 
     /**
+     * Adds the FTS book table for a keyword match.
+     * <p>
+     * An empty filter will silently be rejected.
+     *
+     * @param author   Author-related keywords to find
+     * @param title    Title-related keywords to find
+     * @param keywords Keywords to find anywhere in book
+     */
+    public void setFilter(@Nullable final String author,
+                          @Nullable final String title,
+                          @Nullable final String keywords) {
+        if (keywords != null && !keywords.trim().isEmpty()) {
+            mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
+                    + " IN (" + DAO.getFtsSearchSQL(author, title, keywords) + ")");
+        }
+    }
+
+    /**
+     * Set the filter for only books loaned to the named person (exact name).
+     * <p>
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the exact name of the person we loaned books to.
+     */
+    public void setFilterOnLoanedToPerson(@Nullable final String filter) {
+        if (filter != null && !filter.trim().isEmpty()) {
+            mFilters.add(() -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                    + " WHERE "
+                    + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
+                    + "='" + DAO.encodeString(filter) + '\''
+                    + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')');
+        }
+    }
+
+    /**
+     * Set the filter for only books in named series with added wildcards.
+     * <p>
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the series to limit the search for.
+     */
+    public void setFilterOnSeriesName(@Nullable final String filter) {
+        if (filter != null && !filter.trim().isEmpty()) {
+            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_TITLE, filter));
+        }
+    }
+
+    /**
+     * Set the filter to return only books on this bookshelf.
+     * If set to 0, return books from all shelves.
+     *
+     * @param bookshelfId only books on this shelf, or 0 for all shelves.
+     */
+    public void setFilterOnBookshelfId(final long bookshelfId) {
+        mFilterOnBookshelfId = bookshelfId;
+    }
+
+    /**
+     * The where clause will add a "AND books._id IN (list)".
+     * Be careful when combining with other criteria as you might get less then expected
+     * <p>
+     * An empty filter will silently be rejected.
+     *
+     * @param filter a list of book id's.
+     */
+    public void setFilterOnBookIdList(@Nullable final List<Long> filter) {
+        if (filter != null && !filter.isEmpty()) {
+            mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, filter));
+        }
+    }
+
+    /**
      * Drop and recreate all the data based on previous criteria.
      */
     public void rebuild() {
@@ -443,185 +516,6 @@ public class BooklistBuilder
                 Logger.debug(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
             }
             stmt.execute();
-        }
-    }
-
-    private boolean isNonBlank(@Nullable final String s) {
-        return s != null && !s.trim().isEmpty();
-    }
-
-    /**
-     * If the field has a time part, then convert to local time.
-     * This deals with legacy 'date-only' dates.
-     * The logic being that IF they had a time part then it would be UTC.
-     * Without a time part, we assume the zone is local (or irrelevant).
-     */
-    @NonNull
-    private String localDateExpression(@NonNull final String fieldSpec) {
-        return "CASE WHEN " + fieldSpec + " glob '*-*-* *' "
-                + " THEN datetime(" + fieldSpec + ", 'localtime')"
-                + " ELSE " + fieldSpec
-                + " END";
-    }
-
-    /**
-     * Return a glob expression to get the 'year' from a text date field in a standard way.
-     * <p>
-     * Just look for 4 leading numbers. We don't care about anything else.
-     *
-     * @param fieldSpec fully qualified field name
-     * @param toLocal   convert the fieldSpec to local time from UTC
-     *
-     * @return expression
-     */
-    @NonNull
-    private String yearGlob(@NonNull String fieldSpec,
-                            final boolean toLocal) {
-        if (toLocal) {
-            fieldSpec = localDateExpression(fieldSpec);
-        }
-        return "CASE WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
-                + " THEN substr(" + fieldSpec + ", 1, 4)"
-                + " ELSE '" + mUnknown + '\''
-                + " END";
-    }
-
-    /**
-     * Returns a glob expression to get the 'month' from a text date field in a standard way.
-     * <p>
-     * Just look for 4 leading numbers followed by 2 or 1 digit.
-     * We don't care about anything else.
-     *
-     * @param fieldSpec fully qualified field name
-     * @param toLocal   convert the fieldSpec to local time from UTC
-     *
-     * @return expression
-     */
-    @NonNull
-    private String monthGlob(@NonNull String fieldSpec,
-                             final boolean toLocal) {
-        if (toLocal) {
-            fieldSpec = localDateExpression(fieldSpec);
-        }
-        return "CASE WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789][01234567890]*'"
-                + " THEN substr(" + fieldSpec + ", 6, 2)"
-                + " WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789]*'"
-                + " THEN substr(" + fieldSpec + ", 6, 1)"
-                + " ELSE '" + mUnknown + '\''
-                + " END";
-    }
-
-    /**
-     * Returns a glob expression to get the 'day' from a text date field in a standard way.
-     * <p>
-     * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
-     * We don't care about anything else.
-     *
-     * @param fieldSpec fully qualified field name
-     * @param toLocal   convert the fieldSpec to local time from UTC
-     *
-     * @return expression
-     */
-    @NonNull
-    private String dayGlob(@NonNull String fieldSpec,
-                           final boolean toLocal) {
-        if (toLocal) {
-            fieldSpec = localDateExpression(fieldSpec);
-        }
-        // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
-        // We don't care about anything else.
-        return "CASE WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789][0123456789]*'"
-                + " THEN substr(" + fieldSpec + ", 9, 2)"
-                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789][0123456789]*'"
-                + " THEN substr(" + fieldSpec + ", 8, 2)"
-                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789]*'"
-                + " THEN substr(" + fieldSpec + ", 9, 1)"
-                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789]*'"
-                + " THEN substr(" + fieldSpec + ", 8, 1)"
-                + " ELSE " + fieldSpec
-                + " END";
-    }
-
-    /**
-     * expects a full WHERE condition.
-     *
-     * @param filter additional conditions that apply
-     */
-    public void setGenericCriteria(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            mFilters.add(() -> '(' + filter + ')');
-        }
-    }
-
-    /**
-     * Set the filter for only books loaned to the named person (exact name).
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param filter the exact name of the person we loaned books to.
-     */
-    public void setFilterOnLoanedToPerson(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            mFilters.add(() -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                    + " WHERE "
-                    + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
-                    + "='" + DAO.encodeString(filter) + '\''
-                    + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')');
-        }
-    }
-
-    /**
-     * Set the filter for only books in named series with added wildcards.
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param filter the series to limit the search for.
-     */
-    public void setFilterOnSeriesName(@Nullable final String filter) {
-        if (isNonBlank(filter)) {
-            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_TITLE, filter));
-        }
-    }
-
-    /**
-     * Set the filter to return only books on this bookshelf.
-     * If set to 0, return books from all shelves.
-     *
-     * @param bookshelfId only books on this shelf, or 0 for all shelves.
-     */
-    public void setFilterOnBookshelfId(final long bookshelfId) {
-        mFilterOnBookshelfId = bookshelfId;
-    }
-
-    /**
-     * Adds the FTS book table for a keyword match.
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param author   Author-related keywords to find
-     * @param title    Title-related keywords to find
-     * @param keywords Keywords to find anywhere in book
-     */
-    public void setFilter(@Nullable final String author,
-                          @Nullable final String title,
-                          @Nullable final String keywords) {
-        if (isNonBlank(keywords)) {
-            mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
-                    + " IN (" + DAO.getFtsSearchSQL(author, title, keywords) + ")");
-        }
-    }
-
-    /**
-     * The where clause will add a "AND books._id IN (list)".
-     * Be careful when combining with other criteria as you might get less then expected
-     * <p>
-     * An empty filter will silently be rejected.
-     *
-     * @param filter a list of book id's.
-     */
-    public void setFilterOnBookIdList(@Nullable final List<Integer> filter) {
-        if (filter != null && !filter.isEmpty()) {
-            mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, filter));
         }
     }
 
@@ -901,6 +795,8 @@ public class BooklistBuilder
      * match a specific book (or other row in result set) to a position directly
      * without having to scan the database. This is especially useful in
      * expand/collapse operations.
+     *
+     * @param preferredState State to display: expanded, collapsed or remembered
      */
     private void populateNavigationTable(@NonNull final SqlComponents sqlCmp,
                                          final int preferredState,
@@ -918,8 +814,7 @@ public class BooklistBuilder
 
         // TODO: Rebuild with state preserved is SLOWEST option
         // Need a better way to preserve state.
-        String insSql = mNavTable.getInsert(false,
-                                            DOM_BL_REAL_ROW_ID,
+        String insSql = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
                                             DOM_BL_NODE_LEVEL,
                                             DOM_BL_ROOT_KEY,
                                             DOM_BL_NODE_VISIBLE,
@@ -941,9 +836,9 @@ public class BooklistBuilder
                 + " FROM " + mListTable.ref()
                 + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref()
                 + " ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY)
-                + /*     */ '=' + mListTable.dot(DOM_BL_ROOT_KEY)
+                + /*  */ '=' + mListTable.dot(DOM_BL_ROOT_KEY)
                 + "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND)
-                + /*     */ '=' + mStyle.getGroupKindAt(0)
+                + /*  */ '=' + mStyle.getGroupKindAt(0)
                 + " ORDER BY " + sortExpression;
 
         // Always save the state-preserving navigator for rebuilds
@@ -958,8 +853,7 @@ public class BooklistBuilder
         // On first-time builds, get the Preferences-based list
         switch (preferredState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
-                String sqlc = mNavTable.getInsert(false,
-                                                  DOM_BL_REAL_ROW_ID,
+                String sqlc = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
                                                   DOM_BL_NODE_LEVEL,
                                                   DOM_BL_ROOT_KEY,
                                                   DOM_BL_NODE_VISIBLE,
@@ -980,8 +874,7 @@ public class BooklistBuilder
                 break;
 
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
-                String sqle = mNavTable.getInsert(false,
-                                                  DOM_BL_REAL_ROW_ID,
+                String sqle = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
                                                   DOM_BL_NODE_LEVEL,
                                                   DOM_BL_ROOT_KEY,
                                                   DOM_BL_NODE_VISIBLE,
@@ -1539,20 +1432,6 @@ public class BooklistBuilder
     }
 
     /**
-     * Clear the list of expanded nodes in the current view.
-     */
-    private void deleteListNodeSettings() {
-
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_LIST_NODE_SETTINGS);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_LIST_NODE_SETTINGS,
-                                   DELETE_BOOK_LIST_NODE_SETTINGS_BY_KIND);
-        }
-        stmt.bindLong(1, mStyle.getGroupKindAt(0));
-        stmt.executeUpdateDelete();
-    }
-
-    /**
      * Save the currently expanded top level nodes, and the top level group kind, to the database
      * so that the next time this view is opened, the user will see the same opened/closed nodes.
      */
@@ -1563,19 +1442,18 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
+            // clear all before we save the new values.
             deleteListNodeSettings();
 
             SynchronizedStatement stmt = mStatements.get(STMT_SAVE_ALL_LIST_NODE_SETTINGS);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_SAVE_ALL_LIST_NODE_SETTINGS,
-                                       TBL_BOOK_LIST_NODE_SETTINGS
-                                               .getInsert(false,
-                                                          DOM_BL_NODE_ROW_KIND,
-                                                          DOM_BL_ROOT_KEY)
-                                               + " SELECT DISTINCT ?," + DOM_BL_ROOT_KEY
-                                               + " FROM " + mNavTable
-                                               + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
-                                               + " AND " + DOM_BL_NODE_LEVEL + "=1");
+                String sql = TBL_BOOK_LIST_NODE_SETTINGS
+                        .getInsert(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
+                        + " SELECT DISTINCT ?," + DOM_BL_ROOT_KEY + " FROM " + mNavTable
+                        + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
+                        + " AND " + DOM_BL_NODE_LEVEL + "=1";
+
+                stmt = mStatements.add(STMT_SAVE_ALL_LIST_NODE_SETTINGS, sql);
             }
 
             stmt.bindLong(1, mStyle.getGroupKindAt(0));
@@ -1619,16 +1497,13 @@ public class BooklistBuilder
             // recreate them.
             stmt = mStatements.get(STMT_SAVE_LIST_NODE_SETTING);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_SAVE_LIST_NODE_SETTING,
-                                       TBL_BOOK_LIST_NODE_SETTINGS
-                                               .getInsert(false,
-                                                          DOM_BL_NODE_ROW_KIND,
-                                                          DOM_BL_ROOT_KEY)
-                                               + " SELECT ?, " + DOM_BL_ROOT_KEY
-                                               + " FROM " + mNavTable
-                                               + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
-                                               + " AND " + DOM_BL_NODE_LEVEL + "=1"
-                                               + " AND " + DOM_PK_ID + "=?");
+                String sql = TBL_BOOK_LIST_NODE_SETTINGS
+                        .getInsert(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
+                        + " SELECT ?," + DOM_BL_ROOT_KEY + " FROM " + mNavTable
+                        + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
+                        + " AND " + DOM_BL_NODE_LEVEL + "=1"
+                        + " AND " + DOM_PK_ID + "=?";
+                stmt = mStatements.add(STMT_SAVE_LIST_NODE_SETTING, sql);
             }
 
             stmt.bindLong(1, mStyle.getGroupKindAt(0));
@@ -1646,31 +1521,18 @@ public class BooklistBuilder
     }
 
     /**
-     * Get all positions at which the specified book appears.
-     *
-     * @return Array of row details, including absolute positions and visibility or
-     * {@code null} if not present.
+     * Clear the list of expanded nodes in the current view.
      */
-    @Nullable
-    public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
-        String sql = "SELECT " + mNavTable.dot(DOM_PK_ID)
-                + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
-                + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
-                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
+    private void deleteListNodeSettings() {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
-            ArrayList<BookRowInfo> rows = new ArrayList<>(cursor.getCount());
-            if (cursor.moveToFirst()) {
-                do {
-                    int absPos = cursor.getInt(0) - 1;
-                    rows.add(new BookRowInfo(absPos, getPosition(absPos),
-                                             cursor.getInt(1) == 1));
-                } while (cursor.moveToNext());
-                return rows;
-            } else {
-                return null;
-            }
+        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_LIST_NODE_SETTINGS);
+        if (stmt == null) {
+            stmt = mStatements.add(STMT_DELETE_LIST_NODE_SETTINGS,
+                                   DELETE_BOOK_LIST_NODE_SETTINGS_BY_KIND);
         }
+        // delete all rows for the top level group kind of the style
+        stmt.bindLong(1, mStyle.getGroupKindAt(0));
+        stmt.executeUpdateDelete();
     }
 
     /**
@@ -1835,6 +1697,34 @@ public class BooklistBuilder
     }
 
     /**
+     * Get all positions at which the specified book appears.
+     *
+     * @return Array of row details, including absolute positions and visibility or
+     * {@code null} if not present.
+     */
+    @Nullable
+    public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
+        String sql = "SELECT "
+                + mNavTable.dot(DOM_PK_ID) + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
+                + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
+                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
+
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
+            ArrayList<BookRowInfo> rows = new ArrayList<>(cursor.getCount());
+            if (cursor.moveToFirst()) {
+                do {
+                    int absPos = cursor.getInt(0) - 1;
+                    rows.add(new BookRowInfo(absPos, getPosition(absPos),
+                                             cursor.getInt(1) == 1));
+                } while (cursor.moveToNext());
+                return rows;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
      * Find the visible root node for a given absolute position and ensure it is visible.
      */
     public void ensureAbsolutePositionVisible(final long absPos) {
@@ -1892,6 +1782,7 @@ public class BooklistBuilder
                     stmt.executeUpdateDelete();
                 }
                 saveListNodeSettings();
+
             } else {
                 String sql = "UPDATE " + mNavTable + " SET "
                         + DOM_BL_NODE_EXPANDED + "=0,"
@@ -1963,12 +1854,10 @@ public class BooklistBuilder
             if (getNextAtSameLevelStmt == null) {
                 getNextAtSameLevelStmt = mStatements.add(
                         STMT_GET_NEXT_AT_SAME_LEVEL,
-                        "SELECT Coalesce(max(" + DOM_PK_ID + "),-1) FROM "
+                        "SELECT Coalesce(Max(" + DOM_PK_ID + "),-1) FROM "
                                 + "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref()
-                                + " WHERE "
-                                + mNavTable.dot(DOM_PK_ID) + ">?"
-                                + " AND "
-                                + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?"
+                                + " WHERE " + mNavTable.dot(DOM_PK_ID) + ">?"
+                                + " AND " + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?"
                                 + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
                                 + ") zzz");
             }
@@ -2013,7 +1902,7 @@ public class BooklistBuilder
             expandStmt.bindLong(2, rowId);
             expandStmt.execute();
 
-            // Update settings
+            // Store the state of this node.
             saveListNodeSetting(rowId);
 
             if (txLock != null) {
@@ -2032,6 +1921,98 @@ public class BooklistBuilder
     @NonNull
     public BooklistStyle getStyle() {
         return mStyle;
+    }
+
+    /**
+     * If the field has a time part, then convert to local time.
+     * This deals with legacy 'date-only' dates.
+     * The logic being that IF they had a time part then it would be UTC.
+     * Without a time part, we assume the zone is local (or irrelevant).
+     */
+    @NonNull
+    private String localDateExpression(@NonNull final String fieldSpec) {
+        return "CASE WHEN " + fieldSpec + " glob '*-*-* *' "
+                + " THEN datetime(" + fieldSpec + ", 'localtime')"
+                + " ELSE " + fieldSpec
+                + " END";
+    }
+
+    /**
+     * Return a glob expression to get the 'year' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers. We don't care about anything else.
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private String yearGlob(@NonNull String fieldSpec,
+                            final boolean toLocal) {
+        if (toLocal) {
+            fieldSpec = localDateExpression(fieldSpec);
+        }
+        return "CASE WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
+                + " THEN substr(" + fieldSpec + ",1,4)"
+                + " ELSE '" + mUnknown + '\''
+                + " END";
+    }
+
+    /**
+     * Returns a glob expression to get the 'month' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers followed by 2 or 1 digit.
+     * We don't care about anything else.
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private String monthGlob(@NonNull String fieldSpec,
+                             final boolean toLocal) {
+        if (toLocal) {
+            fieldSpec = localDateExpression(fieldSpec);
+        }
+        return "CASE WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789][01234567890]*'"
+                + " THEN substr(" + fieldSpec + ",6,2)"
+                + " WHEN " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789]*'"
+                + " THEN substr(" + fieldSpec + ",6,1)"
+                + " ELSE '" + mUnknown + '\''
+                + " END";
+    }
+
+    /**
+     * Returns a glob expression to get the 'day' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
+     * We don't care about anything else.
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private String dayGlob(@NonNull String fieldSpec,
+                           final boolean toLocal) {
+        if (toLocal) {
+            fieldSpec = localDateExpression(fieldSpec);
+        }
+        // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
+        // We don't care about anything else.
+        return "CASE WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789][0123456789]*'"
+                + " THEN substr(" + fieldSpec + ",9,2)"
+                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789][0123456789]*'"
+                + " THEN substr(" + fieldSpec + ",8,2)"
+                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789]*'"
+                + " THEN substr(" + fieldSpec + ",9,1)"
+                + " WHEN " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789]*'"
+                + " THEN substr(" + fieldSpec + ",8,1)"
+                + " ELSE " + fieldSpec
+                + " END";
     }
 
     /**
@@ -2111,6 +2092,13 @@ public class BooklistBuilder
                 "mBooklistBuilderId=" + mBooklistBuilderId +
                 ", mCloseWasCalled=" + mCloseWasCalled +
                 '}';
+    }
+
+    public String debugInfoForTables() {
+        TableInfo listTableInfo = new TableInfo(mSyncedDb, mListTable.getName());
+        TableInfo navTableInfo = new TableInfo(mSyncedDb, mNavTable.getName());
+
+        return "ListTable\n" + listTableInfo.toString() + '\n' + navTableInfo.toString();
     }
 
     public static class CompatibilityMode {

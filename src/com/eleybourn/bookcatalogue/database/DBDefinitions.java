@@ -672,6 +672,7 @@ public final class DBDefinitions {
 
         DB_TN_BOOK_LIST_NAME = "book_list_tmp";
 
+        // this is TableTypes.Standard
         TBL_BOOK_LIST_NODE_SETTINGS =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
                         .setAlias("blns");
@@ -680,12 +681,14 @@ public final class DBDefinitions {
                 new TableDefinition(DB_TN_BOOK_LIST_NAME)
                         //RELEASE MUST use TableTypes.Temporary
                         .setType(TableTypes.Temporary)
+//                        .setType(TableTypes.Standard)
                         .setAlias("bl");
 
         TBL_ROW_NAVIGATOR =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos")
                         //RELEASE MUST use TableTypes.Temporary
                         .setType(TableTypes.Temporary)
+//                        .setType(TableTypes.Standard)
                         .setAlias("blrp");
 
         TBL_ROW_NAVIGATOR_FLATTENED =

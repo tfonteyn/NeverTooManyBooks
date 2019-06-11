@@ -35,7 +35,7 @@ public class AuthorWorksModel
                 mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);
 
                 // for testing.
-                for (int i = 0; i < 300; i++) {
+                for (int i = 0; i < 100; i++) {
                     mTocEntries.add(new TocEntry(author, "blah " + i, "1978"));
                 }
             } else {
@@ -55,7 +55,7 @@ public class AuthorWorksModel
     }
 
     @NonNull
-    public ArrayList<Integer> getBookIds(@NonNull final TocEntry item) {
+    public ArrayList<Long> getBookIds(@NonNull final TocEntry item) {
         return mDb.getBookIdsByTocEntry(item.getId());
     }
 }

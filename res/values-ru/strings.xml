@@ -646,5 +646,7 @@
     <string name="title_import">Импортировать</string>
     <string name="btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="clear">протирать</string>
+    <string name="btn_confirm_new">новый</string>
+    <string name="title_edit_book_authors">Редактировать книгу авторов</string>
 
 </resources>

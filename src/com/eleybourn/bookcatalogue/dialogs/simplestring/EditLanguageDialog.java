@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -42,10 +43,10 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 public class EditLanguageDialog
         extends EditStringBaseDialog {
 
-    public EditLanguageDialog(@NonNull final Activity activity,
+    public EditLanguageDialog(@NonNull final Context context,
                               @NonNull final DAO db,
                               @NonNull final BookChangedListener listener) {
-        super(activity, db, listener);
+        super(context, db, listener);
     }
 
     @CallSuper

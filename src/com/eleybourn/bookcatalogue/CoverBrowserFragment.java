@@ -73,7 +73,7 @@ public class CoverBrowserFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = CoverBrowserFragment.class.getSimpleName();
+    public static final String TAG = "CoverBrowserFragment";
 
     /** {@code ArrayList<String>} with edition isbn's. */
     private static final String BKEY_EDITION_LIST = TAG + ":editions";

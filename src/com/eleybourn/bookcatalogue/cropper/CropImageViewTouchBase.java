@@ -39,8 +39,27 @@ import com.eleybourn.bookcatalogue.settings.Prefs;
 public abstract class CropImageViewTouchBase
         extends AppCompatImageView {
 
-    private static final float SCALE_RATE = 1.25F;
+    /**
+     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
+     * See:
+     * http://developer.android.com/guide/topics/graphics/hardware-accel.html
+     * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
+     * so for API level > 11, we turn it off manually.
+     * <p>
+     * 2018-11-30: making this a configuration option
+     * <p>
+     * Actual system values:
+     * <p>
+     * View.LAYER_TYPE_SOFTWARE 1
+     * View.LAYER_TYPE_HARDWARE 2
+     * <p>
+     * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
+     * <p>
+     * see {@link View#setLayerType(int, Paint)}
+     */
+    public static final int LAYER_TYPE_USE_DEFAULT = -1;
 
+    private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image. */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
     /** The current bitmap being displayed. */
@@ -95,34 +114,14 @@ public abstract class CropImageViewTouchBase
 
     private void init() {
         setScaleType(ImageView.ScaleType.MATRIX);
-        initRenderer();
-    }
 
-    /**
-     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
-     * See:
-     * http://developer.android.com/guide/topics/graphics/hardware-accel.html
-     * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
-     * so for API level > 11, we turn it off manually.
-     * <p>
-     * 2018-11-30: making this a configuration option
-     * <p>
-     * Actual system values:
-     * <p>
-     * View.LAYER_TYPE_SOFTWARE 1
-     * View.LAYER_TYPE_HARDWARE 2
-     * <p>
-     * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
-     * <p>
-     * see {@link View#setLayerType(int, Paint)}
-     */
-    private void initRenderer() {
         // specific for Android Studio so the view can render in the layout editor.
         if (isInEditMode()) {
             return;
         }
 
-        int type = App.getListPreference(Prefs.pk_thumbnail_cropper_layer_type, -1);
+        int type = App.getListPreference(Prefs.pk_thumbnail_cropper_layer_type,
+                                         LAYER_TYPE_USE_DEFAULT);
         if (type == -1) {
             return;
         }

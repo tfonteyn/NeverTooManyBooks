@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -32,10 +33,10 @@ import com.eleybourn.bookcatalogue.database.DAO;
 public class EditFormatDialog
         extends EditStringBaseDialog {
 
-    public EditFormatDialog(@NonNull final Activity activity,
+    public EditFormatDialog(@NonNull final Context context,
                             @NonNull final DAO db,
                             @NonNull final BookChangedListener listener) {
-        super(activity, db, db.getFormats(), listener);
+        super(context, db, db.getFormats(), listener);
     }
 
     @CallSuper

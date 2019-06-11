@@ -633,4 +633,6 @@
     <string name="warning_select_a_non_directory">Vyberte soubor, který není adresářem.</string>
     <string name="warning_no_parent_directory_found">Nadřazený adresář nebyl nalezen</string>
     <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
+    <string name="btn_confirm_new">Nový</string>
+    <string name="title_edit_book_authors">Editovat autory knihy</string>
 </resources>

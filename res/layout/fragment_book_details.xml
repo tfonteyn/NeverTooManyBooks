@@ -50,7 +50,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/TextDetail.Large"
+            style="@style/TextDetail.Large.Title"
             android:layout_width="0dp"
             app:layout_constraintEnd_toStartOf="@id/coverImage"
             app:layout_constraintStart_toEndOf="@id/read"

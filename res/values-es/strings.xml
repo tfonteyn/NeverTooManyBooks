@@ -748,4 +748,6 @@
     <string name="btn_drag_handle">Arrástrame para reordenar esta lista.</string>
     <string name="book_format_digest">Digest</string>
     <string name="clear">Claro</string>
+    <string name="btn_confirm_new">Nuevo</string>
+    <string name="title_edit_book_authors">Editar autores de libros</string>
 </resources>

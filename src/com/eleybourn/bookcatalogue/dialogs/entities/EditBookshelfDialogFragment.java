@@ -55,7 +55,7 @@ public class EditBookshelfDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
+    public static final String TAG = "EditBookshelfDialogFragment";
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";
 

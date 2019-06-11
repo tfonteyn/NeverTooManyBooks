@@ -87,7 +87,7 @@ public abstract class EditAuthorBaseDialogFragment
         return new AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
-                .setTitle(R.string.lbl_author)
+                .setTitle(R.string.title_edit_book_authors)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mFamilyName = mFamilyNameView.getText().toString().trim();

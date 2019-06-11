@@ -62,7 +62,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 public class GoodreadsSearchResultsActivity
         extends BaseActivity {
 
-    private static final String TAG = GoodreadsSearchResultsActivity.class.getSimpleName();
+    private static final String TAG = "GoodreadsSearchResultsActivity";
 
     public static final String BKEY_SEARCH_CRITERIA = TAG + ":criteria";
 
@@ -217,9 +217,9 @@ public class GoodreadsSearchResultsActivity
 
             GoodreadsWork work = getItem(position);
 
-            holder.itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
+            holder.itemView.setTag(R.id.TAG_GR_VIEW_HOLDER, holder);
             holder.itemView.setOnClickListener(
-                    v -> doItemClick((Holder) v.getTag(R.id.TAG_VIEW_HOLDER)));
+                    v -> doItemClick((Holder) v.getTag(R.id.TAG_GR_VIEW_HOLDER)));
 
             // get the cover (or put it in background task)
             work.fillImageView(holder.coverView);

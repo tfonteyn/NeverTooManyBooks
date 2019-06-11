@@ -64,7 +64,7 @@ public class PartialDatePickerDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = PartialDatePickerDialogFragment.class.getSimpleName();
+    public static final String TAG = "PartialDatePickerDialogFragment";
 
     /** a standard sql style date string, must be correct. */
     private static final String BKEY_DATE = TAG + ":date";

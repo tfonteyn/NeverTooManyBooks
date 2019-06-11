@@ -17,7 +17,7 @@
 
         <TextView
             android:id="@+id/title"
-            style="@style/TextDetail.Large"
+            style="@style/TextDetail.Large.Title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SelectableText"

@@ -70,7 +70,8 @@ public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = BookSearchByIsbnFragment.class.getSimpleName();
+    public static final String TAG = "BookSearchByIsbnFragmen";
+
     /** option to start in scan mode (versus manual entry). */
     public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
 
@@ -140,7 +141,7 @@ public class BookSearchByIsbnFragment
                         // Clean up
                         mSearchManagerId = 0;
                         // Make sure the base message will be empty.
-                        mActivity.getTaskManager().sendHeaderUpdate(null);
+                        mTaskManager.sendHeaderUpdate(null);
                     }
                 }
             };
@@ -164,7 +165,10 @@ public class BookSearchByIsbnFragment
                 return null;
             }
         }
-        return inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
+        View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
+        mIsbnView = view.findViewById(R.id.isbn);
+        mAllowAsinCb = view.findViewById(R.id.allow_asin);
+        return view;
     }
 
     @Override
@@ -178,12 +182,8 @@ public class BookSearchByIsbnFragment
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
         }
 
-        @SuppressWarnings("ConstantConditions")
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.search_isbn);
-            actionBar.setSubtitle(null);
-        }
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.search_isbn);
 
         // setup the UI if we have one.
         View root = getView();
@@ -220,8 +220,6 @@ public class BookSearchByIsbnFragment
      * Setup the UI.
      */
     private void initUI(@NonNull final View root) {
-        mIsbnView = root.findViewById(R.id.isbn);
-        mAllowAsinCb = root.findViewById(R.id.allow_asin);
         if (mAllowAsinCb != null) {
             initAsin();
         }
@@ -239,7 +237,6 @@ public class BookSearchByIsbnFragment
         initKeypadButton(R.id.isbn_X, "X");
 
         root.findViewById(R.id.isbn_del).setOnClickListener(v -> handleDeleteButton());
-
         root.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
             mIsbnSearchText = mIsbnView.getText().toString().trim();

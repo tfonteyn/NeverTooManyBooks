@@ -677,6 +677,20 @@ public class TableDefinition
      * Return a base INSERT statement for this table using the passed list of domains.
      * <p>
      * format: INSERT into [table-name] ( [domain-list] )
+     *
+     * @param domains List of domains to use
+     *
+     * @return SQL fragment
+     */
+    @NonNull
+    public String getInsert(@NonNull final DomainDefinition... domains) {
+        return "INSERT INTO " + mName + " (" + Csv.join(",", Arrays.asList(domains)) + ')';
+    }
+
+    /**
+     * Return a base INSERT statement for this table using the passed list of domains.
+     * <p>
+     * format: INSERT into [table-name] ( [domain-list] )
      * or
      * format: INSERT into [table-name] ( [domain-list] ) VALUES(?,...?)
      *

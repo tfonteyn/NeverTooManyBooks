@@ -156,29 +156,35 @@ public class BooksOnBookshelfModel
     /**
      *
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@Nullable final Bundle extras,
+                     @Nullable final Bundle savedInstanceState) {
+
+        if (mDb == null) {
+            mDb = new DAO();
+        }
+
+        Bundle args = savedInstanceState != null ? savedInstanceState : extras;
+
         if (args == null) {
             // Get preferred booklist state to use from preferences;
             // always do this here in init, as the prefs might have changed anytime.
-            mRebuildState = BooklistBuilder.getListRebuildState();
+            mRebuildState = BooklistBuilder.getPreferredListRebuildState();
         } else {
             // Always preserve state when rebuilding/recreating etc
             mRebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
         }
 
         // Restore list position on bookshelf
-        setTopRow(App.getPrefs().getInt(PREF_BOB_TOP_ROW, 0));
-        setTopRowOffset(App.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0));
+        mTopRow = App.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
+        mTopRowOffset = App.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
 
         // Debug; makes list structures vary across calls to ensure code is correct...
         mCurrentPositionedBookId = -1;
 
-        // once only actions below.
-        if (mDb != null) {
-            return;
+        // search criteria come only from the intent - if any.
+        if (extras != null) {
+            mSearchCriteria.from(extras, true);
         }
-
-        mDb = new DAO();
     }
 
     /**
@@ -190,69 +196,14 @@ public class BooksOnBookshelfModel
         return mDb;
     }
 
-    /**
-     * Save current position information in the preferences, including view nodes that are expanded.
-     * We do this to preserve this data across application shutdown/startup.
-     *
-     * <p>
-     * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
-     * in length by, potentially, n*2 items. The current code will return to the old position
-     * in the list after such an operation...which will be too far down.
-     *
-     * @param topRow the position of the top visible row in the list
-     */
-    public void savePosition(@NonNull final RecyclerView listView,
-                             final int topRow) {
-
-        mTopRow = topRow;
-        View topView = listView.getChildAt(0);
-        if (topView != null) {
-            mTopRowOffset = topView.getTop();
+    public String debugBuilderTables() {
+        if (mListCursor != null) {
+            return mListCursor.getBuilder().debugInfoForTables();
         } else {
-            mTopRowOffset = 0;
+            return "no cursor";
         }
-
-        App.getPrefs().edit()
-           .putInt(PREF_BOB_TOP_ROW, mTopRow)
-           .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
-           .apply();
     }
 
-    @NonNull
-    public SearchCriteria getSearchCriteria() {
-        return mSearchCriteria;
-    }
-
-    @Nullable
-    public BooklistPseudoCursor getListCursor() {
-        return mListCursor;
-    }
-
-    public void setListCursor(@NonNull final BooklistPseudoCursor listCursor) {
-        mListCursor = listCursor;
-    }
-
-    public void setRebuildState(final int rebuildState) {
-        mRebuildState = rebuildState;
-    }
-
-    public int getTopRow() {
-        return mTopRow;
-    }
-
-    public void setTopRow(final int topRow) {
-        mTopRow = topRow;
-    }
-
-    public int getTopRowOffset() {
-        return mTopRowOffset;
-    }
-
-    public void setTopRowOffset(final int topRowOffset) {
-        mTopRowOffset = topRowOffset;
-    }
 
     public Bookshelf getCurrentBookshelf() {
         return mCurrentBookshelf;
@@ -288,33 +239,87 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * @return {@code null} if no rebuild is requested;
-     * {@code true} or {@code false} if we're requesting a full or partial rebuild.
-     */
-    @Nullable
-    public Boolean isForceFullRebuild() {
-        return mAfterOnActivityResultDoFullRebuild;
-    }
-
-    /**
-     * Request a full or partial rebuild at the next onResume.
+     * Save current position information in the preferences, including view nodes that are expanded.
+     * We do this to preserve this data across application shutdown/startup.
      *
-     * @param fullRebuild {@code true} for a full rebuild; {@code false} for a partial rebuild;
-     *                    {@code null} for no rebuild.
+     * <p>
+     * ENHANCE: Handle positions a little better when books are deleted.
+     * <p>
+     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
+     * in length by, potentially, n*2 items. The current code will return to the old position
+     * in the list after such an operation...which will be too far down.
+     *
+     * @param topRow the position of the top visible row in the list
      */
-    public void setFullRebuild(@Nullable final Boolean fullRebuild) {
-        mAfterOnActivityResultDoFullRebuild = fullRebuild;
+    public void savePosition(final int topRow,
+                             @NonNull final RecyclerView listView) {
+        if (mListHasBeenLoaded) {
+            setTopRow(topRow, listView);
+        }
+    }
+
+    private void savePosition() {
+        App.getPrefs().edit()
+           .putInt(PREF_BOB_TOP_ROW, mTopRow)
+           .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
+           .apply();
     }
 
     /**
-     * @return {@code true} if the last time we build, the list was loaded successfully.
+     * Set the style and position.
+     *
+     * @param style    that was selected
+     * @param topRow   the top row to store
+     * @param listView used to derive the top row offset
      */
-    public boolean hasListBeenLoaded() {
-        return mListHasBeenLoaded;
+    public void onStyleChanged(@NonNull final BooklistStyle style,
+                               final int topRow,
+                               @NonNull final RecyclerView listView) {
+
+        // save the new bookshelf/style combination
+        mCurrentBookshelf.setAsPreferred();
+        mCurrentBookshelf.setStyle(mDb, style);
+
+        // Set the rebuild state like this is the first time in, which it sort of is,
+        // given we are changing style.
+        mRebuildState = BooklistBuilder.getPreferredListRebuildState();
+
+        /* There is very little ability to preserve position when going from
+         * a list sorted by author/series to on sorted by unread/addedDate/publisher.
+         * Keeping the current row/pos is probably the most useful thing we can
+         * do since we *may* come back to a similar list.
+         */
+        setTopRow(topRow, listView);
     }
 
-    public void setCurrentPositionedBookId(final long currentPositionedBookId) {
-        mCurrentPositionedBookId = currentPositionedBookId;
+    /**
+     * @param topRow   the top row to store
+     * @param listView used to derive the top row offset
+     */
+    private void setTopRow(final int topRow,
+                           @Nullable final RecyclerView listView) {
+        mTopRow = topRow;
+        if (listView != null) {
+            View topView = listView.getChildAt(0);
+            if (topView != null) {
+                mTopRowOffset = topView.getTop();
+            } else {
+                mTopRowOffset = 0;
+            }
+        }
+        savePosition();
+    }
+
+    public int getTopRow() {
+        return mTopRow;
+    }
+
+    public void setTopRow(final int topRow) {
+        setTopRow(topRow, null);
+    }
+
+    public int getTopRowOffset() {
+        return mTopRowOffset;
     }
 
     public int getLastTopRow() {
@@ -323,14 +328,6 @@ public class BooksOnBookshelfModel
 
     public void setLastTopRow(final int lastTopRow) {
         mLastTopRow = lastTopRow;
-    }
-
-    public int getTotalBooks() {
-        return mTotalBooks;
-    }
-
-    public int getUniqueBooks() {
-        return mUniqueBooks;
     }
 
     /**
@@ -375,7 +372,6 @@ public class BooksOnBookshelfModel
 
             if (mSearchCriteria.hasIdList()) {
                 // if we have a list of id's, ignore other criteria.
-                // Meant to display the results from FTSSearchActivity directly.
                 bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
 
             } else {
@@ -399,6 +395,14 @@ public class BooksOnBookshelfModel
                 .execute();
     }
 
+    public int getTotalBooks() {
+        return mTotalBooks;
+    }
+
+    public int getUniqueBooks() {
+        return mUniqueBooks;
+    }
+
     /**
      * The result of {@link GetBookListTask}.
      *
@@ -406,6 +410,38 @@ public class BooksOnBookshelfModel
      */
     public MutableLiveData<BuilderHolder> getBuilderResult() {
         return mBuilderResult;
+    }
+
+    @Nullable
+    public BooklistPseudoCursor getListCursor() {
+        return mListCursor;
+    }
+
+    public void setListCursor(@NonNull final BooklistPseudoCursor listCursor) {
+        mListCursor = listCursor;
+    }
+
+    /**
+     * @return {@code null} if no rebuild is requested;
+     * {@code true} or {@code false} if we're requesting a full or partial rebuild.
+     */
+    @Nullable
+    public Boolean isForceFullRebuild() {
+        return mAfterOnActivityResultDoFullRebuild;
+    }
+
+    /**
+     * Request a full or partial rebuild at the next onResume.
+     *
+     * @param fullRebuild {@code true} for a full rebuild; {@code false} for a partial rebuild;
+     *                    {@code null} for no rebuild.
+     */
+    public void setFullRebuild(@Nullable final Boolean fullRebuild) {
+        mAfterOnActivityResultDoFullRebuild = fullRebuild;
+    }
+
+    public void setCurrentPositionedBookId(final long currentPositionedBookId) {
+        mCurrentPositionedBookId = currentPositionedBookId;
     }
 
 
@@ -450,6 +486,12 @@ public class BooksOnBookshelfModel
         return null;
     }
 
+
+    @NonNull
+    public SearchCriteria getSearchCriteria() {
+        return mSearchCriteria;
+    }
+
     /**
      * Holder class for search criteria with some methods to bulk manipulate them.
      */
@@ -460,7 +502,7 @@ public class BooksOnBookshelfModel
          * which can be re-used for the builder.
          */
         @Nullable
-        ArrayList<Integer> bookList;
+        ArrayList<Long> bookList;
 
         /**
          * Author to use in FTS search query.
@@ -522,14 +564,37 @@ public class BooksOnBookshelfModel
             }
         }
 
-        public void from(@NonNull final Bundle bundle) {
-            clear();
-            setKeywords(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
-            ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
-            series = bundle.getString(DBDefinitions.KEY_SERIES);
-            loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
-            bookList = bundle.getIntegerArrayList(UniqueId.BKEY_ID_LIST);
+        /**
+         * Only copies the criteria which are set.
+         * Criteria not set in the bundle, are preserved!
+         *
+         * @param bundle with criteria.
+         */
+        public void from(@NonNull final Bundle bundle,
+                         final boolean clear) {
+            if (clear) {
+                clear();
+            }
+
+            if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
+                setKeywords(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
+            }
+            if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
+                ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            }
+            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
+                ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
+            }
+            if (bundle.containsKey(DBDefinitions.KEY_SERIES)) {
+                series = bundle.getString(DBDefinitions.KEY_SERIES);
+            }
+            if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
+                loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
+            }
+            if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
+                //noinspection unchecked
+                bookList = (ArrayList<Long>) (bundle.get(UniqueId.BKEY_ID_LIST));
+            }
         }
 
         /**
@@ -544,18 +609,6 @@ public class BooksOnBookshelfModel
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
-        /**
-         * @param outState from a #onSaveInstanceState
-         */
-        public void to(@NonNull final Bundle outState) {
-            outState.putString(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords);
-            outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor);
-            outState.putString(DBDefinitions.KEY_TITLE, ftsTitle);
-            outState.putString(DBDefinitions.KEY_SERIES, series);
-            outState.putString(DBDefinitions.KEY_LOANEE, loanee);
-            outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
-        }
-
         public boolean isEmpty() {
             return (ftsKeywords == null || ftsKeywords.isEmpty())
                     && (ftsAuthor == null || ftsAuthor.isEmpty())
@@ -565,7 +618,7 @@ public class BooksOnBookshelfModel
                     && (bookList == null || bookList.isEmpty());
         }
 
-        public boolean hasIdList() {
+        boolean hasIdList() {
             return bookList != null && !bookList.isEmpty();
         }
     }

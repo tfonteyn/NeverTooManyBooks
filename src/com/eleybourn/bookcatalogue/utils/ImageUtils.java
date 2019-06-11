@@ -601,14 +601,12 @@ public final class ImageUtils {
          * overwrites the view.
          */
         static void clearOldTaskFromView(@NonNull final ImageView imageView) {
-            final GetImageTask oldTask = (GetImageTask) imageView.getTag(
-                    R.id.TAG_GET_THUMBNAIL_TASK);
+            GetImageTask oldTask = (GetImageTask) imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK);
             if (oldTask != null) {
                 imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
                 oldTask.cancel(true);
             }
         }
-
 
         @Override
         @UiThread
@@ -681,10 +679,10 @@ public final class ImageUtils {
             ImageView imageView = mView.get();
 
             // Make sure the view is still ... bla bla as above
-            final boolean viewIsValid = imageView != null
+            boolean viewIsValid = imageView != null
                     && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
 
-            // Clear the view tag
+            // we're done; clear the view tag
             if (viewIsValid) {
                 imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
             }
@@ -698,7 +696,7 @@ public final class ImageUtils {
                             .execute();
                 }
 
-                // and finally, set the view.
+                // and finally, load the image into the view.
                 if (viewIsValid) {
                     setImageView(imageView, mBitmap, mWidth, mHeight, true);
                 } else {

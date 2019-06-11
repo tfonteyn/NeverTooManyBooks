@@ -22,6 +22,9 @@ public class TableInfo {
     /** columns of this table. */
     @NonNull
     private final Map<String, ColumnInfo> mColumns;
+    /** only stored for debug purposes. */
+    @NonNull
+    private final String mTableName;
 
     /**
      * Constructor.
@@ -31,7 +34,13 @@ public class TableInfo {
      */
     public TableInfo(@NonNull final SynchronizedDb db,
                      @NonNull final String tableName) {
+        mTableName = tableName;
         mColumns = describeTable(db, tableName);
+    }
+
+    @NonNull
+    public String getTableName() {
+        return mTableName;
     }
 
     @NonNull
@@ -78,5 +87,14 @@ public class TableInfo {
             throw new IllegalStateException("Unable to get column details");
         }
         return allColumns;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "TableInfo{"
+                + "mTableName=" + mTableName
+                + "mColumns=" + mColumns.values()
+                + '}';
     }
 }

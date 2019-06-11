@@ -32,18 +32,18 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
     @NonNull
     private final List<T> mItems;
     @Nullable
-    private final View.OnClickListener mOnSelectionListener;
+    private final SelectionListener<T> mOnSelectionListener;
     /** The (pre-)selected item. */
     private T mSelectedItem;
 
     /**
      * @param context Current context
-     * @param items the list
+     * @param items   the list
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
                                      @NonNull final List<T> items,
                                      @Nullable final T selectedItem,
-                                     @Nullable final View.OnClickListener listener) {
+                                     @Nullable final SelectionListener<T> listener) {
 
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -89,7 +89,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update the radio buttons first (yes, purely for visuals)
-            v.post(() -> mOnSelectionListener.onClick(v));
+            v.post(() -> mOnSelectionListener.onSelected(mSelectedItem));
         }
     }
 
@@ -113,6 +113,11 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
             mSelectedItem = null;
             notifyDataSetChanged();
         }
+    }
+
+    public interface SelectionListener<T> {
+
+        void onSelected(T o);
     }
 
     static class Holder

@@ -83,7 +83,8 @@ public class EditSeriesListActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(mBookTitle);
+
+        setTitle(R.string.title_edit_book_series);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
                                                   android.R.layout.simple_dropdown_item_1line,
@@ -235,7 +236,7 @@ public class EditSeriesListActivity
             extends DialogFragment {
 
         /** Fragment manager tag. */
-        private static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
+        private static final String TAG = "EditBookSeriesDialogFragment";
 
         private AutoCompleteTextView mNameView;
         private Checkable mIsCompleteView;
@@ -244,6 +245,8 @@ public class EditSeriesListActivity
         private String mSeriesName;
         private boolean mSeriesIsComplete;
         private String mSeriesNumber;
+
+        private EditSeriesListActivity mActivity;
 
         /**
          * syntax sugar for newInstance.
@@ -270,6 +273,13 @@ public class EditSeriesListActivity
             return frag;
         }
 
+        @Override
+        public void onAttach(@NonNull final Context context) {
+            super.onAttach(context);
+            //TOMF: use interface
+            mActivity = (EditSeriesListActivity) getActivity();
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -288,13 +298,13 @@ public class EditSeriesListActivity
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_SERIES_NUM);
             }
             @SuppressWarnings("ConstantConditions")
-            final View root = getActivity().getLayoutInflater()
-                                           .inflate(R.layout.dialog_edit_book_series, null);
+            View root = getActivity().getLayoutInflater()
+                                     .inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
             mNameView.setText(mSeriesName);
-            mNameView.setAdapter(((EditSeriesListActivity) getActivity()).mAutoCompleteAdapter);
+            mNameView.setAdapter(mActivity.mAutoCompleteAdapter);
 
             mIsCompleteView = root.findViewById(R.id.is_complete);
             if (mIsCompleteView != null) {
@@ -322,9 +332,8 @@ public class EditSeriesListActivity
                         dismiss();
 
                         //noinspection ConstantConditions
-                        ((EditSeriesListActivity) getActivity())
-                                .processChanges(series, mSeriesName, mSeriesIsComplete,
-                                                mSeriesNumber);
+                        mActivity.processChanges(series, mSeriesName, mSeriesIsComplete,
+                                                 mSeriesNumber);
                     })
                     .create();
         }

@@ -65,7 +65,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public abstract class BaseActivityWithTasks
         extends BaseActivity {
 
-    private static final String TAG = BaseActivityWithTasks.class.getSimpleName();
+    private static final String TAG = "BaseActivityWithTasks";
 
     private static final String BKEY_TASK_MANAGER_ID = TAG + ":TaskManagerId";
 

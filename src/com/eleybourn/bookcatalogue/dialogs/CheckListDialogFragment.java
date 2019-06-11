@@ -58,7 +58,7 @@ public class CheckListDialogFragment<T>
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = CheckListDialogFragment.class.getSimpleName();
+    public static final String TAG = "CheckListDialogFragment";
 
     /** Argument. */
     private static final String BKEY_CHECK_LIST = TAG + ":list";

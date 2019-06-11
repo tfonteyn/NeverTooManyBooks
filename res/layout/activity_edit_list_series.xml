@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/TextDetail"
+        style="@style/TextDetail.Large.Title"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"

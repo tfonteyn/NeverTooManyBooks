@@ -109,9 +109,9 @@
             android:title="@string/pt_bob_header"
             />
 
-        <!-- default == index '1' == value '1' == MEDIUM -->
+        <!-- default BooklistStyle.SCALE_MEDIUM == 2 -->
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="2"
             android:entries="@array/pe_bob_text_size"
             android:entryValues="@array/pv_bob_text_size"
             android:icon="@drawable/ic_format_size"
@@ -135,9 +135,9 @@
             android:title="@string/pt_bob_thumbnails_show"
             />
 
-        <!-- default == index '2' == value '3' == LARGE -->
+        <!-- default BooklistStyle.SCALE_LARGE == 3 -->
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="3"
             android:entries="@array/pe_bob_cover_size"
             android:entryValues="@array/pv_bob_cover_size"
             android:icon="@drawable/ic_photo_size_select_large"

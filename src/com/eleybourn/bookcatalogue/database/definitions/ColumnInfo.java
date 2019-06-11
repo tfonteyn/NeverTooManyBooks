@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.database.definitions;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -36,16 +37,20 @@ public class ColumnInfo {
     public static final String TYPE_DATE = "date";
     public static final String TYPE_DATETIME = "datetime";
 
+    @NonNull
     public final String name;
+    @NonNull
+    private final String typeName;
     public final boolean isPrimaryKey;
+    @NonNull
     public final StorageClass storageClass;
 
     @SuppressWarnings({"unused"})
     private final int position;
-    private final String typeName;
     @SuppressWarnings({"unused"})
     private final boolean allowNull;
     @SuppressWarnings({"unused"})
+    @Nullable
     private final String defaultValue;
 
 
@@ -59,9 +64,13 @@ public class ColumnInfo {
         name = cursor.getString(1);
         typeName = cursor.getString(2);
         allowNull = cursor.getInt(3) == 0;
+
+        // can be null
         defaultValue = cursor.getString(4);
+
         isPrimaryKey = cursor.getInt(5) == 1;
 
+        // derived
         storageClass = StorageClass.newInstance(typeName);
     }
 
@@ -77,7 +86,7 @@ public class ColumnInfo {
     @Override
     @NonNull
     public String toString() {
-        return "ColumnInfo{"
+        return "\nColumnInfo{"
                 + "name=`" + name + '`'
                 + ", isPrimaryKey=" + isPrimaryKey
                 + ", storageClass=" + storageClass

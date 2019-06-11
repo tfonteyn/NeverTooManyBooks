@@ -97,7 +97,7 @@ public class EditBookTocFragment
         extends EditBookBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookTocFragment.class.getSimpleName();
+    public static final String TAG = "EditBookTocFragment";
 
     /** The book. */
     @Nullable
@@ -181,7 +181,9 @@ public class EditBookTocFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
+        mListView = view.findViewById(android.R.id.list);
+        return view;
     }
 
     /**
@@ -249,11 +251,9 @@ public class EditBookTocFragment
         field = fields.add(R.id.multiple_authors, Book.HAS_MULTIPLE_AUTHORS);
         mMultipleAuthorsView = field.getView();
 
-        View view = requireView();
         // adding a new TOC entry
-        view.findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
+        requireView().findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
 
-        mListView = view.findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
@@ -472,7 +472,7 @@ public class EditBookTocFragment
             extends DialogFragment {
 
         /** Fragment manager tag. */
-        private static final String TAG = ConfirmToc.class.getSimpleName();
+        private static final String TAG = "ConfirmToc";
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
@@ -594,7 +594,7 @@ public class EditBookTocFragment
             extends DialogFragment {
 
         /** Fragment manager tag. */
-        private static final String TAG = EditTocEntry.class.getSimpleName();
+        private static final String TAG = "EditTocEntry";
 
         private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
         private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";

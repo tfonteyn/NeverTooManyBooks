@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -60,7 +62,7 @@ public class EditBookFragment
         extends BookBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookFragment.class.getSimpleName();
+    public static final String TAG = "EditBookFragment";
 
     /**
      * Tabs in order.
@@ -74,23 +76,30 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    private BaseActivity mActivity;
+    private AppCompatActivity mActivity;
 
     private ViewPager mViewPager;
     private ViewPagerAdapter mPagerAdapter;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mActivity = (AppCompatActivity) getActivity();
+    }
 
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
+        mViewPager = view.findViewById(R.id.tab_fragment);
+        return view;
     }
 
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mActivity = (BaseActivity) getActivity();
         super.onActivityCreated(savedInstanceState);
 
         // any specific tab desired as 'selected' ?
@@ -134,12 +143,10 @@ public class EditBookFragment
                                                  getString(R.string.tab_lbl_content)));
         }
 
-        mViewPager = requireView().findViewById(R.id.tab_fragment);
         mViewPager.setAdapter(mPagerAdapter);
 
-        // note that the tab bar lives in the activity layout in the AppBarLayout!
-        //noinspection ConstantConditions
-        TabLayout tabLayout = getActivity().findViewById(R.id.tab_panel);
+        // note that the tab bar lives in the activity layout inside the AppBarLayout!
+        TabLayout tabLayout = mActivity.findViewById(R.id.tab_panel);
 
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(showTab);

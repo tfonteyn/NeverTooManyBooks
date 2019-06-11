@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -49,7 +50,7 @@ public class UpdateFieldsFromInternetFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = UpdateFieldsFromInternetFragment.class.getSimpleName();
+    public static final String TAG = "UpdateFieldsFromInternetFragment";
 
     /** RequestCode for editing the search sites order. */
     private static final int REQ_PREFERRED_SEARCH_SITES = 0;
@@ -97,6 +98,15 @@ public class UpdateFieldsFromInternetFragment
     /** display reminder only. */
     private String mTitle;
 
+    private TaskManager mTaskManager;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        //noinspection ConstantConditions
+        mTaskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
+    }
+
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -112,7 +122,9 @@ public class UpdateFieldsFromInternetFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_update_from_internet, container, false);
+        View view = inflater.inflate(R.layout.fragment_update_from_internet, container, false);
+        mFieldListView = view.findViewById(R.id.manage_fields_scrollview);
+        return view;
     }
 
     @Override
@@ -145,8 +157,6 @@ public class UpdateFieldsFromInternetFragment
             authorView.setVisibility(View.GONE);
             titleView.setVisibility(View.GONE);
         }
-
-        mFieldListView = root.findViewById(R.id.manage_fields_scrollview);
 
         // FAB lives in Activity layout.
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -270,7 +280,7 @@ public class UpdateFieldsFromInternetFragment
             cb.setText(usage.getUsageInfo(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
-                final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
+                FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isSelected());
                 cb.setText(fieldUsage.getUsageInfo(getContext()));
@@ -351,8 +361,8 @@ public class UpdateFieldsFromInternetFragment
             View view = mFieldListView.getChildAt(i);
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
-                FieldUsage usage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
-                if (usage.isSelected()) {
+                FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
+                if (fieldUsage.isSelected()) {
                     return true;
                 }
             }
@@ -410,10 +420,8 @@ public class UpdateFieldsFromInternetFragment
             return;
         }
 
-        @SuppressWarnings("ConstantConditions")
-        TaskManager taskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
         UpdateFieldsFromInternetTask updateTask =
-                new UpdateFieldsFromInternetTask(taskManager, mSearchSites, mFieldUsages,
+                new UpdateFieldsFromInternetTask(mTaskManager, mSearchSites, mFieldUsages,
                                                  mManagedTaskListener);
         if (bookId > 0) {
             updateTask.setBookId(bookId);

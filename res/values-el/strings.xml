@@ -715,5 +715,7 @@
     <string name="clear">Καθαρίστε</string>
     <string name="warning_required_at_least_one">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό</string>
     <string name="X_pt_bob_preferred_style">Προνομιούχος</string>
+    <string name="btn_confirm_new">Νέος</string>
+    <string name="title_edit_book_authors">Επεξεργασία συγγραφέων βιβλίων</string>
 
 </resources>

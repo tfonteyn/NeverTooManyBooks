@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.entities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -169,7 +168,7 @@ public class Book
      * Perform sharing of book. Create chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      */
-    public Intent getShareBookIntent(@NonNull final Activity activity) {
+    public Intent getShareBookIntent(@NonNull final Context context) {
         String title = getString(DBDefinitions.KEY_TITLE);
         double rating = getDouble(DBDefinitions.KEY_RATING);
         String author = getString(DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
@@ -201,13 +200,13 @@ public class Book
         // prepare the cover to post
         File coverFile = StorageUtils.getCoverFile(uuid);
         Uri coverURI = FileProvider
-                .getUriForFile(activity, GenericFileProvider.AUTHORITY, coverFile);
+                .getUriForFile(context, GenericFileProvider.AUTHORITY, coverFile);
 
 
         // TEST: There's a problem with the facebook app in android,
         // so despite it being shown on the list it will not post any text unless the user types it.
-        String text = activity.getString(R.string.info_share_book_im_reading,
-                                         title, author, series, ratingString);
+        String text = context.getString(R.string.info_share_book_im_reading,
+                                        title, author, series, ratingString);
         return new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text)
