@@ -53,7 +53,7 @@ public class FloatValidator
                          final boolean crossValidating)
             throws ValidatorException {
 
-        if (!datum.isVisible() || crossValidating) {
+        if (crossValidating) {
             return;
         }
 

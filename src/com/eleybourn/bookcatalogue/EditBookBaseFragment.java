@@ -101,10 +101,10 @@ public abstract class EditBookBaseFragment<T>
     protected void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
         // Check if we have any data, for example from a Search
         if (bundle != null) {
-            Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
-            if (values != null) {
+            Bundle rawData = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
+            if (rawData != null) {
                 // if we do, add if not there yet
-                getFields().setAllFrom(values, false);
+                getFields().setAllFrom(rawData, false);
             }
         }
     }
@@ -145,23 +145,22 @@ public abstract class EditBookBaseFragment<T>
      */
     @CallSuper
     protected void onSaveFieldsToBook() {
+        Fields fields = getFields();
         // validate the fields
-        if (getFields().validate(new Bundle())) {
+        if (fields.validate(new Bundle())) {
             // we're ignoring the passed/returned Bundle for now...
-            getFields().putAllInto(mBookBaseFragmentModel.getBook());
+            fields.putAllInto(mBookBaseFragmentModel.getBook());
 
         } else {
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.vldt_failure)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setMessage(getFields().getValidationExceptionMessage(getContext()))
+                    .setMessage(fields.getValidationExceptionMessage(getContext()))
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .create()
                     .show();
         }
-
-        getFields().putAllInto(mBookBaseFragmentModel.getBook());
     }
 
     /**

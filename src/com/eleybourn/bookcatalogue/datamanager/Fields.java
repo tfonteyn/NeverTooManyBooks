@@ -218,6 +218,13 @@ public class Fields {
         mAfterFieldChangeListener = listener;
     }
 
+    private void afterFieldChange(@NonNull final Field field,
+                                  @Nullable final String newValue) {
+        if (mAfterFieldChangeListener != null) {
+            mAfterFieldChangeListener.afterFieldChange(field, newValue);
+        }
+    }
+
     /**
      * Accessor for related FieldsContext.
      * <p>
@@ -313,22 +320,22 @@ public class Fields {
     /**
      * Load fields from the passed bundle.
      *
-     * @param values        with data to load.
+     * @param rawData       with data to load.
      * @param withOverwrite if {@code true}, all fields are copied.
      *                      If {@code false}, only non-existent fields are copied.
      */
-    public void setAllFrom(@NonNull final Bundle values,
+    public void setAllFrom(@NonNull final Bundle rawData,
                            final boolean withOverwrite) {
         if (withOverwrite) {
             for (Field field : mAllFields) {
-                field.setValueFrom(values);
+                field.setValueFrom(rawData);
             }
         } else {
             for (Field field : mAllFields) {
-                if (!field.mColumn.isEmpty() && values.containsKey(field.mColumn)) {
-                    String val = values.getString(field.mColumn);
-                    if (val != null) {
-                        field.setValue(val);
+                if (!field.mColumn.isEmpty() && rawData.containsKey(field.mColumn)) {
+                    String value = rawData.getString(field.mColumn);
+                    if (value != null) {
+                        field.setValue(value);
                     }
                 }
             }
@@ -375,6 +382,9 @@ public class Fields {
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      * Use {@link #getValidationExceptionMessage} for the results.
+     * <p>
+     * 2019-06-11: right now we do not actually have any Field specific validators installed.
+     * so first 2 checks will always pass. We do have a FieldCrossValidator.
      *
      * @param values The Bundle collection to fill
      *
@@ -398,9 +408,6 @@ public class Fields {
         for (FieldCrossValidator validator : mCrossValidators) {
             try {
                 validator.validate(this, values);
-                if (BuildConfig.DEBUG) {
-                    Logger.debug(this, "validate", validator.toString());
-                }
 
             } catch (ValidatorException e) {
                 mValidationExceptions.add(e);
@@ -423,14 +430,10 @@ public class Fields {
                              final boolean crossValidating) {
         boolean isOk = true;
         for (Field field : mAllFields) {
-            if (field.mFieldValidator != null) {
+            FieldValidator validator = field.getValidator();
+            if (validator != null) {
                 try {
-                    field.mFieldValidator.validate(this, field, values, crossValidating);
-                    if (BuildConfig.DEBUG) {
-                        Logger.debug(this, "validate",
-                                     "column=" + field.mColumn,
-                                     "crossValidating=" + crossValidating);
-                    }
+                    validator.validate(this, field, values, crossValidating);
 
                 } catch (ValidatorException e) {
                     mValidationExceptions.add(e);
@@ -563,20 +566,20 @@ public class Fields {
          * Passed a Field and a Bundle get the column from the Bundle and set the view value.
          *
          * @param field  which defines the View details
-         * @param values with data to load.
+         * @param source with data to load.
          */
         void setFieldValueFrom(@NonNull Field field,
-                               @NonNull Bundle values);
+                               @NonNull Bundle source);
 
         /**
          * Passed a Field and a DataManager get the column from the DataManager and
          * set the view value.
          *
          * @param field  which defines the View details
-         * @param values with data to load.
+         * @param source with data to load.
          */
         void setFieldValueFrom(@NonNull Field field,
-                               @NonNull DataManager values);
+                               @NonNull DataManager source);
 
         /**
          * Passed a Field and a String, use the string to set the view value.
@@ -584,28 +587,28 @@ public class Fields {
          * @param field which defines the View details
          * @param value to set.
          */
-        void set(@NonNull Field field,
-                 @NonNull String value);
+        void setValue(@NonNull Field field,
+                      @NonNull String value);
 
         /**
          * Get the value from the view associated with Field and store a native version
          * in the passed values collection.
          *
          * @param field  associated with the View object
-         * @param values Collection to save value into.
+         * @param target Collection to save value into.
          */
         void putFieldValueInto(@NonNull Field field,
-                               @NonNull Bundle values);
+                               @NonNull Bundle target);
 
         /**
          * Get the value from the view associated with Field and store a native version
          * in the passed DataManager.
          *
          * @param field  associated with the View object
-         * @param values Collection to save value into.
+         * @param target Collection to save value into.
          */
         void putFieldValueInto(@NonNull Field field,
-                               @NonNull DataManager values);
+                               @NonNull DataManager target);
 
         /**
          * Get the value from the view associated with Field and return it as an Object.
@@ -615,7 +618,7 @@ public class Fields {
          * @return The most natural value to associate with the View value.
          */
         @NonNull
-        Object get(@NonNull Field field);
+        Object getValue(@NonNull Field field);
     }
 
     /**
@@ -671,14 +674,14 @@ public class Fields {
 
         @Override
         public void setFieldValueFrom(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
-            set(field, Objects.requireNonNull(values.getString(field.mColumn)));
+                                      @NonNull final Bundle source) {
+            setValue(field, Objects.requireNonNull(source.getString(field.mColumn)));
         }
 
         @Override
         public void setFieldValueFrom(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
-            set(field, values.getString(field.mColumn));
+                                      @NonNull final DataManager source) {
+            setValue(field, source.getString(field.mColumn));
         }
     }
 
@@ -693,26 +696,26 @@ public class Fields {
         private String mLocalValue = "";
 
         @Override
-        public void set(@NonNull final Field field,
-                        @NonNull final String value) {
+        public void setValue(@NonNull final Field field,
+                             @NonNull final String value) {
             mLocalValue = field.format(value);
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
-            values.putString(field.mColumn, field.extract(mLocalValue).trim());
+                                      @NonNull final Bundle target) {
+            target.putString(field.mColumn, field.extract(mLocalValue).trim());
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
-            values.putString(field.mColumn, field.extract(mLocalValue).trim());
+                                      @NonNull final DataManager target) {
+            target.putString(field.mColumn, field.extract(mLocalValue).trim());
         }
 
         @NonNull
         @Override
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             return field.extract(mLocalValue);
         }
     }
@@ -731,8 +734,8 @@ public class Fields {
         @NonNull
         private String mRawValue = "";
 
-        public void set(@NonNull final Field field,
-                        @NonNull final String value) {
+        public void setValue(@NonNull final Field field,
+                             @NonNull final String value) {
             mRawValue = value;
             TextView view = field.getView();
             if (mFormatHtml) {
@@ -746,18 +749,18 @@ public class Fields {
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
-            values.putString(field.mColumn, mRawValue.trim());
+                                      @NonNull final Bundle target) {
+            target.putString(field.mColumn, mRawValue.trim());
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
-            values.putString(field.mColumn, mRawValue.trim());
+                                      @NonNull final DataManager target) {
+            target.putString(field.mColumn, mRawValue.trim());
         }
 
         @NonNull
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             return mRawValue;
         }
 
@@ -819,8 +822,8 @@ public class Fields {
             view.addTextChangedListener(mTextWatcher);
         }
 
-        public synchronized void set(@NonNull final Field field,
-                                     @NonNull final String value) {
+        public synchronized void setValue(@NonNull final Field field,
+                                          @NonNull final String value) {
             EditText view = field.getView();
             view.removeTextChangedListener(mTextWatcher);
 
@@ -833,20 +836,20 @@ public class Fields {
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
+                                      @NonNull final Bundle target) {
             EditText view = field.getView();
-            values.putString(field.mColumn, field.extract(view.getText().toString().trim()));
+            target.putString(field.mColumn, field.extract(view.getText().toString().trim()));
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
+                                      @NonNull final DataManager target) {
             EditText view = field.getView();
-            values.putString(field.mColumn, field.extract(view.getText().toString().trim()));
+            target.putString(field.mColumn, field.extract(view.getText().toString().trim()));
         }
 
         @NonNull
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             EditText view = field.getView();
             return field.extract(view.getText().toString().trim());
         }
@@ -862,8 +865,8 @@ public class Fields {
     public static class CheckableAccessor
             extends BaseDataAccessor {
 
-        public void set(@NonNull final Field field,
-                        @Nullable final String value) {
+        public void setValue(@NonNull final Field field,
+                             @Nullable final String value) {
             Checkable cb = field.getView();
             if (value != null) {
                 try {
@@ -877,35 +880,35 @@ public class Fields {
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
+                                      @NonNull final Bundle target) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                values.putString(field.mColumn,
+                target.putString(field.mColumn,
                                  field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
             } else {
-                values.putBoolean(field.mColumn, cb.isChecked());
+                target.putBoolean(field.mColumn, cb.isChecked());
             }
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
+                                      @NonNull final DataManager target) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                values.putString(field.mColumn,
+                target.putString(field.mColumn,
                                  field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
             } else {
-                values.putBoolean(field.mColumn, cb.isChecked());
+                target.putBoolean(field.mColumn, cb.isChecked());
             }
         }
 
         @NonNull
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
                 return field.formatter.extract(field, cb.isChecked() ? "1" : "0");
             } else {
-                return cb.isChecked() ? 1 : 0;
+                return cb.isChecked() ? "1" : "0";
             }
         }
     }
@@ -955,8 +958,8 @@ public class Fields {
          * @param field which defines the View details
          * @param value to set: the book uuid !
          */
-        public void set(@NonNull final Field field,
-                        @Nullable final String value) {
+        public void setValue(@NonNull final Field field,
+                             @Nullable final String value) {
             ImageView imageView = field.getView();
 
             if (value != null) {
@@ -975,13 +978,13 @@ public class Fields {
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
+                                      @NonNull final Bundle target) {
             // not applicable
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
+                                      @NonNull final DataManager target) {
             // not applicable
         }
 
@@ -993,7 +996,7 @@ public class Fields {
          * @return the uuid
          */
         @NonNull
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             return field.getView().getTag(R.id.TAG_UUID);
         }
     }
@@ -1004,8 +1007,8 @@ public class Fields {
     public static class RatingBarAccessor
             extends BaseDataAccessor {
 
-        public void set(@NonNull final Field field,
-                        @Nullable final String value) {
+        public void setValue(@NonNull final Field field,
+                             @Nullable final String value) {
             RatingBar bar = field.getView();
             float f = 0.0f;
             try {
@@ -1016,29 +1019,29 @@ public class Fields {
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
+                                      @NonNull final Bundle target) {
             RatingBar bar = field.getView();
             if (field.formatter != null) {
                 String value = field.formatter.extract(field, String.valueOf(bar.getRating()));
-                values.putString(field.mColumn, value);
+                target.putString(field.mColumn, value);
             } else {
-                values.putFloat(field.mColumn, bar.getRating());
+                target.putFloat(field.mColumn, bar.getRating());
             }
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
+                                      @NonNull final DataManager target) {
             RatingBar bar = field.getView();
             if (field.formatter != null) {
                 String value = field.formatter.extract(field, String.valueOf(bar.getRating()));
-                values.putString(field.mColumn, value);
+                target.putString(field.mColumn, value);
             } else {
-                values.putFloat(field.mColumn, bar.getRating());
+                target.putFloat(field.mColumn, bar.getRating());
             }
         }
 
         @NonNull
-        public Object get(@NonNull final Field field) {
+        public Object getValue(@NonNull final Field field) {
             RatingBar bar = field.getView();
             return bar.getRating();
         }
@@ -1051,8 +1054,8 @@ public class Fields {
     public static class SpinnerAccessor
             extends BaseDataAccessor {
 
-        public void set(@NonNull final Field field,
-                        @Nullable final String value) {
+        public void setValue(@NonNull final Field field,
+                             @Nullable final String value) {
             Spinner spinner = field.getView();
             String s = field.format(value);
             for (int i = 0; i < spinner.getCount(); i++) {
@@ -1064,22 +1067,22 @@ public class Fields {
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final Bundle values) {
-            values.putString(field.mColumn, getValue(field));
+                                      @NonNull final Bundle target) {
+            target.putString(field.mColumn, getSpinnerValue(field));
         }
 
         public void putFieldValueInto(@NonNull final Field field,
-                                      @NonNull final DataManager values) {
-            values.putString(field.mColumn, getValue(field));
+                                      @NonNull final DataManager target) {
+            target.putString(field.mColumn, getSpinnerValue(field));
         }
 
         @NonNull
-        public Object get(@NonNull final Field field) {
-            return field.extract(getValue(field));
+        public Object getValue(@NonNull final Field field) {
+            return field.extract(getSpinnerValue(field));
         }
 
         @NonNull
-        private String getValue(@NonNull final Field field) {
+        private String getSpinnerValue(@NonNull final Field field) {
             Spinner spinner = field.getView();
             Object selItem = spinner.getSelectedItem();
             if (selItem != null) {
@@ -1087,7 +1090,6 @@ public class Fields {
             } else {
                 return "";
             }
-
         }
     }
 
@@ -1128,9 +1130,11 @@ public class Fields {
     }
 
     /**
-     * Formatter for boolean fields.
+     * Formatter for boolean fields. Displays "Yes" or "No" (localized).
      * <p>
      * Can be reused for multiple fields.
+     * <p>
+     * Does not support {@link FieldFormatter#extract}
      *
      * @author Philip Warner
      */
@@ -1160,19 +1164,6 @@ public class Fields {
             try {
                 boolean val = Datum.toBoolean(source, false);
                 return val ? mYes : mNo;
-            } catch (NumberFormatException e) {
-                return source;
-            }
-        }
-
-        /**
-         * @return "0" or "1": a boolean string.
-         */
-        @NonNull
-        public String extract(@NonNull final Field field,
-                              @NonNull final String source) {
-            try {
-                return Datum.toBoolean(source, false) ? "1" : "0";
             } catch (NumberFormatException e) {
                 return source;
             }
@@ -1372,7 +1363,7 @@ public class Fields {
      *
      * @author Philip Warner
      */
-    public class Field {
+    public static class Field {
 
         /** Field ID. */
         @IdRes
@@ -1535,6 +1526,14 @@ public class Fields {
         }
 
         /**
+         * @return the field validator
+         */
+        @Nullable
+        public FieldValidator getValidator() {
+            return mFieldValidator;
+        }
+
+        /**
          * @param validator to use
          *
          * @return field (for chaining)
@@ -1595,9 +1594,7 @@ public class Fields {
             //TODO: We need to introduce a better way to handle this.
             view.setOnTouchListener((v, event) -> {
                 if (MotionEvent.ACTION_UP == event.getAction()) {
-                    if (mAfterFieldChangeListener != null) {
-                        mAfterFieldChangeListener.afterFieldChange(Field.this, null);
-                    }
+                    mFields.get().afterFieldChange(Field.this, null);
                 }
                 return false;
             });
@@ -1650,7 +1647,7 @@ public class Fields {
          */
         @NonNull
         public Object getValue() {
-            return mFieldDataAccessor.get(this);
+            return mFieldDataAccessor.getValue(this);
         }
 
         /**
@@ -1659,33 +1656,31 @@ public class Fields {
          * @param s New value
          */
         public void setValue(@NonNull final String s) {
-            mFieldDataAccessor.set(this, s);
-            if (mAfterFieldChangeListener != null) {
-                mAfterFieldChangeListener.afterFieldChange(this, s);
-            }
+            mFieldDataAccessor.setValue(this, s);
+            mFields.get().afterFieldChange(this, s);
         }
 
         /**
          * Get the current value of this field and put it into the Bundle collection.
          **/
-        void putValueInto(@NonNull final Bundle values) {
-            mFieldDataAccessor.putFieldValueInto(this, values);
+        void putValueInto(@NonNull final Bundle rawData) {
+            mFieldDataAccessor.putFieldValueInto(this, rawData);
         }
 
         /**
          * Get the current value of this field and put it into the Bundle collection.
          **/
-        void putValueInto(@NonNull final DataManager data) {
-            mFieldDataAccessor.putFieldValueInto(this, data);
+        void putValueInto(@NonNull final DataManager dataManager) {
+            mFieldDataAccessor.putFieldValueInto(this, dataManager);
         }
 
         /**
          * Set the value of this field from the passed Bundle.
          * Useful for getting access to raw data values from a saved data bundle.
          */
-        void setValueFrom(@NonNull final Bundle bundle) {
+        void setValueFrom(@NonNull final Bundle rawData) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
-                mFieldDataAccessor.setFieldValueFrom(this, bundle);
+                mFieldDataAccessor.setFieldValueFrom(this, rawData);
             }
         }
 
@@ -1696,7 +1691,6 @@ public class Fields {
         public void setValueFrom(@NonNull final DataManager dataManager) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
                 mFieldDataAccessor.setFieldValueFrom(this, dataManager);
-
             }
         }
 

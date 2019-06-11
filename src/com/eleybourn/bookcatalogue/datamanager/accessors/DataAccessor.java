@@ -31,66 +31,60 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * Interface implemented for custom data access.
  * <p>
  * Usage:
- * Extends your object from DataManager.
- * During initialisation, call setAccessor(key, new DataAccessor(...))
- * The Accessor needs to be initialised with the ACTUAL key into the rawData. See example below.
+ * Extends your object from {@link DataManager}.
+ * During initialisation, call setAccessor(key, new DataAccessor(dataKey...))
+ * The 'key' is the artificial key to define the DataAccessor.
+ * The 'dataKey' is the ACTUAL key into the rawData.
  * <p>
- * Access your object with get(key); i.e. same key used in "setAccessor(key, accessor)"
- * The dataManager will use that key to get a Datum (still with that key)
+ * Access your object with {@link DataManager#get(String)}.
+ * The dataManager will use that key to get a {@link Datum} (still with that key)
  * The Datum will call the Accessor (this class).
- * This class.get can then use the mRawDataKey to access the rawData
+ * This class get can then use the dataKey to access the rawData
  * <p>
  * pro: very nice and clean way to add artificial data (a bit in a bitmask, a composite object, ...)
  * con: lots of layers on layers bring a performance penalty.
  * <p>
- * Currently used for:
- * - bitmask access to a single bit
- * - boolean/int transformation
- * <p>
- * TODO: speed this up
+ * Currently only used for:
+ * - bitmask access to a single bit (set and get) (2x)
+ * - boolean automatic-transformation when loading values from the database (2x)
  *
  * @author pjw
  */
-public interface DataAccessor {
+public interface DataAccessor<T> {
 
     /*
     // example code:
-    String mRawDataKey;
+    String mDataKey;
 
-    DataAccessor(String key) {
-        mRawDataKey = key;
+    DataAccessor(String dataKey) {
+        mDataKey = dataKey;
     }
     */
 
     /**
      * Get the value.
      *
-     * @param dataManager the parent collection
-     * @param rawData     the bundle into which the value should be stored
-     * @param datum       info about the data we're handling
+     * @param rawData the bundle into which the value is stored
      *
      * @return the raw value, or {@code null} if not present
      */
     @Nullable
-    Object get(@NonNull DataManager dataManager,
-               @NonNull Bundle rawData,
-               @NonNull Datum datum);
+    T get(@NonNull Bundle rawData);
 
     /**
      * Set the specified value.
      *
-     * @param dataManager the parent collection
-     * @param rawData     the bundle into which the value should be stored
-     * @param datum       info about the data we're handling
-     * @param value       the actual value to set
+     * @param rawData the bundle into which the value should be stored
+     * @param value   the actual value to set
      */
-    void put(@NonNull DataManager dataManager,
-             @NonNull Bundle rawData,
-             @NonNull Datum datum,
-             @NonNull Object value);
+    void put(@NonNull Bundle rawData,
+             @NonNull T value);
 
     /**
      * Check if the key is present.
      */
     boolean isPresent(@NonNull Bundle rawData);
+//    boolean isPresent(@NonNull Bundle rawData) {
+//        return rawData.containsKey(mKey);
+//    }
 }

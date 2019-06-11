@@ -389,7 +389,7 @@ public class BookFragment
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
         boolean hasToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK)
-                && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Authors.MULTIPLE_WORKS)
+                && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
         View view = requireView();

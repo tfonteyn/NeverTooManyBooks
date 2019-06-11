@@ -1494,7 +1494,7 @@ public class DAO
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
-                Logger.debug(this, "insertBook", book.getRawData());
+                Logger.debug(this, "insertBook", book);
             }
             // Cleanup fields (author, series, title and remove blank fields for which
             // we have defaults)
@@ -1581,7 +1581,7 @@ public class DAO
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
-                Logger.debug(this, "updateBook", book.getRawData());
+                Logger.debug(this, "updateBook", book);
             }
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,

@@ -30,7 +30,7 @@ public class UniqueMap<K, V>
     public V put(@NonNull final K key,
                  @NonNull final V value) {
         if (super.put(key, value) != null) {
-            throw new IllegalArgumentException("Map already contains key value" + key);
+            throw new IllegalArgumentException("Map already contains key value: " + key);
         }
         /*
          * collection contract says to return the previous value associated with the key,

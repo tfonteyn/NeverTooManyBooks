@@ -4,16 +4,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
  * The database value is stored as an int (0 or 1). Transform to/from boolean
  */
 public class BooleanDataAccessor
-        implements DataAccessor {
+        implements DataAccessor<Boolean> {
 
-    /** this is the ACTUAL key into the DataManager object. */
+    /** this is the ACTUAL key into the 'rawData' object. */
     private final String mKey;
 
     /**
@@ -27,18 +26,16 @@ public class BooleanDataAccessor
 
     @NonNull
     @Override
-    public Boolean get(@NonNull final DataManager dataManager,
-                       @NonNull final Bundle rawData,
-                       @NonNull final Datum datum) {
+    public Boolean get(@NonNull final Bundle rawData) {
+        // The database stores booleans as integers. We also want to deal with non-integer values
+        // that somehow represent a boolean.
         return Datum.toBoolean(rawData.get(mKey));
     }
 
     @Override
-    public void put(@NonNull final DataManager dataManager,
-                    @NonNull final Bundle rawData,
-                    @NonNull final Datum datum,
-                    @NonNull final Object value) {
-        rawData.putBoolean(mKey, Datum.toBoolean(value));
+    public void put(@NonNull final Bundle rawData,
+                    @NonNull final Boolean value) {
+        rawData.putBoolean(mKey, value);
     }
 
     @Override

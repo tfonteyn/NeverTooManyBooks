@@ -62,7 +62,7 @@ public class DefaultFieldValidator
                          final boolean crossValidating)
             throws ValidatorException {
 
-        if (!datum.isVisible() || crossValidating) {
+        if (crossValidating) {
             return;
         }
 

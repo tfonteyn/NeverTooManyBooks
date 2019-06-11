@@ -111,24 +111,11 @@
             tools:text="97834579862"
             />
 
-        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
-        <TextView
-            android:id="@+id/lbl_pages_baseline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            tools:ignore="SelectableText"
-            />
-
         <TextView
             android:id="@+id/pages"
             style="@style/TextDetail.Small"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
-            app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
             tools:text="1073 pages"
             />
@@ -136,9 +123,8 @@
         <TextView
             android:id="@+id/format"
             style="@style/TextDetail.Small"
-            android:layout_marginStart="@dimen/indent1"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
-            app:layout_constraintStart_toEndOf="@id/pages"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/pages"
             tools:ignore="SelectableText"
             tools:text="@string/book_format_hardcover"
             />
@@ -147,7 +133,7 @@
             android:id="@+id/language"
             style="@style/TextDetail.Small"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_pages_baseline"
+            app:layout_constraintTop_toBottomOf="@id/format"
             tools:ignore="SelectableText"
             tools:text="Quenya"
             />

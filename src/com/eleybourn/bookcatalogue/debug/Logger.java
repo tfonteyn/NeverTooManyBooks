@@ -266,4 +266,27 @@ public final class Logger {
             }
         }
     }
+
+    /**
+     * DEBUG
+     * <p>
+     * Format the passed bundle in a way that is convenient for display.
+     *
+     * @param bundle Bundle to format, strings will be trimmed before adding
+     *
+     * @return Formatted string
+     */
+    @NonNull
+    public static String toString(@NonNull final Bundle bundle) {
+        StringBuilder sb = new StringBuilder();
+        for (String k : bundle.keySet()) {
+            sb.append(k).append("->");
+            Object o = bundle.get(k);
+            if (o != null) {
+                sb.append(o.toString().trim());
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
 }

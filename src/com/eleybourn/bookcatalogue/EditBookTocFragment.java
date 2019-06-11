@@ -300,6 +300,7 @@ public class EditBookTocFragment
     @Override
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
+        // no special validation done.
         mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
                                                                 mList);
     }

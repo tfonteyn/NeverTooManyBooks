@@ -300,8 +300,6 @@ public abstract class BookBaseFragment
 
         showHide(hideIfEmpty, R.id.pages, R.id.lbl_pages);
         showHide(hideIfEmpty, R.id.format, R.id.lbl_format);
-        // Hide the baseline if both fields are gone.
-        setVisibilityGoneOr(R.id.lbl_pages_baseline, View.INVISIBLE, R.id.pages, R.id.format);
 
         showHide(hideIfEmpty, R.id.genre, R.id.lbl_genre);
         showHide(hideIfEmpty, R.id.language, R.id.lbl_language);

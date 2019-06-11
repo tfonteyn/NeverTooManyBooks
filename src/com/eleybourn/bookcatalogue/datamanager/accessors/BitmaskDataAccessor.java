@@ -4,11 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.datamanager.DataManager;
-import com.eleybourn.bookcatalogue.datamanager.Datum;
-
 /**
- * A bitmask is stored as an int in the database. But the DataManager loads it as a long.
+ * A bitmask is read/written to the database as a long.
  * We need it as a boolean.
  * <p>
  * Transform setting/resetting a single bit.
@@ -16,40 +13,46 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * A 'set will store it back as a long with the bit set/reset.
  */
 public class BitmaskDataAccessor
-        implements DataAccessor {
+        implements DataAccessor<Boolean> {
 
     /** key of the real data object. */
     private final String mKey;
     /** the bit we're handling in this object. */
-    private final int mBit;
+    private final int mBitmask;
 
     /**
      * Constructor.
      *
-     * @param key The key for the actual data
-     * @param bit to manage
+     * @param key     The key for the actual data
+     * @param bitmask to manage
      */
     public BitmaskDataAccessor(@NonNull final String key,
-                               final int bit) {
+                               final int bitmask) {
         mKey = key;
-        mBit = bit;
+        mBitmask = bitmask;
     }
 
     @NonNull
     @Override
-    public Boolean get(@NonNull final DataManager dataManager,
-                       @NonNull final Bundle rawData,
-                       @NonNull final Datum datum) {
-        return dataManager.isBitSet(mKey, mBit);
+    public Boolean get(@NonNull final Bundle rawData) {
+        return (rawData.getLong(mKey) & mBitmask) != 0;
     }
 
     @Override
-    public void put(@NonNull final DataManager dataManager,
-                    @NonNull final Bundle rawData,
-                    @NonNull final Datum datum,
-                    @NonNull final Object value) {
+    public void put(@NonNull final Bundle rawData,
+                    @NonNull final Boolean value) {
 
-        dataManager.setBit(mKey, mBit, Datum.toBoolean(value));
+        long bits = rawData.getLong(mKey);
+
+        if (value) {
+            // set the bit
+            bits |= mBitmask;
+        } else {
+            // or reset the bit
+            bits &= ~mBitmask;
+        }
+
+        rawData.putLong(mKey, bits);
     }
 
     @Override

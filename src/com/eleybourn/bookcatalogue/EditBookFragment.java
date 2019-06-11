@@ -252,34 +252,37 @@ public class EditBookFragment
             }
         }
 
-        Book book = mBookBaseFragmentModel.getBook();
+        // Reminder: Field validation is done on a per-fragment basis when Field values
+        // are transferred to DataManager (Book) values.
 
-        // validate the book data
+        Book book = mBookBaseFragmentModel.getBook();
+        // Now validate the book data
         if (!book.validate()) {
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.vldt_failure)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(book.getValidationExceptionMessage(getContext()))
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
-        }
-
-        // Ignore validation failures; but we still validate to get the current values updated.
-        //book.validate();
-
-        // However, there is some data that we really do require...
-        if (!book.containsKey(DBDefinitions.KEY_TITLE)
-                || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-            UserMessage.showUserMessage(requireView(), R.string.warning_required_title);
             return;
         }
 
-        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-            UserMessage.showUserMessage(requireView(), R.string.warning_required_author_long);
-            return;
-        }
+//        // Ignore validation failures; but we still validate to get the current values updated.
+//        book.validate();
+//
+//        // However, there is some data that we really do require...
+//        if (!book.containsKey(DBDefinitions.KEY_TITLE)
+//                || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
+//            UserMessage.showUserMessage(requireView(), R.string.warning_required_title);
+//            return;
+//        }
+//
+//        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+//            UserMessage.showUserMessage(requireView(), R.string.warning_required_author_long);
+//            return;
+//        }
 
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);

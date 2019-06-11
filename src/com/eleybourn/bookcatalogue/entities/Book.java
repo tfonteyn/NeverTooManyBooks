@@ -579,7 +579,8 @@ public class Book
         addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
         addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR);
 
-        addValidator(DBDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
+        // pages is now a text field.
+        //addValidator(DBDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
         addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
         addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
