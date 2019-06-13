@@ -73,7 +73,10 @@ public abstract class BookBaseFragment
     /** The book. Must be in the Activity scope for {@link EditBookActivity#onBackPressed()}. */
     BookBaseFragmentModel mBookBaseFragmentModel;
 
-    /** The fields collection. Does not store any context or Views, but does keep WeakReferences. */
+    /**
+     * The fields collection.
+     * Does not store any context or Views, but does uses some WeakReferences.
+     */
     private Fields mFields;
 
     private void setActivityTitle() {

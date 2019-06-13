@@ -1000,8 +1000,7 @@ public class BooklistBuilder
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.debug(this, "baseBuildWithoutTriggers", "add",
-                             "Level" + i,
-                             stmt.toString());
+                             "Level" + i, stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
@@ -1010,8 +1009,8 @@ public class BooklistBuilder
 
         // Build an index if it will help sorting but *If* collation is case-sensitive,
         // don't bother with index, since everything is wrapped in lower().
-        // ENHANCE: ICS UNICODE: Consider adding a duplicate _OB (order-by / lower case) column
-        // to the SUMMARY table. Ugh.
+        // ICS UNICODE: Consider adding a duplicate _OB (lower case) column
+        // to the SUMMARY table. Ugh. ==> this whole "without triggers" is outdated.
         if (!collationIsCs) {
             String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
                     + '(' + sqlCmp.sortIndexColumnList + ')';

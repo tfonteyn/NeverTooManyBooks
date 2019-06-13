@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/BLB_ROW_DETAILS"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/BooklistBook.Row.Level3"
     >
 
     <!-- this is really annoying: setting visibility of the ConstraintLayout to GONE
@@ -21,7 +20,7 @@
         />
 
     <!-- Smaller text, but with padding so user can still select it
-        Note that the 'drawableEnd' is done from code. Only here 'tools'.
+        Note that the 'drawableEnd' is done from code. Only here as 'tools'.
     -->
     <TextView
         android:id="@+id/name"

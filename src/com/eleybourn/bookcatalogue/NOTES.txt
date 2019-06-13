@@ -10,26 +10,23 @@ onResume should force the enclosing dialog to be big enough:
 
 ----------------------------------------------------------------------------------------------------
 TODO: New anthology stuff:
- * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding to new books / wish list?
  * - consider a purge based on book for orphan TocEntry (a purge based on Author is already done)
 
 TODO: Review database stuff
- * - Very few database methods throw an SQLiteDoneException.
+ * Very few database methods throw an SQLiteDoneException.
  * The caller is either already catching them, or believes they will never happen.
  *
- * - database insert methods which return -1 for failing to insert. Not all callers check.
- * - catch NotFoundException (or not?)
- * - bind variables versus string concat
+ * database insert methods which return -1 for failing to insert. Not all callers check.
+ * catch NotFoundException (or not?)
+ * bind variables versus string concat
  * could global replace of author/series be optimized ? For now it's cumbersome and long-winded.
+ * move Publisher, Location, Format ... to separate tables ?
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
  * 'order by' columns have been added to TITLE and AUTHOR name fields.
  * TOMF: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
-
-
-ENHANCE: move Publisher, Location, Format ... to separate tables ?
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!

@@ -301,7 +301,7 @@
         <item name="android:textIsSelectable">false</item>
     </style>
 
-    <!-- level 1/2 text in the header on the booklist activity -->
+    <!-- the header on the booklist activity -->
     <style name="BooklistBook.Header">
         <item name="android:layout_marginStart">@dimen/indent2</item>
         <item name="android:layout_marginEnd">@dimen/indent2</item>
@@ -310,30 +310,54 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <!-- the header on the booklist activity -->
     <style name="BooklistBook.Header.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
+    <!-- level + book rows = The row itself. -->
+    <style name="BooklistBook.Row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+    <style name="BooklistBook.Row.Level1">
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+    <style name="BooklistBook.Row.Level2">
+        <!--<item name="android:layout_marginTop">2dp</item>-->
+    </style>
+    <style name="BooklistBook.Row.Level3">
+        <!--<item name="android:layout_marginTop">2dp</item>-->
+    </style>
+    <style name="BooklistBook.Row.Book">
+        <item name="android:layout_marginTop">@dimen/border1</item>
+    </style>
+
+    <!-- Text element in a 'level' header row -->
     <style name="BooklistBook.Section">
         <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <!-- Text element in a 'level' header row -->
     <style name="BooklistBook.Section.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
+    <!-- Text element in a 'level' header row -->
     <style name="BooklistBook.Section.Small">
         <item name="android:padding">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="BooklistBook.Primary">
-        <!-- medium was tried but it's way to big. -->
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
 
-    <style name="BooklistBook.Secondary">
+    <!-- Text element in a 'book' row -->
+    <style name="BooklistBook.BookInfo" />
+    <style name="BooklistBook.BookInfo.Primary">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    <style name="BooklistBook.BookInfo.Secondary">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 

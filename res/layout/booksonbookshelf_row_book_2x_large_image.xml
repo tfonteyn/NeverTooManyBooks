@@ -4,14 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/BLB_ROW_DETAILS"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/border1"
+    style="@style/BooklistBook.Row"
     >
 
     <TextView
         android:id="@+id/series_num"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         android:layout_width="wrap_content"
         app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintEnd_toStartOf="@id/title"
@@ -22,8 +20,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/BooklistBook.Primary"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        style="@style/BooklistBook.BookInfo.Primary"
         app:layout_constraintEnd_toStartOf="@id/read"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/series_num"
@@ -57,7 +54,7 @@
 
     <TextView
         android:id="@+id/series_num_long"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -67,7 +64,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/BooklistBook.Primary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
@@ -77,7 +74,7 @@
 
     <TextView
         android:id="@+id/publisher"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/author"
@@ -87,7 +84,7 @@
 
     <TextView
         android:id="@+id/format"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/publisher"
@@ -97,7 +94,7 @@
 
     <TextView
         android:id="@+id/shelves"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/format"
@@ -107,7 +104,7 @@
 
     <TextView
         android:id="@+id/location"
-        style="@style/BooklistBook.Secondary"
+        style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/shelves"
