@@ -280,7 +280,7 @@ public class BookFragment
         Field editionsField = getField(R.id.edition);
         // only bother when it's in use
         if (editionsField.isUsed()) {
-            if ("0".equals(editionsField.getValue().toString().trim())) {
+            if ("0".equals(editionsField.getValue().toString())) {
                 setVisibility(View.GONE, R.id.edition, R.id.lbl_edition);
             } else {
                 setVisibility(View.VISIBLE, R.id.edition, R.id.lbl_edition);

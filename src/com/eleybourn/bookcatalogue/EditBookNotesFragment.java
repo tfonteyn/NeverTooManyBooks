@@ -95,7 +95,7 @@ public class EditBookNotesFragment
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
                 Field end = fields.getField(R.id.read_end);
-                if (end.getValue().toString().trim().isEmpty()) {
+                if (end.getValue().toString().isEmpty()) {
                     end.setValue(DateUtils.localSqlDateForToday());
                 }
             }

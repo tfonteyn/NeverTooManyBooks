@@ -372,7 +372,7 @@ public abstract class BookBaseFragment
                     } else if (!(view instanceof ImageView)) {
                         // don't act on ImageView, but all other fields can be string tested.
 
-                        final String value = getField(fieldId).getValue().toString().trim();
+                        final String value = getField(fieldId).getValue().toString();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }

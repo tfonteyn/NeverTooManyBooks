@@ -265,7 +265,9 @@ public class Fields {
     @NonNull
     public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn) {
-        return add(fieldId, sourceColumn, sourceColumn);
+        Field field = Field.newField(this, fieldId, sourceColumn, sourceColumn);
+        mAllFields.add(field);
+        return field;
     }
 
     /**
@@ -281,7 +283,7 @@ public class Fields {
     public Field add(@IdRes final int fieldId,
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup) {
-        Field field = new Field(this, fieldId, sourceColumn, visibilityGroup);
+        Field field = Field.newField(this, fieldId, sourceColumn, visibilityGroup);
         mAllFields.add(field);
         return field;
     }
@@ -864,6 +866,15 @@ public class Fields {
         public String getValue(@NonNull final Field source) {
             EditText view = source.getView();
             return source.extract(view.getText().toString().trim());
+        }
+    }
+
+    public static class IntegerEditTextAccessor
+            extends EditTextAccessor {
+
+        public IntegerEditTextAccessor(@NonNull final EditText view,
+                                       @NonNull final Field field) {
+            super(view, field);
         }
     }
 
@@ -1462,6 +1473,9 @@ public class Fields {
          */
         @NonNull
         private final String mColumn;
+        /** Accessor to use (automatically defined). */
+        @NonNull
+        private final FieldDataAccessor mFieldDataAccessor;
         /** FieldFormatter to use (can be {@code null}). */
         @Nullable
         FieldFormatter formatter;
@@ -1477,9 +1491,6 @@ public class Fields {
         /** FieldValidator to use (can be {@code null}). */
         @Nullable
         private FieldValidator mFieldValidator;
-        /** Accessor to use (automatically defined). */
-        @NonNull
-        private FieldDataAccessor mFieldDataAccessor;
 
         /**
          * Constructor.
@@ -1489,21 +1500,31 @@ public class Fields {
          * @param sourceColumn        Source database column. Can be empty.
          * @param visibilityGroupName Visibility group. Can be blank.
          */
-        Field(@NonNull final Fields fields,
-              @IdRes final int fieldId,
-              @NonNull final String sourceColumn,
-              @NonNull final String visibilityGroupName) {
+        private Field(@NonNull final Fields fields,
+                      @IdRes final int fieldId,
+                      @NonNull final String sourceColumn,
+                      @NonNull final String visibilityGroupName,
+                      @Nullable final FieldDataAccessor customDataAccessor) {
 
             mFields = new WeakReference<>(fields);
             id = fieldId;
             mColumn = sourceColumn;
             group = visibilityGroupName;
 
-            // Lookup the view. Fields will have the context set to the activity/fragment.
+            // Lookup the view. {@link Fields} will have the context set to the activity/fragment.
             final View view = getView();
 
+            // check if the user actually uses this group.
+            mIsUsed = App.isUsed(group);
+            if (!mIsUsed) {
+                view.setVisibility(View.GONE);
+            }
+
             // Set the appropriate accessor
-            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+            if (customDataAccessor != null) {
+                mFieldDataAccessor = customDataAccessor;
+
+            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
                 mFieldDataAccessor = new CheckableAccessor();
@@ -1537,12 +1558,29 @@ public class Fields {
             } else {
                 // field has no layout, store in a dummy String.
                 mFieldDataAccessor = new StringDataAccessor();
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this, "Field",
+                                 "Using StringDataAccessor",
+                                 "sourceColumn=" + sourceColumn);
+                }
             }
+        }
 
-            mIsUsed = App.isUsed(group);
-            if (!mIsUsed) {
-                view.setVisibility(View.GONE);
-            }
+        /**
+         * Factory method to get a new auto-type-detection field.
+         *
+         * @param fields              Parent collection
+         * @param fieldId             Layout ID
+         * @param sourceColumn        Source database column. Can be empty.
+         * @param visibilityGroupName Visibility group. Can be blank.
+         *
+         * @return new Field
+         */
+        static Field newField(@NonNull final Fields fields,
+                              @IdRes final int fieldId,
+                              @NonNull final String sourceColumn,
+                              @NonNull final String visibilityGroupName) {
+            return new Field(fields, fieldId, sourceColumn, visibilityGroupName, null);
         }
 
         @Override
@@ -1559,19 +1597,6 @@ public class Fields {
                     + ", mFieldValidator=" + mFieldValidator
                     + ", mFieldDataAccessor=" + mFieldDataAccessor
                     + '}';
-        }
-
-        /**
-         * Allows overriding the automatic assigned accessor.
-         *
-         * @param accessor to use
-         *
-         * @return field (for chaining)
-         */
-        @NonNull
-        public Field setAccessor(@NonNull final FieldDataAccessor accessor) {
-            mFieldDataAccessor = accessor;
-            return this;
         }
 
         /**
@@ -1635,10 +1660,11 @@ public class Fields {
         @NonNull
         public Field setScale(final int scale) {
             if (mFieldDataAccessor instanceof ImageViewAccessor) {
-                ((ImageViewAccessor)mFieldDataAccessor).setScale(scale);
+                ((ImageViewAccessor) mFieldDataAccessor).setScale(scale);
             }
             return this;
         }
+
         /**
          * @param doNoFetch {@code true} to stop the field being fetched from the database
          *

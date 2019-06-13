@@ -118,7 +118,7 @@ public class EditBookFieldsFragment
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
               .getView().setOnClickListener(v -> {
-            String title = fields.getField(R.id.title).getValue().toString().trim();
+            String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
             Intent intent = new Intent(getContext(), EditAuthorListActivity.class)
@@ -132,7 +132,7 @@ public class EditBookFieldsFragment
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
               .getView().setOnClickListener(v -> {
             // use the current title.
-            String title = fields.getField(R.id.title).getValue().toString().trim();
+            String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
             Intent intent = new Intent(getContext(), EditSeriesListActivity.class)
