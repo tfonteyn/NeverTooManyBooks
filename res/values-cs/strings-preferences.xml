@@ -85,14 +85,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Velikost miniatur v seznamech</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Velikost miniatur v seznamech</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Malý</item>
         <item>Malý</item>
         <item>Střední</item>
         <item>Velký</item>
         <item>X-Velký</item>
         <item>2X-Velký</item>
-        <item>3X-Velký</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->

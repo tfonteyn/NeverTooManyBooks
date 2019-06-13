@@ -106,18 +106,14 @@ public class EditBookFieldsFragment
         fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
-        // ENHANCE: {@link Fields.ImageViewAccessor}
-//        field = fields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
-        Field coverImageField = fields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        //noinspection ConstantConditions
-        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
-//        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
-//        iva.setMaxSize( imageSize.small, imageSize.small);
+        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
+                                      .setScale(ImageUtils.SCALE_MEDIUM);
+
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
                                          book,
                                          fields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
-                                         displaySizes.small, displaySizes.small);
+                                         ImageUtils.SCALE_MEDIUM);
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
@@ -172,12 +168,6 @@ public class EditBookFieldsFragment
 
         ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
-
-        // ENHANCE: {@link Fields.ImageViewAccessor}
-        // allow the field to known the uuid of the book, so it can load 'itself'
-        getField(R.id.coverImage).getView()
-                                 .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
-        mCoverHandler.updateCoverView();
 
         // Restore default visibility
         showHideFields(false);

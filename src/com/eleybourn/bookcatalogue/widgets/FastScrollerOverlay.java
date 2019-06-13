@@ -9,7 +9,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.TypedValue;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,10 +38,10 @@ import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
  * </li>
  * <li>Use a custom {@link CFSRecyclerView}:
  * <ul>
- *     <li>Must set {@link CFSRecyclerView} attributes for enabling the FastScroller.</li>
- *     <li>Do NOT add this class as an ItemDecorator</li>
- *     <li>Does NOT use reflection!</li>
- *     <li>Uses a custom modified copy of the 'real' FastScroller with a hack in onDrawOver.</li>
+ * <li>Must set {@link CFSRecyclerView} attributes for enabling the FastScroller.</li>
+ * <li>Do NOT add this class as an ItemDecorator</li>
+ * <li>Does NOT use reflection!</li>
+ * <li>Uses a custom modified copy of the 'real' FastScroller with a hack in onDrawOver.</li>
  * </ul>
  * </li>
  * </ol>
@@ -59,11 +61,6 @@ public class FastScrollerOverlay
         extends RecyclerView.ItemDecoration {
 
     private static final boolean ___COMPILE_WITH_CFS_SUPPORT = false;
-
-    /** Default value in SP as taken from the Android sources. */
-    private static final int TEXT_SIZE_LARGE_IN_SP = 22;
-    /** Default value in SP as taken from the Android sources. */
-    private static final int TEXT_SIZE__MEDIUM_IN_SP = 18;
 
     /**
      * The overlay size is based on SIZE_MULTIPLIER * mPrimaryTextSize.
@@ -112,7 +109,6 @@ public class FastScrollerOverlay
     private Field mFastScrollerStateField;
 
 
-
     /**
      * Constructor.
      *
@@ -141,14 +137,14 @@ public class FastScrollerOverlay
         try {
             size = resources.getDimension(R.dimen.fso_text_primary);
         } catch (Resources.NotFoundException e) {
-            size = TEXT_SIZE_LARGE_IN_SP * resources.getDisplayMetrics().scaledDensity;
+            size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceLarge));
         }
         mPrimaryTextSize = size;
 
         try {
             size = resources.getDimension(R.dimen.fso_text_secondary);
         } catch (Resources.NotFoundException e) {
-            size = TEXT_SIZE__MEDIUM_IN_SP * resources.getDisplayMetrics().scaledDensity;
+            size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceMedium));
         }
         mSecondaryTextSize = size;
 
@@ -162,6 +158,13 @@ public class FastScrollerOverlay
         mTextPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         mTextDecent = mTextPaint.descent();
+    }
+
+    private static int getAttr(@NonNull final Context context,
+                               @AttrRes final int attr) {
+        TypedValue tv = new TypedValue();
+        context.getTheme().resolveAttribute(attr, tv, true);
+        return tv.resourceId;
     }
 
     /**

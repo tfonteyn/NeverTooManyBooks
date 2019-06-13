@@ -70,8 +70,10 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
-    <string name="pt_hint_layer_type">Leave this setting on \‘Standaard waarde\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
+    <string name="pt_hint_layer_type">
+        Gebruik \‘Standaard waarde\’ voor deze optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding.
+        Gebruik \‘Software\’ voor veiliger maar trager, of forceer \‘Hardware\’ voor sneller, maar misschien minder stabiel.
+    </string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Standaard waarde</item>
         <item>Hardware</item>
@@ -130,14 +132,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Miniaturen grootte in lijsten</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Miniaturen grootte in lijsten</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Klein</item>
         <item>Klein</item>
         <item>Medium</item>
         <item>Groot</item>
         <item>X-Groot</item>
         <item>2X-Groot</item>
-        <item>3X-Groot</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->

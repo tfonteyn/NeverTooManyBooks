@@ -111,7 +111,7 @@ TODO: uniform quotes in all string:
 
     <string name="error_not_available">%1$s not available</string>
 
-    <string name="error_no_external_crop_app">Could not find an image-cropping application</string>
+    <string name="error_no_external_crop_app">An application for trimming images was not found</string>
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
@@ -120,6 +120,7 @@ TODO: uniform quotes in all string:
     <string name="error_authorization_failed">%1$s authorization failed</string>
     <!-- Users of versions older than 4.0.0 need to upgrade to 5.x first -->
     <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 4.0.0</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -307,6 +308,7 @@ TODO: uniform quotes in all string:
     <string name="progress_msg_loading">Loading…</string>
     <string name="progress_msg_starting_search">Starting Search…</string>
     <string name="progress_msg_searching">Searching…</string>
+    <string name="progress_msg_searching_site">Searching %1$s</string>
     <string name="progress_msg_adding_book">Adding book…</string>
     <string name="progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
@@ -704,7 +706,7 @@ TODO: uniform quotes in all string:
 
     <!-- Admin advanced - clear the cached images -->
     <string name="lbl_erase_cover_cache">Erase cover cache</string>
-    <!-- Admin advanced - make a copy of the internal database on the sdcard -->
+    <!-- Admin advanced - make a copy of the internal database to the public directory -->
     <string name="lbl_copy_database">Export Database</string>
 
 
@@ -1042,8 +1044,8 @@ TODO: uniform quotes in all string:
     </string>
     <!-- displayed when a Backup is done: 1: directory; 2: filename; 3: file size -->
     <string name="export_info_success_archive_details">
-        A %3$s file called “%2$s” was created in the “%1$s” directory on your SD card.\n
-        \nYou should manually copy it elsewhere to protect the data in case your device
+        A %3$s file called “%2$s” was created in the “%1$s” directory and you should
+        manually copy it elsewhere to protect the data in case your device
         is damaged, lost, or stolen.
     </string>
 
@@ -1057,6 +1059,7 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
 
     <string name="import_error_csv_file_not_found">No export files found</string>
+    <!-- propmpt the user to select a file from a list -->
     <string name="import_warning_select_csv_file">
         More than one file was found. Please select the one to import:
     </string>
@@ -1152,14 +1155,8 @@ TODO: uniform quotes in all string:
     This is a little arrow pointing to the name of the person who has the book -->
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="X_lbl_loaned_to_long">This book has been lend to:</string>
-
-    <string name="X_import_error_failed_is_csv_file_location_correct">
-        Import of data failed. Is the file in the correct place?
-    </string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-
-    <!-- e.g. "in a folder" -->
-    <string name="X_in">In</string>
+    <string name="X_lbl_series_num_long">Series #</string>
 
     <string name="X_updated">Updated</string>
     <string name="X_file_size">Size</string>
@@ -1169,7 +1166,6 @@ TODO: uniform quotes in all string:
     <string name="X_nobody">Nobody</string>
     <string name="X_search_title">Search Results</string>
     <string name="X_pt_bob_preferred_style">Preferred</string>
-    <string name="X_lbl_series_num_long">Series #</string>
     <string name="X_results_found">Results Found</string>
     <string name="X_unsaved_edits_title">Unsaved Changes</string>
     <string name="X_use_default_setting">Use default</string>

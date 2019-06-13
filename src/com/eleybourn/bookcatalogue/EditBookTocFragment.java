@@ -128,7 +128,8 @@ public class EditBookTocFragment
             new ConfirmToc.ConfirmTocResults() {
 
                 /**
-                 * The user approved, so add the TOC to the list on screen (still not saved to database).
+                 * The user approved, so add the TOC to the list and refresh the screen
+                 * (still not saved to database).
                  */
                 public void commitISFDBData(final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {

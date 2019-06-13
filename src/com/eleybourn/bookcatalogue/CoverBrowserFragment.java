@@ -25,7 +25,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -78,30 +77,20 @@ public class CoverBrowserFragment
     /** {@code ArrayList<String>} with edition isbn's. */
     private static final String BKEY_EDITION_LIST = TAG + ":editions";
     private static final String BKEY_SWITCHER_FILE = TAG + ":coverImage";
-
-    /** Cache the calculated standard sizes. */
-    private ImageUtils.DisplaySizes mDisplaySizes;
-
+    /** Populated by {@link #initGallery(ArrayList)} AND savedInstanceState. */
+    @NonNull
+    private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
-
-    /** The gallery displays a list of images, one for each edition. */
-    private RecyclerView mListView;
-
     @Nullable
-    private GalleryAdapter mGalleryAdapter;
-
+    private GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_SMALL);
     /** The switcher will be used to display larger versions. */
     private ImageSwitcher mImageSwitcherView;
-
+    @SuppressWarnings("FieldCanBeLocal")
+    private int mImageSwitcherScaleFactor = ImageUtils.SCALE_X_LARGE;
     /** Prior to showing a preview, the switcher can show text updates. */
     private TextView mStatusTextView;
-
     private CoverBrowserViewModel mModel;
-
-    /** Populated by {@link #showGallery(ArrayList)} AND savedInstanceState. */
-    @Nullable
-    private ArrayList<String> mAlternativeEditions;
     /** Populated by {@link #setSwitcherImage(String)} AND savedInstanceState. */
     @Nullable
     private String mSwitcherImageFileSpec;
@@ -138,6 +127,7 @@ public class CoverBrowserFragment
         super.onCreate(savedInstanceState);
 
         mModel = ViewModelProviders.of(this).get(CoverBrowserViewModel.class);
+
     }
 
     @NonNull
@@ -150,12 +140,17 @@ public class CoverBrowserFragment
         int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
         if (savedInstanceState != null) {
-            mAlternativeEditions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
+            ArrayList<String> editions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
+            if (editions != null) {
+                // just store, we'll init the gallery in onResume
+                mAlternativeEditions.clear();
+                mAlternativeEditions.addAll(editions);
+            }
             mSwitcherImageFileSpec = savedInstanceState.getString(BKEY_SWITCHER_FILE);
         }
 
         mModel.init(isbn, initialSearchSites);
-        mModel.getEditions().observe(this, this::showGallery);
+        mModel.getEditions().observe(this, this::initGallery);
         mModel.getSwitcherImageFileSpec().observe(this, this::setSwitcherImage);
 
         @SuppressWarnings("ConstantConditions")
@@ -164,16 +159,15 @@ public class CoverBrowserFragment
         // keep the user informed.
         mStatusTextView = root.findViewById(R.id.statusMessage);
 
-        //noinspection ConstantConditions
-        mDisplaySizes = ImageUtils.getDisplaySizes(getContext());
-
-        // setup the gallery.
-        mListView = root.findViewById(R.id.gallery);
+        // The gallery displays a list of images, one for each edition.
+        RecyclerView listView = root.findViewById(R.id.gallery);
         LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
         galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        mListView.setLayoutManager(galleryLayoutManager);
-        mListView.addItemDecoration(
+        listView.setLayoutManager(galleryLayoutManager);
+        //noinspection ConstantConditions
+        listView.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLayoutManager.getOrientation()));
+        listView.setAdapter(mGalleryAdapter);
 
         // setup the switcher.
         mImageSwitcherView = root.findViewById(R.id.switcher);
@@ -216,12 +210,12 @@ public class CoverBrowserFragment
     public void onResume() {
         super.onResume();
 
-        if (mAlternativeEditions == null) {
+        if (mAlternativeEditions.isEmpty()) {
             mStatusTextView.setText(R.string.progress_msg_finding_editions);
             mModel.fetchEditions();
 
         } else {
-            showGallery(mAlternativeEditions);
+            initGallery(mAlternativeEditions);
             if (mSwitcherImageFileSpec != null) {
                 setSwitcherImage(mSwitcherImageFileSpec);
             }
@@ -249,20 +243,24 @@ public class CoverBrowserFragment
      *
      * @param editions the list to use.
      */
-    private void showGallery(@Nullable final ArrayList<String> editions) {
-        mAlternativeEditions = editions;
+    private void initGallery(@Nullable final ArrayList<String> editions) {
+        mAlternativeEditions.clear();
+        if (editions != null) {
+            mAlternativeEditions.addAll(editions);
+        }
 
-        if (editions == null || editions.isEmpty()) {
+        if (mAlternativeEditions.isEmpty()) {
             dismiss();
             UserMessage.showUserMessage(mStatusTextView, R.string.warning_no_editions);
             return;
         }
 
+        //noinspection ConstantConditions
+        mGalleryAdapter.notifyDataSetChanged();
+
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);
 
-        mGalleryAdapter = new GalleryAdapter(mDisplaySizes.small, mDisplaySizes.small);
-        mListView.setAdapter(mGalleryAdapter);
     }
 
     /**
@@ -299,7 +297,6 @@ public class CoverBrowserFragment
         // Remove the defunct view from the gallery
         // sanity check...
         if (position >= 0) {
-            //noinspection ConstantConditions
             mAlternativeEditions.remove(position);
             mGalleryAdapter.notifyItemRemoved(position);
         }
@@ -331,9 +328,7 @@ public class CoverBrowserFragment
                 // store the path. It will be send back to the caller.
                 mImageSwitcherView.setTag(R.id.TAG_ITEM, file.getAbsolutePath());
 
-                Bitmap bm = ImageUtils.createScaledBitmap(
-                        BitmapFactory.decodeFile(file.getPath()),
-                        mDisplaySizes.large, mDisplaySizes.large);
+                Bitmap bm = ImageUtils.createScaledBitmap(file, mImageSwitcherScaleFactor);
 
                 // ImageSwitcher does not accept a bitmap; wants a Drawable instead.
                 mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
@@ -354,7 +349,7 @@ public class CoverBrowserFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (mAlternativeEditions != null && !mAlternativeEditions.isEmpty()) {
+        if (!mAlternativeEditions.isEmpty()) {
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }
         if (mSwitcherImageFileSpec != null) {
@@ -389,10 +384,10 @@ public class CoverBrowserFragment
         /**
          * Constructor.
          */
-        GalleryAdapter(final int width,
-                       final int height) {
-            mWidth = width;
-            mHeight = height;
+        GalleryAdapter(final int scale) {
+            int maxSize = ImageUtils.getMaxImageSize(scale);
+            mWidth = maxSize;
+            mHeight = maxSize;
         }
 
         @Override
@@ -411,7 +406,6 @@ public class CoverBrowserFragment
                                      final int position) {
 
             // fetch an image based on the isbn
-            @SuppressWarnings("ConstantConditions")
             String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
@@ -463,7 +457,6 @@ public class CoverBrowserFragment
 
         @Override
         public int getItemCount() {
-            //noinspection ConstantConditions
             return mAlternativeEditions.size();
         }
     }

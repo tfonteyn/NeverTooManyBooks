@@ -52,10 +52,6 @@
         es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen
         Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.
     </string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">
-        FEHLER: Der Import von Daten von der SD-Karte ist fehlgeschlagen.
-        Ist die Datei bereits vorhanden?
-    </string>
     <string name="X_search_title">Suchergebnisse</string>
     <string name="X_results_found">Bücher gefunden</string>
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
@@ -587,7 +583,6 @@
     <string name="lbl_added_month">Monat der Erfassung</string>
     <string name="lbl_added_day">Tag der Erfassung</string>
     <string name="lbl_book">Buch</string>
-    <string name="X_in">in</string>
     <string name="X_file_size">Größe</string>
     <string name="X_updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
@@ -676,9 +671,8 @@
     <string name="progress_msg_connecting">Verbinde mit der Website…</string>
     <string name="lbl_backup_to_archive">Sichern ins Archiv</string>
     <string name="lbl_import_from_archive">Import vom Archiv</string>
-    <!--  Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
-        Eine %3$s-Datei namens %2$s wurde im Verzeichnis “%1$s” auf Ihrer SD-Karte erzeugt.\n
+        Eine %3$s-Datei namens %2$s wurde im Verzeichnis “%1$s” erzeugt.\n
         \nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor
         Beschädigung, Verlust oder Diebstahl zu schützen.
     </string>
@@ -943,5 +937,8 @@
     <string name="clear">Klar</string>
     <string name="btn_confirm_new">Neu</string>
     <string name="title_edit_book_authors">Buchautoren bearbeiten</string>
+    <string name="progress_msg_searching_site">Suche bei %1$s</string>
+    <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
+    <string name="title_reorder">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
 
 </resources>

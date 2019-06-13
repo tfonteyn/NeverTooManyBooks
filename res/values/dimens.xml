@@ -13,8 +13,7 @@
     <!-- Application icon size on the nav panel and startup splash-->
     <dimen name="app_icon">100dp</dimen>
 
-    <!-- The base size for cover images. Get's multiplied with the image-scale preference.
-         A 'normal' size thus becomes 60dp, a 'large' is 90dp. (and so on...) -->
+    <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>
 
     <!-- Spacing either for all around, or for bottom/top.

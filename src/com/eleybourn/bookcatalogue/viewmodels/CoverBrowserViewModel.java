@@ -165,11 +165,11 @@ public class CoverBrowserViewModel
 
         /**
          * Downloaded files.
-         * key = isbn + "_ + size.
+         * key = isbn + '_' + size.
          */
         private final Map<String, String> mFiles = Collections.synchronizedMap(new HashMap<>());
 
-        /** Flags applicable to *current* search. */
+        /** Sites the user wants to search. */
         private final int mSearchSites;
 
         /**
@@ -228,6 +228,7 @@ public class CoverBrowserViewModel
          * ENHANCE: allow the user to prioritize the order on the fly.
          *
          * @param isbn       ISBN of file
+         * @param position   DEBUG only.
          * @param imageSizes a list of images sizes in order of preference
          *
          * @return the fileSpec, or {@code null} if not found
@@ -235,28 +236,35 @@ public class CoverBrowserViewModel
         @Nullable
         @WorkerThread
         public String download(@NonNull final String isbn,
+                               final int position,
                                @NonNull final SearchEngine.ImageSizes... imageSizes) {
+
+            // use a local copy so we can disable sites on the fly.
+            int currentSearchSites = mSearchSites;
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
             // if none respond with that size, try the next size inline.
-            // The other way around we could get a site/size instead of other0site/better-size.
+            // The other way around we could get a site/small-size instead of otherSite/better-size.
             for (SearchEngine.ImageSizes size : imageSizes) {
                 String key = isbn + '_' + size;
                 String fileSpec = mFiles.get(key);
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                    Logger.debug(this, "download",
-                                 "isbn=" + isbn,
-                                 "size=" + size,
-                                 "fileSpec=" + fileSpec);
-                }
-
-                // Is the file present && good ?
+                // Do we already have a file and is it good ?
                 if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                        Logger.debug(this, "download",
+                                     "FILESYSTEM",
+                                     "position=" + position,
+                                     "isbn=" + isbn,
+                                     "size=" + size,
+                                     "fileSpec=" + fileSpec);
+                    }
+                    // use it
                     return fileSpec;
 
                 } else {
+                    // it was present but bad, remove it.
                     mFiles.remove(key);
                 }
 
@@ -264,34 +272,43 @@ public class CoverBrowserViewModel
                     // Are we allowed to search this site ?
                     if (site.isEnabled()
                             // and should we search this site ?
-                            && ((mSearchSites & site.id) != 0)
+                            && ((currentSearchSites & site.id) != 0)
                     ) {
                         SearchEngine searchEngine = site.getSearchEngine();
-                        // don't search the same site for all sizes if it only supports one size.
-                        if (searchEngine.supportsImageSize(size)) {
-                            File file = searchEngine.getCoverImage(isbn, size);
-                            if (file != null && isGood(file)) {
-                                fileSpec = file.getAbsolutePath();
-                                mFiles.put(key, fileSpec);
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                    Logger.debug(this, "download",
-                                                 "FOUND",
-                                                 "isbn=" + isbn,
-                                                 "size=" + size,
-                                                 "fileSpec=" + fileSpec);
-                                }
-                                return fileSpec;
+                        // try to get it.
+                        File file = searchEngine.getCoverImage(isbn, size);
 
+                        if (file != null && isGood(file)) {
+                            fileSpec = file.getAbsolutePath();
+                            mFiles.put(key, fileSpec);
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                Logger.debug(this, "download",
+                                             "FOUND",
+                                             "site=" + site.getName(),
+                                             "position=" + position,
+                                             "isbn=" + isbn,
+                                             "size=" + size,
+                                             "fileSpec=" + fileSpec);
                             }
-//                            else {
-//                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-//                                    Logger.debug(this, "download",
-//                                                "MISSING",
-//                                                "isbn=" + isbn,
-//                                                "size=" + size,
-//                                                "fileSpec=" + fileSpec);
-//                                }
-//                            }
+                            // we got a file, break out and return it.
+                            return fileSpec;
+
+                        } else {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                                Logger.debug(this, "download",
+                                             "MISSING",
+                                             "site=" + site.getName(),
+                                             "position=" + position,
+                                             "isbn=" + isbn,
+                                             "size=" + size);
+                            }
+                        }
+
+                        // if the site we just searched only supports one image, disable it
+                        // for THIS search
+                        if (!searchEngine.siteSupportsMultipleSizes()) {
+                            currentSearchSites &= ~site.id;
                         }
                     }
                 }
@@ -431,6 +448,9 @@ public class CoverBrowserViewModel
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
             try {
                 return mFileManager.download(mIsbn,
+                                             mPosition,
+                                             // try to get a picture in this order of size.
+                                             // Stops at first one found.
                                              SearchEngine.ImageSizes.SMALL,
                                              SearchEngine.ImageSizes.MEDIUM,
                                              SearchEngine.ImageSizes.LARGE);
@@ -506,7 +526,11 @@ public class CoverBrowserViewModel
         protected String doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mIsbn);
             try {
-                return mFileManager.download(mIsbn, SearchEngine.ImageSizes.LARGE,
+                return mFileManager.download(mIsbn,
+                                             -1,
+                                             // try to get a picture in this order of size.
+                                             // Stops at first one found.
+                                             SearchEngine.ImageSizes.LARGE,
                                              SearchEngine.ImageSizes.MEDIUM,
                                              SearchEngine.ImageSizes.SMALL);
 

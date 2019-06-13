@@ -38,7 +38,6 @@
     <string name="X_lbl_series_num_long">Seria tom#</string>
     <string name="title_import_book_data">Importuj książki</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">Błąd!: Import z karty SD nie powiódł się. Upewnij się, czy plik export.csv jest w prawidłowym miejscu.</string>
     <string name="X_search_title">Katalog książek: Wynik wyszukiwania</string>
     <string name="X_results_found">Znaleziono</string>
     <string name="menu_administration_long">Funkcje administracyjne</string>
@@ -229,7 +228,6 @@
     <string name="lbl_book">Książka</string>
     <string name="info_not_authorized">Nieautoryzowany</string>
     <string name="info_authorized">Upoważniony</string>
-    <string name="X_in">W</string>
     <string name="X_file_size">Rozmiar</string>
     <string name="show_results">Pokaż wyniki</string>
     <string name="style_builtin_compact">Kompaktowy</string>
@@ -550,6 +548,11 @@
     <string name="btn_confirm_new">Nowy</string>
     <string name="title_edit_book_authors">Edytuj autorów książek</string>
     <string name="pt_hint_layer_type">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
-
+    <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
+    <string name="export_info_success_archive_details">
+        Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie
+        skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.
+    </string>
+    <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
 
 </resources>

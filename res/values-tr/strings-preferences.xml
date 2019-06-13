@@ -126,14 +126,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Listelerdeki görüntü boyutu</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Listelerdeki görüntü boyutu</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Küçük</item>
         <item>Küçük</item>
         <item>Orta</item>
         <item>Büyük</item>
         <item>X-Büyük</item>
         <item>2X-Büyük</item>
-        <item>3X-Büyük</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->

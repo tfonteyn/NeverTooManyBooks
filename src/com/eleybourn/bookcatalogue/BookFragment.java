@@ -91,7 +91,7 @@ public class BookFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (AppCompatActivity) getActivity();
+        mActivity = (AppCompatActivity) context;
     }
 
     @Override
@@ -150,24 +150,12 @@ public class BookFragment
         fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
               .setShowHtml(true);
+
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
               .setFormatter(new Fields.LanguageFormatter());
-
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-              .setFormatter((field, source) -> {
-                  if (source != null && !source.isEmpty() && !"0".equals(source)) {
-                      try {
-                          int pages = Integer.parseInt(source);
-                          return getString(R.string.lbl_x_pages, pages);
-                      } catch (NumberFormatException ignore) {
-                          // don't log, both formats are valid.
-                      }
-                      // stored pages was alphanumeric.
-                      return source;
-                  }
-                  return "";
-              });
+              .setFormatter(new Fields.PagesFormatter());
         fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
@@ -183,18 +171,14 @@ public class BookFragment
         // defined, but handled manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES);
 
+        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
+                                      .setScale(ImageUtils.SCALE_LARGE);
 
-        // ENHANCE: {@link Fields.ImageViewAccessor}
-//        Field field = fields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
-        Field field = fields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        @SuppressWarnings("ConstantConditions")
-        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(getContext());
-//        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
-//        iva.setMaxSize(imageSize.standard, imageSize.standard);
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
                                          mBookBaseFragmentModel.getBook(),
-                                         fields.getField(R.id.isbn).getView(), field.getView(),
-                                         displaySizes.standard, displaySizes.standard);
+                                         fields.getField(R.id.isbn).getView(),
+                                         coverImageField.getView(),
+                                         ImageUtils.SCALE_LARGE);
 
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
@@ -215,6 +199,7 @@ public class BookFragment
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
+        //noinspection ConstantConditions
         fields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()));
 
@@ -280,12 +265,6 @@ public class BookFragment
         populateAuthorListField();
         populateSeriesListField();
 
-        // ENHANCE: {@link Fields.ImageViewAccessor}
-        // allow the field to known the uuid of the book, so it can load 'itself'
-        getField(R.id.coverImage)
-                .getView().setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
-        mCoverHandler.updateCoverView();
-
         // handle 'text' DoNotFetch fields
         ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
@@ -301,7 +280,7 @@ public class BookFragment
         Field editionsField = getField(R.id.edition);
         // only bother when it's in use
         if (editionsField.isUsed()) {
-            if ("0".equals(editionsField.getValue().toString())) {
+            if ("0".equals(editionsField.getValue().toString().trim())) {
                 setVisibility(View.GONE, R.id.edition, R.id.lbl_edition);
             } else {
                 setVisibility(View.VISIBLE, R.id.edition, R.id.lbl_edition);
@@ -632,8 +611,6 @@ public class BookFragment
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
-     * <p>
-     * ENHANCE: use ViewPager instead
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {

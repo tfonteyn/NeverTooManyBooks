@@ -46,7 +46,7 @@ public class SearchOrderFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         //TOMF: use interface
-        mActivity= (SearchAdminActivity) getActivity();
+        mActivity= (SearchAdminActivity) context;
     }
 
     @Override

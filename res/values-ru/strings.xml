@@ -388,7 +388,6 @@
     <string name="lbl_added_month">Добавленый месяц</string>
     <string name="lbl_added_day">Добавленый день</string>
     <string name="lbl_book">Книга</string>
-    <string name="X_in">В</string>
     <string name="X_file_size">Размер</string>
     <string name="X_updated">Обновлено</string>
     <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
@@ -456,7 +455,7 @@
     <string name="lbl_backup_to_archive">Бэкап в архив</string>
     <string name="lbl_import_from_archive">Импорт из архива</string>
     <string name="export_info_success_archive_details">
-        Файл %3$s с именем %2$s был создан в папке \“%1$s\” на вашей SD карте.\n
+        Файл %3$s с именем %2$s был создан в папке \“%1$s\”.\n
         \nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.
     </string>
     <string name="progress_msg_covers">%1$d обложек обработано (%2$d пропущено)</string>
@@ -484,9 +483,6 @@
     <string name="progress_msg_covers_skip">
         %1$d обложек обработано (%2$d не хватает, %3$d пропущено)
     </string>
-
-    <string name="X_import_error_failed_is_csv_file_location_correct">Импорт не удался.</string>
-
     <string name="export_info_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="export_options_dialog_title">Выберите, что будет экспортировано в архив.</string>
 
@@ -648,5 +644,7 @@
     <string name="clear">протирать</string>
     <string name="btn_confirm_new">новый</string>
     <string name="title_edit_book_authors">Редактировать книгу авторов</string>
+    <string name="progress_msg_searching_site">Поиск в %1$s</string>
+    <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
 
 </resources>

@@ -146,7 +146,6 @@
     <string name="X_lbl_series_num_long">Série #</string>
     <string name="title_import_book_data">Importovat knihy</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">ERROR: Import dat (z SD karty) selhal. Je soubor na správném místě?</string>
     <string name="X_search_title">Výsledky vyhledávání</string>
     <string name="X_results_found">Nalezené výsledky</string>
     <string name="menu_administration_long">Administrační funkce</string>
@@ -438,7 +437,6 @@
     <string name="lbl_added_month">Měsíc přidání</string>
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_book">Kniha</string>
-    <string name="X_in">V</string>
     <string name="X_file_size">Velikost</string>
     <string name="X_updated">Aktualizování</string>
     <string name="import_error_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
@@ -635,4 +633,12 @@
     <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="btn_confirm_new">Nový</string>
     <string name="title_edit_book_authors">Editovat autory knihy</string>
+    <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
+    <string name="export_info_success_archive_details">
+        Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně
+        zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení
+        zařízení.
+    </string>
+    <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
+    <string name="pt_hint_layer_type">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
 </resources>

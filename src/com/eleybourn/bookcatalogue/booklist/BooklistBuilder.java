@@ -1010,7 +1010,7 @@ public class BooklistBuilder
 
         // Build an index if it will help sorting but *If* collation is case-sensitive,
         // don't bother with index, since everything is wrapped in lower().
-        // ENHANCE: ICS UNICODE: Consider adding a duplicate _lc (lower case) column
+        // ENHANCE: ICS UNICODE: Consider adding a duplicate _OB (order-by / lower case) column
         // to the SUMMARY table. Ugh.
         if (!collationIsCs) {
             String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable

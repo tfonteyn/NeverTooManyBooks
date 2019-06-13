@@ -162,8 +162,7 @@ public class CsvImporter
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
         // For now we require complete data.
-        // ENHANCE: Do a search if mandatory columns missing
-        // (e.g. allow 'import' of a list of ISBNs).
+        // ENHANCE: Do a search if mandatory columns missing (e.g. allow 'import' of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
         // (i.e. if not an update)
 

@@ -117,11 +117,13 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, 1));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, 2));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOODREADS, 3));
+
+        // The proxy site has been broken since around April 2019.
         amazon = Site.newCoverSite(AMAZON, 4);
         amazon.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(amazon);
 
-        // bottom of the list, and disabled by default
+        // bottom of the list as the data from this site is not up to scratch. Disabled by default.
         openLibrary = Site.newCoverSite(OPEN_LIBRARY, 5);
         openLibrary.setEnabled(false);
         COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);

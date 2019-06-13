@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDAO;
@@ -109,14 +110,17 @@ public class CoverHandler {
 
     /**
      * Constructor.
+     *
+     * @param scale image scale factor to apply when populating the coverView.
      */
     CoverHandler(@NonNull final Fragment callerFragment,
                  @NonNull final DAO db,
                  @NonNull final Book book,
                  @NonNull final TextView isbnView,
                  @NonNull final ImageView coverView,
-                 final int maxWidth,
-                 final int maxHeight) {
+                 final int scale) {
+
+        int maxSize = ImageUtils.getMaxImageSize(scale);
 
         mCallerFragment = callerFragment;
         //noinspection ConstantConditions
@@ -125,8 +129,8 @@ public class CoverHandler {
 
         //noinspection ConstantConditions
         mContext = mCallerFragment.getContext();
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
+        mMaxWidth = maxSize;
+        mMaxHeight = maxSize;
         mDb = db;
         mBook = book;
         mCoverView = coverView;
@@ -472,9 +476,9 @@ public class CoverHandler {
             return;
         }
 
-        // We load the file and first scale it to twice the display size.
+        // We load the file and first scale it to scale 10 x the "standard" display size.
         // Keep in mind this means it could be up- or downscaled from the original !
-        int imageSize = ImageUtils.getDisplaySizes(mContext).large * 2;
+        int imageSize = ImageUtils.getMaxImageSize(10);
 
         // we'll try it twice with a gc in between
         int attempts = 2;

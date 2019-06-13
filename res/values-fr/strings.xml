@@ -46,7 +46,6 @@
         Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté.
         Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.
     </string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">Erreur: l\'import depuis la carte SD a échoué. Le fichier se trouve-t-il au bon endroit ?</string>
     <string name="X_search_title">Résultats de recherche</string>
     <string name="X_results_found">Des résultats ont été trouvés.</string>
     <string name="menu_administration_long">Administration</string>
@@ -490,7 +489,6 @@
     <string name="lbl_added_month">Mois d\'ajout</string>
     <string name="lbl_added_day">Jour d\'ajout</string>
     <string name="lbl_book">Livre</string>
-    <string name="X_in">Dans</string>
     <string name="X_file_size">Taille</string>
     <string name="X_updated">Mis à jour</string>
     <string name="import_error_csv_file_not_found">Aucun fichier export n\'a été trouvé</string>
@@ -569,7 +567,7 @@
     <string name="lbl_import_from_archive">Restauration des données</string>
     <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
-        Le fichier %2$s (%3$s) a été créé dans le répertoire “%1$s” de votre carte carte SD.\n
+        Le fichier %2$s (%3$s) a été créé dans le répertoire “%1$s”.\n
         \nVous devriez le copier sur un autre média comme sauvegarde en cas de perte,
         vol ou destruction de votre équipement.
     </string>
@@ -720,7 +718,7 @@
         de nos généreux traducteurs (si nous avons oublié quelqu\'un, merci de nous le dire):
     </string>
     <string name="X_lbl_loaned_to_short">→</string>
-    <string name="title_reorder">le|Le|la|La|les|Les</string>
+    <string name="title_reorder">le|Le|la|La|les|Les|un|Un|une|Une</string>
     <string name="menu_set_read">Marqué comme lu</string>
     <string name="menu_set_unread">Maqué comme non lu</string>
     <string name="tab_lbl_content">Contenu</string>
@@ -810,4 +808,7 @@
     <string name="clear">Effacer</string>
     <string name="btn_confirm_new">Nouveau</string>
     <string name="title_edit_book_authors">Modifier les auteurs du livre</string>
+    <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
+    <string name="error_no_external_crop_app">Une application pour rogner des images n\'a pas été trouvée</string>
+    <string name="book_format_trade_paperback">En app voor het trimmen van afbeeldingen werd niet gevonden</string>
 </resources>

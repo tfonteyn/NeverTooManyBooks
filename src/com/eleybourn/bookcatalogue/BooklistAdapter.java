@@ -201,11 +201,11 @@ public class BooklistAdapter
         if (viewType == RowKind.BOOK) {
             switch (mStyle.getThumbnailScaleFactor()) {
 
-                case BooklistStyle.SCALE_3X_LARGE:
+                case ImageUtils.SCALE_2X_LARGE:
                     layoutId = R.layout.booksonbookshelf_row_book_3x_large_image;
                     break;
 
-                case BooklistStyle.SCALE_2X_LARGE:
+                case ImageUtils.SCALE_X_LARGE:
                     layoutId = R.layout.booksonbookshelf_row_book_2x_large_image;
                     break;
 
@@ -735,7 +735,7 @@ public class BooklistAdapter
             super.onBindViewHolder(rowData, style);
 
             int extraFields = style.getExtraFieldsStatus();
-            int imageMaxSize = style.getScaledCoverImageMaxSize(itemView.getContext());
+            int imageMaxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
 
             // Title
             titleView.setText(rowData.getTitle());
@@ -1086,9 +1086,10 @@ public class BooklistAdapter
             if (isVisible()) {
                 Drawable lock = null;
                 if (rowData.getBoolean(mIsLockedSourceCol)) {
-                    lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
+                    Context context = mTextView.getContext();
+                    lock = context.getDrawable(R.drawable.ic_lock);
                     //noinspection ConstantConditions
-                    lock.setTint(App.getAttr(R.attr.completed_icon_tint));
+                    lock.setTint(App.getAttr(context, R.attr.completed_icon_tint));
                 }
                 mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         null, null, lock, null);

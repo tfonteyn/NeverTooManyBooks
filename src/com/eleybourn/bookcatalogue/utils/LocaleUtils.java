@@ -130,7 +130,8 @@ public final class LocaleUtils {
         Configuration deltaOnlyConfig = new Configuration();
         deltaOnlyConfig.setLocale(userLocale);
 
-        context.getResources().updateConfiguration(deltaOnlyConfig, context.getResources().getDisplayMetrics());
+        context.getResources().updateConfiguration(deltaOnlyConfig,
+                                                   context.getResources().getDisplayMetrics());
 
 
         // see if we need to add mappings for the new/current locale

@@ -8,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -147,8 +148,8 @@ public final class TerminatorConnection
         while (true) {
             try {
                 return new TerminatorConnection(url, killDelayInMillis);
-
-            } catch (FileNotFoundException | UnknownHostException e) {
+                // retry for these exceptions.
+            } catch (SocketTimeoutException | FileNotFoundException | UnknownHostException e) {
                 // don't log here, we'll log higher up the chain.
                 nrOfTries--;
                 if (nrOfTries-- == 0) {

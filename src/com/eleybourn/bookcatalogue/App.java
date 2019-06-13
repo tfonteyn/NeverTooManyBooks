@@ -31,11 +31,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -229,6 +229,12 @@ public class App
                                         @StringRes final int titleId,
                                         @NonNull final String message) {
 
+        // Create the notifier if not done yet.
+        if (sNotifier == null) {
+            sNotifier = (NotificationManager)
+                    sInstance.getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+        }
+
         Intent intent = new Intent(context, StartupActivity.class)
                 .setAction(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_LAUNCHER);
@@ -245,36 +251,20 @@ public class App
                 .setContentIntent(pendingIntent)
                 .build();
 
-        // Create the notifier
-        if (sNotifier == null) {
-            sNotifier = (NotificationManager)
-                    getAppContext().getSystemService(NOTIFICATION_SERVICE);
-        }
-
         sNotifier.notify(NOTIFICATION_ID, notification);
     }
 
     /**
-     * Using the global app theme.
-     *
-     * @param attr resource id to get
-     *
-     * @return resolved attribute
-     */
-    public static int getAttr(@AttrRes final int attr) {
-        return getAttr(sInstance.getApplicationContext().getTheme(), attr);
-    }
-
-    /**
-     * @param theme allows to override the app theme, e.g. with Dialog Themes
-     * @param attr  resource id to get
+     * @param context for getting the theme
+     * @param attr    resource id to get
      *
      * @return resolved attribute
      */
-    public static int getAttr(@NonNull final Resources.Theme theme,
+    @IdRes
+    public static int getAttr(@NonNull final Context context,
                               @AttrRes final int attr) {
         TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
+        context.getTheme().resolveAttribute(attr, tv, true);
         return tv.resourceId;
     }
 

@@ -38,7 +38,6 @@
     <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importa libri</string>
     <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">ERRORE: Importazione dei dati dalla SDCard non riuscita. Il file è nel posto corretto?</string>
     <string name="X_search_title">Risultati ricerca</string>
     <string name="X_results_found">Risultati trovati</string>
     <string name="menu_administration_long">Funzioni amministratore</string>
@@ -404,7 +403,6 @@
     <string name="lbl_added_month">Mese di inserimento</string>
     <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_book">Libro</string>
-    <string name="X_in">In</string>
     <string name="X_file_size">Dimensioni</string>
     <string name="X_updated">Aggiornato</string>
     <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
@@ -492,7 +490,7 @@
 
     <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
-        Un %3$s file chiamato %2$s è stato creato nella cartella \“%1$s\” della tua SD card.\n
+        Un %3$s file chiamato %2$s è stato creato nella cartella \“%1$s\”.\n
         \nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso
         il tuo apparecchio venga danneggiato, perso o rubato.
     </string>
@@ -728,5 +726,7 @@
     <string name="clear">Pulire</string>
     <string name="btn_confirm_new">Nuovo</string>
     <string name="title_edit_book_authors">Modifica autori di libri</string>
+    <string name="progress_msg_searching_site">Ricerca in %1$s</string>
+    <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
 
 </resources>

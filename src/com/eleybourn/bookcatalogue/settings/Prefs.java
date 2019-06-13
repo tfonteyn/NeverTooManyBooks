@@ -25,6 +25,7 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 
@@ -46,6 +47,7 @@ public final class Prefs {
 
     public static final String pk_ui_network_mobile_data = "App.network.mobile_data";
 
+    public static final String pk_thumbnails_zoom_upscale = "Image.Zoom.Upscale";
     public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";
     public static final String pk_thumbnail_cropper_layer_type = "Image.ViewLayerType";
     public static final String pk_thumbnails_external_cropper = "Image.Cropper.UseExternalApp";
@@ -272,8 +274,8 @@ public final class Prefs {
                         break;
 
                     case "BookList.LargeThumbnails":
-                        int tSize = (Boolean) oldValue ? BooklistStyle.SCALE_LARGE
-                                                       : BooklistStyle.SCALE_MEDIUM;
+                        int tSize = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
+                                                       : ImageUtils.SCALE_SMALL;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_cover_size, String.valueOf(tSize));
                         break;
@@ -295,8 +297,8 @@ public final class Prefs {
                         break;
 
                     case "BookList.Condensed":
-                        int con = (Boolean) oldValue ? BooklistStyle.SCALE_SMALL
-                                                     : BooklistStyle.SCALE_MEDIUM;
+                        int con = (Boolean) oldValue ? BooklistStyle.TEXT_SCALE_SMALL
+                                                     : BooklistStyle.TEXT_SCALE_MEDIUM;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_text_size, String.valueOf(con));
                         break;

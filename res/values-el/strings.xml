@@ -38,7 +38,6 @@
     <string name="X_lbl_series_num_long">Σειρές #</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">ΣΦΑΛΜΑ: Εισαγωγή δεδομένων (από SDCard) απέτυχε. Βρίσκεται το αρχείο στη σωστή τοποθεσία;</string>
     <string name="X_search_title">Αποτελέσματα αναζήτησης</string>
     <string name="X_results_found">Αποτελέσματα βρέθηκαν</string>
     <string name="menu_administration_long">Λειτουργίες διαχείρισης</string>
@@ -414,7 +413,6 @@
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_book">Βιβλίο</string>
-    <string name="X_in">Μέσα</string>
     <string name="X_file_size">Μέγεθος</string>
     <string name="X_updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
@@ -493,8 +491,11 @@
     <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
 
     <!-- Hint displayed when a Backup is done -->
-    <string name="export_info_success_archive_details">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο \“%1$s\” στην
-    κάρτα SD.\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
+    <string name="export_info_success_archive_details">
+        ;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο \“%1$s\”.\n
+        \nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση
+        που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.
+    </string>
 
     <!-- Displayed in progress dialog when exporting covers -->
     <string name="progress_msg_covers">%1$d εξώφυλλα επεξεργάστηκαν (%2$d λείπουν)</string>
@@ -717,5 +718,7 @@
     <string name="X_pt_bob_preferred_style">Προνομιούχος</string>
     <string name="btn_confirm_new">Νέος</string>
     <string name="title_edit_book_authors">Επεξεργασία συγγραφέων βιβλίων</string>
+    <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
+    <string name="error_no_external_crop_app">Δεν βρέθηκε μια εφαρμογή για την αποκοπή εικόνων</string>
 
 </resources>

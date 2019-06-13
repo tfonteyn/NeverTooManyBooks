@@ -38,7 +38,6 @@
     <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importar libros</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">ERROR: La importación (desde la tarjeta SD) ha fallado. ¿Está el fichero en el lugar correcto?</string>
     <string name="X_search_title">Buscar resultados</string>
     <string name="X_results_found">Resultados encontrados</string>
     <string name="menu_administration_long">Administración</string>
@@ -417,7 +416,6 @@
     <string name="lbl_added_month">Mes de inclusión</string>
     <string name="lbl_added_day">Día de inclusión</string>
     <string name="lbl_book">Libro</string>
-    <string name="X_in">en</string>
     <string name="X_file_size">Tamaño</string>
     <string name="X_updated">Actualizado</string>
     <string name="import_error_csv_file_not_found">No se han encontrado archivos exportados</string>
@@ -500,7 +498,7 @@
 
     <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
-        Se ha creado un fichero de %3$s llamado %2$s en el directorio \“%1$s\” de su tarjeta SD.\n
+        Se ha creado un fichero de %3$s llamado %2$s en el directorio \“%1$s\”.\n
         \nDebe copiarlo a otro lugar para proteger los datos en caso de que su dispositivo
         resulte dañado, se pierda o sea robado.
     </string>
@@ -750,4 +748,6 @@
     <string name="clear">Claro</string>
     <string name="btn_confirm_new">Nuevo</string>
     <string name="title_edit_book_authors">Editar autores de libros</string>
+    <string name="progress_msg_searching_site">Buscando en %1$s</string>
+    <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
 </resources>

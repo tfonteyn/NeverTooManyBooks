@@ -273,7 +273,7 @@ public class EditAuthorListActivity
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
             //TOMF: use interface
-            mActivity = (EditAuthorListActivity) getActivity();
+            mActivity = (EditAuthorListActivity) context;
         }
 
         /**

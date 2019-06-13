@@ -131,14 +131,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Dimensione miniature in elenchi</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Dimensione miniature in elenchi</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Small</item>
         <item>Small</item>
         <item>Medio</item>
         <item>Grande</item>
         <item>X-Grande</item>
         <item>2X-Grande</item>
-        <item>3X-Grande</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->

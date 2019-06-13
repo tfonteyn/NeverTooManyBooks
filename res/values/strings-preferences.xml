@@ -32,6 +32,9 @@
     <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
     <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
 
+    <!-- SwitchPreference - zooming images should upscale (or only show actual max size) -->
+    <string name="pt_thumbnails_upscale_zoom">Upscale images  when zoomed</string>
+
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
 
@@ -126,7 +129,7 @@
     </string-array>
 
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
+    <string name="pt_thumbnail_cropper_layer_type">Cropping Layer Type</string>
     <string name="pt_hint_layer_type">Leave this setting on \‘Use default\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Use default</item>
@@ -227,20 +230,20 @@
     <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Thumbnails size in lists</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Thumbnails size in lists</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Small</item>
         <item>Small</item>
         <item>Medium</item>
         <item>Large</item>
         <item>X-Large</item>
         <item>2X-Large</item>
-        <item>3X-Large</item>
     </string-array>
-    <!-- the values are multipliers and must match the ones in {@link BooklistStyle#SCALE_*} -->
-    <string-array name="pv_bob_cover_size">
+    <!-- these values are multipliers and must match the ones in {@link BooklistStyle#SCALE_*} -->
+    <string-array name="pv_cover_scale_factor">
         <item translatable="false">1</item>
         <item translatable="false">2</item>
-        <item translatable="false">3</item>
+        <item translatable="false">4</item>
         <item translatable="false">6</item>
         <item translatable="false">9</item>
         <item translatable="false">12</item>

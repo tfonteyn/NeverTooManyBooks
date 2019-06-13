@@ -33,14 +33,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Rozmiar obrazu na listach</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Rozmiar obrazu na listach</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Mały</item>
         <item>Mały</item>
         <item>Średni</item>
         <item>Duży</item>
         <item>X-Duży</item>
         <item>2X-Duży</item>
-        <item>3X-Duży</item>
     </string-array>
 
 </resources>

@@ -61,6 +61,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Entity;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.Csv;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 
 /**
@@ -146,23 +147,12 @@ public class BooklistStyle
     public static final Integer SUMMARY_SHOW_ALL =
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
-    /* Scaling of text and thumbnails in booklist views. */
-    /** Scaling. Not in use, but keeping '0' as a spare value. */
-    @SuppressWarnings("unused")
-    public static final int SCALE_X_SMALL = 0;
-    /** Scaling. Text/Thumbnails. */
-    public static final int SCALE_SMALL = 1;
-    /** Scaling. Text/Thumbnails. */
-    public static final int SCALE_MEDIUM = 2;
-    /** Scaling. Text/Thumbnails. */
-    public static final int SCALE_LARGE = 3;
-
-    /** Scaling. Thumbnails. */
-    public static final int SCALE_X_LARGE = 6;
-    /** Scaling. Thumbnails. */
-    public static final int SCALE_2X_LARGE = 9;
-    /** Scaling. Thumbnails. */
-    public static final int SCALE_3X_LARGE = 12;
+    /** Text Scaling. */
+    public static final int TEXT_SCALE_SMALL = 1;
+    /** Text Scaling. */
+    public static final int TEXT_SCALE_MEDIUM = 2;
+    /** Text Scaling. */
+    private static final int TEXT_SCALE_LARGE = 3;
 
     /**
      * Unique name. This is a stored in our preference file (with the same name)
@@ -411,10 +401,10 @@ public class BooklistStyle
                                        SUMMARY_SHOW_ALL);
 
         mScaleFontSize = new PInteger(Prefs.pk_bob_text_size, mUuid, isUserDefined(),
-                                      SCALE_MEDIUM);
+                                      TEXT_SCALE_MEDIUM);
 
         mThumbnailScale = new PInteger(Prefs.pk_bob_cover_size, mUuid, isUserDefined(),
-                                       SCALE_LARGE);
+                                       ImageUtils.SCALE_MEDIUM);
 
         // all extra details for book-rows.
         mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, isUserDefined(),
@@ -651,45 +641,38 @@ public class BooklistStyle
     }
 
     /**
+     * Used by built-in styles only. Set by user via preferences screen.
+     */
+    @SuppressWarnings("SameParameterValue")
+    void setScaleFactor(@IntRange(from = TEXT_SCALE_SMALL, to = TEXT_SCALE_LARGE) final int size) {
+        mScaleFontSize.set(size);
+    }
+
+    /**
      * @return scaling factor to apply to text size if needed.
      */
     public float getScaleFactor() {
         switch (mScaleFontSize.get()) {
-            case SCALE_SMALL:
+            case TEXT_SCALE_SMALL:
                 return 0.8f;
-            case SCALE_MEDIUM:
+            case TEXT_SCALE_MEDIUM:
                 return 1.0f;
-            case SCALE_LARGE:
+            case TEXT_SCALE_LARGE:
                 return 1.2f;
             default:
-                return SCALE_MEDIUM;
+                return 1.0f;
         }
     }
 
     /**
-     * Used by built-in styles only. Set by user via preferences screen.
+     * @return scaling factor to apply to images, or zero if images should not be shown.
      */
-    @SuppressWarnings("SameParameterValue")
-    void setScaleFactor(@IntRange(from = SCALE_SMALL, to = SCALE_LARGE) final int size) {
-        mScaleFontSize.set(size);
-    }
-
     public int getThumbnailScaleFactor() {
-        return mThumbnailScale.get();
-    }
-
-    /**
-     * Get the scaled maximum size (height/width) in pixels to be used for images.
-     *
-     * @return the max size, or zero if covers should not be shown.
-     */
-    public int getScaledCoverImageMaxSize(@NonNull final Context context) {
         if (mExtraShowThumbnails.isFalse()) {
             return 0;
         }
 
-        return mThumbnailScale.get() * (int) context.getResources()
-                                                    .getDimension(R.dimen.cover_base_size);
+        return mThumbnailScale.get();
     }
 
     /**
@@ -911,9 +894,9 @@ public class BooklistStyle
         Boolean legacyThumbnailScale = (Boolean)in.readObject();
         // Boolean: null=='use-defaults', false='normal', true='large'
         if (legacyThumbnailScale == null) {
-            mThumbnailScale.set(ed, SCALE_MEDIUM);
+            mThumbnailScale.set(ed, ImageUtils.SCALE_SMALL);
         } else {
-            mThumbnailScale.set(ed, legacyThumbnailScale ? SCALE_LARGE : SCALE_MEDIUM);
+            mThumbnailScale.set(ed, legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM : ImageUtils.SCALE_SMALL);
         }
 
         mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
@@ -942,9 +925,9 @@ public class BooklistStyle
         Boolean legacyCondensed = (Boolean) in.readObject();
         // Boolean: null=='use-defaults', false='normal', true='condensed'
         if (legacyCondensed == null) {
-            mScaleFontSize.set(ed, SCALE_MEDIUM);
+            mScaleFontSize.set(ed, TEXT_SCALE_MEDIUM);
         } else {
-            mScaleFontSize.set(ed, legacyCondensed ? SCALE_SMALL : SCALE_MEDIUM);
+            mScaleFontSize.set(ed, legacyCondensed ? TEXT_SCALE_SMALL : TEXT_SCALE_MEDIUM);
         }
 
         // v2

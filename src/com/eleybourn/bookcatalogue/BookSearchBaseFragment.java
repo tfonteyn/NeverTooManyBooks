@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -46,7 +47,7 @@ public abstract class BookSearchBaseFragment
     /** Database access. */
     protected DAO mDb;
     /** hosting activity. */
-    BookSearchActivity mActivity;
+    AppCompatActivity mActivity;
     TaskManager mTaskManager;
 
     /** Objects managing current search. */
@@ -62,10 +63,8 @@ public abstract class BookSearchBaseFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        //TOMF: use interface
-        mActivity = (BookSearchActivity) getActivity();
-        //noinspection ConstantConditions
-        mTaskManager = mActivity.getTaskManager();
+        mActivity = (AppCompatActivity) context;
+        mTaskManager = ((BookSearchActivity)mActivity).getTaskManager();
     }
 
     @Override

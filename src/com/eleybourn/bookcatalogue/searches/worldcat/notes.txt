@@ -1,0 +1,4 @@
+Get a list of alternative editionss; i.e. feed it with an isbn, retrieve a list of alternative isbn
+
+https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
+=> format is the same as LibraryThing => SearchLibraryThingEditionHandler

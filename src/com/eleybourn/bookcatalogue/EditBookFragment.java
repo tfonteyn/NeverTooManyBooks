@@ -84,7 +84,7 @@ public class EditBookFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity = (AppCompatActivity) getActivity();
+        mActivity = (AppCompatActivity) context;
     }
 
     @Override

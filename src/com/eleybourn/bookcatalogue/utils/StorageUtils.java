@@ -85,7 +85,7 @@ public final class StorageUtils {
      * Our root directory to be created on the 'external storage' aka Shared Storage.
      * IMPORTANT: this must stay in sync with res/xml/provider_paths.xml
      */
-    private static final String DIRECTORY_NAME = "bookCatalogue2";
+    private static final String DIRECTORY_NAME = "NeverToManyBooks";
     //private static final String DIRECTORY_NAME = "bookCatalogue";
 
     /** root external storage aka Shared Storage. */

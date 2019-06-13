@@ -344,8 +344,9 @@ public class StartupActivity
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
-        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
-        // must be checked in parallel
+        // when/if we request more permissions, then permissions[] and grantResults[]
+        // must be checked in parallel obviously.
+
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_ANDROID_PERMISSIONS:

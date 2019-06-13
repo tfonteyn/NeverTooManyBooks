@@ -131,14 +131,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Размер изображения в списках</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Размер изображения в списках</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Маленький</item>
         <item>Маленький</item>
         <item>Средняя</item>
         <item>большой</item>
         <item>X-большой</item>
         <item>2X-большой</item>
-        <item>3X-большой</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->

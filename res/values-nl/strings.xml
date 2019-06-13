@@ -55,9 +55,6 @@
         anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het
         id veld leeg is.
     </string>
-    <string name="X_import_error_failed_is_csv_file_location_correct">
-        FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?
-    </string>
     <string name="X_search_title">Zoekresultaten</string>
     <string name="X_results_found">Gevonden resultaten</string>
     <string name="menu_administration_long">Administratieve Functies</string>
@@ -143,7 +140,7 @@
         Wilt u  een back-up van uw database op uw SD kaart maken?
     </string>
     <string name="title_backup">Back-up</string>
-    <string name="searching_amazon">Zoek bij Amazon</string>
+    <string name="searching_amazon">Zoeken bij Amazon</string>
     <string name="searching_google_books">Zoeken bij Google Books</string>
     <string name="searching_library_thing">Zoeken bij LibraryThing</string>
     <string name="searching_open_library">Zoeken by OpenLibrary</string>
@@ -590,7 +587,6 @@
     <string name="lbl_added_month">Maand</string>
     <string name="lbl_added_day">Dag</string>
     <string name="lbl_book">Boek</string>
-    <string name="X_in">In</string>
     <string name="X_file_size">Grootte</string>
     <string name="X_updated">Bijgewerkt</string>
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
@@ -674,7 +670,7 @@
     <string name="lbl_import_from_archive">Importeren vanuit archief</string>
 
     <string name="export_info_success_archive_details">
-        Een %3$s bestand met de naam %2$s is aangemaakt in de “%1$s” map op uw SD kaart.\n
+        Een %3$s bestand met de naam %2$s is aangemaakt in de “%1$s” map.\n
         \nU wordt aangeraden dit bestand naar een ander plek te kopiëren om de gegevens veilig
         te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.
     </string>
@@ -925,4 +921,6 @@
     <string name="clear">Wissen</string>
     <string name="btn_confirm_new">Nieuw</string>
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
+    <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
+    <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
 </resources>

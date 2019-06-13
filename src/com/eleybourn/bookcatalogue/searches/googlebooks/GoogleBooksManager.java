@@ -58,18 +58,6 @@ public final class GoogleBooksManager
         return NetworkUtils.isAlive(getBaseURL());
     }
 
-    @Override
-    public boolean supportsImageSize(@NonNull final ImageSizes size) {
-        // support 1 size only
-        return ImageSizes.LARGE.equals(size);
-    }
-
-    @StringRes
-    @Override
-    public int getSearchingResId() {
-        return R.string.searching_google_books;
-    }
-
     @StringRes
     @Override
     public int getNameResId() {

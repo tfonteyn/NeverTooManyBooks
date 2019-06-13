@@ -1,12 +1,10 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
@@ -22,6 +20,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -33,9 +32,38 @@ import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 
 public final class ImageUtils {
 
+    /*
+     * Scaling of thumbnails.
+     * Must be kept in sync with res/xml/preferences_book_style#pv_cover_scale_factor
+     */
+    /** Thumbnail Scaling. */
+    public static final int SCALE_X_SMALL = 1;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_SMALL = 2;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_MEDIUM = 4;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_LARGE = 6;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_X_LARGE = 9;
+    /** Thumbnail Scaling. */
+    public static final int SCALE_2X_LARGE = 12;
+
+
     private static final int BUFFER_SIZE = 65536;
 
     private ImageUtils() {
+    }
+
+    /**
+     * Get the maximum pixel size an image should be based on the desired scale factor.
+     *
+     * @param scale to apply
+     * @return amount in pixels
+     */
+    public static int getMaxImageSize(final int scale) {
+        return scale * (int) App.getAppContext().getResources()
+                                .getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -126,6 +154,15 @@ public final class ImageUtils {
         setImageView(destView, bm, maxWidth, maxHeight, upscale);
     }
 
+    @UiThread
+    private static void setImageView(@NonNull final ImageView destView,
+                                     @Nullable final Bitmap bm,
+                                     final int scale,
+                                     final boolean upscale) {
+        int maxSize = ImageUtils.getMaxImageSize(scale);
+        setImageView(destView, bm, maxSize, maxSize, upscale);
+    }
+
     /**
      * Load the image bitmap into the destination view.
      * Scaling is done by Android, enforced by the view itself and the dimensions passed in.
@@ -172,6 +209,22 @@ public final class ImageUtils {
             // if not upscaling, let Android decide on any other scaling as needed.
             destView.setImageBitmap(bm);
         }
+    }
+
+    @NonNull
+    @AnyThread
+    public static Bitmap createScaledBitmap(@NonNull final File file,
+                                            final int scale) {
+        int maxSize = ImageUtils.getMaxImageSize(scale);
+        return createScaledBitmap(BitmapFactory.decodeFile(file.getPath()), maxSize, maxSize);
+    }
+
+    @NonNull
+    @AnyThread
+    public static Bitmap createScaledBitmap(@NonNull final Bitmap src,
+                                            final int scale) {
+        int maxSize = ImageUtils.getMaxImageSize(scale);
+        return createScaledBitmap(src, maxSize, maxSize);
     }
 
     /**
@@ -474,54 +527,6 @@ public final class ImageUtils {
             File source = new File(imageList.get(bestFileIndex));
             File destination = StorageUtils.getTempCoverFile();
             StorageUtils.renameFile(source, destination);
-        }
-    }
-
-    @NonNull
-    public static DisplaySizes getDisplaySizes(@NonNull final Context context) {
-        return new DisplaySizes(context);
-    }
-
-    /**
-     * NEWKIND: if we need more display sizes, add a field calculation here.
-     * <p>
-     * small:  Minimum of MAX_SIZE_SMALL and 1/3rd of largest screen dimension
-     * standard: Minimum of MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
-     * large:  Minimum of MAX_SIZE_LARGE and largest screen dimension.
-     * <p>
-     * ENHANCE: should use density instead of pixels!
-     */
-    public static class DisplaySizes {
-
-        /** Target size of an image - on the Edit Screens. */
-        private static final int MAX_SIZE_SMALL = 256;
-        /** on the View Screens. */
-        private static final int MAX_SIZE_STANDARD = 512;
-        /** in zoomed (but not full-screen) mode. */
-        private static final int MAX_SIZE_LARGE = 1024;
-
-        /** Display size in pixels. */
-        public final int small;
-        public final int standard;
-        public final int large;
-
-        DisplaySizes(@NonNull final Context context) {
-            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-
-            int maxMetrics = Math.max(metrics.widthPixels, metrics.heightPixels);
-
-            small = Math.min(MAX_SIZE_SMALL, maxMetrics / 3);
-            standard = Math.min(MAX_SIZE_STANDARD, maxMetrics * 2 / 3);
-            large = Math.min(MAX_SIZE_LARGE, maxMetrics);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-                Logger.debug(this, "ImageSize",
-                             "metrics.widthPixels=" + metrics.widthPixels,
-                             "metrics.heightPixels=" + metrics.heightPixels,
-                             "small=" + small,
-                             "standard=" + standard,
-                             "large=" + large);
-            }
         }
     }
 

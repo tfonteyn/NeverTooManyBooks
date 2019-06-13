@@ -144,11 +144,6 @@ public class TaskManager {
      * Indicates tasks are being cancelled. This is reset when a new task is added.
      */
     private boolean mCancelling;
-    /**
-     * Indicates the TaskManager is terminating; will close after last task exits.
-     */
-    private boolean mIsClosing;
-
     /** Controller instance (strong reference) for this specific SearchManager. */
     @SuppressWarnings("FieldCanBeLocal")
     private final TaskManagerController mController = new TaskManagerController() {
@@ -163,6 +158,10 @@ public class TaskManager {
             return TaskManager.this;
         }
     };
+    /**
+     * Indicates the TaskManager is terminating; will close after last task exits.
+     */
+    private boolean mIsClosing;
 
     /**
      * Constructor.
@@ -259,6 +258,24 @@ public class TaskManager {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
             taskInfo.progressMessage = messageId != 0 ? mContext.getString(messageId) : null;
+            taskInfo.progressCurrent = count;
+            sendProgress();
+        }
+    }
+
+    /**
+     * Creates and send a {@link TaskProgressMessage} based on information about a task.
+     *
+     * @param task    The task associated with this message
+     * @param message Message string
+     * @param count   Counter for progress
+     */
+    public void sendProgress(@NonNull final ManagedTask task,
+                             @NonNull final String message,
+                             final int count) {
+        TaskInfo taskInfo = getTaskInfo(task);
+        if (taskInfo != null) {
+            taskInfo.progressMessage = message;
             taskInfo.progressCurrent = count;
             sendProgress();
         }

@@ -15,8 +15,10 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 /**
@@ -73,12 +75,13 @@ public class ZoomedImageDialogFragment
         File imageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
+        boolean upscale = App.getPrefs().getBoolean(Prefs.pk_thumbnails_zoom_upscale, true);
 
         ImageView imageView = view.findViewById(R.id.coverImage);
         ImageUtils.setImageView(imageView, imageFile,
                                 metrics.widthPixels,
                                 metrics.heightPixels,
-                                true);
+                                upscale);
 
         imageView.setOnClickListener(v -> dismiss());
     }

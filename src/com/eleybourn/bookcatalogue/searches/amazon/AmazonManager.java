@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -90,18 +91,6 @@ public final class AmazonManager
     @WorkerThread
     public boolean isAvailable() {
         return NetworkUtils.isAlive(getBaseURL());
-    }
-
-    @Override
-    public boolean supportsImageSize(@NonNull final ImageSizes size) {
-        // support 1 size only
-        return SearchEngine.ImageSizes.LARGE.equals(size);
-    }
-
-    @StringRes
-    @Override
-    public int getSearchingResId() {
-        return R.string.searching_amazon;
     }
 
     @StringRes

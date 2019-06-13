@@ -230,6 +230,15 @@
 
     <PreferenceCategory
         android:title="@string/pg_thumbnails">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_zoom_in"
+            android:key="Image.Zoom.Upscale"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_thumbnails_upscale_zoom" />
+
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_crop_original"

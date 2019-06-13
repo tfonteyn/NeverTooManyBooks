@@ -277,7 +277,7 @@ public class EditSeriesListActivity
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
             //TOMF: use interface
-            mActivity = (EditSeriesListActivity) getActivity();
+            mActivity = (EditSeriesListActivity) context;
         }
 
         @NonNull

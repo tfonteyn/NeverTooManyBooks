@@ -135,32 +135,14 @@ public interface SearchEngine {
     }
 
     /**
-     * Warning: the use of this method should be limited to places
-     * where we search for multiple sizes!
-     * <p>
-     * Do NOT use this check if you just do a single search for some size.
-     * <p>
-     * TODO: the above warning could be phrased better...
-     * try again:
-     * CoverBrowserFragment loops through all sizes
-     * --> must use this method check to avoid calling sites to many times.
-     * Other places, where just a single image is fetched, don't use this method.
-     * <p>
-     * Would it be better if this method was more "siteSupportsMultipleSizes()" ?
+     * A site can support a single or multiple sizes.
      *
-     * @param size the image size we want to check support on.
-     *
-     * @return {@code true} if the site supports the passed image size
+     * @return {@code true} if multiple sizes are supported.
      */
     @AnyThread
-    boolean supportsImageSize(@NonNull final ImageSizes size);
-
-    /**
-     * @return the resource id for the text "Searching {site}"
-     */
-    @AnyThread
-    @StringRes
-    int getSearchingResId();
+    default boolean siteSupportsMultipleSizes() {
+        return false;
+    }
 
     /**
      * @return the resource id for the human-readable name of the site

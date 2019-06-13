@@ -109,7 +109,7 @@
             android:title="@string/pt_bob_header"
             />
 
-        <!-- default BooklistStyle.SCALE_MEDIUM == 2 -->
+        <!-- default BooklistStyle.SCALE_SMALL == 2 -->
         <ListPreference
             android:defaultValue="2"
             android:entries="@array/pe_bob_text_size"
@@ -135,14 +135,14 @@
             android:title="@string/pt_bob_thumbnails_show"
             />
 
-        <!-- default BooklistStyle.SCALE_LARGE == 3 -->
+        <!-- default BooklistStyle.SCALE_MEDIUM == 4 -->
         <ListPreference
-            android:defaultValue="3"
-            android:entries="@array/pe_bob_cover_size"
-            android:entryValues="@array/pv_bob_cover_size"
+            android:defaultValue="4"
+            android:entries="@array/pe_cover_scale_factor"
+            android:entryValues="@array/pv_cover_scale_factor"
             android:icon="@drawable/ic_photo_size_select_large"
             android:key="BookList.Style.Scaling.Thumbnails"
-            android:title="@string/pt_bob_cover_size"
+            android:title="@string/pt_cover_scale_factor"
             />
 
     </PreferenceCategory>

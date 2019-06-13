@@ -43,7 +43,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 /**
  * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
  * <p>
- * FIXME: ... re-test and see why the progress stops.
+ * FIXME: ... re-test and see why the progress stops when run on all books.
  * Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
 public class UpdateFieldsFromInternetFragment
@@ -103,8 +103,7 @@ public class UpdateFieldsFromInternetFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        //noinspection ConstantConditions
-        mTaskManager = ((BaseActivityWithTasks) getActivity()).getTaskManager();
+        mTaskManager = ((BaseActivityWithTasks) context).getTaskManager();
     }
 
     @Override

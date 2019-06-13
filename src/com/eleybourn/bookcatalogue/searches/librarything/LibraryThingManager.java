@@ -456,15 +456,8 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean supportsImageSize(@NonNull final ImageSizes size) {
-        // all sizes
+    public boolean siteSupportsMultipleSizes() {
         return true;
-    }
-
-    @StringRes
-    @Override
-    public int getSearchingResId() {
-        return R.string.searching_library_thing;
     }
 
     @StringRes

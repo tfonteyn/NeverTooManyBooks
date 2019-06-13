@@ -58,8 +58,7 @@ public class SearchTask
         extends ManagedTask {
 
     /** progress title. e.g. "Searching Amazon". */
-    @StringRes
-    private final int mProgressTitleResId;
+    private final String mProgressTitle;
 
     @NonNull
     private final SearchEngine mSearchEngine;
@@ -103,8 +102,10 @@ public class SearchTask
         super(manager, taskName);
         mTaskId = taskId;
         mSearchEngine = searchEngine;
-        // cache the resId for convenience
-        mProgressTitleResId = mSearchEngine.getSearchingResId();
+
+        Context context = manager.getContext();
+        mProgressTitle = context.getString(R.string.progress_msg_searching_site,
+                                           context.getString(mSearchEngine.getNameResId()));
     }
 
     /**
@@ -161,8 +162,7 @@ public class SearchTask
     protected void runTask() {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.debugEnter(this, "runTask",
-                              getResources().getString(mProgressTitleResId));
+            Logger.debugEnter(this, "runTask", mProgressTitle);
         }
         // keys? site up? etc...
         if (!mSearchEngine.isAvailable()) {
@@ -170,7 +170,7 @@ public class SearchTask
             return;
         }
 
-        mTaskManager.sendProgress(this, mProgressTitleResId, 0);
+        mTaskManager.sendProgress(this, mProgressTitle, 0);
 
         try {
             // SEARCH!
@@ -245,8 +245,7 @@ public class SearchTask
     private void setFinalError(@StringRes final int error,
                                @NonNull final Object... args) {
         Context context = getContext();
-        mFinalMessage = context.getString(R.string.error_search_exception,
-                                          context.getString(mProgressTitleResId),
+        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
                                           context.getString(error, args));
     }
 
@@ -267,8 +266,7 @@ public class SearchTask
         } catch (RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
-        mFinalMessage = context.getString(R.string.error_search_exception,
-                                          context.getString(mProgressTitleResId), s);
+        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle, s);
     }
 
 }

@@ -130,14 +130,14 @@
     </string-array>
 
     <!-- Preference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_cover_size">Taille de l\'image dans les listes</string>
-    <string-array name="pe_bob_cover_size">
+    <string name="pt_cover_scale_factor">Taille de l\'image dans les listes</string>
+    <string-array name="pe_cover_scale_factor">
+        <item>X-Petit</item>
         <item>Petit</item>
         <item>Moyen</item>
         <item>Grand</item>
         <item>X-Grand</item>
         <item>2X-Grand</item>
-        <item>3X-Grand</item>
     </string-array>
 
     <!-- Preference - Determines what is show in book list header -->
