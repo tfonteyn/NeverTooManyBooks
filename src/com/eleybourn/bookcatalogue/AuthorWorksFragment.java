@@ -42,7 +42,7 @@ public class AuthorWorksFragment
 
     private AuthorWorksModel mModel;
 
-    //    @Override
+//    @Override
 //    @CallSuper
 //    public void onCreate(@Nullable final Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
@@ -71,7 +71,7 @@ public class AuthorWorksFragment
         mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
         mModel.init(authorId, withBooks);
 
-        String title = mModel.getAuthor().getLabel() + '[' + mModel.getTocEntries().size() + ']';
+        String title = mModel.getAuthor().getLabel() + " [" + mModel.getTocEntries().size() + ']';
         //noinspection ConstantConditions
         getActivity().setTitle(title);
 

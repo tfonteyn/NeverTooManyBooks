@@ -720,5 +720,8 @@
     <string name="title_edit_book_authors">Επεξεργασία συγγραφέων βιβλίων</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
     <string name="error_no_external_crop_app">Δεν βρέθηκε μια εφαρμογή για την αποκοπή εικόνων</string>
+    <string name="book_format_hardcover">σκληρό βιβλίο</string>
+    <string name="book_format_ebook">eBook</string>
+    <string name="book_format_trade_paperback">χαρτόδετο βιβλίο</string>
 
 </resources>

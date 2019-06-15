@@ -336,7 +336,7 @@ public class CoverHandler {
         String uuid = (String) mCoverView.getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.debugWithStackTrace(this, "getUuid", "UUID was not available on the view t");
+            Logger.warnWithStackTrace(this, "getUuid", "UUID was not available on the view");
             uuid = mDb.getBookUuid(mBook.getId());
         }
         return uuid;

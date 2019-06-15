@@ -34,10 +34,10 @@ public class AuthorWorksModel
             if (author != null) {
                 mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);
 
-                // for testing.
-                for (int i = 0; i < 100; i++) {
-                    mTocEntries.add(new TocEntry(author, "blah " + i, "1978"));
-                }
+//                // for testing.
+//                for (int i = 0; i < 100; i++) {
+//                    mTocEntries.add(new TocEntry(author, "blah " + i, "1978"));
+//                }
             } else {
                 throw new IllegalArgumentException("author was NULL for id=" + authorId);
             }

@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * Class to manage storage/retrieval and validation of a piece of data from a bundle.
+ * Class to manage storage/retrieval of a piece of data from a bundle.
  * <p>
  * DataManager, e.g. a Book.
  * Datum, describes a single piece of data.
@@ -47,7 +47,6 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * </ul>
  * </li>
  * <li>DataAccessor: optional layer to 'translate' the data between the value in the bundle and the value that comes in / goes out</li>
- * <li>DataValidator: optional layer to validate the value</li>
  * </ul>
  * What a Datum is <strong>NOT: a value</strong>
  *

@@ -20,6 +20,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.CheckListDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
@@ -139,7 +140,7 @@ public abstract class EditBookBaseFragment<T>
 
     /**
      * Default implementation of code to save existing data to the Book object.
-     * We simply copy all {@link Fields.Field} into the {@link DataManager} e.g. the {@link Book}
+     * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
      * <p>
      * Override as needed.
      */
@@ -170,12 +171,12 @@ public abstract class EditBookBaseFragment<T>
      * <p>
      * Note that a {@link ValuePicker} uses a plain AlertDialog.
      *
-     * @param field         {@link Fields.Field} to edit
+     * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param fieldButtonId field/button to bind the PickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
      */
-    void initValuePicker(@NonNull final Fields.Field field,
+    void initValuePicker(@NonNull final Field field,
                          @StringRes final int dialogTitleId,
                          @IdRes final int fieldButtonId,
                          @NonNull final List<String> list) {
@@ -208,11 +209,11 @@ public abstract class EditBookBaseFragment<T>
     }
 
     /**
-     * @param field         {@link Fields.Field} to edit
+     * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
      */
-    void initPartialDatePicker(@NonNull final Fields.Field field,
+    void initPartialDatePicker(@NonNull final Field field,
                                @StringRes final int dialogTitleId,
                                final boolean todayIfNone) {
         // only bother when it's in use
@@ -232,12 +233,12 @@ public abstract class EditBookBaseFragment<T>
     }
 
     /**
-     * @param field         {@link Fields.Field} to edit
+     * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter <T>}
      *                      interface to get the *current* list
      */
-    void initCheckListEditor(@NonNull final Fields.Field field,
+    void initCheckListEditor(@NonNull final Field field,
                              @StringRes final int dialogTitleId,
                              @NonNull final CheckListDialogFragment
                                      .CheckListEditorListGetter<T> listGetter) {

@@ -129,7 +129,7 @@
     </string-array>
 
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Cropping Layer Type</string>
+    <string name="pt_thumbnail_cropper_layer_type">Cropping ‘Layer Type’</string>
     <string name="pt_hint_layer_type">Leave this setting on \‘Use default\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Use default</item>

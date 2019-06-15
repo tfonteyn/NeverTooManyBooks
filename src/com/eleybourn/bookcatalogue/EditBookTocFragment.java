@@ -62,6 +62,7 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
@@ -222,8 +223,8 @@ public class EditBookTocFragment
 
         // do other stuff here that might affect the view.
 
-        // Fix up the views
-        ViewUtils.fixFocusSettings(requireView());
+        // Fix the focus order for the views
+        FocusSettings.fix(requireView());
     }
 
     @Override
@@ -241,7 +242,7 @@ public class EditBookTocFragment
         super.initFields();
         Fields fields = getFields();
 
-        Fields.Field field;
+        Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
         fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
               .getView().setOnClickListener(v -> {

@@ -140,7 +140,7 @@ public class Fields {
     /** All validator exceptions caught. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     /** the list with all fields. */
-    private final ArrayList<Fields.Field> mAllFields = new ArrayList<>();
+    private final ArrayList<Field> mAllFields = new ArrayList<>();
     /**
      * The activity or fragment related to this object.
      * Uses a WeakReference to the Activity/Fragment.
@@ -442,7 +442,7 @@ public class Fields {
                     // Always save the value...even if invalid. Or at least try to.
                     if (!crossValidating) {
                         try {
-                            values.putString(field.mColumn, field.getValue().toString().trim());
+                            values.putString(field.mColumn, field.getValue().toString());
                         } catch (RuntimeException ignored) {
                         }
                     }
@@ -554,14 +554,12 @@ public class Fields {
     }
 
     /**
-     * Interface for view-specific accessors. One of these will be implemented for
+     * Interface for view-specific accessors. One of these must be implemented for
      * each view type that is supported.
-     * <p>
-     * TOMF: would it be enough to make this generic ? i.e instead of String be able to use a boolean ?
      *
      * @author Philip Warner
      */
-    public interface FieldDataAccessor {
+    private interface FieldDataAccessor {
 
         /**
          * Passed a Field and a Bundle get the value from the Bundle and set the Field.
@@ -589,6 +587,7 @@ public class Fields {
          */
         void setValue(@NonNull String source,
                       @NonNull Field target);
+
 
         /**
          * Get the value from the view associated with the Field and store a native version
@@ -632,10 +631,11 @@ public class Fields {
 
         /**
          * Format a string for applying to a View.
+         * If the source is {@code null}, implementations should return "" (and log an error)
          *
          * @param source Input value
          *
-         * @return The formatted value. If the source is {@code null}, should return "" (and log an error)
+         * @return The formatted value.
          */
         @NonNull
         String format(@NonNull Field field,
@@ -643,16 +643,17 @@ public class Fields {
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
+         * It's only needed if the field is some sort of EditText.
          * Optional to implement if the field it's set on is read-only.
          * <p>
-         * Extract a formatted string from the displayed version.
+         * Extract a formatted {@code String} from the displayed version.
          *
          * @param source The value to be back-translated
          *
          * @return The extracted value
          */
         @NonNull
-        default String extract(@NonNull final Fields.Field field,
+        default String extract(@NonNull final Field field,
                                @NonNull final String source) {
             throw new UnsupportedOperationException();
         }
@@ -692,7 +693,7 @@ public class Fields {
      * Implementation that stores and retrieves data from a local string variable
      * for fields without a layout.
      * <p>
-     * Supports {@link FieldFormatter}. Output is String.
+     * Does not support {@link FieldFormatter}. Output is String.
      */
     public static class StringDataAccessor
             extends BaseDataAccessor {
@@ -703,7 +704,7 @@ public class Fields {
         @Override
         public void setValue(@NonNull final String source,
                              @NonNull final Field target) {
-            mLocalValue = target.format(source);
+            mLocalValue = source;
         }
 
         @Override
@@ -721,7 +722,7 @@ public class Fields {
         @NonNull
         @Override
         public String getValue(@NonNull final Field source) {
-            return source.extract(mLocalValue.trim());
+            return mLocalValue.trim();
         }
     }
 
@@ -758,13 +759,13 @@ public class Fields {
         @Override
         public void setValue(@NonNull final Field source,
                              @NonNull final Bundle target) {
-            target.putString(source.mColumn, mRawValue);
+            target.putString(source.mColumn, getValue(source));
         }
 
         @Override
         public void setValue(@NonNull final Field source,
                              @NonNull final DataManager target) {
-            target.putString(source.mColumn, mRawValue);
+            target.putString(source.mColumn, getValue(source));
         }
 
         @NonNull
@@ -785,6 +786,58 @@ public class Fields {
     }
 
     /**
+     * TextWatcher for EditText fields. Sets the Field value after each EditText change.
+     */
+    private static class EditTextWatcher
+            implements TextWatcher {
+
+        @NonNull
+        private final Field field;
+
+        EditTextWatcher(@NonNull final Field field) {
+            this.field = field;
+        }
+
+        @Override
+        public void beforeTextChanged(@NonNull final CharSequence s,
+                                      final int start,
+                                      final int count,
+                                      final int after) {
+        }
+
+        @Override
+        public void onTextChanged(@NonNull final CharSequence s,
+                                  final int start,
+                                  final int before,
+                                  final int count) {
+        }
+
+        /**
+         * FIXME: not very efficient... aside of when the user is typing,
+         * this ALSO gets called whenever the field content is set by the system
+         * This includes when the device is rotated, when a tab is changed...
+         * We should handle this in an onPause/onResume
+         */
+        @Override
+        public void afterTextChanged(@NonNull final Editable s) {
+            String value;
+            if (field.formatter == null) {
+                value = s.toString().trim();
+            } else {
+                value = field.formatter.extract(field, s.toString().trim());
+            }
+
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "afterTextChanged",
+                             "s=`" + s.toString() + '`',
+                             "extract=`" + value + '`'
+                );
+            }
+            field.setValue(value);
+        }
+    }
+
+    /**
      * Implementation that stores and retrieves data from an EditText.
      * <p>
      * Supports {@link FieldFormatter}. Output is String.
@@ -797,34 +850,7 @@ public class Fields {
 
         EditTextAccessor(@NonNull final EditText view,
                          @NonNull final Field field) {
-            mTextWatcher = new TextWatcher() {
-                @Override
-                public void beforeTextChanged(@NonNull final CharSequence s,
-                                              final int start,
-                                              final int count,
-                                              final int after) {
-                }
-
-                @Override
-                public void onTextChanged(@NonNull final CharSequence s,
-                                          final int start,
-                                          final int before,
-                                          final int count) {
-                }
-
-                @Override
-                public void afterTextChanged(@NonNull final Editable s) {
-                    //FIXME: not very efficient... gets called whenever the field content is set
-                    // This includes when the device is rotated, when a tab is changed...
-                    if (BuildConfig.DEBUG) {
-                        Logger.debug(this, "afterTextChanged",
-                                     "s=`" + s.toString() + '`',
-                                     "extract=`" + field.extract(s.toString()) + '`'
-                        );
-                    }
-                    field.setValue(field.extract(s.toString()));
-                }
-            };
+            mTextWatcher = new EditTextWatcher(field);
             view.addTextChangedListener(mTextWatcher);
         }
 
@@ -842,9 +868,16 @@ public class Fields {
             view.removeTextChangedListener(mTextWatcher);
 
             String newVal = target.format(source);
+            // do not use extract, we compare formatted/formatted value
             String oldVal = view.getText().toString().trim();
             if (!newVal.equals(oldVal)) {
-                view.setText(newVal);
+                if (view instanceof AutoCompleteTextView) {
+                    // prevent auto-completion to kick in / stop the dropdown from opening.
+                    // this happened if the field had the focus when we'd be populating it.
+                    ((AutoCompleteTextView)view).setText(newVal, false);
+                } else {
+                    view.setText(newVal);
+                }
             }
             view.addTextChangedListener(mTextWatcher);
         }
@@ -865,23 +898,83 @@ public class Fields {
         @Override
         public String getValue(@NonNull final Field source) {
             EditText view = source.getView();
-            return source.extract(view.getText().toString().trim());
+            if (source.formatter == null) {
+                return view.getText().toString().trim();
+            } else {
+                return source.formatter.extract(source, view.getText().toString().trim());
+            }
         }
     }
 
-    public static class IntegerEditTextAccessor
-            extends EditTextAccessor {
+    /**
+     * Spinner accessor. Assumes the Spinner contains a list of Strings and
+     * sets the spinner to the matching item.
+     * <p>
+     * Supports {@link FieldFormatter} which can be used if the internal String is different
+     * from the displayed String.
+     */
+    public static class SpinnerAccessor
+            extends BaseDataAccessor {
 
-        public IntegerEditTextAccessor(@NonNull final EditText view,
-                                       @NonNull final Field field) {
-            super(view, field);
+        @Override
+        public void setValue(@Nullable final String source,
+                             @NonNull final Field target) {
+            Spinner spinner = target.getView();
+            String value = target.format(source);
+            for (int i = 0; i < spinner.getCount(); i++) {
+                if (spinner.getItemAtPosition(i).equals(value)) {
+                    spinner.setSelection(i);
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void setValue(@NonNull final Field source,
+                             @NonNull final Bundle target) {
+            target.putString(source.mColumn, getValue(source));
+        }
+
+        @Override
+        public void setValue(@NonNull final Field source,
+                             @NonNull final DataManager target) {
+            target.putString(source.mColumn, getValue(source));
+        }
+
+        @Override
+        @NonNull
+        public String getValue(@NonNull final Field source) {
+            if (source.formatter == null) {
+                return getSpinnerValue(source);
+            } else {
+                return source.formatter.extract(source, getSpinnerValue(source));
+            }
+        }
+
+        /**
+         * Get the raw String value from the Spinner.
+         *
+         * @param source Field to read.
+         *
+         * @return raw String
+         */
+        @NonNull
+        private String getSpinnerValue(@NonNull final Field source) {
+            Spinner spinner = source.getView();
+            Object selItem = spinner.getSelectedItem();
+            if (selItem != null) {
+                return selItem.toString().trim();
+            } else {
+                return "";
+            }
         }
     }
 
     /**
      * Checkable accessor. Attempt to convert data to a boolean when setting to the Field.
      * <p>
-     * Supports {@link FieldFormatter#format} only. Output is <strong>strictly</strong> {@code Boolean}.
+     * Supports {@link FieldFormatter#format} only.
+     * Output is <strong>strictly</strong> {@code Boolean}.
      * <p>
      * {@link Checkable} covers more then just a Checkbox:
      * <ul>
@@ -925,6 +1018,48 @@ public class Fields {
         public Boolean getValue(@NonNull final Field source) {
             Checkable cb = source.getView();
             return cb.isChecked();
+        }
+    }
+
+    /**
+     * RatingBar accessor.
+     * <p>
+     * Supports {@link FieldFormatter#format} only.
+     * Output is <strong>strictly</strong> {@code Float}.
+     */
+    public static class RatingBarAccessor
+            extends BaseDataAccessor {
+
+        @Override
+        public void setValue(@Nullable final String source,
+                             @NonNull final Field target) {
+            RatingBar bar = target.getView();
+            float rating;
+            try {
+                rating = Float.parseFloat(target.format(source));
+            } catch (NumberFormatException ignored) {
+                rating = 0.0f;
+            }
+            bar.setRating(rating);
+        }
+
+        @Override
+        public void setValue(@NonNull final Field source,
+                             @NonNull final Bundle target) {
+            target.putFloat(source.mColumn, getValue(source));
+        }
+
+        @Override
+        public void setValue(@NonNull final Field source,
+                             @NonNull final DataManager target) {
+            target.putFloat(source.mColumn, getValue(source));
+        }
+
+        @NonNull
+        @Override
+        public Float getValue(@NonNull final Field source) {
+            RatingBar bar = source.getView();
+            return bar.getRating();
         }
     }
 
@@ -1006,133 +1141,9 @@ public class Fields {
         }
     }
 
-    /**
-     * RatingBar accessor.
-     * <p>
-     * Supports {@link FieldFormatter}.
-     */
-    public static class RatingBarAccessor
-            extends BaseDataAccessor {
-
-        @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            RatingBar bar = target.getView();
-            float rating;
-            try {
-                rating = Float.parseFloat(target.format(source));
-            } catch (NumberFormatException ignored) {
-                rating = 0.0f;
-            }
-            bar.setRating(rating);
-        }
-
-        @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            RatingBar bar = source.getView();
-            if (source.formatter != null) {
-                String value = source.formatter.extract(source, String.valueOf(bar.getRating()));
-                target.putString(source.mColumn, value);
-            } else {
-                target.putFloat(source.mColumn, bar.getRating());
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            RatingBar bar = source.getView();
-            if (source.formatter != null) {
-                String value = source.formatter.extract(source, String.valueOf(bar.getRating()));
-                target.putString(source.mColumn, value);
-            } else {
-                target.putFloat(source.mColumn, bar.getRating());
-            }
-        }
-
-        @NonNull
-        @Override
-        public Object getValue(@NonNull final Field source) {
-            RatingBar bar = source.getView();
-            if (source.formatter != null) {
-                return source.formatter.extract(source, String.valueOf(bar.getRating()));
-            } else {
-                return bar.getRating();
-            }
-        }
-    }
 
     /**
-     * Spinner accessor. Assumes the Spinner contains a list of Strings and
-     * sets the spinner to the matching item.
-     * <p>
-     * Supports {@link FieldFormatter}.
-     */
-    public static class SpinnerAccessor
-            extends BaseDataAccessor {
-
-        @Override
-        public void setValue(@Nullable final String source,
-                             @NonNull final Field target) {
-            Spinner spinner = target.getView();
-            String value = target.format(source);
-            for (int i = 0; i < spinner.getCount(); i++) {
-                if (spinner.getItemAtPosition(i).equals(value)) {
-                    spinner.setSelection(i);
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final Bundle target) {
-            if (source.formatter != null) {
-                target.putString(source.mColumn, getValue(source));
-            } else {
-                target.putString(source.mColumn, getSpinnerValue(source));
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Field source,
-                             @NonNull final DataManager target) {
-            if (source.formatter != null) {
-                target.putString(source.mColumn, getValue(source));
-            } else {
-                target.putString(source.mColumn, getSpinnerValue(source));
-            }
-        }
-
-        @Override
-        @NonNull
-        public String getValue(@NonNull final Field source) {
-            return source.extract(getSpinnerValue(source));
-        }
-
-        /**
-         * Get the raw String value from the Spinner.
-         *
-         * @param source Field to read.
-         *
-         * @return raw String
-         */
-        @NonNull
-        private String getSpinnerValue(@NonNull final Field source) {
-            Spinner spinner = source.getView();
-            Object selItem = spinner.getSelectedItem();
-            if (selItem != null) {
-                return selItem.toString().trim();
-            } else {
-                return "";
-            }
-        }
-    }
-
-
-    /**
-     * Formatter for date fields.
+     * Formatter/Extractor for date fields.
      * <p>
      * Can be shared among multiple fields.
      * Uses the context/locale from the field itself.
@@ -1503,8 +1514,7 @@ public class Fields {
         private Field(@NonNull final Fields fields,
                       @IdRes final int fieldId,
                       @NonNull final String sourceColumn,
-                      @NonNull final String visibilityGroupName,
-                      @Nullable final FieldDataAccessor customDataAccessor) {
+                      @NonNull final String visibilityGroupName) {
 
             mFields = new WeakReference<>(fields);
             id = fieldId;
@@ -1521,10 +1531,7 @@ public class Fields {
             }
 
             // Set the appropriate accessor
-            if (customDataAccessor != null) {
-                mFieldDataAccessor = customDataAccessor;
-
-            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
+            if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()) {
                 // this was nasty... a MaterialButton implements Checkable,
                 // but you have to double check (pardon the pun) whether it IS checkable.
                 mFieldDataAccessor = new CheckableAccessor();
@@ -1580,7 +1587,7 @@ public class Fields {
                               @IdRes final int fieldId,
                               @NonNull final String sourceColumn,
                               @NonNull final String visibilityGroupName) {
-            return new Field(fields, fieldId, sourceColumn, visibilityGroupName, null);
+            return new Field(fields, fieldId, sourceColumn, visibilityGroupName);
         }
 
         @Override
@@ -1821,18 +1828,6 @@ public class Fields {
                 return source;
             }
             return formatter.format(this, source);
-        }
-
-        /**
-         * Wrapper to call the formatters extract() method if present, or just return the raw value.
-         */
-        @SuppressWarnings("WeakerAccess")
-        @NonNull
-        public String extract(@NonNull final String source) {
-            if (formatter == null) {
-                return source;
-            }
-            return formatter.extract(this, source);
         }
     }
 }

@@ -14,12 +14,13 @@ import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 
 /**
  * @param <T> type of the actual Object that is represented by a row in the selection list.
  *            Right now, this is ALWAYS {@code String} and we use {@link #toString()}.
  *            Using another type is bound to bring up issues.
- *            This limitation is due to {@link Fields.Field#format}.
+ *            This limitation is due to {@link Field#format}.
  */
 public class FieldPicker<T>
         extends ValuePicker {
@@ -36,7 +37,7 @@ public class FieldPicker<T>
      */
     public FieldPicker(@NonNull final Context context,
                        @Nullable final String title,
-                       @NonNull final Fields.Field field,
+                       @NonNull final Field field,
                        @NonNull final List<T> list) {
         super(context, title, null);
 
@@ -58,7 +59,7 @@ public class FieldPicker<T>
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final Fields.Field mField;
+        private final Field mField;
         @NonNull
         private final PickListener<T> mListener;
         private int mPreSelectedPosition = -1;
@@ -72,7 +73,7 @@ public class FieldPicker<T>
          * @param listener where to send the result back to
          */
         FieldListAdapter(@NonNull final Context context,
-                         @NonNull final Fields.Field field,
+                         @NonNull final Field field,
                          @NonNull final List<T> items,
                          @NonNull final PickListener<T> listener) {
 

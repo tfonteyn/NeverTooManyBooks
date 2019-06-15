@@ -153,7 +153,7 @@ public class GoodreadsSearchResultsActivity
     private void doItemClick(@NonNull final Holder holder) {
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
-        Logger.debugWithStackTrace(this, "doItemClick", msg);
+        Logger.warnWithStackTrace(this, "doItemClick", msg);
         UserMessage.showUserMessage(mListView, msg);
     }
 

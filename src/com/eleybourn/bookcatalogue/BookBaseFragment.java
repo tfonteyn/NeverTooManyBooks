@@ -434,16 +434,17 @@ public abstract class BookBaseFragment
         }
     }
 
-    static final class ViewUtils {
+    static final class FocusSettings {
 
-        private ViewUtils() {
+        private FocusSettings() {
         }
 
         /**
          * Ensure that next up/down/left/right View is visible for all
          * sub-views of the passed view.
+         * Sets the nextFocusX attributes on the visible fields.
          */
-        static void fixFocusSettings(@NonNull final View root) {
+        static void fix(@NonNull final View root) {
             try {
                 final INextView getDown = new INextView() {
                     @Override
@@ -509,7 +510,7 @@ public abstract class BookBaseFragment
             } catch (RuntimeException e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
-                Logger.error(ViewUtils.class, e);
+                Logger.error(FocusSettings.class, e);
             }
         }
 

@@ -62,17 +62,17 @@ public abstract class BaseSettingsFragment
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
                     // This re-surfaces sometimes after a careless dev. change.
-                    Logger.debugWithStackTrace(this, "getSummary",
-                                               "MultiSelectListPreference:"
-                                                       + "\n s=" + s
-                                                       + "\n key=" + msp.getKey()
-                                                       + "\n entries="
-                                                       + Csv.join(",",
-                                                                  Arrays.asList(msp.getEntries()))
-                                                       + "\n entryValues="
-                                                       + Csv.join(",", Arrays.asList(
-                                                       msp.getEntryValues()))
-                                                       + "\n values=" + msp.getValues()
+                    Logger.warnWithStackTrace(this, "getSummary",
+                                              "MultiSelectListPreference:"
+                                                      + "\n s=" + s
+                                                      + "\n key=" + msp.getKey()
+                                                      + "\n entries="
+                                                      + Csv.join(",",
+                                                                 Arrays.asList(msp.getEntries()))
+                                                      + "\n entryValues="
+                                                      + Csv.join(",", Arrays.asList(
+                                                      msp.getEntryValues()))
+                                                      + "\n values=" + msp.getValues()
 
                     );
                 } else {
@@ -118,7 +118,6 @@ public abstract class BaseSettingsFragment
     /**
      * Force children to adopt this pattern / to not forget to set a result.
      * THEY STILL MUST CALL IT THEMSELVES!
-     *
      */
     abstract void prepareResult();
 

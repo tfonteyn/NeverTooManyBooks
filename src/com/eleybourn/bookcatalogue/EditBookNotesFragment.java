@@ -70,8 +70,8 @@ public class EditBookNotesFragment
 
         // do other stuff here that might affect the view.
 
-        // Fix up the views
-        ViewUtils.fixFocusSettings(requireView());
+        // Fix the focus order for the views
+        FocusSettings.fix(requireView());
     }
 
     @CallSuper

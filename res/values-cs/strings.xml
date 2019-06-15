@@ -641,4 +641,5 @@
     </string>
     <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
     <string name="pt_hint_layer_type">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
+    <string name="pt_thumbnail_cropper_layer_type">Oříznout ‘Layer Type’</string>
 </resources>

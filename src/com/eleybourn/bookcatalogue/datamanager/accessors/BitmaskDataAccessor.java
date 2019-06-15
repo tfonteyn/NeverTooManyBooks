@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.datamanager.Datum;
+
 /**
  * A bitmask is read/written to the database as a long.
  * We need it as a boolean.
@@ -13,7 +15,7 @@ import androidx.annotation.NonNull;
  * A 'set will store it back as a long with the bit set/reset.
  */
 public class BitmaskDataAccessor
-        implements DataAccessor<Boolean> {
+        implements DataAccessor {
 
     /** key of the real data object. */
     private final String mKey;
@@ -40,11 +42,11 @@ public class BitmaskDataAccessor
 
     @Override
     public void put(@NonNull final Bundle rawData,
-                    @NonNull final Boolean value) {
+                    @NonNull final Object value) {
 
         long bits = rawData.getLong(mKey);
 
-        if (value) {
+        if (Datum.toBoolean(value)) {
             // set the bit
             bits |= mBitmask;
         } else {

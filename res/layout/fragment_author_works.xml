@@ -24,5 +24,4 @@
     If there are a lot of items, the thumb will get quite small. Known issue:
     https://issuetracker.google.com/issues/64729576
     -->
-    <requestFocus />
 </androidx.recyclerview.widget.RecyclerView>

@@ -554,5 +554,6 @@
         skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.
     </string>
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
+    <string name="pt_thumbnail_cropper_layer_type">przytnij obraz ‘Layer Type’</string>
 
 </resources>

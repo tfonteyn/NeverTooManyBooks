@@ -10,7 +10,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * The database value is stored as an int (0 or 1). Transform to/from boolean
  */
 public class BooleanDataAccessor
-        implements DataAccessor<Boolean> {
+        implements DataAccessor {
 
     /** this is the ACTUAL key into the 'rawData' object. */
     private final String mKey;
@@ -34,8 +34,8 @@ public class BooleanDataAccessor
 
     @Override
     public void put(@NonNull final Bundle rawData,
-                    @NonNull final Boolean value) {
-        rawData.putBoolean(mKey, value);
+                    @NonNull final Object value) {
+        rawData.putBoolean(mKey, Datum.toBoolean(value));
     }
 
     @Override

@@ -166,18 +166,27 @@ public class CsvImporter
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
         // (i.e. if not an update)
 
-        // need either ID or UUID
-        requireColumnOrThrow(book, DBDefinitions.KEY_ID, DBDefinitions.KEY_BOOK_UUID);
+        // need either UUID or ID
+        requireColumnOrThrow(book,
+                             // preferred
+                             DBDefinitions.KEY_BOOK_UUID,
+                             // but an ID is also ok.
+                             DBDefinitions.KEY_ID);
 
         // need some type of author name.
         requireColumnOrThrow(book,
-                             CsvExporter.CSV_COLUMN_AUTHORS,
                              // aka author_details: preferred one as used in latest versions
-
+                             CsvExporter.CSV_COLUMN_AUTHORS,
+                            // alternative column names we handle.
                              DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
                              DBDefinitions.KEY_AUTHOR_FORMATTED,
                              OLD_STYLE_AUTHOR_NAME
         );
+
+        // Do NOT force/check for a title.
+        // We accept UPDATED books where the incoming row does not have a title.
+        //requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
+
 
         final boolean updateOnlyIfNewer;
         if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
@@ -223,9 +232,11 @@ public class CsvImporter
 
                 // Validate IDs
                 BookIds bids = new BookIds(book);
+
                 // check title
                 requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
+
                 // Lookup id's etc, but do not write to db! Storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
@@ -243,6 +254,7 @@ public class CsvImporter
                     handleBookshelves(mDb, book);
                 }
 
+                // ready to update/insert into the database
                 try {
                     // Save the original ID from the file for use in checking for images
                     long bookIdFromFile = bids.bookId;
@@ -321,16 +333,15 @@ public class CsvImporter
             return mDb.insertBook(book);
         }
 
-        // we have UUID or ID, so it's an update
-
-        // Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
+        // we have a UUID or ID. We'll check if we already have the book.
         boolean exists = false;
 
+        // Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
         if (hasUuid) {
-            long tmp_id = mDb.getBookIdFromUuid(bids.uuid);
-            if (tmp_id != 0) {
+            long bookId = mDb.getBookIdFromUuid(bids.uuid);
+            if (bookId != 0) {
                 // use the id from the existing book, as found by UUID lookup
-                bids.bookId = tmp_id;
+                bids.bookId = bookId;
                 exists = true;
             } else {
                 // We have a UUID, but book does not exist. We will create a book.
@@ -655,6 +666,7 @@ public class CsvImporter
      */
     private static class BookIds {
 
+        @NonNull
         final String uuid;
         long bookId;
         boolean hasNumericId;

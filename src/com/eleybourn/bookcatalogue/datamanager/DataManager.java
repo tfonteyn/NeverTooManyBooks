@@ -83,6 +83,9 @@ public class DataManager {
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
 
+    /** Datum Validators. Key is the same as used for mRawData access. */
+    private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
+
     /** The last validator exception caught by this object. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
 
@@ -92,8 +95,6 @@ public class DataManager {
     /** Storage for the {@link Datum} objects; the data-related code. */
     private final DatumMap mDatumMap = new DatumMap();
 
-    /** Validators. Key is the same as used for mRawData access. */
-    private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
 
     /**
      * Add a validator for the specified key.
@@ -159,7 +160,7 @@ public class DataManager {
 
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.debugWithStackTrace(this, "putAll",
+                Logger.warnWithStackTrace(this, "putAll",
                                            "key=`" + key + '`',
                                            "value=" + value);
                 if (value != null) {
@@ -463,6 +464,43 @@ public class DataManager {
     }
 
     /**
+     * @param key Key of object
+     *
+     * @return {@code true} if the underlying data contains the specified key.
+     */
+    public boolean containsKey(@NonNull final String key) {
+        return mDatumMap.getOrNew(key).isPresent(mRawData);
+    }
+
+    /**
+     * @return the current set of data.
+     */
+    @NonNull
+    public Set<String> keySet() {
+        return mDatumMap.keySet();
+    }
+
+    /**
+     * Remove the specified key from this collection.
+     *
+     * @param key Key of data to remove.
+     */
+    public void remove(@NonNull final String key) {
+        mDatumMap.remove(key);
+        mRawData.remove(key);
+    }
+
+    /**
+     * Erase everything in this instance.
+     */
+    public void clear() {
+        mRawData.clear();
+        mDatumMap.clear();
+        mValidationExceptions.clear();
+        mCrossValidators.clear();
+    }
+
+    /**
      * Loop through and apply validators.
      * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
@@ -536,43 +574,6 @@ public class DataManager {
 //        }
 
         return isOk;
-    }
-
-    /**
-     * @param key Key of object
-     *
-     * @return {@code true} if the underlying data contains the specified key.
-     */
-    public boolean containsKey(@NonNull final String key) {
-        return mDatumMap.getOrNew(key).isPresent(mRawData);
-    }
-
-    /**
-     * Remove the specified key from this collection.
-     *
-     * @param key Key of data to remove.
-     */
-    public void remove(@NonNull final String key) {
-        mDatumMap.remove(key);
-        mRawData.remove(key);
-    }
-
-    /**
-     * @return the current set of data.
-     */
-    @NonNull
-    public Set<String> keySet() {
-        return mDatumMap.keySet();
-    }
-
-    /**
-     * Erase everything in this instance.
-     */
-    public void clear() {
-        mRawData.clear();
-        mDatumMap.clear();
-        mValidationExceptions.clear();
-        mCrossValidators.clear();
     }
 
     /**

@@ -42,10 +42,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
-            >
-
-            <requestFocus />
-        </Button>
+            />
 
         <TextView
             android:id="@+id/lbl_title"

@@ -70,7 +70,7 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Zuschneiden Schicht Typ</string>
+    <string name="pt_thumbnail_cropper_layer_type">Zuschneiden ‘Layer Type’</string>
     <string name="pt_hint_layer_type">Behalten Sie diese Einstellung bei \‘Standardeinstellung\’ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie \‘Software\’ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie \‘Hardware\’ für weniger Sicherheit, aber schneller.</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Standardeinstellung verwenden</item>
