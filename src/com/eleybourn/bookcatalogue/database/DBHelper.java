@@ -26,9 +26,6 @@ import com.eleybourn.bookcatalogue.database.definitions.IndexDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -355,7 +352,7 @@ public class DBHelper
         String name;
         String body;
 
-        /**
+        /*
          * Deleting a {@link Bookshelf).
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -370,7 +367,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Updating a {@link Bookshelf}.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -387,7 +384,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-//        /**
+//        /*
 //         * Deleting an {@link Author). Currently not possible to delete an Author directly.
 //         *
 //         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -402,7 +399,7 @@ public class DBHelper
 //        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
 //        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Updating an {@link Author).
          *
          * This is for both actual Books, and for any TocEntry's they have done in anthologies.
@@ -431,7 +428,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Deleting a {@link Series).
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -446,7 +443,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Update a {@link Series}
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -463,7 +460,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Deleting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -478,7 +475,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Updating a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -493,7 +490,7 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
+        /*
          * Inserting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
@@ -509,7 +506,7 @@ public class DBHelper
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
 
-        /**
+        /*
          * Deleting a {@link Book).
          *
          * Delete the book from FTS.
@@ -525,7 +522,7 @@ public class DBHelper
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
 
-        /**
+        /*
          * If the ISBN of a {@link Book) is changed, reset external id's and sync dates.
          */
         name = "after_update_of_" + DOM_BOOK_ISBN + "_on_" + TBL_BOOKS;

@@ -114,7 +114,7 @@ public class Editions
          *
          * @param isfdbId of the book link we found
          */
-        public Edition(final long isfdbId) {
+        Edition(final long isfdbId) {
             this.isfdbId = isfdbId;
             doc = null;
         }
@@ -125,8 +125,8 @@ public class Editions
          * @param isfdbId of the book we found
          * @param doc     of the book we found
          */
-        public Edition(final long isfdbId,
-                       @Nullable final Document doc) {
+        Edition(final long isfdbId,
+                @Nullable final Document doc) {
             this.isfdbId = isfdbId;
             this.doc = doc;
         }

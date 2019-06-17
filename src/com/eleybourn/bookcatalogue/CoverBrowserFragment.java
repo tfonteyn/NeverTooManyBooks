@@ -83,11 +83,11 @@ public class CoverBrowserFragment
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
     @Nullable
-    private GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_SMALL);
+    private final GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_SMALL);
     /** The switcher will be used to display larger versions. */
     private ImageSwitcher mImageSwitcherView;
     @SuppressWarnings("FieldCanBeLocal")
-    private int mImageSwitcherScaleFactor = ImageUtils.SCALE_X_LARGE;
+    private final int mImageSwitcherScaleFactor = ImageUtils.SCALE_X_LARGE;
     /** Prior to showing a preview, the switcher can show text updates. */
     private TextView mStatusTextView;
     private CoverBrowserViewModel mModel;
@@ -97,7 +97,7 @@ public class CoverBrowserFragment
 
     /**
      * WARNING: LibraryThing is in fact the only site searched for alternative editions!
-     * See {@link CoverBrowserViewModel.GetEditionsTask}.
+     * See {@link CoverBrowserViewModel} GetEditionsTask.
      * <p>
      * Images themselves are searched from the 'searchSites' as usual.
      *
@@ -264,7 +264,7 @@ public class CoverBrowserFragment
     }
 
     /**
-     * handle result from the {@link CoverBrowserViewModel.GetGalleryImageTask}.
+     * handle result from the {@link CoverBrowserViewModel} GetGalleryImageTask.
      * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      *
@@ -309,7 +309,7 @@ public class CoverBrowserFragment
     }
 
     /**
-     * handle result from the {@link CoverBrowserViewModel.GetSwitcherImageTask}.
+     * handle result from the {@link CoverBrowserViewModel} GetSwitcherImageTask.
      *
      * @param switcherImageFileSpec the file we got.
      */
@@ -375,7 +375,7 @@ public class CoverBrowserFragment
         }
     }
 
-    public class GalleryAdapter
+    class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
         private final int mWidth;

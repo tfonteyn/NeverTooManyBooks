@@ -132,7 +132,7 @@ public abstract class BookBaseFragment
 
     /** Convenience method. */
     @NonNull
-    protected Fields getFields() {
+    Fields getFields() {
         return mFields;
     }
 
@@ -151,7 +151,7 @@ public abstract class BookBaseFragment
      * <p>
      * Note this is NOT where we set values.
      */
-    protected void initFields() {
+    void initFields() {
     }
 
     /**
@@ -202,7 +202,7 @@ public abstract class BookBaseFragment
      * be handled in overrides, calling super as the first step.
      */
     @CallSuper
-    protected void onLoadFieldsFromBook() {
+    void onLoadFieldsFromBook() {
         getFields().setAllFrom(mBookBaseFragmentModel.getBook());
     }
 
@@ -423,8 +423,8 @@ public abstract class BookBaseFragment
      * @param visibility to use
      * @param fields     list of fields to set visibility on
      */
-    protected void setVisibility(final int visibility,
-                                 @NonNull @IdRes final int... fields) {
+    void setVisibility(final int visibility,
+                       @NonNull @IdRes final int... fields) {
         View view = requireView();
         for (int fieldId : fields) {
             View field = view.findViewById(fieldId);

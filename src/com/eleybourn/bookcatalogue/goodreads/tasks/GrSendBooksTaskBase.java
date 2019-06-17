@@ -186,14 +186,14 @@ abstract class GrSendBooksTaskBase
          *
          * @return ID of related book.
          */
-        public long getBookId() {
+        long getBookId() {
             return mBookId;
         }
 
         /**
          * Resubmit this book and delete this event.
          */
-        public void retry(@NonNull final Context context) {
+        void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
             GrSendOneBookTask task = new GrSendOneBookTask(
                     context.getString(R.string.gr_send_book_to_goodreads, mBookId),

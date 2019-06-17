@@ -219,7 +219,7 @@ public class SearchAdminActivity
             return mFragmentList.size();
         }
 
-        public void add(@NonNull final FragmentHolder fragmentHolder) {
+        void add(@NonNull final FragmentHolder fragmentHolder) {
             mFragmentList.add(fragmentHolder);
         }
 

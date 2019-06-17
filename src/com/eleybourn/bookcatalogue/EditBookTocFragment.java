@@ -489,8 +489,8 @@ public class EditBookTocFragment
          *
          * @return the instance
          */
-        public static ConfirmToc newInstance(@NonNull final Bundle bookData,
-                                             final boolean hasOtherEditions) {
+        static ConfirmToc newInstance(@NonNull final Bundle bookData,
+                                      final boolean hasOtherEditions) {
             ConfirmToc frag = new ConfirmToc();
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
             frag.setArguments(bookData);
@@ -502,7 +502,7 @@ public class EditBookTocFragment
          *
          * @param listener the object to send the result to.
          */
-        public void setListener(@NonNull final ConfirmTocResults listener) {
+        void setListener(@NonNull final ConfirmTocResults listener) {
             mListener = new WeakReference<>(listener);
         }
 
@@ -618,8 +618,8 @@ public class EditBookTocFragment
          *
          * @return the instance
          */
-        public static EditTocEntry newInstance(TocEntry tocEntry,
-                                               final boolean hasMultipleAuthors) {
+        static EditTocEntry newInstance(TocEntry tocEntry,
+                                        final boolean hasMultipleAuthors) {
             EditTocEntry frag = new EditTocEntry();
             Bundle args = new Bundle();
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
@@ -633,7 +633,7 @@ public class EditBookTocFragment
          *
          * @param listener the object to send the result to.
          */
-        public void setListener(@NonNull final EditTocEntryResults listener) {
+        void setListener(@NonNull final EditTocEntryResults listener) {
             mListener = new WeakReference<>(listener);
         }
 

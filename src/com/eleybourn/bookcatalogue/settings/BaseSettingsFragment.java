@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.utils.Csv;
  * <p>
  * Uses OnSharedPreferenceChangeListener to dynamically update the summary for each preference.
  */
-public abstract class BaseSettingsFragment
+abstract class BaseSettingsFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 

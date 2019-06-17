@@ -1,8 +1,7 @@
 /**
  * Problem:
  * <p>
- * The Preferences in {@link androidx.preference} are limited to storing String and
- * Boolean data only..
+ * The Preferences in {@link androidx.preference} are limited to store String and Boolean data only.
  * <p>
  * Integer, Long, ... needs to be stored as String.
  * Examples:
@@ -24,29 +23,28 @@
  * <p>
  * So... bring in the classes of this package to transmogrify (Hi Calvin) between the two.
  * <p>
- * PPref
- * => Interface for all of them.
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PPref} => Interface for all of them.
  * <p>
- * PString
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PString}
  * => {@link androidx.preference.EditTextPreference}
- * PBoolean
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PBoolean}
  * => {@link androidx.preference.SwitchPreference}
  * <p>
- * PInteger
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PInteger}
  * => a value in a List-of-values used by {@link androidx.preference.ListPreference}
- * => an actual Integer (not used as such yet)
+ * => an actual {@code Integer} (not used as such yet)
  * <p>
- * PBitmask
- * => an integer used as a bitmask, used by {@link androidx.preference.MultiSelectListPreference}
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PBitmask}
+ * => an {@code Integer} used as a bitmask, used by {@link androidx.preference.MultiSelectListPreference}
  * <p>
- * PInt
- * => Interface implemented by PInteger, PBitmask to 'set' their values as {@code Integer}
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PInt}
+ * => {@code Interface} implemented by PInteger, PBitmask to 'set' their values as {@code Integer}
  * <p>
- * PIntList
- * => {@code List<Integer>}: an ordered list of Integer values. Stored as a CSV String
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PIntList}
+ * => {@code List<Integer>}: an ordered list of {@code Integer} values. Stored as a CSV String
  * <p>
- * PCollection
- * => Interface implemented by PIntList (and potentially future List/Set classes) to 'set'
+ * {@link com.eleybourn.bookcatalogue.booklist.prefs.PCollection}
+ * => Interface implemented by {@code PIntList} (and potentially future List/Set classes) to 'set'
  * the value as {@code Set<String>}
  */
 package com.eleybourn.bookcatalogue.booklist.prefs;

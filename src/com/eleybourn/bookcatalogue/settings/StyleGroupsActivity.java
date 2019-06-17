@@ -71,13 +71,13 @@ public class StyleGroupsActivity
     private static final String BKEY_LIST = "list";
 
     /** the rows. */
-    protected ArrayList<GroupWrapper> mList;
+    private ArrayList<GroupWrapper> mList;
 
     /** The adapter for the list. */
-    protected RecyclerViewAdapterBase mListAdapter;
+    private RecyclerViewAdapterBase mListAdapter;
     /** The View for the list. */
-    protected RecyclerView mListView;
-    protected LinearLayoutManager mLayoutManager;
+    private RecyclerView mListView;
+    private LinearLayoutManager mLayoutManager;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -141,7 +141,7 @@ public class StyleGroupsActivity
      * Construct the list by wrapping each group individually.
      */
     @NonNull
-    protected ArrayList<GroupWrapper> getList() {
+    private ArrayList<GroupWrapper> getList() {
         // Build an array list with the groups from the style
         ArrayList<GroupWrapper> groupWrappers = new ArrayList<>(mStyle.groupCount());
         for (BooklistGroup group : mStyle.getGroups()) {
@@ -180,7 +180,7 @@ public class StyleGroupsActivity
         super.onBackPressed();
     }
 
-    public void saveStyleSettings() {
+    private void saveStyleSettings() {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
         // Loop through ALL groups
@@ -233,7 +233,7 @@ public class StyleGroupsActivity
 
         /** The actual group. When parceling, we only parcel the kind. */
         @NonNull
-        public final BooklistGroup group;
+        final BooklistGroup group;
         /* Needed to reconstruct after parceling. */
         @NonNull
         final String uuid;
@@ -241,7 +241,7 @@ public class StyleGroupsActivity
         final boolean isUserDefinedStyle;
 
         /** Whether this group is present in the style. */
-        public boolean present;
+        boolean present;
 
         /** Constructor. */
         GroupWrapper(@NonNull final BooklistGroup group,

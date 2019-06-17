@@ -99,7 +99,7 @@ public abstract class EditBookBaseFragment<T>
      *
      * @param bundle to load values from
      */
-    protected void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
+    void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
         // Check if we have any data, for example from a Search
         if (bundle != null) {
             Bundle rawData = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
@@ -145,7 +145,7 @@ public abstract class EditBookBaseFragment<T>
      * Override as needed.
      */
     @CallSuper
-    protected void onSaveFieldsToBook() {
+    void onSaveFieldsToBook() {
         Fields fields = getFields();
         // validate the fields
         if (fields.validate(new Bundle())) {

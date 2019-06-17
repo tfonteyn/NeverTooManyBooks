@@ -46,7 +46,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
  * FIXME: ... re-test and see why the progress stops when run on all books.
  * Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
-public class UpdateFieldsFromInternetFragment
+class UpdateFieldsFromInternetFragment
         extends Fragment {
 
     /** Fragment manager tag. */

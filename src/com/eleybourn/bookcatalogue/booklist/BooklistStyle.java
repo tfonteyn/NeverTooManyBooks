@@ -1110,7 +1110,7 @@ public class BooklistStyle
         }
 
         @NonNull
-        public List<BooklistGroup> getGroups() {
+        List<BooklistGroup> getGroups() {
             return mGroups;
         }
 
@@ -1133,7 +1133,7 @@ public class BooklistStyle
             super.clear();
         }
 
-        public int size() {
+        int size() {
             return get().size();
         }
 
@@ -1149,7 +1149,7 @@ public class BooklistStyle
             dest.writeList(mGroups);
         }
 
-        public void add(@NonNull final BooklistGroup group) {
+        void add(@NonNull final BooklistGroup group) {
             mGroups.add(group);
             super.add(group.getKind());
         }
@@ -1165,7 +1165,7 @@ public class BooklistStyle
          *
          * @param kind of group to remove
          */
-        public void remove(final int kind) {
+        void remove(final int kind) {
             Iterator<BooklistGroup> it = mGroups.iterator();
             while (it.hasNext()) {
                 int groupKind = it.next().getKind();

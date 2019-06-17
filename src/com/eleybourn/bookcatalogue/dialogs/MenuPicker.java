@@ -104,7 +104,7 @@ public class MenuPicker<T>
             mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
         }
 
-        public void setMenu(@NonNull final Menu menu) {
+        void setMenu(@NonNull final Menu menu) {
             mList.clear();
             for (int i = 0; i < menu.size(); i++) {
                 mList.add(menu.getItem(i));

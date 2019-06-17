@@ -44,11 +44,9 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -344,7 +342,7 @@ public class EditBookFragment
             return mFragmentList.size();
         }
 
-        public void add(@NonNull final FragmentHolder fragmentHolder) {
+        void add(@NonNull final FragmentHolder fragmentHolder) {
             mFragmentList.add(fragmentHolder);
         }
 
@@ -377,29 +375,33 @@ public class EditBookFragment
             //noinspection ConstantConditions
             mFragment = fm.findFragmentByTag(tag);
             if (mFragment == null) {
-                if (EditBookFieldsFragment.TAG.equals(tag)) {
-                    mFragment = new EditBookFieldsFragment();
+                switch (tag) {
+                    case EditBookFieldsFragment.TAG:
+                        mFragment = new EditBookFieldsFragment();
+                        break;
 
-                } else if (EditBookPublicationFragment.TAG.equals(tag)) {
-                    mFragment = new EditBookPublicationFragment();
+                    case EditBookPublicationFragment.TAG:
+                        mFragment = new EditBookPublicationFragment();
+                        break;
 
-                } else if (EditBookNotesFragment.TAG.equals(tag)) {
-                    mFragment = new EditBookNotesFragment();
+                    case EditBookNotesFragment.TAG:
+                        mFragment = new EditBookNotesFragment();
+                        break;
 
-                } else if (EditBookTocFragment.TAG.equals(tag)) {
-                    mFragment = new EditBookTocFragment();
-
+                    case EditBookTocFragment.TAG:
+                        mFragment = new EditBookTocFragment();
+                        break;
                 }
             }
         }
 
         @NonNull
-        public String getTitle() {
+        String getTitle() {
             return mTitle;
         }
 
         @NonNull
-        public Fragment getFragment() {
+        Fragment getFragment() {
             return mFragment;
         }
     }

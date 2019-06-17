@@ -210,7 +210,7 @@ public class TocEntry
     /**
      * @param type 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
      */
-    public void setType(final char type) {
+    private void setType(final char type) {
         if (BuildConfig.DEBUG) {
             if (type != TYPE_BOOK && type != TYPE_TOC) {
                 throw new IllegalTypeException("type=`" + type + '`');
@@ -324,7 +324,7 @@ public class TocEntry
      *
      * @return the locale of the TocEntry
      */
-    public Locale getLocale() {
+    private Locale getLocale() {
         return LocaleUtils.getSystemLocale();
     }
 

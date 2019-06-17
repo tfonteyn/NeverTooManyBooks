@@ -170,7 +170,7 @@ public class EditBookshelfListActivity
         @NonNull
         final TextView nameView;
 
-        public Holder(@NonNull final View itemView) {
+        Holder(@NonNull final View itemView) {
             super(itemView);
 
             nameView = itemView.findViewById(R.id.name);
@@ -182,7 +182,7 @@ public class EditBookshelfListActivity
      * <p>
      * Displays the name in a TextView.
      */
-    public class BookshelfAdapter
+    class BookshelfAdapter
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull

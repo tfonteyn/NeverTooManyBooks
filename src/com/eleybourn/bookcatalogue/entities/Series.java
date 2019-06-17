@@ -549,7 +549,7 @@ public class Series
         /**
          * @param name of series
          */
-        public void setName(@NonNull final String name) {
+        void setName(@NonNull final String name) {
             mName = name;
         }
 
@@ -566,7 +566,7 @@ public class Series
          *
          * @param position the position/number of a book in this series; can be {@code null}
          */
-        public void setPosition(@Nullable final String position) {
+        void setPosition(@Nullable final String position) {
             mPosition = cleanupSeriesPosition(position);
         }
     }

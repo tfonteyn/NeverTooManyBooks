@@ -34,13 +34,13 @@ public abstract class BRBaseActivity
         extends BaseActivity {
 
     /** Fragment manager tag. */
-    public static final String TAG = "BRBaseActivity";
+    private static final String TAG = "BRBaseActivity";
 
     private static final String BKEY_ROOT_PATH = TAG + ":root";
     private static final String BKEY_FILE_LIST = TAG + ":list";
     @NonNull
     private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
-    protected File mRootDir;
+    File mRootDir;
     RecyclerView mListView;
     /** User clicks on the 'up' button. */
     private final View.OnClickListener onPathUpClickListener = v -> {
@@ -51,7 +51,7 @@ public abstract class BRBaseActivity
         }
         onPathChanged(new File(parent));
     };
-    FileDetailsAdapter mAdapter;
+    private FileDetailsAdapter mAdapter;
     private TextView mCurrentFolderView;
     private final TaskListener<Object, ArrayList<FileDetails>> mListener =
             new TaskListener<Object, ArrayList<FileDetails>>() {
@@ -101,7 +101,7 @@ public abstract class BRBaseActivity
                                              | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
-    protected void setupList(@Nullable final Bundle args) {
+    void setupList(@Nullable final Bundle args) {
 
         // populate with the existing content if we have it
         if (args != null) {
@@ -221,7 +221,7 @@ public abstract class BRBaseActivity
     /**
      * List Adapter for FileDetails objects.
      */
-    protected class FileDetailsAdapter
+    class FileDetailsAdapter
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull

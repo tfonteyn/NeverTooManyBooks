@@ -292,7 +292,7 @@ public class BooksOnBookshelf
     /**
      * @return the position that reflects the current bookshelf.
      */
-    public int initBookshelfNameList() {
+    private int initBookshelfNameList() {
         mBookshelfNameList.clear();
         mBookshelfNameList.add(getString(R.string.bookshelf_all_books));
         // default to 'All Books'
@@ -353,7 +353,7 @@ public class BooksOnBookshelf
      * @param isFullRebuild Indicates whole table structure needs rebuild,
      *                      versus just do a reselect of underlying data
      */
-    public void initBookList(final boolean isFullRebuild) {
+    private void initBookList(final boolean isFullRebuild) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             // with stack trace, so we know who called us.
             Logger.debugWithStackTrace(this, "initBookList",
@@ -480,7 +480,7 @@ public class BooksOnBookshelf
 
         // all set, we can close the old list
         if (oldList != null) {
-            if (mModel.getListCursor().getBuilder() != oldList.getBuilder()) {
+            if (!mModel.getListCursor().getBuilder().equals(oldList.getBuilder())) {
                 oldList.getBuilder().close();
             }
             oldList.close();
@@ -501,15 +501,7 @@ public class BooksOnBookshelf
         Tracker.enterOnResume(this);
         super.onResume();
 
-        // don't build the list needlessly
-        if (App.isRecreating()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.debugExit("onResume", "isRecreating",
-                                 LocaleUtils.toDebugString(this));
-            }
-            return;
-        }
-        // don't build the list needlessly
+        // get out, nothing to do.
         if (isFinishing() || isDestroyed()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "onResume",
@@ -519,56 +511,49 @@ public class BooksOnBookshelf
             return;
         }
 
-        // Update the list of bookshelves + set the current bookshelf.
-        boolean bookshelfChanged = populateBookShelfSpinner();
-
-        // start the task that will provide the cursor/adapter/list.
-        initBookList(true);
-
-        // this commented section was/is an attempt to prevent a full rebuild...
-        // ... but is it worth it?
-
-//        // If we got here after onActivityResult, see if we need to force a rebuild.
-//        Boolean fullOrPartialRebuild = mModel.isForceFullRebuild();
-//
-//        if (bookshelfChanged) {
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-//                Logger.debug(this, "onResume",
-//                             "bookshelf changed, fullRebuild: true");
-//            }
-//            initBookList(true);
-//
-//        } else if (fullOrPartialRebuild != null) {
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-//                Logger.debug(this, "onResume",
-//                             "fullOrPartialRebuild=" + fullOrPartialRebuild);
-//            }
-//            // Build the book list according to onActivityResult outcome
-//            initBookList(fullOrPartialRebuild);
-//
-//        } else if (mModel.hasListBeenLoaded()) {
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-//                Logger.debug(this, "onResume",
-//                             "reusing existing list");
-//            }
-//            // a list has been build previously and we should re-use it.
-////            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
-////            displayList(booklistBuilder.getNewListCursor(), null);
-//            initBookList(true);
-//
-//        } else {
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-//                Logger.debug(this, "onResume",
-//                             "rebuild full for other reason.");
-//            }
-//            initBookList(true);
-//        }
-
+        // don't build the list needlessly
+        if (App.isRecreating()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.debugExit("onResume", "isRecreating",
+                                 LocaleUtils.toDebugString(this));
+            }
+            return;
+        }
 
         // clear the cursor; we'll prepare a new one and meanwhile the view/adapter should
         // obviously NOT try to display the old list.
         // Note we do not clear the cursor on the model here, so we have the option of re-using it.
         mAdapter.setCursor(null);
+
+        // If we got here after onActivityResult, see if we need to force a rebuild.
+        Boolean fullOrPartialRebuild = mModel.isForceFullRebuild();
+
+        // Update the list of bookshelves + set the current bookshelf.
+        boolean bookshelfChanged = populateBookShelfSpinner();
+
+        if (bookshelfChanged) {
+            //  bookshelf changed, we need a whole new list
+            initBookList(true);
+
+        } else if (fullOrPartialRebuild != null) {
+            // onActivityResult told us to refresh or create the list
+            initBookList(fullOrPartialRebuild);
+
+        } else if (mModel.isListLoaded()) {
+            // a list has been build previously and we should re-use it.
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+                Logger.debug(this, "onResume", "reusing existing list");
+            }
+            //noinspection ConstantConditions
+            BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
+            displayList(booklistBuilder.getNewListCursor(), null);
+
+        } else {
+            // rebuild for other reason
+            initBookList(true);
+        }
+
         // always reset for next iteration.
         mModel.setFullRebuild(null);
 
@@ -792,7 +777,7 @@ public class BooksOnBookshelf
      * <li>Not a book: expand/collapse the section as appropriate.</li>
      * </ul>
      */
-    public void onItemClick(@NonNull final View view) {
+    private void onItemClick(@NonNull final View view) {
         int position = (int) view.getTag(R.id.TAG_POSITION);
 
         BooklistPseudoCursor listCursor = mModel.getListCursor();
@@ -830,11 +815,11 @@ public class BooksOnBookshelf
                 // If it's a level, expand/collapse. Technically, we could expand/collapse any level
                 // but storing and recovering the view becomes unmanageable.
                 // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
-                if (row.getLevel() == 1) {
-                    listCursor.getBuilder().toggleExpandNode(row.getAbsolutePosition());
-                    listCursor.requery();
-                    mAdapter.notifyDataSetChanged();
-                }
+//                if (row.getLevel() == 1) {
+                listCursor.getBuilder().toggleExpandNode(row.getAbsolutePosition());
+                listCursor.requery();
+                mAdapter.notifyDataSetChanged();
+//                }
                 break;
         }
     }
@@ -877,8 +862,8 @@ public class BooksOnBookshelf
      * @return {@code true} if there actually is a menu to show.
      * {@code false} if not OR if the only menus would be the 'search Amazon' set.
      */
-    boolean prepareListViewContextMenu(@NonNull final Menu /* in/out */ menu,
-                                       @NonNull final BooklistCursorRow row) {
+    private boolean prepareListViewContextMenu(@NonNull final Menu /* in/out */ menu,
+                                               @NonNull final BooklistCursorRow row) {
         menu.clear();
 
         int rowKind = row.getRowKind();
@@ -1019,8 +1004,8 @@ public class BooksOnBookshelf
      * @return {@code true} if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                  @NonNull final BooklistCursorRow row) {
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final BooklistCursorRow row) {
 
         final long bookId = row.getBookId();
 
@@ -1241,12 +1226,14 @@ public class BooksOnBookshelf
             case UniqueId.REQ_BOOK_EDIT:
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
+                        // a book was deleted.
                         // handle re-positioning better
                         //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one];
                         mModel.setFullRebuild(false);
                         break;
 
                     case Activity.RESULT_OK:
+                        // a book was changed/added.
                         Objects.requireNonNull(data);
                         long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
@@ -1257,6 +1244,7 @@ public class BooksOnBookshelf
 
 
                     default:
+                        // no changes were made, we'l redisplay the list as-is.
                         if (resultCode != Activity.RESULT_CANCELED) {
                             Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
                         }
@@ -1445,7 +1433,7 @@ public class BooksOnBookshelf
      *
      * @param searchText the text which was used for the search (if any).
      */
-    void initSearchField(@Nullable final String searchText) {
+    private void initSearchField(@Nullable final String searchText) {
         TextView searchTextView = findViewById(R.id.search_text);
         if (searchText == null || searchText.isEmpty()) {
             searchTextView.setVisibility(View.GONE);
@@ -1522,14 +1510,15 @@ public class BooksOnBookshelf
             // 1. the cursor provides the data for this level, and
             // 2. the style defined the level.
             //noinspection ConstantConditions
-            if (mModel.getListCursor().levels() > level && style.hasHeaderForLevel(level)) {
+            if (mModel.getListCursor().getBuilder().levels() > level
+                    && style.hasHeaderForLevel(level)) {
                 mHeaderTextView[index].setVisibility(View.VISIBLE);
                 mHeaderTextView[index].setText("");
             } else {
                 mHeaderTextView[index].setVisibility(View.GONE);
             }
         }
-        // do we show any levels?
+        // are we showing any levels?
         return style.hasHeaderForLevel(1) || style.hasHeaderForLevel(2);
     }
 

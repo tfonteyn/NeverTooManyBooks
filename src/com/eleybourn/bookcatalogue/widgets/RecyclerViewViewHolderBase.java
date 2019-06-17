@@ -47,7 +47,7 @@ public class RecyclerViewViewHolderBase
     @Nullable
     final View mDeleteButton;
 
-    public RecyclerViewViewHolderBase(@NonNull final View itemView) {
+    protected RecyclerViewViewHolderBase(@NonNull final View itemView) {
         super(itemView);
 
         // Don't enable the whole row, so buttons keep working

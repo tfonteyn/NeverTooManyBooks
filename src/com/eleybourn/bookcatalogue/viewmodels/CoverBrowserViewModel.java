@@ -235,9 +235,9 @@ public class CoverBrowserViewModel
          */
         @Nullable
         @WorkerThread
-        public String download(@NonNull final String isbn,
-                               final int position,
-                               @NonNull final SearchEngine.ImageSizes... imageSizes) {
+        String download(@NonNull final String isbn,
+                        final int position,
+                        @NonNull final SearchEngine.ImageSizes... imageSizes) {
 
             // use a local copy so we can disable sites on the fly.
             int currentSearchSites = mSearchSites;
@@ -355,7 +355,7 @@ public class CoverBrowserViewModel
     /**
      * Fetch all alternative edition isbn's from LibraryThing.
      */
-    public static class GetEditionsTask
+    static class GetEditionsTask
             extends AsyncTask<Void, Void, ArrayList<String>> {
 
         @NonNull
@@ -410,7 +410,7 @@ public class CoverBrowserViewModel
     /**
      * Fetch a thumbnail and stick it into the gallery.
      */
-    public static class GetGalleryImageTask
+    static class GetGalleryImageTask
             extends AsyncTask<Void, Void, String> {
 
         @NonNull
@@ -493,7 +493,7 @@ public class CoverBrowserViewModel
     /**
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
-    public static class GetSwitcherImageTask
+    static class GetSwitcherImageTask
             extends AsyncTask<Void, Void, String> {
 
         @NonNull

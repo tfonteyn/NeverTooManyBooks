@@ -250,7 +250,7 @@ public class EditAuthorListActivity
             extends EditAuthorBaseDialogFragment {
 
         /** Fragment manager tag. */
-        public static final String TAG = "EditBookAuthorDialogFragment";
+        static final String TAG = "EditBookAuthorDialogFragment";
 
         private EditAuthorListActivity mActivity;
 
@@ -261,7 +261,7 @@ public class EditAuthorListActivity
          *
          * @return the instance
          */
-        public static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
+        static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
             Bundle args = new Bundle();
             args.putParcelable(DBDefinitions.KEY_AUTHOR, author);

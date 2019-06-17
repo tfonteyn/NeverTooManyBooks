@@ -210,7 +210,7 @@ public final class GoodreadsTasks {
         private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
 
         @Nullable
-        protected Exception mException;
+        Exception mException;
 
         /**
          * Constructor.
@@ -289,7 +289,7 @@ public final class GoodreadsTasks {
         private final int mTaskId = R.id.TASK_ID_GR_SEND_ONE_BOOK;
         private final long mBookId;
         @Nullable
-        protected Exception mException;
+        Exception mException;
 
         public SendOneBookTask(@NonNull final Context context,
                                final long bookId,
@@ -361,7 +361,7 @@ public final class GoodreadsTasks {
         private final boolean mUpdatesOnly;
 
         @Nullable
-        protected Exception mException;
+        Exception mException;
 
         public SendBooksTask(final boolean updatesOnly,
                              @NonNull final TaskListener<Object, Integer> taskListener) {
@@ -433,7 +433,7 @@ public final class GoodreadsTasks {
         private final boolean mIsSync;
 
         @Nullable
-        protected Exception mException;
+        Exception mException;
 
         public ImportTask(final boolean isSync,
                           @NonNull final TaskListener<Object, Integer> taskListener) {

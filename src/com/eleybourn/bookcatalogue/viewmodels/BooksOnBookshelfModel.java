@@ -362,16 +362,22 @@ public class BooksOnBookshelfModel
             // get a new builder and add the required extra domains
             bookListBuilder = new BooklistBuilder(context, mCurrentBookshelf.getStyle(mDb));
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE, DBDefinitions.DOM_TITLE_OB,
+            // Title for displaying
+            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
+                                          false);
+
+            // Title for sorting
+            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE_OB,
+                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
                                           true);
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ, null,
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                                           false);
 
+            // if we have a list of id's, ignore other criteria.
             if (mSearchCriteria.hasIdList()) {
-                // if we have a list of id's, ignore other criteria.
                 bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
 
             } else {
@@ -428,6 +434,10 @@ public class BooksOnBookshelfModel
     @Nullable
     public Boolean isForceFullRebuild() {
         return mAfterOnActivityResultDoFullRebuild;
+    }
+
+    public boolean isListLoaded() {
+        return mListHasBeenLoaded;
     }
 
     /**
@@ -651,7 +661,7 @@ public class BooksOnBookshelfModel
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
-        protected Exception mException;
+        Exception mException;
         /** Resulting Cursor. */
         private BooklistPseudoCursor tempListCursor;
 
@@ -803,7 +813,7 @@ public class BooksOnBookshelfModel
                     t4 = System.nanoTime();
                 }
                 // pre-fetch this count
-                mHolder.resultUniqueBooks = tempListCursor.getUniqueBookCount();
+                mHolder.resultUniqueBooks = tempListCursor.getBuilder().getUniqueBookCount();
 
                 if (isCancelled()) {
                     return mHolder;
@@ -814,7 +824,7 @@ public class BooksOnBookshelfModel
                     t5 = System.nanoTime();
                 }
                 // pre-fetch this count
-                mHolder.resultTotalBooks = tempListCursor.getBookCount();
+                mHolder.resultTotalBooks = tempListCursor.getBuilder().getBookCount();
 
                 long t6;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -876,7 +886,7 @@ public class BooksOnBookshelfModel
             }
             if (tempListCursor != null && tempListCursor != mCurrentListCursor) {
                 if (mCurrentListCursor == null
-                        || (tempListCursor.getBuilder() != mCurrentListCursor.getBuilder())) {
+                        || (!tempListCursor.getBuilder().equals(mCurrentListCursor.getBuilder()))) {
                     tempListCursor.getBuilder().close();
                 }
                 tempListCursor.close();
@@ -925,14 +935,14 @@ public class BooksOnBookshelfModel
         BooklistPseudoCursor resultListCursor;
 
         /**
-         * output field. Pre-fetched from the resultListCursor.
-         * {@link BooklistPseudoCursor#getBookCount()}
+         * output field. Pre-fetched from the resultListCursor's builder.
+         * {@link BooklistBuilder#getBookCount()}
          * Should be ignored if resultListCursor is {@code null}
          */
         int resultTotalBooks;
         /**
-         * output field. Pre-fetched from the resultListCursor.
-         * {@link BooklistPseudoCursor#getUniqueBookCount()}
+         * output field. Pre-fetched from the resultListCursor's builder.
+         * {@link BooklistBuilder#getUniqueBookCount()}
          * Should be ignored if resultListCursor is {@code null}
          */
         int resultUniqueBooks;

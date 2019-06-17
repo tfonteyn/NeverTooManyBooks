@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -163,7 +162,7 @@ public final class AmazonManager
     /**
      * replace spaces with %20
      */
-    public String encodeSpaces(@NonNull final String s) {
+    private String encodeSpaces(@NonNull final String s) {
         return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

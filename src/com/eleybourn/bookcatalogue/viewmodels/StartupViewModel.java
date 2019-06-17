@@ -179,7 +179,7 @@ public class StartupViewModel
         @NonNull
         private final WeakReference<TaskListener<String, Void>> mTaskListener;
         @Nullable
-        protected Exception mException;
+        Exception mException;
 
         /**
          * Constructor.
@@ -193,7 +193,7 @@ public class StartupViewModel
             mTaskListener = new WeakReference<>(taskListener);
         }
 
-        protected int getId() {
+        int getId() {
             return mTaskId;
         }
 

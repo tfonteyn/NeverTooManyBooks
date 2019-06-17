@@ -598,8 +598,8 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    public int doBooks(@NonNull final BufferedWriter out,
-                       @NonNull final ProgressListener listener)
+    private int doBooks(@NonNull final BufferedWriter out,
+                        @NonNull final ProgressListener listener)
             throws IOException {
         int count = 0;
         out.append('<' + XmlTags.XML_BOOK_LIST)

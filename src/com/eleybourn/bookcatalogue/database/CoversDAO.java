@@ -63,13 +63,16 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * To be reviewed when the location of the images can be user-configured.
  * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
  *
+ * note that {@link #DOM_WIDTH} and {@link #DOM_HEIGHT} are redundant/information only.
+ * Lookup is done via the {@link #DOM_CACHE_ID} instead.
+ *
  * @author Philip Warner
  */
 public final class CoversDAO
         implements AutoCloseable {
 
     /** Compresses images to 70%. */
-    private static final int IMAGE_QUALITY_PERCENTAGE = 70;
+    private static final int IMAGE_QUALITY_PERCENTAGE = 80;
 
     /** DB name. */
     private static final String COVERS_DATABASE_NAME = "covers.db";
@@ -105,9 +108,11 @@ public final class CoversDAO
             new DomainDefinition("date", ColumnInfo.TYPE_DATETIME, true)
                     .setDefault("current_timestamp");
 
+    /** The actual stored bitmap width. */
     private static final DomainDefinition DOM_WIDTH =
             new DomainDefinition("width", ColumnInfo.TYPE_INTEGER, true);
 
+    /** The actual stored bitmap height. */
     private static final DomainDefinition DOM_HEIGHT =
             new DomainDefinition("height", ColumnInfo.TYPE_INTEGER, true);
 
@@ -189,9 +194,9 @@ public final class CoversDAO
      * @param maxHeight used to construct the cacheId
      */
     @NonNull
-    public static String constructCacheId(@NonNull final String uuid,
-                                          final int maxWidth,
-                                          final int maxHeight) {
+    private static String constructCacheId(@NonNull final String uuid,
+                                           final int maxWidth,
+                                           final int maxHeight) {
         return uuid + '.' + maxWidth + 'x' + maxHeight;
     }
 
@@ -284,37 +289,51 @@ public final class CoversDAO
 
     /**
      * Save the passed bitmap to a 'file' in the covers database.
-     * Compresses to IMAGE_QUALITY_PERCENTAGE first.
+     * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
      */
     @WorkerThread
     public void saveFile(@NonNull final Bitmap bitmap,
-                         @NonNull final String filename) {
+                         final int maxWidth,
+                         final int maxHeight,
+                         @NonNull final String uuid) {
         if (sSyncedDb == null) {
             return;
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+        // Rapid scrolling of view could already have recycled the bitmap.
+        if (bitmap.isRecycled()) {
+            return;
+        }
+        try {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+        } catch (IllegalStateException e) {
+            // java.lang.IllegalStateException: Can't compress a recycled bitmap
+            // don't care; this is just a cache; don't even log.
+            return;
+        }
+
         byte[] image = out.toByteArray();
+
+        String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_CACHE_ID.name, cacheId);
+        cv.put(DOM_IMAGE.name, image);
+        cv.put(DOM_WIDTH.name, bitmap.getHeight());
+        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
+
 
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
         if (existsStmt == null) {
             existsStmt = mStatements.add(sSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
         }
-        existsStmt.bindString(1, filename);
-
-        ContentValues cv = new ContentValues();
-        cv.put(DOM_CACHE_ID.name, filename);
-        cv.put(DOM_IMAGE.name, image);
-        cv.put(DOM_WIDTH.name, bitmap.getHeight());
-        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
-
+        existsStmt.bindString(1, cacheId);
         if (existsStmt.count() == 0) {
             sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
             sSyncedDb.update(TBL_IMAGE.getName(), cv,
                              DOM_CACHE_ID.name + "=?",
-                             new String[]{filename});
+                             new String[]{cacheId});
         }
     }
 
@@ -381,8 +400,8 @@ public final class CoversDAO
          *
          * @return the instance
          */
-        public static CoversDbHelper getInstance(@SuppressWarnings("SameParameterValue")
-                                                 @NonNull final SQLiteDatabase.CursorFactory factory) {
+        static CoversDbHelper getInstance(@SuppressWarnings("SameParameterValue")
+                                          @NonNull final SQLiteDatabase.CursorFactory factory) {
             if (sInstance == null) {
                 sInstance = new CoversDbHelper(factory);
             }

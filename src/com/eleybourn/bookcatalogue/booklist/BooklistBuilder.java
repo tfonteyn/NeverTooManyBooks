@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -361,6 +362,8 @@ public class BooklistBuilder
 
         mNavTable = TBL_ROW_NAVIGATOR.clone();
         mNavTable.setName(mNavTable.getName() + '_' + mBooklistBuilderId);
+
+        // link the two tables via the row id
         mNavTable.addReference(mListTable, DOM_BL_REAL_ROW_ID);
     }
 
@@ -379,7 +382,6 @@ public class BooklistBuilder
      * Add a domain to the resulting flattened list based on the details provided.
      *
      * @param domain           Domain to add
-     * @param orderByDomain    [optional] domain to sort by instead of actual domain.
      * @param sourceExpression Expression to use in deriving domain value
      * @param isSorted         Indicates if it should be added to the sort key
      *
@@ -388,38 +390,22 @@ public class BooklistBuilder
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
     public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain,
-                                         @Nullable final DomainDefinition orderByDomain,
                                          @Nullable final String sourceExpression,
                                          final boolean isSorted) {
-        // Save the details
-        ExtraDomainDetails info = new ExtraDomainDetails(domain, orderByDomain,
-                                                         sourceExpression, isSorted);
 
         // Check if it already exists
-        if (mExtraDomains.containsKey(domain.name)) {
-            // Make sure it has the same definition.
-            boolean ok;
-            ExtraDomainDetails oldInfo = mExtraDomains.get(domain.name);
-            //noinspection ConstantConditions
-            if (oldInfo.sourceExpression == null) {
-                ok = info.sourceExpression == null || info.sourceExpression.isEmpty();
-            } else {
-                if (info.sourceExpression == null) {
-                    ok = oldInfo.sourceExpression.isEmpty();
-                } else {
-                    ok = oldInfo.sourceExpression.equalsIgnoreCase(info.sourceExpression);
-                }
+        if (!mExtraDomains.containsKey(domain.name)) {
+            // Save the details
+            int flags = 0;
+            if (isSorted) {
+                flags |= SummaryBuilder.FLAG_SORTED;
             }
-            if (!ok) {
-                throw new IllegalStateException(
-                        "Required domain `" + domain.name + '`'
-                                + " added with differing sourceExpression");
-            }
-        } else {
-            mExtraDomains.put(domain.name, info);
-        }
+            mExtraDomains.put(domain.name, new ExtraDomainDetails(domain, sourceExpression, flags));
+            return this;
 
-        return this;
+        } else {
+            throw new IllegalStateException("Domain already added: `" + domain.name + '`');
+        }
     }
 
     /**
@@ -617,10 +603,8 @@ public class BooklistBuilder
             summary.addDomain(DOM_BL_NODE_LEVEL, null, SummaryBuilder.FLAG_SORTED);
 
             // Finished. Ensure any caller-specified extras (e.g. title) are added at the end.
-            for (ExtraDomainDetails info : mExtraDomains.values()) {
-                int flags = info.isSorted ? SummaryBuilder.FLAG_SORTED
-                                          : SummaryBuilder.FLAG_NONE;
-                summary.addDomain(info.domain, info.orderByDomain, info.sourceExpression, flags);
+            for (ExtraDomainDetails edd : mExtraDomains.values()) {
+                summary.addDomain(edd.domain, edd.sourceExpression, edd.flags);
             }
 
             final long t3 = System.nanoTime();
@@ -918,8 +902,8 @@ public class BooklistBuilder
             if (sdi.domain.isText()) {
                 indexCols.append(DAO.COLLATION);
 
-                if (sdi.isPreparedOrderByColumn) {
-                    // always use as-is
+                if (sdi.domain.isPrePreparedOrderBy()) {
+                    // always use a pre-prepared order-by column as-is
                     sortCols.append(sdi.domain.name);
 
                 } else if (collationIsCs) {
@@ -1604,9 +1588,9 @@ public class BooklistBuilder
     }
 
     /**
-     * @return the number of book records in the list
+     * @return the total number of book records in the list
      */
-    int getBookCount() {
+    public int getBookCount() {
         return pseudoCount("ListTableBooks",
                            "SELECT COUNT(*)"
                                    + " FROM " + mListTable
@@ -1615,9 +1599,9 @@ public class BooklistBuilder
     }
 
     /**
-     * @return the number of unique book records in the list
+     * @return the number of <strong>unique</strong> book records in the list
      */
-    int getUniqueBookCount() {
+    public int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
                            "SELECT COUNT(DISTINCT " + DOM_FK_BOOK_ID + ')'
                                    + " FROM " + mListTable
@@ -1652,7 +1636,7 @@ public class BooklistBuilder
     /**
      * @return the number of levels in the list, including the 'base' books level
      */
-    int levels() {
+    public int levels() {
         return mStyle.groupCount() + 1;
     }
 
@@ -2084,6 +2068,26 @@ public class BooklistBuilder
         super.finalize();
     }
 
+    /**
+     * Simple equality: two builders are equal if their id's are the same.
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BooklistBuilder that = (BooklistBuilder) o;
+        return mBooklistBuilderId == that.mBooklistBuilderId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mBooklistBuilderId);
+    }
+
     @Override
     @NonNull
     public String toString() {
@@ -2137,7 +2141,7 @@ public class BooklistBuilder
             }
         }
 
-        public static CompatibilityMode get() {
+        static CompatibilityMode get() {
             if (instance == null) {
                 instance = new CompatibilityMode();
             }
@@ -2206,22 +2210,15 @@ public class BooklistBuilder
     /**
      * A data class for domain + desc/asc sorting flag.
      */
-    public static class SortedDomainInfo {
+    static class SortedDomainInfo {
 
         @NonNull
         final DomainDefinition domain;
         final boolean isDescending;
-        /**
-         * if the domain is a prepared order-by column in the database;
-         * e.g. {@link DBDefinitions#DOM_TITLE_OB} instead of {@link DBDefinitions#DOM_TITLE}
-         */
-        final boolean isPreparedOrderByColumn;
 
         SortedDomainInfo(@NonNull final DomainDefinition domain,
-                         final boolean isPreparedOrderByColumn,
                          final boolean isDescending) {
             this.domain = domain;
-            this.isPreparedOrderByColumn = isPreparedOrderByColumn;
             this.isDescending = isDescending;
         }
     }
@@ -2234,23 +2231,18 @@ public class BooklistBuilder
         /** Domain definition of domain to add. */
         @NonNull
         final DomainDefinition domain;
-        /** Optional ORDER-BY domain definition of domain to add. */
-        @Nullable
-        final DomainDefinition orderByDomain;
         /** Expression to use in deriving domain value. */
         @Nullable
         final String sourceExpression;
-        /** Indicates if domain is to be part of the list sort key. */
-        final boolean isSorted;
+        /** Flags indicating attributes of new domain. */
+        final int flags;
 
         ExtraDomainDetails(@NonNull final DomainDefinition domain,
-                           @Nullable final DomainDefinition orderByDomain,
                            @Nullable final String sourceExpression,
-                           final boolean isSorted) {
+                           final int flags) {
             this.domain = domain;
-            this.orderByDomain = orderByDomain;
             this.sourceExpression = sourceExpression;
-            this.isSorted = isSorted;
+            this.flags = flags;
         }
     }
 
@@ -2261,27 +2253,24 @@ public class BooklistBuilder
 
         /** Flag (bitmask) indicating added domain has no special properties. */
         static final int FLAG_NONE = 0;
-        /** Flag indicating added domain is SORTED. */
-        static final int FLAG_SORTED = 1;
-        /** Flag indicating added domain is GROUPED. */
-        static final int FLAG_GROUPED = 1 << 1;
+        /** Flag indicating domain should be added to the GROUP BY clause. */
+        static final int FLAG_GROUPED = 1;
+        /** Flag indicating domain should be added to the ORDER BY clause. */
+        static final int FLAG_SORTED = 1 << 1;
+        /**
+         * Flag indicating added domain should be sorted in DESC order.
+         * DO NOT USE FOR GROUPED DATA. See notes below.
+         */
+        static final int FLAG_SORT_DESCENDING = 1 << 2;
 
         // Not currently used.
         ///** Flag indicating added domain is part of the unique key. */
-        //static final int FLAG_KEY = 1 << 2;
-
-        /**
-         * Flag indicating added domain should be SORTED in descending order.
-         * DO NOT USE FOR GROUPED DATA. See notes below.
-         */
-        static final int FLAG_SORT_DESCENDING = 1 << 3;
+        //static final int FLAG_KEY = 1 << 3;
 
         /** Domains required in output table. */
         private final ArrayList<DomainDefinition> mDomains = new ArrayList<>();
-        /** Source expressions for output domains. */
-        private final ArrayList<String> mExpressions = new ArrayList<>();
         /** Mapping from Domain to source Expression. */
-        private final Map<DomainDefinition, String> mExpressionMap = new HashMap<>();
+        private final Map<DomainDefinition, String> mExpressions = new HashMap<>();
 
         /** Domains that are GROUPED. */
         private final ArrayList<DomainDefinition> mGroupedDomains = new ArrayList<>();
@@ -2309,40 +2298,18 @@ public class BooklistBuilder
         void addDomain(@NonNull final DomainDefinition domain,
                        @Nullable final String sourceExpression,
                        final int flags) {
-            addDomain(domain, null, sourceExpression, flags);
-        }
-
-        /**
-         * Add a domain and source expression to the summary.
-         * Optionally an ORDER-BY domain can be specified; e.g. {@link DBDefinitions#DOM_TITLE_OB}
-         * when the actual domain is {@link DBDefinitions#DOM_TITLE}
-         *
-         * @param domain           Domain to add
-         * @param orderByDomain    [optional] domain to sort by instead of actual domain.
-         * @param sourceExpression Source Expression
-         * @param flags            Flags indicating attributes of new domain
-         */
-        void addDomain(@NonNull final DomainDefinition domain,
-                       @Nullable final DomainDefinition orderByDomain,
-                       @Nullable final String sourceExpression,
-                       final int flags) {
             // Add to various collections. We use a map to improve lookups and ArrayLists
             // so we can preserve order. Order preservation makes reading the SQL easier
             // but is unimportant for code correctness.
 
             // Add to table
             mListTable.addDomain(domain);
-            if (orderByDomain != null) {
-                mListTable.addDomain(orderByDomain);
-            }
 
-            // Domains and Expressions must be synchronized; we should probably use a map.
-            // For now, just check if expression is {@code null}. If it IS null, it means that
-            // the domain is just for the lowest level of the hierarchy.
+            // If the sourceExpression is {@code null},
+            // then the domain is just for the lowest level of the hierarchy.
             if (sourceExpression != null) {
                 mDomains.add(domain);
-                mExpressions.add(sourceExpression);
-                mExpressionMap.put(domain, sourceExpression);
+                mExpressions.put(domain, sourceExpression);
             }
 
             // Based on the flags, add the domain to other lists.
@@ -2351,14 +2318,8 @@ public class BooklistBuilder
             }
 
             if ((flags & FLAG_SORTED) != 0 && !mSortedColumnsSet.contains(domain)) {
-                SortedDomainInfo sdi;
-                if (orderByDomain == null) {
-                    sdi = new SortedDomainInfo(domain, false,
-                                               (flags & FLAG_SORT_DESCENDING) != 0);
-                } else {
-                    sdi = new SortedDomainInfo(orderByDomain, true,
-                                               (flags & FLAG_SORT_DESCENDING) != 0);
-                }
+                boolean isDesc = (flags & FLAG_SORT_DESCENDING) != 0;
+                SortedDomainInfo sdi = new SortedDomainInfo(domain, isDesc);
                 mSortedColumns.add(sdi);
                 mSortedColumnsSet.add(domain);
             }
@@ -2391,8 +2352,7 @@ public class BooklistBuilder
                     buildInfoHolder.authorGroup = (BooklistGroup.BooklistAuthorGroup) booklistGroup;
 
                     // Always group & sort by DOM_AUTHOR_SORT and user preference order; see #696
-                    // The expression uses the OB column, so there is no need to set the OB
-                    // explicitly.
+                    // The expression uses the OB column.
                     addDomain(DOM_AUTHOR_SORT,
                               mStyle.sortAuthorByGiven()
                               ? X_AUTHOR_SORT_FIRST_LAST
@@ -2767,7 +2727,7 @@ public class BooklistBuilder
                 }
 
                 String domainName = mDomains.get(i).name;
-                String expression = mExpressions.get(i);
+                String expression = mExpressions.get(mDomains.get(i));
 
                 destColumns.append(domainName);
                 expressions.append(expression);
@@ -2780,7 +2740,7 @@ public class BooklistBuilder
             StringBuilder keyExpression = new StringBuilder('\'' + rootKey.getPrefix());
             for (DomainDefinition domain : rootKey.getDomains()) {
                 keyExpression.append("/'||Coalesce(")
-                             .append(mExpressionMap.get(domain))
+                             .append(mExpressions.get(domain))
                              .append(",'')");
             }
 

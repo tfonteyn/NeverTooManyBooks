@@ -75,7 +75,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected ArrayList<T> mList;
 
     /** flag indicating local changes were made. Used in setResult. */
-    protected boolean mIsDirty;
+    private boolean mIsDirty;
 
     /** flag indicating global changes were made. Used in setResult. */
     protected boolean mGlobalReplacementsMade;
@@ -86,14 +86,14 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected AutoCompleteTextView mAutoCompleteTextView;
 
     /** The View for the list. */
-    protected RecyclerView mListView;
-    protected LinearLayoutManager mLayoutManager;
+    private RecyclerView mListView;
+    private LinearLayoutManager mLayoutManager;
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
 
 
     @Nullable
-    protected String mBookTitle;
+    private String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
 

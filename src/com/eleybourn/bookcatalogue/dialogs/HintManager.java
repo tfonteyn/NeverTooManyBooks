@@ -251,7 +251,7 @@ public final class HintManager {
             mHasBeenDisplayed = true;
         }
 
-        public void reset() {
+        void reset() {
             setVisibility(true);
             mHasBeenDisplayed = false;
         }

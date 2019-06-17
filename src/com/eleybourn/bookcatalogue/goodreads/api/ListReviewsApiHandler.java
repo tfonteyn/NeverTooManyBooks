@@ -467,10 +467,10 @@ public class ListReviewsApiHandler
      */
     public static final class ReviewFields {
 
-        public static final String START = "__start";
-        public static final String END = "__end";
+        static final String START = "__start";
+        static final String END = "__end";
         public static final String TOTAL = "__total";
-        public static final String GR_REVIEW_ID = "__gr_review_id";
+        static final String GR_REVIEW_ID = "__gr_review_id";
         public static final String ISBN13 = "__isbn13";
         public static final String SMALL_IMAGE = "__smallImage";
         public static final String LARGE_IMAGE = "__largeImage";
@@ -486,15 +486,15 @@ public class ListReviewsApiHandler
         public static final String AUTHOR_NAME_GF = "__author_name";
 
         public static final String DBA_GR_BOOK_ID = DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name;
-        public static final String DBA_ISBN = DBDefinitions.DOM_BOOK_ISBN.name;
+        static final String DBA_ISBN = DBDefinitions.DOM_BOOK_ISBN.name;
 
-        public static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
+        static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
         public static final String DBA_TITLE = DBDefinitions.DOM_TITLE.name;
         public static final String DBA_PUBLISHER = DBDefinitions.DOM_BOOK_PUBLISHER.name;
         public static final String DBA_DESCRIPTION = DBDefinitions.DOM_BOOK_DESCRIPTION.name;
         public static final String DBA_FORMAT = DBDefinitions.DOM_BOOK_FORMAT.name;
         public static final String DBA_PAGES = DBDefinitions.DOM_BOOK_PAGES.name;
-        public static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
+        static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
         public static final String DBA_RATING = DBDefinitions.DOM_BOOK_RATING.name;
         public static final String DBA_READ_START = DBDefinitions.DOM_BOOK_READ_START.name;
         public static final String DBA_READ_END = DBDefinitions.DOM_BOOK_READ_END.name;

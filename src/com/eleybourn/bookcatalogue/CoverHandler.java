@@ -31,7 +31,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDAO;
@@ -507,8 +506,6 @@ public class CoverHandler {
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
                     Logger.error(this, e);
                     return;
-                } finally {
-                    rotatedBitmap.recycle();
                 }
 
                 // put the new image on screen.
@@ -657,6 +654,7 @@ public class CoverHandler {
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {

@@ -120,7 +120,7 @@ public class App
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
     /** don't assume / allow the day-night theme to have a different integer id. */
-    public static final int THEME_DAY_NIGHT = 0;
+    private static final int THEME_DAY_NIGHT = 0;
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
@@ -422,7 +422,7 @@ public class App
     /**
      * DEBUG only.
      */
-    public static void debugDayNightMode() {
+    private static void debugDayNightMode() {
 
         switch (sCurrentTheme) {
             case 0:

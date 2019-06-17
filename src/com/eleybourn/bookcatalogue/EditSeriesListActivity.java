@@ -154,10 +154,10 @@ public class EditSeriesListActivity
     /**
      * Called from the editor dialog fragment after the user was done.
      */
-    void processChanges(@NonNull final Series series,
-                        @NonNull final String newName,
-                        final boolean isComplete,
-                        @NonNull final String newNumber) {
+    private void processChanges(@NonNull final Series series,
+                                @NonNull final String newName,
+                                final boolean isComplete,
+                                @NonNull final String newNumber) {
 
         // anything actually changed ?
         if (series.getName().equals(newName) && series.isComplete() == isComplete) {
@@ -265,7 +265,7 @@ public class EditSeriesListActivity
          *
          * @return the instance
          */
-        public static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
+        static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
             Bundle args = new Bundle();
             args.putParcelable(DBDefinitions.KEY_SERIES, series);

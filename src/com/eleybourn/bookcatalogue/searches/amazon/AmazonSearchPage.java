@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * Provides the {@link #open(Context, String, String)} api.
+ * Provides the {@link #open} api.
  * This class is used by the (sub) menu "Search Amazon" to look for authors, series.
  * <p>
  * It is NOT used by the ISBN lookup/search engine,

@@ -73,7 +73,7 @@ public class FieldUsage {
         Skip, CopyIfBlank, AddExtra, Overwrite;
 
         @NonNull
-        public Usage nextState(final boolean isList) {
+        Usage nextState(final boolean isList) {
             switch (this) {
                 case Skip:
                     return CopyIfBlank;

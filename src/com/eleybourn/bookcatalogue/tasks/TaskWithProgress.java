@@ -27,8 +27,8 @@ public abstract class TaskWithProgress<Progress, Result>
     @Nullable
     protected Exception mException;
 
-    public TaskWithProgress(final int taskId,
-                            @NonNull final ProgressDialogFragment<Progress, Result> progressDialog) {
+    protected TaskWithProgress(final int taskId,
+                               @NonNull final ProgressDialogFragment<Progress, Result> progressDialog) {
         mTaskId = taskId;
         mProgressDialog = progressDialog;
     }

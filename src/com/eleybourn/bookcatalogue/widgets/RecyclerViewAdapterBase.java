@@ -53,12 +53,12 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     }
 
     @NonNull
-    public LayoutInflater getLayoutInflater() {
+    protected LayoutInflater getLayoutInflater() {
         return mInflater;
     }
 
     @NonNull
-    public Context getContext() {
+    protected Context getContext() {
         return mInflater.getContext();
     }
 
@@ -87,7 +87,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
         }
     }
 
-    public Item getItem(final int position) {
+    protected Item getItem(final int position) {
         return mItems.get(position);
     }
 

@@ -130,7 +130,7 @@ public final class UpgradeMessageManager {
      *
      * @return the versionCode.
      */
-    public static long getVersion() {
+    private static long getVersion() {
         // versionCode deprecated and new method in API: 28, till then ignore...
         PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {

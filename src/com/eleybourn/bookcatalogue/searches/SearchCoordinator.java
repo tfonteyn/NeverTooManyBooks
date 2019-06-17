@@ -747,7 +747,7 @@ public class SearchCoordinator {
     /**
      * Controller interface for this Object.
      */
-    public interface SearchCoordinatorController {
+    interface SearchCoordinatorController {
 
         void requestAbort();
 

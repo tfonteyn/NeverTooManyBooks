@@ -219,7 +219,7 @@ public class Synchronizer {
         LockType getType();
     }
 
-    public static class LockException
+    static class LockException
             extends RuntimeException {
 
         private static final long serialVersionUID = -6266684663589932716L;

@@ -433,9 +433,9 @@ public class TaskManager {
         @NonNull
         private final String mMessage;
 
-        public TaskProgressMessage(final int absPosition,
-                                   final int max,
-                                   @NonNull final String message) {
+        TaskProgressMessage(final int absPosition,
+                            final int max,
+                            @NonNull final String message) {
             mAbsPosition = absPosition;
             mMax = max;
             mMessage = message;
@@ -464,7 +464,7 @@ public class TaskManager {
         @NonNull
         private final String mMessage;
 
-        public TaskUserMessage(@NonNull final String message) {
+        TaskUserMessage(@NonNull final String message) {
             mMessage = message;
         }
 

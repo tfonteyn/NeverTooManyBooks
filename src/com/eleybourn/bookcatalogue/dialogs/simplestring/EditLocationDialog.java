@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.CallSuper;

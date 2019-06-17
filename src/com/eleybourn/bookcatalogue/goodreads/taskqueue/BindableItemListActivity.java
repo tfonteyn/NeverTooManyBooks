@@ -43,7 +43,7 @@ abstract class BindableItemListActivity
         implements BindableItemBinder {
 
     /** Database access. */
-    protected DAO mDb;
+    DAO mDb;
 
     /** Cursor for list. */
     private BindableItemCursor mBindableItems;

@@ -66,7 +66,7 @@ public class ValuePicker {
         mDialog.show();
     }
 
-    public void dismiss() {
+    void dismiss() {
         mDialog.dismiss();
     }
 

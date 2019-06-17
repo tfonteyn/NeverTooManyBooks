@@ -972,7 +972,7 @@ public class XmlImporter
      *
      * @author pjw
      */
-    public static class BufferedReaderNoClose
+    static class BufferedReaderNoClose
             extends BufferedReader {
 
         BufferedReaderNoClose(@NonNull final Reader in,

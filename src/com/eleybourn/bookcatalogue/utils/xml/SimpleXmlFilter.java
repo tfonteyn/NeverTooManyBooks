@@ -363,7 +363,7 @@ public class SimpleXmlFilter {
                       @NonNull ElementContext c);
     }
 
-    public interface DataStoreProvider {
+    interface DataStoreProvider {
 
         void addArrayItem(@NonNull Bundle bundle);
 

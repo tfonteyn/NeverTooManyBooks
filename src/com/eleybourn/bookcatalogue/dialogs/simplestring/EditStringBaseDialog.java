@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.dialogs.simplestring;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +20,11 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
-public abstract class EditStringBaseDialog {
+abstract class EditStringBaseDialog {
 
     /** Database access. */
     @NonNull
-    protected final DAO mDb;
+    final DAO mDb;
 
     @NonNull
     private final Context mContext;

@@ -33,8 +33,6 @@ public class DomainDefinition
                 }
             };
 
-    private static final long serialVersionUID = 3405337543505961871L;
-
     /** Constraint string. */
     private static final String NOT_NULL = "NOT NULL";
     @NonNull
@@ -47,8 +45,9 @@ public class DomainDefinition
     @Nullable
     private String mReferences;
 
-    private boolean isPrimaryKey;
+    private boolean mIsPrimaryKey;
 
+    private boolean mIsPrePreparedOrderBy;
     /**
      * Create a PRIMARY KEY column.
      *
@@ -57,7 +56,7 @@ public class DomainDefinition
     public DomainDefinition(@NonNull final String name) {
         this.name = name;
         mType = ColumnInfo.TYPE_INTEGER;
-        isPrimaryKey = true;
+        mIsPrimaryKey = true;
         mConstraints.add(NOT_NULL);
     }
 
@@ -116,6 +115,9 @@ public class DomainDefinition
         //noinspection ConstantConditions
         mType = in.readString();
         in.readList(mConstraints, getClass().getClassLoader());
+        mReferences = in.readString();
+        mIsPrimaryKey = in.readInt() == 1;
+        mIsPrePreparedOrderBy = in.readInt() == 1;
     }
 
     /**
@@ -194,6 +196,9 @@ public class DomainDefinition
         dest.writeString(name);
         dest.writeString(mType);
         dest.writeList(mConstraints);
+        dest.writeString(mReferences);
+        dest.writeInt(mIsPrimaryKey ? 1 : 0);
+        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -209,8 +214,17 @@ public class DomainDefinition
         return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
     }
 
+    public boolean isPrePreparedOrderBy() {
+        return mIsPrePreparedOrderBy;
+    }
+
+    public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
+        mIsPrePreparedOrderBy = prePreparedOrderBy;
+        return this;
+    }
+
     boolean isPrimaryKey() {
-        return isPrimaryKey;
+        return mIsPrimaryKey;
     }
 
     /**
@@ -236,7 +250,7 @@ public class DomainDefinition
     @NonNull
     String def(final boolean withConstraints) {
         StringBuilder sql = new StringBuilder(name + ' ' + mType);
-        if (isPrimaryKey) {
+        if (mIsPrimaryKey) {
             sql.append(" PRIMARY KEY AUTOINCREMENT");
         }
 

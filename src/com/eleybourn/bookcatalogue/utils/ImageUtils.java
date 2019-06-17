@@ -3,6 +3,8 @@ package com.eleybourn.bookcatalogue.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -59,6 +61,7 @@ public final class ImageUtils {
      * Get the maximum pixel size an image should be based on the desired scale factor.
      *
      * @param scale to apply
+     *
      * @return amount in pixels
      */
     public static int getMaxImageSize(final int scale) {
@@ -201,6 +204,7 @@ public final class ImageUtils {
 //                scaledBitmap = Bitmap.createScaledBitmap(bm, maxWidth, maxHeight, true);
                 scaledBitmap = createScaledBitmap(bm, maxWidth, maxHeight);
                 if (!bm.equals(scaledBitmap)) {
+                    // clean up the old one right now to save memory.
                     bm.recycle();
                     destView.setImageBitmap(scaledBitmap);
                     return;
@@ -248,9 +252,9 @@ public final class ImageUtils {
      */
     @NonNull
     @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final Bitmap src,
-                                            final int dstWidth,
-                                            final int dstHeight) {
+    private static Bitmap createScaledBitmap(@NonNull final Bitmap src,
+                                             final int dstWidth,
+                                             final int dstHeight) {
         Matrix matrix = new Matrix();
 
         final int width = src.getWidth();
@@ -359,6 +363,7 @@ public final class ImageUtils {
                 bm = Bitmap.createBitmap(tmpBm, 0, 0, opt.outWidth, opt.outHeight, matrix, true);
                 // Recycle if original was not returned
                 if (!bm.equals(tmpBm)) {
+                    // clean up the old one right now to save memory.
                     tmpBm.recycle();
                 }
             } else {
@@ -693,21 +698,23 @@ public final class ImageUtils {
             }
 
             if (mBitmap != null) {
-                if (!mWasInCache && BooklistBuilder.imagesAreCached()) {
-                    // Queue the image to be written to the cache.
-                    // "!viewIsValid" :
-                    // Tell the cache writer it can be recycled if we don't have a valid view.
-                    new ImageCacheWriterTask(mUuid, mWidth, mHeight, mBitmap, !viewIsValid)
-                            .execute();
+                if (viewIsValid) {
+                    // first display
+                    setImageView(imageView, mBitmap, mWidth, mHeight, true);
+                    // now send to cache if needed/allowed.
+                    if (!mWasInCache && BooklistBuilder.imagesAreCached()) {
+                        // during displaying, the bitmap could have been up or downscaled.
+                        // so we extract the currently displayed one to send to the cache.
+                        Drawable drawable = imageView.getDrawable();
+                        if (drawable instanceof BitmapDrawable) {
+                            Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+                            // Queue the image to be written to the cache.
+                            new ImageCacheWriterTask(mUuid, mWidth, mHeight, bitmap)
+                                    .execute();
+                        }
+                    }
                 }
 
-                // and finally, load the image into the view.
-                if (viewIsValid) {
-                    setImageView(imageView, mBitmap, mWidth, mHeight, true);
-                } else {
-                    mBitmap.recycle();
-                    mBitmap = null;
-                }
             } else {
                 if (viewIsValid) {
                     imageView.setImageResource(R.drawable.ic_broken_image);
@@ -731,29 +738,28 @@ public final class ImageUtils {
 
         private static final AtomicInteger runningTasks = new AtomicInteger();
 
-        /** Indicates if Bitmap can be recycled when no longer needed. */
-        private final boolean mCanRecycle;
-        /** Cache ID of this object. */
-        private String mCacheId;
         /** Bitmap to store. */
-        private Bitmap mBitmap;
+        private final Bitmap mBitmap;
+        @NonNull
+        private final String mUuid;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
 
         /**
          * Create a task that will compress the passed bitmap and write it to the database,
          * it will also be recycled if flag is set.
          *
          * @param source     Raw bitmap to store
-         * @param canRecycle Indicates bitmap should be recycled after use
          */
         @UiThread
         private ImageCacheWriterTask(@NonNull final String uuid,
                                      final int maxWidth,
                                      final int maxHeight,
-                                     @NonNull final Bitmap source,
-                                     final boolean canRecycle) {
-            mCacheId = CoversDAO.constructCacheId(uuid, maxWidth, maxHeight);
+                                     @NonNull final Bitmap source) {
+            mUuid = uuid;
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
             mBitmap = source;
-            mCanRecycle = canRecycle;
         }
 
         /**
@@ -771,20 +777,9 @@ public final class ImageUtils {
 
             runningTasks.incrementAndGet();
 
-            if (mBitmap.isRecycled()) {
-                // Was probably recycled by rapid scrolling of view
-                mBitmap = null;
-            } else {
-                try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
-                    coversDBAdapter.saveFile(mBitmap, mCacheId);
-                }
-
-                if (mCanRecycle) {
-                    mBitmap.recycle();
-                    mBitmap = null;
-                }
+            try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
+                coversDBAdapter.saveFile(mBitmap, mMaxWidth, mMaxHeight, mUuid);
             }
-            mCacheId = null;
 
             runningTasks.decrementAndGet();
             return null;

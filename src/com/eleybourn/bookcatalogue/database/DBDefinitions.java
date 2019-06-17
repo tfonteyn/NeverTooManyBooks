@@ -191,6 +191,7 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_TITLE, ColumnInfo.TYPE_TEXT, true);
         DOM_TITLE_OB =
                 new DomainDefinition(KEY_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
         DOM_FIRST_PUBLICATION =
                 new DomainDefinition(KEY_DATE_FIRST_PUBLISHED, ColumnInfo.TYPE_DATE, true)
@@ -224,6 +225,7 @@ public final class DBDefinitions {
 
         DOM_AUTHOR_FAMILY_NAME_OB =
                 new DomainDefinition(DOM_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
 
         DOM_AUTHOR_GIVEN_NAMES =
@@ -232,6 +234,7 @@ public final class DBDefinitions {
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
                 new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
 
         DOM_AUTHOR_IS_COMPLETE =
@@ -680,21 +683,22 @@ public final class DBDefinitions {
         TBL_BOOK_LIST =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME)
                         //RELEASE MUST use TableTypes.Temporary
-                        .setType(TableTypes.Temporary)
-//                        .setType(TableTypes.Standard)
+//                        .setType(TableTypes.Temporary)
+                        .setType(TableTypes.Standard)
                         .setAlias("bl");
 
         TBL_ROW_NAVIGATOR =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos")
                         //RELEASE MUST use TableTypes.Temporary
-                        .setType(TableTypes.Temporary)
-//                        .setType(TableTypes.Standard)
+//                        .setType(TableTypes.Temporary)
+                        .setType(TableTypes.Standard)
                         .setAlias("blrp");
 
         TBL_ROW_NAVIGATOR_FLATTENED =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos_flattened")
                         //RELEASE MUST use TableTypes.Temporary
                         .setType(TableTypes.Temporary)
+//                        .setType(TableTypes.Standard)
                         .setAlias("blrpf");
     }
 

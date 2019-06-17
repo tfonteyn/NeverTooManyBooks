@@ -370,7 +370,7 @@ public class BooklistGroup
          * Only ever init the Preferences if you have a valid UUID.
          */
         @Override
-        protected void initPrefs() {
+        void initPrefs() {
             super.initPrefs();
             mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid,
                                       mIsUserDefinedStyle);

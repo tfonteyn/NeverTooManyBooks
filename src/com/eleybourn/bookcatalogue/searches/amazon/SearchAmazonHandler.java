@@ -208,7 +208,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * @author evan
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
-public class SearchAmazonHandler
+class SearchAmazonHandler
         extends DefaultHandler {
 
     /** file suffix for cover files. */

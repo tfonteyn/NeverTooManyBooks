@@ -66,10 +66,12 @@ public class BooklistCursorRow
 
     /**
      * level text. Uses a dynamically set domain.
-     * Why 6 members? because at 2 it took me an hour to figure out why we had crashed...
-     * i.o.w. there are more then 2 levels, but we only display text for levels 1+2.
+     * Why 10 members? because at 2 it took me an hour to figure out why we had crashed...
+     * i.o.w. there can be as many levels as there are groups,
+     * but we only display text for levels 1+2.
+     * Note that if a user adds more then 10 groups to a style, we'll crash...
      */
-    private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2};
+    private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
 
     /**
      * Constructor.

@@ -140,15 +140,6 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * {@link AbstractCursor} method.
-     */
-    @Override
-    @NonNull
-    public String[] getColumnNames() {
-        return mBuilder.getListColumnNames();
-    }
-
-    /**
      * Handle a position change. Manage cursor based on new position.
      */
     @Override
@@ -223,7 +214,7 @@ public class BooklistPseudoCursor
                 }
             }
 
-            // Set the active cursor, and set its position correctly
+            // Set as the active cursor, and finally set its position correctly
             mActiveCursor = mCursors.get(cursorId);
             //noinspection ConstantConditions
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
@@ -265,6 +256,21 @@ public class BooklistPseudoCursor
         }
     }
 
+
+    private void clearCursors() {
+
+        for (BooklistCursor cursor : mCursors.values()) {
+            cursor.close();
+        }
+
+        mCursors.clear();
+        mActiveCursor = null;
+
+        for (int i = 0; i < mMruList.length; i++) {
+            mMruList[i] = -1;
+        }
+    }
+
     /**
      * Check if the passed cursor ID is in the MRU list.
      *
@@ -281,6 +287,16 @@ public class BooklistPseudoCursor
         return false;
     }
 
+
+    /**
+     * {@link AbstractCursor} method.
+     */
+    @Override
+    @NonNull
+    public String[] getColumnNames() {
+        return mBuilder.getListColumnNames();
+    }
+
     /**
      * {@link AbstractCursor} method.
      */
@@ -290,20 +306,6 @@ public class BooklistPseudoCursor
             mPseudoCount = mBuilder.getPseudoCount();
         }
         return mPseudoCount;
-    }
-
-    /**
-     * @return the number of book records in the list.
-     */
-    public int getBookCount() {
-        return mBuilder.getBookCount();
-    }
-
-    /**
-     * @return the number of unique book records in the list.
-     */
-    public int getUniqueBookCount() {
-        return mBuilder.getUniqueBookCount();
     }
 
     @Override
@@ -342,13 +344,6 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * @return the number of levels in the book list (includes the 'book' level!)
-     */
-    public int levels() {
-        return mBuilder.levels();
-    }
-
-    /**
      * Implement re-query; this needs to invalidate our existing cursors and call the superclass.
      */
     @Override
@@ -363,20 +358,6 @@ public class BooklistPseudoCursor
         onMove(getPosition(), getPosition());
 
         return super.requery();
-    }
-
-    private void clearCursors() {
-
-        for (BooklistCursor cursor : mCursors.values()) {
-            cursor.close();
-        }
-
-        mCursors.clear();
-        mActiveCursor = null;
-
-        for (int i = 0; i < mMruList.length; i++) {
-            mMruList[i] = -1;
-        }
     }
 
     /**

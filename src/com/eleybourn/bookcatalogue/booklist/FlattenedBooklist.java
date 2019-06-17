@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -26,6 +27,10 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_ROW_NAVIGAT
  * {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
  * <li>Use the normal constructor to start using the table</li>
  * </ol>
+ *
+ * Reminder: moveNext/Prev SQL concatenates/splits two columns. This is to get around the limitation
+ * of {@link SQLiteStatement} only able to return a single column.
+ * Alternative is to use a raw query, but those cannot be re-used (pre-compiled).
  *
  * @author pjw
  */
@@ -148,7 +153,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + ">?"
                     + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
@@ -174,7 +179,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + "<?"
                     + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
@@ -195,14 +200,14 @@ public class FlattenedBooklist
      * Move to the specified book row, based on the row ID, not the book ID or row number.
      * The row ID should be the row number in the table, including header-related rows.
      *
-     * @return {@code true}if successful
+     * @return {@code true} if successful
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean moveTo(final int position) {
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "|| '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);

@@ -563,7 +563,7 @@ public class BooklistAdapter
     /**
      * Base for all row 'holder' classes.
      */
-    public abstract static class RowViewHolder
+    abstract static class RowViewHolder
             extends RecyclerView.ViewHolder {
 
         /** Absolute position of this row. */
@@ -574,8 +574,8 @@ public class BooklistAdapter
         }
 
         @CallSuper
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
-                                     @NonNull final BooklistStyle style) {
+        void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+                              @NonNull final BooklistStyle style) {
             absolutePosition = rowData.getAbsolutePosition();
         }
     }
