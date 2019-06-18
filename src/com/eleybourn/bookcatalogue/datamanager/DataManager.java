@@ -496,8 +496,9 @@ public class DataManager {
     public void clear() {
         mRawData.clear();
         mDatumMap.clear();
-        mValidationExceptions.clear();
+        mValidatorsMap.clear();
         mCrossValidators.clear();
+        mValidationExceptions.clear();
     }
 
     /**
