@@ -676,44 +676,15 @@ public class TableDefinition
     /**
      * Return a base INSERT statement for this table using the passed list of domains.
      * <p>
-     * format: INSERT into [table-name] ( [domain-list] )
+     * format: INSERT INTO [table-name] ( [domain-list] )
      *
      * @param domains List of domains to use
      *
      * @return SQL fragment
      */
     @NonNull
-    public String getInsert(@NonNull final DomainDefinition... domains) {
+    public String getInsertInto(@NonNull final DomainDefinition... domains) {
         return "INSERT INTO " + mName + " (" + Csv.join(",", Arrays.asList(domains)) + ')';
-    }
-
-    /**
-     * Return a base INSERT statement for this table using the passed list of domains.
-     * <p>
-     * format: INSERT into [table-name] ( [domain-list] )
-     * or
-     * format: INSERT into [table-name] ( [domain-list] ) VALUES(?,...?)
-     *
-     * @param withValuesClause set to {@code true} to add the VALUES part
-     * @param domains          List of domains to use
-     *
-     * @return SQL fragment
-     */
-    @NonNull
-    public String getInsert(final boolean withValuesClause,
-                            @NonNull final DomainDefinition... domains) {
-        StringBuilder sql = new StringBuilder("INSERT INTO ")
-                .append(mName)
-                .append(" (")
-                .append(Csv.join(",", Arrays.asList(domains)))
-                .append(')');
-
-        if (withValuesClause) {
-            sql.append(" VALUES (")
-               .append(Csv.join(",", "?", domains.length))
-               .append(')');
-        }
-        return sql.toString();
     }
 
     /**

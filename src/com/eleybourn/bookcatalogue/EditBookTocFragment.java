@@ -378,9 +378,6 @@ public class EditBookTocFragment
     /**
      * we got one or more editions from ISFDB.
      * Store the url's locally as the user might want to try the next in line
-     * <p>
-     * ENHANCE: add the url's to the options menu for retry.
-     * Remove from menu each time one is tried.
      */
     private void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
         mISFDBEditions = editions != null ? editions : new ArrayList<>();

@@ -56,8 +56,9 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder} and related. */
     public static final boolean BOOKLIST_BUILDER = false;
 
+
     /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
-    public static final boolean BOB_FIX_POSITION = false;
+    static final boolean BOB_FIX_POSITION = false;
 
     /** {@link com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel#initBookList}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;

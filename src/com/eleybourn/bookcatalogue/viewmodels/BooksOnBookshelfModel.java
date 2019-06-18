@@ -51,10 +51,6 @@ public class BooksOnBookshelfModel
     public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
     public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
-    /**
-     * Set to true to enable true rebuild for debugging. See {@link #initBookList}.
-     */
-    private static final boolean __DEBUG_THE_REBUILD_ISSUE = false;
 
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
@@ -70,9 +66,11 @@ public class BooksOnBookshelfModel
      * Indicates if list rebuild is needed.
      */
     @Nullable
-    private Boolean mAfterOnActivityResultDoFullRebuild;
-    /** Flag to indicate that a list has been successfully loaded. Affects the way we save state. */
+    private Boolean mDoFullRebuildAfterOnActivityResult;
+
+    /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
+
     /** Stores the book id for the current list position, e.g. while a book is viewed/edited. */
     private long mCurrentPositionedBookId;
     /** Used by onScroll to detect when the top row has actually changed. */
@@ -337,20 +335,8 @@ public class BooksOnBookshelfModel
      *                      versus just do a reselect of underlying data
      * @param context       NOT cached, only used to get locale strings
      */
-    public void initBookList(@SuppressWarnings("ParameterCanBeLocal") boolean isFullRebuild,
+    public void initBookList(final boolean isFullRebuild,
                              @NonNull final Context context) {
-
-        //FIXME: this is one from the original code. isFullRebuild=false is BROKEN.
-        // basically all group headers are no longer in the TBL_BOOK_LIST.
-        // See DatabaseDefinitions#TBL_BOOK_LIST for an example of the correct table content
-        // After rebuild(false) all rows which don't show an expanded node are gone.
-        //
-        if (__DEBUG_THE_REBUILD_ISSUE) {
-            Logger.debugWithStackTrace(this, "initBookList",
-                                       "isFullRebuild=" + isFullRebuild);
-        } else {
-            isFullRebuild = true;
-        }
 
         BooklistBuilder bookListBuilder;
 
@@ -433,7 +419,7 @@ public class BooksOnBookshelfModel
      */
     @Nullable
     public Boolean isForceFullRebuild() {
-        return mAfterOnActivityResultDoFullRebuild;
+        return mDoFullRebuildAfterOnActivityResult;
     }
 
     public boolean isListLoaded() {
@@ -447,7 +433,7 @@ public class BooksOnBookshelfModel
      *                    {@code null} for no rebuild.
      */
     public void setFullRebuild(@Nullable final Boolean fullRebuild) {
-        mAfterOnActivityResultDoFullRebuild = fullRebuild;
+        mDoFullRebuildAfterOnActivityResult = fullRebuild;
     }
 
     public void setCurrentPositionedBookId(final long currentPositionedBookId) {

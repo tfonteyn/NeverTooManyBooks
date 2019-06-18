@@ -273,6 +273,12 @@ public class BooklistBuilder
     private final String mUnknown;
     /** the list of Filters. */
     private final ArrayList<Filter> mFilters = new ArrayList<>();
+    /**
+     * Collection of statements used to build the data tables.
+     * <p>
+     * Needs to be re-usable WITHOUT parameter binding.
+     */
+    private final ArrayList<SynchronizedStatement> mRebuildStmts = new ArrayList<>();
     /** used in debug. */
     private boolean mDebugReferenceDecremented;
     /**
@@ -292,18 +298,6 @@ public class BooklistBuilder
     private TableDefinition mNavTable;
     /** Object used in constructing the output table. */
     private SummaryBuilder mSummary;
-    /**
-     * Statement used to perform initial insert.
-     * <p>
-     * Needs to be re-usable WITHOUT parameter binding.
-     */
-    private SynchronizedStatement mBaseBuildStmt;
-    /**
-     * Collection of statements used to build remaining data.
-     * <p>
-     * Needs to be re-usable WITHOUT parameter binding.
-     */
-    private ArrayList<SynchronizedStatement> mLevelBuildStmts;
 
     /** A bookshelf id to use as a filter; i.e. show only books on this bookshelf. */
     private long mFilterOnBookshelfId;
@@ -343,12 +337,15 @@ public class BooklistBuilder
         return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_STATE_PRESERVED);
     }
 
-    public static boolean imagesAreCached() {
-        return App.getPrefs().getBoolean(Prefs.pk_bob_thumbnails_cache_resized, false);
-    }
-
     public static boolean imagesAreGeneratedInBackground() {
         return App.getPrefs().getBoolean(Prefs.pk_bob_thumbnails_generating_mode, false);
+    }
+
+    /**
+     * Only valid if {@link #imagesAreGeneratedInBackground()} returns {@code true}.
+     */
+    public static boolean imagesAreCached() {
+        return App.getPrefs().getBoolean(Prefs.pk_bob_thumbnails_cache_resized, false);
     }
 
     /**
@@ -489,17 +486,9 @@ public class BooklistBuilder
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this, "rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
-        }
-
-        // Build base data
-        mBaseBuildStmt.executeInsert();
-
-        // Rebuild all the rest
-        for (SynchronizedStatement stmt : mLevelBuildStmts) {
+        for (SynchronizedStatement stmt : mRebuildStmts) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
+                Logger.debug(this, "rebuild", "mRebuildStmts|" + stmt + '\n');
             }
             stmt.execute();
         }
@@ -523,13 +512,14 @@ public class BooklistBuilder
         // SQLite 3.5.9 (2008-05-14) is broken.
         // Allow for the user preferences to override in case another build is broken.
         // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
-        //ENHANCE: time to remove sqlite pre-trigger use logic ? -> keep it till the bug of rebuild (using triggers) is resolved.
+        //ENHANCE: time to remove sqlite pre-trigger use logic ?
         final CompatibilityMode listMode = CompatibilityMode.get();
 
         // Build a sort mask based on if triggers are used;
         // we can not reverse sort if they are not used.
         final int sortDescendingMask = listMode.useTriggers
-                                       ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
+                                       ? SummaryBuilder.FLAG_SORT_DESCENDING
+                                       : SummaryBuilder.FLAG_NONE;
 
         SummaryBuilder summary = new SummaryBuilder();
 
@@ -612,35 +602,23 @@ public class BooklistBuilder
             ////////////////////////////////////////////////////////////////////////////////////////
 
             /*
-             * Build the initial insert statement:
-             *      'insert into <tbl> (col-list) select (expr-list) from'.
-             *
-             * We just need to add the 'from' tables. It is a fairly static list,
-             * for the most part we just add extra criteria as needed.
-             *
-             * The seriesLevel and authorLevel fields will influence the nature of the join.
-             * If at a later stage some row kinds introduce more table dependencies, a flag
-             * (or object) can be set when processing the level to inform the joining code
-             * (below) which tables need to be added.
+             * Build the initial insert statement components:
              */
-            SqlComponents sqlCmp = summary.buildSqlComponents(mStyle.getGroupAt(0)
-                                                                    .getCompoundKey());
+            BooklistGroup.CompoundKey compoundKey = mStyle.getGroupAt(0).getCompoundKey();
+            BaseBuildSqlComponents baseBuild = summary.buildSqlComponents(compoundKey);
 
             final long t4_buildSqlComponents = System.nanoTime();
-            // Build the join tables
-            sqlCmp.join = buildJoin(buildInfoHolder);
+
+            baseBuild.buildJoinTables(buildInfoHolder, (mFilterOnBookshelfId > 0));
 
             final long t5_build_join = System.nanoTime();
 
-            // Build the 'where' clause
-            sqlCmp.where = buildWhereClause();
+            baseBuild.buildWhereClause(mFilters, mStyle);
 
             final long t6_build_where = System.nanoTime();
 
-            // Check if the collation we use is case sensitive.
-            boolean collationIsCs = mSyncedDb.isCollationCaseSensitive();
-
-            processSortColumns(summary.getSortedColumns(), collationIsCs, sqlCmp);
+            baseBuild.buildOrderBy(summary.getSortedColumns(),
+                                   mSyncedDb.isCollationCaseSensitive());
 
             // unused
             // Process the group-by columns suitable for a group-by statement or index
@@ -657,13 +635,11 @@ public class BooklistBuilder
 
             final long t7_sortColumns_processed = System.nanoTime();
 
-            // We are good to go.
+            mRebuildStmts.clear();
 
-            //mSyncedDb.execSQL("PRAGMA synchronous = OFF"); -- Has very little effect
+            // We are good to go.
             SyncLock txLock = mSyncedDb.beginTransaction(true);
             try {
-                mLevelBuildStmts = new ArrayList<>();
-                // Build the lowest level summary using our initial insert statement
                 if (listMode.useTriggers) {
                     // If we are using triggers, then we insert them in order and rely on the
                     // triggers to build the summary rows in the correct place.
@@ -677,17 +653,17 @@ public class BooklistBuilder
                         // Flat triggers are compatible with Android 1.6+ but slower
                         tgt = makeSingleTrigger(summary.getSortedColumns());
                     }
-                    mBaseBuildStmt = mStatements.add(
-                            STMT_BASE_BUILD,
-                            "INSERT INTO " + tgt + '(' + sqlCmp.destinationColumns + ") "
-                                    + sqlCmp.select
-                                    + " FROM " + sqlCmp.join + sqlCmp.where
-                                    + " ORDER BY " + sqlCmp.orderByColumns);
 
-                    mBaseBuildStmt.executeInsert();
+                    // Build the lowest level summary using our initial insert statement
+                    // The triggers will do the rest.
+                    SynchronizedStatement baseStmt = mStatements.add(STMT_BASE_BUILD,
+                                                                     baseBuild.getSql(tgt));
+                    mRebuildStmts.add(baseStmt);
+                    baseStmt.executeInsert();
+
                 } else {
-                    // just moved out of the way... eventually to be removed maybe?
-                    baseBuildWithoutTriggers(sqlCmp, collationIsCs);
+                    // eventually to be removed maybe?
+                    baseBuildWithoutTriggers(baseBuild, mSyncedDb.isCollationCaseSensitive());
                 }
 
                 final long t8_BaseBuild_executed = System.nanoTime();
@@ -697,7 +673,12 @@ public class BooklistBuilder
                 final long t9_table_optimized = System.nanoTime();
 
                 // build the lookup aka navigation table
-                populateNavigationTable(sqlCmp, preferredState, listMode);
+                if (listMode.useTriggers) {
+                    // the table is ordered at insert time, so the row id *is* the order.
+                    populateNavigationTable(mListTable.dot(DOM_PK_ID), preferredState);
+                } else {
+                    populateNavigationTable(baseBuild.getOrderByColumns(), preferredState);
+                }
 
                 final long t10_nav_table_build = System.nanoTime();
 
@@ -709,12 +690,7 @@ public class BooklistBuilder
                                                 + '(' + DOM_BL_NODE_LEVEL
                                                 + ',' + DOM_BL_NODE_EXPANDED
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                    Logger.debug(this, "build", "add",
-                                 STMT_NAV_IX_1, ixStmt1.toString());
-                }
-                mLevelBuildStmts.add(ixStmt1);
+                mRebuildStmts.add(ixStmt1);
                 ixStmt1.execute();
 
                 final long t11_nav_table_index_IX1_created = System.nanoTime();
@@ -726,14 +702,8 @@ public class BooklistBuilder
                                         "CREATE UNIQUE INDEX " + mNavTable + "_IX2"
                                                 + " ON " + mNavTable
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                    Logger.debug(this, "build", "add",
-                                 STMT_NAV_IX_2, ixStmt2.toString());
-                }
-                mLevelBuildStmts.add(ixStmt2);
+                mRebuildStmts.add(ixStmt2);
                 ixStmt2.execute();
-
 
                 final long t12_nav_table_index_IX2_created = System.nanoTime();
                 mSyncedDb.analyze(mNavTable);
@@ -764,8 +734,6 @@ public class BooklistBuilder
 
             } finally {
                 mSyncedDb.endTransaction(txLock);
-                //mSyncedDb.execSQL("PRAGMA synchronous = FULL");
-
             }
         } finally {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
@@ -782,27 +750,19 @@ public class BooklistBuilder
      *
      * @param preferredState State to display: expanded, collapsed or remembered
      */
-    private void populateNavigationTable(@NonNull final SqlComponents sqlCmp,
-                                         final int preferredState,
-                                         @NonNull final CompatibilityMode listMode) {
+    private void populateNavigationTable(@NonNull final String sortExpression,
+                                         final int preferredState) {
 
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
-        String sortExpression;
-        if (listMode.useTriggers) {
-            sortExpression = mListTable.dot(DOM_PK_ID);
-        } else {
-            sortExpression = sqlCmp.orderByColumns;
-        }
-
         // TODO: Rebuild with state preserved is SLOWEST option
         // Need a better way to preserve state.
-        String insSql = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
-                                            DOM_BL_NODE_LEVEL,
-                                            DOM_BL_ROOT_KEY,
-                                            DOM_BL_NODE_VISIBLE,
-                                            DOM_BL_NODE_EXPANDED)
+        String insSql = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
+                                                DOM_BL_NODE_LEVEL,
+                                                DOM_BL_ROOT_KEY,
+                                                DOM_BL_NODE_VISIBLE,
+                                                DOM_BL_NODE_EXPANDED)
                 + " SELECT " + mListTable.dot(DOM_PK_ID)
                 + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                 + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
@@ -827,21 +787,16 @@ public class BooklistBuilder
 
         // Always save the state-preserving navigator for rebuilds
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this, "populateNavigationTable", "add",
-                         STMT_NAV_TABLE_INSERT, navStmt.toString());
-        }
-        mLevelBuildStmts.add(navStmt);
+        mRebuildStmts.add(navStmt);
 
         // On first-time builds, get the Preferences-based list
         switch (preferredState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
-                String sqlc = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
-                                                  DOM_BL_NODE_LEVEL,
-                                                  DOM_BL_ROOT_KEY,
-                                                  DOM_BL_NODE_VISIBLE,
-                                                  DOM_BL_NODE_EXPANDED)
+                String sqlc = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
+                                                      DOM_BL_NODE_LEVEL,
+                                                      DOM_BL_ROOT_KEY,
+                                                      DOM_BL_NODE_VISIBLE,
+                                                      DOM_BL_NODE_EXPANDED)
                         + " SELECT " + mListTable.dot(DOM_PK_ID)
                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
@@ -858,11 +813,11 @@ public class BooklistBuilder
                 break;
 
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
-                String sqle = mNavTable.getInsert(DOM_BL_REAL_ROW_ID,
-                                                  DOM_BL_NODE_LEVEL,
-                                                  DOM_BL_ROOT_KEY,
-                                                  DOM_BL_NODE_VISIBLE,
-                                                  DOM_BL_NODE_EXPANDED)
+                String sqle = mNavTable.getInsertInto(DOM_BL_REAL_ROW_ID,
+                                                      DOM_BL_NODE_LEVEL,
+                                                      DOM_BL_ROOT_KEY,
+                                                      DOM_BL_NODE_VISIBLE,
+                                                      DOM_BL_NODE_EXPANDED)
                         + " SELECT " + mListTable.dot(DOM_PK_ID)
                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
@@ -879,250 +834,6 @@ public class BooklistBuilder
                 // Use already-defined SQL for preserve state.
                 navStmt.execute();
                 break;
-        }
-    }
-
-    /**
-     * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement, or index.
-     * <p>
-     * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
-     *
-     * @param sortedColumns the list of sorted domains from the builder
-     * @param collationIsCs if {@code true} then we'll adjust the case here
-     * @param sqlCmp        will be updated with the sorting information
-     */
-    private void processSortColumns(@NonNull final List<SortedDomainInfo> sortedColumns,
-                                    final boolean collationIsCs,
-                                    final SqlComponents /* in/out */ sqlCmp) {
-        final StringBuilder sortCols = new StringBuilder();
-        final StringBuilder indexCols = new StringBuilder();
-
-        for (SortedDomainInfo sdi : sortedColumns) {
-            indexCols.append(sdi.domain.name);
-            if (sdi.domain.isText()) {
-                indexCols.append(DAO.COLLATION);
-
-                if (sdi.domain.isPrePreparedOrderBy()) {
-                    // always use a pre-prepared order-by column as-is
-                    sortCols.append(sdi.domain.name);
-
-                } else if (collationIsCs) {
-                    // *If* collations is case-sensitive, lowercase it.
-                    sortCols.append("lower(").append(sdi.domain.name).append(')');
-
-                } else {
-                    // hope for the best. This case might not handle non-[A..Z0..9] as expected
-                    sortCols.append(sdi.domain.name);
-                }
-
-                sortCols.append(DAO.COLLATION);
-            } else {
-                sortCols.append(sdi.domain.name);
-            }
-            if (sdi.isDescending) {
-                indexCols.append(" DESC");
-                sortCols.append(" DESC");
-            }
-            sortCols.append(',');
-            indexCols.append(',');
-        }
-
-        sortCols.append(DOM_BL_NODE_LEVEL.name);
-        indexCols.append(DOM_BL_NODE_LEVEL.name);
-
-        sqlCmp.orderByColumns = sortCols.toString();
-        sqlCmp.sortIndexColumnList = indexCols.toString();
-    }
-
-    private void baseBuildWithoutTriggers(@NonNull final SqlComponents /* in/out */ sqlCmp,
-                                          final boolean collationIsCs) {
-
-        final long[] t_style = new long[mStyle.groupCount() + 1];
-        t_style[0] = System.nanoTime();
-
-        // Without triggers we just get the base rows and add summary later
-        mBaseBuildStmt = mStatements.add(STMT_BASE_BUILD,
-                                         sqlCmp.insertSelect + sqlCmp.join + sqlCmp.where);
-        mBaseBuildStmt.executeInsert();
-
-        // Now build each summary level query based on the prior level.
-        // We build and run from the bottom up.
-        int timer = 1;
-        // Loop from innermost group to outermost, building summary at each level
-        for (int i = mStyle.groupCount() - 1; i >= 0; i--) {
-            final BooklistGroup group = mStyle.getGroupAt(i);
-            final int levelId = i + 1;
-            // cols is the list of column names for the 'Insert' and 'Select' parts
-            StringBuilder cols = new StringBuilder();
-            // collatedCols is used for the group-by
-            StringBuilder collatedCols = new StringBuilder();
-
-            // Build the column lists for this group
-            //noinspection ConstantConditions
-            for (DomainDefinition d : group.getDomains()) {
-                if (collatedCols.length() > 0) {
-                    collatedCols.append(',');
-                }
-                cols.append(',').append(d.name);
-
-                collatedCols.append(' ').append(d.name).append(DAO.COLLATION);
-            }
-
-            // Construct the sum statement for this group
-            String summarySql = "INSERT INTO " + mListTable
-                    + " (" + DOM_BL_NODE_LEVEL
-                    + ',' + DOM_BL_NODE_ROW_KIND + cols
-                    + ',' + DOM_BL_ROOT_KEY + ')'
-                    + " SELECT " + levelId + " AS " + DOM_BL_NODE_LEVEL
-                    + ',' + group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols
-                    + ',' + DOM_BL_ROOT_KEY
-                    + " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1)
-                    + " GROUP BY " + collatedCols + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION;
-            //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
-
-            // Save, compile and run this statement
-            SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this, "baseBuildWithoutTriggers", "add",
-                             "Level" + i, stmt.toString());
-            }
-            mLevelBuildStmts.add(stmt);
-            stmt.executeInsert();
-            t_style[timer++] = System.nanoTime();
-        }
-
-        // Build an index if it will help sorting but *If* collation is case-sensitive,
-        // don't bother with index, since everything is wrapped in lower().
-        // ICS UNICODE: Consider adding a duplicate _OB (lower case) column
-        // to the SUMMARY table. Ugh. ==> this whole "without triggers" is outdated.
-        if (!collationIsCs) {
-            String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
-                    + '(' + sqlCmp.sortIndexColumnList + ')';
-
-            // Indexes that were tried. None had a substantial impact with 800 books.
-//            String ix1aSql = "CREATE INDEX " + mListTable + "_IX1a ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ", " + sqlCmp.sortIndexColumnList + ')';
-//            String ix2Sql = "CREATE UNIQUE INDEX " + mListTable + "_IX2 ON " + mListTable
-//                    + '(' + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ')';
-//            String ix3Sql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + sqlCmp.sortIndexColumnList + ')';
-//            String ix3aSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + sqlCmp.sortIndexColumnList + ')';
-//            String ix3bSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + sqlCmp.sortIndexColumnList + ',' + DOM_BL_NODE_LEVEL + ')';
-//            String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + sqlCmp.sortIndexColumnList
-//                    + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION + ')';
-//            String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + sqlCmp.sortIndexColumnList
-//                    + ',' + DOM_BL_ROOT_KEY + ')';
-//            String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + sqlCmp.sortIndexColumnList + ',' + DOM_BL_ROOT_KEY
-//                    + ',' + DOM_BL_NODE_LEVEL + ')';
-//            String ix4Sql = "CREATE INDEX " + mListTable + "_IX4 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
-//                    + ',' + DOM_BL_ROOT_KEY + ')';
-            SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.debug(this, "baseBuildWithoutTriggers", "add",
-                             STMT_IX_1, stmt.toString());
-            }
-            mLevelBuildStmts.add(stmt);
-            stmt.execute();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            for (
-                    int i = 0; i < mStyle.groupCount();
-                    i++) {
-                Logger.debug(this, "baseBuildWithoutTriggers",
-                             "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
-            }
-        }
-    }
-
-    /**
-     * Build the 'join' statement based on the groups and extra criteria.
-     */
-    @NonNull
-    private String buildJoin(@NonNull final BuildInfoHolder buildInfoHolder) {
-
-        Joiner join;
-
-        // If there is a bookshelf specified, start the join there.
-        // Otherwise, start with the BOOKS table.
-        if (buildInfoHolder.hasGroupBOOKSHELF || (mFilterOnBookshelfId > 0)) {
-            join = new Joiner(TBL_BOOKSHELF)
-                    .join(TBL_BOOK_BOOKSHELF)
-                    .join(TBL_BOOKS);
-        } else {
-            join = new Joiner(TBL_BOOKS);
-        }
-
-        // If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
-        if (buildInfoHolder.hasGroupLOANED) {
-            join.leftOuterJoin(TBL_BOOK_LOANEE);
-        }
-
-        // Now join with author; we must specify a parent in the join, because the last table
-        // joined was one of BOOKS or LOAN and we don't know which. So we explicitly use books.
-        join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
-
-        // If there is no author group, or the user only wants primary author, get primary only
-        if (buildInfoHolder.authorGroup == null || !buildInfoHolder.authorGroup.showAllAuthors()) {
-            join.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " == 1");
-        }
-
-        // Join with authors to make the names available
-        join.join(TBL_AUTHORS);
-
-        // Current table will be authors, so name parent explicitly to join books->book_series.
-        join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
-
-        // If there was no series group, or user requests primary series only,
-        // then just get primary series.
-        if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAllSeries()) {
-            join.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "==1");
-        }
-
-        // Join with series to get name
-        join.leftOuterJoin(TBL_SERIES);
-
-        return join.getSql();
-    }
-
-    /**
-     * Create the WHERE clause based on all filters.
-     *
-     * @return a full WHERE clause (including keyword 'WHERE'), or the empty string for none.
-     */
-    @NonNull
-    private String buildWhereClause() {
-        StringBuilder where = new StringBuilder();
-
-        // Add local Filters which are always active
-        for (Filter filter : mFilters) {
-            if (where.length() != 0) {
-                where.append(" AND ");
-            }
-            where.append(' ').append(filter.getExpression());
-        }
-
-        // Add BooklistStyle Filters but check if they are active
-        for (Filter filter : mStyle.getFilters().values()) {
-            if (filter.isActive()) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(' ').append(filter.getExpression());
-            }
-        }
-
-        // all done
-        if (where.length() > 0) {
-            return where.insert(0, " WHERE ").toString();
-        } else {
-            return "";
         }
     }
 
@@ -1155,11 +866,11 @@ public class BooklistBuilder
             if (!sortedDomainNames.contains(domainInfo.domain.name)) {
                 sortedDomainNames.add(domainInfo.domain.name);
                 if (sortedCols.length() > 0) {
-                    sortedCols.append(", ");
-                    currInsertSql.append(", ");
+                    sortedCols.append(",");
+                    currInsertSql.append(",");
                 }
                 sortedCols.append(domainInfo.domain.name);
-                currInsertSql.append("new.").append(domainInfo.domain.name);
+                currInsertSql.append("New.").append(domainInfo.domain.name);
             }
         }
 
@@ -1192,7 +903,7 @@ public class BooklistBuilder
             StringBuilder valuesSql = new StringBuilder(
                     " VALUES(" + levelId
                             + ',' + group.getKind()
-                            + ",new." + DOM_BL_ROOT_KEY);
+                            + ",New." + DOM_BL_ROOT_KEY);
 
             // Create the conditional to detect if next level up is already defined
             // (by checking the 'current' record/table)
@@ -1201,7 +912,7 @@ public class BooklistBuilder
             //noinspection ConstantConditions
             for (DomainDefinition groupDomain : group.getDomains()) {
                 insertSql.append(',').append(groupDomain);
-                valuesSql.append(", new.").append(groupDomain);
+                valuesSql.append(", New.").append(groupDomain);
                 // Only update the 'condition' part if it is part of the SORT list
                 if (sortedDomainNames.contains(groupDomain.name)) {
                     if (conditionSql.length() > 0) {
@@ -1221,10 +932,10 @@ public class BooklistBuilder
             mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgName);
             String tgSql = "\nCREATE TEMP TRIGGER " + tgName
                     + " BEFORE INSERT ON " + mListTable + " FOR EACH ROW"
-                    + "\n WHEN New." + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) + " AND NOT EXISTS("
-                    + "SELECT 1 FROM " + currentTableName + ' ' + currentTableAlias
-                    + " WHERE " + conditionSql
-                    + ')'
+                    + "\n WHEN New." + DOM_BL_NODE_LEVEL + '=' + (levelId + 1)
+                    + " AND NOT EXISTS("
+                    + /* */ "SELECT 1 FROM " + currentTableName + ' ' + currentTableAlias
+                    + /* */ " WHERE " + conditionSql + ')'
                     + "\n BEGIN"
                     + "\n   " + insertSql + ';'
                     + "\n END";
@@ -1234,7 +945,7 @@ public class BooklistBuilder
                 Logger.debug(this, "makeNestedTriggers", "add",
                              tgName, stmt.toString());
             }
-            mLevelBuildStmts.add(stmt);
+            mRebuildStmts.add(stmt);
             stmt.execute();
         }
 
@@ -1244,8 +955,9 @@ public class BooklistBuilder
         String tgSql = "\nCREATE TEMP TRIGGER " + currentValueTriggerName
                 + " AFTER INSERT ON " + mListTable + " FOR EACH ROW"
                 + "\n WHEN New." + DOM_BL_NODE_LEVEL + '=' + mStyle.groupCount()
-                // + " AND NOT EXISTS(SELECT 1 FROM " + currTblName + ' ' + currentTableAlias
-                // + " WHERE " + conditionSql + ")\n"
+                // + " AND NOT EXISTS("
+                // +   "SELECT 1 FROM " + currentTableName + ' ' + currentTableAlias
+                // +   " WHERE " + conditionSql + ')'
                 + "\n BEGIN"
                 + "\n   DELETE FROM " + currentTableName + ';'
                 + "\n   INSERT INTO " + currentTableName + " VALUES (" + currInsertSql + ");"
@@ -1256,7 +968,7 @@ public class BooklistBuilder
             Logger.debug(this, "makeNestedTriggers", "add",
                          currentValueTriggerName, stmt);
         }
-        mLevelBuildStmts.add(stmt);
+        mRebuildStmts.add(stmt);
         stmt.execute();
 
         return mListTable.getName();
@@ -1297,7 +1009,7 @@ public class BooklistBuilder
                     fullValues.append(", ");
                 }
                 fullInsert.append(d);
-                fullValues.append("new.").append(d);
+                fullValues.append("New.").append(d);
             }
         }
         fullInsert.append(") ").append(fullValues).append(");");
@@ -1325,7 +1037,7 @@ public class BooklistBuilder
                     currInsertSql.append(',');
                 }
                 sortedCols.append(domainInfo.domain.name);
-                currInsertSql.append("new.").append(domainInfo.domain.name);
+                currInsertSql.append("New.").append(domainInfo.domain.name);
             }
         }
 
@@ -1360,7 +1072,7 @@ public class BooklistBuilder
                     " SELECT "
                             + levelId
                             + ',' + group.getKind()
-                            + ',' + "new." + DOM_BL_ROOT_KEY);
+                            + ',' + "New." + DOM_BL_ROOT_KEY);
 
             // Create the conditional to detect if next level up is already defined
             // (by checking the 'current' record/table)
@@ -1369,14 +1081,14 @@ public class BooklistBuilder
             //noinspection ConstantConditions
             for (DomainDefinition d : group.getDomains()) {
                 insertSql.append(',').append(d);
-                valuesSql.append(", new.").append(d);
+                valuesSql.append(", New.").append(d);
                 // Only update the 'condition' part if it is part of the SORT list
                 if (sortedDomainNames.contains(d.name)) {
                     if (conditionSql.length() > 0) {
                         conditionSql.append(" AND ");
                     }
                     conditionSql.append("Coalesce(l.").append(d)
-                                .append(",'') = Coalesce(new.").append(d)
+                                .append(",'') = Coalesce(New.").append(d)
                                 .append(",'')")
                                 .append(DAO.COLLATION).append('\n');
                 }
@@ -1401,17 +1113,86 @@ public class BooklistBuilder
                      .append("\n END");
 
 
-        SynchronizedStatement stmt =
-                mStatements.add(tgForwardName, oneBigTrigger.toString());
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.debug(this, "makeSingleTrigger", "add",
-                         tgForwardName, stmt);
-        }
-        mLevelBuildStmts.add(stmt);
+        SynchronizedStatement stmt = mStatements.add(tgForwardName, oneBigTrigger.toString());
+        mRebuildStmts.add(stmt);
         stmt.execute();
 
         return viewTblName;
+    }
+
+    private void baseBuildWithoutTriggers(@NonNull final BaseBuildSqlComponents sqlCmp,
+                                          final boolean collationIsCs) {
+
+        final long[] t_style = new long[mStyle.groupCount() + 1];
+        t_style[0] = System.nanoTime();
+
+        // Without triggers we just get the base rows and add summary later
+        SynchronizedStatement baseStmt =
+                mStatements.add(STMT_BASE_BUILD, sqlCmp.getSqlWithoutOrderBy(mListTable.getName()));
+        mRebuildStmts.add(baseStmt);
+        baseStmt.executeInsert();
+
+        // Now build each summary level query based on the prior level.
+        // We build and run from the bottom up.
+        int timer = 1;
+        // Loop from innermost group to outermost, building summary at each level
+        for (int i = mStyle.groupCount() - 1; i >= 0; i--) {
+            final BooklistGroup group = mStyle.getGroupAt(i);
+            final int levelId = i + 1;
+            // cols is the list of column names for the 'Insert' and 'Select' parts
+            StringBuilder cols = new StringBuilder();
+            // collatedCols is used for the group-by
+            StringBuilder collatedCols = new StringBuilder();
+
+            // Build the column lists for this group
+            //noinspection ConstantConditions
+            for (DomainDefinition d : group.getDomains()) {
+                if (collatedCols.length() > 0) {
+                    collatedCols.append(',');
+                }
+                cols.append(',').append(d.name);
+
+                collatedCols.append(' ').append(d.name).append(DAO.COLLATION);
+            }
+
+            // Construct the sum statement for this group
+            String summarySql = "INSERT INTO " + mListTable
+                    + " (" + DOM_BL_NODE_LEVEL
+                    + ',' + DOM_BL_NODE_ROW_KIND + cols
+                    + ',' + DOM_BL_ROOT_KEY + ')'
+                    + " SELECT " + levelId + " AS " + DOM_BL_NODE_LEVEL
+                    + ',' + group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols
+                    + ',' + DOM_BL_ROOT_KEY
+                    + " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1)
+                    + " GROUP BY " + collatedCols + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION;
+            //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
+
+            // Save, compile and run this statement
+            SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
+            mRebuildStmts.add(stmt);
+            stmt.executeInsert();
+            t_style[timer++] = System.nanoTime();
+        }
+
+        // Build an index if it will help sorting but *If* collation is case-sensitive,
+        // don't bother with index, since everything is wrapped in lower().
+        // ICS UNICODE: Consider adding a duplicate _OB (lower case) column
+        // to the SUMMARY table. Ugh. ==> this whole "without triggers" is outdated.
+        if (!collationIsCs) {
+            String ix1Sql = sqlCmp.getIndexCreateWithoutTriggersSql(mListTable.getName());
+            SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
+            mRebuildStmts.add(stmt);
+            stmt.execute();
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            for (
+                    int i = 0; i < mStyle.groupCount();
+                    i++) {
+                Logger.debug(this, "baseBuildWithoutTriggers",
+                             "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
+            }
+        }
     }
 
     /**
@@ -1431,7 +1212,7 @@ public class BooklistBuilder
             SynchronizedStatement stmt = mStatements.get(STMT_SAVE_ALL_LIST_NODE_SETTINGS);
             if (stmt == null) {
                 String sql = TBL_BOOK_LIST_NODE_SETTINGS
-                        .getInsert(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
+                        .getInsertInto(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
                         + " SELECT DISTINCT ?," + DOM_BL_ROOT_KEY + " FROM " + mNavTable
                         + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
                         + " AND " + DOM_BL_NODE_LEVEL + "=1";
@@ -1481,7 +1262,7 @@ public class BooklistBuilder
             stmt = mStatements.get(STMT_SAVE_LIST_NODE_SETTING);
             if (stmt == null) {
                 String sql = TBL_BOOK_LIST_NODE_SETTINGS
-                        .getInsert(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
+                        .getInsertInto(DOM_BL_NODE_ROW_KIND, DOM_BL_ROOT_KEY)
                         + " SELECT ?," + DOM_BL_ROOT_KEY + " FROM " + mNavTable
                         + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
                         + " AND " + DOM_BL_NODE_LEVEL + "=1"
@@ -2150,26 +1931,243 @@ public class BooklistBuilder
     }
 
     /**
-     * Structure used to store components of the SQL required to build the list.
-     * We use this for experimenting with alternate means of construction.
+     * Store and process components of the SQL required to build the list.
      */
-    private static class SqlComponents {
+    private static class BaseBuildSqlComponents {
 
-        String destinationColumns;
-        /** constructed & assigned, but not used right now (2019-03-29). */
-        String rootKeyExpression;
-        String join;
-        String insert;
-        String select;
-        String insertSelect;
-        /** constructed & assigned, but not used right now (2019-03-29). */
-        String insertValues;
-        String where;
+        /** Columns in the current list table. */
+        @NonNull
+        private final String mDestinationColumns;
+        /** Columns from the original tables. */
+        @NonNull
+        private final String mSourceColumns;
+        /**
+         * Expression from the original tables that represent the key for the root level group.
+         * Stored in each row and used to determine the expand/collapse results.
+         */
+        @NonNull
+        private final String mRootKeyExpression;
 
-        /** List of column names appropriate for 'ORDER BY' clause. */
-        String orderByColumns;
-        /** List of column names appropriate for 'CREATE INDEX' column list. */
-        String sortIndexColumnList;
+        /** Tables/joins. */
+        private String mSourceTables;
+        /** WHERE clause; includes the WHERE keyword. Alternatively, an empty string. */
+        private String mWhereClause;
+
+        /** [without triggers] List of column names for the 'ORDER BY' clause. */
+        private String mOrderByColumns;
+        /** [without triggers] List of column names for the 'CREATE INDEX' column list. */
+        private String mOrderByColumnsForBaseBuildIndex;
+
+        BaseBuildSqlComponents(@NonNull final String destinationColumns,
+                               @NonNull final String sourceColumns,
+                               @NonNull final String rootKeyExpression) {
+            mDestinationColumns = destinationColumns;
+            mSourceColumns = sourceColumns;
+            mRootKeyExpression = rootKeyExpression;
+        }
+
+        /**
+         * Build the 'join' statement based on the groups and extra criteria.
+         */
+        void buildJoinTables(@NonNull final BuildInfoHolder buildInfoHolder,
+                             final boolean filterOnBookshelf) {
+
+            Joiner join;
+
+            // If there is a bookshelf specified, start the join there.
+            // Otherwise, start with the BOOKS table.
+            if (buildInfoHolder.hasGroupBOOKSHELF || filterOnBookshelf) {
+                join = new Joiner(TBL_BOOKSHELF)
+                        .join(TBL_BOOK_BOOKSHELF)
+                        .join(TBL_BOOKS);
+            } else {
+                join = new Joiner(TBL_BOOKS);
+            }
+
+            // If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
+            if (buildInfoHolder.hasGroupLOANED) {
+                join.leftOuterJoin(TBL_BOOK_LOANEE);
+            }
+
+            // Now join with author; we must specify a parent in the join, because the last table
+            // joined was one of BOOKS or LOAN and we don't know which. So we explicitly use books.
+            join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
+
+            // If there is no author group, or the user only wants primary author, get primary only
+            if (buildInfoHolder.authorGroup == null || !buildInfoHolder.authorGroup.showAllAuthors()) {
+                join.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "==1");
+            }
+
+            // Join with authors to make the names available
+            join.join(TBL_AUTHORS);
+
+            // Current table will be authors, so name parent explicitly to join books->book_series.
+            join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
+
+            // If there was no series group, or user requests primary series only,
+            // then just get primary series.
+            if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAllSeries()) {
+                join.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "==1");
+            }
+
+            // Join with series to get name
+            join.leftOuterJoin(TBL_SERIES);
+
+            mSourceTables = join.getSql();
+        }
+
+        /**
+         * Create the WHERE clause based on all filters.
+         */
+        void buildWhereClause(@NonNull final ArrayList<Filter> filters,
+                              @NonNull final BooklistStyle style) {
+            StringBuilder where = new StringBuilder();
+
+            // Add local Filters which are always active
+            for (Filter filter : filters) {
+                if (where.length() != 0) {
+                    where.append(" AND ");
+                }
+                where.append(' ').append(filter.getExpression());
+            }
+
+            // Add BooklistStyle Filters but check if they are active
+            for (Filter filter : style.getFilters().values()) {
+                if (filter.isActive()) {
+                    if (where.length() != 0) {
+                        where.append(" AND ");
+                    }
+                    where.append(' ').append(filter.getExpression());
+                }
+            }
+
+            // all done
+            if (where.length() > 0) {
+                mWhereClause = where.insert(0, " WHERE ").toString();
+            } else {
+                mWhereClause = "";
+            }
+        }
+
+        /**
+         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement, or index.
+         * <p>
+         * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
+         *
+         * @param sortedColumns the list of sorted domains from the builder
+         * @param collationIsCs if {@code true} then we'll adjust the case here
+         */
+        void buildOrderBy(@NonNull final List<SortedDomainInfo> sortedColumns,
+                          final boolean collationIsCs) {
+            final StringBuilder sortCols = new StringBuilder();
+            final StringBuilder indexCols = new StringBuilder();
+
+            for (SortedDomainInfo sdi : sortedColumns) {
+                indexCols.append(sdi.domain.name);
+                if (sdi.domain.isText()) {
+                    indexCols.append(DAO.COLLATION);
+
+                    if (sdi.domain.isPrePreparedOrderBy()) {
+                        // always use a pre-prepared order-by column as-is
+                        sortCols.append(sdi.domain.name);
+
+                    } else if (collationIsCs) {
+                        // *If* collations is case-sensitive, lowercase it.
+                        sortCols.append("lower(").append(sdi.domain.name).append(')');
+
+                    } else {
+                        // hope for the best. This case might not handle non-[A..Z0..9] as expected
+                        sortCols.append(sdi.domain.name);
+                    }
+
+                    sortCols.append(DAO.COLLATION);
+                } else {
+                    sortCols.append(sdi.domain.name);
+                }
+                if (sdi.isDescending) {
+                    indexCols.append(" DESC");
+                    sortCols.append(" DESC");
+                }
+                sortCols.append(',');
+                indexCols.append(',');
+            }
+
+            sortCols.append(DOM_BL_NODE_LEVEL.name);
+            indexCols.append(DOM_BL_NODE_LEVEL.name);
+
+            mOrderByColumns = sortCols.toString();
+            mOrderByColumnsForBaseBuildIndex = indexCols.toString();
+        }
+
+        /**
+         * Constructs the INSERT INTO statement for the base build using triggers.
+         *
+         * @param table destination table
+         *
+         * @return INSERT INTO statement
+         */
+        @NonNull
+        String getSql(@NonNull final String table) {
+            return "INSERT INTO " + table + '(' + mDestinationColumns + ')'
+                    + " SELECT " + mSourceColumns + ',' + mRootKeyExpression
+                    + " FROM " + mSourceTables + mWhereClause
+                    + " ORDER BY " + mOrderByColumns;
+        }
+
+        /**
+         * Constructs the INSERT INTO statement for the base build without using triggers.
+         *
+         * @param table destination table
+         *
+         * @return INSERT INTO statement
+         */
+        @NonNull
+        String getSqlWithoutOrderBy(@NonNull final String table) {
+            return "INSERT INTO " + table + '(' + mDestinationColumns + ')'
+                    + " SELECT " + mSourceColumns + ',' + mRootKeyExpression
+                    + " FROM " + mSourceTables + mWhereClause;
+        }
+
+        @NonNull
+        String getOrderByColumns() {
+            return mOrderByColumns;
+        }
+
+        /**
+         * Constructs the CREATE INDEX statement for the build without using triggers.
+         *
+         * @param table destination table
+         *
+         * @return CREATE INDEX statement
+         */
+        @NonNull
+        String getIndexCreateWithoutTriggersSql(@NonNull final String table) {
+            return "CREATE INDEX " + table + "_IX1 ON " + table + '(' + mOrderByColumnsForBaseBuildIndex + ')';
+
+            // Indexes that were tried. None had a substantial impact with 800 books.
+//            String ix1aSql = "CREATE INDEX " + table + "_IX1a ON " + table
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + mOrderByColumnsForBaseBuildIndex + ')';
+//            String ix2Sql = "CREATE UNIQUE INDEX " + table + "_IX2 ON " + table
+//                    + '(' + DOM_FK_BOOK_ID + ',' + DOM_PK_ID + ')';
+//            String ix3Sql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + mOrderByColumnsForBaseBuildIndex + ')';
+//            String ix3aSql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + mOrderByColumnsForBaseBuildIndex + ')';
+//            String ix3bSql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + mOrderByColumnsForBaseBuildIndex + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix3cSql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + mOrderByColumnsForBaseBuildIndex
+//                    + ',' + DOM_BL_ROOT_KEY + DAO.COLLATION + ')';
+//            String ix3dSql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + mOrderByColumnsForBaseBuildIndex
+//                    + ',' + DOM_BL_ROOT_KEY + ')';
+//            String ix3eSql = "CREATE INDEX " + table + "_IX3 ON " + table
+//                    + '(' + mOrderByColumnsForBaseBuildIndex + ',' + DOM_BL_ROOT_KEY
+//                    + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix4Sql = "CREATE INDEX " + table + "_IX4 ON " + table
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
+//                    + ',' + DOM_BL_ROOT_KEY + ')';
+        }
     }
 
     /**
@@ -2700,60 +2698,46 @@ public class BooklistBuilder
          * to build the resulting flat list table and build the portion of the SQL
          * that does the initial table load.
          * <p>
-         * 'INSERT INTO.[mListTable]..([mDomains])..SELECT..[expressions]..FROM'
+         * 'INSERT INTO <mListTable> (mDomains) SELECT [expressions] FROM'
+         * <p>
+         * The from-tables, where-clause, order-by is build later.
          *
          * @param rootKey The key for the root level group. Stored in each row and used
          *                to determine the expand/collapse results.
          *
-         * @return SqlComponents structure
+         * @return BaseBuildSqlComponents structure
          */
         @NonNull
-        SqlComponents buildSqlComponents(@NonNull final BooklistGroup.CompoundKey rootKey) {
+        BaseBuildSqlComponents buildSqlComponents(@NonNull final BooklistGroup.CompoundKey rootKey) {
             // Rebuild the data table
             recreateTable();
-            // List of column names for the INSERT... part
+            // List of column names for the INSERT INTO... clause
             StringBuilder destColumns = new StringBuilder();
-            // List of expressions for the SELECT... part.
-            StringBuilder expressions = new StringBuilder();
-            // List of ?'s for the VALUES... part.
-            StringBuilder values = new StringBuilder();
+            // List of expressions for the SELECT... clause.
+            StringBuilder sourceColumns = new StringBuilder();
 
-            // Build the lists. mDomains and mExpressions were built in sync with each other.
+            // Build the lists.
             for (int i = 0; i < mDomains.size(); i++) {
                 if (i > 0) {
                     destColumns.append(',');
-                    expressions.append(',');
-                    values.append(',');
+                    sourceColumns.append(',');
                 }
 
-                String domainName = mDomains.get(i).name;
-                String expression = mExpressions.get(mDomains.get(i));
-
-                destColumns.append(domainName);
-                expressions.append(expression);
-                values.append('?');
+                destColumns.append(mDomains.get(i).name);
+                sourceColumns.append(mExpressions.get(mDomains.get(i)));
                 // This is not strictly necessary, but the SQL is more readable and easier to debug.
-                expressions.append(" AS ").append(domainName);
+                sourceColumns.append(" AS ").append(mDomains.get(i).name);
             }
 
             // Build the expression for the root key.
-            StringBuilder keyExpression = new StringBuilder('\'' + rootKey.getPrefix());
+            StringBuilder keyColumns = new StringBuilder('\'' + rootKey.getPrefix());
             for (DomainDefinition domain : rootKey.getDomains()) {
-                keyExpression.append("/'||Coalesce(")
-                             .append(mExpressions.get(domain))
-                             .append(",'')");
+                keyColumns.append("/'||Coalesce(").append(mExpressions.get(domain)).append(",'')");
             }
 
-            // Setup the SQL phrases.
-            SqlComponents cmp = new SqlComponents();
-            cmp.rootKeyExpression = keyExpression.toString();
-            cmp.destinationColumns = destColumns + "," + DOM_BL_ROOT_KEY;
-            cmp.insert = "INSERT INTO " + mListTable + " (" + cmp.destinationColumns + ')';
-            cmp.select = "SELECT " + expressions + ',' + keyExpression;
-            cmp.insertSelect = cmp.insert + ' ' + cmp.select + " FROM ";
-            cmp.insertValues = cmp.insert + " VALUES (" + values + ",?)";
-
-            return cmp;
+            return new BaseBuildSqlComponents(destColumns + "," + DOM_BL_ROOT_KEY,
+                                              sourceColumns.toString(),
+                                              keyColumns.toString());
         }
     }
 }

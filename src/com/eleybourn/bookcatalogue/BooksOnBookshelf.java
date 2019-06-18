@@ -550,7 +550,7 @@ public class BooksOnBookshelf
             displayList(booklistBuilder.getNewListCursor(), null);
 
         } else {
-            // rebuild for other reason
+            // rebuild for other reason... this should not be reached anyhow.
             initBookList(true);
         }
 
