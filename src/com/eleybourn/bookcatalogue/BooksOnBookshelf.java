@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -257,14 +258,8 @@ public class BooksOnBookshelf
                     new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
         }
 
-        // create adapter, but do not initialise the list, we'l populate it in onResume
-        mAdapter = new BooklistAdapter(getLayoutInflater(),
-                                       mModel.getCurrentStyle(),
-                                       mModel.getDb(),
-                                       null);
-        mAdapter.setOnItemClickListener(this::onItemClick);
-        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
-        mListView.setAdapter(mAdapter);
+        // create and hookup the list adapter.
+        initAdapter(null);
 
         // details for the header of the list.
         mBookCountView = findViewById(R.id.book_count);
@@ -287,6 +282,17 @@ public class BooksOnBookshelf
 
         // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
+    }
+
+    private void initAdapter(@Nullable final Cursor cursor) {
+        // create adapter, but do not initialise the list, we'l populate it in onResume
+        mAdapter = new BooklistAdapter(getLayoutInflater(),
+                                       mModel.getCurrentStyle(),
+                                       mModel.getDb(),
+                                       cursor);
+        mAdapter.setOnItemClickListener(this::onItemClick);
+        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
+        mListView.setAdapter(mAdapter);
     }
 
     /**
@@ -430,12 +436,14 @@ public class BooksOnBookshelf
 
         // and set the new list
         mModel.setListCursor(newListCursor);
-        // make sure any old views with potentially incorrect layout are removed
-        mListView.getRecycledViewPool().clear();
-        // (re)set the adapter with the current style
-        mAdapter.setStyle(mModel.getCurrentStyle());
-        // set the list, this will trigger the adapter to refresh.
-        mAdapter.setCursor(mModel.getListCursor());
+
+//        // make sure any old views with potentially incorrect layout are removed
+//        mListView.getRecycledViewPool().clear();
+//        // (re)set the adapter with the current style
+//        mAdapter.setStyle(mModel.getCurrentStyle());
+//        // set the list, this will trigger the adapter to refresh.
+//        mAdapter.setCursor(mModel.getListCursor());
+        initAdapter(mModel.getListCursor());
 
         // Restore saved position
         //noinspection ConstantConditions
@@ -881,8 +889,6 @@ public class BooksOnBookshelf
                     .setIcon(R.drawable.ic_delete);
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
-                menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, 0, R.string.menu_edit_book_notes)
-                    .setIcon(R.drawable.ic_note);
 
                 if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mModel.getDb().getLoaneeByBookId(row.getBookId());
@@ -1037,14 +1043,6 @@ public class BooksOnBookshelf
                 Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_ID, bookId)
                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                return true;
-            }
-            case R.id.MENU_BOOK_EDIT_NOTES: {
-                Intent intent = new Intent(this, EditBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_ID, bookId)
-                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                  EditBookFragment.TAB_EDIT_NOTES);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
             }
