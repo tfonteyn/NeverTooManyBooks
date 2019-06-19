@@ -2333,10 +2333,6 @@ public class BooklistBuilder
          * ****************************************************************************************
          * IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
          * that will be displayed at that level in the UI.
-         * <p>
-         * -> 2018-12-07: due to moving some things to {@link BooklistGroup.RowKind}
-         * the requirement is semi-reverse: the displayed domain is normally decided by the RowKind
-         * and this should be set as the FIRST SORTED AND GROUPED domain
          * ****************************************************************************************
          */
         void addGroup(@NonNull final BooklistGroup booklistGroup,
@@ -2355,7 +2351,7 @@ public class BooklistBuilder
                               mStyle.sortAuthorByGiven()
                               ? X_AUTHOR_SORT_FIRST_LAST
                               : X_AUTHOR_SORT_LAST_FIRST,
-                              SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     // Add the 'formatted' field of the requested type for displaying.
                     addDomain(DOM_AUTHOR_FORMATTED,
@@ -2383,7 +2379,7 @@ public class BooklistBuilder
                     // Group and sort by name
                     addDomain(DOM_SERIES_TITLE,
                               TBL_SERIES.dot(DOM_SERIES_TITLE),
-                              SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
+                              SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     // Group by ID (we want the ID available and there is a *chance* two
                     // series will have the same name...with bad data

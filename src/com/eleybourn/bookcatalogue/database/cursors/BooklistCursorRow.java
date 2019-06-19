@@ -68,8 +68,7 @@ public class BooklistCursorRow
      * level text. Uses a dynamically set domain.
      * Why 10 members? because at 2 it took me an hour to figure out why we had crashed...
      * i.o.w. there can be as many levels as there are groups,
-     * but we only display text for levels 1+2.
-     * Note that if a user adds more then 10 groups to a style, we'll crash...
+     * FIXME: Note that if a user adds more then 10 groups to a style, we'll crash...
      */
     private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
 
@@ -86,7 +85,6 @@ public class BooklistCursorRow
         mMapper.addDomains(DOM_FK_BOOK_ID,
 
                            DOM_FK_SERIES_ID,
-                           DOM_SERIES_TITLE,
                            DOM_SERIES_IS_COMPLETE,
                            DOM_BOOK_SERIES_NUM,
 
@@ -120,11 +118,6 @@ public class BooklistCursorRow
 
     public boolean hasSeriesId() {
         return mCursor.getColumnIndex(DOM_FK_SERIES_ID.name) >= 0;
-    }
-
-    @Nullable
-    public String getSeriesName() {
-        return mMapper.getString(DOM_SERIES_TITLE);
     }
 
     public boolean isSeriesComplete() {

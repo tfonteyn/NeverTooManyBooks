@@ -49,25 +49,13 @@ public class BookCursorRow
     public BookCursorRow(@NonNull final Cursor cursor) {
         super(cursor);
 
-        mMapper.addDomains(DOM_AUTHOR_FORMATTED,
-                           DOM_AUTHOR_FORMATTED_GIVEN_FIRST,
-                           DOM_SERIES_FORMATTED,
+        mMapper.addDomains(DOM_AUTHOR_FORMATTED_GIVEN_FIRST,
                            DOM_BOOK_LOANEE);
-    }
-
-    @NonNull
-    public final String getPrimaryAuthorNameFormatted() {
-        return mMapper.getString(DOM_AUTHOR_FORMATTED);
     }
 
     @NonNull
     public final String getPrimaryAuthorNameFormattedGivenFirst() {
         return mMapper.getString(DOM_AUTHOR_FORMATTED_GIVEN_FIRST);
-    }
-
-    @NonNull
-    public final String getPrimarySeriesFormatted() {
-        return mMapper.getString(DOM_SERIES_FORMATTED);
     }
 
     @NonNull

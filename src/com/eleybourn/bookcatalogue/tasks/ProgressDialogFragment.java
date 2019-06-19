@@ -309,12 +309,11 @@ public class ProgressDialogFragment<Progress, Result>
      */
     @UiThread
     private void setMessage(@NonNull final String message) {
+        // tests have shown the dialog can already be closed before the last (couple of) messages
+        // arrive here. We don't care that much, so ignore if the view is null.
         if (mMessageView != null && !message.equals(mMessage)) {
             mMessage = message;
             mMessageView.setText(mMessage);
-        } else {
-            Logger.warnWithStackTrace(this, "mMessageView was NULL",
-                                      "newMessage=" + message);
         }
     }
 
@@ -328,8 +327,6 @@ public class ProgressDialogFragment<Progress, Result>
             if (absPosition != null && (absPosition != mProgressBar.getProgress())) {
                 mProgressBar.setProgress(absPosition);
             }
-        } else {
-            Logger.warnWithStackTrace(this, "mProgressBar was NULL");
         }
     }
 

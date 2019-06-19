@@ -146,7 +146,6 @@ public class BooklistAdapter
         mOnItemLongClick = onItemLongClick;
     }
 
-
     public int getItemViewType(final int position) {
         //
         // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
@@ -299,8 +298,8 @@ public class BooklistAdapter
             return new BookHolder(itemView, mDb, mStyle);
         }
 
-        // other rows are based on a single column
-        // (except CheckableStringHolder which uses an additional fixed column).
+        // Except for CheckableStringHolder (which uses an additional fixed column),
+        // all other rows are based on a single column
         String columnName = RowKind.get(viewType).getDisplayDomain().name;
         int columnIndex = row.getColumnIndex(columnName);
         if (columnIndex < 0) {

@@ -675,7 +675,7 @@ public final class DBDefinitions {
 
         DB_TN_BOOK_LIST_NAME = "book_list_tmp";
 
-        // this is TableTypes.Standard
+        // this is TableTypes.Standard as it needs to keep its data across app starts.
         TBL_BOOK_LIST_NODE_SETTINGS =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_node_settings")
                         .setAlias("blns");

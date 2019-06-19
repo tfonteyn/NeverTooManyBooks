@@ -55,10 +55,10 @@ public final class AmazonSearchPage {
      * @param author to search for
      * @param series to search for
      */
-    public static boolean open(@NonNull final Context context,
-                               @NonNull final View view,
-                               @Nullable final String author,
-                               @Nullable final String series) {
+    public static void open(@NonNull final Context context,
+                            @NonNull final View view,
+                            @Nullable final String author,
+                            @Nullable final String series) {
 
         try {
             String cAuthor = cleanupSearchString(author);
@@ -71,13 +71,10 @@ public final class AmazonSearchPage {
                 openLink(context, cAuthor, cSeries);
             }
 
-            return true;
-
         } catch (RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(AmazonSearchPage.class, e, "Unable to call the Amazon API");
             UserMessage.showUserMessage(view, R.string.error_unexpected_error);
-            return false;
         }
     }
 

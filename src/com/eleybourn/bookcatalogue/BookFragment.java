@@ -59,8 +59,8 @@ public class BookFragment
     /** Fragment manager tag. */
     public static final String TAG = "BookFragment";
 
-    public static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
-    public static final String REQUEST_BKEY_FLAT_BOOKLIST = "FBL";
+    public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
+    public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
@@ -171,7 +171,8 @@ public class BookFragment
         // defined, but handled manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES);
 
-        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
+        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
+                                           UniqueId.BKEY_COVER_IMAGE)
                                       .setScale(ImageUtils.SCALE_LARGE);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
@@ -252,7 +253,7 @@ public class BookFragment
         Book book = mBookBaseFragmentModel.getBook();
 
         // pass the CURRENT currency code to the price formatters
-        //TODO: this defeats the ease of use of the formatter... populate manually or something...
+        //TOMF: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) getField(R.id.price_listed).getFormatter())
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));

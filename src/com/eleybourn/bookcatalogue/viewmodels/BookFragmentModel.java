@@ -44,7 +44,7 @@ public class BookFragmentModel
                 return;
             }
             // no list ?
-            String listTableName = args.getString(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST);
+            String listTableName = args.getString(BookFragment.BKEY_FLAT_BOOKLIST_TABLE);
             if (listTableName == null || listTableName.isEmpty()) {
                 return;
             }
@@ -62,7 +62,7 @@ public class BookFragmentModel
             }
 
             // ok, we absolutely have a list, get the position we need to be on.
-            int pos = args.getInt(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST_POSITION, 0);
+            int pos = args.getInt(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, 0);
 
             mFlattenedBooklist.moveTo(pos);
             // the book might have moved around. So see if we can find it.

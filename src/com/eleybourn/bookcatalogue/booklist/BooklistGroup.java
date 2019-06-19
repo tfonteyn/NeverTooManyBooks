@@ -838,10 +838,6 @@ public class BooklistGroup
             return ALL_KINDS.get(kind);
         }
 
-        public int getKind() {
-            return mKind;
-        }
-
         /**
          * The display domain will never be {@code null}, except for a BOOK!
          */

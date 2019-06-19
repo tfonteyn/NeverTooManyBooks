@@ -85,9 +85,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** Main screen name field. */
     protected AutoCompleteTextView mAutoCompleteTextView;
 
-    /** The View for the list. */
-    private RecyclerView mListView;
-    private LinearLayoutManager mLayoutManager;
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
 
@@ -125,17 +122,18 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             mList = args.getParcelableArrayList(mBKey);
         }
 
-        mListView = findViewById(android.R.id.list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mListView.setLayoutManager(mLayoutManager);
-        mListView.addItemDecoration(
-                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
+        // The View for the list.
+        RecyclerView listView = findViewById(android.R.id.list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(layoutManager);
+        listView.addItemDecoration(
+                new DividerItemDecoration(this, layoutManager.getOrientation()));
+        listView.setHasFixedSize(true);
 
         // setup the adapter
         mListAdapter = createListAdapter(mList,
                                          (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
-        mListView.setAdapter(mListAdapter);
+        listView.setAdapter(mListAdapter);
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -146,7 +144,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(listView);
 
         TextView titleView = findViewById(R.id.title);
         if (mBookTitle == null || mBookTitle.isEmpty()) {

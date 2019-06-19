@@ -68,16 +68,13 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 public class StyleGroupsActivity
         extends BaseActivity {
 
-    private static final String BKEY_LIST = "list";
+    private static final String TAG = "StyleGroupsActivity";
+
+    private static final String BKEY_LIST = TAG + ":list";
 
     /** the rows. */
     private ArrayList<GroupWrapper> mList;
 
-    /** The adapter for the list. */
-    private RecyclerViewAdapterBase mListAdapter;
-    /** The View for the list. */
-    private RecyclerView mListView;
-    private LinearLayoutManager mLayoutManager;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -106,22 +103,25 @@ public class StyleGroupsActivity
             mList = getList();
         }
 
-        mListView = findViewById(android.R.id.list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mListView.setLayoutManager(mLayoutManager);
-        mListView.addItemDecoration(
-                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
+        // The View for the list.
+        RecyclerView listView = findViewById(android.R.id.list);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(layoutManager);
+        listView.addItemDecoration(
+                new DividerItemDecoration(this, layoutManager.getOrientation()));
+        listView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new GroupWrapperListAdapter(this, mList,
-                                                   vh -> mItemTouchHelper.startDrag(vh));
-        mListView.setAdapter(mListAdapter);
+        // The adapter for the list.
+        RecyclerViewAdapterBase listAdapter = new GroupWrapperListAdapter(this, mList,
+                                                                          vh -> mItemTouchHelper.startDrag(
+                                                                                  vh));
+        listView.setAdapter(listAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
-                new SimpleItemTouchHelperCallback(mListAdapter);
+                new SimpleItemTouchHelperCallback(listAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(listView);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

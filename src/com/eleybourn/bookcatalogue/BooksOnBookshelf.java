@@ -284,8 +284,19 @@ public class BooksOnBookshelf
         Tracker.exitOnCreate(this);
     }
 
+    /**
+     * FIXME: we should not create the adapter twice.
+     * Need a reliable way of creating it in {@link #onCreate} and loading in {@link #displayList}.
+     */
     private void initAdapter(@Nullable final Cursor cursor) {
-        // create adapter, but do not initialise the list, we'l populate it in onResume
+
+        // make sure any old views with potentially incorrect layout are removed
+//        mListView.getRecycledViewPool().clear();
+//        // (re)set the adapter with the current style
+//        mAdapter.setStyle(mModel.getCurrentStyle());
+//        // set the list, this will trigger the adapter to refresh.
+//        mAdapter.setCursor(mModel.getListCursor());
+
         mAdapter = new BooklistAdapter(getLayoutInflater(),
                                        mModel.getCurrentStyle(),
                                        mModel.getDb(),
@@ -437,12 +448,7 @@ public class BooksOnBookshelf
         // and set the new list
         mModel.setListCursor(newListCursor);
 
-//        // make sure any old views with potentially incorrect layout are removed
-//        mListView.getRecycledViewPool().clear();
-//        // (re)set the adapter with the current style
-//        mAdapter.setStyle(mModel.getCurrentStyle());
-//        // set the list, this will trigger the adapter to refresh.
-//        mAdapter.setCursor(mModel.getListCursor());
+        // create and hookup the list adapter.
         initAdapter(mModel.getListCursor());
 
         // Restore saved position
@@ -806,8 +812,8 @@ public class BooksOnBookshelf
 
                     Intent intent = new Intent(this, BookDetailsActivity.class)
                             .putExtra(DBDefinitions.KEY_ID, bookId)
-                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST, listTableName)
-                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST_POSITION, position);
+                            .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
+                            .putExtra(BookFragment.BKEY_FLAT_BOOKLIST_POSITION, position);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
                 } else {
