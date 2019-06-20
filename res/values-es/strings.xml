@@ -13,6 +13,7 @@
     <string name="lbl_is_read">¿Has leído este libro?</string>
     <string name="lbl_pages">Páginas</string>
     <string name="X_btn_confirm_add_book">Añadir libro</string>
+    <string name="X_use_default_setting">Utilizar configuración por defecto</string>
     <string name="btn_confirm_update">Actualizar</string>
     <string name="X_info_no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_expand_all">Expandir todo</string>
@@ -26,7 +27,6 @@
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="bookshelf_all_books">Todos los libros</string>
-    <string name="X_isbn_found">ISBN escaneado. Buscando en Internet.</string>
     <string name="search_isbn">Buscar ISBN</string>
     <string name="title_edit_bookshelves">Gestionar bibliotecas</string>
     <string name="title_edit_bookshelf">Editar bibliotecas</string>
@@ -44,7 +44,6 @@
     <string name="menu_administration">Admin</string>
     <string name="info_install_scanner">Para poder escanear códigos de barras de ISBN debe instalar una aplicación de escaneo (Zxing o pic2shop). Seleccione una para instalarla, o Cancelar para salir.</string>
     <string name="title_install_scan">Instalar Escáner de código de barras</string>
-    <string name="about_donate">Si desea contribuir al desarrollo de esta aplicación puede realizar su aportación económica utilizando Amazon Wishlist o el botón de Paypal que figura más abajo. En Australia no se puede publicar una versión &quot;de pago&quot;. :-)</string>
     <string name="about_lbl_upgrade">Desde la última actualización</string>
     <string name="menu_edit_book">Editar libro</string>
     <string name="menu_edit_book_notes">Sus comentarios</string>
@@ -59,7 +58,6 @@
     <string name="about_lbl_website">Página web</string>
     <string name="about_lbl_sourcecode">Código fuente</string>
     <string name="about_lbl_contacts">Contacto</string>
-    <string name="about_lbl_donate">Contribuir</string>
     <string name="menu_about">Acerca de esta App</string>
     <string name="lbl_price_listed">Precio</string>
     <string name="lbl_update_fields">Actualización automática de campos</string>
@@ -76,7 +74,6 @@
     <string name="help">Ayuda</string>
     <string name="info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="X_anthology_titles">Antologías</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Esta antología tiene múltiples autores.</string>
     <string name="X_menu_delete_toc_entry">Eliminar título de una antología</string>
     <string name="lbl_is_anthology">¿Se trata de una antología?</string>
@@ -108,7 +105,7 @@
     <string name="field_not_set">No configurado</string>
     <string name="X_menu_search_books">Buscar libro</string>
     <string name="hint_book_search_by_text">Añadir libros con ISBN es mucho más preciso que hacerlo por autor y título. Recuerde que en ocasiones el código de barras o el ISBN se encuentran en la parte interior de la portada.\n\n</string>
-    <string name="about_help_tap_here">Pulse aquí para acceder a la ayuda online</string>
+    <string name="X_about_help_tap_here">Pulse aquí para acceder a la ayuda online</string>
     <string name="vldt_unable_to_get_value_for_x">Falta \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">\‘%1$s\’ debe ser un entero</string>
     <string name="vldt_real_expected_for_x">\‘%1$s\’ debe ser un número real</string>
@@ -126,8 +123,8 @@
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="btn_confirm_save">Guardar</string>
     <string name="btn_confirm_add">Añadir</string>
-    <string name="info_no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
-    <string name="info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
+    <string name="X_info_no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
+    <string name="X_info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
 
     <string name="X_warning_cover_field_not_set">No hay imagen de portada</string>
     <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
@@ -332,15 +329,12 @@
     <string name="lbl_preferred_styles">Estilos preferidos</string>
     <string name="title_edit_style">Editar estilo</string>
     <string name="title_clone_style">Duplicar estilo</string>
-    <string name="pg_filters">Filtros adicionales</string>
     <string name="title_select_style">Seleccionar Estilo</string>
     <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>
     <string name="lbl_settings">Preferencias</string>
     <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción ‘Admin’ del menú principal</string>
     <string name="menu_duplicate">Duplicar</string>
-    <string name="about_dash_or_dash">- O -</string>
-    <string name="about_donate_paypal">Donación PayPal</string>
     <string name="style_builtin_compact">Compacto</string>
     <string name="style_is_user_defined">Definido por el usuario</string>
     <string name="style_is_builtin">Predefinido</string>
@@ -641,14 +635,6 @@
         (si nos hemos olvidado de alguien, por favor, díganoslo):
     </string>
 
-    <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>Si compra productos en Amazon después de haber seleccionado las opciones <i>“%1$s”</i>, <i>“%2$s”</i> o <i>“%3$s”</i>,
-         un porcentaje del precio de compra será enviado a los desarrolladores de %4$s.</p>
-         <p>También puede utilizar el enlace <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>en nuestras FAQ</a>
-          para acceder directamente a Amazon o PayPal.</p>]]>
-    </string>
-
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Fecha de actualización</string>
     <!-- Name of the new style grouping (needs to be short). -->
@@ -736,9 +722,7 @@
     <string name="progress_msg_please_wait">Por favor espera…</string>
     <string name="warning_required_title_and_author">Falta el título y / o el autor.</string>
     <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
-    <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
     <string name="none">Ninguno</string>
-    <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="menu_hide_keyboard">Ocultar teclado</string>
     <string name="warning_action_requires_isbn">Esta acción requiere un ISBN válido.</string>
     <string name="vldt_failure">Fallo de validación.</string>

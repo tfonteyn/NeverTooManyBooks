@@ -117,11 +117,27 @@
                 />
 
             <TextView
+                android:id="@+id/lbl_creators"
+                style="@style/SectionHeader"
+                android:text="@string/lbl_creators"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contact2"
+                />
+
+            <TextView
+                android:id="@+id/creators"
+                style="@style/Blurb.Small"
+                android:text="@string/original_creators"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_creators"
+                />
+
+            <TextView
                 android:id="@+id/thanks"
                 style="@style/SectionHeader"
                 android:text="@string/about_lbl_special_thanks"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/contact2"
+                app:layout_constraintTop_toBottomOf="@id/creators"
                 />
 
             <TextView
@@ -130,7 +146,7 @@
                 android:text="@string/about_translators"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/thanks"
+                app:layout_constraintTop_toBottomOf="@id/creators"
                 />
 
             <TextView
@@ -142,69 +158,6 @@
                 app:layout_constraintTop_toBottomOf="@id/b1"
                 />
 
-            <TextView
-                android:id="@+id/donate"
-                style="@style/SectionHeader"
-                android:text="@string/about_lbl_donate"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/translators"
-                />
-
-            <TextView
-                android:id="@+id/b2"
-                style="@style/Blurb.Small"
-                android:text="@string/about_donate"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/donate"
-                />
-
-            <TextView
-                android:id="@+id/amazon_url"
-                style="@style/Url"
-                android:text="@string/about_donate_amazon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/b2"
-                />
-
-            <TextView
-                android:id="@+id/or"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/about_dash_or_dash"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/amazon_url"
-                />
-
-            <TextView
-                android:id="@+id/donate_url"
-                style="@style/Url"
-                android:text="@string/about_donate_paypal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/or"
-                />
-
-            <TextView
-                android:id="@+id/amazon"
-                style="@style/SectionHeader"
-                android:text="@string/amazon"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/donate_url"
-                />
-
-            <TextView
-                android:id="@+id/amazon_links_info"
-                style="@style/Blurb.Small"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/amazon"
-                tools:ignore="SelectableText"
-                tools:text="@string/hint_amazon_links_blurb"
-                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>

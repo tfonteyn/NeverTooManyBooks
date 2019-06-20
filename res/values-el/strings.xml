@@ -13,6 +13,7 @@
     <string name="lbl_is_read">Έχετε διαβάσει αυτό το βιβλίο;</string>
     <string name="lbl_pages">Σελίδες</string>
     <string name="X_btn_confirm_add_book">Προσθήκη Βιβλίου</string>
+    <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
     <string name="btn_confirm_update">Ενημέρωση</string>
     <string name="X_info_no_books_yet">Δεν υπάρχουν βιβλία σε αυτό το ράφι. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_expand_all">Επέκταση Όλων</string>
@@ -26,7 +27,6 @@
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="lbl_bookshelf">Ράφι</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
-    <string name="X_isbn_found">ISBN σαρώθηκε. Αναζήτηση στο διαδίκτυο.</string>
     <string name="search_isbn">ISBN Αναζήτηση</string>
     <string name="title_edit_bookshelves">Διαχείρηση Ραφιών</string>
     <string name="title_edit_bookshelf">Επεξεργασία ραφιού</string>
@@ -44,7 +44,6 @@
     <string name="menu_administration">Διαχειριστής</string>
     <string name="info_install_scanner">Για να σκανάρετε τα βιβλία σας μέσω ISBN barcode, θα πρέπει να εγκαταστήσετε κάποια απο τίς εφαρμογές Zxing, pic2shop or Google Googles για σάρωση barcode.</string>
     <string name="title_install_scan">Εγκατάσταση σαρωτή barcode</string>
-    <string name="about_donate">Εαν θέλετε να στηρίξετε την αναπτυξη της εφαρμογής, παρακαλούμε δωρήστε μέ το my Amazon Wishlist ή το paypal κουμπί παρακάτω. Το να βρίσκεσαι στην Αυστραλία σημαίνει ότι δεν μπορεί να εκδοθεί &quot;πληρωμένη&quot; έκδοση. :-) </string>
     <string name="about_lbl_upgrade">Από την τελευταία σας αναβάθμιση.</string>
     <string name="menu_edit_book">Επεξεργασία βιβλίου</string>
     <string name="menu_edit_book_notes">Τα σχόλια μου</string>
@@ -59,7 +58,6 @@
     <string name="about_lbl_website">Ιστοσελίδα:</string>
     <string name="about_lbl_sourcecode">Πηγαίος Κώδικας:</string>
     <string name="about_lbl_contacts">Επαφές:</string>
-    <string name="about_lbl_donate">Δωρεά</string>
     <string name="menu_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_update_fields">Αυτόματη ενημέρωση πεδίων</string>
@@ -81,7 +79,6 @@
         Τα μη επιλεγμένα πεδία είναι κρυφά.
     </string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Αυτή η ανθολογία έχει πολλούς συγγραφείς.</string>
     <string name="X_menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
     <string name="lbl_is_anthology">Είναι αυτό το βιβλίο ανθολογία;</string>
@@ -120,7 +117,7 @@
     <string name="field_not_set">Μη ορισμένο</string>
     <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="hint_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
-    <string name="about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
+    <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
     <string name="vldt_unable_to_get_value_for_x">Δεν βρέθηκε τιμή για \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για \‘%1$s\’</string>
     <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για \‘%1$s\’</string>
@@ -138,8 +135,8 @@
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="btn_confirm_save">Αποθήκευση</string>
     <string name="btn_confirm_add">Προσθήκη</string>
-    <string name="info_no_authors_yet">Δεν υπάρχουν συγγραφείς για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.Please add some using the text area and button at the top of this screen.</string>
-    <string name="info_no_series_yet">>Δεν υπάρχουν σειρές για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.</string>
+    <string name="X_info_no_authors_yet">Δεν υπάρχουν συγγραφείς για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.Please add some using the text area and button at the top of this screen.</string>
+    <string name="X_info_no_series_yet">>Δεν υπάρχουν σειρές για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.</string>
     <string name="X_warning_cover_field_not_set">Το εξώφυλλο δεν έχει οριστεί</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="X_title_cover_detail">Λεπτομέρειες εξωφύλλου</string>
@@ -339,15 +336,12 @@
     <string name="lbl_preferred_styles">Προτιμώμενα στυλ</string>
     <string name="title_edit_style">Επεξεργασία στυλ</string>
     <string name="title_clone_style">Αντιγραφή στυλ</string>
-    <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="title_select_style">Επιλογή Στυλ</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="lbl_settings">Επιλογές</string>
     <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής ‘Διαχειριστής’ από το κεντρικό μενού.</string>
     <string name="menu_duplicate">Aντιγράφω</string>
-    <string name="about_dash_or_dash">- Ή -</string>
-    <string name="about_donate_paypal">Δωρεά μέσω PayPal</string>
     <string name="style_builtin_compact">Συμπαγής</string>
     <string name="style_is_user_defined">Καθορισμενο-από-χρήστη</string>
     <string name="style_is_builtin">Ενσωματωμένο</string>
@@ -657,7 +651,6 @@
     <string name="title_import">εισάγω</string>
     <string name="title_send_mail">Να στείλετε e-mail…</string>
     <string name="tab_lbl_notes">Σημειώσεις</string>
-    <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
     <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
     <string name="usage_skip">Παραλείπω</string>
     <string name="btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
@@ -670,7 +663,6 @@
     <string name="lbl_table_of_content">πίνακας περιεχομένων</string>
     <string name="menu_hide_keyboard">Απόκρυψη πληκτρολογίου</string>
     <string name="lbl_price_paid">Πληρωθείσα τιμή</string>
-    <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
     <string name="style_builtin_acquired_date">Επίκτητος</string>
     <string name="search_with_text">Αναζήτηση: %1$s</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
@@ -697,7 +689,6 @@
     <string name="gr_tq_events_recorded">(%1$d καταγραφόμενα συμβάντα)</string>
     <string name="confirm_merge_bookshelves">Το βιβλιοθήκη που μετονομάζετε ήδη υπάρχει. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="gr_tq_generic_task_info">Αναγνωριστικό εργασίας %1$d, αναρτημένο στο %2$s</string>
-    <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="menu_set_complete">Ορίστε να “ολοκληρώσετε”</string>
     <string name="menu_set_incomplete">Ρυθμίστε σε “ατελές”</string>
     <string name="menu_set_read">Ορίστε ως “διαβάσετε”</string>

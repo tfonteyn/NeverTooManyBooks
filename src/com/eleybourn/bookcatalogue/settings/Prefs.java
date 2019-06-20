@@ -375,6 +375,7 @@ public final class Prefs {
                     case "state_sort":
                     case "state_bookshelf":
                     case "App.BooklistStyle":
+                    case "HintManager.Hint.hint_amazon_links_blurb":
                         // skip keys that make no sense to copy
                     case "UpgradeMessages.LastMessage":
                     case UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED:

@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Usa i parametri predefiniti</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Generale</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Interfaccia Utente</string>
-    <string name="pt_ui_field_visibility">Gestisci visibilità campi</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>
     <string name="pg_thumbnails">Miniature</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Acquisizione</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Elenchi di libri</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Dettagli libro aggiuntivi</string>
+    <string name="pg_filters">Filtra libri</string>
     <string name="pg_groupings">Raggruppamenti</string>
 
     <!-- ========== Global preferences ========== -->
@@ -39,6 +31,9 @@
 
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Suona se il codice ISBN acquisito non è valido</string>
+
+    <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
+    <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
 
      <!--Preference -->
     <string name="pt_ui_messages_use">Informare con</string>
@@ -162,12 +157,9 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formato dei nome degli autori</string>
-    <string name="pv_bob_format_author_name_given_first">Prima il nome, ad es. \‘Mario Rossi\’</string>
-    <string name="pv_bob_format_author_name_family_first">Prima il cognome, ad es. \‘Rossi, Mario\’</string>
+    <string name="pv_bob_format_author_name_given_first">Prima il nome, ad es. ‘Dante Alighieri’</string>
+    <string name="pv_bob_format_author_name_family_first">Prima il cognome, ad es. ‘Alighieri, Dante’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Ordina i nomi degli autori</string>
-
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Dettagli libro aggiuntivi</string>
 </resources>

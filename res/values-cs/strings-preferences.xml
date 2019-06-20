@@ -5,41 +5,36 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Použít defaultní nastavení</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Obecné</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Uživatelské rozhraní</string>
-    <string name="pt_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="pg_thumbnails">Náhledy</string>
-    <!--Preference GROUP -->
     <string name="pg_scanning">Snímání</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Seznamy knih</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
+    <string name="pg_filters">Filtry knih</string>
     <string name="pg_groupings">Seskupení</string>
 
     <!-- ========== Global preferences ========== -->
 
-    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
-
-    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
-
-    <!-- Preference - use an external app. (Intent) to handle cropping-->
-
-    <!-- Preference -->
-
-    <!-- Preference -->
-
-     <!--Preference -->
-
-    <!-- Preference -->
-
-    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Upřednostňovaný jazyk uživatelského rozhraní</string>
+    <string name="pt_ui_system_locale">Národní prostředí systému</string>
+    <string name="pt_ui_theme">Téma</string>
+    <string name="pt_bob_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
+    <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
+    <string name="pt_scanning_beep_if_isbn_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
+    <string name="pt_scanning_beep_if_isbn_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
+    <string name="pt_ui_messages_use">Informační zprávy</string>
+    <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
+    <string name="pt_scanning_preferred_scanner">Upřednostňovaný skener</string>
+    <string name="pt_thumbnails_external_cropper">Použijte externí oříznutí obrázků</string>
+    <string name="pt_bob_list_generation">Možnost generování seznamu knih</string>
+    <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
+    <string name="pt_bob_thumbnails_generating_mode">Chcete-li načíst obrázky, použijte úkol na pozadí</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
+    <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
+    <string name="pt_hint_layer_type">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
+    <string name="pt_thumbnail_cropper_layer_type">Oříznout ‘Layer Type’</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Automaticky otáčí snímky pořízené fotoaparátem</string>
@@ -112,12 +107,15 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formát zobrazení jména autora</string>
-    <string name="pv_bob_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. \‘Bill Smith\’</string>
-    <string name="pv_bob_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. \‘Smith, Bill\’</string>
+    <string name="pv_bob_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. ‘Karel Čapek’</string>
+    <string name="pv_bob_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. ‘Čapek, Karel’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Seřadit podle jména autora</string>
 
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Načíst obrázky okamžitě (rolování bude pomalejší)</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Použít úlohu na pozadí k načtení obrázků (rolování bude rychlejší, obrázky mohou být zpožděny)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
+
 </resources>

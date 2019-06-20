@@ -128,9 +128,6 @@ dependencies {
     //
     implementation 'org.apache.commons:commons-compress:1.18'
     implementation 'commons-codec:commons-codec:1.12'
-
-    // Can't get the Amazon jar online.
-    implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
 }
 
 configurations {

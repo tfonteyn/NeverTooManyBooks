@@ -84,7 +84,7 @@ import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -1171,18 +1171,16 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonSearchPage.open(this, mListView,
-                                      mModel.getAuthorFromRow(row), null);
+                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(row), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonSearchPage.open(this, mListView,
-                                      null, mModel.getSeriesFromRow(row));
+                AmazonManager.openWebsite(this, null, mModel.getSeriesFromRow(row));
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonSearchPage.open(this, mListView,
-                                      mModel.getAuthorFromRow(row), mModel.getSeriesFromRow(row));
+                AmazonManager.openWebsite(this,
+                                          mModel.getAuthorFromRow(row), mModel.getSeriesFromRow(row));
                 return true;
 
             default:
@@ -1455,9 +1453,6 @@ public class BooksOnBookshelf
                                 R.string.hint_view_only_book_details, null);
         HintManager.displayHint(getLayoutInflater(),
                                 R.string.hint_book_list, null);
-        if (StartupActivity.showAmazonHint()) {
-            HintManager.showAmazonHint(getLayoutInflater());
-        }
     }
 
     /**

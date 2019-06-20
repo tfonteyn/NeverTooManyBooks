@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Gebruik de standaard waarden</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Algemeen</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Gebruikersinterface</string>
-    <string name="pt_ui_field_visibility">Zichtbaarheid velden beheren</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pg_thumbnails">Miniaturen</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Scannen</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Boeken Lijst</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Extra boekdetails</string>
+    <string name="pg_filters">Boekfilters</string>
     <string name="pg_groupings">Groeperingen</string>
 
     <!-- ========== Global preferences ========== -->
@@ -39,6 +31,10 @@
 
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>
+
+    <string name="pt_thumbnail_cropper_layer_type">Bijsnijden ‘Layer Type’</string>
+    <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
+    <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
 
     <!--Preference -->
     <string name="pt_ui_messages_use">Informeren met</string>
@@ -169,8 +165,6 @@
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Auteur namen sorteren</string>
 
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Extra boekdetails</string>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_read">

@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Основные</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Пользовательский интерфейс</string>
-    <string name="pt_ui_field_visibility">Видимость полей</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Видимость полей</string>
     <string name="pg_thumbnails">Миниатюры</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Сканирование</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Списки книг</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Дополнительная информация</string>
+    <string name="pg_filters">Фильтры книг</string>
     <string name="pg_groupings">Группирование</string>
 
     <!-- ========== Global preferences ========== -->
@@ -39,6 +31,9 @@
 
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
+
+    <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
+    <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
 
      <!--Preference -->
     <string name="pt_ui_messages_use">Сообщить с</string>
@@ -162,12 +157,10 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>
-    <string name="pv_bob_format_author_name_given_first">Первое имя, например \‘Иван, Иванов\’</string>
-    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например \‘Иванов, Иван\’</string>
+    <string name="pv_bob_format_author_name_given_first">Первое имя, например ‘Фёдор Достоевский’</string>
+    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например ‘Достоевский, Фёдор’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Сортировать авторов</string>
 
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Дополнительная информация</string>
 </resources>

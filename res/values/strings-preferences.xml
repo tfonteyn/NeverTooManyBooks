@@ -12,8 +12,8 @@
     <string name="pg_general">General</string>
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
-
-    <string name="pt_ui_field_visibility">Field Visibility</string>
+    <!-- Preference Category -->
+    <string name="pg_ui_field_visibility">Field Visibility</string>
 
     <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
@@ -22,6 +22,8 @@
 
     <!-- Preference Category -->
     <string name="pg_booklist">Book Lists</string>
+    <!-- Preference Category -->
+    <string name="pg_bob_extra_book_details">Extra Book Details</string>
     <!-- Preference Category; filters in booklist style -->
     <string name="pg_filters">Filters</string>
     <!-- Preference Category; groups (RowKinds) in booklist style -->
@@ -259,15 +261,11 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format of author names</string>
-    <string name="pv_bob_format_author_name_given_first">Given name first e.g. \‘Bill Smith\’</string>
-    <string name="pv_bob_format_author_name_family_first">Family name first e.g. \‘Smith, Bill\’</string>
+    <string name="pv_bob_format_author_name_given_first">Given name first e.g. ‘Phillis Wheatley’</string>
+    <string name="pv_bob_format_author_name_family_first">Family name first e.g. ‘Wheatley, Phillis’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Sorting of author names</string>
-
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Extra Book Details</string>
-
 
     <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>

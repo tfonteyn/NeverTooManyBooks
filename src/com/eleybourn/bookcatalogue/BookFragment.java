@@ -573,7 +573,7 @@ public class BookFragment
 
             default:
                 //noinspection ConstantConditions
-                if (MenuHandler.handleAmazonSearchSubMenu(getContext(), getView(), item, book)) {
+                if (MenuHandler.handleAmazonSearchSubMenu(getContext(), item, book)) {
                     return true;
                 }
                 // MENU_BOOK_UPDATE_FROM_INTERNET handled in super

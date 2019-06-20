@@ -26,7 +26,6 @@
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki</string>
     <string name="lbl_bookshelf">Półka</string>
     <string name="bookshelf_all_books">Wszystkie książki</string>
-    <string name="X_isbn_found">ISBN odczytany. Wyszukiwanie w Internecie.</string>
     <string name="search_isbn">Szukj wg ISBN</string>
     <string name="title_edit_bookshelves">Zarządzaj półkami</string>
     <string name="title_edit_bookshelf">Edycja półek</string>
@@ -44,7 +43,6 @@
     <string name="menu_administration">Administracja</string>
     <string name="info_install_scanner">Do skanowania kodów kreskowych ISBN musisz zainstalować program Zxing Barcode Scanner. Naciśnij OK by to zrobić, lub Anuluj by zrezygnować z instalacji.</string>
     <string name="title_install_scan">Zainstaluj Barcode Scanner</string>
-    <string name="about_donate">Jeśli chciałbyś wesprzeć rozwój programu, zrób to poprzez mój Amazon Wishlist lub PayPal. Będąc obywatelem Australii nie mam póki co możliwości opublikowania &quot;płatnej&quot; wersji. :-) </string>
     <string name="about_lbl_upgrade">Od ostatniej aktualizacji</string>
     <string name="menu_edit_book">Edytuj książkę</string>
     <string name="menu_edit_book_notes">Twoje komentarze</string>
@@ -59,7 +57,6 @@
     <string name="about_lbl_website">Strona	 WWW:</string>
     <string name="about_lbl_sourcecode">Kod źródłowy:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
-    <string name="about_lbl_donate">Wesprzyj</string>
     <string name="menu_about">O programie</string>
     <string name="lbl_price_listed">Cena</string>
     <string name="lbl_update_fields">Automatycznie aktualizuj pola wg danych z sieci</string>
@@ -76,7 +73,6 @@
     <string name="help">Pomoc</string>
     <string name="info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Ta antologia ma wielu autorów.</string>
     <string name="X_menu_delete_toc_entry">Usuń pozycję z antologii</string>
     <string name="lbl_is_anthology">Czy ta książka jest antologią?</string>
@@ -108,7 +104,7 @@
     <string name="field_not_set">Nie wybrany(a)</string>
     <string name="X_menu_search_books">Przeszukaj książki</string>
     <string name="hint_book_search_by_text">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
-    <string name="about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
+    <string name="X_about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
     <string name="vldt_unable_to_get_value_for_x">Nie mogę pobrać wartości dla \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Oczekiwana wartość całkowita dla \‘%1$s\’</string>
     <string name="vldt_real_expected_for_x">Oczekiwana wartość liczbowa dla \‘%1$s\’</string>
@@ -126,8 +122,8 @@
     <string name="error_columns_are_blank">Pola %1$s są puste w linii %2$d</string>
     <string name="btn_confirm_save">Zapisz</string>
     <string name="btn_confirm_add">Dodaj</string>
-    <string name="info_no_authors_yet">Brak autora(ów) tej ksiażki. Dodaj autora używając pola tekstowego na górze.</string>
-    <string name="info_no_series_yet">Brak serii dla tej ksiażki. Dodaj serię używając pola tekstowego na górze.</string>
+    <string name="X_info_no_authors_yet">Brak autora(ów) tej ksiażki. Dodaj autora używając pola tekstowego na górze.</string>
+    <string name="X_info_no_series_yet">Brak serii dla tej ksiażki. Dodaj serię używając pola tekstowego na górze.</string>
     <string name="X_warning_cover_field_not_set">Okładka nie jest ustawiona</string>
     <string name="X_warning_cover_corrupt">Okładka jest uszkodzona</string>
     <string name="X_title_cover_detail">Szczegóły okładki</string>
@@ -304,9 +300,7 @@
     <string name="menu_add_book_by_barcode_scan">Skanowanie kodów kreskowych / ISBN</string>
     <string name="lbl_price_paid">Zapłacona cena</string>
     <string name="lbl_preferred_styles">Preferowane style</string>
-    <string name="pt_ui_language">Preferowany język interfejsu użytkownika</string>
-    <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
-    <string name="pt_ui_theme">Motyw</string>
+
     <string name="search_criteria">Kryteria wyszukiwania</string>
     <string name="search_please_enter_criteria">Wprowadź kryteria wyszukiwania</string>
     <string name="style_builtin_acquired_date">Nabyty</string>
@@ -389,13 +383,8 @@
     <string name="warning_book_was_deleted_uc">NINIEJSZA KSIĄŻKA ZOSTAŁA USUNIĘTA</string>
     <string name="warning_bad_scanner">Wygląda na to, że istniejąca aplikacja skanera kodów kreskowych nie jest kompatybilna z &APP_NAME;. Zalecamy zainstalowanie aplikacji skanera kodów kreskowych Zxing, a jeśli jest już zainstalowana, zalecamy odinstalowanie i ponowne zainstalowanie.</string>
     <string name="warning_cover_copy_failed">Nie można skopiować obrazu</string>
-    <string name="pt_bob_open_book_read_only">Otwórz książkę w trybie tylko do odczytu</string>
-    <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
-    <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>
-    <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
     <string name="progress_msg_process_preferences">Preferencje…</string>
     <string name="progress_end_import_complete">Import zakończony</string>
-    <string name="pg_bob_extra_book_details">Dodatkowe szczegóły książki</string>
     <string name="progress_msg_adding_book">Dodawanie książki…</string>
     <string name="progress_msg_backing_up">Tworzenie kopii zapasowej…</string>
     <string name="progress_msg_connecting">Łączenie ze stroną internetową…</string>
@@ -404,10 +393,7 @@
     <string name="progress_msg_n_created_m_updated">Utworzono %1$d, zaktualizowano %2$d</string>
     <string name="progress_msg_covers">Objętych przetworzonych %1$d (brakuje %2$d)</string>
     <string name="progress_msg_covers_skip">Obejmuje przetworzone %1$d (brak %2$d, pominięto %3$d)</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
-    <string name="pt_ui_messages_use">Wiadomości informacyjne</string>
-    <string name="pt_allow_mobile_data">Włącz mobilne korzystanie z danych</string>
+
     <string name="hint_book_list">Dotknięcie książki pokaże szczegóły książki. Długie naciśnięcie elementu na liście daje więcej opcji.</string>
     <string name="gr_tq_menu_delete_task">Usuń zadanie</string>
     <string name="gr_tq_menu_delete_event">Usuń wydarzenie</string>
@@ -431,20 +417,13 @@
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="confirm_merge_bookshelves">Zmieniona nazwa półki na książki już istnieje. Czy chcesz je połączyć?</string>
     <string name="gr_tq_generic_task_info">Identyfikator zadania %1$d, umieszczony w kolejce przy %2$s</string>
-    <string name="pt_scanning_preferred_scanner">Preferowany skaner</string>
-    <string name="pt_thumbnails_external_cropper">Użyj zewnętrznego przycinacza obrazu</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Pod każdym %1$s</string>
+
     <string name="warning_required_name">Nazwa nie może być pusta</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
-    <string name="pt_thumbnails_rotate_auto">Automatycznie obracaj zdjęcia zrobione aparatem</string>
-    <string name="pt_bob_list_generation">Opcja tworzenia listy książek</string>
+
     <string name="progress_msg_upgrading">Aktualizacja…</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
-    <string name="pt_bob_format_author_name">Format nazw autorów</string>
-    <string name="pt_bob_sort_author_name">Sortowanie nazw autorów</string>
-    <string name="pt_bob_list_state">Stan listy książek</string>
-    <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
-    <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
+
     <string name="menu_set_complete">Ustaw na „uzupełnij”</string>
     <string name="menu_set_incomplete">Ustaw na „niekompletny”</string>
     <string name="menu_set_read">Ustaw jako „czytaj”</string>
@@ -453,7 +432,6 @@
     <string name="acra_resReportSendSuccessToast">Dziękuję Ci!</string>
     <string name="acra_resNotifText">Kliknij tutaj, aby uzyskać szczegółowe informacje</string>
     <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
-    <string name="about_dash_or_dash">- lub -</string>
     <string name="error_not_available">%1$s jest niedostępny</string>
     <string name="error_authorization_failed">Autoryzacja %1$s nie powiodła się</string>
     <string name="error_search_configuration">Błąd konfiguracji. Otwórz stronę Ustawienia i sprawdź preferencje strony wyszukiwania.</string>
@@ -501,8 +479,6 @@
     <string name="gr_explain_goodreads_no_isbn">Wybrana książka nie ma numeru ISBN; nie jest możliwe automatyczne zsynchronizowanie go z Goodreads. Najprostszym rozwiązaniem jest: (1) usunięcie książki z (2) ręczne dodanie książki w Goodreads za pośrednictwem interfejsu internetowego (3) Synchronizacja z Goodreads Spowoduje to ponowne utworzenie książki i pozostanie z nią połączona dalej.</string>
     <string name="gr_explain_goodreads_no_match">ISBN wybranej książki nie można znaleźć w Goodreads. Istnieją dwie możliwe przyczyny: albo dane książki są błędne (powinieneś sprawdzić ISBN), albo książka nie jest w Goodreads. Jeśli wprowadzisz jakiekolwiek zmiany w danych, po prostu naciśnij przycisk „Ponów próbę” i sprawdź, czy wynikowe zadanie w tle się powiedzie. Jeśli dane wyglądają poprawnie, a książka nadal nie została znaleziona, książka z tym ISBN musi zostać ręcznie dodana do Goodreads za pośrednictwem strony internetowej. Gdy to zrobisz, możesz spróbować ponownie wysłać książkę.</string>
     <string name="gr_send_books_to_goodreads_blurb">Spowoduje to wysłanie biblioteki do Goodreads. Możesz wysłać wszystkie swoje książki lub tylko książki zaktualizowane od czasu ich ostatniego skopiowania do lub z Goodreads (w tym wszystkie książki, które nie zostały jeszcze wysłane) lub możesz anulować aktualizację. Jeśli nigdy nie wysłałeś żadnych książek, nie ma różnicy między pierwszymi dwiema opcjami.</string>
-    <string name="pv_bob_format_author_name_given_first">Pierwsze imię, np. „Anna Nowak”</string>
-    <string name="pv_bob_format_author_name_family_first">Najpierw imię rodziny, np. „Nowak, Anna”</string>
     <string name="gr_access_error">Wystąpił problem z siecią podczas uzyskiwania dostępu do Goodreads. Sprawdź, czy witryna Goodreads obsługuje ją, a jeśli problem nadal występuje, skontaktuj się z pomocą techniczną.</string>
     <string name="gr_action_cannot_be_completed">Ta akcja nie może zostać zakończona, dopóki ta aplikacja nie zostanie autoryzowana na stronie internetowej Goodreads. Po autoryzacji tej aplikacji spróbuj ponownie. Czy chcesz teraz autoryzować?</string>
     <string name="gr_auth_access_already_auth">Wygląda na to, że już autoryzowałeś tę aplikację. Wszystkie funkcje Goodreads powinny być już dostępne.</string>
@@ -523,16 +499,9 @@
         (jeśli o kimś zapomnieliśmy, powiedz nam):
     </string>
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK“, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
-    <string name="about_donate_paypal">Dotacja PayPal</string>
     <string name="acra_resNotifTitle">&APP_NAME; Wypadek</string>
     <string name="acra_resNotifTickerText">&APP_NAME; uległo awarii</string>
     <string name="clear">Wyczyść</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Użyj zadania w tle, aby załadować obrazy (przewijanie będzie szybsze, obrazy mogą być opóźnione)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Natychmiastowe ładowanie obrazów (przewijanie będzie wolniejsze)</string>
-    <string name="pt_bob_thumbnails_generating_mode">Użyj zadania w tle, aby załadować obrazy</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
     <string name="warning_required_at_least_one">Co najmniej jedno pole nie może być puste</string>
     <string name="X_updated">Zaktualizowano</string>
     <string name="X_use_default_setting">Zastosowanie domyślne</string>
@@ -544,16 +513,12 @@
     <string name="pv_bob_books_under_multiple_primary_1s_only">Pod głównym tylko %1$s</string>
     <string name="X_error_starting_import_arg">Podczas uruchamiania importu wystąpił problem: %1$s</string>
     <string name="X_hint_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
-    <string name="pt_bob_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
     <string name="btn_confirm_new">Nowy</string>
     <string name="title_edit_book_authors">Edytuj autorów książek</string>
-    <string name="pt_hint_layer_type">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
     <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
     <string name="export_info_success_archive_details">
         Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie
         skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.
     </string>
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
-    <string name="pt_thumbnail_cropper_layer_type">przytnij obraz ‘Layer Type’</string>
-
 </resources>

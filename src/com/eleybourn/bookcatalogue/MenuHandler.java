@@ -26,13 +26,12 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 
 /**
  * Handles re-usable menu items; both to create and to handle.
@@ -172,14 +171,12 @@ public final class MenuHandler {
      * Handle the menu items created by {@link #addAmazonSearchSubMenu(Menu)}.
      *
      * @param context  Current context
-     * @param view     view to use for user messages/errors
      * @param menuItem The item selected
      * @param book     the book upon to act
      *
      * @return {@code true} if handled
      */
     static boolean handleAmazonSearchSubMenu(@NonNull final Context context,
-                                             @NonNull final View view,
                                              @NonNull final MenuItem menuItem,
                                              @NonNull final Book book) {
         switch (menuItem.getItemId()) {
@@ -199,16 +196,16 @@ public final class MenuHandler {
                 return false;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonSearchPage.open(context, view, book.getPrimaryAuthor(), null);
+                AmazonManager.openWebsite(context, book.getPrimaryAuthor(), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonSearchPage.open(context, view, null, book.getPrimarySeries());
+                AmazonManager.openWebsite(context, null, book.getPrimarySeries());
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonSearchPage.open(context, view,
-                                      book.getPrimaryAuthor(), book.getPrimarySeries());
+                AmazonManager.openWebsite(context,
+                                          book.getPrimaryAuthor(), book.getPrimarySeries());
                 return true;
 
             default:

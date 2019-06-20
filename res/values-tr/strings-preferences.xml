@@ -5,20 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Genel</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Kullanıcı arayüzü</string>
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="pg_thumbnails">Ufak resimler</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Tarama</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Kitap listeleri</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
+    <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="pg_groupings">Öbeklemeler</string>
 
     <!-- ========== Global preferences ========== -->
@@ -38,7 +32,11 @@
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
 
-     <!--Preference -->
+    <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
+    <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
+    <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
+
+    <!--Preference -->
     <string name="pt_ui_messages_use">İle bilgilendir</string>
     <string-array name="pe_ui_messages_use">
         <item translatable="false">Toast</item>
@@ -56,7 +54,6 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Dil</string>
-    <string name="pt_ui_field_visibility">Alan görünürlüğünü yönet</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>
@@ -157,12 +154,10 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Yazar adları biçimi</string>
-    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin \‘Özgür Çapulcu\’</string>
-    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin \‘Çapulcu, Özgür\’</string>
+    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin ‘Aziz Nesin’</string>
+    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin ‘Nesin, Aziz’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Yazarları sırala</string>
 
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
 </resources>

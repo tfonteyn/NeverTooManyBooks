@@ -13,6 +13,7 @@
     <string name="lbl_is_read">Вы прочитали эту книгу?</string>
     <string name="lbl_pages">Страницы</string>
     <string name="X_btn_confirm_add_book">Добавить книгу</string>
+    <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
     <string name="btn_confirm_update">Обновить</string>
     <string name="X_info_no_books_yet">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
     <string name="menu_expand_all">Развернуть всё</string>
@@ -26,7 +27,6 @@
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="bookshelf_all_books">Все книги</string>
-    <string name="X_isbn_found">ISBN отсканирован. Поиск в Интернете.</string>
     <string name="search_isbn">поиск по ISBN</string>
     <string name="title_edit_bookshelves">управление книжными полками</string>
     <string name="title_edit_bookshelf">редактирование книжной полки</string>
@@ -44,7 +44,6 @@
     <string name="menu_administration">Настройки</string>
     <string name="info_install_scanner">Чтобы определить ваши книги по ISBN штрих-коду, вы должны установить приложение Google Goggles или zxing.</string>
     <string name="title_install_scan">Установить сканер штрих-кодов</string>
-    <string name="about_donate">Если Вы хотите поддержать разработку этого приложения, пожалуйста сделайте пожертвование или через Amazon Wishlist или через PayPal кнопкой внизу. Я не могу опубликовать &quot;платную&quot; версию приложения в Австралии. :-) </string>
     <string name="about_lbl_upgrade">После Вашего последнего обновления</string>
     <string name="menu_edit_book">Редактировать книгу</string>
     <string name="menu_edit_book_notes">Комментарии</string>
@@ -59,7 +58,6 @@
     <string name="about_lbl_website">Веб-адрес проекта:</string>
     <string name="about_lbl_sourcecode">Исходный код:</string>
     <string name="about_lbl_contacts">Контакты разработчиков:</string>
-    <string name="about_lbl_donate">Пожертвовать</string>
     <string name="menu_about">О приложении…</string>
     <string name="lbl_price_listed">Список цен</string>
     <string name="lbl_update_fields">Автоматическое обновление полей</string>
@@ -76,7 +74,6 @@
     <string name="help">Помощь</string>
     <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="X_anthology_titles">Названия антологий</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Эта антология имеет несколько авторов.</string>
     <string name="X_menu_delete_toc_entry">Удалить название антологии</string>
     <string name="lbl_is_anthology">Эта книга - антология?</string>
@@ -108,7 +105,7 @@
     <string name="field_not_set">Не установлено</string>
     <string name="X_menu_search_books">Искать книги</string>
     <string name="hint_book_search_by_text">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги. \n\n</string>
-    <string name="about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
+    <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="vldt_unable_to_get_value_for_x">Невозможно получить значение для: \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Введите целое значение: \‘%1$s\’</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: \‘%1$s\’</string>
@@ -126,8 +123,8 @@
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="btn_confirm_save">Сохранить</string>
     <string name="btn_confirm_add">Добавить</string>
-    <string name="info_no_authors_yet">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
-    <string name="info_no_series_yet">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
+    <string name="X_info_no_authors_yet">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
+    <string name="X_info_no_series_yet">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
     <string name="X_warning_cover_field_not_set">Обложка не установлена</string>
     <string name="X_warning_cover_corrupt">Обложка испорчена</string>
     <string name="X_title_cover_detail">Детальная информация об обложке</string>
@@ -315,15 +312,12 @@
     <string name="lbl_preferred_styles">Предпочитаемые стили</string>
     <string name="title_edit_style">Редактировать стиль</string>
     <string name="title_clone_style">Клонировать стиль</string>
-    <string name="pg_filters">Фильтры книг</string>
     <string name="title_select_style">Выбрать стиль</string>
     <string name="X_warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="edit">Редактировать</string>
     <string name="lbl_settings">Настройки</string>
     <string name="error_unexpected_error">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню ‘Настройки’ из Главного меню</string>
     <string name="menu_duplicate">копия</string>
-    <string name="about_dash_or_dash">- Или -</string>
-    <string name="about_donate_paypal">Пожертвование через PayPal</string>
     <string name="style_builtin_compact">Компактный</string>
     <string name="style_is_user_defined">Определенный пользователем</string>
     <string name="style_is_builtin">Встроенный</string>
@@ -546,13 +540,6 @@
         (если кто-то забыт, пожалуйста, напомните):
     </string>
 
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>Если вы покупаете вещи на Amazon после выбора  <i>“%1$s”</i>, <i>“%2$s”</i> или <i>“%3$s”</i> элементов меню,
-         часть стоимости заказa будет отослана разработчикам %4$s.</p>
-         <p>Вы также можете использовать <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”> ссылки нашего FAQ</a>,
-          чтобы перейти прямо на Amazon или PayPal.</p>]]>
-    </string>
-
     <string name="style_builtin_update_date">Дата обновления</string>
     <string name="lbl_update_year">Год обновления</string>
     <string name="lbl_update_month">Месяц обновления</string>
@@ -632,8 +619,6 @@
     <string name="gr_tq_events_recorded">(Записано %1$d событий)</string>
     <string name="none">Никто</string>
     <string name="menu_hide_keyboard">Скрыть клавиатуру</string>
-    <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
-    <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="warning_action_requires_isbn">Для этого действия требуется действительный ISBN.</string>
     <string name="vldt_failure">Ошибка проверки.</string>
     <string name="lbl_search_sites">Поиск сайтов</string>

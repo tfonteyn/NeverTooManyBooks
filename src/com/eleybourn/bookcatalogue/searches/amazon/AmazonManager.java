@@ -1,5 +1,8 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,6 +11,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +78,7 @@ public final class AmazonManager
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
+    private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
 
     /**
      * Constructor.
@@ -84,6 +90,62 @@ public final class AmazonManager
     public static String getBaseURL() {
         //noinspection ConstantConditions
         return App.getPrefs().getString(PREFS_HOST_URL, "https://www.amazon.com");
+    }
+
+    /**
+     * @param author to search for
+     * @param series to search for
+     */
+    public static void openWebsite(@NonNull final Context context,
+                                   @Nullable final String author,
+                                   @Nullable final String series) {
+
+        String cAuthor = cleanupSearchString(author);
+        String cSeries = cleanupSearchString(series);
+
+        String extra = "";
+        if (!cAuthor.isEmpty()) {
+            try {
+                extra += "&field-author=" + URLEncoder.encode(cAuthor, "UTF-8");
+            } catch (@NonNull final UnsupportedEncodingException e) {
+                Logger.error(AmazonManager.class, e, "Unable to add author to URL");
+            }
+        }
+
+        if (!cSeries.isEmpty()) {
+            try {
+                extra += "&field-keywords=" + URLEncoder.encode(cSeries, "UTF-8");
+            } catch (@NonNull final UnsupportedEncodingException e) {
+                Logger.error(AmazonManager.class, e, "Unable to add series to URL");
+            }
+        }
+
+        String url = getBaseURL() + SUFFIX_BASE_URL + extra.trim();
+
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+
+    }
+
+    @NonNull
+    private static String cleanupSearchString(@Nullable final String search) {
+        if (search == null || search.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder out = new StringBuilder(search.length());
+        char prev = ' ';
+        for (char curr : search.toCharArray()) {
+            if (Character.isLetterOrDigit(curr)) {
+                out.append(curr);
+                prev = curr;
+            } else {
+                if (!Character.isWhitespace(prev)) {
+                    out.append(' ');
+                }
+                prev = ' ';
+            }
+        }
+        return out.toString().trim();
     }
 
     @Override

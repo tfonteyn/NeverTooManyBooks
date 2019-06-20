@@ -68,15 +68,14 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Number of app startup's between offers to backup. */
+    /**
+     * Number of app startup's between offers to backup.
+     * RELEASE: set to 5
+     */
     private static final int PROMPT_WAIT_BACKUP = 50;
-    /** Number of app startup's between displaying the Amazon hint. */
-    private static final int PROMPT_WAIT_AMAZON = 70;
 
     /** Indicates the upgrade message has been shown. */
     private static boolean sUpgradeMessageShown;
-    /** Flag indicating Amazon hint should be shown. */
-    private static boolean sShowAmazonHint;
 
     /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
@@ -99,10 +98,6 @@ public class StartupActivity
     @Nullable
     public static StartupActivity getActiveActivity() {
         return sStartupActivity != null ? sStartupActivity.get() : null;
-    }
-
-    public static boolean showAmazonHint() {
-        return sShowAmazonHint;
     }
 
     @Override
@@ -307,9 +302,6 @@ public class StartupActivity
         }
         ed.putInt(PREF_STARTUP_COUNT, startCount)
           .apply();
-
-        // every so often, let the Amazon hint show.
-        sShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
 
         return opened == 0;
     }

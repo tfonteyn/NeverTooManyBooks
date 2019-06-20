@@ -14,6 +14,7 @@
     <string name="lbl_pages">Pagina\'s</string>
     <string name="X_btn_confirm_add_book">Boek toevoegen</string>
     <string name="btn_confirm_update">Bijwerken</string>
+    <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="X_info_no_books_yet">
         Er staan geen boeken op deze boekenplank.
         Voeg er een paar toe via het menu onderaan dit scherm.
@@ -33,7 +34,6 @@
     </string>
     <string name="lbl_bookshelf">Boekenplank: </string>
     <string name="bookshelf_all_books">Alle Boeken</string>
-    <string name="X_isbn_found">ISBN gescand. Zoeken op Internet.</string>
     <string name="search_isbn">ISBN zoeken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
@@ -64,11 +64,6 @@
         Google Goggles streepjescode scanner app installeren.
     </string>
     <string name="title_install_scan">Streepjescode Scanner Installeren</string>
-    <string name="about_donate">
-        Als u de ontwikkeling van deze applicatie wilt ondersteunen, kunt u een bijdrage doen
-        via mijn Amazon Wishlist of de Paypal knop hieronder. Omdat ik in Australië ben kan ik
-        geen betaalde &quot;betaalde&quot; versie publiceren. :-)
-    </string>
     <string name="about_lbl_upgrade">Sinds uw laatste upgrade</string>
     <string name="menu_edit_book">Boek bewerken</string>
     <string name="menu_edit_book_notes">Mijn Commentaar</string>
@@ -83,7 +78,6 @@
     <string name="about_lbl_website">Webpagina:</string>
     <string name="about_lbl_sourcecode">Broncode:</string>
     <string name="about_lbl_contacts">Contacten:</string>
-    <string name="about_lbl_donate">Doneren</string>
     <string name="menu_about">Over deze App</string>
     <string name="lbl_price_listed">Prijs</string>
     <string name="lbl_update_fields">Automatisch Velden bijwerken</string>
@@ -113,7 +107,6 @@
         Ongeselecteerde velden zijn verborgen.
     </string>
     <string name="X_anthology_titles">Bloemlezing titels</string>
-    <string name="about_donate_amazon">Amazon Verlanglijst</string>
     <string name="lbl_toc_multiple_authors">Deze bloemlezing heeft meerdere auteurs</string>
     <string name="X_menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
     <string name="lbl_is_anthology">Is dit boek een bloemlezing?</string>
@@ -155,7 +148,7 @@
         verdient meestal de voorkeur. De juiste streepjescode kunt u meestal vinden aan de
         achterkant van de boekomslag.
     </string>
-    <string name="about_help_tap_here">Tik hier voor online help</string>
+    <string name="X_about_help_tap_here">Tik hier voor online help</string>
 
     <string name="vldt_unable_to_get_value_for_x">Kan de waarde voor ‘%1$s’ niet krijgen</string>
     <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor ‘%1$s’</string>
@@ -183,11 +176,11 @@
     <string name="error_columns_are_blank">Kolommen %1$s zijn allemaal leeg op lijn %2$d</string>
     <string name="btn_confirm_save">Opslaan</string>
     <string name="btn_confirm_add">Toevoegen</string>
-    <string name="info_no_authors_yet">
+    <string name="X_info_no_authors_yet">
         Er zijn geen auteurs voor dit boek.
         U kunt er een toevoegen met het tekstveld en de knop bovenin dit scherm.
     </string>
-    <string name="info_no_series_yet">
+    <string name="X_info_no_series_yet">
         Er zijn geen series voor dit boek.
         U kunt er een toevoegen met het tekstveld en de knop bovenin dit scherm.
     </string>
@@ -482,7 +475,6 @@
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
     <string name="title_edit_style">Stijl bewerken</string>
     <string name="title_clone_style">Stijl klonen</string>
-    <string name="pg_filters">Boekfilters</string>
     <string name="title_select_style">Selecteer een stijl</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>
@@ -492,8 +484,6 @@
         Zend ons aub de details via de ‘Admin’ optie in het hoofdmenu.
     </string>
     <string name="menu_duplicate">Dupliceer</string>
-    <string name="about_dash_or_dash">- Of -</string>
-    <string name="about_donate_paypal">PayPal Donatie</string>
     <string name="style_builtin_compact">Compact</string>
     <string name="style_is_user_defined">Gebruiker-gedefinieerd</string>
     <string name="style_is_builtin">Ingebouwd</string>
@@ -814,15 +804,6 @@
         (als we iemand zijn vergeten, laat het ons aub weten):
     </string>
 
-    <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>Indien u boeken koopt bij Amazon na het selecteren van de  « <i>“%1$s”</i> »,
-         « <i>“%2$s”</i> » of « <i>“%3$s”</i> » menu opties, zal een deel van de aankoopprijs
-          gezonden worden naar de ontwikkelaars van %4$s.</p>
-         <p>U kunt ook de <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>links op de FAQ pagina</a>
-          gebruiken om direct naar Amazon of Paypal te gaan.</p>]]>
-    </string>
-
     <string name="style_builtin_update_date">Datum update</string>
     <string name="lbl_update_year">Jaar update</string>
     <string name="lbl_update_month">Maand update</string>
@@ -910,8 +891,6 @@
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
     <string name="menu_hide_keyboard">Toetsenbord verbergen</string>
-    <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
-    <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
     <string name="none">Geen</string>
     <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="vldt_failure">Validatiefout.</string>
@@ -923,5 +902,4 @@
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
-    <string name="pt_thumbnail_cropper_layer_type">Bijsnijden ‘Layer Type’</string>
 </resources>

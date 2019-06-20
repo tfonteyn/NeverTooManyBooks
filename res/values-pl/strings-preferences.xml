@@ -1,27 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Preference Category -->
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
     <string name="pg_general">Ogólne</string>
-    <!-- Preference Category -->
     <string name="pg_ui">Interfejs użytkownika</string>
-
-    <string name="pt_ui_field_visibility">Dostosuj widoczność pól</string>
-
-    <!-- Preference Category -->
+    <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="pg_thumbnails">Miniatury</string>
-    <!-- Preference Category -->
     <string name="pg_scanning">Skaner</string>
-
-    <!-- Preference Category -->
     <string name="pg_booklist">Listy książek</string>
-    <!-- Preference Category; filters in booklist style -->
+    <string name="pg_bob_extra_book_details">Dodatkowe szczegóły książki</string>
     <string name="pg_filters">Filtry</string>
-    <!-- Preference Category; groups (RowKinds) in booklist style -->
     <string name="pg_groupings">Grupowanie</string>
 
-
-
+    <!-- ========== Global preferences ========== -->
+    <string name="pt_ui_language">Preferowany język interfejsu użytkownika</string>
+    <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
+    <string name="pt_ui_theme">Motyw</string>
+    <string name="pt_bob_open_book_read_only">Otwórz książkę w trybie tylko do odczytu</string>
+    <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
+    <string name="pt_bob_books_under_multiple_series">Książki w wielu seriach</string>
+    <string name="pt_bob_books_under_multiple_authors">Książki z wieloma autorami</string>
+    <string name="pt_scanning_beep_if_isbn_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
+    <string name="pt_scanning_beep_if_isbn_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
+    <string name="pt_ui_messages_use">Wiadomości informacyjne</string>
+    <string name="pt_allow_mobile_data">Włącz mobilne korzystanie z danych</string>
+    <string name="pt_scanning_preferred_scanner">Preferowany skaner</string>
+    <string name="pt_thumbnails_external_cropper">Użyj zewnętrznego przycinacza obrazu</string>
+    <string name="pt_thumbnails_rotate_auto">Automatycznie obracaj zdjęcia zrobione aparatem</string>
+    <string name="pt_bob_list_generation">Opcja tworzenia listy książek</string>
+    <string name="pt_bob_format_author_name">Format nazw autorów</string>
+    <string name="pt_bob_sort_author_name">Sortowanie nazw autorów</string>
+    <string name="pt_bob_list_state">Stan listy książek</string>
+    <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
+    <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
+    <string name="pt_bob_thumbnails_generating_mode">Użyj zadania w tle, aby załadować obrazy</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
+    <string name="pt_bob_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
+    <string name="pt_hint_layer_type">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
+    <string name="pt_thumbnail_cropper_layer_type">przytnij obraz ‘Layer Type’</string>
 
 
     <!-- Preference - Scale text. -->
@@ -42,5 +61,14 @@
         <item>X-Duży</item>
         <item>2X-Duży</item>
     </string-array>
+
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Użyj zadania w tle, aby załadować obrazy (przewijanie będzie szybsze, obrazy mogą być opóźnione)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Natychmiastowe ładowanie obrazów (przewijanie będzie wolniejsze)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Pod każdym %1$s</string>
+    <string name="pv_bob_format_author_name_given_first">Pierwsze imię, np. „Stanisław Lem”</string>
+    <string name="pv_bob_format_author_name_family_first">Najpierw imię rodziny, np. „Lem, Stanisław”</string>
+
 
 </resources>

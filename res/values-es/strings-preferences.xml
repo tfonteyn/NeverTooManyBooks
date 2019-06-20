@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Utilizar configuración por defecto</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">General</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Interfaz de usuario</string>
-    <string name="pt_ui_field_visibility">Visibilidad de campos</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Visibilidad de campos</string>
     <string name="pg_thumbnails">Miniaturas</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Escaneado</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Listas de libros</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Detalles adicionales</string>
+    <string name="pg_filters">Filtros adicionales</string>
     <string name="pg_groupings">Grupos</string>
 
     <!-- ========== Global preferences ========== -->
@@ -39,6 +31,9 @@
 
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Pitido si el ISBN escaneado no es válido</string>
+
+    <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
+    <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
 
      <!--Preference -->
     <string name="pt_ui_messages_use">Informar con</string>
@@ -163,12 +158,10 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formato para nombres de autor</string>
-    <string name="pv_bob_format_author_name_given_first">Nombre primero, por ejemplo \‘Antonio García\’</string>
-    <string name="pv_bob_format_author_name_family_first">Apellido primero, por ejemplo \‘García, Antonio\’</string>
+    <string name="pv_bob_format_author_name_given_first">Nombre primero, por ejemplo ‘Benito Pérez Galdós’</string>
+    <string name="pv_bob_format_author_name_family_first">Apellido primero, por ejemplo ‘Pérez Galdós, Benito’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Ordenar autores</string>
 
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Detalles adicionales</string>
 </resources>

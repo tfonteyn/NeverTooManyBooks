@@ -134,7 +134,6 @@
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
     <string name="lbl_bookshelf">Knihovna</string>
     <string name="bookshelf_all_books">Všechny knihy</string>
-    <string name="X_isbn_found">Zjištěn ISBN kód. Prohledávám Internet.</string>
     <string name="search_isbn">Hledat ISBN</string>
     <string name="title_edit_bookshelves">Spravovat knihovny</string>
     <string name="title_edit_bookshelf">Upravit knihovnu</string>
@@ -152,7 +151,6 @@
     <string name="menu_administration">Admin</string>
     <string name="info_install_scanner">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
     <string name="title_install_scan">Instalovat čtečku čárových kódů</string>
-    <string name="about_donate">Pokud chcete podpořit vývoj této aplikace, učiňte tak prosím prostřednictvím mého Amazon Wishlistu nebo přes paypal tlačítko níže. Vzhledem k tomu, že jsem z Austrálie, tak nemohu nabízet &quot;placenou&quot; verzi. :-) </string>
     <string name="about_lbl_upgrade">Od Vaší poslední aktualizace</string>
     <string name="menu_edit_book">Upravit knihu</string>
     <string name="menu_edit_book_notes">Váš komentář</string>
@@ -167,7 +165,6 @@
     <string name="about_lbl_website">WWW stránky:</string>
     <string name="about_lbl_sourcecode">Zdrojový kód:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
-    <string name="about_lbl_donate">Podpořit</string>
     <string name="menu_about">O této aplikaci</string>
     <string name="lbl_price_listed">Seznam cen</string>
     <string name="lbl_update_fields">Automaticky aktualizovat pole</string>
@@ -185,7 +182,6 @@
     <string name="help">Nápověda</string>
     <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="X_anthology_titles">Antologické tituly</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Tato antologie má více autorů.</string>
     <string name="X_menu_delete_toc_entry">Odstranit tento titul z antologií</string>
     <string name="lbl_is_anthology">Je tato kniha antologií?</string>
@@ -217,7 +213,7 @@
     <string name="field_not_set">Nenastaveno</string>
     <string name="X_menu_search_books">Hledat knihy</string>
     <string name="hint_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
-    <string name="about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
+    <string name="X_about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="vldt_unable_to_get_value_for_x">Neznámá hodnota pro \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Očekávána číselná hodnota pro \‘%1$s\’</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro \‘%1$s\’</string>
@@ -235,8 +231,8 @@
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
     <string name="btn_confirm_save">Uložit</string>
     <string name="btn_confirm_add">Přidat</string>
-    <string name="info_no_authors_yet">Tato kniha nemá autora. Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
-    <string name="info_no_series_yet">Pro tuto knihu není zadána žádná série. Pro její zadání můžete použít pole v horní části obrazovky.</string>
+    <string name="X_info_no_authors_yet">Tato kniha nemá autora. Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
+    <string name="X_info_no_series_yet">Pro tuto knihu není zadána žádná série. Pro její zadání můžete použít pole v horní části obrazovky.</string>
     <string name="X_warning_cover_field_not_set">Obálka není zadána</string>
     <string name="X_warning_cover_corrupt">Obálka je poškozena</string>
     <string name="X_title_cover_detail">Detail obálky</string>
@@ -400,15 +396,12 @@
     <string name="lbl_preferred_styles">Preferované styly</string>
     <string name="title_edit_style">Upravit styl</string>
     <string name="title_clone_style">Klonovat styl</string>
-    <string name="pg_filters">Filtry knih</string>
     <string name="title_select_style">Zvolit styl</string>
     <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
     <string name="lbl_settings">Nastavení</string>
     <string name="error_unexpected_error">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím \‘Admin\’ v hlavním menu.</string>
     <string name="menu_duplicate">Kopírovat</string>
-    <string name="about_dash_or_dash">- nebo -</string>
-    <string name="about_donate_paypal">Podpořit prostřednictvím PayPal</string>
     <string name="style_builtin_compact">Kompaktní</string>
     <string name="style_is_user_defined">Definován uživatelem</string>
     <string name="style_is_builtin">Vestavěný</string>
@@ -509,9 +502,6 @@
     <string name="menu_add_book_by_isbn">Zadejte ISBN</string>
     <string name="menu_add_book_by_barcode_scan">Skenování čárového kódu / ISBN</string>
     <string name="lbl_price_paid">Cena zaplacena</string>
-    <string name="pt_ui_language">Upřednostňovaný jazyk uživatelského rozhraní</string>
-    <string name="pt_ui_system_locale">Národní prostředí systému</string>
-    <string name="pt_ui_theme">Téma</string>
     <string name="style_builtin_acquired_date">Získáno</string>
     <string name="search_with_text">Hledat: %1$s</string>
     <string name="style_builtin_read_date">Datum Čtení</string>
@@ -560,8 +550,6 @@
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
     <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s NeverToManyBooks. Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
     <string name="warning_cover_copy_failed">Nelze kopírovat obraz</string>
-    <string name="pt_bob_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
-    <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="progress_msg_process_preferences">Předvolby…</string>
     <string name="progress_msg_process_cover">Přebal…</string>
     <string name="progress_end_import_complete">Import byl dokončen</string>
@@ -573,10 +561,6 @@
     <string name="progress_msg_n_created_m_updated">%1$d vytvořeno, %2$d aktualizováno</string>
     <string name="progress_msg_covers">Zpracované kryty %1$d (chybí %2$d)</string>
     <string name="progress_msg_covers_skip">Zpracované kryty %1$d (chybí %2$d, %3$d přeskočeno)</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
-    <string name="pt_ui_messages_use">Informační zprávy</string>
-    <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="hint_book_list">Kliknutí na knihu vám ukáže podrobnosti o knize. Dlouhý stisk položky v seznamu vám poskytne více možností.</string>
     <string name="hint_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
     <string name="hint_view_only_book_details">Když klepnete na položku v tomto seznamu, můžete se nyní rozhodnout pro zobrazení podrobností o neupravitelných podrobnostech knihy. Viz Nastavení příslušného spínače.</string>
@@ -586,10 +570,6 @@
     <string name="about_lbl_special_thanks">Zvláštní poděkování</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="pt_scanning_preferred_scanner">Upřednostňovaný skener</string>
-    <string name="pt_thumbnails_external_cropper">Použijte externí oříznutí obrázků</string>
-    <string name="pt_bob_list_generation">Možnost generování seznamu knih</string>
-    <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
     <string name="menu_set_complete">Nastavit na “kompletní”</string>
     <string name="menu_set_incomplete">Nastaveno na “neúplné”</string>
     <string name="menu_set_read">Nastavit jako čtení</string>
@@ -619,18 +599,11 @@
         (Pokud jsme na někoho zapomněli, sdělte nám to prosím):
     </string>
     <string name="clear">Jasné</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Načíst obrázky okamžitě (rolování bude pomalejší)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Použít úlohu na pozadí k načtení obrázků (rolování bude rychlejší, obrázky mohou být zpožděny)</string>
-    <string name="pt_bob_thumbnails_generating_mode">Chcete-li načíst obrázky, použijte úkol na pozadí</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
     <string name="warning_required_at_least_one">Alespoň jedno pole nemůže být prázdné</string>
     <string name="X_pt_bob_preferred_style">Výhodné</string>
     <string name="X_select_bookshelves">Vyberte si regály</string>
     <string name="warning_select_a_non_directory">Vyberte soubor, který není adresářem.</string>
     <string name="warning_no_parent_directory_found">Nadřazený adresář nebyl nalezen</string>
-    <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="btn_confirm_new">Nový</string>
     <string name="title_edit_book_authors">Editovat autory knihy</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
@@ -640,6 +613,6 @@
         zařízení.
     </string>
     <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
-    <string name="pt_hint_layer_type">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
-    <string name="pt_thumbnail_cropper_layer_type">Oříznout ‘Layer Type’</string>
+
+    <string name="X_use_default_setting">Použít defaultní nastavení</string>
 </resources>

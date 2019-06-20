@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Standardeinstellung verwenden</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Allgemein</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Benutzeroberfläche</string>
-    <string name="pt_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="pg_thumbnails">Umschlagbilder</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Scanne</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Buchlisten</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Zusätzliche Buchdetails</string>
+    <string name="pg_filters">Buchfilter</string>
     <string name="pg_groupings">Gruppierung</string>
 
     <!-- ========== Global preferences ========== -->
@@ -39,6 +31,9 @@
 
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
+
+    <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
+    <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
 
      <!--Preference -->
     <string name="pt_ui_messages_use">informieren mit</string>
@@ -161,12 +156,9 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format des Autorennamens</string>
-    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. \‘Max Meier\’)</string>
-    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. \‘Meier, Max\’)</string>
+    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. ‘Franz  Kafka’)</string>
+    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. ‘Kafka, Franz’)</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>
-
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Zusätzliche Buchdetails</string>
 </resources>

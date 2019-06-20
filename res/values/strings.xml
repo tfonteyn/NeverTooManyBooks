@@ -129,14 +129,6 @@ TODO: uniform quotes in all string:
         displaying %1$d books, in %2$d entries
     </string>
 
-    <string name="info_no_authors_yet">
-        There are no authors for this Book.
-        Please add some using the text area and button at the top of this screen.
-    </string>
-    <string name="info_no_series_yet">
-        There are no series for this Book.
-        You can add some using the text area and button at the top of this screen.
-    </string>
     <string name="info_cleanup_files_text">
         Purgeable files currently use %1$s on the SD card. Log files and other data are saved
         on the SD card at each upgrade, when you backup the database, or when the application
@@ -577,17 +569,6 @@ TODO: uniform quotes in all string:
         Tapping on a book will show you the details of the book.
         A long-press on an item in the list will give you more options.
     </string>
-    <!-- A hint describing the benefit of following the Amazon links
-        Arguments 1-3 are menu names; allows us to change the names without the need to redo
-        this string. Argument 4 == &APP_NAME; but this is a CDATA block, so done from code.  -->
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>If you buy things from Amazon after selecting the <i>“%1$s”</i>, <i>“%2$s”</i>
-        or <i>“%3$s”</i> menu items, a proportion of the purchase price will be sent to the
-        developers of %4$s.</p>
-        <p>You can also use the
-         <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>links on our FAQ</a>
-          to navigate directly to Amazon or PayPal.</p>]]>
-    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
@@ -961,7 +942,6 @@ TODO: uniform quotes in all string:
     <string name="about_lbl_sourcecode">Source Code</string>
 
     <string name="about_lbl_contacts">Contacts</string>
-    <string name="about_lbl_donate">Donate</string>
     <string name="about_lbl_special_thanks">Special Thanks</string>
     <string name="about_lbl_upgrade">Since your last upgrade</string>
 
@@ -971,16 +951,6 @@ TODO: uniform quotes in all string:
         use without the generous help of our volunteer translators
         (if we have forgotten someone, please tell us):
     </string>
-    <string name="about_donate">
-        If you would like to support the development of this application, please donate using a
-        my Amazon WishList or the Paypal button below. Being in Australia means I cannot
-        publish a “paid” version. :-)
-    </string>
-    <string name="about_donate_amazon">Amazon WishList</string>
-    <string name="about_dash_or_dash">- Or -</string>
-    <string name="about_donate_paypal">PayPal Donation</string>
-
-    <string name="about_help_tap_here">Please tap here to access the online help pages</string>
 
     <!-- ####################################################################################### -->
     <!-- == strings specific to loaning a book == -->
@@ -1134,6 +1104,14 @@ TODO: uniform quotes in all string:
         There are no books on this Bookshelf.
         Please add some using the menu at the bottom of this screen.
     </string>
+    <string name="X_info_no_authors_yet">
+        There are no authors for this Book.
+        Please add some using the text area and button at the top of this screen.
+    </string>
+    <string name="X_info_no_series_yet">
+        There are no series for this Book.
+        You can add some using the text area and button at the top of this screen.
+    </string>
 
     <string name="X_menu_add_bookshelf">Add Bookshelf</string>
     <string name="X_menu_edit_author">Edit Author…</string>
@@ -1161,7 +1139,6 @@ TODO: uniform quotes in all string:
     <string name="X_updated">Updated</string>
     <string name="X_file_size">Size</string>
     <string name="X_anthology_titles">Anthology Titles</string>
-    <string name="X_isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="X_select_bookshelves">Select Bookshelves</string>
     <string name="X_nobody">Nobody</string>
     <string name="X_search_title">Search Results</string>
@@ -1169,6 +1146,7 @@ TODO: uniform quotes in all string:
     <string name="X_results_found">Results Found</string>
     <string name="X_unsaved_edits_title">Unsaved Changes</string>
     <string name="X_use_default_setting">Use default</string>
+    <string name="X_about_help_tap_here">Please tap here to access the online help pages</string>
 
     <string name="X_hint_booklist_global_properties">
         You can use this screen to set the default characteristics of all book list styles.

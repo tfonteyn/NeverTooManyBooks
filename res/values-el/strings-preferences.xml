@@ -5,22 +5,14 @@
     <!-- ========== Preferences / PropertyList ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Preference VALUE -->
-    <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
-
-    <!-- Preference GROUP -->
     <string name="pg_general">Γενικά</string>
-    <!-- Preference GROUP -->
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
-    <string name="pt_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
-
-    <!-- Preference GROUP -->
+    <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="pg_thumbnails">Μικρογραφίες</string>
-    <!-- Preference GROUP -->
     <string name="pg_scanning">Γίνεται Σάρωση</string>
-    <!-- Preference GROUP -->
     <string name="pg_booklist">Λίστα βιβλίων</string>
-    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_bob_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
+    <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string name="pg_groupings">Ομαδοποιήσεις</string>
 
     <!-- ========== Global preferences ========== -->
@@ -40,7 +32,11 @@
     <!-- Preference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Ειδοποίηση αν ο σκαναρισμένος κωδικός ISBN δεν είναι έγκυρος</string>
 
-     <!--Preference -->
+    <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
+    <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
+    <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
+
+    <!--Preference -->
     <string name="pt_ui_messages_use">Ενημερώστε με</string>
     <string-array name="pe_ui_messages_use">
         <item translatable="false">Toast</item>
@@ -158,12 +154,9 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Μορφή του ονόματος συγγραφέα</string>
-    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ \‘Bill Smith\’</string>
-    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ \‘Smith, Bill\’</string>
+    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ ‘Κωστής  Παλαμάς’</string>
+    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ ‘Παλαμάς, Κωστής ’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>
-
-    <!-- Preference GROUP -->
-    <string name="pg_bob_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
 </resources>

@@ -13,6 +13,7 @@
     <string name="lbl_is_read">Bu kitabı okudunuz mu?</string>
     <string name="lbl_pages">Sayfa</string>
     <string name="X_btn_confirm_add_book">Kitap ekle</string>
+    <string name="X_use_default_setting">Öntanımlı ayarları kullan</string>
     <string name="btn_confirm_update">Güncelle</string>
     <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
     <string name="menu_expand_all">Hepsini göster</string>
@@ -43,7 +44,6 @@
     <string name="menu_administration">Ayarlar</string>
     <string name="info_install_scanner">ISBN barkodu ile kitap taramak için Zxing barkod tarayıcısı uygulamasını yüklemelisiniz. Yüklemek için Tamam\'a, atlamak için Vazgeç\'e basın.</string>
     <string name="title_install_scan">Barkod Tarayıcıyı yükleyin</string>
-    <string name="about_donate">Eğer uygulamanın geliştirilmesini desteklemek isterseniz aşağıdaki Amazon Wishlist veya Paypal düğmelerini kullanarak bağışta bulunabilirsiniz. Kişi Avustralya\'da olunca &quot;ücretli&quot; bir sürüm yayınlayamıyor haliyle. :-) </string>
     <string name="about_lbl_upgrade">Son güncellemenizden beri</string>
     <string name="menu_edit_book">Kitap düzenle</string>
     <string name="menu_edit_book_notes">Yorumlarınız</string>
@@ -58,7 +58,6 @@
     <string name="about_lbl_website">İnteret Sayfası</string>
     <string name="about_lbl_sourcecode">Kaynak kodu</string>
     <string name="about_lbl_contacts">İletişim</string>
-    <string name="about_lbl_donate">Bağış yap</string>
     <string name="menu_about">Uygulama hakkında</string>
     <string name="lbl_price_listed">Fiyatı</string>
     <string name="lbl_update_fields">Alanları kendiliğinden doldur</string>
@@ -75,7 +74,6 @@
     <string name="help">Yardım</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="X_anthology_titles">Seçmeler</string>
-    <string name="about_donate_amazon">Amazon Wishlist</string>
     <string name="lbl_toc_multiple_authors">Bu antolojinin çok sayıda yazarı vardır.</string>
     <string name="X_menu_delete_toc_entry">Seçkiden eser sil</string>
     <string name="lbl_is_anthology">Bu kitap bir seçkide var mı?</string>
@@ -105,7 +103,7 @@
     <string name="field_not_set">Ayarlı değil</string>
     <string name="X_menu_search_books">Kiatp ara</string>
     <string name="hint_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
-    <string name="about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
+    <string name="X_about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
     <string name="vldt_unable_to_get_value_for_x">\‘%1$s\’ için değer alınamıyor</string>
     <string name="vldt_integer_expected_for_x">\‘%1$s\’ için bir tamsayı değeri gerekli</string>
     <string name="vldt_real_expected_for_x">\‘%1$s\’ için bir gerçek sayı gerekli</string>
@@ -123,8 +121,8 @@
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="btn_confirm_save">Kaydet</string>
     <string name="btn_confirm_add">Ekle</string>
-    <string name="info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
-    <string name="info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
+    <string name="X_info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
+    <string name="X_info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
     <string name="X_warning_cover_field_not_set">Kapak yok</string>
     <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
     <string name="X_title_cover_detail">Kapak ayrıntısı</string>
@@ -325,15 +323,12 @@
     <string name="lbl_preferred_styles">Yeğlenen biçemler</string>
     <string name="title_edit_style">Biçemi düzenle</string>
     <string name="title_clone_style">Biçemi çoğalt</string>
-    <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="title_select_style">Biçem seç</string>
     <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
     <string name="lbl_settings">Yeğlenenler</string>
     <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki ‘Ayarlar’ seçeneğinden bize gönderin</string>
     <string name="menu_duplicate">Çift</string>
-    <string name="about_dash_or_dash">- Veya -</string>
-    <string name="about_donate_paypal">PayPal bağışı</string>
     <string name="style_builtin_compact">Küçük</string>
     <string name="style_is_user_defined">Kullanıcı tanımlı</string>
     <string name="style_is_builtin">Yerleşik</string>
@@ -613,14 +608,6 @@
         (eğer unuttuğumuz birisi var ise lütfen belirtin):
     </string>
 
-    <!-- A hint describing the benefit of following the Amazon links -->
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p><i>“%1$s”</i>, <i>“%2$s”</i> veya <i>“%3$s”</i>
-         seçtikten sonra Amazon\'dan alışveriş yaparsanız, yaptığınız alışveriş tutarının bir bölümü %4$s
-         geliştiricilerine gönderilecektir.</p><p>Ayrıca Sıkça Sorulan Sorular bölümündeki
-         <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>bağlantısını kullanarak da</a>
-         Amazon veya PayPal\'e erişebilirsiniz.</p>]]>
-    </string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
     <!-- Name of the new style grouping (needs to be short). -->
@@ -667,7 +654,6 @@
     <string name="warning_required_at_least_one">En az bir alan boş bırakılmamalıdır</string>
     <string name="progress_msg_process_preferences">Tercihler…</string>
     <string name="progress_msg_please_wait">Lütfen bekle…</string>
-    <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="none">Hiçbiri</string>
     <string name="warning_thing_already_exists">%1$s zaten var</string>
     <string name="lbl_currency">Para birimi</string>
@@ -707,16 +693,13 @@
     <string name="book_format_ebook">E-kitap</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
-    <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
     <string name="search_with_text">Ara: %1$s</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>
     <string name="menu_set_unread">Okunmamış olarak işaretle</string>
-    <string name="X_isbn_found">ISBN Tarandı. İnternet aranıyor.</string>
     <string name="menu_internet_update_fields">Alanları Güncelle</string>
     <string name="lbl_date_acquired_year">Kazanılan Yıl</string>
     <string name="lbl_first_publication">İlk yayın</string>
     <string name="gr_tq_generic_task_info">%1$d görev kimliği, %2$s sırada</string>
-    <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="info_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
     <string name="clear">Silme</string>
     <string name="X_pt_bob_preferred_style">Tercihli</string>

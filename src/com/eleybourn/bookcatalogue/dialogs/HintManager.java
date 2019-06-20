@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,8 +96,6 @@ public final class HintManager {
                    new Hint("hint_view_only_help"));
         mHints.put(R.string.hint_book_list,
                    new Hint("hint_book_list"));
-        mHints.put(R.string.hint_amazon_links_blurb,
-                   new Hint("hint_amazon_links_blurb"));
         mHints.put(R.string.hint_book_search_by_text,
                    new Hint("hint_book_search_by_text"));
         // v200
@@ -114,20 +111,6 @@ public final class HintManager {
         for (Hint h : mHints.values()) {
             h.reset();
         }
-    }
-
-    /**
-     * Convenience method so the main code is not polluted with the rather long arguments.
-     *
-     * @param inflater to use.
-     */
-    public static void showAmazonHint(@NonNull final LayoutInflater inflater) {
-        Context context = inflater.getContext();
-        displayHint(inflater, R.string.hint_amazon_links_blurb, null,
-                    context.getString(R.string.menu_amazon_books_by_author),
-                    context.getString(R.string.menu_amazon_books_in_series),
-                    context.getString(R.string.menu_amazon_books_by_author_in_series),
-                    context.getString(R.string.app_name));
     }
 
     /**

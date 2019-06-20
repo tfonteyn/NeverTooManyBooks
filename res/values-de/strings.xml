@@ -17,6 +17,7 @@
     <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
         Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.
     </string>
+    <string name="X_use_default_setting">Standardeinstellung verwenden</string>
     <string name="menu_expand_all">Alles ausklappen</string>
     <string name="X_menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
@@ -32,7 +33,6 @@
     </string>
     <string name="lbl_bookshelf">Bücherregal: </string>
     <string name="bookshelf_all_books">Alle Bücher</string>
-    <string name="X_isbn_found">ISBN gescannt. Suche im Internet.</string>
     <string name="search_isbn">ISBN-Suche</string>
     <string name="title_edit_bookshelves">Bücherregale verwalten</string>
     <string name="title_edit_bookshelf">Bücherregal bearbeiten</string>
@@ -57,11 +57,6 @@
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
     <string name="menu_administration">Verwaltung</string>
     <string name="title_install_scan">Installiere Barcode Scanner</string>
-    <string name="about_donate">
-        Wenn Sie die Entwicklung dieser App unterstützen möchten,
-        können Sie über meine Amazon-Wunschliste oder den PayPal-Knopf spenden.
-        Weil ich in Australien bin, kann ich keine “Kaufversion” der App anbieten. :-)
-    </string>
     <string name="about_lbl_upgrade">Seit der letzten Aktualisierung</string>
     <string name="menu_edit_book">Buch bearbeiten</string>
     <string name="menu_edit_book_notes">Kommentar</string>
@@ -76,7 +71,6 @@
     <string name="about_lbl_website">Webseite:</string>
     <string name="about_lbl_sourcecode">Quellcode:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
-    <string name="about_lbl_donate">Spenden</string>
     <string name="menu_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
@@ -106,7 +100,6 @@
         Nicht ausgewählte Felder werden nicht angezeigt.
     </string>
     <string name="X_anthology_titles">Anthologie-Titel</string>
-    <string name="about_donate_amazon">Amazon-Wunschliste</string>
     <string name="lbl_toc_multiple_authors">Diese Anthologie hat mehrere Autoren.</string>
     <string name="X_menu_delete_toc_entry">Titel von Anthologie löschen</string>
     <string name="lbl_is_anthology">Ist dieses Buch eine Anthologie?</string>
@@ -150,7 +143,7 @@
         und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte
         Barcode manchmal auf der Rückseite des Covers zu finden ist.
     </string>
-    <string name="about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
+    <string name="X_about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
     <string name="vldt_unable_to_get_value_for_x">Der Wert für ‘%1$s’ konnte nicht ermittelt werden</string>
     <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für ‘%1$s’ erwartet</string>
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für ‘%1$s’ erwartet</string>
@@ -176,11 +169,11 @@
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="btn_confirm_save">Speichern</string>
     <string name="btn_confirm_add">Hinzufügen</string>
-    <string name="info_no_authors_yet">
+    <string name="X_info_no_authors_yet">
         Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das
         Textfeld und den Knopf oben auf diesem Bildschirm hinzu.
     </string>
-    <string name="info_no_series_yet">
+    <string name="X_info_no_series_yet">
         Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den
         Knopf oben auf dieser Seite hinzufügen.
     </string>
@@ -480,7 +473,6 @@
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
     <string name="title_edit_style">Bearbeite Stil</string>
     <string name="title_clone_style">Stil klonen</string>
-    <string name="pg_filters">Buchfilter</string>
 
     <string name="title_select_style">Stil wählen</string>
     <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
@@ -491,8 +483,6 @@
         über den  Eintrag ‘Verwaltung’ in Hauptmenü
     </string>
     <string name="menu_duplicate">Vervielfältigen</string>
-    <string name="about_dash_or_dash">- Oder -</string>
-    <string name="about_donate_paypal">Spende über PayPal</string>
     <string name="style_builtin_compact">Kompakt</string>
     <string name="style_is_user_defined">Benutzerdefiniert</string>
     <string name="style_is_builtin">Eingebaut</string>
@@ -817,14 +807,6 @@
         (falls wir jemanden vergessen haben, geben Sie uns bitte Bescheid):
     </string>
 
-    <!-- A hint describing the benefit of following the Amazon links -->
-    <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>Wenn Sie Produkte von Amazon kaufen, nachdem Sie die Menüpunkte <i>“%1$s”</i>,
-         <i>“%2$s”</i> oder <i>“%3$s”</i> gewählt haben, wird ein Anteil des Kaufpreises an
-         die Entwickler von %4$s weitergeleitet.</p>
-         <p>Sie können auch die <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>Links in unserer Hilfe</a>
-          verwenden, um direkt zu Amazon oder PayPal zu gelangen.</p>]]>
-    </string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Änderungsdatum</string>
     <!-- Name of the new style grouping (needs to be short). -->
@@ -927,8 +909,6 @@
     <string name="lbl_edition_first_impression">Erstauflage</string>
     <string name="info_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
     <string name="none">Keiner</string>
-    <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
-    <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="menu_hide_keyboard">Tastatur ausblenden</string>
     <string name="warning_action_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>
     <string name="vldt_failure">Validierungsfehler.</string>
