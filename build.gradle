@@ -49,6 +49,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
         }
+        debug {
+        }
+        devtest {
+        }
     }
 
 //    dataBinding {
@@ -117,7 +121,7 @@ dependencies {
     //TODO: apache http is removed from API: 23
     // pull apache http explicitly. Signpost would get an older version otherwise.
     implementation 'org.apache.httpcomponents:httpcore:4.4.11'
-    implementation 'org.apache.httpcomponents:httpmime:4.5.8'
+    implementation 'org.apache.httpcomponents:httpmime:4.5.9'
     // but SignPost requires/favours apache http client.
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
     implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'

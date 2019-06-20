@@ -12,7 +12,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 /**
  * Global settings page.
  */
-class GlobalSettingsFragment
+public class GlobalSettingsFragment
         extends BaseSettingsFragment {
 
     /** Fragment manager tag. */
