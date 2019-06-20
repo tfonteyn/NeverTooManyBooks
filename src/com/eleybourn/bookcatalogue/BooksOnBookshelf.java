@@ -785,7 +785,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * The user clicked on a row:
+     * Called when the user clicked on a row.
      * <ul>
      * <li>Book: open the details screen.</li>
      * <li>Not a book: expand/collapse the section as appropriate.</li>
@@ -1010,7 +1010,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * @param menuItem Related MenuItem
+     * @param menuItem that was selected
      * @param row      Row view for affected cursor row
      *
      * @return {@code true} if handled.
@@ -1501,6 +1501,8 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Checks and sets visibility for the header lines.
+     *
      * @return {@code true} if the style supports any level at all.
      */
     private boolean setHeaderTextVisibility() {

@@ -204,7 +204,7 @@ public final class DateUtils {
             try {
                 sdf.setLenient(lenient);
                 return sdf.parse(dateString);
-            } catch (ParseException ignore) {
+            } catch (@NonNull final ParseException ignore) {
             }
         }
 
@@ -213,7 +213,7 @@ public final class DateUtils {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
             df.setLenient(lenient);
             return df.parse(dateString);
-        } catch (ParseException ignore) {
+        } catch (@NonNull final ParseException ignore) {
         }
 
         // try System Locale.
@@ -222,7 +222,7 @@ public final class DateUtils {
                                                        LocaleUtils.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
-        } catch (ParseException ignore) {
+        } catch (@NonNull final ParseException ignore) {
         }
         return null;
     }

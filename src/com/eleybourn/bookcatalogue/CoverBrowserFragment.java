@@ -433,7 +433,7 @@ public class CoverBrowserFragment
                     try {
                         mModel.fetchGalleryImages(CoverBrowserFragment.this, position, isbn);
 
-                    } catch (RejectedExecutionException e) {
+                    } catch (@NonNull final RejectedExecutionException e) {
                         // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
                             Logger.debug(this, "onBindViewHolder",

@@ -55,7 +55,7 @@ public abstract class Task
 
 
     private static final long serialVersionUID = -1735892871810069L;
-    private static final int mRetryLimit = 15;
+    private static final int RETRY_LIMIT = 15;
     @NonNull
     private final String mDescription;
     private long mId;
@@ -111,7 +111,7 @@ public abstract class Task
     }
 
     int getRetryLimit() {
-        return mRetryLimit;
+        return RETRY_LIMIT;
     }
 
     protected int getRetryDelay() {
@@ -135,7 +135,7 @@ public abstract class Task
     }
 
     boolean canRetry() {
-        return mRetries < mRetryLimit;
+        return mRetries < RETRY_LIMIT;
     }
 
     @Nullable

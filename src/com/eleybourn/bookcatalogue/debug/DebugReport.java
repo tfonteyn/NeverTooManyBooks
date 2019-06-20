@@ -86,7 +86,7 @@ public final class DebugReport {
                     }
                 }
             }
-        } catch (PackageManager.NameNotFoundException
+        } catch (@NonNull final PackageManager.NameNotFoundException
                 | NoSuchAlgorithmException
                 | RuntimeException e) {
             return e.getLocalizedMessage();
@@ -179,7 +179,7 @@ public final class DebugReport {
                     message.append("    No packages found\n");
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Don't lose the other debug info if scanner data dies for some reason
             message.append("Scanner failure: ").append(e.getLocalizedMessage()).append('\n');
         }
@@ -224,7 +224,7 @@ public final class DebugReport {
 
             return true;
 
-        } catch (NullPointerException e) {
+        } catch (@NonNull final NullPointerException e) {
             Logger.error(DebugReport.class, e);
             return false;
         }

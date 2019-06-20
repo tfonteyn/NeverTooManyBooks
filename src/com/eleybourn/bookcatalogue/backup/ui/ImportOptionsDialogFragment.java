@@ -124,7 +124,7 @@ public class ImportOptionsDialogFragment
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(this, e);
             mArchiveHasValidDates = false;
         }

@@ -235,7 +235,7 @@ public abstract class EditBookBaseFragment<T>
     /**
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter <T>}
+     * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}
      *                      interface to get the *current* list
      */
     void initCheckListEditor(@NonNull final Field field,

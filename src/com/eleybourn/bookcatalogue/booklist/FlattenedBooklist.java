@@ -128,7 +128,7 @@ public class FlattenedBooklist
             mPosition = Long.parseLong(data[0]);
             mBookId = Long.parseLong(data[1]);
             return true;
-        } catch (SQLiteDoneException ignore) {
+        } catch (@NonNull final SQLiteDoneException ignore) {
             return false;
         }
     }
@@ -255,6 +255,7 @@ public class FlattenedBooklist
     /**
      * @return the underlying row position (row ID).
      */
+    @SuppressWarnings("unused")
     public long getPosition() {
         return mPosition;
     }

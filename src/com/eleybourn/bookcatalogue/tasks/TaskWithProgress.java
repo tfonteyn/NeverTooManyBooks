@@ -33,10 +33,6 @@ public abstract class TaskWithProgress<Progress, Result>
         mProgressDialog = progressDialog;
     }
 
-    public int getId() {
-        return mTaskId;
-    }
-
     @Override
     protected void onPreExecute() {
         mProgressDialog.setTask(mTaskId, this);

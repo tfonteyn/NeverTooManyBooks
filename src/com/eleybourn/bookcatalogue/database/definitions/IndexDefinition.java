@@ -67,11 +67,11 @@ public class IndexDefinition {
                 String indexName = current.getString(0);
                 try {
                     db.execSQL("DROP INDEX " + indexName);
-                } catch (SQLException e) {
+                } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
                     Logger.error(IndexDefinition.class, e);
                     throw e;
-                } catch (RuntimeException e) {
+                } catch (@NonNull final RuntimeException e) {
                     Logger.error(IndexDefinition.class, e, "Index deletion failed: " + indexName);
                 }
             }

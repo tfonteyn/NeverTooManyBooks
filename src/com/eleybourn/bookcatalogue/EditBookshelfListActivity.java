@@ -115,6 +115,11 @@ public class EditBookshelfListActivity
 
     /**
      * Using {@link ValuePicker} for context menus.
+     *
+     * @param menuItem  that was selected
+     * @param bookshelf to act on
+     *
+     * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Bookshelf bookshelf) {

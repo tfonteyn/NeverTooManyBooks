@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 public class AuthorizationResultCheckTask
         extends AsyncTask<Void, Void, Boolean> {
 
+    @Nullable
     private Exception mException;
 
     @Override
@@ -36,7 +38,7 @@ public class AuthorizationResultCheckTask
             if (grMgr.hasValidCredentials()) {
                 return true;
             }
-        } catch (AuthorizationException | IOException e) {
+        } catch (@NonNull final AuthorizationException | IOException e) {
             mException = e;
         }
         return false;

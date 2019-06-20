@@ -410,7 +410,7 @@ public class Fields {
             try {
                 validator.validate(this, values);
 
-            } catch (ValidatorException e) {
+            } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
             }
@@ -436,14 +436,14 @@ public class Fields {
                 try {
                     validator.validate(this, field, values, crossValidating);
 
-                } catch (ValidatorException e) {
+                } catch (@NonNull final ValidatorException e) {
                     mValidationExceptions.add(e);
                     isOk = false;
                     // Always save the value...even if invalid. Or at least try to.
                     if (!crossValidating) {
                         try {
                             values.putString(field.mColumn, field.getValue().toString());
-                        } catch (RuntimeException ignored) {
+                        } catch (@NonNull final RuntimeException ignored) {
                         }
                     }
                 }
@@ -993,7 +993,7 @@ public class Fields {
             if (source != null) {
                 try {
                     cb.setChecked(Datum.toBoolean(target.format(source), true));
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     cb.setChecked(false);
                 }
             } else {
@@ -1037,7 +1037,7 @@ public class Fields {
             float rating;
             try {
                 rating = Float.parseFloat(target.format(source));
-            } catch (NumberFormatException ignored) {
+            } catch (@NonNull final NumberFormatException ignored) {
                 rating = 0.0f;
             }
             bar.setRating(rating);
@@ -1216,7 +1216,7 @@ public class Fields {
             try {
                 boolean val = Datum.toBoolean(source, false);
                 return val ? mYes : mNo;
-            } catch (NumberFormatException e) {
+            } catch (@NonNull final NumberFormatException e) {
                 return source;
             }
         }
@@ -1300,7 +1300,7 @@ public class Fields {
                 try {
                     int pages = Integer.parseInt(source);
                     return field.getView().getContext().getString(R.string.lbl_x_pages, pages);
-                } catch (NumberFormatException ignore) {
+                } catch (@NonNull final NumberFormatException ignore) {
                     // don't log, both formats are valid.
                 }
                 // stored pages was alphanumeric.
@@ -1357,7 +1357,7 @@ public class Fields {
             int bitmask;
             try {
                 bitmask = Integer.parseInt(source);
-            } catch (NumberFormatException ignore) {
+            } catch (@NonNull final NumberFormatException ignore) {
                 return source;
             }
             Context context = field.getView().getContext();

@@ -210,7 +210,7 @@ public class OpenLibraryManager
                 Bundle bookData = handleResponse(new JSONObject(response), fetchThumbnail);
                 return bookData != null ? bookData : new Bundle();
 
-            } catch (JSONException e) {
+            } catch (@NonNull final JSONException e) {
                 throw new IOException(e);
             }
 

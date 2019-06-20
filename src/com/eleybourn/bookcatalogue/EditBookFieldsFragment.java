@@ -106,7 +106,8 @@ public class EditBookFieldsFragment
         fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
-        Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
+        Field coverImageField = fields.add(R.id.coverImage,
+                                           DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
                                       .setScale(ImageUtils.SCALE_MEDIUM);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),

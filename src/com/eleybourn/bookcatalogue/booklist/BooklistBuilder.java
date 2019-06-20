@@ -1520,7 +1520,7 @@ public class BooklistBuilder
             if (rootId != rowId && isExpanded == 0) {
                 toggleExpandNode(rootId - 1);
             }
-        } catch (SQLiteDoneException ignore) {
+        } catch (@NonNull final SQLiteDoneException ignore) {
             // query returned zero rows
         }
     }
@@ -1606,7 +1606,7 @@ public class BooklistBuilder
             String[] info;
             try {
                 info = getNodeLevelStmt.simpleQueryForString().split("/");
-            } catch (SQLiteDoneException ignore) {
+            } catch (@NonNull final SQLiteDoneException ignore) {
                 return;
             }
             long level = Long.parseLong(info[0]);
@@ -1807,7 +1807,7 @@ public class BooklistBuilder
             try {
                 mNavTable.clear();
                 mNavTable.drop(mSyncedDb);
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
             }
         }
@@ -1821,7 +1821,7 @@ public class BooklistBuilder
             try {
                 mListTable.clear();
                 mListTable.drop(mSyncedDb);
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
             }
         }

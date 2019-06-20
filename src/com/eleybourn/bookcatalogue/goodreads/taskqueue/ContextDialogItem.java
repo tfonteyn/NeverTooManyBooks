@@ -54,7 +54,8 @@ public class ContextDialogItem
     /**
      * Displays an array of ContextDialogItems in an alert.
      *
-     * @param items Items to display
+     * @param context Current context
+     * @param items   Items to display
      */
     static void showContextDialog(@NonNull final Context context,
                                   @NonNull final List<ContextDialogItem> items) {

@@ -77,14 +77,14 @@ public class ImportCSVTask
             Logger.error(this, e);
             mException = e;
 
-        } catch (ImportException e) {
+        } catch (@NonNull final ImportException e) {
             Logger.error(this, e);
             mException = e;
 
         } finally {
             try {
                 mImporter.close();
-            } catch (IOException ignore) {
+            } catch (@NonNull final IOException ignore) {
             }
         }
         return null;

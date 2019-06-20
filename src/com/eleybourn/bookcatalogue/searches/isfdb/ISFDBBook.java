@@ -254,7 +254,7 @@ public class ISFDBBook
                     try {
                         long record = Long.parseLong(tmp);
                         bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
-                    } catch (NumberFormatException ignore) {
+                    } catch (@NonNull final NumberFormatException ignore) {
                     }
                 } else if ("Author:".equalsIgnoreCase(fieldName)
                         || "Authors:".equalsIgnoreCase(fieldName)) {
@@ -334,7 +334,7 @@ public class ISFDBBook
                             bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                                currency.getCurrencyCode());
 
-                        } catch (NumberFormatException e) {
+                        } catch (@NonNull final NumberFormatException e) {
                             bookData.putString(DBDefinitions.KEY_PRICE_LISTED, data[1]);
                             bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                                currencyCode);
@@ -387,7 +387,7 @@ public class ISFDBBook
 //                        }
 //                    }
                 }
-            } catch (IndexOutOfBoundsException e) {
+            } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
                 Logger.error(this, e, "path: " + mPath + "\n\nLI: " + li.toString());

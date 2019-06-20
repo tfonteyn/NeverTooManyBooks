@@ -123,7 +123,7 @@ public class StartupViewModel
 
         try {
             mDb = new DAO();
-        } catch (DBHelper.UpgradeException e) {
+        } catch (@NonNull final DBHelper.UpgradeException e) {
             Logger.warn(this, "startTasks", e.getLocalizedMessage());
             mTaskException.setValue(e);
             return;
@@ -252,7 +252,7 @@ public class StartupViewModel
             try {
                 LocaleUtils.createLanguageMappingCache();
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 mException = e;
             }
             return null;
@@ -311,7 +311,7 @@ public class StartupViewModel
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 mException = e;
             }
             return null;
@@ -361,7 +361,7 @@ public class StartupViewModel
                    .edit()
                    .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
                    .apply();
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 mException = e;
             }
             return null;
@@ -412,7 +412,7 @@ public class StartupViewModel
                     }
                 }
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 mException = e;
             }
             return null;

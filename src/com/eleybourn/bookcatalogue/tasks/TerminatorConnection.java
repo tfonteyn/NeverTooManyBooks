@@ -80,7 +80,7 @@ public final class TerminatorConnection
         isOpen = true;
         try {
             inputStream = new BufferedInputStream(con.getInputStream());
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             close();
             throw e;
         }
@@ -149,7 +149,7 @@ public final class TerminatorConnection
             try {
                 return new TerminatorConnection(url, killDelayInMillis);
                 // retry for these exceptions.
-            } catch (SocketTimeoutException | FileNotFoundException | UnknownHostException e) {
+            } catch (@NonNull final SocketTimeoutException | FileNotFoundException | UnknownHostException e) {
                 // don't log here, we'll log higher up the chain.
                 nrOfTries--;
                 if (nrOfTries-- == 0) {
@@ -157,7 +157,7 @@ public final class TerminatorConnection
                 }
                 try {
                     Thread.sleep(RETRY_AFTER_MS);
-                } catch (InterruptedException ignored) {
+                } catch (@NonNull final InterruptedException ignored) {
                 }
             }
         }
@@ -172,7 +172,7 @@ public final class TerminatorConnection
         if (inputStream != null) {
             try {
                 inputStream.close();
-            } catch (IOException ignore) {
+            } catch (@NonNull final IOException ignore) {
             }
         }
         con.disconnect();
@@ -218,7 +218,7 @@ public final class TerminatorConnection
                     }
                     mConnection.close();
                 }
-            } catch (InterruptedException ignore) {
+            } catch (@NonNull final InterruptedException ignore) {
             }
         }
     }

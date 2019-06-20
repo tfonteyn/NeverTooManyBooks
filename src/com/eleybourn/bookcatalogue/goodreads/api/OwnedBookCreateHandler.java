@@ -105,7 +105,7 @@ public class OwnedBookCreateHandler
 
         try {
             id = isbnToIdHandler.isbnToId(isbn);
-        } catch (BookNotFoundException e) {
+        } catch (@NonNull final BookNotFoundException e) {
             throw new ISBN.IsbnInvalidException(e);
         }
 

@@ -266,7 +266,7 @@ class CropImageView
             for (int i = 0; i < mHighlightViews.size(); i++) {
                 mHighlightViews.get(i).draw(canvas);
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
     }

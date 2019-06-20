@@ -160,7 +160,7 @@ class GrImportAllTask
                         QueueManager.Q_MAIN);
             }
             return ok;
-        } catch (AuthorizationException e) {
+        } catch (@NonNull final AuthorizationException e) {
             Logger.error(this, e);
             throw new RuntimeException(e.getLocalizedMessage());
         }
@@ -199,7 +199,7 @@ class GrImportAllTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (BookNotFoundException | AuthorizationException | IOException e) {
+            } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
                 setException(e);
                 return false;
             }
@@ -250,7 +250,7 @@ class GrImportAllTask
         }
         try {
             db.analyze();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Do nothing. Not a critical step.
             Logger.error(this, e);
         }

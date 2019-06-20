@@ -59,7 +59,7 @@ public interface SearchEngine {
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
             }
-        } catch (IOException | AuthorizationException e) {
+        } catch (@NonNull final IOException | AuthorizationException e) {
             Logger.error(SearchSites.class, e);
         }
 

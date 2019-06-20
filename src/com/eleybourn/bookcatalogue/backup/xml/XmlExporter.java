@@ -400,7 +400,7 @@ public class XmlExporter
 
             }
             return sb.toString();
-        } catch (NullPointerException e) {
+        } catch (@NonNull final NullPointerException e) {
             return "\"\"";
         }
     }

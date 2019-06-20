@@ -249,16 +249,6 @@ public class EditSeriesListActivity
         private EditSeriesListActivity mActivity;
 
         /**
-         * syntax sugar for newInstance.
-         */
-        public static void show(@NonNull final FragmentManager fm,
-                                @NonNull final Series series) {
-            if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(series).show(fm, TAG);
-            }
-        }
-
-        /**
          * Constructor.
          *
          * @param series to edit

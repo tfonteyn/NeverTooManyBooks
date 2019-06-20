@@ -80,10 +80,10 @@ public class RestoreTask
                 }
             });
 
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
-        } catch (ImportException e) {
+        } catch (@NonNull final ImportException e) {
             Logger.error(this, e);
             mException = e;
         }

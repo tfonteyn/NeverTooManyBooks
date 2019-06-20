@@ -125,13 +125,12 @@ abstract class BindableItemListActivity
             if (cursor != null) {
                 cursor.close();
             }
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
         }
     }
 
-    protected abstract void onListItemClick(@NonNull final AdapterView<?> parent,
-                                            @NonNull final View v,
-                                            final int position,
-                                            final long id);
-
+    protected abstract void onListItemClick(@NonNull AdapterView<?> parent,
+                                            @NonNull View v,
+                                            int position,
+                                            long id);
 }

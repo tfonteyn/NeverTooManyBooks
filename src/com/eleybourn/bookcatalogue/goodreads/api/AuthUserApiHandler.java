@@ -90,7 +90,7 @@ public class AuthUserApiHandler
             mManager.execute(post, handler, true);
             // Return user found.
             return mUserId;
-        } catch (BookNotFoundException | AuthorizationException | IOException
+        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException
                 | RuntimeException e) {
             return 0;
         }

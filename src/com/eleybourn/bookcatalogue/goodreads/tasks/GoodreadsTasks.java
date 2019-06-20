@@ -216,7 +216,7 @@ public final class GoodreadsTasks {
          * Constructor.
          */
         @UiThread
-        public RequestAuthTask(@NonNull TaskListener<Object, Integer> taskListener) {
+        public RequestAuthTask(@NonNull final TaskListener<Object, Integer> taskListener) {
             mTaskListener = new WeakReference<>(taskListener);
         }
 
@@ -239,10 +239,10 @@ public final class GoodreadsTasks {
             if (!grMgr.hasValidCredentials()) {
                 try {
                     grMgr.requestAuthorization();
-                } catch (IOException e) {
+                } catch (@NonNull final IOException e) {
                     Logger.error(this, e);
                     return R.string.gr_access_error;
-                } catch (AuthorizationException e) {
+                } catch (@NonNull final AuthorizationException e) {
                     return GR_RESULT_CODE_AUTHORIZED_FAILED;
                 }
             } else {
@@ -321,7 +321,7 @@ public final class GoodreadsTasks {
                     return R.string.gr_tq_task_has_been_queued_in_background;
                 }
                 return msg;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;
@@ -393,7 +393,7 @@ public final class GoodreadsTasks {
                     return R.string.gr_tq_task_has_been_queued_in_background;
                 }
                 return msg;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;
@@ -465,7 +465,7 @@ public final class GoodreadsTasks {
                     return R.string.gr_tq_task_has_been_queued_in_background;
                 }
                 return msg;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;

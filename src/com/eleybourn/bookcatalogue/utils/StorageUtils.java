@@ -172,7 +172,7 @@ public final class StorageUtils {
                              + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return 0;
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(StorageUtils.class, e, "Failed to create .nomedia files");
             return R.string.error_storage_not_writable;
         }
@@ -279,7 +279,7 @@ public final class StorageUtils {
             totalSize += purgeDir(getSharedStorage(), reallyDelete);
             totalSize += purgeDir(getTemp(), reallyDelete);
 
-        } catch (SecurityException e) {
+        } catch (@NonNull final SecurityException e) {
             Logger.error(StorageUtils.class, e);
         }
         return totalSize;
@@ -330,7 +330,7 @@ public final class StorageUtils {
                     }
                 }
             }
-        } catch (SecurityException e) {
+        } catch (@NonNull final SecurityException e) {
             Logger.error(StorageUtils.class, e);
         }
     }
@@ -422,7 +422,7 @@ public final class StorageUtils {
                     debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append('\n');
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(StorageUtils.class, e,
                          "Failed to get external storage from environment variables");
         }
@@ -475,7 +475,7 @@ public final class StorageUtils {
                                  .append(" does not exist\n");
                     }
                 }
-            } catch (IOException e) {
+            } catch (@NonNull final IOException e) {
                 Logger.error(StorageUtils.class, e,
                              "Failed to read directory " + dir.getAbsolutePath());
             }
@@ -540,7 +540,7 @@ public final class StorageUtils {
                                  "deleteFile",
                                  "file=" + file.getAbsolutePath());
                 }
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(StorageUtils.class, e);
             }
         }
@@ -564,7 +564,7 @@ public final class StorageUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 src.renameTo(dst);
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(StorageUtils.class, e);
             }
         }
@@ -594,7 +594,7 @@ public final class StorageUtils {
             // so NOT using getFile()
             copyFile(new File(sourcePath), getFile(destinationPath));
 
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(StorageUtils.class, e);
         }
     }
@@ -667,7 +667,7 @@ public final class StorageUtils {
         try {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
-        } catch (IllegalArgumentException e) {
+        } catch (@NonNull final IllegalArgumentException e) {
             Logger.error(StorageUtils.class, e);
             return ERROR_CANNOT_STAT;
         }

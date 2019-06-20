@@ -42,15 +42,6 @@ public abstract class BRBaseActivity
     private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
     File mRootDir;
     RecyclerView mListView;
-    /** User clicks on the 'up' button. */
-    private final View.OnClickListener onPathUpClickListener = v -> {
-        String parent = mRootDir.getParent();
-        if (parent == null) {
-            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
-            return;
-        }
-        onPathChanged(new File(parent));
-    };
     private FileDetailsAdapter mAdapter;
     private TextView mCurrentFolderView;
     private final TaskListener<Object, ArrayList<FileDetails>> mListener =
@@ -73,6 +64,15 @@ public abstract class BRBaseActivity
                     }
                 }
             };
+    /** User clicks on the 'up' button. */
+    private final View.OnClickListener onPathUpClickListener = v -> {
+        String parent = mRootDir.getParent();
+        if (parent == null) {
+            UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        onPathChanged(new File(parent));
+    };
 
     @Override
     protected int getLayoutId() {
@@ -228,6 +228,11 @@ public abstract class BRBaseActivity
         private final LayoutInflater mInflater;
 
 
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
         FileDetailsAdapter(@NonNull final Context context) {
             mInflater = LayoutInflater.from(context);
         }

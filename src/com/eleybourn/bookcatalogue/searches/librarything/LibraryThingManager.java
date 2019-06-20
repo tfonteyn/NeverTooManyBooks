@@ -163,7 +163,7 @@ public class LibraryThingManager
             try {
                 Log.d("LT", "wait=" + wait);
                 Thread.sleep(wait);
-            } catch (InterruptedException ignored) {
+            } catch (@NonNull final InterruptedException ignored) {
             }
         }
     }
@@ -281,7 +281,7 @@ public class LibraryThingManager
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(LibraryThingManager.class, e);
             }
@@ -415,7 +415,7 @@ public class LibraryThingManager
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }

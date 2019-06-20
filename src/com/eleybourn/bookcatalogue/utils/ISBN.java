@@ -129,7 +129,7 @@ public class ISBN {
                 mDigits = digits;
                 return;
             }
-        } catch (NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.error(this, e);
             }
@@ -141,7 +141,7 @@ public class ISBN {
             if (isValid(digits)) {
                 mDigits = digits;
             }
-        } catch (NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.error(this, e);
             }
@@ -157,7 +157,7 @@ public class ISBN {
         }
         try {
             return new ISBN(isbn).isValid();
-        } catch (NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             return false;
         }
     }
@@ -178,7 +178,7 @@ public class ISBN {
         // if it's a UPC, convert to 10 and return
         try {
             return new ISBN(input).to10();
-        } catch (NumberFormatException | StringIndexOutOfBoundsException ignore) {
+        } catch (@NonNull final NumberFormatException | StringIndexOutOfBoundsException ignore) {
         }
 
         // might be invalid, but let the caller deal with that.
@@ -227,7 +227,7 @@ public class ISBN {
             } else {
                 return info.to10();
             }
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
 
         // might be invalid, but let the caller deal with that.

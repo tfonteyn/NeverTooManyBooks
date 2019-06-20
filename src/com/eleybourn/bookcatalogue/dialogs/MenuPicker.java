@@ -72,7 +72,7 @@ public class MenuPicker<T>
          * @param menuItem   that was selected
          * @param userObject that the caller passed in when creating the context menu
          *
-         * @return {@code true} if the selection was handled.
+         * @return {@code true} if handled.
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onContextItemSelected(@NonNull MenuItem menuItem,

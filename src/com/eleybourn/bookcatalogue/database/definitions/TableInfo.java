@@ -39,11 +39,6 @@ public class TableInfo {
     }
 
     @NonNull
-    public String getTableName() {
-        return mTableName;
-    }
-
-    @NonNull
     public Collection<ColumnInfo> getColumns() {
         return mColumns.values();
     }

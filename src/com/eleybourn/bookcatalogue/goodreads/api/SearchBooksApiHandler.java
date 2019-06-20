@@ -210,19 +210,19 @@ public class SearchBooksApiHandler
     private final XmlHandler mHandlePubDay = context -> {
         try {
             mCurrentWork.pubDay = Long.parseLong(context.getBody());
-        } catch (NumberFormatException ignored) {
+        } catch (@NonNull final NumberFormatException ignored) {
         }
     };
     private final XmlHandler mHandlePubMonth = context -> {
         try {
             mCurrentWork.pubMonth = Long.parseLong(context.getBody());
-        } catch (NumberFormatException ignored) {
+        } catch (@NonNull final NumberFormatException ignored) {
         }
     };
     private final XmlHandler mHandlePubYear = context -> {
         try {
             mCurrentWork.pubYear = Long.parseLong(context.getBody());
-        } catch (NumberFormatException ignored) {
+        } catch (@NonNull final NumberFormatException ignored) {
         }
     };
     private final XmlHandler mHandleBookId =

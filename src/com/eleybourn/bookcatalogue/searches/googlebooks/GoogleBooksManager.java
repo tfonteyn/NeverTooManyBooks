@@ -116,7 +116,7 @@ public final class GoogleBooksManager
                 }
             }
             // wrap parser exceptions in an IOException
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }

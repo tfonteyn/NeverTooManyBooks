@@ -139,7 +139,7 @@ public class TarBackupContainer
             BackupInfo backupInfo = reader.getInfo();
             // the info block will/can do more checks.
             return backupInfo.isValid();
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(this, e);
         }
         return false;

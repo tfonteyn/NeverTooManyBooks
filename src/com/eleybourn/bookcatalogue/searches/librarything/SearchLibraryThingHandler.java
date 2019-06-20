@@ -473,7 +473,7 @@ class SearchLibraryThingHandler
                 try {
                     long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
                     mBookData.putLong(DBDefinitions.KEY_LIBRARY_THING_ID, id);
-                } catch (NumberFormatException ignore) {
+                } catch (@NonNull final NumberFormatException ignore) {
                 }
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){

@@ -29,6 +29,7 @@ import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -134,7 +135,7 @@ public class About
                     .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)})
                     .putExtra(Intent.EXTRA_SUBJECT, subject);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
-        } catch (ActivityNotFoundException e) {
+        } catch (@NonNull final ActivityNotFoundException e) {
             Logger.error(this, e);
         }
     }

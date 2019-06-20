@@ -227,7 +227,7 @@ public abstract class ShowBookApiHandler
     private final XmlHandler mHandleSeriesId = context -> {
 //        try {
 //            mCurrSeriesId = Integer.parseInt(context.getBody());
-//        } catch (NumberFormatException ignore) {
+//        } catch (@NonNull final NumberFormatException ignore) {
 //        }
     };
 
@@ -240,7 +240,7 @@ public abstract class ShowBookApiHandler
     private final XmlHandler mHandleAuthorId = context -> {
 //        try {
 //            mCurrAuthorId = Long.parseLong(context.getBody());
-//        } catch (Exception ignore) {
+//        } catch (@NonNull final Exception ignore) {
 //        }
     };
 
@@ -256,7 +256,7 @@ public abstract class ShowBookApiHandler
         try {
             long l = Long.parseLong(context.getBody());
             mBookData.putLong(name, l);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
@@ -266,7 +266,7 @@ public abstract class ShowBookApiHandler
         try {
             double d = Double.parseDouble(context.getBody());
             mBookData.putDouble(name, d);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };
@@ -284,7 +284,7 @@ public abstract class ShowBookApiHandler
                 b = (Long.parseLong(s) != 0);
             }
             mBookData.putBoolean(name, b);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
     };
     /** Local storage for series book appears in. */
@@ -349,7 +349,7 @@ public abstract class ShowBookApiHandler
     private final XmlHandler mHandleSeriesPosition = context -> {
         try {
             mCurrSeriesPosition = Integer.parseInt(context.getBody());
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
     };
 

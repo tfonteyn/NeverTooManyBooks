@@ -362,7 +362,7 @@ public class CsvExporter
 
             }
             return sb.append("\",").toString();
-        } catch (NullPointerException e) {
+        } catch (@NonNull final NullPointerException e) {
             return "\"\",";
         }
     }

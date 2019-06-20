@@ -71,7 +71,7 @@ public final class AmazonSearchPage {
                 openLink(context, cAuthor, cSeries);
             }
 
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(AmazonSearchPage.class, e, "Unable to call the Amazon API");
             UserMessage.showUserMessage(view, R.string.error_unexpected_error);
@@ -108,12 +108,12 @@ public final class AmazonSearchPage {
             try {
                 linkService.overrideLinkInvocation(new WebView(context), url);
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(AmazonSearchPage.class, e);
                 linkService.openRetailPage(
                         new OpenSearchPageRequest("books", author + ' ' + series));
             }
-        } catch (IllegalArgumentException | NotInitializedException e) {
+        } catch (@NonNull final IllegalArgumentException | NotInitializedException e) {
             Logger.error(AmazonSearchPage.class, e);
             openIntent(context, url);
         }
@@ -131,7 +131,7 @@ public final class AmazonSearchPage {
         if (author != null && !author.isEmpty()) {
             try {
                 extra += "&field-author=" + URLEncoder.encode(author, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
+            } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(AmazonSearchPage.class, e, "Unable to add author to URL");
             }
         }
@@ -139,7 +139,7 @@ public final class AmazonSearchPage {
         if (series != null && !series.isEmpty()) {
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(series, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
+            } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(AmazonSearchPage.class, e, "Unable to add series to URL");
             }
         }

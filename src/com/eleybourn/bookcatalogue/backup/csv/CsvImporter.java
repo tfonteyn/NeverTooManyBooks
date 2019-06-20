@@ -270,11 +270,11 @@ public class CsvImporter
                                                               mDb.getBookUuid(bids.bookId));
                         }
                     }
-                } catch (IOException e) {
+                } catch (@NonNull final IOException e) {
                     Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                } catch (SQLiteDoneException e) {
+                } catch (@NonNull final SQLiteDoneException e) {
                     Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                } catch (RuntimeException e) {
+                } catch (@NonNull final RuntimeException e) {
                     Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
@@ -312,7 +312,7 @@ public class CsvImporter
         try {
             // do some cleaning
             mDb.purge();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
         mDb.close();
@@ -685,7 +685,7 @@ public class CsvImporter
             if (hasNumericId) {
                 try {
                     bookId = Long.parseLong(idStr);
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     // don't log, it's fine.
                     hasNumericId = false;
                 }

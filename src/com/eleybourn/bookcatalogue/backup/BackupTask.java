@@ -130,7 +130,7 @@ public class BackupTask
             ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());
             ed.apply();
 
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
             cleanup();

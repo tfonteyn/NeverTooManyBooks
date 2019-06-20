@@ -209,6 +209,7 @@ public class BindableItemCursorAdapter
          * @param context     Current context
          * @param cursor      Cursor, positions at the relevant row
          * @param convertView View to populate
+         * @param item        item to bin
          */
         void bindView(@NonNull Context context,
                       @NonNull BindableItemCursor cursor,

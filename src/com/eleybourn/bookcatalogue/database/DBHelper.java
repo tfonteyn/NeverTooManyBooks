@@ -569,11 +569,11 @@ public class DBHelper
         for (String create_index : DATABASE_CREATE_INDICES) {
             try {
                 syncedDb.execSQL(create_index);
-            } catch (SQLException e) {
+            } catch (@NonNull final SQLException e) {
                 // bad sql is a developer issue... die!
                 Logger.error(this, e);
                 throw e;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e, "Index creation failed: " + create_index);
             }
         }
@@ -774,7 +774,7 @@ public class DBHelper
                                            + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
                                            + " WHERE " + DOM_PK_ID + '=' + id);
 
-                    } catch (SerializationUtils.DeserializationException e) {
+                    } catch (@NonNull final SerializationUtils.DeserializationException e) {
                         Logger.error(this, e, "BooklistStyle id=" + id);
                     }
                 }

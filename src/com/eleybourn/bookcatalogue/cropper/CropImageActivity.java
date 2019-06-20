@@ -319,7 +319,7 @@ public class CropImageActivity
         try {
             in = getContentResolver().openInputStream(uri);
             return BitmapFactory.decodeStream(in);
-        } catch (FileNotFoundException ignored) {
+        } catch (@NonNull final FileNotFoundException ignored) {
             return null;
         }
     }
@@ -356,7 +356,7 @@ public class CropImageActivity
                     });
                     try {
                         latch.await();
-                    } catch (InterruptedException e) {
+                    } catch (@NonNull final InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     mRunFaceDetection.run();

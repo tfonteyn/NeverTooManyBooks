@@ -450,7 +450,7 @@ public class ListReviewsApiHandler
                 if (date != null) {
                     bundle.putString(key, DateUtils.utcSqlDateTime(date));
                 }
-            } catch (ParseException e) {
+            } catch (@NonNull final ParseException e) {
                 bundle.remove(key);
             }
         }

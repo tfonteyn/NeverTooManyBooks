@@ -140,7 +140,7 @@ public final class NetworkUtils {
             }
             return true;
 
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                 Logger.warn(NetworkUtils.class, "isAlive",
                             "Site unreachable: " + host + ':' + port + '\n'

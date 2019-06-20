@@ -231,7 +231,7 @@ public class PartialDatePickerDialogFragment
             if (date.length > 2) {
                 dd = Integer.parseInt(date[2]);
             }
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
 
         mYear = yyyy;
@@ -526,7 +526,7 @@ public class PartialDatePickerDialogFragment
             String val = mYearView.getText().toString().trim();
             try {
                 mYear = Integer.parseInt(val);
-            } catch (NumberFormatException e) {
+            } catch (@NonNull final NumberFormatException e) {
                 mYear = null;
             }
 
@@ -639,7 +639,7 @@ public class PartialDatePickerDialogFragment
                 // just use our default order in these cases.
                 // See Issue #712.
                 order = DateFormat.getDateFormatOrder(getContext());
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 return;
             }
 

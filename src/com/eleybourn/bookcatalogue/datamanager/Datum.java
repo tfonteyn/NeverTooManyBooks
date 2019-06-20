@@ -91,7 +91,7 @@ public class Datum {
         } else {
             try {
                 return Long.parseLong(o.toString());
-            } catch (NumberFormatException e1) {
+            } catch (@NonNull final NumberFormatException e1) {
                 // desperate ?
                 return toBoolean(o) ? 1 : 0;
             }
@@ -117,7 +117,7 @@ public class Datum {
         } else {
             try {
                 return Double.parseDouble(o.toString());
-            } catch (NumberFormatException e1) {
+            } catch (@NonNull final NumberFormatException e1) {
                 // desperate ?
                 return toBoolean(o) ? 1 : 0;
             }
@@ -185,7 +185,7 @@ public class Datum {
                 default:
                     try {
                         return Integer.parseInt(s) != 0;
-                    } catch (NumberFormatException e) {
+                    } catch (@NonNull final NumberFormatException e) {
                         Logger.error(Datum.class, e, "Invalid boolean, s=`" + s + '`');
                         throw e;
                     }

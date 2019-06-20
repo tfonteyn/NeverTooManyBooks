@@ -127,7 +127,7 @@ public class SqlStatementManager
             for (SynchronizedStatement s : mStatements.values()) {
                 try {
                     s.close();
-                } catch (RuntimeException ignored) {
+                } catch (@NonNull final RuntimeException ignored) {
                 }
             }
             mStatements.clear();

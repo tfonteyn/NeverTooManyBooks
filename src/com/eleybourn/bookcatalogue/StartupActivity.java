@@ -145,7 +145,7 @@ public class StartupActivity
                 if (msgId != 0) {
                     UserMessage.showUserMessage(this, msgId);
                 }
-            } catch (SecurityException ignore) {
+            } catch (@NonNull final SecurityException ignore) {
             }
         }
 

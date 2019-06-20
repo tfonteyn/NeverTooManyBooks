@@ -950,7 +950,7 @@ public class DAO
                                             from.getId(), to.getId());
 
             sSyncedDb.setTransactionSuccessful();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             return false;
         } finally {
@@ -1287,7 +1287,7 @@ public class DAO
                 newTitle.append(", ").append(titleWords[0]);
                 return newTitle.toString();
             }
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
             //do nothing. Title stays the same
         }
         return title;
@@ -1410,7 +1410,7 @@ public class DAO
         try {
             // need the UUID to delete the thumbnail.
             uuid = getBookUuid(bookId);
-        } catch (SQLiteDoneException e) {
+        } catch (@NonNull final SQLiteDoneException e) {
             Logger.error(this, e, "Failed to get book UUID");
         }
 
@@ -1430,7 +1430,7 @@ public class DAO
                 deleteThumbnail(uuid);
             }
             sSyncedDb.setTransactionSuccessful();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e, "Failed to delete book");
         } finally {
             sSyncedDb.endTransaction(txLock);
@@ -1544,10 +1544,10 @@ public class DAO
             // and return it
             return newBookId;
 
-        } catch (NumberFormatException e) {
+        } catch (@NonNull final NumberFormatException e) {
             Logger.error(this, e, "Failed creating book from\n" + book);
             return -1L;
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e, "Failed creating book from\n" + book);
             return -1L;
         } finally {
@@ -1618,7 +1618,7 @@ public class DAO
             book.putLong(DBDefinitions.KEY_ID, bookId);
 
             return rowsAffected;
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             throw new RuntimeException(
                     "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
@@ -3383,7 +3383,7 @@ public class DAO
                                             from.getId(), to.getId());
 
             sSyncedDb.setTransactionSuccessful();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             return false;
         } finally {
@@ -3656,7 +3656,7 @@ public class DAO
                                 }
                                 break;
                         }
-                    } catch (NumberFormatException e) {
+                    } catch (@NonNull final NumberFormatException e) {
                         Logger.error(this, e,
                                      "column=" + columnInfo.name,
                                      "stringValue=" + entry.toString());
@@ -3824,7 +3824,7 @@ public class DAO
                                                   "")) {
                 ftsSendBooks(books, stmt);
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
@@ -3853,7 +3853,7 @@ public class DAO
                                                   "")) {
                 ftsSendBooks(books, stmt);
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
@@ -3898,7 +3898,7 @@ public class DAO
             }
 
             sSyncedDb.setTransactionSuccessful();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(this, e);
             gotError = true;

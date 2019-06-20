@@ -130,6 +130,11 @@ public class PreferredStylesActivity
 
     /**
      * Using {@link ValuePicker} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param style    to act on
+     *
+     * @return {@code true} if handled.
      */
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                          @NonNull final BooklistStyle style) {

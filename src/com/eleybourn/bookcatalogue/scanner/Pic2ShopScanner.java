@@ -128,7 +128,7 @@ public class Pic2ShopScanner
 //            Intent intent = new Intent(Intent.ACTION_VIEW,
 //                                       Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);
-//        } catch (ActivityNotFoundException e) {
+//        } catch (@NonNull final ActivityNotFoundException e) {
 //            Logger.warnWithStackTrace(e, "Google Play not installed.");
 //        }
 //    }

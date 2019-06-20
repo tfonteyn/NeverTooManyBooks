@@ -391,6 +391,9 @@ public class EditBookFragment
                     case EditBookTocFragment.TAG:
                         mFragment = new EditBookTocFragment();
                         break;
+
+                    default:
+                        throw new IllegalArgumentException("tag=" + tag);
                 }
             }
         }

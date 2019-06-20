@@ -213,7 +213,7 @@ public class App
             // Get app info from the manifest
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
-        } catch (PackageManager.NameNotFoundException ignore) {
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
         }
         return packageInfo;
     }
@@ -283,7 +283,7 @@ public class App
                           .getPackageManager()
                           .getApplicationInfo(sInstance.getPackageName(),
                                               PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (@NonNull final PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
         }
         String result = ai.metaData.getString(name);
@@ -561,7 +561,7 @@ public class App
         try {
             LocaleUtils.init(Locale.getDefault());
             LocaleUtils.applyPreferred(getBaseContext());
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(this, e);
         }

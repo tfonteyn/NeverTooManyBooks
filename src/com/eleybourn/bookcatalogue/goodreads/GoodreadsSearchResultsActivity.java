@@ -120,7 +120,7 @@ public class GoodreadsSearchResultsActivity
         List<GoodreadsWork> works;
         try {
             works = searcher.search(query);
-        } catch (BookNotFoundException
+        } catch (@NonNull final BookNotFoundException
                 | AuthorizationException
                 | IOException
                 | RuntimeException e) {

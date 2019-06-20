@@ -424,7 +424,7 @@ public final class Prefs {
                         break;
                 }
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
                 Logger.warnWithStackTrace(Prefs.class, e, "key=" + key);
             }

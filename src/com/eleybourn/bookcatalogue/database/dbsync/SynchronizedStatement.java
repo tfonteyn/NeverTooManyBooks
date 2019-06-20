@@ -201,7 +201,7 @@ public class SynchronizedStatement
                              mStatement, "result: " + result);
             }
             return result;
-        } catch (SQLiteDoneException ignore) {
+        } catch (@NonNull final SQLiteDoneException ignore) {
             return 0;
         } finally {
             sharedLock.unlock();
@@ -267,7 +267,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return mStatement.simpleQueryForString();
-        } catch (SQLiteDoneException e) {
+        } catch (@NonNull final SQLiteDoneException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debug(this, "simpleQueryForStringOrNull",
                              mStatement, "NULL");
@@ -296,7 +296,7 @@ public class SynchronizedStatement
                 Logger.debug(this, "execute", mStatement);
             }
             mStatement.execute();
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e, mStatement.toString());
             throw e;
@@ -323,7 +323,7 @@ public class SynchronizedStatement
                              mStatement, "rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e, mStatement.toString());
             throw e;
@@ -353,7 +353,7 @@ public class SynchronizedStatement
                 Logger.warnWithStackTrace(this, "Insert failed");
             }
             return id;
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e, mStatement.toString());
             throw e;

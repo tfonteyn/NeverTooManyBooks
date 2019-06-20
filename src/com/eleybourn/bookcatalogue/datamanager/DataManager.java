@@ -528,7 +528,7 @@ public class DataManager {
         for (DataCrossValidator v : mCrossValidators) {
             try {
                 v.validate(this);
-            } catch (ValidatorException e) {
+            } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;
             }
@@ -555,7 +555,7 @@ public class DataManager {
                 try {
                     //noinspection ConstantConditions
                     mValidatorsMap.get(key).validate(this, datum, crossValidating);
-                } catch (ValidatorException e) {
+                } catch (@NonNull final ValidatorException e) {
                     mValidationExceptions.add(e);
                     isOk = false;
                 }
@@ -567,7 +567,7 @@ public class DataManager {
 //            if (validator != null) {
 //                try {
 //                    validator.validate(this, datum, crossValidating);
-//                } catch (ValidatorException e) {
+//                } catch (@NonNull final ValidatorException e) {
 //                    mValidationExceptions.add(e);
 //                    isOk = false;
 //                }

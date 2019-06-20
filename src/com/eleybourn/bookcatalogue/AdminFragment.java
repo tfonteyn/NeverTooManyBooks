@@ -382,7 +382,7 @@ public class AdminFragment
             uris.add(coverURI);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
-        } catch (NullPointerException e) {
+        } catch (@NonNull final NullPointerException e) {
             Logger.error(this, e);
             UserMessage.showUserMessage(requireView(), R.string.error_email_failed);
         }

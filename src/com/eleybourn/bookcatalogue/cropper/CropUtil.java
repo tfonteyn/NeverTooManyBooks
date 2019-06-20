@@ -145,7 +145,7 @@ final class CropUtil {
                     bm.recycle();
                     bm = b2;
                 }
-            } catch (OutOfMemoryError e) {
+            } catch (@NonNull final OutOfMemoryError e) {
                 // We have no memory to rotate. Return the original bitmap.
             }
         }

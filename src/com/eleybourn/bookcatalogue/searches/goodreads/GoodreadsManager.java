@@ -228,7 +228,7 @@ public class GoodreadsManager
             try {
                 Log.d("GR", "wait=" + wait);
                 Thread.sleep(wait);
-            } catch (InterruptedException ignored) {
+            } catch (@NonNull final InterruptedException ignored) {
             }
         }
     }
@@ -374,7 +374,7 @@ public class GoodreadsManager
             mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
             try {
                 mConsumer.sign(request);
-            } catch (OAuthMessageSignerException
+            } catch (@NonNull final OAuthMessageSignerException
                     | OAuthExpectationFailedException
                     | OAuthCommunicationException e) {
                 throw new IOException(e);
@@ -393,7 +393,7 @@ public class GoodreadsManager
         try {
             response = httpClient.execute(request);
 
-        } catch (ClientProtocolException e) {
+        } catch (@NonNull final ClientProtocolException e) {
             throw new IOException(e);
         }
 
@@ -442,7 +442,7 @@ public class GoodreadsManager
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
         try {
             mConsumer.sign(request);
-        } catch (OAuthMessageSignerException
+        } catch (@NonNull final OAuthMessageSignerException
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
@@ -506,7 +506,7 @@ public class GoodreadsManager
             SAXParser parser = factory.newSAXParser();
             parser.parse(is, handler);
             // wrap parser exceptions in an IOException
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
@@ -667,7 +667,7 @@ public class GoodreadsManager
                 // Get the book details to make sure we have a valid book ID
                 grBook = getBookById(grId);
             }
-        } catch (BookNotFoundException | AuthorizationException | IOException e) {
+        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
             grId = 0;
         }
 
@@ -690,9 +690,9 @@ public class GoodreadsManager
                 if (grId != 0) {
                     db.setGoodreadsBookId(bookId, grId);
                 }
-            } catch (BookNotFoundException e) {
+            } catch (@NonNull final BookNotFoundException e) {
                 return ExportDisposition.notFound;
-            } catch (IOException e) {
+            } catch (@NonNull final IOException e) {
                 return ExportDisposition.networkError;
             }
         }
@@ -762,9 +762,9 @@ public class GoodreadsManager
                         if (!(grShelfList.isExclusive(grShelf))) {
                             removeBookFromShelf(grShelf, grId);
                         }
-                    } catch (BookNotFoundException e) {
+                    } catch (@NonNull final BookNotFoundException e) {
                         // Ignore for now; probably means book not on shelf anyway
-                    } catch (AuthorizationException | IOException e) {
+                    } catch (@NonNull final AuthorizationException | IOException e) {
                         return ExportDisposition.error;
                     }
                 }
@@ -781,7 +781,7 @@ public class GoodreadsManager
                 if (okToSend && !grShelves.contains(canonicalShelfName)) {
                     try {
                         reviewId = addBookToShelf(shelf, grId);
-                    } catch (BookNotFoundException | IOException | AuthorizationException e) {
+                    } catch (@NonNull final BookNotFoundException | IOException | AuthorizationException e) {
                         return ExportDisposition.error;
                     }
                 }
@@ -798,7 +798,7 @@ public class GoodreadsManager
             if (reviewId == 0) {
                 try {
                     reviewId = addBookToShelf("Default", grId);
-                } catch (BookNotFoundException | IOException | AuthorizationException e) {
+                } catch (@NonNull final BookNotFoundException | IOException | AuthorizationException e) {
                     return ExportDisposition.error;
                 }
             }
@@ -814,7 +814,7 @@ public class GoodreadsManager
                              null,
                              (int) bookCursorRow.getRating());
 
-            } catch (BookNotFoundException e) {
+            } catch (@NonNull final BookNotFoundException e) {
                 return ExportDisposition.error;
             }
 
@@ -856,7 +856,7 @@ public class GoodreadsManager
             } else {
                 return new Bundle();
             }
-        } catch (BookNotFoundException e) {
+        } catch (@NonNull final BookNotFoundException e) {
             // to bad.
             return new Bundle();
         }
@@ -993,7 +993,7 @@ public class GoodreadsManager
             sHasValidCredentials = true;
             return true;
 
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Something went wrong. Clear the access token, set credentials as bad
             sHasValidCredentials = false;
             sAccessToken = null;
@@ -1020,11 +1020,12 @@ public class GoodreadsManager
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer,
                                                      GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);
-        } catch (OAuthMessageSignerException
+        } catch (@NonNull final OAuthMessageSignerException
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
-        } catch (OAuthNotAuthorizedException e) {
+
+        } catch (@NonNull final OAuthNotAuthorizedException e) {
             throw new AuthorizationException(R.string.goodreads, e);
         }
 
@@ -1076,10 +1077,10 @@ public class GoodreadsManager
         // Get the access token
         try {
             mProvider.retrieveAccessToken(mConsumer, null);
-        } catch (OAuthNotAuthorizedException e) {
+        } catch (@NonNull final OAuthNotAuthorizedException e) {
             throw new AuthorizationException(R.string.goodreads, e);
 
-        } catch (OAuthMessageSignerException
+        } catch (@NonNull final OAuthMessageSignerException
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);

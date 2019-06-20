@@ -7,10 +7,42 @@
 -->
 <module name="Checker">
     <property name="severity" value="warning" />
+
+    <!-- ========== Headers ========== -->
+    <!--<module name="Header"/>-->
+    <!--<module name="RegexpHeader"/>-->
+
+
+    <!-- Checks that each Java package has a package-info.java file -->
+    <module name="JavadocPackage" />
+
+    <!-- Require files to end with newline characters -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf" />
+    </module>
+
+    <!-- Checks for long source files. (default 2000 lines) -->
+    <module name="FileLength" />
+    <!-- Checks that there are no tab characters -->
+    <module name="FileTabCharacter" />
+
+    <!--<module name="RegexpMultiline" />-->
+    <!-- A check for detecting single lines that match a supplied regular expression. -->
+    <module name="RegexpSingleline">
+        <property name="severity" value="ignore" />
+        <property name="format" value="\s+$" />
+        <property name="message" value="Line has trailing spaces." />
+    </module>
+    <!--<module name="RegexpOnFilename"/>-->
+
+    <!--<module name="Translation" />-->
+    <module name="UniqueProperties" />
+
+
     <module name="TreeWalker">
         <property name="tabWidth" value="4" />
 
-        <!--Annotations-->
+        <!-- ========== Annotations ========== -->
         <module name="AnnotationLocation" />
         <!--<module name="AnnotationOnSameLine" />-->
         <module name="AnnotationUseStyle" />
@@ -20,7 +52,7 @@
         <module name="SuppressWarnings" />
         <!--<module name="SuppressWarningsHolder" />-->
 
-        <!--Block Checks-->
+        <!-- ========== Block Checks ========== -->
         <module name="AvoidNestedBlocks" />
         <module name="EmptyBlock" />
         <module name="EmptyCatchBlock" />
@@ -28,7 +60,7 @@
         <module name="NeedBraces" />
         <module name="RightCurly" />
 
-        <!--Class Design-->
+        <!-- ========== Class Design ========== -->
         <!--<module name="DesignForExtension" />-->
         <module name="FinalClass" />
         <module name="HideUtilityClassConstructor" />
@@ -41,21 +73,27 @@
         </module>
         <module name="VisibilityModifier" />
 
-        <!--Coding-->
+        <!-- ========== Coding ========== -->
         <module name="ArrayTrailingComma" />
         <module name="AvoidInlineConditionals" />
+        <module name="CovariantEquals"/>
+        <!--<module name="DeclarationOrder"/>-->
         <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <module name="EqualsAvoidNull" />
         <module name="EqualsHashCode" />
         <module name="ExplicitInitialization" />
         <module name="FallThrough" />
-        <!--<module name="FinalLocalVariable" />-->
+        <module name="FinalLocalVariable">
+            <!--<property name="tokens" value="VARIABLE_DEF,PARAMETER_DEF"/>-->
+            <property name="tokens" value="PARAMETER_DEF" />
+        </module>
         <module name="HiddenField" />
         <module name="IllegalCatch" />
         <module name="IllegalInstantiation" />
         <module name="IllegalThrows" />
         <module name="IllegalToken" />
+        <!--<module name="IllegalTokenText" />-->
         <module name="IllegalType" />
         <module name="InnerAssignment" />
         <module name="MagicNumber" />
@@ -64,10 +102,14 @@
         <module name="ModifiedControlVariable" />
         <module name="MultipleStringLiterals" />
         <module name="MultipleVariableDeclarations" />
+        <!--<module name="NestedForDepth"/>-->
+        <!--<module name="NestedIfDepth"/>-->
+        <module name="NoClone"/>
         <module name="NoFinalizer" />
         <module name="OneStatementPerLine" />
         <module name="OverloadMethodsDeclarationOrder" />
         <module name="ParameterAssignment" />
+        <!--<module name="RequireThis"/>-->
         <module name="ReturnCount">
             <property name="max" value="3" />
             <property name="maxForVoid" value="5" />
@@ -78,46 +120,68 @@
         <module name="SuperClone" />
         <module name="SuperFinalize" />
         <module name="UnnecessaryParentheses" />
+        <!--<module name="VariableDeclarationUsageDistance"/>-->
 
-        <!--Headers-->
-
-        <!--Imports-->
+        <!-- ========== Imports ========== -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport" />
+        <!--<module name="CustomImportOrder" />-->
         <module name="IllegalImport" />
+        <!--<module name="ImportControl" />-->
+        <!--<module name="ImportOrder" />-->
         <module name="RedundantImport" />
         <module name="UnusedImports" />
 
-        <!-- Javadoc Comments -->
+        <!-- ========== Javadoc Comments ========== -->
+        <!--<module name="AtclauseOrder" />-->
         <module name="JavadocMethod">
             <property name="validateThrows" value="true" />
         </module>
+        <!--<module name="JavadocParagraph"/>-->
+        <!--<module name="JavadocTagContinuationIndentation" />-->
+        <!--<module name="JavadocStyle" />-->
         <module name="JavadocType" />
-        <module name="JavadocStyle" />
         <module name="JavadocVariable" />
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="SingleLineJavadoc"/>
+        <module name="SummaryJavadocCheck"/>
 
-        <!--Metrics-->
+        <!-- ========== Metrics ========== -->
+        <module name="BooleanExpressionComplexity"/>
+        <module name="ClassDataAbstractionCoupling"/>
+        <module name="ClassFanOutComplexity"/>
+        <module name="CyclomaticComplexity"/>
+        <module name="JavaNCSS"/>
+        <module name="NPathComplexity"/>
 
-        <!--Miscellaneous-->
+        <!-- ========== Miscellaneous ========== -->
         <module name="ArrayTypeStyle" />
+        <!--<module name="AvoidEscapedUnicodeCharacters"/>-->
         <module name="CommentsIndentation" />
+        <!--<module name="DescendantToken" />-->
         <module name="FinalParameters" />
         <!-- Useful, but cannot use 'align' of parameters etc when enabled -->
         <!--<module name="Indentation" />-->
+        <!--<module name="OuterTypeFilename"/>-->
         <module name="TodoComment" />
         <module name="TrailingComment" />
+
         <module name="UpperEll" />
 
-        <!--Modifiers-->
+        <!-- ========== Modifiers ========== -->
+        <!--<module name="ClassMemberImpliedModifier" />-->
+        <!--<module name="InterfaceMemberImpliedModifier"/>-->
         <module name="ModifierOrder" />
         <module name="RedundantModifier" />
 
-        <!-- Naming Conventions -->
+        <!-- ========== Naming Conventions ========== -->
+        <module name="AbbreviationAsWordInName"/>
         <!--<module name="AbstractClassName" />-->
         <!--<module name="CatchParameterName" />-->
         <!--<module name="ClassTypeParameterName" />-->
         <module name="ConstantName" />
         <!--<module name="InterfaceTypeParameterName" />-->
+        <module name="LambdaParameterName"/>
         <module name="LocalFinalVariableName" />
         <module name="LocalVariableName" />
         <module name="MemberName" />
@@ -128,12 +192,16 @@
         <module name="StaticVariableName" />
         <module name="TypeName" />
 
-        <!--Regexp-->
+        <!-- ========== Regexp ========== -->
+        <!--<module name="Regexp" />-->
+        <!--<module name="RegexpSinglelineJava" />-->
 
-        <!--Size Violations-->
+        <!-- ========== Size Violations ========== -->
         <module name="AnonInnerLength">
             <property name="max" value="30" />
         </module>
+        <!--<module name="ExecutableStatementCount"/>-->
+        <!--<module name="FileLength" /> on top-level -->
         <module name="LineLength">
             <property name="max" value="100" />
         </module>
@@ -142,8 +210,10 @@
         <module name="OuterTypeNumber" />
         <module name="ParameterNumber" />
 
-        <!--Whitespace-->
+        <!-- ========== Whitespace ========== -->
+        <!--<module name="EmptyForInitializerPad"/>-->
         <module name="EmptyForIteratorPad" />
+        <!--<module name="EmptyLineSeparator"/>-->
         <module name="GenericWhitespace" />
         <module name="MethodParamPad" />
         <module name="NoLineWrap" />
@@ -152,12 +222,12 @@
         <module name="OperatorWrap" />
         <module name="ParenPad" />
         <module name="SeparatorWrap">
-            <property name="tokens" value="DOT"/>
-            <property name="option" value="nl"/>
+            <property name="tokens" value="DOT" />
+            <property name="option" value="nl" />
         </module>
         <module name="SeparatorWrap">
-            <property name="tokens" value="COMMA"/>
-            <property name="option" value="eol"/>
+            <property name="tokens" value="COMMA" />
+            <property name="option" value="eol" />
         </module>
         <module name="SingleSpaceSeparator" />
         <module name="TypecastParenPad" />
@@ -167,22 +237,5 @@
 
     </module>
 
-    <!-- Checks that each Java package has a package-info.java file -->
-    <module name="JavadocPackage" />
 
-    <!-- Require files to end with newline characters -->
-    <module name="NewlineAtEndOfFile">
-        <property name="lineSeparator" value="lf"/>
-    </module>
-
-    <!-- Checks for long source files. (default 2000 lines) -->
-    <module name="FileLength" />
-    <!-- Checks that there are no tab characters -->
-    <module name="FileTabCharacter" />
-    <!-- A check for detecting single lines that match a supplied regular expression. -->
-    <module name="RegexpSingleline">
-        <property name="severity" value="ignore" />
-        <property name="format" value="\s+$" />
-        <property name="message" value="Line has trailing spaces." />
-    </module>
 </module>

@@ -216,7 +216,7 @@ public abstract class BackupReaderAbstract
             }
             try {
                 close();
-            } catch (IOException e) {
+            } catch (@NonNull final IOException e) {
                 Logger.error(this, e, "Failed to close reader");
             }
         }
@@ -284,7 +284,7 @@ public abstract class BackupReaderAbstract
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
                 Logger.debug(this, "restorePreV200Style", style);
             }
-        } catch (DeserializationException e) {
+        } catch (@NonNull final DeserializationException e) {
             Logger.error(this, e, "Unable to restore style");
         }
 

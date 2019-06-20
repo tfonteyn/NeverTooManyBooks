@@ -507,7 +507,7 @@ public abstract class BookBaseFragment
                         fixNextView(vh, v, getRight);
                     }
                 }
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
                 Logger.error(FocusSettings.class, e);

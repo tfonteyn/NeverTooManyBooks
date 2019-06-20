@@ -512,7 +512,7 @@ public class CoverHandler {
                 updateCoverView();
                 return;
 
-            } catch (OutOfMemoryError e) {
+            } catch (@NonNull final OutOfMemoryError e) {
                 attempts--;
                 if (attempts > 1) {
                     System.gc();
@@ -624,7 +624,7 @@ public class CoverHandler {
         try {
             File file = getCoverFile();
             StorageUtils.deleteFile(file);
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
         invalidateCachedImages();
@@ -639,9 +639,9 @@ public class CoverHandler {
         if (mBook.getId() != 0) {
             try (CoversDAO db = CoversDAO.getInstance()) {
                 db.delete(getUuid());
-            } catch (SQLiteDoneException e) {
+            } catch (@NonNull final SQLiteDoneException e) {
                 Logger.error(this, e, "SQLiteDoneException cleaning up cached cover images");
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e, "RuntimeException cleaning up cached cover images");
             }
         }

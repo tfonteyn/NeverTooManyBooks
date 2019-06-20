@@ -278,7 +278,7 @@ public class EditBookTocFragment
 
         //noinspection ConstantConditions
         mListAdapter = new TocListAdapterForEditing(
-                getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+                getContext(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -355,6 +355,11 @@ public class EditBookTocFragment
 
     /**
      * Using {@link ValuePicker} for context menus.
+     *
+     * @param menuItem that was selected
+     * @param position in the list
+     *
+     * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Integer position) {
@@ -755,7 +760,7 @@ public class EditBookTocFragment
             Thread.currentThread().setName("ISFDBGetEditionsTask " + mIsbn);
             try {
                 return new Editions().fetch(mIsbn);
-            } catch (SocketTimeoutException e) {
+            } catch (@NonNull final SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
                 }
@@ -813,7 +818,7 @@ public class EditBookTocFragment
                 Resources resources = App.getAppContext().getResources();
 
                 return new ISFDBBook().fetch(mEditions, mAddSeriesFromToc, false, resources);
-            } catch (SocketTimeoutException e) {
+            } catch (@NonNull final SocketTimeoutException e) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                     Logger.warn(this, "doInBackground", e.getLocalizedMessage());
                 }

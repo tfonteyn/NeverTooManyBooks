@@ -159,7 +159,7 @@ public final class ScannerManager {
             activity.startActivity(marketIntent);
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();
-        } catch (ActivityNotFoundException e) {
+        } catch (@NonNull final ActivityNotFoundException e) {
             UserMessage.showUserMessage(activity, R.string.error_google_play_missing);
             Logger.error(ScannerManager.class, e);
         }
@@ -172,11 +172,15 @@ public final class ScannerManager {
      */
     private interface ScannerFactory {
 
-        /** @return a new scanner of the related type. */
+        /**
+         * @return a new scanner of the related type.
+         */
         @NonNull
         Scanner newInstance();
 
-        /** @return {@code true} if this scanner is available. */
+        /**
+         * @return {@code true} if this scanner is available.
+         */
         boolean isIntentAvailable(@NonNull Context context);
     }
 

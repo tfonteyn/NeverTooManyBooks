@@ -136,14 +136,14 @@ public class FastScrollerOverlay
         float size;
         try {
             size = resources.getDimension(R.dimen.fso_text_primary);
-        } catch (Resources.NotFoundException e) {
+        } catch (@NonNull final Resources.NotFoundException e) {
             size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceLarge));
         }
         mPrimaryTextSize = size;
 
         try {
             size = resources.getDimension(R.dimen.fso_text_secondary);
-        } catch (Resources.NotFoundException e) {
+        } catch (@NonNull final Resources.NotFoundException e) {
             size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceMedium));
         }
         mSecondaryTextSize = size;
@@ -305,7 +305,7 @@ public class FastScrollerOverlay
                 return mFastScrollerStateField.getInt(mFastScroller) == 2;
             }
 
-        } catch (IllegalAccessException e) {
+        } catch (@NonNull final IllegalAccessException e) {
             // should not happen.... yeah right!
             Logger.warn(this, "fastScrollerIsDragging", e.getLocalizedMessage());
             mHasFastScroller = false;
@@ -334,7 +334,7 @@ public class FastScrollerOverlay
                     return true;
                 }
             }
-        } catch (NoSuchFieldException | SecurityException e) {
+        } catch (@NonNull final NoSuchFieldException | SecurityException e) {
             Logger.warn(this, "enableFastScrollerAccess", e.getLocalizedMessage());
         }
 

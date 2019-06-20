@@ -163,11 +163,11 @@ public class Synchronizer {
                     }
                     mReleased.await();
 
-                } catch (InterruptedException | RuntimeException e) {
+                } catch (@NonNull final InterruptedException | RuntimeException e) {
                     // Probably happens because thread was interrupted. Just die.
                     try {
                         mLock.unlock();
-                    } catch (RuntimeException ignored) {
+                    } catch (@NonNull final RuntimeException ignored) {
                     }
                     throw new LockException("Unable to get exclusive lock", e);
                 }

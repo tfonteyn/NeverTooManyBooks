@@ -64,7 +64,7 @@ public abstract class BookSearchBaseFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         mActivity = (AppCompatActivity) context;
-        mTaskManager = ((BookSearchActivity)mActivity).getTaskManager();
+        mTaskManager = ((BookSearchActivity) mActivity).getTaskManager();
     }
 
     @Override
@@ -188,7 +188,7 @@ public abstract class BookSearchBaseFragment
                                      isbnSearchText, true);
             return true;
 
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             UserMessage.showUserMessage(requireView(), R.string.error_search_failed);
 

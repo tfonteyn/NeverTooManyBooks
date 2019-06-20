@@ -51,8 +51,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 // mIsbnView.setCursorVisible(true); // no effect
 
 // field gets focus, up it pops
-// InputMethodManager imm = (InputMethodManager)
-//      getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 // imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0, null);
 
 // field gets focus, up it pops
@@ -60,9 +59,9 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 // field gets focus, up it pops
 // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 // hide on entry, field gets focus, up it pops
-//  getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//  getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 // field gets focus, up it pops
-// getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
+// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
 
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
@@ -203,7 +202,7 @@ public class BookSearchByIsbnFragment
                     // let's scan....
                     try {
                         startScannerActivity();
-                    } catch (RuntimeException e) {
+                    } catch (@NonNull final RuntimeException e) {
                         // we had a scanner setup, but something went wrong starting it.
                         ScannerManager.promptForScannerInstallAndFinish(mActivity, false);
                         // Prevent our activity to finish.
@@ -265,7 +264,7 @@ public class BookSearchByIsbnFragment
                     mIsbnView.setSelection(start - 1, start - 1);
                 }
             }
-        } catch (StringIndexOutOfBoundsException ignore) {
+        } catch (@NonNull final StringIndexOutOfBoundsException ignore) {
             //do nothing - empty string
         }
     }

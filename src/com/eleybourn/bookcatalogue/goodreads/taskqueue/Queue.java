@@ -140,7 +140,7 @@ class Queue
                 synchronized (mManager) {
                     mManager.onQueueTerminating(this);
                 }
-            } catch (RuntimeException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
             }
         }
     }
@@ -157,7 +157,7 @@ class Queue
             mManager.notifyTaskChange();
             result = mManager.runTask(task);
             requeue = !result;
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Don't overwrite exception set by handler
             if (task.getException() == null) {
                 task.setException(e);

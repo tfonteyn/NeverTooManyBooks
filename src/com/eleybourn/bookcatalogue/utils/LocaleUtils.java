@@ -155,14 +155,14 @@ public final class LocaleUtils {
             // MissingResourceException
             // NullPointerException can be thrown from within, when the ISO3Language fails.
             return locale.getISO3Language() != null && locale.getISO3Country() != null;
-        } catch (MissingResourceException e) {
+        } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
             Logger.debug(LocaleUtils.class,"isValid",
                         "e=" + e.getLocalizedMessage(),
                         "locale=" + locale);
             return false;
 
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
             return false;
         }
     }

@@ -121,7 +121,7 @@ public class EventsCursor
         Event event;
         try {
             event = SerializationUtils.deserializeObject(blob);
-        } catch (SerializationUtils.DeserializationException de) {
+        } catch (@NonNull final SerializationUtils.DeserializationException de) {
             event = new LegacyEvent();
         }
         event.setId(getId());

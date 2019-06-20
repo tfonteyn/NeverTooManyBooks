@@ -354,7 +354,7 @@ class SearchAmazonHandler
             addIfNotPresent(mBookData, DBDefinitions.KEY_PRICE_LISTED,
                             String.format("%." + decDigits + 'f', price));
             addIfNotPresent(mBookData, DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.debug(this, "handleListPrice",
                              "mCurrencyCode=" + mCurrencyCode,

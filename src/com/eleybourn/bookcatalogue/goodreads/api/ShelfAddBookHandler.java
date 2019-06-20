@@ -73,7 +73,7 @@ public class ShelfAddBookHandler
     private final XmlHandler mHandleReviewId = context -> {
         try {
             mReviewId = Long.parseLong(context.getBody());
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
     };
 

@@ -127,7 +127,7 @@ public class GoodreadsWork {
      * @author Philip Warner
      */
     static class GetImageTask
-            extends AsyncTask<Void, Void,  byte[]> {
+            extends AsyncTask<Void, Void, byte[]> {
 
         /** URL of image to fetch. */
         @NonNull
@@ -155,7 +155,7 @@ public class GoodreadsWork {
          */
         @Override
         @WorkerThread
-        protected  byte[] doInBackground(final Void... params) {
+        protected byte[] doInBackground(final Void... params) {
             Thread.currentThread().setName("GR.GetImageTask");
 
             return ImageUtils.getBytes(mUrl);
@@ -166,7 +166,7 @@ public class GoodreadsWork {
          */
         @Override
         @UiThread
-        protected void onPostExecute(final  byte[] result) {
+        protected void onPostExecute(final byte[] result) {
             mWork.onGetImageTaskFinished(result);
         }
     }

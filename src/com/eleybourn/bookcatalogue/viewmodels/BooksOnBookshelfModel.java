@@ -835,7 +835,7 @@ public class BooksOnBookshelfModel
                 // Set the results.
                 mHolder.resultListCursor = tempListCursor;
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 cleanup();

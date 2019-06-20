@@ -683,15 +683,15 @@ public final class DBDefinitions {
         TBL_BOOK_LIST =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME)
                         //RELEASE MUST use TableTypes.Temporary
-//                        .setType(TableTypes.Temporary)
-                        .setType(TableTypes.Standard)
+                        .setType(TableTypes.Temporary)
+//                        .setType(TableTypes.Standard)
                         .setAlias("bl");
 
         TBL_ROW_NAVIGATOR =
                 new TableDefinition(DB_TN_BOOK_LIST_NAME + "_row_pos")
                         //RELEASE MUST use TableTypes.Temporary
-//                        .setType(TableTypes.Temporary)
-                        .setType(TableTypes.Standard)
+                        .setType(TableTypes.Temporary)
+//                        .setType(TableTypes.Standard)
                         .setAlias("blrp");
 
         TBL_ROW_NAVIGATOR_FLATTENED =

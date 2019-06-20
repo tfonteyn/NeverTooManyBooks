@@ -509,11 +509,11 @@ class TaskQueueDAO {
             for (SQLiteStatement s : mStatements) {
                 try {
                     s.close();
-                } catch (RuntimeException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
                 }
             }
             mTaskQueueDBHelper.close();
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
         } finally {
             mStatements.clear();
         }
@@ -560,7 +560,7 @@ class TaskQueueDAO {
 
             try {
                 task = SerializationUtils.deserializeObject(mBlob);
-            } catch (SerializationUtils.DeserializationException e) {
+            } catch (@NonNull final SerializationUtils.DeserializationException e) {
                 return null;
             }
 

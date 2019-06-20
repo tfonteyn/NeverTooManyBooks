@@ -206,7 +206,7 @@ public final class TasksCursor
         byte[] blob = getBlob(sTaskCol);
         try {
             task = SerializationUtils.deserializeObject(blob);
-        } catch (SerializationUtils.DeserializationException de) {
+        } catch (@NonNull final SerializationUtils.DeserializationException de) {
             task = new LegacyTask(App.getAppContext());
         }
         task.setId(getId());

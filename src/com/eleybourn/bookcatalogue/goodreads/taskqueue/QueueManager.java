@@ -153,7 +153,7 @@ public final class QueueManager {
                     mEventChangeListeners.remove(l);
                 }
             }
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
         }
     }
 
@@ -183,7 +183,7 @@ public final class QueueManager {
                     mTaskChangeListeners.remove(l);
                 }
             }
-        } catch (RuntimeException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
         }
     }
 
@@ -203,7 +203,7 @@ public final class QueueManager {
             } else {
                 try {
                     mMessageHandler.post(listener::onChange);
-                } catch (RuntimeException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
                 }
             }
         }
@@ -225,7 +225,7 @@ public final class QueueManager {
             } else {
                 try {
                     mMessageHandler.post(listener::onChange);
-                } catch (RuntimeException ignore) {
+                } catch (@NonNull final RuntimeException ignore) {
                 }
             }
         }
@@ -290,7 +290,7 @@ public final class QueueManager {
                 if (queue.equals(mActiveQueues.get(queue.getQueueName()))) {
                     mActiveQueues.remove(queue.getQueueName());
                 }
-            } catch (RuntimeException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
             }
         }
     }

@@ -96,7 +96,7 @@ public class FileListerTask
             if (BackupManager.isArchive(file)) {
                 try (BackupReader reader = BackupManager.getReader(file)) {
                     fd.setInfo(reader.getInfo());
-                } catch (IOException e) {
+                } catch (@NonNull final IOException e) {
                     Logger.error(this, e);
                 }
             }

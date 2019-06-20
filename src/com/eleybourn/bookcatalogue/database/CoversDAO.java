@@ -205,7 +205,7 @@ public final class CoversDAO
         // Try to connect.
         try {
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Log, rename, and retry
             Logger.error(this, e, "Failed to open covers db");
             if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
@@ -216,7 +216,7 @@ public final class CoversDAO
             // retry...
             try {
                 sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
-            } catch (RuntimeException e2) {
+            } catch (@NonNull final RuntimeException e2) {
                 // If we fail after creating a new DB, just give up.
                 Logger.error(this, e2, "Covers database unavailable");
             }
@@ -278,7 +278,7 @@ public final class CoversDAO
                     return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             // It's possible the SDCard got removed and DB is now inaccessible
             // or the 'bytes' might be an invalid bitmap.
             Logger.error(this, e);
@@ -307,7 +307,7 @@ public final class CoversDAO
         }
         try {
             bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
-        } catch (IllegalStateException e) {
+        } catch (@NonNull final IllegalStateException e) {
             // java.lang.IllegalStateException: Can't compress a recycled bitmap
             // don't care; this is just a cache; don't even log.
             return;

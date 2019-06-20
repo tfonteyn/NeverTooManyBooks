@@ -134,11 +134,11 @@ abstract class AbstractBase {
                     return false;
                 }
 
-            } catch (HttpStatusException e) {
+            } catch (@NonNull final HttpStatusException e) {
                 Logger.error(this, e);
                 return false;
 
-            } catch (EOFException e) {
+            } catch (@NonNull final EOFException e) {
                 // this happens often with ISFDB... Google search says it's a server issue.
                 // not so sure that Google search is correct thought but what do I know...
                 //So, retry once.
@@ -150,10 +150,10 @@ abstract class AbstractBase {
                     return false;
                 }
 
-            } catch (java.net.SocketTimeoutException e) {
+            } catch (@NonNull final SocketTimeoutException e) {
                 throw e;
 
-            } catch (IOException e) {
+            } catch (@NonNull final IOException e) {
                 Logger.error(this, e, url);
                 return false;
             }

@@ -391,7 +391,7 @@ public class MessageSwitch<T, U> {
                             break;
                         }
 
-                    } catch (RuntimeException e) {
+                    } catch (@NonNull final RuntimeException e) {
                         Logger.error(this, e, "Error delivering message to listener");
                     }
                 }

@@ -60,7 +60,7 @@ public class SimpleXmlFilter {
                 if (value != null) {
                     try {
                         f.put(bc, value);
-                    } catch (RuntimeException ignore) {
+                    } catch (@NonNull final RuntimeException ignore) {
                         // Could not be parsed....just ignore
                     }
                 }
@@ -99,7 +99,7 @@ public class SimpleXmlFilter {
         try {
             long l = Long.parseLong(context.getBody());
             bc.getData().putLong(name, l);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
     };
 
@@ -110,7 +110,7 @@ public class SimpleXmlFilter {
         try {
             double d = Double.parseDouble(context.getBody());
             bc.getData().putDouble(name, d);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
         }
     };
 
@@ -121,7 +121,7 @@ public class SimpleXmlFilter {
         try {
             boolean b = textToBoolean(context.getBody());
             bc.getData().putBoolean(name, b);
-        } catch (NumberFormatException ignore) {
+        } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
         }
     };

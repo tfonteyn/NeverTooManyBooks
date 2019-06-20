@@ -432,18 +432,24 @@ public class BookFragment
 
     //<editor-fold desc="Menu handlers">
 
+
+    /**
+     * @param menuItem that was selected
+     *
+     * @return {@code true} if handled.
+     */
     @Override
     @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem menuItem) {
         //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_LOAN_DELETE:
                 mBookBaseFragmentModel.deleteLoan();
                 populateLoanedToField(null);
                 return true;
 
             default:
-                return super.onContextItemSelected(item);
+                return super.onContextItemSelected(menuItem);
         }
     }
 

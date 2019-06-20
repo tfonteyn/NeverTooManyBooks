@@ -56,7 +56,7 @@ public final class SerializationUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new IllegalStateException(e);
         }
         return bos.toByteArray();
@@ -73,7 +73,7 @@ public final class SerializationUtils {
             throws DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
-        } catch (ClassCastException | ClassNotFoundException | IOException e) {
+        } catch (@NonNull final ClassCastException | ClassNotFoundException | IOException e) {
             throw new DeserializationException(e);
         }
     }

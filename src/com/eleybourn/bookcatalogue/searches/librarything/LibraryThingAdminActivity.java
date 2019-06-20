@@ -177,7 +177,7 @@ public class LibraryThingAdminActivity
                     return R.string.progress_end_cancelled;
                 }
                 return R.string.warning_cover_not_found;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;

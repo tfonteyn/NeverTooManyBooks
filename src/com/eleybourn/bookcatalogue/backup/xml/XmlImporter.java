@@ -312,7 +312,7 @@ public class XmlImporter
 
                 mTag = mTagStack.pop();
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag.name
                                                    + '(' + mTag.type + ')', e);
@@ -401,7 +401,7 @@ public class XmlImporter
 
                 mTag = mTagStack.pop();
 
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
             }
@@ -439,7 +439,7 @@ public class XmlImporter
             is.setCharacterStream(in);
             parser.parse(is, handler);
             // wrap parser exceptions in an IOException
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }
@@ -503,7 +503,7 @@ public class XmlImporter
                                  throw new IllegalTypeException(mTag.type);
                          }
 
-                     } catch (NumberFormatException e) {
+                     } catch (@NonNull final NumberFormatException e) {
                          throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
                      }
                  });
@@ -514,7 +514,7 @@ public class XmlImporter
         try {
             // now do some cleaning
             mDb.purge();
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
         mDb.close();
@@ -627,7 +627,7 @@ public class XmlImporter
             if (idStr != null) {
                 try {
                     id = Integer.parseInt(idStr);
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                         Logger.warn(this, "TagInfo",
                                     "invalid id in xml t: " + name);
                 }

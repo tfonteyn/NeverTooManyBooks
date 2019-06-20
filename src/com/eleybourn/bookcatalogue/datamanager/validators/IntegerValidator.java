@@ -74,7 +74,7 @@ public class IntegerValidator
         } else {
             try {
                 value = Integer.parseInt(o.toString());
-            } catch (NumberFormatException e) {
+            } catch (@NonNull final NumberFormatException e) {
                 throw new ValidatorException(R.string.vldt_integer_expected_for_x,
                                              datum.getKey());
             }

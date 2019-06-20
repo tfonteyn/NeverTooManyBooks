@@ -74,7 +74,7 @@ public class FloatValidator
         } else {
             try {
                 value = Float.parseFloat(o.toString());
-            } catch (NumberFormatException e) {
+            } catch (@NonNull final NumberFormatException e) {
                 throw new ValidatorException(R.string.vldt_real_expected_for_x, datum.getKey());
             }
         }

@@ -152,9 +152,9 @@ public abstract class ManagedTask
     public void run() {
         try {
             runTask();
-        } catch (InterruptedException e) {
+        } catch (@NonNull final InterruptedException e) {
             mCancelFlg = true;
-        } catch (Exception e) {
+        } catch (@NonNull final Exception e) {
             Logger.error(this, e);
         }
 

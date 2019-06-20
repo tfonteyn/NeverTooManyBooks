@@ -97,9 +97,9 @@ abstract class GrSendBooksTaskBase
     /**
      * @return {@code false} to requeue, {@code true} for success
      */
-    protected abstract boolean send(@NonNull final QueueManager queueManager,
-                                    @NonNull final Context context,
-                                    @NonNull final GoodreadsManager grManager);
+    protected abstract boolean send(@NonNull QueueManager queueManager,
+                                    @NonNull Context context,
+                                    @NonNull GoodreadsManager grManager);
 
     /**
      * Try to export one book.
@@ -117,7 +117,7 @@ abstract class GrSendBooksTaskBase
         Exception exportException = null;
         try {
             disposition = grManager.sendOneBook(db, bookCursorRow);
-        } catch (BookNotFoundException | AuthorizationException | IOException e) {
+        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
             disposition = GoodreadsManager.ExportDisposition.error;
             exportException = e;
         }
@@ -314,7 +314,7 @@ abstract class GrSendBooksTaskBase
                                     .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                               EditBookFragment.TAB_EDIT);
                             context.startActivity(intent);
-                        } catch (RuntimeException ignore) {
+                        } catch (@NonNull final RuntimeException ignore) {
                             // not a book event?
                         }
                     }));
@@ -344,7 +344,7 @@ abstract class GrSendBooksTaskBase
                                         view.getTag(R.id.TAG_GR_EVENT);
                                 event.retry(context);
                                 QueueManager.getQueueManager().deleteEvent(id);
-                            } catch (RuntimeException ignore) {
+                            } catch (@NonNull final RuntimeException ignore) {
                                 // not a book event?
                             }
                         }));

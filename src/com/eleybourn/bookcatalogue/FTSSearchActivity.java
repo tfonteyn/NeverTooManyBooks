@@ -244,7 +244,7 @@ public class FTSSearchActivity
                 }
 
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
         }
 

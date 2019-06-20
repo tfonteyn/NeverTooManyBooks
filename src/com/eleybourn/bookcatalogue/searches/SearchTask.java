@@ -182,27 +182,27 @@ public class SearchTask
                 checkForSeriesNameInTitle();
             }
 
-        } catch (AuthorizationException e) {
+        } catch (@NonNull final AuthorizationException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(e);
 
-        } catch (SocketTimeoutException e) {
+        } catch (@NonNull final SocketTimeoutException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_network_timeout);
 
-        } catch (MalformedURLException e) {
+        } catch (@NonNull final MalformedURLException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_search_configuration);
 
-        } catch (UnknownHostException e) {
+        } catch (@NonNull final UnknownHostException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_search_configuration);
 
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(R.string.error_search_failed);
 
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
             setFinalError(e);
         }
@@ -263,7 +263,7 @@ public class SearchTask
                 // best shot
                 s = e.getLocalizedMessage();
             }
-        } catch (RuntimeException e2) {
+        } catch (@NonNull final RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
         mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle, s);

@@ -144,7 +144,7 @@ public final class AmazonManager
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(this, e);
             }

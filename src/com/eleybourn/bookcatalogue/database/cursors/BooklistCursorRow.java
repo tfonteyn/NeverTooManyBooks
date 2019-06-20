@@ -48,7 +48,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_I
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -263,7 +262,7 @@ public class BooklistCursorRow
                     if (i > 0 && i <= 12) {
                         return DateUtils.getMonthName(locale, i, false);
                     }
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
                 break;
@@ -275,7 +274,7 @@ public class BooklistCursorRow
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
                 break;

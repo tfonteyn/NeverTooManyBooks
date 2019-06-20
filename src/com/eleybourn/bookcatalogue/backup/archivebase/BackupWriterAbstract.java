@@ -176,7 +176,7 @@ public abstract class BackupWriterAbstract
             }
             try {
                 close();
-            } catch (IOException e) {
+            } catch (@NonNull final IOException e) {
                 Logger.error(this, e, "Failed to close writer");
             }
         }

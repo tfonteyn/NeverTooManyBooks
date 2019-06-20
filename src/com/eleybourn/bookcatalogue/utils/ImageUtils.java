@@ -373,7 +373,7 @@ public final class ImageUtils {
                 }
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
-        } catch (OutOfMemoryError e) {
+        } catch (@NonNull final OutOfMemoryError e) {
             Logger.error(ImageUtils.class, e);
             return null;
         }
@@ -403,7 +403,7 @@ public final class ImageUtils {
         final File file = StorageUtils.getTempCoverFile(name);
         try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugWithStackTrace(ImageUtils.class, e);
             }
@@ -433,7 +433,7 @@ public final class ImageUtils {
                 }
                 return out.toByteArray();
             }
-        } catch (IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(ImageUtils.class, e);
         }
         return null;

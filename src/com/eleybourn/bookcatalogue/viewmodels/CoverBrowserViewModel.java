@@ -201,7 +201,7 @@ public class CoverBrowserViewModel
                     BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
                     ok = opt.outHeight >= 10 && opt.outWidth >= 10;
-                } catch (RuntimeException e) {
+                } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
                     Logger.error(this, e, "Unable to decode thumbnail");
@@ -388,7 +388,7 @@ public class CoverBrowserViewModel
             // often the best source but at present could only be obtained by HTML scraping.
             try {
                 return LibraryThingManager.searchEditions(mIsbn);
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 return null;
             }
         }

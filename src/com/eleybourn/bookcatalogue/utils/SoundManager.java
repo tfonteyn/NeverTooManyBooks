@@ -44,7 +44,7 @@ public final class SoundManager {
             player.setVolume(0.2f, 0.2f);
             player.prepare();
             player.start();
-        } catch (Resources.NotFoundException e) {
+        } catch (@NonNull final Resources.NotFoundException e) {
             throw new IllegalStateException(e);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
             // No sound is critical.

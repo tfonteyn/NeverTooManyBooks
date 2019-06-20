@@ -59,7 +59,7 @@ public class OrValidator
                 validator.validate(dataManager, datum, crossValidating);
                 // first one 'ok' and we're done.
                 return;
-            } catch (ValidatorException e) {
+            } catch (@NonNull final ValidatorException e) {
                 // Do nothing...try next validator
                 lastException = e;
             }

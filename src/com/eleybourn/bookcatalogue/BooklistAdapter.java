@@ -520,7 +520,7 @@ public class BooklistAdapter
                                                    DateUtils.toPrettyDate(mLocale, tmpPubDate));
                     }
                 }
-            } catch (NumberFormatException e) {
+            } catch (@NonNull final NumberFormatException e) {
                 Logger.error(this, e);
                 return false;
             }
@@ -942,7 +942,7 @@ public class BooklistAdapter
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         s = itemView.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
             }
@@ -1045,7 +1045,7 @@ public class BooklistAdapter
                     if (i > 0 && i <= 12) {
                         s = DateUtils.getMonthName(locale, i, false);
                     }
-                } catch (NumberFormatException e) {
+                } catch (@NonNull final NumberFormatException e) {
                     Logger.error(this, e);
                 }
             }

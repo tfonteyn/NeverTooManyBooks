@@ -124,7 +124,7 @@ public class SynchronizedDb {
 //                    }
 
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+            } catch (@NonNull final NoSuchFieldException | IllegalAccessException e) {
                 // already in debug block
                 Logger.error(SynchronizedDb.class, e);
             }
@@ -168,7 +168,7 @@ public class SynchronizedDb {
                     debugDumpInfo(db);
                 }
                 return db;
-            } catch (RuntimeException e) {
+            } catch (@NonNull final RuntimeException e) {
                 exclusiveLock.unlock();
                 exclusiveLock = null;
                 if (retriesLeft == 0) {
@@ -180,7 +180,7 @@ public class SynchronizedDb {
                     retriesLeft--;
                     // Wait longer next time
                     wait *= 2;
-                } catch (InterruptedException e1) {
+                } catch (@NonNull final InterruptedException e1) {
                     throw new RuntimeException("Unable to open database, interrupted", e1);
                 }
             } finally {
@@ -258,7 +258,7 @@ public class SynchronizedDb {
                 Logger.warnWithStackTrace(this, "Insert failed");
             }
             return id;
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e);
             throw e;
@@ -294,7 +294,7 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e);
             throw e;
@@ -332,7 +332,7 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.delete(table, whereClause, whereArgs);
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e);
             throw e;
@@ -427,7 +427,7 @@ public class SynchronizedDb {
                     txLock.unlock();
                 }
             }
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e, sql);
             throw e;
@@ -475,7 +475,7 @@ public class SynchronizedDb {
         //execSQL("vacuum");
         try {
             execSQL("analyze");
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e, "Analyze failed");
         }
     }
@@ -528,7 +528,7 @@ public class SynchronizedDb {
                 Logger.warnWithStackTrace(this,
                                           "Starting a transaction when one is already started");
             }
-        } catch (RuntimeException e) {
+        } catch (@NonNull final RuntimeException e) {
             txLock.unlock();
             throw new TransactionException(
                     "Unable to start database transaction: " + e.getLocalizedMessage(), e);
@@ -627,14 +627,14 @@ public class SynchronizedDb {
                 s = c.getString(0);
             }
             return !"a".equals(s);
-        } catch (SQLException e) {
+        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(this, e);
             throw e;
         } finally {
             try {
                 mSqlDb.execSQL(dropTable);
-            } catch (SQLException e) {
+            } catch (@NonNull final SQLException e) {
                 Logger.error(this, e);
             }
         }

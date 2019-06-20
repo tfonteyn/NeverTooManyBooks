@@ -2,6 +2,8 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 public class Throttler {
 
     /**
@@ -66,7 +68,7 @@ public class Throttler {
             try {
                 Log.d("Throttler", "wait=" + wait);
                 Thread.sleep(wait);
-            } catch (InterruptedException ignored) {
+            } catch (@NonNull final InterruptedException ignored) {
             }
         }
     }
