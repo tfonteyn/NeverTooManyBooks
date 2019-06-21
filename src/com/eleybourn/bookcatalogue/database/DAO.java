@@ -336,10 +336,12 @@ public class DAO
     }
 
     /**
-     * @return the synchronizer object for this database in case there is some other activity
+     * Get the synchronizer object for this database in case there is some other activity
      * that needs to be synced.
      * <p>
      * Note: {@link Cursor#requery()} is the only thing found so far.
+     *
+     * @return the synchronizer
      */
     @NonNull
     public static Synchronizer getSynchronizer() {
@@ -4201,7 +4203,7 @@ public class DAO
                 "SELECT DISTINCT " + DOM_AUTHOR_GIVEN_NAMES
                         + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
                         + " FROM " + TBL_AUTHORS
-                        + " ORDER BY lower(" + DOM_AUTHOR_GIVEN_NAMES_OB + ')' + COLLATION;
+                        + " ORDER BY " + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_WITH_FORMATTED_NAMES =
