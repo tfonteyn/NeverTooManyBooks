@@ -920,5 +920,6 @@
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
     <string name="title_reorder">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
+    <string name="lbl_creators">Ursprünglich von:</string>
 
 </resources>

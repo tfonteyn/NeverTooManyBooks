@@ -708,5 +708,6 @@
     <string name="title_edit_book_authors">Kitap Yazarlarını Düzenle</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
+    <string name="lbl_creators">İlk olarak:</string>
 
 </resources>

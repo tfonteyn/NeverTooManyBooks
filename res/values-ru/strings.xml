@@ -631,5 +631,7 @@
     <string name="title_edit_book_authors">Редактировать книгу авторов</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
     <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
+    <string name="lbl_creators">Первоначально:</string>
+    <string name="lbl_edition_first_impression">первый отпечаток</string>
 
 </resources>

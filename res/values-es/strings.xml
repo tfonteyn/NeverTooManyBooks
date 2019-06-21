@@ -734,4 +734,5 @@
     <string name="title_edit_book_authors">Editar autores de libros</string>
     <string name="progress_msg_searching_site">Buscando en %1$s</string>
     <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
+    <string name="lbl_creators">Originalmente por:</string>
 </resources>

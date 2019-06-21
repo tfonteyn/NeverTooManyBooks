@@ -902,4 +902,5 @@
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
+    <string name="lbl_creators">Oorspronkelijk door:</string>
 </resources>

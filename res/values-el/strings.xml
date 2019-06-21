@@ -680,7 +680,7 @@
     <string name="lbl_lending">Δανεισμός</string>
     <string name="lbl_signed">Υπογραφή</string>
     <string name="lbl_edition_book_club">Έκδοση Βιβλίου Club</string>
-    <string name="lbl_edition_first_impression">Πρώτη έκδοση</string>
+    <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="import_options_dialog_title">Επιλέξτε τι θα εισαχθεί.</string>
     <string name="warning_required_title_and_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
     <string name="warning_thing_already_exists">Το %1$s υπάρχει ήδη</string>
@@ -714,5 +714,6 @@
     <string name="book_format_hardcover">σκληρό βιβλίο</string>
     <string name="book_format_ebook">eBook</string>
     <string name="book_format_trade_paperback">χαρτόδετο βιβλίο</string>
+    <string name="lbl_creators">Αρχικά από:</string>
 
 </resources>

@@ -242,7 +242,7 @@
     <string name="lbl_style">Styl</string>
     <string name="progress_msg_process_booklist_style">Style listy książek…</string>
     <string name="lbl_search_site_order">Zamówienie</string>
-    <string name="book_format_hardcover">Capa dura</string>
+    <string name="book_format_hardcover">Twarda</string>
     <string name="lbl_covers">Okładka</string>
     <string name="progress_msg_process_cover">Okładki…</string>
     <string name="X_menu_cover_options">Opcje okładki</string>
@@ -358,7 +358,6 @@
     <string name="lbl_lending">Pożyczanie</string>
     <string name="rebuild_fts">Odbuduj FTS (eksperymentalne!)</string>
     <string name="lbl_export_to_csv">Eksportuj do pliku CSV</string>
-    <string name="lbl_edition_first_impression">Pierwsza edycja</string>
     <string name="import_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
     <string name="import_export_option_csv">Książki (CSV)</string>
     <string name="hints_have_been_reset">Wskazówki zostały zresetowane</string>
@@ -521,4 +520,9 @@
         skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.
     </string>
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
+    <string name="lbl_creators">Pierwotnie przez:</string>
+    <string name="lbl_edition_book_club">Klub Książki</string>
+    <string name="book_format_paperback">Miękka</string>
+    <string name="book_format_ebook">ebook</string>
+    <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
 </resources>

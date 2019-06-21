@@ -1187,5 +1187,6 @@ TODO: uniform quotes in all string:
 
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="date_not_set_with_brackets">(no date)</string>
+    <string name="lbl_creators">Originally by:</string>
 
 </resources>

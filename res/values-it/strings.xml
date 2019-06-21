@@ -712,5 +712,6 @@
     <string name="title_edit_book_authors">Modifica autori di libri</string>
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
     <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
+    <string name="lbl_creators">Originariamente da:</string>
 
 </resources>
