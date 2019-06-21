@@ -136,7 +136,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FTS_AUTHOR_
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_READ_STATUS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
@@ -1640,7 +1639,7 @@ public class DAO
     public boolean setBookRead(final long id,
                                final boolean read) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_READ_STATUS.name, read);
+        cv.put(DOM_BOOK_READ.name, read);
         if (read) {
             cv.put(DOM_BOOK_READ_END.name, DateUtils.localSqlDateForToday());
         } else {
