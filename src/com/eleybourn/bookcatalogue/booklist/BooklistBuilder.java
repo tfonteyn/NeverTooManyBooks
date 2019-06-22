@@ -288,7 +288,7 @@ public class BooklistBuilder
      * The builder will create the needed columns (domain) on the fly
      * and create INSERT statements to build the content of this table.
      * <p>
-     * TOMF: speculation.. use a VIEW instead ?
+     * URGENT: speculation.. use a VIEW instead ?
      */
     private TableDefinition mListTable;
     /**
@@ -2498,7 +2498,7 @@ public class BooklistBuilder
                     break;
 
 
-                //TOMF: check with original code what this quote really means.
+                //URGENT: check with original code what this quote really means.
                 // It was on most, but not all date rows:
                 // ----------------------------------
                 // TODO: Handle 'DESCENDING'. Requires the navigator construction to use

@@ -118,7 +118,7 @@ public class GoodreadsSearchCriteriaActivity
     private void doSearch() {
         String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
-            UserMessage.showUserMessage(mCriteriaView, R.string.search_please_enter_criteria);
+            UserMessage.showUserMessage(mCriteriaView, R.string.warning_please_enter_search_criteria);
             return;
         }
 

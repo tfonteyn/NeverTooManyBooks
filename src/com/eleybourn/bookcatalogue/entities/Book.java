@@ -379,7 +379,7 @@ public class Book
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
-                //TOMF ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
+                //URGENT ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
                 //pro: one call for book and sublist(s)
                 //con: the sublist comes in as one column. Will need json format to keep it flexible
                 // and then decode here (or StringList custom (de)coding? hum...)

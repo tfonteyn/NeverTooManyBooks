@@ -119,7 +119,7 @@
             <TextView
                 android:id="@+id/lbl_creators"
                 style="@style/SectionHeader"
-                android:text="@string/lbl_creators"
+                android:text="@string/about_lbl_creators"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/contact2"
                 />

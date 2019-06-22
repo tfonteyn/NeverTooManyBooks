@@ -34,7 +34,7 @@
     </string>
     <string name="lbl_bookshelf">Boekenplank: </string>
     <string name="bookshelf_all_books">Alle Boeken</string>
-    <string name="search_isbn">ISBN zoeken</string>
+    <string name="title_search_isbn">ISBN zoeken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
@@ -355,8 +355,8 @@
     <string name="gr_tq_menu_background_tasks">Achtergrondtaken</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Opschonen oude taken</string>
     <string name="gr_tq_btn_cleanup_old_events">Opschonen oude gebeurtenissen</string>
-    <string name="text_and_or_isbn">Tekst en/of ISBN</string>
-    <string name="search_criteria">Zoekcriteria</string>
+    <string name="search_text_hint">Tekst en/of ISBN</string>
+    <string name="lbl_search_criteria">Zoekcriteria</string>
     <string name="menu_add_book_manually">Handmatig toevoegen</string>
     <string name="menu_search_internet">Internet doorzoeken</string>
     <string name="show_results">Toon resultaten</string>
@@ -380,7 +380,7 @@
         in het hoofdmenu.
     </string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
-    <string name="search_please_enter_criteria">Vul de zoekcriteria in</string>
+    <string name="warning_please_enter_search_criteria">Vul de zoekcriteria in</string>
     <string name="gr_error_while_searching">Fout tijdens het zoeken.</string>
     <string name="gr_send_all_books_results">
         %1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN
@@ -902,5 +902,5 @@
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
-    <string name="lbl_creators">Oorspronkelijk door:</string>
+    <string name="about_lbl_creators">Oorspronkelijk door:</string>
 </resources>

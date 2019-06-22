@@ -156,29 +156,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         findViewById(R.id.add).setOnClickListener(this::onAdd);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_SAVE, MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
-            .setIcon(R.drawable.ic_save)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_SAVE:
-                doSave();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     /**
      * get the specific list adapter from the child class.
      */
@@ -193,7 +170,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      */
     protected abstract void onAdd(@NonNull final View target);
 
-    protected void doSave() {
+    @Override
+    public void onBackPressed() {
         Intent data = new Intent()
                 .putExtra(mBKey, mList)
                 .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
@@ -205,7 +183,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     }
 
     /**
-     * Called when user clicks the 'Save' button (if present). Primary task is
+     * Called when user clicks the 'Back' button. Primary task is
      * to return a boolean indicating it is OK to continue.
      * <p>
      * Can be overridden to perform other checks.
@@ -220,19 +198,20 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @return {@code true} if activity should exit, {@code false} to abort exit.
      */
     protected boolean onSave(@NonNull final Intent data) {
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mIsDirty) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-                // runs when user clicks 'exit anyway'
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            });
+        String name = mAutoCompleteTextView.getText().toString().trim();
+        if (name.isEmpty()) {
+            // no current edit, so we're good to go.
+            return true;
         }
-        super.onBackPressed();
+
+        // if the user had enter a (partial) new name, check if it's ok to leave
+        StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+            // runs when user clicks 'exit anyway'. The list itself IS saved.
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        });
+
+        return false;
     }
 
     /**

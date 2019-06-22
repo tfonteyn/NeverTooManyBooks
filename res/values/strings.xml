@@ -179,6 +179,7 @@ TODO: uniform quotes in all string:
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
 
+    <string name="warning_please_enter_search_criteria">Please enter search criteria</string>
     <string name="warning_required_title">Title must be specified</string>
     <string name="warning_required_author_long">At least one author must be specified</string>
     <string name="warning_required_title_and_author">The title and/or author is missing.</string>
@@ -691,7 +692,6 @@ TODO: uniform quotes in all string:
     <string name="lbl_copy_database">Export Database</string>
 
 
-
     <!-- ####################################################################################### -->
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
@@ -717,6 +717,7 @@ TODO: uniform quotes in all string:
     <string name="title_select_image">Select Image</string>
     <string name="title_scope_of_change">Scope of Change</string>
     <string name="title_search_for">Search Author or Title</string>
+    <string name="title_search_isbn">ISBN Search</string>
     <string name="title_send_mail">Send email…</string>
 
     <!-- ####################################################################################### -->
@@ -878,6 +879,7 @@ TODO: uniform quotes in all string:
     <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_search_for_books">Search for Books</string>
+    <string name="lbl_search_criteria">Search Criteria</string>
     <string name="lbl_details_have_changed">Details have changed</string>
 
     <string name="lbl_send_info">Send Debug Information</string>
@@ -944,6 +946,7 @@ TODO: uniform quotes in all string:
     <string name="about_lbl_contacts">Contacts</string>
     <string name="about_lbl_special_thanks">Special Thanks</string>
     <string name="about_lbl_upgrade">Since your last upgrade</string>
+    <string name="about_lbl_creators">Originally by:</string>
 
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">
@@ -1160,33 +1163,31 @@ TODO: uniform quotes in all string:
     <!-- ========== need cleaning/renaming/moving...  ========== -->
     <!-- ####################################################################################### -->
 
+    <string name="title_reorder">a|A|an|An|the|The</string>
+
     <!-- generic hint text for text input fields. -->
     <string name="field_not_set">Not Set</string>
-
     <!-- generic place holder text for Book list rows -->
     <string name="field_not_set_with_brackets">(Not Set)</string>
+    <string name="date_not_set_with_brackets">(no date)</string>
 
     <!-- name of virtual bookshelf which displays all books; also used in list filters -->
     <string name="bookshelf_all_books">All Books</string>
     <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
     <string name="bookshelf_my_books">My Books</string>
 
+    <string name="search_with_text">Search: %1$s</string>
+
+
     <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
     <string name="usage_skip">Skip</string>
+    <string name="search_text_hint">Text and/or ISBN</string>
 
-    <string name="text_and_or_isbn">Text and/or ISBN</string>
-    <string name="search_please_enter_criteria">Please enter search criteria</string>
-    <string name="search_criteria">Search Criteria</string>
-    <string name="search_isbn">ISBN Search</string>
-    <string name="search_with_text">Search: %1$s</string>
     <string name="show_results">Show Results</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
-    <string name="title_reorder">a|A|an|An|the|The</string>
-    <string name="date_not_set_with_brackets">(no date)</string>
-    <string name="lbl_creators">Originally by:</string>
 
 </resources>

@@ -55,7 +55,7 @@
         android:id="@+id/lbl_criteria"
         style="@style/FieldLabel"
         android:labelFor="@id/criteria"
-        android:text="@string/search_criteria"
+        android:text="@string/lbl_search_criteria"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider"
         />

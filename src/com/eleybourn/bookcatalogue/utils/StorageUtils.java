@@ -337,18 +337,27 @@ public final class StorageUtils {
 
     /**
      * Find all possible CSV files in all accessible filesystems which
-     * have a "bookCatalogue" directory.
+     * have a {@link #DIRECTORY_NAME} directory.
+     *
+     * ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
      *
      * @return list of csv files
      */
     @NonNull
     public static List<File> findCsvFiles() {
-        // Make a filter for files ending in .csv
-        FilenameFilter csvFilter = (dir, name) -> {
-            return name.toLowerCase(LocaleUtils.getSystemLocale()).endsWith(".csv");
-            //ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
-        };
+        FilenameFilter csvFilter = (dir, name) ->
+                name.toLowerCase(LocaleUtils.getSystemLocale()).endsWith(".csv");
+        return findFiles(csvFilter);
+    }
 
+    /**
+     * Find all files in all accessible filesystems which match the given filter
+     * and have a {@link #DIRECTORY_NAME} directory.
+     *
+     * @return list of csv files
+     */
+    @NonNull
+    public static List<File> findFiles(@NonNull final FilenameFilter filenameFilter) {
         @SuppressWarnings("unused")
         StringBuilder debugInfo;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
@@ -369,7 +378,7 @@ public final class StorageUtils {
                 final Matcher matcher = MOUNT_POINT_PATH.matcher(line);
                 // Get the mount point
                 if (matcher.find()) {
-                    // See if it has a bookCatalogue directory
+                    // See if it has our directory
                     final File dir =
                             new File(matcher.group(1) + File.separator + DIRECTORY_NAME);
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
@@ -388,12 +397,12 @@ public final class StorageUtils {
             Logger.error(StorageUtils.class, e, "Failed to open/scan/read /proc/mounts");
         }
 
-        // Sometimes (Android 6?) the /proc/mount search seems to fail,
-        // so we revert to environment vars
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
+        // Sometimes (Android 6?) the /proc/mount search seems to fail,
+        // so we revert to environment vars
         try {
             final String loc1 = System.getenv("EXTERNAL_STORAGE");
             if (loc1 != null) {
@@ -433,30 +442,30 @@ public final class StorageUtils {
             debugInfo.append("Looking for files in directories\n");
         }
 
-        final List<File> files = new ArrayList<>();
+        final List<File> filesFound = new ArrayList<>();
         for (File dir : dirs) {
             try {
                 if (dir.exists()) {
-                    // Loop for csv files
-                    final File[] csvFiles = dir.listFiles(csvFilter);
-                    if (csvFiles != null) {
+                    final File[] files = dir.listFiles(filenameFilter);
+                    if (files != null) {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                             debugInfo.append("    found ")
-                                     .append(csvFiles.length)
+                                     .append(files.length)
                                      .append(" in ").append(dir.getAbsolutePath()).append('\n');
                         }
-                        for (File f : csvFiles) {
+
+                        for (File file : files) {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                                debugInfo.append("Found: ").append(f.getAbsolutePath());
+                                debugInfo.append("Found: ").append(file.getAbsolutePath());
                             }
-                            final String cp = f.getCanonicalPath();
+                            final String cp = file.getCanonicalPath();
                             if (paths.contains(cp)) {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                                     debugInfo.append("        already present as ")
                                              .append(cp).append('\n');
                                 }
                             } else {
-                                files.add(f);
+                                filesFound.add(file);
                                 paths.add(cp);
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                                     debugInfo.append("        added as ").append(cp).append('\n');
@@ -482,12 +491,12 @@ public final class StorageUtils {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.debug(StorageUtils.class, "findCsvFiles", debugInfo);
+            Logger.debug(StorageUtils.class, "findFiles", debugInfo);
         }
 
         // Sort descending based on modified date
-        Collections.sort(files, new FileDateComparator(-1));
-        return files;
+        Collections.sort(filesFound, new FileDateComparator(-1));
+        return filesFound;
     }
 
     /**

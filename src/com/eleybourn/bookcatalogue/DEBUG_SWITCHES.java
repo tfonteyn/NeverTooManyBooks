@@ -99,7 +99,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean LIBRARY_THING_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
-    public static final boolean ISFDB_SEARCH = true;
+    public static final boolean ISFDB_SEARCH = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;

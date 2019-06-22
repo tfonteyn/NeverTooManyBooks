@@ -123,7 +123,7 @@ public final class DateUtils {
         // This is done because internet sites we search are english.
         final boolean addEnglish = !Objects.equals(Locale.ENGLISH.getISO3Language(),
                                                    LocaleUtils.getSystemLocale().getISO3Language());
-        //TOMF: these are created at startup, so do not support switching Locale on the fly!
+        //URGENT: these are created at startup, so do not support switching Locale on the fly!
         // the month is (localized) text, or english
         addParseDateFormat("dd-MMM-yyyy HH:mm:ss", addEnglish);
         addParseDateFormat("dd-MMM-yyyy HH:mm", addEnglish);

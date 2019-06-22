@@ -636,7 +636,7 @@ public class BooksOnBookshelf
      * comment this method out. The system will use {@link SearchSuggestionProvider}
      * as configured in res/xml/searchable.xml
      * <p>
-     * TOMF: https://developer.android.com/guide/topics/search/search-dialog
+     * URGENT: https://developer.android.com/guide/topics/search/search-dialog
      * the way this is implemented is a bit of a shoehorn... to be revisited.
      */
     @Override

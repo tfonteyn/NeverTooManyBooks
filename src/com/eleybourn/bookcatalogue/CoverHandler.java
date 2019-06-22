@@ -464,7 +464,7 @@ public class CoverHandler {
 
     /**
      * Rotate the image.
-     * TOMF: add a progress spinner
+     * URGENT: add a progress spinner
      *
      * @param angle rotate by the specified amount
      */

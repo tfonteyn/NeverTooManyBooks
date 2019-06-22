@@ -409,7 +409,7 @@ public class BooklistAdapter
     }
 
     /**
-     * TOMF: this really needs performance testing. Can we not simply add the columns to the real cursor?
+     * URGENT: this really needs performance testing. Can we not simply add the columns to the real cursor?
      * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.

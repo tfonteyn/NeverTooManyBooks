@@ -33,7 +33,7 @@
     </string>
     <string name="lbl_bookshelf">Bücherregal: </string>
     <string name="bookshelf_all_books">Alle Bücher</string>
-    <string name="search_isbn">ISBN-Suche</string>
+    <string name="title_search_isbn">ISBN-Suche</string>
     <string name="title_edit_bookshelves">Bücherregale verwalten</string>
     <string name="title_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="lbl_search_for_books">Suche nach Büchern</string>
@@ -356,8 +356,8 @@
     <string name="gr_tq_menu_background_tasks">Aufgaben im Hintergrund</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Alte Aufgaben bereinigen</string>
     <string name="gr_tq_btn_cleanup_old_events">Alte Ereignisse bereinigen</string>
-    <string name="text_and_or_isbn">Text und/oder ISBN</string>
-    <string name="search_criteria">Suchkriterien</string>
+    <string name="search_text_hint">Text und/oder ISBN</string>
+    <string name="lbl_search_criteria">Suchkriterien</string>
     <string name="menu_add_book_manually">Manuell hinzufügen</string>
     <string name="menu_search_internet">Internet durchsuchen</string>
     <string name="show_results">Ergebnisse anzeigen</string>
@@ -382,7 +382,7 @@
         Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü “Verwaltung”
     </string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
-    <string name="search_please_enter_criteria">Bitte geben Sie die Suchkriterien ein</string>
+    <string name="warning_please_enter_search_criteria">Bitte geben Sie die Suchkriterien ein</string>
     <string name="gr_error_while_searching">Fehler während der Suche.</string>
     <string name="gr_send_all_books_results">
         %1$d Bücher verarbeitet: %2$d erfolgreich übertragen, %3$d ohne ISBN und %4$d mit einer
@@ -920,6 +920,6 @@
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
     <string name="title_reorder">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
-    <string name="lbl_creators">Ursprünglich von:</string>
+    <string name="about_lbl_creators">Ursprünglich von:</string>
 
 </resources>

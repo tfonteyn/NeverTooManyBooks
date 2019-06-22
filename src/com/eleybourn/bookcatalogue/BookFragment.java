@@ -253,7 +253,7 @@ public class BookFragment
         Book book = mBookBaseFragmentModel.getBook();
 
         // pass the CURRENT currency code to the price formatters
-        //TOMF: this defeats the ease of use of the formatter... populate manually or something...
+        //URGENT: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) getField(R.id.price_listed).getFormatter())
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));

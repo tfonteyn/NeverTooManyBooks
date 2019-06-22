@@ -27,7 +27,7 @@
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="bookshelf_all_books">Все книги</string>
-    <string name="search_isbn">поиск по ISBN</string>
+    <string name="title_search_isbn">поиск по ISBN</string>
     <string name="title_edit_bookshelves">управление книжными полками</string>
     <string name="title_edit_bookshelf">редактирование книжной полки</string>
     <string name="lbl_search_for_books">Поиск книг</string>
@@ -226,8 +226,8 @@
     <string name="gr_tq_menu_background_tasks">Фоновые задачи</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Очистить старые задачи</string>
     <string name="gr_tq_btn_cleanup_old_events">Очистить старые события</string>
-    <string name="text_and_or_isbn">Текст и/или ISBN</string>
-    <string name="search_criteria">Параметры поиска</string>
+    <string name="search_text_hint">Текст и/или ISBN</string>
+    <string name="lbl_search_criteria">Параметры поиска</string>
     <string name="menu_add_book_manually">Добавить вручную</string>
     <string name="menu_search_internet">Поиск в Интернете</string>
     <string name="show_results">Показать результаты</string>
@@ -248,7 +248,7 @@
     <string name="gr_auth_error">Авторизация Goodreads завершилась с ошибкой.</string>
     <string name="error_if_the_problem_persists">Если проблема осталась, свяжитесь с поддержкой через меню ‘Настройки’ главного меню.</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
-    <string name="search_please_enter_criteria">Пожалуйста, введите параметры поиска</string>
+    <string name="warning_please_enter_search_criteria">Пожалуйста, введите параметры поиска</string>
     <string name="gr_error_while_searching">Ошибка во время поиска</string>
     <string name="gr_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="x_of_y">%1$d из %2$d</string>
@@ -631,7 +631,7 @@
     <string name="title_edit_book_authors">Редактировать книгу авторов</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
     <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
-    <string name="lbl_creators">Первоначально:</string>
+    <string name="about_lbl_creators">Первоначально:</string>
     <string name="lbl_edition_first_impression">первый отпечаток</string>
 
 </resources>

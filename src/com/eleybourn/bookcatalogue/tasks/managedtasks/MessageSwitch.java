@@ -53,8 +53,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * The listener should call {@link #addListener}, {@link #removeListener}
  * or {@link #getController} as necessary.
- * <p>
- * ENHANCE: Allow fixed sender IDs to ensure uniqueness / allow multiple senders for specific IDs
  *
  * @param <T> The Class (a listener interface) of message that this switchboard sends
  * @param <U> The Class of controller object made available to listeners.

@@ -27,7 +27,7 @@
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="lbl_bookshelf">Kitaplık</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
-    <string name="search_isbn">ISBN arama</string>
+    <string name="title_search_isbn">ISBN arama</string>
     <string name="title_edit_bookshelves">Kitaplıkları yönet</string>
     <string name="title_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="lbl_search_for_books">Kitap ara</string>
@@ -227,8 +227,8 @@
     <string name="gr_tq_menu_background_tasks">Ardalan görevleri</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Eski görevleri temizle</string>
     <string name="gr_tq_btn_cleanup_old_events">Eski olayları temizle</string>
-    <string name="text_and_or_isbn">Metin ve/veya ISBN</string>
-    <string name="search_criteria">Arama kriteri</string>
+    <string name="search_text_hint">Metin ve/veya ISBN</string>
+    <string name="lbl_search_criteria">Arama kriteri</string>
     <string name="menu_add_book_manually">El ile ekle</string>
     <string name="menu_search_internet">Genelağ\'da ara</string>
     <string name="show_results">Sonuçları göster</string>
@@ -249,7 +249,7 @@
     <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
     <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki ‘Ayarlar’ bölümünden destek ile iletişime geçin.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
-    <string name="search_please_enter_criteria">Lütfen arama kriteri girin</string>
+    <string name="warning_please_enter_search_criteria">Lütfen arama kriteri girin</string>
     <string name="gr_error_while_searching">Arama sırasında hata</string>
     <string name="gr_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
@@ -708,6 +708,6 @@
     <string name="title_edit_book_authors">Kitap Yazarlarını Düzenle</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
-    <string name="lbl_creators">İlk olarak:</string>
+    <string name="about_lbl_creators">İlk olarak:</string>
 
 </resources>

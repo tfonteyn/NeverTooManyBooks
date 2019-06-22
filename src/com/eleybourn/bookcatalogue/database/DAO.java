@@ -461,7 +461,7 @@ public class DAO
 
         // Because FTS does not understand locales in all android up to 4.2,
         // we do case folding here using the user preferred locale.
-        //TOMF: is this really needed? was done in BooklistBuilder, but not in #searchFts
+        //URGENT: is this really needed? was done in BooklistBuilder, but not in #searchFts
         search = search.toLowerCase(LocaleUtils.getPreferredLocal());
 
         // Output buffer
@@ -1919,6 +1919,8 @@ public class DAO
                 }
                 // this basically will only happen if a multi-author anthology is added,
                 // with an entry by an Author from whom we have no Books.
+                // OR FIXME: if the author on the book was spelled differently on the TOC.
+                // e.g. "Brian Aldiss" versus "Brian W. Aldiss"
                 insertAuthor(author, book.getLocale());
             }
 

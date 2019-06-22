@@ -67,7 +67,7 @@ public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "BookSearchByIsbnFragmen";
+    public static final String TAG = "BookSearchByIsbnFragment";
 
     /** option to start in scan mode (versus manual entry). */
     public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
@@ -180,7 +180,7 @@ public class BookSearchByIsbnFragment
         }
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.search_isbn);
+        getActivity().setTitle(R.string.title_search_isbn);
 
         // setup the UI if we have one.
         View root = getView();

@@ -27,7 +27,7 @@
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="bookshelf_all_books">Todos los libros</string>
-    <string name="search_isbn">Buscar ISBN</string>
+    <string name="title_search_isbn">Buscar ISBN</string>
     <string name="title_edit_bookshelves">Gestionar bibliotecas</string>
     <string name="title_edit_bookshelf">Editar bibliotecas</string>
     <string name="lbl_search_for_books">Buscar libro</string>
@@ -231,8 +231,8 @@
     <string name="gr_tq_menu_background_tasks">Tareas en segundo plano</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Eliminar tareas antiguas</string>
     <string name="gr_tq_btn_cleanup_old_events">Eliminar eventos antiguos</string>
-    <string name="text_and_or_isbn">Texto y/o ISBN</string>
-    <string name="search_criteria">Criterio de búsqueda</string>
+    <string name="search_text_hint">Texto y/o ISBN</string>
+    <string name="lbl_search_criteria">Criterio de búsqueda</string>
     <string name="menu_add_book_manually">Añadir manualmente</string>
     <string name="menu_search_internet">Buscar en internet</string>
     <string name="show_results">Mostrar resultados</string>
@@ -253,7 +253,7 @@
     <string name="gr_auth_error">Error de autorización en Goodreads.</string>
     <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de ‘Admin’ del menú principal.</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
-    <string name="search_please_enter_criteria">Por favor, introduzca un criterio de búsqueda</string>
+    <string name="warning_please_enter_search_criteria">Por favor, introduzca un criterio de búsqueda</string>
     <string name="gr_error_while_searching">Error buscando.</string>
     <string name="gr_send_all_books_results">%1$d libros procesados: %2$d enviados correctamente, %3$d sin ISBN y %4$d con ISBN pero no encontrados en Goodreads</string>
     <string name="x_of_y">%1$d de %2$d</string>
@@ -734,5 +734,5 @@
     <string name="title_edit_book_authors">Editar autores de libros</string>
     <string name="progress_msg_searching_site">Buscando en %1$s</string>
     <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
-    <string name="lbl_creators">Originalmente por:</string>
+    <string name="about_lbl_creators">Originalmente por:</string>
 </resources>

@@ -642,7 +642,7 @@ public class TableDefinition
      * <p>
      * format: [table-alias].[domain-name] AS [domain_name]
      * <p>
-     * TOMF: deprecated?... This is useful in older SQLite installations that add make the alias part of the output
+     * URGENT: deprecated?... This is useful in older SQLite installations that add make the alias part of the output
      * column name.
      *
      * @param domain Domain

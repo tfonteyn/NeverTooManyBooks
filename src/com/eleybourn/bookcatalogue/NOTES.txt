@@ -26,7 +26,7 @@ TODO: Review database stuff
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
  * 'order by' columns have been added to TITLE and AUTHOR name fields.
- * TOMF: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
+ * URGENT: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!

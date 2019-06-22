@@ -99,7 +99,7 @@ public abstract class BaseActivity
      *
      * The current (2nd) incarnation of restart-logic is still rather broken
      * as it does not deal with back-stack.
-     * TOMF:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
+     * URGENT:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
      *
      * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
      *
@@ -139,7 +139,6 @@ public abstract class BaseActivity
      * and ignore the back-press.
      */
     @Override
-    @CallSuper
     public void onBackPressed() {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);

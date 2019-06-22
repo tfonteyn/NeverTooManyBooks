@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -124,24 +125,6 @@ public class EditSeriesListActivity
         // and clear the form for next entry.
         mAutoCompleteTextView.setText("");
         mSeriesNumberView.setText("");
-    }
-
-    @Override
-    protected boolean onSave(@NonNull final Intent data) {
-        String name = mAutoCompleteTextView.getText().toString().trim();
-        if (name.isEmpty()) {
-            // no current edit, so we're good to go.
-            return true;
-        }
-
-        // if the user had enter a (partial) new name, check if it's ok to leave
-        StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-            // runs when user clicks 'exit anyway'
-            mAutoCompleteTextView.setText("");
-            doSave();
-        });
-
-        return false;
     }
 
     @Override
@@ -266,7 +249,7 @@ public class EditSeriesListActivity
         @Override
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
-            //TOMF: use interface
+            //URGENT: use interface
             mActivity = (EditSeriesListActivity) context;
         }
 
