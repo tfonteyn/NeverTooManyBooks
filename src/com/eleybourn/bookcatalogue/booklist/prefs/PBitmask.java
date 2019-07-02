@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}
@@ -45,7 +45,7 @@ public class PBitmask
         } else if (value == null) {
             remove();
         } else {
-            App.getPrefs(mUuid).edit().putStringSet(getKey(), Utils.toStringSet(value)).apply();
+            App.getPrefs(mUuid).edit().putStringSet(getKey(), Prefs.toStringSet(value)).apply();
         }
     }
 
@@ -58,7 +58,7 @@ public class PBitmask
         if (value == null) {
             ed.remove(getKey());
         } else {
-            ed.putStringSet(getKey(), Utils.toStringSet(value));
+            ed.putStringSet(getKey(), Prefs.toStringSet(value));
         }
     }
 
@@ -75,7 +75,7 @@ public class PBitmask
             if (value == null || value.isEmpty()) {
                 return mDefaultValue;
             }
-            return Utils.toInteger(value);
+            return Prefs.toInteger(value);
         }
     }
 
@@ -83,7 +83,7 @@ public class PBitmask
     @NonNull
     public String toString() {
         return "PBitmask{" + super.toString()
-                + ",value=`" + Utils.toStringSet(get()) + '`'
+                + ",value=`" + Prefs.toStringSet(get()) + '`'
                 + '}';
     }
 }

@@ -42,16 +42,12 @@ import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.FieldUsage;
-import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTaskListener;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -67,7 +63,6 @@ public class UpdateFieldsFromInternetTask
     /** The fields that the user requested to update. */
     @NonNull
     private final Map<String, FieldUsage> mFields;
-
     /** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
@@ -90,14 +85,9 @@ public class UpdateFieldsFromInternetTask
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
-
-    /** WHERE clause to use in cursor, none by default, but see {@link #setBookId(long)}. */
-    @NonNull
-    private String mBookWhereClause = "";
-
     /**
      * Called in the main thread for this object when the search for one book has completed.
-     *
+     * <p>
      * Note: do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
@@ -121,9 +111,7 @@ public class UpdateFieldsFromInternetTask
 
                     // Save the local data from the context so we can start a new search
                     if (!isCancelled() && !bookData.isEmpty()) {
-                        processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages,
-                                             bookData,
-                                             mOriginalBookData);
+                        processSearchResults(bookData);
                     }
 
                     /*
@@ -138,6 +126,9 @@ public class UpdateFieldsFromInternetTask
                     }
                 }
             };
+    /** WHERE clause to use in cursor, none by default, but see {@link #setBookId(long)}. */
+    @NonNull
+    private String mBookWhereClause = "";
 
     /**
      * Constructor.
@@ -160,46 +151,6 @@ public class UpdateFieldsFromInternetTask
         mSearchCoordinator = new SearchCoordinator(mTaskManager, mListener);
         mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
         MESSAGE_SWITCH.addListener(getSenderId(), false, listener);
-    }
-
-    /**
-     * Combines two ParcelableArrayList's, weeding out duplicates.
-     *
-     * @param key        for the ArrayList to combine
-     * @param sourceData Bundle with the 'original' ArrayList (if any)
-     * @param destData   Destination Bundle where the combined list is updated
-     * @param <T>        type of the ArrayList elements
-     */
-    private static <T extends Parcelable> void merge(@NonNull final String key,
-                                                     @NonNull final Bundle sourceData,
-                                                     @NonNull final Bundle destData) {
-        // Each of the lists to combine
-        ArrayList<T> sourceList = null;
-        ArrayList<T> destList = null;
-        // Get the list from the original, if present.
-        if (sourceData.containsKey(key)) {
-            sourceList = sourceData.getParcelableArrayList(key);
-        }
-        // Otherwise an empty list
-        if (sourceList == null) {
-            sourceList = new ArrayList<>();
-        }
-
-        // Get the list from the new data
-        if (destData.containsKey(key)) {
-            destList = destData.getParcelableArrayList(key);
-        }
-        if (destList == null) {
-            destList = new ArrayList<>();
-        }
-
-        for (T item : destList) {
-            if (!sourceList.contains(item)) {
-                sourceList.add(item);
-            }
-        }
-        // Save combined version to the new data
-        destData.putParcelableArrayList(key, sourceList);
     }
 
     /**
@@ -236,9 +187,11 @@ public class UpdateFieldsFromInternetTask
     public void runTask()
             throws InterruptedException {
         int progressCounter = 0;
-        // the 'order by' used in fetchBooksForFieldUpdate makes sure we update the 'oldest'
+        // the 'order by' used in fetchBooksForFieldUpdate makes sure we update from 'oldest'
         // book to 'newest'. So if we get interrupted, we can pick up the thread (arf...) later.
         try (BookCursor books = mDb.fetchBooksForFieldUpdate(mBookWhereClause)) {
+
+            int langCol = books.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
 
             mTaskManager.setMaxProgress(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
@@ -250,6 +203,14 @@ public class UpdateFieldsFromInternetTask
                 mOriginalBookData = new Bundle();
                 for (int i = 0; i < books.getColumnCount(); i++) {
                     mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
+                }
+
+                // always add the language if we have one, so we can use it for the locale details.
+                if (langCol > 0) {
+                    String lang = books.getString(langCol);
+                    if (lang != null && !lang.isEmpty()) {
+                        mOriginalBookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
+                    }
                 }
 
                 // Get the book ID
@@ -340,7 +301,7 @@ public class UpdateFieldsFromInternetTask
             // Not selected, we don't want it
             if (usage.isSelected()) {
                 switch (usage.usage) {
-                    case AddExtra:
+                    case Merge:
                     case Overwrite:
                         // Add and Overwrite mean we always get the data
                         fieldUsages.put(usage.fieldId, usage);
@@ -367,31 +328,12 @@ public class UpdateFieldsFromInternetTask
                 }
                 break;
 
+            // We should never have a book without authors, but be paranoid
             case UniqueId.BKEY_AUTHOR_ARRAY:
-                // We should never have a book without authors, but be paranoid
-                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Author> list =
-                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                    if (list == null || list.isEmpty()) {
-                        fieldUsages.put(usage.fieldId, usage);
-                    }
-                }
-                break;
-
             case UniqueId.BKEY_SERIES_ARRAY:
-                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Series> list =
-                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                    if (list == null || list.isEmpty()) {
-                        fieldUsages.put(usage.fieldId, usage);
-                    }
-                }
-                break;
-
             case UniqueId.BKEY_TOC_ENTRY_ARRAY:
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<TocEntry> list =
-                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+                    ArrayList list = mOriginalBookData.getParcelableArrayList(usage.fieldId);
                     if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
@@ -422,24 +364,19 @@ public class UpdateFieldsFromInternetTask
     /**
      * Passed the old & new data, construct the update data and perform the update.
      *
-     * @param bookId           Book ID
-     * @param newBookData      Data gathered from internet
-     * @param originalBookData Original data
+     * @param newBookData Data gathered from internet
      */
-    private void processSearchResults(final long bookId,
-                                      @NonNull final String uuid,
-                                      @NonNull final Map<String, FieldUsage> requestedFields,
-                                      @NonNull final Bundle newBookData,
-                                      @NonNull final Bundle originalBookData) {
+    private void processSearchResults(@NonNull final Bundle newBookData) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(this, "processSearchResults", "bookId=" + bookId);
+            Logger.debug(this, "processSearchResults", "bookId=" + mCurrentBookId);
         }
 
-        // First, filter the data to remove keys we don't care about
+        // Filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
         for (String key : newBookData.keySet()) {
             //noinspection ConstantConditions
-            if (!requestedFields.containsKey(key) || !requestedFields.get(key).isSelected()) {
+            if (!mCurrentBookFieldUsages.containsKey(key)
+                    || !mCurrentBookFieldUsages.get(key).isSelected()) {
                 toRemove.add(key);
             }
         }
@@ -448,125 +385,127 @@ public class UpdateFieldsFromInternetTask
         }
 
         // For each field, process it according the usage.
-        for (FieldUsage usage : requestedFields.values()) {
+        for (FieldUsage usage : mCurrentBookFieldUsages.values()) {
             if (newBookData.containsKey(usage.fieldId)) {
                 // Handle thumbnail specially
                 if (usage.fieldId.equals(UniqueId.BKEY_COVER_IMAGE)) {
-                    File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
-                    if (usage.usage == FieldUsage.Usage.CopyIfBlank) {
-                        File file = StorageUtils.getCoverFile(uuid);
-                        copyThumb = !file.exists() || file.length() == 0;
-                    } else if (usage.usage == FieldUsage.Usage.Overwrite) {
-                        copyThumb = true;
+                    switch (usage.usage) {
+                        case CopyIfBlank:
+                            File file = StorageUtils.getCoverFile(mCurrentUuid);
+                            copyThumb = !file.exists() || file.length() == 0;
+                            break;
+
+                        case Overwrite:
+                            copyThumb = true;
+                            break;
+
+                        default:
+                            // not applicable
                     }
+
+                    File downloadedFile = StorageUtils.getTempCoverFile();
                     if (copyThumb) {
-                        File destination = StorageUtils.getCoverFile(uuid);
+                        File destination = StorageUtils.getCoverFile(mCurrentUuid);
                         StorageUtils.renameFile(downloadedFile, destination);
                     } else {
                         StorageUtils.deleteFile(downloadedFile);
                     }
+
                 } else {
                     switch (usage.usage) {
+                        case CopyIfBlank:
+                            copyIfBlank(usage.fieldId, newBookData);
+                            break;
+
+                        case Merge:
+                            merge(usage.fieldId, newBookData);
+                            break;
+
                         case Overwrite:
                             // Nothing to do; just use new data
-                            break;
-
-                        case CopyIfBlank:
-                            handleCopyIfBlank(usage, originalBookData, newBookData);
-                            break;
-
-                        case AddExtra:
-                            handleAddExtra(usage, originalBookData, newBookData);
                             break;
                     }
                 }
             }
         }
 
-        // Update
+        // Commit new data
         if (!newBookData.isEmpty()) {
-            mDb.updateBook(bookId, new Book(newBookData), 0);
+
+            // Get the language, if there was one. Otherwise use the original one.
+            String bookLang = newBookData.getString(DBDefinitions.KEY_LANGUAGE);
+            if (bookLang == null || bookLang.isEmpty()) {
+                bookLang = mOriginalBookData.getString(DBDefinitions.KEY_LANGUAGE);
+                if (bookLang != null && !bookLang.isEmpty()) {
+                    newBookData.putString(DBDefinitions.KEY_LANGUAGE, bookLang);
+                }
+            }
+
+            mDb.updateBook(mCurrentBookId, new Book(newBookData), 0);
         }
     }
 
     /**
-     * AddExtra: merge arrays.
+     * Combines two ParcelableArrayList's, weeding out duplicates.
+     *
+     * @param <T>         type of the ArrayList elements
+     * @param listKey     for the ArrayList to combine
+     * @param newBookData Destination Bundle where the combined list is updated
      */
-    private void handleAddExtra(@NonNull final FieldUsage usage,
-                                @NonNull final Bundle originalBookData,
-                                @NonNull final Bundle newBookData) {
-        // Handle arrays (note: before you're clever, and collapse this to
-        // one... Android Studio hides the type in the <~> notation!
-        switch (usage.fieldId) {
-            case UniqueId.BKEY_AUTHOR_ARRAY:
-                UpdateFieldsFromInternetTask.<Author>merge(usage.fieldId,
-                                                           originalBookData, newBookData);
-                break;
+    private <T extends Parcelable> void merge(@NonNull final String listKey,
+                                              @NonNull final Bundle newBookData) {
 
-            case UniqueId.BKEY_SERIES_ARRAY:
-                UpdateFieldsFromInternetTask.<Series>merge(usage.fieldId,
-                                                           originalBookData, newBookData);
-                break;
-
-            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
-                UpdateFieldsFromInternetTask.<TocEntry>merge(usage.fieldId,
-                                                             originalBookData, newBookData);
-                break;
-
-            default:
-                // No idea how to handle this for non-arrays
-                throw new IllegalTypeException("Illegal usage `" + usage.usage
-                                                       + "` for field `"
-                                                       + usage.fieldId + '`');
+        // Get the list from the original, if it's present.
+        ArrayList<T> destinationList = null;
+        if (mOriginalBookData.containsKey(listKey)) {
+            destinationList = mOriginalBookData.getParcelableArrayList(listKey);
         }
+        // Otherwise use an empty list
+        if (destinationList == null) {
+            destinationList = new ArrayList<>();
+        }
+
+        // Get the list from the new data, if it's present.
+        ArrayList<T> newDataList = newBookData.getParcelableArrayList(listKey);
+        if (newDataList != null && !newDataList.isEmpty()) {
+            // do the actual merge by copying new data to the source list
+            // if the latter does not already have the object.
+            for (T item : newDataList) {
+                if (!destinationList.contains(item)) {
+                    destinationList.add(item);
+                }
+            }
+        }
+
+        // Save the combined list to the new data bundle.
+        newBookData.putParcelableArrayList(listKey, destinationList);
     }
 
     /**
-     * CopyIfBlank: replace if needed.
+     * CopyIfBlank: replace null/empty data.
      */
-    private void handleCopyIfBlank(@NonNull final FieldUsage usage,
-                                   @NonNull final Bundle originalBookData,
-                                   @NonNull final Bundle newBookData) {
-        switch (usage.fieldId) {
+    private void copyIfBlank(@NonNull final String key,
+                             @NonNull final Bundle /* in/out */ newBookData) {
+        switch (key) {
             case UniqueId.BKEY_AUTHOR_ARRAY:
-                if (originalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Author> list =
-                            originalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                    if (list != null && !list.isEmpty()) {
-                        newBookData.remove(usage.fieldId);
-                    }
-                }
-                break;
-
             case UniqueId.BKEY_SERIES_ARRAY:
-                if (originalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Series> list =
-                            originalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                    if (list != null && !list.isEmpty()) {
-                        newBookData.remove(usage.fieldId);
-                    }
-                }
-                break;
-
             case UniqueId.BKEY_TOC_ENTRY_ARRAY:
-                if (originalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<TocEntry> list =
-                            originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+                if (mOriginalBookData.containsKey(key)) {
+                    ArrayList<Parcelable> list = mOriginalBookData.getParcelableArrayList(key);
                     if (list != null && !list.isEmpty()) {
-                        newBookData.remove(usage.fieldId);
+                        newBookData.remove(key);
                     }
                 }
                 break;
 
             default:
                 // If the original was non-blank, erase from list
-                String value = originalBookData.getString(usage.fieldId);
+                String value = mOriginalBookData.getString(key);
                 if (value != null && !value.isEmpty()) {
-                    newBookData.remove(usage.fieldId);
+                    newBookData.remove(key);
                 }
                 break;
         }
     }
-
 }

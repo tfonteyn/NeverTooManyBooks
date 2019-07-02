@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.picker;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

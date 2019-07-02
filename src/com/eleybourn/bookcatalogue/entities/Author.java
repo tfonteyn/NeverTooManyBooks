@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +35,8 @@ import java.util.regex.Pattern;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to hold author data.
@@ -43,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author Philip Warner
  */
 public class Author
-        implements Parcelable, Utils.ItemWithIdFixup, Entity {
+        implements Parcelable, ItemWithIdFixup, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR =
@@ -348,6 +349,19 @@ public class Author
     }
 
     /**
+     * Stopgap.... makes the code elsewhere clean.
+     * <p>
+     * ENHANCE: The locale of the Author
+     * should be based on the main language the author writes in.
+     * Not implemented for now. So we cheat.
+     *
+     * @return the locale of the Author
+     */
+    public Locale getLocale() {
+        return LocaleUtils.getPreferredLocal();
+    }
+
+    /**
      * Finds the Author by using all fields except the id.
      * Then 'fixup' the local id with the id from the database.
      *
@@ -357,7 +371,13 @@ public class Author
      */
     @Override
     public long fixupId(@NonNull final DAO db) {
-        mId = db.getAuthorIdByName(mFamilyName, mGivenNames);
+        return fixupId(db, getLocale());
+    }
+
+    @Override
+    public long fixupId(@NonNull final DAO db,
+                        @NonNull final Locale locale) {
+        mId = db.getAuthorId(this, locale);
         return mId;
     }
 
@@ -373,11 +393,11 @@ public class Author
     /**
      * Equality.
      * <p>
-     * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
-     * AND all their other fields are equal
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *     AND all other fields are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -388,10 +408,11 @@ public class Author
             return false;
         }
         Author that = (Author) obj;
+        // if both 'exist' but have different id's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-
+        // one or both are 'new' or their id's are the same.
         return Objects.equals(mFamilyName, that.mFamilyName)
                 && Objects.equals(mGivenNames, that.mGivenNames)
                 && (mIsComplete == that.mIsComplete);

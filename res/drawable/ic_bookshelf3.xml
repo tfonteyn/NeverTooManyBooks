@@ -28,11 +28,11 @@
         v385
         c0,5  -1,10   -5, 10
         h-55
-        c-5,0 -5,-5  -5,-10
+        c-5,0 -5,-5   -5,-10
         v-350
         c0,-5  1,-10   5,-10
         h55
-        c5,0   5,5      5, 10
+        c5,0   5,5     5, 10
         z"
         android:strokeWidth="1" />
 
@@ -83,9 +83,9 @@
 
     <path
         android:fillAlpha="1"
-        android:fillColor="@color/yellow_600"
+        android:fillColor="@color/yellow_800"
         android:pathData="M193,310
-         l10,21
+         l 10,21
           24,4
          -17,17
            4,24
@@ -103,15 +103,15 @@
     <!-- book 3 -->
     <path
         android:fillColor="@color/red_600"
-        android:pathData="M285,0
+        android:pathData="M300,0
         v385
-        c 0, 5 -2, 10     -5, 10
-        h-25
-        c-2, 0 -5, -5     -5,-10
+        c 0, 5   -2, 10     -5, 10
+        h-50
+        c-2, 0   -5, -5     -5,-10
         v-285
-        c 0,-5  2,-10      5,-10
-        h25
-        c 2, 0  5,  5      5, 10
+        c 0,-5    2,-10      5,-10
+        h50
+        c 2, 0    5,  5      5, 10
         z"
         android:strokeWidth="1" />
 </vector>

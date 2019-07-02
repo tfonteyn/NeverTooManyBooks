@@ -31,7 +31,7 @@ Also involved are:
 Used by:
 - BookSearchActivity
 - UpdateFieldsFromInternetActivity
-==> the SearchManager/SearchTasks for getting book information from web sites.
+==> the SearchCoordinator/SearchTasks for getting book information from web sites.
 
 ----------------------------------------------------------------------------------------------------
 4. task-queue - minimalistic traditional database backed 'MessageQueue' like product

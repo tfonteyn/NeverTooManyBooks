@@ -32,9 +32,9 @@ import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.FilePicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
@@ -42,7 +42,6 @@ import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 public class AdminFragment
         extends Fragment {
@@ -391,7 +390,7 @@ public class AdminFragment
     private void cleanupFiles() {
         //noinspection ConstantConditions
         String msg = getString(R.string.info_cleanup_files_text,
-                               Utils.formatFileSize(getContext(), StorageUtils.purgeFiles(false)));
+                               StorageUtils.formatFileSize(getContext(), StorageUtils.purgeFiles(false)));
 
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_warning)

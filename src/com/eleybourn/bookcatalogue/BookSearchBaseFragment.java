@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
@@ -27,6 +27,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.viewmodels.BookSearchBaseModel;
 
 /**
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
@@ -39,24 +40,16 @@ public abstract class BookSearchBaseFragment
     public static final String TAG = "BookSearchBaseFragment";
 
     /** stores an active search id, or 0 when none active. */
-    private static final String BKEY_SEARCH_MANAGER_ID = TAG + ":SearchManagerId";
+    public static final String BKEY_SEARCH_COORDINATOR_ID = TAG + ":SearchCoordinatorId";
     /** the last book data (intent) we got from a successful EditBook. */
     private static final String BKEY_LAST_BOOK_INTENT = TAG + ":LastBookIntent";
-    /** activity request code. */
-    private static final int REQ_PREFERRED_SEARCH_SITES = 10;
-    /** Database access. */
-    protected DAO mDb;
+
     /** hosting activity. */
     AppCompatActivity mActivity;
     TaskManager mTaskManager;
 
-    /** Objects managing current search. */
-    long mSearchManagerId;
-    /** The last Intent returned as a result of creating a book. */
-    @Nullable
-    Intent mLastBookData;
-    /** sites to search on. Can be overridden by the user (option menu). */
-    private int mSearchSites = SearchSites.SEARCH_ALL;
+    /** the ViewModel. */
+    BookSearchBaseModel mBookSearchBaseModel;
 
     abstract SearchCoordinator.SearchFinishedListener getSearchFinishedListener();
 
@@ -79,14 +72,12 @@ public abstract class BookSearchBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new DAO();
+        mBookSearchBaseModel = ViewModelProviders.of(this).get(BookSearchBaseModel.class);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
-        // optional, use ALL if not there
-        mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+        mBookSearchBaseModel.init(args);
 
-        if ((mSearchSites & SearchSites.LIBRARY_THING) != 0) {
+        if ((mBookSearchBaseModel.getSearchSites() & SearchSites.LIBRARY_THING) != 0) {
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false, "search");
         }
@@ -127,7 +118,7 @@ public abstract class BookSearchBaseFragment
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
                                   SearchAdminActivity.TAB_ORDER);
-                startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
             default:
@@ -144,9 +135,10 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onResume() {
         super.onResume();
-        if (mSearchManagerId != 0) {
+        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
             SearchCoordinator.MESSAGE_SWITCH
-                    .addListener(mSearchManagerId, true, getSearchFinishedListener());
+                    .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
+                                 getSearchFinishedListener());
         }
     }
 
@@ -158,18 +150,18 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if search was started.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean startSearch(@NonNull final String authorSearchText,
-                        @NonNull final String titleSearchText,
-                        @NonNull final String isbnSearchText) {
+    boolean startSearch() {
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debugEnter(this, "startSearch",
-                              "isbn=" + isbnSearchText,
-                              "author=" + authorSearchText,
-                              "title=" + titleSearchText);
+        // check if we have an active search, if so, quit silently.
+        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
+            return false;
         }
 
+        //sanity check
+        if (!mBookSearchBaseModel.hasSearchData()) {
+            UserMessage.showUserMessage(requireView(), R.string.warning_required_at_least_one);
+            return false;
+        }
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
             UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
@@ -180,12 +172,19 @@ public abstract class BookSearchBaseFragment
             // Start the lookup in a background search task.
             final SearchCoordinator searchCoordinator =
                     new SearchCoordinator(mTaskManager, getSearchFinishedListener());
-            mSearchManagerId = searchCoordinator.getId();
+            mBookSearchBaseModel.setSearchCoordinator(searchCoordinator.getId());
 
             mTaskManager.sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
-            searchCoordinator.search(mSearchSites, authorSearchText, titleSearchText,
-                                     isbnSearchText, true);
+            searchCoordinator.search(mBookSearchBaseModel.getSearchSites(),
+                                     mBookSearchBaseModel.getAuthorSearchText(),
+                                     mBookSearchBaseModel.getTitleSearchText(),
+                                     mBookSearchBaseModel.getIsbnSearchText(),
+                                     true);
+
+            // reset the details so we don't restart the search unnecessarily
+            mBookSearchBaseModel.clearSearchText();
+
             return true;
 
         } catch (@NonNull final RuntimeException e) {
@@ -206,20 +205,12 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onPause() {
-        if (mSearchManagerId != 0) {
-            SearchCoordinator.MESSAGE_SWITCH.removeListener(mSearchManagerId,
-                                                            getSearchFinishedListener());
+        if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
+            SearchCoordinator.MESSAGE_SWITCH.removeListener(
+                    mBookSearchBaseModel.getSearchCoordinatorId(),
+                    getSearchFinishedListener());
         }
         super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     @Override
@@ -230,20 +221,21 @@ public abstract class BookSearchBaseFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case REQ_PREFERRED_SEARCH_SITES:
+            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
-                                                    mSearchSites);
+                    mBookSearchBaseModel.setSearchSites(
+                            data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
+                                             mBookSearchBaseModel.getSearchSites()));
                 }
                 break;
 
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
-                    mLastBookData = data;
-                    // and set that as the default result
-                    mActivity.setResult(resultCode, mLastBookData);
+                    mBookSearchBaseModel.setLastBookData(data);
+                    // and set it as the default result
+                    mActivity.setResult(resultCode, mBookSearchBaseModel.getLastBookData());
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // if the edit was cancelled, set that as the default result code
@@ -268,7 +260,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
-        outState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookData);
+        outState.putLong(BKEY_SEARCH_COORDINATOR_ID, mBookSearchBaseModel.getSearchCoordinatorId());
+        outState.putParcelable(BKEY_LAST_BOOK_INTENT, mBookSearchBaseModel.getLastBookData());
     }
 }

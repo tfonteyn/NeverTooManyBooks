@@ -40,9 +40,9 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -204,7 +204,7 @@ public class EditBookFieldsFragment
         Book book = mBookBaseFragmentModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (!list.isEmpty() && Utils.pruneList(mBookBaseFragmentModel.getDb(), list)) {
+        if (!list.isEmpty() && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(), list)) {
             mBookBaseFragmentModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -218,12 +218,12 @@ public class EditBookFieldsFragment
     }
 
     private void populateSeriesListField() {
-        Book book = mBookBaseFragmentModel.getBook();
-
         if (getField(R.id.series).isUsed()) {
 
+            Book book = mBookBaseFragmentModel.getBook();
+
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-            if (!list.isEmpty() && Utils.pruneList(mBookBaseFragmentModel.getDb(), list)) {
+            if (!list.isEmpty() && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(), list)) {
                 mBookBaseFragmentModel.setDirty(true);
                 book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
             }

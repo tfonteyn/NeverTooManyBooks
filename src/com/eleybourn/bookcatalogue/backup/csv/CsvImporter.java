@@ -53,12 +53,12 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -409,7 +409,7 @@ public class CsvImporter
             ArrayList<TocEntry> list = StringList.getTocCoder().decode(encodedList, false);
             if (!list.isEmpty()) {
                 // fixup the id's
-                Utils.pruneList(db, list);
+                ItemWithIdFixup.pruneList(db, list);
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
@@ -442,7 +442,7 @@ public class CsvImporter
         // Handle the series
         final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
-        Utils.pruneList(db, list);
+        ItemWithIdFixup.pruneList(db, list);
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
@@ -487,7 +487,7 @@ public class CsvImporter
 
         // Now build the array for authors
         final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
-        Utils.pruneList(db, list);
+        ItemWithIdFixup.pruneList(db, list);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }

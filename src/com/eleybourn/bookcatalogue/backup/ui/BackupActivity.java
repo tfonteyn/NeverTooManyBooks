@@ -46,6 +46,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -87,8 +88,8 @@ public class BackupActivity
                                 String msg = getString(R.string.export_info_success_archive_details,
                                                        result.file.getParent(),
                                                        result.file.getName(),
-                                                       Utils.formatFileSize(BackupActivity.this,
-                                                                            result.file.length()));
+                                                       StorageUtils.formatFileSize(BackupActivity.this,
+                                                                                   result.file.length()));
 
                                 new AlertDialog.Builder(BackupActivity.this)
                                         .setTitle(R.string.lbl_backup_to_archive)

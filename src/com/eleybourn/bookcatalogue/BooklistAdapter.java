@@ -237,7 +237,7 @@ public class BooklistAdapter
 
         View view = mInflater.inflate(layoutId, parent, false);
 
-        view.setPadding(indent * mLevelIndent, 0, 0, 0);
+        view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
         // Scale text if required
         float scale = mStyle.getScaleFactor();
@@ -269,7 +269,7 @@ public class BooklistAdapter
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, px * scale);
         }
 
-        // all elements get scaled padding.
+        // all elements get scaled padding; using the absolute padding values.
         root.setPadding((int) (scale * root.getPaddingLeft()),
                         (int) (scale * root.getPaddingTop()),
                         (int) (scale * root.getPaddingRight()),

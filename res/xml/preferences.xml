@@ -170,6 +170,25 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/pg_reformat_titles"
+        android:summary="@string/pg_reformat_titles_summary">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_add"
+            android:key="title.reformat.insert"
+            android:summaryOff="@string/pg_reformat_titles_original"
+            android:summaryOn="@string/pg_reformat_titles_reformatted"
+            android:title="@string/pt_reformat_titles_on_insert" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_edit"
+            android:key="title.reformat.update"
+            android:summaryOff="@string/pg_reformat_titles_original"
+            android:summaryOn="@string/pg_reformat_titles_reformatted"
+            android:title="@string/pt_reformat_titles_on_update" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pg_booklist">
         <SwitchPreference
             android:defaultValue="true"
@@ -337,18 +356,18 @@
             android:title="@string/pt_collect_series_info_from_toc" />
 
         <EditTextPreference
-            android:defaultValue="https://books.google.com"
-            android:icon="@drawable/ic_link"
-            android:inputType="textUri"
-            android:key="GoogleBooks.hostUrl"
-            android:title="@string/google_books" />
-
-        <EditTextPreference
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_link"
             android:inputType="textUri"
             android:key="Amazon.hostUrl"
             android:title="@string/amazon" />
+
+        <!--<EditTextPreference-->
+        <!--android:defaultValue="https://books.google.com"-->
+        <!--android:icon="@drawable/ic_link"-->
+        <!--android:inputType="textUri"-->
+        <!--android:key="GoogleBooks.hostUrl"-->
+        <!--android:title="@string/google_books" />-->
 
         <!--<EditTextPreference-->
         <!--android:defaultValue="http://www.isfdb.org"-->

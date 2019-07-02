@@ -45,7 +45,6 @@ public class SearchOrderFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        //URGENT: use interface
         mActivity= (SearchAdminActivity) context;
     }
 

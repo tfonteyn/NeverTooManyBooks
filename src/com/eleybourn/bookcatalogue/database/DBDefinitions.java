@@ -224,7 +224,7 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT, true);
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new DomainDefinition(DOM_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
 
@@ -249,6 +249,7 @@ public final class DBDefinitions {
 
     /** {@link #TBL_SERIES). */
     public static final DomainDefinition DOM_SERIES_TITLE;
+    public static final DomainDefinition DOM_SERIES_TITLE_OB;
     /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_IS_COMPLETE;
     /** {@link #TBL_SERIES). */
@@ -260,6 +261,10 @@ public final class DBDefinitions {
     static {
         DOM_SERIES_TITLE =
                 new DomainDefinition(KEY_SERIES, ColumnInfo.TYPE_TEXT, true);
+        DOM_SERIES_TITLE_OB =
+                new DomainDefinition(KEY_SERIES + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                        .setPrePreparedOrderBy(true)
+                        .setDefaultEmptyString();
         DOM_SERIES_IS_COMPLETE =
                 new DomainDefinition(KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN, true)
                         .setDefault(0);
@@ -522,6 +527,8 @@ public final class DBDefinitions {
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_AUTHOR_SORT;
     /** sorting and grouping in {@link BooklistGroup}. */
+    public static final DomainDefinition DOM_SERIES_SORT;
+    /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_READ_STATUS;
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_TITLE_LETTER;
@@ -563,6 +570,8 @@ public final class DBDefinitions {
                 new DomainDefinition("loaned_to_sort", ColumnInfo.TYPE_INTEGER, true);
         DOM_AUTHOR_SORT =
                 new DomainDefinition("author_sort", ColumnInfo.TYPE_TEXT, true);
+        DOM_SERIES_SORT =
+                new DomainDefinition("series_sort", ColumnInfo.TYPE_TEXT, true);
         DOM_READ_STATUS =
                 new DomainDefinition("read_status", ColumnInfo.TYPE_TEXT, true);
         DOM_TITLE_LETTER =
@@ -725,9 +734,12 @@ public final class DBDefinitions {
 
         TBL_SERIES.addDomains(DOM_PK_ID,
                               DOM_SERIES_TITLE,
+                              DOM_SERIES_TITLE_OB,
                               DOM_SERIES_IS_COMPLETE)
                   .setPrimaryKey(DOM_PK_ID)
-                  .addIndex("id", true, DOM_PK_ID);
+                  .addIndex("id", true, DOM_PK_ID)
+                  .addIndex(DOM_SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
+                  .addIndex(DOM_SERIES_TITLE, false, DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
         TBL_BOOKS.addDomains(DOM_PK_ID,

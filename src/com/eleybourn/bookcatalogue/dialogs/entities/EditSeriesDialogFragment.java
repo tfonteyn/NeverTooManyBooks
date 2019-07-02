@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -130,7 +131,7 @@ public class EditSeriesDialogFragment
                     series.setName(mName);
                     series.setComplete(mIsComplete);
 
-                    mDb.updateOrInsertSeries(series);
+                    mDb.updateOrInsertSeries(series, LocaleUtils.getPreferredLocal());
 
                     Bundle data = new Bundle();
                     data.putLong(DBDefinitions.KEY_SERIES, series.getId());

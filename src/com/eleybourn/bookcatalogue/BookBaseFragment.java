@@ -98,8 +98,6 @@ public abstract class BookBaseFragment
         }
     }
 
-    //<editor-fold desc="Fragment startup">
-
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -206,10 +204,6 @@ public abstract class BookBaseFragment
         getFields().setAllFrom(mBookBaseFragmentModel.getBook());
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Menu handlers">
-
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -233,8 +227,6 @@ public abstract class BookBaseFragment
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    //</editor-fold>
 
     @Override
     public void onActivityResult(final int requestCode,

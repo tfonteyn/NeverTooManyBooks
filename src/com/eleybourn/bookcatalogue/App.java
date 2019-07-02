@@ -31,7 +31,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
@@ -62,7 +64,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Application implementation. Useful for making globals available and for being a
@@ -129,6 +130,7 @@ public class App
     private static final int ACTIVITY_NEEDS_RECREATING = 1;
     /** Checked in onResume() so not to start tasks etc. */
     private static final int ACTIVITY_IS_RECREATING = 2;
+
     /**
      * NEWKIND: APP THEME.
      * <ol>
@@ -143,6 +145,7 @@ public class App
      * DEFAULT_THEME: the default to use.
      */
     private static final int DEFAULT_THEME = 0;
+
     /**
      * As defined in res/themes.xml.
      * <p>
@@ -308,12 +311,11 @@ public class App
      */
     @NonNull
     public static SharedPreferences getPrefs(@NonNull final String uuid) {
-
         return sInstance.getApplicationContext().getSharedPreferences(uuid, MODE_PRIVATE);
     }
 
     /**
-     * Get a global preference String.
+     * Get a global preference String. Null values results are returned as an empty string.
      *
      * @return the preference value string, can be empty, but never {@code null}
      */
@@ -350,7 +352,12 @@ public class App
         if (value == null || value.isEmpty()) {
             return defaultValue;
         }
-        return Utils.toInteger(value);
+        return Prefs.toInteger(value);
+    }
+
+    public static boolean isRtl() {
+        return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocal())
+                == View.LAYOUT_DIRECTION_RTL;
     }
 
     /**

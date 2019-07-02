@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
@@ -62,7 +63,6 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
@@ -552,7 +552,7 @@ class GrImportAllTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            Utils.pruneList(db, bsList);
+            ItemWithIdFixup.pruneList(db, bsList);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);

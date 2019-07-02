@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to hold book-related series data.
@@ -54,7 +53,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author Philip Warner
  */
 public class Series
-        implements Parcelable, Utils.ItemWithIdFixup, Entity {
+        implements Parcelable, ItemWithIdFixup, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR =
@@ -131,24 +130,6 @@ public class Series
     public Series(@NonNull final String name,
                   final boolean isComplete) {
         mName = name;
-        mIsComplete = isComplete;
-        mNumber = "";
-    }
-
-    /**
-     * Full constructor.
-     *
-     * @param id         of the series
-     * @param name       of the series
-     * @param isComplete whether a Series is completed, i.e if the user has all
-     *                   they want from this Series.
-     */
-    @SuppressWarnings("unused")
-    public Series(final long id,
-                  @NonNull final String name,
-                  final boolean isComplete) {
-        mId = id;
-        mName = name.trim();
         mIsComplete = isComplete;
         mNumber = "";
     }
@@ -462,7 +443,7 @@ public class Series
     /**
      * Stopgap.... makes the code elsewhere clean.
      * <p>
-     * ENHANCE: The locale of the series
+     * ENHANCE: The locale of the Series
      * should be based on either a specific language setting for
      * the Series itself, or on the locale of the primary book.
      * Neither is implemented for now. So we cheat.
@@ -470,15 +451,20 @@ public class Series
      * @return the locale of the Series
      */
     public Locale getLocale() {
-        return LocaleUtils.getSystemLocale();
+        return LocaleUtils.getPreferredLocal();
     }
 
     @Override
     public long fixupId(@NonNull final DAO db) {
-        mId = db.getSeriesId(this);
-        return mId;
+        return fixupId(db, getLocale());
     }
 
+    @Override
+    public long fixupId(@NonNull final DAO db,
+                        @NonNull final Locale locale) {
+        mId = db.getSeriesId(this, locale);
+        return mId;
+    }
     /**
      * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.
@@ -492,11 +478,11 @@ public class Series
     /**
      * Equality.
      * <p>
-     * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
-     * AND all their other fields are equal
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *     AND all other fields are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -507,9 +493,11 @@ public class Series
             return false;
         }
         Series that = (Series) obj;
-        if ((mId != 0) && (that.mId != 0) && (mId != that.mId)) {
+        // if both 'exist' but have different id's -> different.
+        if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
+        // one or both are 'new' or their id's are the same.
         return Objects.equals(mName, that.mName)
                 && (mIsComplete == that.mIsComplete)
                 && Objects.equals(mNumber, that.mNumber);

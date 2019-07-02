@@ -85,7 +85,7 @@
     <item name="MENU_BOOK_READ" type="id" />
     <item name="MENU_BOOK_UNREAD" type="id" />
 
-    <item name="MENU_AUTHOR_DETAILS" type="id" />
+    <item name="MENU_AUTHOR_WORKS" type="id" />
     <item name="MENU_AUTHOR_EDIT" type="id" />
     <item name="MENU_AUTHOR_COMPLETE" type="id" />
 
@@ -125,8 +125,6 @@
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
 
     <!-- Thumbnail context menu -->
-    <item name="MENU_THUMB_DELETE" type="id" />
-
     <item name="SUBMENU_THUMB_REPLACE" type="id" />
     <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id" />
     <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id" />

@@ -56,6 +56,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
@@ -66,6 +67,8 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTR
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_OB;
@@ -640,6 +643,43 @@ public class DBHelper
             // migrate old properties.
             Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
+            // add the UUID field for the move of styles to SharedPreferences
+            db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
+                               + " ADD " + DOM_UUID + " text not null default ''");
+
+            // insert the builtin style id's so foreign key rules are possible.
+            prepareStylesTable(db);
+
+            // convert user styles from serialized storage to SharedPreference xml.
+            try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
+                                                           + " FROM " + TBL_BOOKLIST_STYLES,
+                                                   null)) {
+                while (stylesCursor.moveToNext()) {
+                    long id = stylesCursor.getLong(0);
+                    byte[] blob = stylesCursor.getBlob(1);
+                    BooklistStyle style;
+                    try {
+                        // de-serializing will in effect write out the preference file.
+                        style = SerializationUtils.deserializeObject(blob);
+                        // update db with the newly created prefs file name.
+                        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
+                                           + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
+                                           + " WHERE " + DOM_PK_ID + '=' + id);
+
+                    } catch (@NonNull final SerializationUtils.DeserializationException e) {
+                        Logger.error(this, e, "BooklistStyle id=" + id);
+                    }
+                }
+            }
+            // drop the serialized field.
+            recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
+                    /* remove field */ "style");
+
+            // add the foreign key rule pointing to the styles table.
+            recreateAndReloadTable(syncedDb, TBL_BOOKSHELF);
+
+
+
             // this trigger was replaced.
             db.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
 
@@ -657,7 +697,7 @@ public class DBHelper
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
                                + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
 
-            // clean columns where we adding a "not null default ''" constraint
+            // clean columns where we are adding a "not null default ''" constraint
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
                                + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
@@ -694,7 +734,11 @@ public class DBHelper
             db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
                                + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
 
-            // probably not needed, but there were some 'coalesce' usages. Paranoia again...
+            // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
+            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
+                    + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
+
+            // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
             db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
                                + " WHERE " + DOM_BOOKSHELF + " IS NULL");
 
@@ -737,6 +781,10 @@ public class DBHelper
                                + " ADD " + DOM_TITLE_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
 
+            db.execSQL("ALTER TABLE " + TBL_SERIES
+                               + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
+            UpgradeDatabase.v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
+
             db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
                                + " ADD " + DOM_TITLE_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
@@ -745,46 +793,10 @@ public class DBHelper
                                + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
                                                   DOM_AUTHOR_FAMILY_NAME_OB);
-
             db.execSQL("ALTER TABLE " + TBL_AUTHORS
                                + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
             UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
                                                   DOM_AUTHOR_GIVEN_NAMES_OB);
-
-            // add the UUID field for the move of styles to SharedPreferences
-            db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
-                               + " ADD " + DOM_UUID + " text not null default ''");
-
-            // insert the builtin style id's so foreign key rules are possible.
-            prepareStylesTable(db);
-
-            // convert user styles from serialized storage to SharedPreference xml.
-            try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
-                                                           + " FROM " + TBL_BOOKLIST_STYLES,
-                                                   null)) {
-                while (stylesCursor.moveToNext()) {
-                    long id = stylesCursor.getLong(0);
-                    byte[] blob = stylesCursor.getBlob(1);
-                    BooklistStyle style;
-                    try {
-                        // de-serializing will in effect write out the preference file.
-                        style = SerializationUtils.deserializeObject(blob);
-                        // update db with the newly created prefs file name.
-                        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
-                                           + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
-                                           + " WHERE " + DOM_PK_ID + '=' + id);
-
-                    } catch (@NonNull final SerializationUtils.DeserializationException e) {
-                        Logger.error(this, e, "BooklistStyle id=" + id);
-                    }
-                }
-            }
-            // drop the serialized field.
-            recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
-                    /* remove field */ "style");
-
-            // add the foreign key rule pointing to the styles table.
-            recreateAndReloadTable(syncedDb, TBL_BOOKSHELF);
 
             /* all books with a list price are assumed to be USD based on the only search up to v82
              * being Amazon US (via proxy... so this is my best guess).

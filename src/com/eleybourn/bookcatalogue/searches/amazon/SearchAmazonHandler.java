@@ -204,8 +204,6 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * <p>
  * "ItemAttributes" section:
  * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
- *
- * @author evan
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
 class SearchAmazonHandler

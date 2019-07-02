@@ -308,6 +308,8 @@ public class StartupViewModel
 
                 // do a mass update of any languages not yet converted to ISO3 codes
                 cleaner.updateLanguages();
+                // clean/correct style UUID's on Bookshelves for deleted styles.
+                cleaner.bookshelves();
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);

@@ -47,8 +47,8 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
-import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -112,6 +112,23 @@ public class EditBookshelfListActivity
             ((EditBookshelfDialogFragment) fragment).setListener(mListener);
         }
     }
+
+    private void onCreateContextMenu(final int position) {
+
+        Bookshelf bookshelf = mList.get(position);
+
+        Menu menu = MenuPicker.createMenu(this);
+        menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+            .setIcon(R.drawable.ic_edit);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+
+        String menuTitle = bookshelf.getName();
+        final MenuPicker<Bookshelf> picker = new MenuPicker<>(this, menuTitle, menu, bookshelf,
+                                                              this::onContextItemSelected);
+        picker.show();
+    }
+
 
     /**
      * Using {@link ValuePicker} for context menus.
@@ -231,17 +248,7 @@ public class EditBookshelfListActivity
 
             // long-click -> menu
             holder.nameView.setOnLongClickListener(v -> {
-                Menu menu = MenuPicker.createMenu(holder.nameView.getContext());
-                menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
-                menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                    .setIcon(R.drawable.ic_delete);
-                // display
-                String menuTitle = bookshelf.getName();
-                final MenuPicker<Bookshelf> picker =
-                        new MenuPicker<>(holder.nameView.getContext(), menuTitle, menu, bookshelf,
-                                         EditBookshelfListActivity.this::onContextItemSelected);
-                picker.show();
+                onCreateContextMenu(holder.getAdapterPosition());
                 return true;
             });
 

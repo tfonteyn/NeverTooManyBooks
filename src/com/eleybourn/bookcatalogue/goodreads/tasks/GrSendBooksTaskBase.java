@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.EditBookActivity;
-import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -310,9 +309,7 @@ abstract class GrSendBooksTaskBase
                         try {
                             GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
-                                    .putExtra(DBDefinitions.KEY_ID, event.getBookId())
-                                    .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                              EditBookFragment.TAB_EDIT);
+                                    .putExtra(DBDefinitions.KEY_ID, event.getBookId());
                             context.startActivity(intent);
                         } catch (@NonNull final RuntimeException ignore) {
                             // not a book event?

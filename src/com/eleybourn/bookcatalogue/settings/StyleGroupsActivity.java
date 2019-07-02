@@ -329,7 +329,7 @@ public class StyleGroupsActivity
                 boolean newStatus = !groupWrapper.present;
                 groupWrapper.present = newStatus;
                 holder.mCheckableButton.setChecked(newStatus);
-                notifyItemChanged(position);
+                notifyItemChanged(holder.getAdapterPosition());
             });
         }
     }

@@ -702,12 +702,12 @@
     <string name="gr_tq_generic_task_info">%1$d görev kimliği, %2$s sırada</string>
     <string name="info_share_book_im_reading">“%1$s” yazısını %2$s %3$s %4$s okuyorum</string>
     <string name="clear">Silme</string>
-    <string name="X_pt_bob_preferred_style">Tercihli</string>
     <string name="X_select_bookshelves">Raflardan seçin</string>
     <string name="btn_confirm_new">Yeni</string>
     <string name="title_edit_book_authors">Kitap Yazarlarını Düzenle</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
     <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
     <string name="about_lbl_creators">İlk olarak:</string>
-
+    <string name="unknown_uc">BİLİNMEYEN</string>
+    <string name="title_delete_toc_entry">Başlığı sil</string>
 </resources>

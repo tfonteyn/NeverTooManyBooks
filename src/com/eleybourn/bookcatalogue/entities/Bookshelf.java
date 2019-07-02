@@ -19,13 +19,12 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Represents a Bookshelf.
  */
 public class Bookshelf
-        implements Parcelable, Utils.ItemWithIdFixup, Entity {
+        implements Parcelable, ItemWithIdFixup, Entity {
 
     /**
      * how to concat bookshelf names. This should be using '|' as {@link StringList}
@@ -278,6 +277,18 @@ public class Bookshelf
     }
 
     /**
+     * Check the current style and if it had to be corrected, update this shelf in the database.
+     *
+     * @param db the database
+     */
+    public void validateStyle(@NonNull final DAO db) {
+        String uuid = mStyleUuid;
+        if (!uuid.equals(getStyle(db).getUuid())) {
+            db.updateBookshelf(this);
+        }
+    }
+
+    /**
      * Replace local details from another Bookshelf.
      *
      * @param source Bookshelf to copy from
@@ -322,13 +333,12 @@ public class Bookshelf
      */
     @NonNull
     public String stringEncoded() {
-        //URGENT: the uuid is not validated. Does not matter for the CSV export, but will subsequently fail on re-import.
         return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleUuid;
     }
 
     @Override
     public long fixupId(@NonNull final DAO db) {
-        mId = db.getBookshelfIdByName(mName);
+        mId = db.getBookshelfId(this);
         return mId;
     }
 
@@ -349,11 +359,11 @@ public class Bookshelf
     /**
      * Equality.
      * <p>
-     * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
-     * AND all their other fields are equal
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *     AND all other fields are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -364,9 +374,11 @@ public class Bookshelf
             return false;
         }
         Bookshelf that = (Bookshelf) obj;
+        // if both 'exist' but have different id's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
+        // one or both are 'new' or their id's are the same.
         return Objects.equals(mName, that.mName);
     }
 

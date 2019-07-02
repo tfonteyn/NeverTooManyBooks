@@ -127,7 +127,6 @@ public class CoverBrowserFragment
         super.onCreate(savedInstanceState);
 
         mModel = ViewModelProviders.of(this).get(CoverBrowserViewModel.class);
-
     }
 
     @NonNull

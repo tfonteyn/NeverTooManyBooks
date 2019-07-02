@@ -74,6 +74,10 @@ public class BookFragment
         }
     };
 
+    private View mTocLabelView;
+    private View mTocButton;
+    private LinearLayout mTocView;
+
     private NestedScrollView mNestedScrollView;
 
     /** Handles cover replacement, rotation, etc. */
@@ -101,6 +105,11 @@ public class BookFragment
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_details, container, false);
         mNestedScrollView = view.findViewById(R.id.topScroller);
+
+        mTocLabelView = view.findViewById(R.id.lbl_toc);
+        mTocButton = view.findViewById(R.id.toc_button);
+        mTocView = view.findViewById(R.id.toc);
+
         return view;
     }
 
@@ -310,6 +319,7 @@ public class BookFragment
 
     /**
      * The series field is a single String with line-breaks between multiple series.
+     * Each line will be prefixed with a "• "
      */
     private void populateSeriesListField() {
         Field field = getField(R.id.series);
@@ -319,7 +329,7 @@ public class BookFragment
 
         boolean visible = seriesCount != 0 && App.isUsed(DBDefinitions.KEY_SERIES);
         if (visible) {
-            field.setValue(Csv.join("\n", list, Series::getLabel));
+            field.setValue(Csv.join("\n", list, false,"• ", Series::getLabel));
             setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
         } else {
             field.setValue("");
@@ -372,15 +382,12 @@ public class BookFragment
                 && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
-        View view = requireView();
-        View tocLabel = view.findViewById(R.id.lbl_toc);
-        View tocButton = view.findViewById(R.id.toc_button);
-        LinearLayout tocView = view.findViewById(R.id.toc);
+        mTocView.removeAllViews();
 
         if (hasToc) {
             for (TocEntry item : tocList) {
                 View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
-                                                           tocView, false);
+                                                           mTocView, false);
 
                 TextView titleView = rowView.findViewById(R.id.title);
                 TextView authorView = rowView.findViewById(R.id.author);
@@ -402,29 +409,29 @@ public class BookFragment
                                 firstPubView.getContext().getString(R.string.brackets, year));
                     }
                 }
-                tocView.addView(rowView);
+                mTocView.addView(rowView);
             }
 
-            tocButton.setOnClickListener(v -> {
-                if (tocView.getVisibility() == View.VISIBLE) {
+            mTocButton.setOnClickListener(v -> {
+                if (mTocView.getVisibility() == View.VISIBLE) {
                     // force a scroll; a manual scroll is no longer possible after the TOC closes.
                     mNestedScrollView.fullScroll(View.FOCUS_UP);
-                    tocView.setVisibility(View.GONE);
+                    mTocView.setVisibility(View.GONE);
 
                 } else {
-                    tocView.setVisibility(View.VISIBLE);
+                    mTocView.setVisibility(View.VISIBLE);
                 }
             });
 
-            tocLabel.setVisibility(View.VISIBLE);
-            tocButton.setVisibility(View.VISIBLE);
+            mTocLabelView.setVisibility(View.VISIBLE);
+            mTocButton.setVisibility(View.VISIBLE);
             // do not show by default, user has to click button first.
-            //tocView.setVisibility(View.VISIBLE);
+            //mTocView.setVisibility(View.VISIBLE);
 
         } else {
-            tocLabel.setVisibility(View.GONE);
-            tocButton.setVisibility(View.GONE);
-            tocView.setVisibility(View.GONE);
+            mTocLabelView.setVisibility(View.GONE);
+            mTocButton.setVisibility(View.GONE);
+            mTocView.setVisibility(View.GONE);
         }
     }
 
@@ -521,8 +528,7 @@ public class BookFragment
 
             case R.id.MENU_EDIT:
                 Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_ID, book.getId())
-                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                        .putExtra(DBDefinitions.KEY_ID, book.getId());
                 startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
                 return true;
 

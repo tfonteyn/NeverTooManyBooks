@@ -99,7 +99,7 @@ public final class HintManager {
         mHints.put(R.string.hint_book_search_by_text,
                    new Hint("hint_book_search_by_text"));
         // v200
-        mHints.put(R.string.pt_hint_layer_type,
+        mHints.put(R.string.pt_thumbnail_cropper_layer_type_summary,
                    new Hint("hint_pref_layer_type"));
     }
 

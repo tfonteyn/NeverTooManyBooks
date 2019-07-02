@@ -62,15 +62,15 @@ public class FieldUsage {
     /**
      * Cycle to the next Usage stage.
      * <p>
-     * if (isList): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
-     * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
+     * if (isList): Skip -> CopyIfBlank -> Merge -> Overwrite -> Skip
+     * else       : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
     public void nextState() {
         usage = usage.nextState(mIsList);
     }
 
     public enum Usage {
-        Skip, CopyIfBlank, AddExtra, Overwrite;
+        Skip, CopyIfBlank, Merge, Overwrite;
 
         @NonNull
         Usage nextState(final boolean isList) {
@@ -79,11 +79,11 @@ public class FieldUsage {
                     return CopyIfBlank;
                 case CopyIfBlank:
                     if (isList) {
-                        return AddExtra;
+                        return Merge;
                     } else {
                         return Overwrite;
                     }
-                case AddExtra:
+                case Merge:
                     return Overwrite;
 
                 //case Overwrite:
@@ -97,7 +97,7 @@ public class FieldUsage {
             switch (this) {
                 case CopyIfBlank:
                     return R.string.lbl_field_usage_copy_if_blank;
-                case AddExtra:
+                case Merge:
                     return R.string.lbl_field_usage_add_extra;
                 case Overwrite:
                     return R.string.lbl_field_usage_overwrite;

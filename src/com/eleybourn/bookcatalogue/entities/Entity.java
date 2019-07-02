@@ -30,4 +30,5 @@ public interface Entity {
     default String getLabel(@NonNull final Context context) {
         return getLabel();
     }
+
 }

@@ -353,10 +353,10 @@ public class SynchronizedStatement
                 Logger.warnWithStackTrace(this, "Insert failed");
             }
             return id;
-        } catch (@NonNull final SQLException e) {
+//        } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(this, e, mStatement.toString());
-            throw e;
+            //Logger.error(this, e, mStatement.toString());
+//            throw e;
         } finally {
             exclusiveLock.unlock();
         }

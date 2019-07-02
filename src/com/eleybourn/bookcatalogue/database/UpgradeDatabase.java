@@ -336,7 +336,7 @@ public final class UpgradeDatabase {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);
                 final String in = cur.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, LocaleUtils.getSystemLocale()));
+                update.bindString(1, DAO.encodeOrderByColumn(in, LocaleUtils.getPreferredLocal()));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

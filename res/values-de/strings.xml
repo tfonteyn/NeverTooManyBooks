@@ -212,7 +212,8 @@
     <string name="X_menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
     <string name="confirm_delete_series">
-        Soll die Serie ‘%1$s’ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n
+        Soll die Serie ‘%1$s’ gelöscht werden?\n
+        \nDie Bücher werden nicht gelöscht.\n\n
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
     </string>
@@ -919,7 +920,10 @@
     <string name="title_edit_book_authors">Buchautoren bearbeiten</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
-    <string name="title_reorder">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
+    <string name="pg_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
     <string name="about_lbl_creators">Ursprünglich von:</string>
+    <string name="unknown_uc">UNBEKANNT</string>
+    <string name="title_delete_toc_entry">Titel löschen</string>
+    <string name="confirm_delete_toc_entry">Wirklich den Titel “%1$s” von %2$s löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
 
 </resources>

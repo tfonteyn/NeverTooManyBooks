@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -22,7 +23,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -52,12 +53,11 @@ public class BookSearchByTextFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchManagerId=" + mSearchManagerId);
+                                          "SearchCoordinatorId=" + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
-                            mTaskManager.sendHeaderUpdate(
-                                    R.string.progress_msg_adding_book);
+                            mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
@@ -68,16 +68,13 @@ public class BookSearchByTextFragment
                         }
                     } finally {
                         // Clean up
-                        mSearchManagerId = 0;
+                        mBookSearchBaseModel.setSearchCoordinator(0);
                         // Make sure the base message will be empty.
                         mTaskManager.sendHeaderUpdate(null);
                     }
                 }
             };
-    @NonNull
-    private String mAuthorSearchText = "";
-    @NonNull
-    private String mTitleSearchText = "";
+
 
     @Override
     @Nullable
@@ -94,18 +91,14 @@ public class BookSearchByTextFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-        mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
-
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.title_search_for);
 
         populateAuthorList();
 
         requireView().findViewById(R.id.btn_search).setOnClickListener(v -> {
-            mAuthorSearchText = mAuthorView.getText().toString().trim();
-            mTitleSearchText = mTitleView.getText().toString().trim();
+            mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
+            mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
             prepareSearch();
         });
 
@@ -117,48 +110,29 @@ public class BookSearchByTextFragment
     }
 
     private void prepareSearch() {
-        if (mAuthorAdapter.getPosition(mAuthorSearchText) < 0) {
+
+        String authorSearchText = mBookSearchBaseModel.getAuthorSearchText();
+        if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
             // Based on code from filipeximenes we also need to update the adapter here in
             // case no author or book is added, but we still want to see 'recent' entries.
-            if (!mAuthorSearchText.isEmpty()) {
+            if (!authorSearchText.isEmpty()) {
                 boolean found = false;
                 for (String s : mAuthorNames) {
-                    if (s.equalsIgnoreCase(mAuthorSearchText)) {
+                    if (s.equalsIgnoreCase(authorSearchText)) {
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
                     // Keep a list of names as typed to use when we recreate list
-                    mAuthorNames.add(mAuthorSearchText);
+                    mAuthorNames.add(authorSearchText);
                     // Add to adapter, in case search produces no results
-                    mAuthorAdapter.add(mAuthorSearchText);
+                    mAuthorAdapter.add(authorSearchText);
                 }
             }
         }
 
         startSearch();
-    }
-
-    /**
-     * Start the actual search with the {@link SearchCoordinator} in the background.
-     */
-    private void startSearch() {
-        // check if we have an active search, if so, quit.
-        if (mSearchManagerId != 0) {
-            return;
-        }
-
-        //sanity check
-        if ((mAuthorSearchText.isEmpty()) || mTitleSearchText.isEmpty()) {
-            UserMessage.showUserMessage(mAuthorView, R.string.warning_required_at_least_one);
-            return;
-        }
-        if (super.startSearch(mAuthorSearchText, mTitleSearchText, "")) {
-            // reset the details so we don't restart the search unnecessarily
-            mAuthorSearchText = "";
-            mTitleSearchText = "";
-        }
     }
 
     @Override
@@ -189,38 +163,39 @@ public class BookSearchByTextFragment
     @Override
     public void onPause() {
         super.onPause();
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
+        mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
+        mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mBookSearchBaseModel.getAuthorSearchText());
+        outState.putString(DBDefinitions.KEY_TITLE, mBookSearchBaseModel.getTitleSearchText());
     }
 
     /**
      * Setup the adapter for the Author AutoCompleteTextView field.
      */
     private void populateAuthorList() {
+        //noinspection ConstantConditions
+        Locale locale = LocaleUtils.from(getContext());
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mDb.getAuthorsFormattedName();
+        final ArrayList<String> authors = mBookSearchBaseModel.getDb().getAuthorsFormattedName();
         final Set<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
-            uniqueNames.add(s.toUpperCase());
+            uniqueNames.add(s.toUpperCase(locale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : mAuthorNames) {
-            if (!uniqueNames.contains(s.toUpperCase())) {
+            if (!uniqueNames.contains(s.toUpperCase(locale))) {
                 authors.add(s);
             }
         }
 
         // Now get an adapter based on the combined names
-        //noinspection ConstantConditions
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
                                             android.R.layout.simple_dropdown_item_1line,
                                             authors);

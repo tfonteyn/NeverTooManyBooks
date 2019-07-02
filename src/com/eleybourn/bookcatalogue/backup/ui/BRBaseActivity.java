@@ -142,7 +142,8 @@ public abstract class BRBaseActivity
      */
     private void onPathChanged(@NonNull final File rootDir) {
         if (rootDir.isDirectory()) {
-            UserMessage.showUserMessage(mListView, R.string.progress_msg_reading_directory);
+            // on my late 2016 phone, the message stays up long after the dir is read...
+            //UserMessage.showUserMessage(mListView, R.string.progress_msg_reading_directory);
             mRootDir = rootDir;
             new FileListerTask(mRootDir, mListener).execute();
         }

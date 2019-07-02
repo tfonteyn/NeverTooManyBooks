@@ -47,6 +47,9 @@ public final class UniqueId {
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ADVANCED_LOCAL_SEARCH = 2_102;
 
+    /** Request code: open the admin page to order and en/disable sites. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_PREFERRED_SEARCH_SITES = 2_103;
 
     /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
     @SuppressWarnings("WeakerAccess")
@@ -64,6 +67,9 @@ public final class UniqueId {
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ACTION_GET_CONTENT = 3_005;
 
+    /** Request code: open the author "all works" screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_AUTHOR_WORKS = 4_001;
 
     /** Request code: system request to ask the user for permissions. */
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
@@ -210,6 +216,7 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";
+
 
     /* ****************************************************************************************** */
 

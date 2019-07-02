@@ -29,6 +29,7 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 
 public final class StandardDialogs {
 
@@ -65,6 +66,28 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
                 .setMessage(context.getString(R.string.confirm_delete_series, series.getName()))
+                .setCancelable(false)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    onDoDelete.run();
+                })
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     */
+    public static void deleteTocEntryAlert(@NonNull final Context context,
+                                           @NonNull final TocEntry tocEntry,
+                                           @NonNull final Runnable onDoDelete) {
+        new AlertDialog.Builder(context)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle(R.string.title_delete_toc_entry)
+                .setMessage(context.getString(R.string.confirm_delete_toc_entry,
+                                              tocEntry.getTitle(),
+                                              tocEntry.getAuthor().getLabel()))
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {

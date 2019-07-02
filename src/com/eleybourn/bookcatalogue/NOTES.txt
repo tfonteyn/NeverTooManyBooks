@@ -25,14 +25,15 @@ TODO: Review database stuff
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
- * 'order by' columns have been added to TITLE and AUTHOR name fields.
- * URGENT: Modify the "series_name" field to be "title" + add an OrderBy to the series table.
+ * 'order by' columns have been added to TITLE (book, series, tocEntry) and AUTHOR name fields.
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags
         not easy to get 'others' to create import files
         importing id's is dangerous
+
+TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 
 TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
@@ -46,14 +47,12 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition[do
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 ==> superseded by 813
 
-Make some behavior optional:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
-
 General:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn goodreads notes
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images (804 == a number of older ones)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
+-> now possible to collapse/expand any level but the state is NOT saved.
 
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
@@ -63,8 +62,11 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 
-==> SearchManager.search when isbn not provided, will run a search until it finds an isbn, and then redo the search WITH the isbn
+==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn, and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
+
+Dev:
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
 
 Bugs:
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
@@ -73,7 +75,6 @@ FIXME: https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
 
 TEST:
 - csv export/import with the new coders.
-- bookshelf with style storage
 
 
 Implemented:
@@ -90,7 +91,6 @@ https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
 https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
 https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work
 https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
-https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
 https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
 https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book
@@ -99,6 +99,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/653 - Allow users to select a
 https://github.com/eleybourn/Book-Catalogue/issues/597 - Merging of bookshelves
 https://github.com/eleybourn/Book-Catalogue/issues/587 - residual thumbnail after Cancel entry-by-isbn
 https://github.com/eleybourn/Book-Catalogue/issues/567 - Read-only display does not display anthology titles
+https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
 https://github.com/eleybourn/Book-Catalogue/issues/547 - UPC bar-codes
 https://github.com/eleybourn/Book-Catalogue/issues/534 - Display Anthology Titles in Read-only view
 https://github.com/eleybourn/Book-Catalogue/issues/519 - == 721
@@ -108,7 +109,3 @@ https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
 https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
 https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price
 https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
-
-Rejected:
-https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series
-==> use notes field (I tried keeping track of my own limited editions... a waste of time IMHO)

@@ -65,7 +65,6 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StylePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
@@ -73,6 +72,7 @@ import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditPublisherDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditSeriesDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditFormatDialog;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditGenreDialog;
 import com.eleybourn.bookcatalogue.dialogs.simplestring.EditLanguageDialog;
@@ -804,8 +804,8 @@ public class BooksOnBookshelf
             // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
                 long bookId = row.getBookId();
-                boolean openInReadOnly =
-                        App.getPrefs().getBoolean(Prefs.pk_bob_open_book_read_only, true);
+                boolean openInReadOnly = App.getPrefs()
+                                            .getBoolean(Prefs.pk_bob_open_book_read_only, true);
 
                 if (openInReadOnly) {
                     String listTableName = listCursor.getBuilder().createFlattenedBooklist();
@@ -818,8 +818,7 @@ public class BooksOnBookshelf
 
                 } else {
                     Intent intent = new Intent(this, EditBookActivity.class)
-                            .putExtra(DBDefinitions.KEY_ID, bookId)
-                            .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                            .putExtra(DBDefinitions.KEY_ID, bookId);
                     startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 }
                 break;
@@ -919,7 +918,7 @@ public class BooksOnBookshelf
                 break;
 
             case BooklistGroup.RowKind.AUTHOR:
-                menu.add(Menu.NONE, R.id.MENU_AUTHOR_DETAILS, 0, R.string.menu_author_details)
+                menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS, 0, R.string.menu_author_details)
                     .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit)
                     .setIcon(R.drawable.ic_edit);
@@ -1047,8 +1046,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_BOOK_EDIT: {
                 Intent intent = new Intent(this, EditBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_ID, bookId)
-                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                        .putExtra(DBDefinitions.KEY_ID, bookId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
             }
@@ -1114,10 +1112,10 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-            case R.id.MENU_AUTHOR_DETAILS: {
+            case R.id.MENU_AUTHOR_WORKS: {
                 Intent intent = new Intent(this, AuthorWorksActivity.class)
                         .putExtra(DBDefinitions.KEY_ID, row.getAuthorId());
-                startActivity(intent);
+                startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
                 return true;
             }
 
@@ -1180,7 +1178,8 @@ public class BooksOnBookshelf
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
                 AmazonManager.openWebsite(this,
-                                          mModel.getAuthorFromRow(row), mModel.getSeriesFromRow(row));
+                                          mModel.getAuthorFromRow(row),
+                                          mModel.getSeriesFromRow(row));
                 return true;
 
             default:
@@ -1251,6 +1250,15 @@ public class BooksOnBookshelf
                             Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
                         }
                         break;
+                }
+                break;
+
+            case UniqueId.REQ_AUTHOR_WORKS:
+                if (resultCode == UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING) {
+                    // one or more books were deleted.
+                    // handle re-positioning better
+                    //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one];
+                    mModel.setFullRebuild(false);
                 }
                 break;
 

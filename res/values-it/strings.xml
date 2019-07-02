@@ -713,5 +713,12 @@
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
     <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
     <string name="about_lbl_creators">Originariamente da:</string>
-
+    <string name="unknown_uc">SCONOSCIUTO</string>
+    <string name="title_delete_toc_entry">Elimina il titolo</string>
+    <string name="confirm_delete_toc_entry">
+        Cancellare davvero il titolo “%1$s” di %2$s?\n
+        Sarà cancellato da tutti i libri in cui è elencato.\n
+        I libri stessi non saranno cancellati.
+    </string>
+    <string name="pg_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
 </resources>

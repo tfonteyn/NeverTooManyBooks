@@ -25,6 +25,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -37,7 +38,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -51,7 +51,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author pjw
  */
 public class TocEntry
-        implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, ItemWithIdFixup {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR =
@@ -66,13 +66,10 @@ public class TocEntry
                     return new TocEntry[size];
                 }
             };
-
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = '*';
-
     public static final char TYPE_TOC = 'T';
     public static final char TYPE_BOOK = 'B';
-
+    /** String encoding use. */
+    private static final char FIELD_SEPARATOR = '*';
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
      * <p>
@@ -82,11 +79,12 @@ public class TocEntry
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
-     *
+     * <p>
      * TODO: simplify pattern
      */
     private static final Pattern DATE_PATTERN =
-            Pattern.compile("\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
+            Pattern.compile(
+                    "\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
 
     private long mId;
     @NonNull
@@ -169,17 +167,17 @@ public class TocEntry
      * Constructor that will attempt to parse a single string into an TocEntry.
      * <br>The date *must* match a patter of a (partial) SQL date string:
      * <ul>
-     *     <li>(YYYY)</li>
-     *     <li>(YYYY-MM)</li>
-     *     <li>(YYYY-MM-DD)</li>
-     *     <li>(YYYY-DD-MM) might work depending on the user's locale. Not tested.</li>
+     * <li>(YYYY)</li>
+     * <li>(YYYY-MM)</li>
+     * <li>(YYYY-MM-DD)</li>
+     * <li>(YYYY-DD-MM) might work depending on the user's locale. Not tested.</li>
      * </ul>
      * <br>V82 had no dates: Giants In The Sky * Blish, James
-     *  <br>V200 accepts:
+     * <br>V200 accepts:
      * <ul>
-     *     <li>Giants In The Sky (1952) * Blish, James</li>
-     *     <li>Giants In The Sky (1952-03) * Blish, James</li>
-     *     <li>Giants In The Sky (1952-03-22) * Blish, James</li>
+     * <li>Giants In The Sky (1952) * Blish, James</li>
+     * <li>Giants In The Sky (1952-03) * Blish, James</li>
+     * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
      * </ul>
      */
     public static TocEntry fromString(@NonNull final String encodedString) {
@@ -305,6 +303,17 @@ public class TocEntry
         mAuthor = author;
     }
 
+    /**
+     * Convenience method for {@link #TYPE_BOOK}
+     *
+     * @return list of Authors.
+     */
+    @NonNull
+    public List<Author> getAuthors() {
+        Author[] authors = {mAuthor};
+        return Arrays.asList(authors);
+    }
+
     @NonNull
     public String getFirstPublication() {
         return mFirstPublicationDate;
@@ -319,19 +328,27 @@ public class TocEntry
      * <p>
      * ENHANCE: The locale of the TocEntry
      * should be based on either a specific language setting for
-     * the TocEntry itself, or on the locale of the primary book.
-     * Neither is implemented for now. So we cheat.
+     * the TocEntry itself, or on the locale of the <strong>primary</strong> book or
+     * the Author.
+     * None of those is implemented for now. So we cheat.
      *
      * @return the locale of the TocEntry
      */
     private Locale getLocale() {
-        return LocaleUtils.getSystemLocale();
+        return LocaleUtils.getPreferredLocal();
     }
 
     @Override
     public long fixupId(@NonNull final DAO db) {
+        return fixupId(db, getLocale());
+    }
+
+    @Override
+    public long fixupId(@NonNull final DAO db,
+                        @NonNull final Locale locale) {
+        // let the Author use its own Locale.
         mAuthor.fixupId(db);
-        mId = db.getTocEntryId(getLocale(), mAuthor.getId(), mTitle);
+        mId = db.getTocEntryId(this, locale);
         return mId;
     }
 
@@ -347,11 +364,11 @@ public class TocEntry
     /**
      * Equality.
      * <p>
-     * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. mId == 0) but all their fields are equal
-     * - their mId's are the same
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     * AND all other fields are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -362,12 +379,15 @@ public class TocEntry
             return false;
         }
         TocEntry that = (TocEntry) obj;
-        if (mId == 0 || that.mId == 0) {
-            return Objects.equals(mAuthor, that.mAuthor)
-                    && Objects.equals(mTitle, that.mTitle)
-                    && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
+        // if both 'exist' but have different id's -> different.
+        if (mId != 0 && that.mId != 0 && mId != that.mId) {
+            return false;
         }
-        return mId == that.mId;
+        // one or both are 'new' or their id's are the same.
+        return Objects.equals(mAuthor, that.mAuthor)
+                && Objects.equals(mTitle, that.mTitle)
+                && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
+
     }
 
     @Override
@@ -405,9 +425,6 @@ public class TocEntry
      * Which of course brings it back full-circle to the original and correct (!) meaning.
      * <p>
      * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
-     * <p>
-     * ENHANCE: Think about actually updating the column to 0%10 as a cache for a book
-     * having multiple authors without the need to 'count' them in the book_author table ?
      * <p>
      * ENHANCE: currently we use the bit definitions directly. Should use the enum as an enum.
      */

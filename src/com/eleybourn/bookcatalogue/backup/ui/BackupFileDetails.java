@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.ui.BRBaseActivity.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * Implementation of {@link FileDetails} that collects data about backup mFileDetails
@@ -96,7 +96,7 @@ public class BackupFileDetails
             holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_archive));
             holder.fileDetails.setVisibility(View.VISIBLE);
 
-            holder.sizeView.setText(Utils.formatFileSize(context, mFile.length()));
+            holder.sizeView.setText(StorageUtils.formatFileSize(context, mFile.length()));
 
 
             Locale locale = LocaleUtils.from(context);

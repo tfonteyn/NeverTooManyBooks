@@ -701,7 +701,7 @@
         de nos généreux traducteurs (si nous avons oublié quelqu\'un, merci de nous le dire):
     </string>
     <string name="X_lbl_loaned_to_short">→</string>
-    <string name="title_reorder">le|Le|la|La|les|Les|un|Un|une|Une</string>
+    <string name="pg_reformat_titles_prefixes">le|Le|la|La|les|Les|un|Un|une|Une</string>
     <string name="menu_set_read">Marqué comme lu</string>
     <string name="menu_set_unread">Maqué comme non lu</string>
     <string name="tab_lbl_content">Contenu</string>
@@ -792,4 +792,8 @@
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
     <string name="error_no_external_crop_app">Une application pour rogner des images n\'a pas été trouvée</string>
     <string name="about_lbl_creators">À l\'origine par:</string>
+    <string name="unknown_uc">INCONNU</string>
+    <string name="title_delete_toc_entry">Supprimer le titre</string>
+    <string name="confirm_delete_toc_entry">Vraiment supprimer le titre “%1$s” par %2$s? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
+
 </resources>

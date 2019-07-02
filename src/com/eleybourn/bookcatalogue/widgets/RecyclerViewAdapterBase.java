@@ -70,8 +70,9 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
 
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {
-                mItems.remove(getItem(position));
-                notifyItemRemoved(position);
+                int pos = holder.getAdapterPosition();
+                mItems.remove(getItem(pos));
+                notifyItemRemoved(pos);
             });
         }
 
@@ -87,6 +88,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
         }
     }
 
+    @NonNull
     protected Item getItem(final int position) {
         return mItems.get(position);
     }

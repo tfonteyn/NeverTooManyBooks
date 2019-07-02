@@ -633,5 +633,8 @@
     <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
     <string name="about_lbl_creators">Первоначально:</string>
     <string name="lbl_edition_first_impression">первый отпечаток</string>
+    <string name="unknown_uc">НЕИЗВЕСТНО</string>
+    <string name="title_delete_toc_entry">Удалить заголовок</string>
+
 
 </resources>

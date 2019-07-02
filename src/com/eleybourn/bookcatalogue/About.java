@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -34,6 +35,7 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.SoundManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -61,6 +63,19 @@ public class About
             view.setText(packageInfo.versionName);
         }
 
+        view = findViewById(R.id.sourcecode6);
+        view.setText(Utils.linkifyHtml(
+                getString(R.string.url_sourcecode6, getString(R.string.about_lbl_sourcecode))));
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+        view = findViewById(R.id.contact1);
+        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
+
+        view = findViewById(R.id.contact2);
+        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
+
+        // Information to original creators site.
         view = findViewById(R.id.website);
         view.setText(Utils.linkifyHtml(
                 getString(R.string.url_website, getString(R.string.about_lbl_website))));
@@ -75,12 +90,6 @@ public class About
         view.setText(Utils.linkifyHtml(
                 getString(R.string.url_help, getString(R.string.help))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
-
-        view = findViewById(R.id.contact1);
-        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
-
-        view = findViewById(R.id.contact2);
-        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
     }
 
     private void sendContactEmail(@StringRes final int stringId) {

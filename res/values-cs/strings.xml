@@ -600,7 +600,6 @@
     </string>
     <string name="clear">Jasné</string>
     <string name="warning_required_at_least_one">Alespoň jedno pole nemůže být prázdné</string>
-    <string name="X_pt_bob_preferred_style">Výhodné</string>
     <string name="X_select_bookshelves">Vyberte si regály</string>
     <string name="warning_select_a_non_directory">Vyberte soubor, který není adresářem.</string>
     <string name="warning_no_parent_directory_found">Nadřazený adresář nebyl nalezen</string>
@@ -620,4 +619,8 @@
     <string name="book_format_hardcover">Tvrdý obal</string>
     <string name="book_format_paperback">Brožovaná kniha</string>
     <string name="lbl_edition_first_impression">První tisk</string>
+    <string name="unknown_uc">NEZNÁMÉ</string>
+    <string name="title_delete_toc_entry">Smazat název</string>
+    <string name="confirm_delete_toc_entry">Odstraňte název “%1$s” z %2$s? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
+
 </resources>

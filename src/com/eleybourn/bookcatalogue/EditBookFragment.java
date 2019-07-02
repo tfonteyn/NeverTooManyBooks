@@ -65,7 +65,9 @@ public class EditBookFragment
     /**
      * Tabs in order.
      */
+    @SuppressWarnings("WeakerAccess")
     public static final String REQUEST_BKEY_TAB = "tab";
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT = 0;
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_PUBLICATION = 1;

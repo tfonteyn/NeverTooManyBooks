@@ -735,4 +735,12 @@
     <string name="progress_msg_searching_site">Buscando en %1$s</string>
     <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
     <string name="about_lbl_creators">Originalmente por:</string>
+    <string name="unknown_uc">DESCONOCIDO</string>
+    <string name="title_delete_toc_entry">Borrar el titulo</string>
+    <string name="confirm_delete_toc_entry">
+        ¿Realmente eliminas el título “%1$s” por %2$s?\n
+        Se eliminará de todos los libros en los que figura.\n
+        Los libros en sí no serán borrados.
+    </string>
+    <string name="pg_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
 </resources>

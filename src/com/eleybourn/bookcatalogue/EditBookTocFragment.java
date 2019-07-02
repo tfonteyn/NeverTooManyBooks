@@ -33,11 +33,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -59,13 +56,14 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
-import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditTocEntryDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -157,8 +155,8 @@ public class EditBookTocFragment
             };
     @Nullable
     private Integer mEditPosition;
-    private final EditTocEntry.EditTocEntryResults mEditTocEntryResultsListener =
-            new EditTocEntry.EditTocEntryResults() {
+    private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
+            new EditTocEntryDialogFragment.EditTocEntryResults() {
 
                 /**
                  * Add the author/title from the edit fields as a new row in the TOC list.
@@ -232,8 +230,8 @@ public class EditBookTocFragment
         if (ConfirmToc.TAG.equals(childFragment.getTag())) {
             ((ConfirmToc) childFragment).setListener(mConfirmTocResultsListener);
 
-        } else if (EditTocEntry.TAG.equals(childFragment.getTag())) {
-            ((EditTocEntry) childFragment).setListener(mEditTocEntryResultsListener);
+        } else if (EditTocEntryDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((EditTocEntryDialogFragment) childFragment).setListener(mEditTocEntryResultsListener);
         }
     }
 
@@ -254,7 +252,7 @@ public class EditBookTocFragment
         mMultipleAuthorsView = field.getView();
 
         // adding a new TOC entry
-        requireView().findViewById(R.id.btn_add).setOnClickListener(v -> newItem());
+        requireView().findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
@@ -263,7 +261,6 @@ public class EditBookTocFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
     }
-
 
     @Override
     protected void onLoadFieldsFromBook() {
@@ -346,7 +343,6 @@ public class EditBookTocFragment
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        // display the menu
         String menuTitle = item.getTitle();
         final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
                                                             this::onContextItemSelected);
@@ -367,12 +363,17 @@ public class EditBookTocFragment
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
-                editItem(position);
+                editEntry(mList.get(position), position);
                 return true;
 
             case R.id.MENU_DELETE:
-                mList.remove(tocEntry);
-                mListAdapter.notifyItemRemoved(position);
+                //noinspection ConstantConditions
+                StandardDialogs.deleteTocEntryAlert(getContext(), tocEntry, () -> {
+                    if (mBookBaseFragmentModel.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
+                        mList.remove(tocEntry);
+                        mListAdapter.notifyItemRemoved(position);
+                    }
+                });
                 return true;
 
             default:
@@ -440,29 +441,21 @@ public class EditBookTocFragment
     /**
      * Create a new entry.
      */
-    private void newItem() {
-        mEditPosition = null;
-
-        FragmentManager fm = getChildFragmentManager();
-        if (fm.findFragmentByTag(EditTocEntry.TAG) == null) {
-            TocEntry tocEntry = new TocEntry(mBookAuthor, "", "");
-            EditTocEntry.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
-                        .show(fm, EditTocEntry.TAG);
-        }
+    private void newEntry() {
+        editEntry(new TocEntry(mBookAuthor, "", ""), null);
     }
 
     /**
-     * copy the selected entry into the edit fields,
-     * and set the confirm button to reflect a save (versus add).
+     * Edit an entry.
      */
-    private void editItem(final int position) {
+    private void editEntry(@NonNull final TocEntry tocEntry,
+                           @Nullable final Integer position) {
         mEditPosition = position;
 
         FragmentManager fm = getChildFragmentManager();
-        if (fm.findFragmentByTag(EditTocEntry.TAG) == null) {
-            TocEntry tocEntry = mList.get(position);
-            EditTocEntry.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
-                        .show(fm, EditTocEntry.TAG);
+        if (fm.findFragmentByTag(EditTocEntryDialogFragment.TAG) == null) {
+            EditTocEntryDialogFragment.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
+                                      .show(fm, EditTocEntryDialogFragment.TAG);
         }
     }
 
@@ -585,150 +578,6 @@ public class EditBookTocFragment
                                  @NonNull List<TocEntry> tocEntries);
 
             void getNextEdition();
-        }
-    }
-
-    /**
-     * Dialog to add a new TOCEntry, or edit an existing one.
-     * <p>
-     * Show with the {@link Fragment#getChildFragmentManager()}
-     * <p>
-     * Uses {@link Fragment#getParentFragment()} for sending results back.
-     */
-    public static class EditTocEntry
-            extends DialogFragment {
-
-        /** Fragment manager tag. */
-        private static final String TAG = "EditTocEntry";
-
-        private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
-        private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
-
-        private AutoCompleteTextView mAuthorTextView;
-        private EditText mTitleTextView;
-        private EditText mPubDateTextView;
-
-        private boolean mHasMultipleAuthors;
-        private TocEntry mTocEntry;
-
-        private DAO mDb;
-
-        private WeakReference<EditTocEntryResults> mListener;
-
-        /**
-         * Constructor.
-         *
-         * @return the instance
-         */
-        static EditTocEntry newInstance(TocEntry tocEntry,
-                                        final boolean hasMultipleAuthors) {
-            EditTocEntry frag = new EditTocEntry();
-            Bundle args = new Bundle();
-            args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
-            args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        /**
-         * Call this from {@link #onAttachFragment} in the parent.
-         *
-         * @param listener the object to send the result to.
-         */
-        void setListener(@NonNull final EditTocEntryResults listener) {
-            mListener = new WeakReference<>(listener);
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
-            @SuppressWarnings("ConstantConditions")
-            final View root = getActivity().getLayoutInflater()
-                                           .inflate(R.layout.dialog_edit_book_toc, null);
-
-            mAuthorTextView = root.findViewById(R.id.author);
-            mTitleTextView = root.findViewById(R.id.title);
-            mPubDateTextView = root.findViewById(R.id.first_publication);
-
-            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-
-            mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
-            mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
-
-            mDb = new DAO();
-
-            if (mHasMultipleAuthors) {
-                @SuppressWarnings("ConstantConditions")
-                ArrayAdapter<String> authorAdapter =
-                        new ArrayAdapter<>(getContext(),
-                                           android.R.layout.simple_dropdown_item_1line,
-                                           mDb.getAuthorsFormattedName());
-                mAuthorTextView.setAdapter(authorAdapter);
-
-                mAuthorTextView.setText(mTocEntry.getAuthor().getLabel());
-                mAuthorTextView.setVisibility(View.VISIBLE);
-            } else {
-                mAuthorTextView.setVisibility(View.GONE);
-            }
-
-            mTitleTextView.setText(mTocEntry.getTitle());
-            mPubDateTextView.setText(mTocEntry.getFirstPublication());
-
-            //noinspection ConstantConditions
-            return new AlertDialog.Builder(getContext())
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setView(root)
-                    .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                    .setPositiveButton(android.R.string.ok, this::onConfirm)
-                    .create();
-        }
-
-        @Override
-        public void onPause() {
-            getFields();
-            super.onPause();
-        }
-
-        @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
-        }
-
-        private void getFields() {
-            mTocEntry.setTitle(mTitleTextView.getText().toString().trim());
-            mTocEntry.setFirstPublication(mPubDateTextView.getText().toString().trim());
-            if (mHasMultipleAuthors) {
-                mTocEntry.setAuthor(Author.fromString(mAuthorTextView.getText().toString().trim()));
-            }
-        }
-
-        @Override
-        public void onSaveInstanceState(@NonNull final Bundle outState) {
-            super.onSaveInstanceState(outState);
-            outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
-            outState.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
-        }
-
-        private void onConfirm(@SuppressWarnings("unused") @NonNull final DialogInterface d,
-                               @SuppressWarnings("unused") final int which) {
-            getFields();
-            if (mListener.get() != null) {
-                mListener.get().addOrUpdateEntry(mTocEntry);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onConfirm",
-                                 "WeakReference to listener was dead");
-                }
-            }
-        }
-
-        interface EditTocEntryResults {
-
-            void addOrUpdateEntry(@NonNull final TocEntry tocEntry);
         }
     }
 
@@ -893,7 +742,7 @@ public class EditBookTocFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            TocEntry item = getItem(position);
+            final TocEntry item = getItem(position);
 
             holder.titleView.setText(item.getTitle());
             holder.authorView.setText(item.getAuthor().getLabel());
@@ -907,12 +756,12 @@ public class EditBookTocFragment
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> editItem(position));
+            holder.rowDetailsView.setOnClickListener(
+                    v -> editEntry(item, holder.getAdapterPosition()));
 
-            // This is overkill.... user already has a delete button and can click-to-edit.
             // long-click -> menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(position);
+                onCreateContextMenu(holder.getAdapterPosition());
                 return true;
             });
 

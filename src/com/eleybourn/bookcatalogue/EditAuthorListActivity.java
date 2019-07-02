@@ -20,10 +20,8 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +38,11 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
@@ -146,7 +143,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData);
-            Utils.pruneList(mDb, mList);
+            ItemWithIdFixup.pruneList(mDb, mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -184,7 +181,7 @@ public class EditAuthorListActivity
                              d.dismiss();
 
                              author.copyFrom(newAuthorData);
-                             Utils.pruneList(mDb, mList);
+                             ItemWithIdFixup.pruneList(mDb, mList);
                              mListAdapter.notifyDataSetChanged();
                          });
 
@@ -218,7 +215,7 @@ public class EditAuthorListActivity
                                                               LocaleUtils.getPreferredLocal());
 
             author.copyFrom(newAuthorData);
-            Utils.pruneList(mDb, mList);
+            ItemWithIdFixup.pruneList(mDb, mList);
             mListAdapter.notifyDataSetChanged();
         });
 
@@ -255,7 +252,6 @@ public class EditAuthorListActivity
         @Override
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
-            //URGENT: use interface
             mActivity = (EditAuthorListActivity) context;
         }
 

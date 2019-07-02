@@ -8,6 +8,12 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
+    <string name="url_sourcecode6" translatable="false">
+        <![CDATA[
+            <a href="https://github.com/tfonteyn/Book-Catalogue/tree/move-to-android-5">%1s</a>
+        ]]>
+    </string>
+
     <!-- Creators etc -->
     <!--<string name="email_contact1" translatable="false">eleybourn@gmail.com</string>-->
     <!--<string name="email_contact2" translatable="false">philip.warner@rhyme.com.au</string>-->
@@ -26,7 +32,7 @@
 
     <string name="url_website" translatable="false">
         <![CDATA[
-            <a href="https://wiki.github.com/eleybourn/Book-Catalogue/">%1s</a>
+            <a href="https://github.com/eleybourn/Book-Catalogue/wiki/">%1s</a>
         ]]>
     </string>
     <string name="url_sourcecode" translatable="false">

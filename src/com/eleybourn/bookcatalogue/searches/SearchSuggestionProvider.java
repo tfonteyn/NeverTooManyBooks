@@ -31,9 +31,6 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.database.DAO;
 
-/**
- * @author evan
- */
 public class SearchSuggestionProvider
         extends SearchRecentSuggestionsProvider {
 

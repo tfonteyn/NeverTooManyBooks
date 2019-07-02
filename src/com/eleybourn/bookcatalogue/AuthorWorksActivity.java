@@ -7,8 +7,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 
 /**
  * Hosting activity for showing an author.
@@ -38,5 +40,15 @@ public class AuthorWorksActivity
               .replace(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
               .commit();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AuthorWorksModel model = ViewModelProviders.of(this).get(AuthorWorksModel.class);
+
+        if (model.isAtLeastOneBookDeleted()) {
+            setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+        }
+        super.onBackPressed();
     }
 }

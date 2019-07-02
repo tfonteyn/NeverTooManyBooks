@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.dialogs;
+package com.eleybourn.bookcatalogue.dialogs.picker;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,7 +18,7 @@ import java.util.Locale;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * Present a list of files for selection.
@@ -90,7 +90,7 @@ public class FilePicker
             File item = mList.get(position);
             holder.nameView.setText(item.getName());
             holder.pathView.setText(item.getParent());
-            holder.sizeView.setText(Utils.formatFileSize(context, item.length()));
+            holder.sizeView.setText(StorageUtils.formatFileSize(context, item.length()));
             holder.lastModDateView.setText(DateUtils.toPrettyDateTime(mLocale,
                                                                       new Date(item.lastModified())));
 

@@ -70,7 +70,7 @@ public class BookSearchByIsbnFragment
     public static final String TAG = "BookSearchByIsbnFragment";
 
     /** option to start in scan mode (versus manual entry). */
-    public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
+    static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
 
     private static final String BKEY_SCANNER_STARTED = TAG + ":ScannerStarted";
 
@@ -116,10 +116,11 @@ public class BookSearchByIsbnFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchManagerId=" + mSearchManagerId);
+                                          "SearchCoordinatorId=" + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
+                            mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
@@ -136,15 +137,14 @@ public class BookSearchByIsbnFragment
                         }
                     } finally {
                         // Clean up
-                        mSearchManagerId = 0;
+                        mBookSearchBaseModel.setSearchCoordinator(0);
                         // Make sure the base message will be empty.
                         mTaskManager.sendHeaderUpdate(null);
                     }
                 }
             };
 
-    @NonNull
-    private String mIsbnSearchText = "";
+
     @Nullable
     private CompoundButton mAllowAsinCb;
 
@@ -172,15 +172,9 @@ public class BookSearchByIsbnFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
-
         if (savedInstanceState != null) {
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
         }
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_isbn);
 
         // setup the UI if we have one.
         View root = getView();
@@ -196,7 +190,7 @@ public class BookSearchByIsbnFragment
                 mDisplayingAlert = true;
             } else {
                 // we have a scanner, but first check if we already have an isbn from somewhere
-                if (!mIsbnSearchText.isEmpty()) {
+                if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
                     prepareSearch();
                 } else {
                     // let's scan....
@@ -217,6 +211,10 @@ public class BookSearchByIsbnFragment
      * Setup the UI.
      */
     private void initUI(@NonNull final View root) {
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.title_search_isbn);
+
         if (mAllowAsinCb != null) {
             initAsin();
         }
@@ -236,14 +234,14 @@ public class BookSearchByIsbnFragment
         root.findViewById(R.id.isbn_del).setOnClickListener(v -> handleDeleteButton());
         root.findViewById(R.id.btn_search).setOnClickListener(v -> {
             //noinspection ConstantConditions
-            mIsbnSearchText = mIsbnView.getText().toString().trim();
+            mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
             prepareSearch();
         });
 
-        if (!mIsbnSearchText.isEmpty()) {
+        if (!mBookSearchBaseModel.getIsbnSearchText().isEmpty()) {
             // ISBN has been passed by another component, kick of a search.
             //noinspection ConstantConditions
-            mIsbnView.setText(mIsbnSearchText);
+            mIsbnView.setText(mBookSearchBaseModel.getIsbnSearchText());
             prepareSearch();
         }
     }
@@ -322,14 +320,15 @@ public class BookSearchByIsbnFragment
      * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
     private void prepareSearch() {
+        String isbn = mBookSearchBaseModel.getIsbnSearchText();
         // sanity check
-        if (mIsbnSearchText.length() < 10) {
+        if (isbn.length() < 10) {
             return;
         }
 
         // intercept UPC numbers
-        mIsbnSearchText = ISBN.upc2isbn(mIsbnSearchText);
-        if (mIsbnSearchText.length() < 10) {
+        isbn = ISBN.upc2isbn(isbn);
+        if (isbn.length() < 10) {
             return;
         }
 
@@ -337,7 +336,7 @@ public class BookSearchByIsbnFragment
         final boolean allowAsin = mAllowAsinCb != null && mAllowAsinCb.isChecked();
 
         // not a valid ISBN/ASIN ?
-        if (!ISBN.isValid(mIsbnSearchText) && (!allowAsin || !ISBN.isValidAsin(mIsbnSearchText))) {
+        if (!ISBN.isValid(isbn) && (!allowAsin || !ISBN.isValidAsin(isbn))) {
             if (mScanMode) {
                 // Optionally beep if scan failed.
                 //noinspection ConstantConditions
@@ -350,10 +349,10 @@ public class BookSearchByIsbnFragment
                 msg = R.string.warning_x_is_not_a_valid_isbn;
             }
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(mIsbnView, getString(msg, mIsbnSearchText));
+            UserMessage.showUserMessage(mIsbnView, getString(msg, isbn));
             if (mScanMode) {
                 // reset the now-discarded details
-                mIsbnSearchText = "";
+                mBookSearchBaseModel.clearSearchText();
                 startScannerActivity();
             }
             return;
@@ -366,7 +365,7 @@ public class BookSearchByIsbnFragment
         }
 
         // See if ISBN already exists in our database, if not then start the search and get details.
-        final long existingId = mDb.getBookIdFromIsbn(mIsbnSearchText, true);
+        final long existingId = mBookSearchBaseModel.getDb().getBookIdFromIsbn(isbn, true);
         if (existingId == 0) {
             startSearch();
         } else {
@@ -395,9 +394,7 @@ public class BookSearchByIsbnFragment
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
                          (d, which) -> {
                              Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                     .putExtra(DBDefinitions.KEY_ID, existingId)
-                                     .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                               EditBookFragment.TAB_EDIT);
+                                     .putExtra(DBDefinitions.KEY_ID, existingId);
                              startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                          });
 
@@ -405,7 +402,7 @@ public class BookSearchByIsbnFragment
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                          (d, which) -> {
                              // reset the now-discarded details
-                             mIsbnSearchText = "";
+                             mBookSearchBaseModel.clearSearchText();
                              if (mScanMode) {
                                  startScannerActivity();
                              }
@@ -417,23 +414,15 @@ public class BookSearchByIsbnFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * Or restart the scanner if applicable.
      */
-    private void startSearch() {
-        // check if we have an active search, if so, quit.
-        if (mSearchManagerId != 0) {
-            return;
+    boolean startSearch() {
+        if (!super.startSearch()) {
+            if (mScanMode) {
+                // we don't have an isbn, but we're scanning. Restart scanner.
+                startScannerActivity();
+            }
         }
 
-        //sanity check
-        if (!mIsbnSearchText.isEmpty()) {
-            // we have an isbn, kick of search
-            if (super.startSearch("", "", mIsbnSearchText)) {
-                // reset the details so we don't restart the search unnecessarily
-                mIsbnSearchText = "";
-            }
-        } else if (mScanMode) {
-            // we don't have an isbn, but we're scanning. Restart scanner.
-            startScannerActivity();
-        }
+        return true;
     }
 
     @Override
@@ -460,7 +449,7 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         if (mIsbnView != null) {
-            mIsbnSearchText = mIsbnView.getText().toString().trim();
+            mBookSearchBaseModel.setIsbnSearchText(mIsbnView.getText().toString().trim());
         }
     }
 
@@ -468,7 +457,7 @@ public class BookSearchByIsbnFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
+        outState.putString(DBDefinitions.KEY_ISBN, mBookSearchBaseModel.getIsbnSearchText());
         outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
     }
 
@@ -488,16 +477,17 @@ public class BookSearchByIsbnFragment
                         Objects.requireNonNull(data);
 
                         //noinspection ConstantConditions
-                        mIsbnSearchText = mScanner.getBarcode(data);
+                        mBookSearchBaseModel.setIsbnSearchText(mScanner.getBarcode(data));
                         prepareSearch();
                         break;
 
                     default:
                         // Scanner Cancelled/failed.
                         // Pass the last book we got to our caller and finish here.
-                        mActivity.setResult(mLastBookData != null ? Activity.RESULT_OK
-                                                                  : Activity.RESULT_CANCELED,
-                                            mLastBookData);
+                        Intent lastBookData = mBookSearchBaseModel.getLastBookData();
+                        mActivity.setResult(lastBookData != null ? Activity.RESULT_OK
+                                                                 : Activity.RESULT_CANCELED,
+                                            lastBookData);
                         // and exit if no dialog present.
                         if (!mDisplayingAlert) {
                             mActivity.finish();

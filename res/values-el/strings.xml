@@ -706,7 +706,6 @@
     <string name="error_storage_not_accessible">Δεν είναι δυνατή η αποθήκευση</string>
     <string name="clear">Καθαρίστε</string>
     <string name="warning_required_at_least_one">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό</string>
-    <string name="X_pt_bob_preferred_style">Προνομιούχος</string>
     <string name="btn_confirm_new">Νέος</string>
     <string name="title_edit_book_authors">Επεξεργασία συγγραφέων βιβλίων</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
@@ -715,5 +714,8 @@
     <string name="book_format_ebook">eBook</string>
     <string name="book_format_trade_paperback">χαρτόδετο βιβλίο</string>
     <string name="about_lbl_creators">Αρχικά από:</string>
+    <string name="unknown_uc">ΑΓΝΩΣΤΟ</string>
+    <string name="title_delete_toc_entry">Διαγράψτε τον τίτλο</string>
+    <string name="pg_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
 
 </resources>

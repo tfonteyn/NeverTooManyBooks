@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
@@ -338,7 +339,7 @@ public final class StorageUtils {
     /**
      * Find all possible CSV files in all accessible filesystems which
      * have a {@link #DIRECTORY_NAME} directory.
-     *
+     * <p>
      * ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
      *
      * @return list of csv files
@@ -708,6 +709,31 @@ public final class StorageUtils {
 
             default:
                 return R.string.error_storage_not_accessible;
+        }
+    }
+
+    /**
+     * Format a number of bytes in a human readable form.
+     * <p>
+     * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
+     *
+     * @param context Current context
+     * @param bytes   to format
+     *
+     * @return formatted # bytes
+     */
+    @NonNull
+    public static String formatFileSize(@NonNull final Context context,
+                                        final float bytes) {
+        if (bytes < 3_000) {
+            // Show 'bytes' if < 3k
+            return context.getString(R.string.bytes, bytes);
+        } else if (bytes < 250_000) {
+            // Show Kb if less than 250kB
+            return context.getString(R.string.kilobytes, bytes / 1_000);
+        } else {
+            // Show MB otherwise...
+            return context.getString(R.string.megabytes, bytes / 1_000_000);
         }
     }
 

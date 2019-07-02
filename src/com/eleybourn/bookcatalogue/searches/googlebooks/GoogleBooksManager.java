@@ -28,8 +28,7 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
- * ENHANCE: Get editions via.
- * http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
+ * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
  */
 public final class GoogleBooksManager
         implements SearchEngine {

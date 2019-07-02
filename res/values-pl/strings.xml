@@ -504,12 +504,10 @@
     <string name="warning_required_at_least_one">Co najmniej jedno pole nie może być puste</string>
     <string name="X_updated">Zaktualizowano</string>
     <string name="X_use_default_setting">Zastosowanie domyślne</string>
-    <string name="X_pt_bob_preferred_style">Preferowane</string>
     <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
     <string name="X_select_bookshelves">Wybierz półki na książki</string>
     <string name="warning_select_a_non_directory">Wybierz plik, który nie jest katalogiem.</string>
     <string name="warning_no_parent_directory_found">Nie znaleziono katalogu nadrzędnego</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Pod głównym tylko %1$s</string>
     <string name="X_error_starting_import_arg">Podczas uruchamiania importu wystąpił problem: %1$s</string>
     <string name="X_hint_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="btn_confirm_new">Nowy</string>
@@ -525,4 +523,8 @@
     <string name="book_format_paperback">Miękka</string>
     <string name="book_format_ebook">ebook</string>
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
+    <string name="unknown_uc">NIEZNANY</string>
+    <string name="title_delete_toc_entry">Usuń tytuł</string>
+    <string name="confirm_delete_toc_entry">Usuń tytuł “%1$s” przez %2$s” Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
+
 </resources>

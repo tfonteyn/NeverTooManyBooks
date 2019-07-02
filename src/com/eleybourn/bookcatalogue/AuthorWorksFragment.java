@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
@@ -37,10 +41,10 @@ public class AuthorWorksFragment
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Also show the authors book. Defaults to {@code true}. */
-    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
     private AuthorWorksModel mModel;
+    private TocAdapter mAdapter;
 
 //    @Override
 //    @CallSuper
@@ -64,15 +68,11 @@ public class AuthorWorksFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = requireArguments();
-        long authorId = args.getLong(DBDefinitions.KEY_ID, 0);
-        boolean withBooks = args.getBoolean(BKEY_WITH_BOOKS, true);
-
-        mModel = ViewModelProviders.of(this).get(AuthorWorksModel.class);
-        mModel.init(authorId, withBooks);
+        //noinspection ConstantConditions
+        mModel = ViewModelProviders.of(getActivity()).get(AuthorWorksModel.class);
+        mModel.init(requireArguments());
 
         String title = mModel.getAuthor().getLabel() + " [" + mModel.getTocEntries().size() + ']';
-        //noinspection ConstantConditions
         getActivity().setTitle(title);
 
         RecyclerView listView = requireView().findViewById(android.R.id.list);
@@ -88,8 +88,8 @@ public class AuthorWorksFragment
                     new FastScrollerOverlay(getContext(), R.drawable.fast_scroll_overlay));
         }
 
-        TocAdapter adapter = new TocAdapter(getContext(), mModel);
-        listView.setAdapter(adapter);
+        mAdapter = new TocAdapter(getContext(), mModel);
+        listView.setAdapter(mAdapter);
     }
 
     /**
@@ -99,7 +99,6 @@ public class AuthorWorksFragment
         Intent intent;
         switch (item.getType()) {
             case TocEntry.TYPE_TOC:
-                // see note on dba method about Integer vs. Long
                 final ArrayList<Long> bookIds = mModel.getBookIds(item);
                 // story in one book, goto that book.
                 if (bookIds.size() == 1) {
@@ -130,6 +129,78 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         getActivity().finish();
+    }
+
+    private void onCreateContextMenu(final int position) {
+        TocEntry item = mModel.getTocEntries().get(position);
+
+        //noinspection ConstantConditions
+        Menu menu = MenuPicker.createMenu(getContext());
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+
+        if (item.getType() == TocEntry.TYPE_BOOK) {
+            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
+                .setIcon(R.drawable.ic_edit);
+        }
+        String menuTitle = item.getTitle();
+        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
+                                                            this::onContextItemSelected);
+        picker.show();
+    }
+
+    /**
+     * <ul>Delete.
+     * <li>TocEntry.TYPE_BOOK: confirmation from user is requested.</li>
+     * <li>TocEntry.TYPE_TOC: deletion is immediate.</li>
+     * </ul>
+     *
+     * @return {@code true} if handled
+     */
+    private boolean onContextItemSelected(final MenuItem menuItem,
+                                          final Integer position) {
+        TocEntry item = mModel.getTocEntries().get(position);
+
+        switch (item.getType()) {
+            case TocEntry.TYPE_BOOK:
+                switch (menuItem.getItemId()) {
+                    case R.id.MENU_DELETE:
+                        //noinspection ConstantConditions
+                        StandardDialogs.deleteBookAlert(getContext(), item.getTitle(),
+                                                        item.getAuthors(), () -> {
+                                    mModel.delTocEntry(item);
+                                    mAdapter.notifyItemRemoved(position);
+                                });
+                        return true;
+
+                    case R.id.MENU_EDIT:
+                        Intent editIntent = new Intent(getContext(), EditBookActivity.class)
+                                .putExtra(DBDefinitions.KEY_ID, item.getId());
+                        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
+                        return true;
+
+                    default:
+                        return false;
+                }
+
+            case TocEntry.TYPE_TOC:
+                //noinspection SwitchStatementWithTooFewBranches
+                switch (menuItem.getItemId()) {
+                    case R.id.MENU_DELETE:
+                        //noinspection ConstantConditions
+                        StandardDialogs.deleteTocEntryAlert(getContext(), item, () -> {
+                            mModel.delTocEntry(item);
+                            mAdapter.notifyItemRemoved(position);
+                        });
+                        return true;
+
+                    default:
+                        return false;
+                }
+
+            default:
+                throw new IllegalArgumentException("type=" + item.getType());
+        }
     }
 
     /**
@@ -191,9 +262,9 @@ public class AuthorWorksFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            TocEntry item = mModel.getTocEntries().get(position);
+            TocEntry tocEntry = mModel.getTocEntries().get(position);
             // decorate the row depending on toc entry or actual book
-            switch (item.getType()) {
+            switch (tocEntry.getType()) {
                 case TocEntry.TYPE_TOC:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             mStoryIndicator, null, null, null);
@@ -205,17 +276,17 @@ public class AuthorWorksFragment
                     break;
 
                 default:
-                    throw new IllegalArgumentException("type=" + item.getType());
+                    throw new IllegalArgumentException("type=" + tocEntry.getType());
             }
 
-            holder.titleView.setText(item.getTitle());
+            holder.titleView.setText(tocEntry.getTitle());
             // optional
             if (holder.authorView != null) {
-                holder.authorView.setText(item.getAuthor().getLabel());
+                holder.authorView.setText(tocEntry.getAuthor().getLabel());
             }
             // optional
             if (holder.firstPublicationView != null) {
-                String date = item.getFirstPublication();
+                String date = tocEntry.getFirstPublication();
                 if (date.isEmpty()) {
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
@@ -227,7 +298,13 @@ public class AuthorWorksFragment
             }
 
             // click -> get the book(s) for that entry and display.
-            holder.itemView.setOnClickListener(v -> gotoBook(item));
+            holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
+
+            // long-click -> menu
+            holder.itemView.setOnLongClickListener(v -> {
+                onCreateContextMenu(holder.getAdapterPosition());
+                return true;
+            });
         }
 
         @Override
@@ -241,9 +318,10 @@ public class AuthorWorksFragment
                                        final int position) {
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-
+            // first character, don't care about Locale locale = LocaleUtils.from(getContext());
             return new String[]{mModel.getTocEntries().get(index)
                                       .getTitle().substring(0, 1).toUpperCase()};
         }
     }
+
 }

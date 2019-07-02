@@ -99,7 +99,7 @@ public class SearchCoordinator {
     @NonNull
     private final Map<Integer, Bundle> mSearchResults =
             Collections.synchronizedMap(new HashMap<>());
-    /** Controller instance (strong reference) for this specific SearchManager. */
+    /** Controller instance (strong reference) for this object. */
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinatorController mController = new SearchCoordinatorController() {
 
@@ -229,6 +229,14 @@ public class SearchCoordinator {
                        @NonNull final String title,
                        @NonNull final String isbn,
                        final boolean fetchThumbnail) {
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+            Logger.debugEnter(this, "startSearch",
+                              "isbn=" + isbn,
+                              "author=" + author,
+                              "title=" + title,
+                              "fetchThumbnail=" + fetchThumbnail);
+        }
 
         // Developer sanity check
         if (!NetworkUtils.isNetworkAvailable()) {

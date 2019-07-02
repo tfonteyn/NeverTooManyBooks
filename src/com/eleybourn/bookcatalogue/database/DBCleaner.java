@@ -11,11 +11,11 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
@@ -94,9 +94,6 @@ public class DBCleaner {
 
     public void maybeUpdate(final boolean dryRun) {
 
-        // correct '2' entries
-        bookAnthologyBitmask(dryRun);
-
         // remove orphan rows
         bookBookshelf(dryRun);
 
@@ -108,7 +105,6 @@ public class DBCleaner {
         // in particular if the UUID is surrounded with '' or ""
         //TODO: covers.db, filename column -> delete rows where the uuid is invalid
     }
-
 
     /* ****************************************************************************************** */
 
@@ -130,25 +126,11 @@ public class DBCleaner {
     }
 
     /**
-     * Make sure the TOC bitmask is valid.
-     * <p>
-     * int: 0,1,3.
-     * <p>
-     * 2 should become 0
-     *
-     * @param dryRun {@code true} to run the update.
+     * Validates the style versus Bookshelf. No dry-run.
      */
-    public void bookAnthologyBitmask(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + DOM_BOOK_TOC_BITMASK + " FROM " + TBL_BOOKS
-                + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)";
-        toLog(Tracker.State.Enter, select);
-        if (!dryRun) {
-            String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=2"
-                    + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)";
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            }
-            toLog(Tracker.State.Exit, select);
+    public void bookshelves() {
+        for (Bookshelf bookshelf : mDb.getBookshelves()) {
+            bookshelf.validateStyle(mDb);
         }
     }
 
@@ -157,7 +139,7 @@ public class DBCleaner {
      *
      * @param dryRun {@code true} to run the update.
      */
-    public void bookBookshelf(final boolean dryRun) {
+    private void bookBookshelf(final boolean dryRun) {
         String select = "SELECT DISTINCT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
                 + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
         toLog(Tracker.State.Enter, select);

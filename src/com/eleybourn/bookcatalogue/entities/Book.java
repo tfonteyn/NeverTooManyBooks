@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -49,6 +50,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BitmaskDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BooleanDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -553,7 +555,19 @@ public class Book
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }
         }
-        return bookLocale != null ? bookLocale : LocaleUtils.getPreferredLocal();
+
+        if (bookLocale != null) {
+            return bookLocale;
+        } else {
+            // this is not an issue as such, but helps during debug when the book *should*
+            // have a language and did not.
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this, "getLocale", "no language set for",
+                             "id=" + getId(),
+                             "title=" + get(DBDefinitions.KEY_TITLE));
+            }
+            return LocaleUtils.getPreferredLocal();
+        }
     }
 
     /**

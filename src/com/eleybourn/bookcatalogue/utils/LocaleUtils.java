@@ -42,7 +42,7 @@ public final class LocaleUtils {
     /**
      * Needs to be called from main thread at App startup.
      * <p>
-     * WARNING: it *is* allowed to be called more then once.
+     * It's guarded against being called more then once.
      */
     @UiThread
     public static void init(@NonNull final Locale systemLocale) {
@@ -50,44 +50,44 @@ public final class LocaleUtils {
         // preserve startup==system Locale
         sSystemInitialLocale = systemLocale;
 
-        if (LocaleUtils.CURRENCY_MAP.isEmpty()) {
+        if (CURRENCY_MAP.isEmpty()) {
             // key in map should always be lowercase
-            LocaleUtils.CURRENCY_MAP.put("", "");
-            LocaleUtils.CURRENCY_MAP.put("€", "EUR");
+            CURRENCY_MAP.put("", "");
+            CURRENCY_MAP.put("€", "EUR");
         /*
         English
         https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language
          */
-            LocaleUtils.CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
-            LocaleUtils.CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-            LocaleUtils.CURRENCY_MAP.put("£", "GBP"); // British Pound
-            LocaleUtils.CURRENCY_MAP.put("$", "USD"); // Trump Disney's
+            CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
+            CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
+            CURRENCY_MAP.put("£", "GBP"); // British Pound
+            CURRENCY_MAP.put("$", "USD"); // Trump Disney's
 
-            LocaleUtils.CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
-            LocaleUtils.CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
-            LocaleUtils.CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
+            CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
+            CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
+            CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
 
             // supported locales (including pre-euro)
 
-            LocaleUtils.CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
-            LocaleUtils.CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
-            LocaleUtils.CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
-            LocaleUtils.CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
-            LocaleUtils.CURRENCY_MAP.put("dm", "DEM"); //german marks
-            LocaleUtils.CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
-            LocaleUtils.CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
-            LocaleUtils.CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
-            LocaleUtils.CURRENCY_MAP.put("f", "FRF"); // French Franc
-            LocaleUtils.CURRENCY_MAP.put("ff", "FRF"); // French Franc
-            LocaleUtils.CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-            LocaleUtils.CURRENCY_MAP.put("L", "ITL"); // Italian Lira
-            LocaleUtils.CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
-            LocaleUtils.CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
+            CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
+            CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
+            CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
+            CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
+            CURRENCY_MAP.put("dm", "DEM"); //german marks
+            CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
+            CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
+            CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
+            CURRENCY_MAP.put("f", "FRF"); // French Franc
+            CURRENCY_MAP.put("ff", "FRF"); // French Franc
+            CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
+            CURRENCY_MAP.put("L", "ITL"); // Italian Lira
+            CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
+            CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
 
             // some others as seen on ISFDB site
-            LocaleUtils.CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
-            LocaleUtils.CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
-            LocaleUtils.CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
+            CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
+            CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
+            CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
         }
     }
 
@@ -157,9 +157,9 @@ public final class LocaleUtils {
             return locale.getISO3Language() != null && locale.getISO3Country() != null;
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
-            Logger.debug(LocaleUtils.class,"isValid",
-                        "e=" + e.getLocalizedMessage(),
-                        "locale=" + locale);
+            Logger.debug(LocaleUtils.class, "isValid",
+                         "e=" + e.getLocalizedMessage(),
+                         "locale=" + locale);
             return false;
 
         } catch (@NonNull final RuntimeException ignore) {
@@ -188,7 +188,7 @@ public final class LocaleUtils {
         if (lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
             return sSystemInitialLocale;
         } else {
-            return LocaleUtils.from(lang);
+            return from(lang);
         }
     }
 
@@ -261,7 +261,7 @@ public final class LocaleUtils {
      */
     @Nullable
     public static String currencyToISO(@NonNull final String currency) {
-        return CURRENCY_MAP.get(currency.trim().toLowerCase(LocaleUtils.getSystemLocale()));
+        return CURRENCY_MAP.get(currency.trim().toLowerCase(getSystemLocale()));
     }
 
     /**
@@ -276,7 +276,7 @@ public final class LocaleUtils {
     public static String getDisplayName(@NonNull final Context context,
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(LocaleUtils.class,"getLabel",
+            Logger.debugEnter(LocaleUtils.class, "getLabel",
                               "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);
@@ -300,7 +300,6 @@ public final class LocaleUtils {
         }
         return iso;
     }
-
     /**
      * Load a Resources set for the specified Locale.
      *
@@ -313,10 +312,205 @@ public final class LocaleUtils {
     public static Resources getLocalizedResources(@NonNull final Context context,
                                                   @NonNull final Locale locale) {
         Configuration conf = new Configuration(context.getResources().getConfiguration());
-        conf.setLocale(locale);
+        String lang = locale.getLanguage();
+        //FIXME: resources want 2-chars, locale 3-chars... is there a better way ?
+        if (lang.length() == 2) {
+            conf.setLocale(locale);
+        } else {
+            // any 3-character code needs to be converted to be able to find the resource.
+            conf.setLocale(new Locale(mapLanguageCode(lang)));
+        }
 
         Context localizedContext = context.createConfigurationContext(conf);
         return localizedContext.getResources();
+    }
+
+    /**
+     * Map an ISO 639-3 language code to an ISO 639-1 language code.
+     * <p>
+     * There is one entry here for each language supported.
+     * NEWKIND: if a new resource language is added, enable the mapping here.
+     *
+     * @param iso3LanguageCode ISO 639-3 language code
+     *
+     * @return ISO 639-1 language code
+     */
+    private static String mapLanguageCode(@NonNull final String iso3LanguageCode) {
+
+        switch (iso3LanguageCode) {
+            case "eng":
+                // English
+                return "en";
+            case "ces":
+                // Czech
+                return "cs";
+            case "deu":
+                // German
+                return "de";
+            case "ell":
+                // Greek
+                return "el";
+            case "spa":
+                // Spanish
+                return "es";
+            case "fra":
+                // French
+                return "fr";
+            case "ita":
+                // Italian
+                return "it";
+            case "nld":
+                // Dutch
+                return "nl";
+            case "pol":
+                // Polish
+                return "pl";
+            case "rus":
+                // Russian
+                return "ru";
+            case "tur":
+                // Turkish
+                return "tr";
+            default:
+                // English
+                return "en";
+//
+//            case "afr":
+//                // Afrikaans
+//                return "af";
+//            case "sqi":
+//                // Albanian
+//                return "sq";
+//            case "ara":
+//                // Arabic
+//                return "ar";
+//            case "aze":
+//                // Azeri
+//                return "az";
+//            case "eus":
+//                // Basque
+//                return "eu";
+//            case "bel":
+//                // Belarusian
+//                return "be";
+//            case "ben":
+//                // Bengali
+//                return "bn";
+//            case "bul":
+//                // Bulgarian
+//                return "bg";
+//            case "cat":
+//                // Catalan
+//                return "ca";
+//            case "chi_sim":
+//                // Chinese (Simplified)
+//                return "zh-CN";
+//            case "chi_tra":
+//                // Chinese (Traditional)
+//                return "zh-TW";
+//            case "hrv":
+//                // Croatian
+//                return "hr";
+//            case "dan":
+//                // Danish
+//                return "da";
+//            case "est":
+//                // Estonian
+//                return "et";
+//            case "fin":
+//                // Finnish
+//                return "fi";
+//            case "glg":
+//                // Galician
+//                return "gl";
+//            case "heb":
+//                // Hebrew
+//                return "he";
+//            case "hin":
+//                // Hindi
+//                return "hi";
+//            case "hun":
+//                // Hungarian
+//                return "hu";
+//            case "isl":
+//                // Icelandic
+//                return "is";
+//            case "ind":
+//                // Indonesian
+//                return "id";
+//            case "jpn":
+//                // Japanese
+//                return "ja";
+//            case "kan":
+//                // Kannada
+//                return "kn";
+//            case "kor":
+//                // Korean
+//                return "ko";
+//            case "lav":
+//                // Latvian
+//                return "lv";
+//            case "lit":
+//                // Lithuanian
+//                return "lt";
+//            case "mkd":
+//                // Macedonian
+//                return "mk";
+//            case "msa":
+//                // Malay
+//                return "ms";
+//            case "mal":
+//                // Malayalam
+//                return "ml";
+//            case "mlt":
+//                // Maltese
+//                return "mt";
+//            case "nor":
+//                // Norwegian
+//                return "no";
+//            case "por":
+//                // Portuguese
+//                return "pt";
+//            case "ron":
+//                // Romanian
+//                return "ro";
+//            case "srp":
+//                // Serbian (Latin)
+//                // TODO is google expecting Cyrillic?
+//                return "sr";
+//            case "slk":
+//                // Slovak
+//                return "sk";
+//            case "slv":
+//                // Slovenian
+//                return "sl";
+//            case "swa":
+//                // Swahili
+//                return "sw";
+//            case "swe":
+//                // Swedish
+//                return "sv";
+//            case "tgl":
+//                // Tagalog
+//                return "tl";
+//            case "tam":
+//                // Tamil
+//                return "ta";
+//            case "tel":
+//                // Telugu
+//                return "te";
+//            case "tha":
+//                // Thai
+//                return "th";
+//            case "ukr":
+//                // Ukrainian
+//                return "uk";
+//            case "vie":
+//                // Vietnamese
+//                return "vi";
+//            default:
+//                return iso3LanguageCode;
+        }
     }
 
     /**

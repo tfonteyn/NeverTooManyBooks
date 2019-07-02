@@ -808,7 +808,7 @@
     <string name="lbl_update_year">Jaar update</string>
     <string name="lbl_update_month">Maand update</string>
     <string name="lbl_update_day">Dag update</string>
-    <string name="title_reorder">de|De|een|Een|het|Het</string>
+    <string name="pg_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
     <string name="menu_set_read">Markeer als gelezen</string>
     <string name="menu_set_unread">Markeer als ongelezen</string>
     <string name="tab_lbl_content">Inhoud</string>
@@ -884,9 +884,7 @@
     <string name="error_not_available">%1$s niet beschikbaar</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
-    <string name="error_database_upgrade_failed">
-        Upgraden vanaf een versie ouder dan 4.0.0 is niet ondersteunt
-    </string>
+    <string name="error_database_upgrade_failed">Upgraden vanaf een versie ouder dan 4.0.0 is niet ondersteunt</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
@@ -903,4 +901,7 @@
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
     <string name="about_lbl_creators">Oorspronkelijk door:</string>
+    <string name="unknown_uc">ONBEKEND</string>
+    <string name="title_delete_toc_entry">Titel verwijderen</string>
+    <string name="confirm_delete_toc_entry">De titel “%1$s” door %2$s echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
 </resources>

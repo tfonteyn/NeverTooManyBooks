@@ -252,9 +252,11 @@ TODO: uniform quotes in all string:
         \nConsider editing the series and changing the series name to that of another series
         to preserve this data.
     </string>
+    <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
+
     <string name="confirm_delete_book">
         This will completely delete the book entitled “%1$s” by %2$s.
-        Are you sure you wish to proceed?
+        \nAre you sure you wish to proceed?
     </string>
     <string name="confirm_merge_bookshelves">
         The bookshelf you are renaming already exists. Would you like to merge them?
@@ -580,6 +582,7 @@ TODO: uniform quotes in all string:
     <string name="help">Help</string>
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
+    <string name="unknown_uc">UNKNOWN</string>
     <string name="done">Done</string>
     <string name="none">None</string>
     <string name="clear">Clear</string>
@@ -699,6 +702,7 @@ TODO: uniform quotes in all string:
     <string name="title_add_book">Add book</string>
     <string name="title_delete_book">Delete Book</string>
     <string name="title_delete_series">Delete Series</string>
+    <string name="title_delete_toc_entry">Delete entry</string>
     <string name="title_duplicate_book">Duplicate Book</string>
     <string name="title_edit_book_series">Edit Book Series</string>
     <string name="title_edit_book_authors">Edit Book Authors</string>
@@ -1032,7 +1036,7 @@ TODO: uniform quotes in all string:
     <!-- ####################################################################################### -->
 
     <string name="import_error_csv_file_not_found">No export files found</string>
-    <!-- propmpt the user to select a file from a list -->
+    <!-- prompt the user to select a file from a list -->
     <string name="import_warning_select_csv_file">
         More than one file was found. Please select the one to import:
     </string>
@@ -1145,10 +1149,9 @@ TODO: uniform quotes in all string:
     <string name="X_select_bookshelves">Select Bookshelves</string>
     <string name="X_nobody">Nobody</string>
     <string name="X_search_title">Search Results</string>
-    <string name="X_pt_bob_preferred_style">Preferred</string>
     <string name="X_results_found">Results Found</string>
     <string name="X_unsaved_edits_title">Unsaved Changes</string>
-    <string name="X_use_default_setting">Use default</string>
+    <string name="X_use_default_setting">Use default values</string>
     <string name="X_about_help_tap_here">Please tap here to access the online help pages</string>
 
     <string name="X_hint_booklist_global_properties">
@@ -1163,8 +1166,6 @@ TODO: uniform quotes in all string:
     <!-- ========== need cleaning/renaming/moving...  ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="title_reorder">a|A|an|An|the|The</string>
-
     <!-- generic hint text for text input fields. -->
     <string name="field_not_set">Not Set</string>
     <!-- generic place holder text for Book list rows -->
@@ -1178,7 +1179,6 @@ TODO: uniform quotes in all string:
 
     <string name="search_with_text">Search: %1$s</string>
 
-
     <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
     <string name="usage_skip">Skip</string>
     <string name="search_text_hint">Text and/or ISBN</string>
@@ -1188,6 +1188,4 @@ TODO: uniform quotes in all string:
     <string name="and_others">et. al.</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
-
-
 </resources>

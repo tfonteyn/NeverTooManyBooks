@@ -1,5 +1,4 @@
 /**
- * ENHANCE: maybe update the crop code ?
  * The original was in Android itself but was deprecated long time ago.
  * <p>
  * http://www.java2s.com/Open-Source/Android_Free_Code/Image/crop/index.htm

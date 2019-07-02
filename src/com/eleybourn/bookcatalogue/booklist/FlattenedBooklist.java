@@ -153,10 +153,10 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + ">?"
-                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
                     + " ORDER BY " + mTable.dot(DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(STMT_NEXT, sql);
         }
@@ -179,10 +179,10 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + "<?"
-                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
                     + " ORDER BY " + mTable.dot(DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(STMT_PREV, sql);
         }
@@ -207,7 +207,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + "||'/'|| " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);

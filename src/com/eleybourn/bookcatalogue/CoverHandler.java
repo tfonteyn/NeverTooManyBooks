@@ -37,8 +37,8 @@ import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.MenuPicker;
-import com.eleybourn.bookcatalogue.dialogs.ValuePicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
+import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -137,7 +137,7 @@ public class CoverHandler {
 
         // add context menu to the cover image
         mCoverView.setOnLongClickListener(v -> {
-            prepareCoverContextMenu();
+            onCreateContextMenu();
             return true;
         });
 
@@ -161,7 +161,7 @@ public class CoverHandler {
             // copy new file on top of old.
             StorageUtils.renameFile(newFile, bookFile);
             // Update the ImageView with the new image
-            updateCoverView();
+            ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
             // all done, get rid of the browser fragment
             mCoverBrowserFragment.dismiss();
             mCoverBrowserFragment = null;
@@ -181,22 +181,12 @@ public class CoverHandler {
     }
 
     /**
-     * Dismiss the cover browser.
-     */
-    void dismissCoverBrowser() {
-        if (mCoverBrowserFragment != null) {
-            mCoverBrowserFragment.dismiss();
-            mCoverBrowserFragment = null;
-        }
-    }
-
-    /**
      * Context menu for the image.
      */
-    private void prepareCoverContextMenu() {
+    private void onCreateContextMenu() {
 
         Menu menu = MenuPicker.createMenu(mContext);
-        menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, 0, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
         SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0,
@@ -230,7 +220,6 @@ public class CoverHandler {
         menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 0, R.string.menu_cover_crop)
             .setIcon(R.drawable.ic_crop);
 
-        // display
         String menuTitle = mResources.getString(R.string.title_cover);
         final MenuPicker<Integer> picker = new MenuPicker<>(mContext, menuTitle, menu,
                                                             R.id.coverImage,
@@ -256,7 +245,7 @@ public class CoverHandler {
         }
 
         switch (menuItem.getItemId()) {
-            case R.id.MENU_THUMB_DELETE:
+            case R.id.MENU_DELETE:
                 deleteCoverFile();
                 return true;
 
@@ -301,13 +290,6 @@ public class CoverHandler {
             default:
                 return false;
         }
-    }
-
-    /**
-     * (re)load the image into the view.
-     */
-    void updateCoverView() {
-        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -447,7 +429,7 @@ public class CoverHandler {
 
             if (imageOk) {
                 // Update the ImageView with the new image
-                updateCoverView();
+                ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
             } else {
                 String msg = mResources.getString(R.string.warning_cover_copy_failed) + ". "
                         + mResources.getString(R.string.error_if_the_problem_persists);
@@ -509,7 +491,7 @@ public class CoverHandler {
                 }
 
                 // put the new image on screen.
-                updateCoverView();
+                ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
                 return;
 
             } catch (@NonNull final OutOfMemoryError e) {
@@ -629,7 +611,7 @@ public class CoverHandler {
         }
         invalidateCachedImages();
         // replace the old image with a placeholder.
-        updateCoverView();
+        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -690,7 +672,7 @@ public class CoverHandler {
                         File destination = getCoverFile();
                         StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
-                        updateCoverView();
+                        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
                     } else {
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this, "onActivityResult",

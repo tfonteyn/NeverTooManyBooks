@@ -42,8 +42,8 @@ public class FileListerTask
      */
     private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
             (o1, o2) -> o1.getFile().getName().toLowerCase(LocaleUtils.getSystemLocale())
-                          .compareTo(o2.getFile().getName().toLowerCase(
-                                  LocaleUtils.getSystemLocale()));
+                          .compareTo(o2.getFile().getName()
+                                       .toLowerCase(LocaleUtils.getSystemLocale()));
 
     @NonNull
     private final WeakReference<TaskListener<Object, ArrayList<FileDetails>>> mTaskListener;

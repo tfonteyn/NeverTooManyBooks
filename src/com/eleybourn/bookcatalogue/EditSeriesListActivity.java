@@ -20,11 +20,9 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +43,11 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditSeriesDialogFragment;
+import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
@@ -150,7 +148,7 @@ public class EditSeriesListActivity
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
                 Series.pruneSeriesList(mList);
-                Utils.pruneList(mDb, mList);
+                ItemWithIdFixup.pruneList(mDb, mList);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -170,7 +168,7 @@ public class EditSeriesListActivity
             // Use the original series, but update its fields
             series.copyFrom(newSeries);
             Series.pruneSeriesList(mList);
-            Utils.pruneList(mDb, mList);
+            ItemWithIdFixup.pruneList(mDb, mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -193,20 +191,20 @@ public class EditSeriesListActivity
 
                              series.copyFrom(newSeries);
                              Series.pruneSeriesList(mList);
-                             Utils.pruneList(mDb, mList);
+                             ItemWithIdFixup.pruneList(mDb, mList);
                              mListAdapter.notifyDataSetChanged();
                          });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
-                         (d, which) -> {
-                             d.dismiss();
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
+            d.dismiss();
 
-                             mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries);
-                             series.copyFrom(newSeries);
-                             Series.pruneSeriesList(mList);
-                             Utils.pruneList(mDb, mList);
-                             mListAdapter.notifyDataSetChanged();
-                         });
+            mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries,
+                                                              LocaleUtils.getPreferredLocal());
+            series.copyFrom(newSeries);
+            Series.pruneSeriesList(mList);
+            ItemWithIdFixup.pruneList(mDb, mList);
+            mListAdapter.notifyDataSetChanged();
+        });
 
         dialog.show();
     }
@@ -249,7 +247,6 @@ public class EditSeriesListActivity
         @Override
         public void onAttach(@NonNull final Context context) {
             super.onAttach(context);
-            //URGENT: use interface
             mActivity = (EditSeriesListActivity) context;
         }
 

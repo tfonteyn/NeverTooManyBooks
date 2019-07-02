@@ -105,11 +105,11 @@ public class Publisher
     /**
      * Equality.
      * <p>
-     * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
-     * AND all their other fields are equal
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *     AND all other fields are equal</li>
      * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
+     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
@@ -120,7 +120,6 @@ public class Publisher
             return false;
         }
         Publisher that = (Publisher) obj;
-
         return Objects.equals(mName, that.mName);
     }
 

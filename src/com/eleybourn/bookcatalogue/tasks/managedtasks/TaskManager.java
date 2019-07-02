@@ -92,17 +92,6 @@ public class TaskManager {
     private final Context mContext;
 
     /**
-     * {@link Csv#join} formatter for {@link #sendProgress}
-     */
-    private final Csv.Formatter<TaskInfo> mProgressMsgFormatter = element -> {
-        String pm = element.progressMessage;
-        if (pm != null && !pm.isEmpty()) {
-            return " - " + pm;
-        } else {
-            return null;
-        }
-    };
-    /**
      * Current progress message to display, even if no tasks running.
      * Setting to {@code null} or blank will remove the Progress Dialog if no tasks are left
      * running. If this is not done, the dialog WILL STAY OPEN
@@ -144,7 +133,7 @@ public class TaskManager {
      * Indicates tasks are being cancelled. This is reset when a new task is added.
      */
     private boolean mCancelling;
-    /** Controller instance (strong reference) for this specific SearchManager. */
+    /** Controller instance (strong reference) for this object. */
     @SuppressWarnings("FieldCanBeLocal")
     private final TaskManagerController mController = new TaskManagerController() {
 
@@ -309,11 +298,13 @@ public class TaskManager {
             synchronized (mTaskInfoList) {
                 // Append each task message
                 if (!mTaskInfoList.isEmpty()) {
+                    // if there was a baseMessage, add a linefeed to it.
                     if (progressMessage.length() > 0) {
                         progressMessage.append('\n');
                     }
                     progressMessage.append(Csv.join("\n", mTaskInfoList, false,
-                                                    mProgressMsgFormatter));
+                                                    " - ",
+                                                    element -> element.progressMessage));
                 }
             }
 

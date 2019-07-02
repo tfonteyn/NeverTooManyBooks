@@ -52,9 +52,6 @@ public class UpdateFieldsFromInternetFragment
     /** Fragment manager tag. */
     public static final String TAG = "UpdateFieldsFromInternetFragment";
 
-    /** RequestCode for editing the search sites order. */
-    private static final int REQ_PREFERRED_SEARCH_SITES = 0;
-
     /**
      * optionally limit the sites to search on.
      * By default uses {@link SearchSites#SEARCH_ALL}
@@ -191,73 +188,61 @@ public class UpdateFieldsFromInternetFragment
      * Entries are displayed in the order they are added here.
      */
     private void initFields() {
-        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_AUTHOR,
-                     R.string.lbl_author, FieldUsage.Usage.AddExtra, true);
-        addIfVisible(DBDefinitions.KEY_TITLE,
-                     R.string.lbl_title, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_ISBN,
-                     R.string.lbl_isbn, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_COVER_IMAGE,
-                     R.string.lbl_cover, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES,
-                     R.string.lbl_series, FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, DBDefinitions.KEY_TOC_BITMASK,
-                     R.string.lbl_table_of_content, FieldUsage.Usage.AddExtra, true);
-        addIfVisible(DBDefinitions.KEY_PUBLISHER,
-                     R.string.lbl_publisher, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_DATE_PUBLISHED,
-                     R.string.lbl_date_published, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                     R.string.lbl_first_publication, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_DESCRIPTION,
-                     R.string.lbl_description, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_PAGES,
-                     R.string.lbl_pages, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_PRICE_LISTED,
-                     R.string.lbl_price_listed, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_FORMAT,
-                     R.string.lbl_format, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_GENRE,
-                     R.string.lbl_genre, FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DBDefinitions.KEY_LANGUAGE,
-                     R.string.lbl_language, FieldUsage.Usage.CopyIfBlank, false);
+        addListField(UniqueId.BKEY_AUTHOR_ARRAY,
+                     DBDefinitions.KEY_AUTHOR, R.string.lbl_author);
+
+        addField(DBDefinitions.KEY_TITLE, R.string.lbl_title);
+        addField(DBDefinitions.KEY_ISBN, R.string.lbl_isbn);
+        addField(UniqueId.BKEY_COVER_IMAGE, R.string.lbl_cover);
+
+        addListField(UniqueId.BKEY_SERIES_ARRAY,
+                     DBDefinitions.KEY_SERIES, R.string.lbl_series);
+        addListField(UniqueId.BKEY_TOC_ENTRY_ARRAY,
+                     DBDefinitions.KEY_TOC_BITMASK, R.string.lbl_table_of_content);
+
+        addField(DBDefinitions.KEY_PUBLISHER, R.string.lbl_publisher);
+        addField(DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published);
+        addField(DBDefinitions.KEY_DATE_FIRST_PUBLISHED, R.string.lbl_first_publication);
+        addField(DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description);
+
+        addField(DBDefinitions.KEY_PAGES, R.string.lbl_pages);
+        addField(DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed);
+        addField(DBDefinitions.KEY_FORMAT, R.string.lbl_format);
+        addField(DBDefinitions.KEY_GENRE, R.string.lbl_genre);
+        addField(DBDefinitions.KEY_LANGUAGE, R.string.lbl_language);
     }
 
     /**
-     * Add a FieldUsage if the specified field has not been hidden by the user.
+     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param fieldId      name to use in FieldUsages + check for visibility
-     * @param nameStringId of field label string
-     * @param defaultUsage Usage to apply.
-     * @param isList       if the field is a list to which we can append to
+     * @param fieldId      Field name to use in FieldUsages + check for visibility
+     * @param nameStringId Field label string resource id
      */
-    private void addIfVisible(@NonNull final String fieldId,
-                              @StringRes final int nameStringId,
-                              @NonNull final FieldUsage.Usage defaultUsage,
-                              final boolean isList) {
+    private void addField(@NonNull final String fieldId,
+                          @StringRes final int nameStringId) {
 
         if (App.isUsed(fieldId)) {
-            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+            // CopyIfBlank by default, user can override.
+            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId,
+                                                     FieldUsage.Usage.CopyIfBlank, false));
         }
     }
 
     /**
-     * Add a FieldUsage if the specified field has not been hidden by the user.
+     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      *
-     * @param fieldId      name to use in FieldUsages
+     * @param fieldId      List-field name to use in FieldUsages
      * @param visField     Field name to check for visibility.
-     * @param nameStringId of field label string
-     * @param defaultUsage Usage to apply.
-     * @param isList       if the field is a list to which we can append to
+     * @param nameStringId Field label string resource id
      */
-    private void addIfVisible(@NonNull final String fieldId,
+    private void addListField(@NonNull final String fieldId,
                               @NonNull final String visField,
-                              @StringRes final int nameStringId,
-                              @NonNull final FieldUsage.Usage defaultUsage,
-                              final boolean isList) {
+                              @StringRes final int nameStringId) {
 
         if (App.isUsed(visField)) {
-            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+            // Merge by default, user can override.
+            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId,
+                                                     FieldUsage.Usage.Merge, true));
         }
     }
 
@@ -316,7 +301,7 @@ public class UpdateFieldsFromInternetFragment
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
                                   SearchAdminActivity.TAB_ORDER);
-                startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
             default:
@@ -333,7 +318,7 @@ public class UpdateFieldsFromInternetFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case REQ_PREFERRED_SEARCH_SITES:
+            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,

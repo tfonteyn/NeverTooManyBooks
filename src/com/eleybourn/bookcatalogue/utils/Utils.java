@@ -34,15 +34,9 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DAO;
-import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.Series;
 
 /**
  * Left-over methods...
@@ -50,61 +44,6 @@ import com.eleybourn.bookcatalogue.entities.Series;
 public final class Utils {
 
     private Utils() {
-    }
-
-    /**
-     * Passed a list of Objects, remove duplicates based on the
-     * {@link ItemWithIdFixup#stringEncoded} result.
-     * (case insensitive + trimmed)
-     * <p>
-     * ENHANCE: Add {@link Author} aliases table to allow further pruning
-     * (e.g. Joe Haldeman == Joe W Haldeman).
-     * ENHANCE: Add {@link Series} aliases table to allow further pruning
-     * (e.g. 'Amber Series' <==> 'Amber').
-     *
-     * @param db   Database connection to lookup IDs
-     * @param list List to clean up
-     * @param <T>  ItemWithIdFixup object
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DAO db,
-                                                                @NonNull final List<T> list) {
-        // weeding out duplicate ids
-        Set<Long> ids = new HashSet<>();
-        // weeding out duplicate uniqueNames.
-        Set<String> names = new HashSet<>();
-        // will be set to true if we modify the list.
-        boolean modified = false;
-
-        Iterator<T> it = list.iterator();
-        while (it.hasNext()) {
-            T item = it.next();
-            // try to find the item.
-            long itemId = item.fixupId(db);
-
-            String uniqueName = item.stringEncoded().trim().toUpperCase();
-
-            // Series special case: same name + different number.
-            // This means different series positions will have the same id+name but will have
-            // different numbers; so ItemWithIdFixup 'isUniqueById()' returns 'false'.
-            if (ids.contains(itemId) && !item.isUniqueById() && !names.contains(uniqueName)) {
-                // unique item in the list: id+name matched, but other fields might be different.
-                ids.add(itemId);
-                names.add(uniqueName);
-
-            } else if (names.contains(uniqueName) || (itemId != 0 && ids.contains(itemId))) {
-                it.remove();
-                modified = true;
-
-            } else {
-                // unique item in the list.
-                ids.add(itemId);
-                names.add(uniqueName);
-            }
-        }
-
-        return modified;
     }
 
     /**
@@ -156,69 +95,6 @@ public final class Utils {
     }
 
     /**
-     * Format a number of bytes in a human readable form.
-     * <p>
-     * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
-     *
-     * @param context Current context
-     * @param bytes   to format
-     *
-     * @return formatted # bytes
-     */
-    @NonNull
-    public static String formatFileSize(@NonNull final Context context,
-                                        final float bytes) {
-        if (bytes < 3_000) {
-            // Show 'bytes' if < 3k
-            return context.getString(R.string.bytes, bytes);
-        } else if (bytes < 250_000) {
-            // Show Kb if less than 250kB
-            return context.getString(R.string.kilobytes, bytes / 1_000);
-        } else {
-            // Show MB otherwise...
-            return context.getString(R.string.megabytes, bytes / 1_000_000);
-        }
-    }
-
-    /**
-     * Convert a set where each element represents one bit to an int bitmask.
-     *
-     * @param set the set
-     *
-     * @return the value
-     */
-    @NonNull
-    public static Integer toInteger(@NonNull final Set<String> set) {
-        int tmp = 0;
-        for (String s : set) {
-            tmp += Integer.parseInt(s);
-        }
-        return tmp;
-    }
-
-    /**
-     * Convert an int (bitmask) to a set where each element represents one bit.
-     *
-     * @param bitmask the value
-     *
-     * @return the set
-     */
-    @NonNull
-    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
-        Set<String> set = new HashSet<>();
-        int tmp = bitmask;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            tmp = tmp >> 1;
-        }
-        return set;
-    }
-
-    /**
      * Hide the keyboard.
      */
     public static void hideKeyboard(@NonNull final View view) {
@@ -254,33 +130,4 @@ public final class Utils {
         listView.requestLayout();
     }
 
-    /**
-     * An entity (item) in the database which is capable of finding itself in the database
-     * without using its id.
-     */
-    public interface ItemWithIdFixup {
-
-        /**
-         * Tries to find the item in the database using all its fields (except the id).
-         * If found, sets the item's id with the id found in the database.
-         * <p>
-         * If the item has 'sub' items, then it should call fixup on those as well.
-         *
-         * @param db the database
-         *
-         * @return the item id (also set on the item).
-         */
-        long fixupId(@NonNull DAO db);
-
-        /**
-         * @return a unique name for this object, representing all it's data (except id).
-         */
-        String stringEncoded();
-
-        /**
-         * @return {@code true} if comparing ONLY by id ensures uniqueness.
-         */
-        boolean isUniqueById();
-
-    }
 }

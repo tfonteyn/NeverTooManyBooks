@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -78,6 +78,9 @@ public final class Prefs {
     public static final String pk_bob_format_author_name = "BookList.Style.Group.Authors.DisplayFirstThenLast";
     public static final String pk_bob_sort_author_name = "BookList.Style.Sort.Author.GivenFirst";
 
+    public static final String pk_reformat_titles_on_insert = "title.reformat.insert";
+    public static final String pk_reformat_titles_on_update = "title.reformat.update";
+
     /** Show the cover image for each book. */
     public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
     /** Show list of bookshelves for each book. */
@@ -101,6 +104,44 @@ public final class Prefs {
     public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
 
     private Prefs() {
+    }
+
+    /**
+     * Convert a set where each element represents one bit to an int bitmask.
+     *
+     * @param set the set
+     *
+     * @return the value
+     */
+    @NonNull
+    public static Integer toInteger(@NonNull final Set<String> set) {
+        int tmp = 0;
+        for (String s : set) {
+            tmp += Integer.parseInt(s);
+        }
+        return tmp;
+    }
+
+    /**
+     * Convert an int (bitmask) to a set where each element represents one bit.
+     *
+     * @param bitmask the value
+     *
+     * @return the set
+     */
+    @NonNull
+    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
+        Set<String> set = new HashSet<>();
+        int tmp = bitmask;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                set.add(String.valueOf(bit));
+            }
+            bit *= 2;
+            tmp = tmp >> 1;
+        }
+        return set;
     }
 
     /**
@@ -306,7 +347,7 @@ public final class Prefs {
                     case "BookList.ShowHeaderInfo":
                         int shi = ((Integer) oldValue) & BooklistStyle.SUMMARY_SHOW_ALL;
                         // this is now a PBitmask, stored as a Set
-                        ed.putStringSet(pk_bob_header, Utils.toStringSet(shi));
+                        ed.putStringSet(pk_bob_header, toStringSet(shi));
                         break;
 
                     /*
@@ -435,4 +476,6 @@ public final class Prefs {
         // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
         oldPrefs.edit().clear().apply();
     }
+
+
 }

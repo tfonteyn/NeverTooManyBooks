@@ -10,6 +10,8 @@
             * New Search website: ISFDB.\n
             * Better Anthology support (Edit/View/cross-book) and morphed into “Table of Content” or “TOC”\n
             * TOC auto populated (ISFDB site only!).\n
+            * List of all works of an author.\n
+            * Reformatting of titles configurable.\n
             * Language field shows the translated name in the current locale.\n
             * More local support in general (formatting etc.)
             * Books & Anthology/TOC titles now have a “first published” field.\n
@@ -22,6 +24,7 @@
             * Export of all tables can also be done in XML (no import yet).\n
             * Better support for rotating the screen.\n
             * LibraryThing & ISFDB local id for future usage.\n
+            * UI translation 99% complete.\n
             * Experimental: New Search website: OpenLibrary\n
             * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
             * Removed: The old “Classic” view is gone.\n

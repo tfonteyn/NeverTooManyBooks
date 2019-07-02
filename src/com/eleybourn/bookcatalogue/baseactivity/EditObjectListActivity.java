@@ -24,8 +24,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -41,14 +39,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
-import com.eleybourn.bookcatalogue.widgets.SimpleAdapterDataObserver;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
@@ -74,9 +70,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** the rows. */
     protected ArrayList<T> mList;
 
-    /** flag indicating local changes were made. Used in setResult. */
-    private boolean mIsDirty;
-
     /** flag indicating global changes were made. Used in setResult. */
     protected boolean mGlobalReplacementsMade;
 
@@ -87,13 +80,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
-
-
-    @Nullable
-    private String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
-
+    @Nullable
+    private String mBookTitle;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
 
@@ -134,12 +124,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         mListAdapter = createListAdapter(mList,
                                          (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
         listView.setAdapter(mListAdapter);
-        mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mIsDirty = true;
-            }
-        });
 
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
@@ -172,46 +156,25 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     @Override
     public void onBackPressed() {
+
         Intent data = new Intent()
                 .putExtra(mBKey, mList)
                 .putExtra(UniqueId.BKEY_GLOBAL_CHANGES_MADE, mGlobalReplacementsMade);
 
-        if (onSave(data)) {
-            setResult(Activity.RESULT_OK, data);
-            finish();
-        }
-    }
-
-    /**
-     * Called when user clicks the 'Back' button. Primary task is
-     * to return a boolean indicating it is OK to continue.
-     * <p>
-     * Can be overridden to perform other checks.
-     * <p>
-     * IMPORTANT: Individual items on the list might have been saved to the database
-     * depending on the child class needs.
-     * The list itself is (normally) NOT SAVED -> we only return it in the result.
-     *
-     * @param data A newly created Intent to store output if necessary.
-     *             Comes pre-populated with data.putExtra(mBKey, mList);
-     *
-     * @return {@code true} if activity should exit, {@code false} to abort exit.
-     */
-    protected boolean onSave(@NonNull final Intent data) {
         String name = mAutoCompleteTextView.getText().toString().trim();
-        if (name.isEmpty()) {
-            // no current edit, so we're good to go.
-            return true;
+        if (!name.isEmpty()) {
+
+            // if the user had enter a (partial) new name, check if it's ok to leave
+            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+                // runs when user clicks 'exit anyway'. The list itself IS saved.
+                setResult(Activity.RESULT_OK, data);
+                finish();
+            });
         }
 
-        // if the user had enter a (partial) new name, check if it's ok to leave
-        StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-            // runs when user clicks 'exit anyway'. The list itself IS saved.
-            setResult(Activity.RESULT_OK, data);
-            finish();
-        });
-
-        return false;
+        // no current edit, so we're good to go.
+        setResult(Activity.RESULT_OK, data);
+        finish();
     }
 
     /**
