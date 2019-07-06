@@ -80,48 +80,5 @@
             * Correction de bogues\n\n
         </p>]]>
     </string>
-    <string name="new_in_423"><![CDATA[
-        <p><b>Nouveautés de la version 4.2.3</b>\n\n
-            * Meilleure prise en charge des ISBN invalides lors de l\'envoi à Goodreads\n\n
-            * Autres corrections de bogues mineurs\n\n
-        </p>]]>
-    </string>
-    <string name="new_in_422"><![CDATA[
-        <p><b>Nouveautés de la version 4.2.2</b>\n\n
-            * Correction : mosaïque de l\'image de fond pour certaines versions d\'Android\n\n
-            * Meilleure prise en charge des scanners de code barre incompatibles\n\n
-            * Plus important niveau de détails envoyés lors d\'un crash ou d\'une demande d\'aide\n\n
-            * Nettoyage des mises en page (Nick Silin)\n\n
-            * Correction de bogues\n\n
-        </p>]]>
-    </string>
-    <string name="new_in_421"><![CDATA[
-        <p><b>Nouveautés de la version 4.2.1</b>\n\n
-            * Correction de crash lors de l\'utilisation « Tout étendre »\n\n
-        </p>]]>
-    </string>
-    <string name="new_in_420"><![CDATA[
-        <p><b>Nouveautés de la 4.2</b>\n\n
-            * Dates supportées jusqu\'en l\'an 0 ainsi que les dates partielles\n\n
-            * Les descriptions en HTML s\'affichent correctement lors du click sur « Modifier »\n\n
-            * Paramètre de sélection de l\'image entière lors du recadrage\n\n
-            * Paramètre de rotation automatique des photos\n\n
-            * Paramètre pour l\'utilisation d\'un outil de recadrage externe (expérimental)\n\n
-            * Nouvelles options dans le menu « Plus » \n\n
-            * Mise à jour de la version française (Imkal)\n\n
-            * Mise à jour de la version allemande (Robert Wetzlmayr)\n\n
-            * Mise à jour de la version russe (Nick Silin)\n\n
-            * Mise à jour des boutons « OK » et « Annuler » pour se conformer aux nouveaux standards Android\n\n
-            * Clavier complet disponible pour l\'introduction d\'ASINs\n\n
-            * Sauvegarde des cinq derniers fichiers d\'export\n\n
-            * Meilleure détection des changements lors de l\'édition d\'un livre\n\n
-            * Support d\'un choix plus large d\'explorateurs de la galerie et de fichiers\n\n
-            * Meilleure gestion des dates lors de l\'import/export/sync\n\n
-            * Correction de la gestion des doubles dans les titres d\'une anthologie\n\n
-            * Correction d\'un certain nombre de bogues\n\n
-            Tous nos remerciements à nos dévoués bêta-testeurs et nos traducteurs.\n\n
-            Tous les bugs et erreurs sont à imputer à Grunthos. Et envoyez-nous vos rapports de bugs.
-        </p>]]>
-    </string>
 
 </resources>

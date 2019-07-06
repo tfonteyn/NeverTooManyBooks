@@ -41,23 +41,8 @@ public final class UpgradeMessageManager {
 
     /**
      * List of version-specific messages.
-     * 2019-01-18: messages up to 3.x deleted.
-     * Message 4.0.0 to 4.1 moved to the resource file, and added here.
      */
     private static final int[][] UPGRADE_MESSAGES = {
-            // 4.0.0 is from mar/apr 2012 and was database version 72/73
-            {76, R.string.new_in_400},
-            {78, R.string.new_in_401},
-            {81, R.string.new_in_403},
-            {84, R.string.new_in_404},
-            {88, R.string.new_in_406},
-            {92, R.string.new_in_410},
-            {124, R.string.new_in_420},
-            {125, R.string.new_in_421},
-            {126, R.string.new_in_422},
-            {128, R.string.new_in_423},
-            {134, R.string.new_in_424},
-
             // 5.0.0 is from Feb/Mar 2013 and was database version 80
             {142, R.string.new_in_500},
             {145, R.string.new_in_502},
