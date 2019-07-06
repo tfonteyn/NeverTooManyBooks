@@ -24,98 +24,10 @@
             * Export of all tables can also be done in XML (no import yet).\n
             * Better support for rotating the screen.\n
             * LibraryThing & ISFDB local id for future usage.\n
-            * UI translation 99% complete.\n
+            * UI translations 99% complete.\n
             * Experimental: New Search website: OpenLibrary\n
             * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
             * Removed: The old “Classic” view is gone.\n
-            * Bug fixes\n
-        </p>]]>
-    </string>
-
-    <string name="new_in_522"><![CDATA[
-        <p><b>New in 5.2.2</b>\n
-            * Bug fixes\n
-        </p>]]>
-    </string>
-    <string name="new_in_520"><![CDATA[
-        <p><b>New in 5.2.0</b>\n
-            * User-selectable locale in Preferences\n
-            * Greek translation (Dimitris Klisiaris)\n
-            * Locale-specific capitalization (de, fr)\n
-            * Improvements to search\n
-            * Bug fixes\n
-        </p>]]>
-    </string>
-    <string name="new_in_511"><![CDATA[
-        <p><b>New in 5.1.1</b>\n
-            * Bug fixes\n
-            * New style: Group by last update date\n
-            * New style: Group by rating\n
-            * New style: Group by bookshelf name\n
-        </p>]]>
-    </string>
-    <string name="new_in_510"><![CDATA[
-        <p><b>New in 5.1.0</b>\n
-            * Italian translation (Eugenio Davolio)\n
-            * Spanish translation (José M. Galdo)\n
-            * Turkish translations (Emir Sarı)\n
-            * Ability to archive only new/updated books and to exclude covers (or books)\n
-            * Better thumbnail size in lists for high density screens\n
-            * Added options to see books by author/series at Amazon\n
-            * Other minor bug fixes\n
-        </p>]]>
-    </string>
-    <string name="new_in_509"><![CDATA[
-        <p><b>New in 5.0.9</b>\n
-            * Bug fix for Android 4.4 (KitKat)\n
-            * Dutch translation (Gideon van Melle)\n
-            * Other minor bug fixes\n
-        </p>]]>
-    </string>
-    <string name="new_in_508"><![CDATA[
-        <p><b>New in 5.0.8</b>\n
-            * German translation updates (Robert Wetzlmayr)\n
-        </p>]]>
-    </string>
-    <string name="new_in_505"><![CDATA[
-        <p><b>New in 5.0.5</b>\n
-            * “Added Date” List now sorted in reverse order\n
-            * French translation updates (Imkal)\n
-            * Bug fixes\n
-        </p>
-    ]]></string>
-
-    <string name="new_in_504"><![CDATA[
-        <p><b>New in 5.0.4</b>\n
-            * New field: Language\n
-            * French translation updates (Imkal)\n
-            * Bug fixes\n
-        </p>]]>
-    </string>
-    <string name="new_in_503"><![CDATA[
-        <p><b>New in 5.0.3</b>\n
-            * Bug fixes\n
-            * French translation updates (Imkal)\n
-        </p>]]>
-    </string>
-    <string name="new_in_502"><![CDATA[
-        <p><b>New in 5.0.2</b>\n
-            * Bug fixes\n
-        </p>]]>
-    </string>
-    <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
-    <string name="new_in_500"><![CDATA[
-        <p><b>New in 5.0.0</b>\n
-            * A non-editable view of book details, with “fling” support! (See “Other Preferences”) (Nick Silin)\n
-            * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n
-            * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n
-            * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n
-            * Goodreads now appears in main menu if you authorize it\n
-            * Check internet connection earlier when trying to scan books\n
-            * More German translation updates (Robert Wetzlmayr)\n
-            * More French translation updates (Imkal & Djiko)\n
-            * More Russian translation updates (Nick Silin)\n
-            * Internal changes in anticipation of an improved tablet interface\n
             * Bug fixes\n
         </p>]]>
     </string>

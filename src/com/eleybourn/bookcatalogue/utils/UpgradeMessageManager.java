@@ -43,19 +43,6 @@ public final class UpgradeMessageManager {
      * List of version-specific messages.
      */
     private static final int[][] UPGRADE_MESSAGES = {
-            // 5.0.0 is from Feb/Mar 2013 and was database version 80
-            {142, R.string.new_in_500},
-            {145, R.string.new_in_502},
-            {146, R.string.new_in_503},
-            {147, R.string.new_in_504},
-            {149, R.string.new_in_505},
-            {152, R.string.new_in_508},
-            {154, R.string.new_in_509},
-            {162, R.string.new_in_510},
-            {166, R.string.new_in_511},
-            {171, R.string.new_in_520},
-            {179, R.string.new_in_522},
-
             {200, R.string.new_in_600},
             };
 
