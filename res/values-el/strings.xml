@@ -81,7 +81,7 @@
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="lbl_toc_multiple_authors">Αυτή η ανθολογία έχει πολλούς συγγραφείς.</string>
     <string name="X_menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
-    <string name="lbl_is_anthology">Είναι αυτό το βιβλίο ανθολογία;</string>
+    <string name="lbl_is_anthology">Αυτό το βιβλίο είναι μια Ανθολογία</string>
     <string name="menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="lbl_anthology">Ανθολογία</string>

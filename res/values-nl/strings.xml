@@ -109,7 +109,7 @@
     <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="lbl_toc_multiple_authors">Deze bloemlezing heeft meerdere auteurs</string>
     <string name="X_menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
-    <string name="lbl_is_anthology">Is dit boek een bloemlezing?</string>
+    <string name="lbl_is_anthology">Dit boek is een bloemlezing</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="lbl_anthology">Bloemlezing</string>

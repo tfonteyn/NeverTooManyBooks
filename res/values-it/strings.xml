@@ -75,7 +75,7 @@
     <string name="X_anthology_titles">Antologia titoli</string>
     <string name="lbl_toc_multiple_authors">Questa antologia ha più autori.</string>
     <string name="X_menu_delete_toc_entry">Cancella titolo dall\'antologia</string>
-    <string name="lbl_is_anthology">Questo libro è una antologia?</string>
+    <string name="lbl_is_anthology">Questo libro è un\'antologia</string>
     <string name="menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
     <string name="error_auto_toc_population_failed">Inserimento titoli in automatico fallito</string>
     <string name="lbl_anthology">Antologia</string>

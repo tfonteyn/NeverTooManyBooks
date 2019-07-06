@@ -807,9 +807,9 @@ TODO: uniform quotes in all string:
     <string name="lbl_styles">Styles</string>
     <string name="lbl_credentials">Credentials</string>
 
-    <string name="lbl_is_anthology">Is this book an Anthology?</string>
     <string name="lbl_is_signed">Has this book been signed?</string>
     <string name="lbl_is_read">Have you read this book?</string>
+
     <string name="lbl_read_start">Date started reading</string>
     <string name="lbl_read_end">Date finished reading</string>
 
@@ -823,7 +823,8 @@ TODO: uniform quotes in all string:
     <string name="lbl_allow_asin">Allow ASIN</string>
 
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
-    <string name="lbl_toc_multiple_authors">This anthology has multiple authors</string>
+    <string name="lbl_is_anthology">This book is an Anthology</string>
+    <string name="lbl_toc_multiple_authors">This Anthology has multiple authors</string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>

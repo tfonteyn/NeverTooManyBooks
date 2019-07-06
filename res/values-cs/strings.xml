@@ -184,7 +184,7 @@
     <string name="X_anthology_titles">Antologické tituly</string>
     <string name="lbl_toc_multiple_authors">Tato antologie má více autorů.</string>
     <string name="X_menu_delete_toc_entry">Odstranit tento titul z antologií</string>
-    <string name="lbl_is_anthology">Je tato kniha antologií?</string>
+    <string name="lbl_is_anthology">Tato kniha je antologie</string>
     <string name="menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo</string>
     <string name="lbl_anthology">Antologie</string>

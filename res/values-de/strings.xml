@@ -102,7 +102,7 @@
     <string name="X_anthology_titles">Anthologie-Titel</string>
     <string name="lbl_toc_multiple_authors">Diese Anthologie hat mehrere Autoren.</string>
     <string name="X_menu_delete_toc_entry">Titel von Anthologie löschen</string>
-    <string name="lbl_is_anthology">Ist dieses Buch eine Anthologie?</string>
+    <string name="lbl_is_anthology">Dieses Buch ist eine Anthologie</string>
     <string name="menu_populate_toc">
         Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)
     </string>

@@ -76,7 +76,7 @@
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="lbl_toc_multiple_authors">Bu antolojinin çok sayıda yazarı vardır.</string>
     <string name="X_menu_delete_toc_entry">Seçkiden eser sil</string>
-    <string name="lbl_is_anthology">Bu kitap bir seçkide var mı?</string>
+    <string name="lbl_is_anthology">Bu kitap bir antoloji</string>
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
     <string name="lbl_anthology">Seçmeler</string>

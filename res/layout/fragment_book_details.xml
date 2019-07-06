@@ -379,7 +379,7 @@
         <TextView
             android:id="@+id/lbl_signed"
             style="@style/FieldLabel.Inline"
-            android:text="@string/lbl_is_signed"
+            android:text="@string/lbl_signed"
             app:layout_constraintBaseline_toBaselineOf="@id/signed"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             />

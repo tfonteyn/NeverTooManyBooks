@@ -76,7 +76,7 @@
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="lbl_toc_multiple_authors">Эта антология имеет несколько авторов.</string>
     <string name="X_menu_delete_toc_entry">Удалить название антологии</string>
-    <string name="lbl_is_anthology">Эта книга - антология?</string>
+    <string name="lbl_is_anthology">Эта книга Антология</string>
     <string name="menu_populate_toc">Автоматически заполнить названия (ЭКСПЕРИМЕНТАЛЬНО)</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
     <string name="lbl_anthology">Антология</string>

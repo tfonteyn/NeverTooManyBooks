@@ -89,7 +89,7 @@
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="lbl_toc_multiple_authors">Cette anthologie a plusieurs auteurs.</string>
     <string name="X_menu_delete_toc_entry">Supprimer ce titre de l\'anthologie</string>
-    <string name="lbl_is_anthology">Ce livre est-il une anthologie ?</string>
+    <string name="lbl_is_anthology">Ce livre est une anthologie</string>
     <string name="menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="lbl_anthology">Anthologie</string>
