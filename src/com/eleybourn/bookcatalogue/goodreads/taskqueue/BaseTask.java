@@ -67,8 +67,8 @@ public abstract class BaseTask
     /**
      * @return {@code false} to requeue, {@code true} for success
      */
-    public abstract boolean run(@NonNull final QueueManager queueManager,
-                                @NonNull final Context context);
+    public abstract boolean run(@NonNull QueueManager queueManager,
+                                @NonNull Context context);
 
     /**
      * Create a new View.

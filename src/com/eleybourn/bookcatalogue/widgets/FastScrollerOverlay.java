@@ -112,7 +112,7 @@ public class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param context            Current context, it will be used to access resources.
+     * @param context            Current context, for accessing resources.
      * @param overlayDrawableRes drawable for the overlay.
      */
     public FastScrollerOverlay(@NonNull final Context context,
@@ -124,7 +124,7 @@ public class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param context         Current context, it will be used to access resources.
+     * @param context         Current context, for accessing resources.
      * @param overlayDrawable drawable for the overlay.
      */
     public FastScrollerOverlay(@NonNull final Context context,

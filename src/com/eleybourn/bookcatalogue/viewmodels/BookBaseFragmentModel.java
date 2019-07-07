@@ -63,9 +63,12 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * Conditional constructor.
+     * Pseudo constructor.
+     * <p>
      * If we already have been initialized, return silently.
      * Otherwise use the passed data to construct a Book.
+     *
+     * @param args Bundle with arguments
      */
     public void init(@Nullable final Bundle args) {
 

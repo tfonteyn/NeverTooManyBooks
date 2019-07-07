@@ -13,9 +13,4 @@ public class ColumnNotPresentException
     public ColumnNotPresentException(@NonNull final String columnName) {
         super("Column " + columnName + " not present in cursor");
     }
-
-    public ColumnNotPresentException(@NonNull final String columnName,
-                                     @NonNull final Throwable cause) {
-        super("Column " + columnName + " not present in cursor", cause);
-    }
 }

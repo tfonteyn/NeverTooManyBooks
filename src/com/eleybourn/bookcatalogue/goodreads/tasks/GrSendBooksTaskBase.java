@@ -307,7 +307,8 @@ abstract class GrSendBooksTaskBase
                     context.getString(R.string.menu_edit_book),
                     () -> {
                         try {
-                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
+                            GrSendBookEvent event =
+                                    (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
                                     .putExtra(DBDefinitions.KEY_ID, event.getBookId());
                             context.startActivity(intent);

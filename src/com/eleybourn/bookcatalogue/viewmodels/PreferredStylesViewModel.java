@@ -26,6 +26,9 @@ public class PreferredStylesViewModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     */
     public void init() {
         if (mDb != null) {
             return;

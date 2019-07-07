@@ -34,6 +34,12 @@ public class BookFragmentModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args      Bundle with arguments
+     * @param bookId    The book this model will represent.
+     */
     public void init(@Nullable final Bundle args,
                      final long bookId) {
         if (mDb == null) {

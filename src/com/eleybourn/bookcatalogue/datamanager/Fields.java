@@ -425,6 +425,8 @@ public class Fields {
      *
      * @param values          The Bundle to fill in/use.
      * @param crossValidating flag indicating if this is a cross validation pass.
+     *
+     * @return {@code true} is all validations are fine.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validate(@NonNull final Bundle values,
@@ -874,7 +876,7 @@ public class Fields {
                 if (view instanceof AutoCompleteTextView) {
                     // prevent auto-completion to kick in / stop the dropdown from opening.
                     // this happened if the field had the focus when we'd be populating it.
-                    ((AutoCompleteTextView)view).setText(newVal, false);
+                    ((AutoCompleteTextView) view).setText(newVal, false);
                 } else {
                     view.setText(newVal);
                 }
@@ -1196,7 +1198,7 @@ public class Fields {
         private final String mNo;
 
         /**
-         * @param context for strings
+         * @param context Current context, for accessing resources.
          */
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mYes = context.getString(R.string.yes);
@@ -1273,7 +1275,7 @@ public class Fields {
                 currencyInstance.setCurrency(Currency.getInstance(mCurrencyCode));
                 return currencyInstance.format(price);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IllegalArgumentException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IllegalArgumentException e) {
                 Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
                         + " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;
@@ -1651,6 +1653,7 @@ public class Fields {
          *
          * @return field (for chaining)
          */
+        @SuppressWarnings("UnusedReturnValue")
         @NonNull
         public Field setShowHtml(final boolean showHtml) {
             if (mFieldDataAccessor instanceof TextViewAccessor) {

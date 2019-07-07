@@ -45,6 +45,12 @@ public class CoverBrowserViewModel
     /** Handles downloading, checking and cleanup of files. */
     private CoverBrowserViewModel.FileManager mFileManager;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param isbn               of the book
+     * @param initialSearchSites default search sites for covers
+     */
     public void init(@NonNull final String isbn,
                      final int initialSearchSites) {
         if (mBaseIsbn != null) {

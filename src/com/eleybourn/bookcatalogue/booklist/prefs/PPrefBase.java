@@ -26,16 +26,14 @@ public abstract class PPrefBase<T>
      */
     @NonNull
     protected final String mUuid;
+    /** Flag to indicate the value is persisted. */
+    protected final boolean mIsPersistent;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     final T mDefaultValue;
-    /** key for the Preference */
+    /** key for the Preference. */
     @NonNull
     private final String mKey;
-
-    /** Flag to indicate the value is persisted. */
-    protected final boolean mIsPersistent;
-
     /** in memory value used for non-persistence situations. */
     @Nullable
     T mNonPersistedValue;

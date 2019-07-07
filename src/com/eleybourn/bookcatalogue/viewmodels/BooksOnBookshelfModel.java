@@ -152,7 +152,10 @@ public class BooksOnBookshelfModel
     }
 
     /**
+     * Pseudo constructor.
      *
+     * @param extras             Bundle with arguments from activity startup
+     * @param savedInstanceState Bundle with arguments from activity waking up
      */
     public void init(@Nullable final Bundle extras,
                      @Nullable final Bundle savedInstanceState) {
@@ -237,33 +240,6 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Save current position information in the preferences, including view nodes that are expanded.
-     * We do this to preserve this data across application shutdown/startup.
-     *
-     * <p>
-     * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
-     * in length by, potentially, n*2 items. The current code will return to the old position
-     * in the list after such an operation...which will be too far down.
-     *
-     * @param topRow the position of the top visible row in the list
-     */
-    public void savePosition(final int topRow,
-                             @NonNull final RecyclerView listView) {
-        if (mListHasBeenLoaded) {
-            setTopRow(topRow, listView);
-        }
-    }
-
-    private void savePosition() {
-        App.getPrefs().edit()
-           .putInt(PREF_BOB_TOP_ROW, mTopRow)
-           .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
-           .apply();
-    }
-
-    /**
      * Set the style and position.
      *
      * @param style    that was selected
@@ -287,15 +263,19 @@ public class BooksOnBookshelfModel
          * Keeping the current row/pos is probably the most useful thing we can
          * do since we *may* come back to a similar list.
          */
-        setTopRow(topRow, listView);
+        setAndSaveTopRow(topRow, listView);
+    }
+
+    public void setAndSaveTopRow(final int topRow) {
+        setAndSaveTopRow(topRow, null);
     }
 
     /**
      * @param topRow   the top row to store
      * @param listView used to derive the top row offset
      */
-    private void setTopRow(final int topRow,
-                           @Nullable final RecyclerView listView) {
+    private void setAndSaveTopRow(final int topRow,
+                                  @Nullable final RecyclerView listView) {
         mTopRow = topRow;
         if (listView != null) {
             View topView = listView.getChildAt(0);
@@ -312,10 +292,6 @@ public class BooksOnBookshelfModel
         return mTopRow;
     }
 
-    public void setTopRow(final int topRow) {
-        setTopRow(topRow, null);
-    }
-
     public int getTopRowOffset() {
         return mTopRowOffset;
     }
@@ -329,11 +305,39 @@ public class BooksOnBookshelfModel
     }
 
     /**
+     * Save current position information in the preferences, including view nodes that are expanded.
+     * We do this to preserve this data across application shutdown/startup.
+     *
+     * <p>
+     * ENHANCE: Handle positions a little better when books are deleted.
+     * <p>
+     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
+     * in length by, potentially, n*2 items. The current code will return to the old position
+     * in the list after such an operation...which will be too far down.
+     *
+     * @param topRow   the position of the top visible row in the list
+     * @param listView used to derive the top row offset
+     */
+    public void savePosition(final int topRow,
+                             @NonNull final RecyclerView listView) {
+        if (mListHasBeenLoaded) {
+            setAndSaveTopRow(topRow, listView);
+        }
+    }
+
+    private void savePosition() {
+        App.getPrefs().edit()
+           .putInt(PREF_BOB_TOP_ROW, mTopRow)
+           .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
+           .apply();
+    }
+
+    /**
      * Queue a rebuild of the underlying cursor and data.
      *
      * @param isFullRebuild Indicates whole table structure needs rebuild,
      *                      versus just do a reselect of underlying data
-     * @param context       NOT cached, only used to get locale strings
+     * @param context       Current context, for accessing resources.
      */
     public void initBookList(final boolean isFullRebuild,
                              @NonNull final Context context) {

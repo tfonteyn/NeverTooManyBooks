@@ -214,8 +214,8 @@ public class BackupActivity
      * Local handler for 'Save'. Perform basic validation, and pass on.
      */
     private void doBackup() {
-        File file = new File(mRootDir.getAbsolutePath() +
-                                     File.separator + mFilenameView.getText().toString().trim());
+        File file = new File(mRootDir.getAbsolutePath()
+                                     + File.separator + mFilenameView.getText().toString().trim());
         if (file.exists() && !file.isFile()) {
             UserMessage.showUserMessage(mListView, R.string.warning_select_a_non_directory);
             return;
@@ -232,8 +232,8 @@ public class BackupActivity
                     // ask user what options they want
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
-                        ExportOptionsDialogFragment.newInstance(options).show(fm,
-                                                                              ExportOptionsDialogFragment.TAG);
+                        ExportOptionsDialogFragment.newInstance(options)
+                                                   .show(fm, ExportOptionsDialogFragment.TAG);
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {

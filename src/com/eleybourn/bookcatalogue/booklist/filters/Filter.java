@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 public interface Filter {
 
     /**
+     * @param context Current context, for accessing resources.
      *
      * @return a human readable label/name for this filter, or {@code null} if none.
      */

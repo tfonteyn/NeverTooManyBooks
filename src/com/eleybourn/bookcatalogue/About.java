@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -35,7 +34,6 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.SoundManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -92,12 +90,17 @@ public class About
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void sendContactEmail(@StringRes final int stringId) {
+    /**
+     * Prepare a new email.
+     *
+     * @param emailId resource id for email address
+     */
+    private void sendContactEmail(@StringRes final int emailId) {
         try {
             String subject = '[' + getString(R.string.app_name) + "] ";
             Intent intent = new Intent(Intent.ACTION_SEND)
                     .setType("text/plain")
-                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)})
+                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(emailId)})
                     .putExtra(Intent.EXTRA_SUBJECT, subject);
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final ActivityNotFoundException e) {

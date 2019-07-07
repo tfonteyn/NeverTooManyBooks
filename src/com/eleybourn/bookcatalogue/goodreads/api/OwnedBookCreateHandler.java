@@ -135,9 +135,6 @@ public class OwnedBookCreateHandler
         create(isbn, shelves);
     }
 
-    /**
-
-     */
     private static class OwnedBookCreateParser
             extends DefaultHandler {
 

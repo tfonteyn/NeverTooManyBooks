@@ -55,7 +55,8 @@
  * Constructor:
  * <pre>
  *     // BEGIN - CFSRecyclerView
- *     mMinVerticalThumbHeight = recyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.cfs_fast_scroll_min_thumb_height);
+ *     mMinVerticalThumbHeight = recyclerView.getContext().getResources()
+ *                               .getDimensionPixelSize(R.dimen.cfs_fast_scroll_min_thumb_height);
  *     // END - CFSRecyclerView
  * </pre>
  *

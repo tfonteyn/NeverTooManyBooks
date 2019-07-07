@@ -16,6 +16,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 
 /**
+ * Provides an AlertDialog with an optional title and message.
+ * The content is a list of strings suited to populate the {@link Field}.
+ *
  * @param <T> type of the actual Object that is represented by a row in the selection list.
  *            Right now, this is ALWAYS {@code String} and we use {@link #toString()}.
  *            Using another type is bound to bring up issues.
@@ -31,6 +34,7 @@ public class FieldPicker<T>
      * But not all (far from) the values are entities.
      *
      * @param context Current context
+     * @param title   Dialog title
      * @param field   to get/set
      * @param list    list to choose from
      */

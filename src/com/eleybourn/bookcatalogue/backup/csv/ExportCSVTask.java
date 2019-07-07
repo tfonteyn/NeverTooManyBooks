@@ -91,7 +91,7 @@ public class ExportCSVTask
             // success
             CsvExporter.renameFiles(tmpFile);
 
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
             cleanup();

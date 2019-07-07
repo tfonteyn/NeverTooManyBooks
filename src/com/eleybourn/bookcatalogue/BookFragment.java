@@ -62,6 +62,8 @@ public class BookFragment
     public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
     public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
+    private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
+
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -182,13 +184,13 @@ public class BookFragment
 
         Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
                                            UniqueId.BKEY_COVER_IMAGE)
-                                      .setScale(ImageUtils.SCALE_LARGE);
+                                      .setScale(IMAGE_SCALE);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
                                          mBookBaseFragmentModel.getBook(),
                                          fields.getField(R.id.isbn).getView(),
                                          coverImageField.getView(),
-                                         ImageUtils.SCALE_LARGE);
+                                         IMAGE_SCALE);
 
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
@@ -329,7 +331,7 @@ public class BookFragment
 
         boolean visible = seriesCount != 0 && App.isUsed(DBDefinitions.KEY_SERIES);
         if (visible) {
-            field.setValue(Csv.join("\n", list, false,"• ", Series::getLabel));
+            field.setValue(Csv.join("\n", list, false, "• ", Series::getLabel));
             setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
         } else {
             field.setValue("");

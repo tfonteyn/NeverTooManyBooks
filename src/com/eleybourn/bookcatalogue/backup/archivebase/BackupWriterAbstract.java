@@ -250,6 +250,8 @@ public abstract class BackupWriterAbstract
     /**
      * Write each cover file corresponding to a book to the archive.
      *
+     * @return the number of covers written
+     *
      * @throws IOException on failure
      */
     private int doCovers(final boolean dryRun)

@@ -381,7 +381,7 @@ public class Book
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
-                //URGENT ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
+                //ENHANCE: use SQL GROUP_CONCAT() to get these lists at the same time as the book.
                 //pro: one call for book and sublist(s)
                 //con: the sublist comes in as one column. Will need json format to keep it flexible
                 // and then decode here (or StringList custom (de)coding? hum...)
@@ -396,7 +396,9 @@ public class Book
     }
 
     /**
-     * @return a complete list of Bookshelves each reflecting the book being on that shelf or not.
+     * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
+     *
+     * @return the list
      */
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DAO db) {
 
@@ -411,7 +413,9 @@ public class Book
     }
 
     /**
-     * @return a complete list of Editions each reflecting the book being that edition or not.
+     * Gets a complete list of Editions each reflecting the book being that edition or not.
+     *
+     * @return the list
      */
     public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
 

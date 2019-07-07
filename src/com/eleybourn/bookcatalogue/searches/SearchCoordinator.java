@@ -56,9 +56,9 @@ import com.eleybourn.bookcatalogue.utils.StringList;
  * <p>
  * Uses the {@link TaskManager} and listens to {@link TaskManagerListener} messages.
  * <p>
- * It maintain its own internal list of tasks {@link #mManagedTasks} and as tasks it knows about
+ * It maintains its own internal list of tasks {@link #mManagedTasks} and as tasks it knows about
  * finish, it processes the data. Once all tasks are complete, it sends a message to its
- * creator via its {@link MessageSwitch}
+ * creator via the {@link MessageSwitch}
  *
  * @author Philip Warner
  */
@@ -750,7 +750,6 @@ public class SearchCoordinator {
         }
         mBookData.putParcelableArrayList(key, dest);
     }
-
 
     /**
      * Controller interface for this Object.

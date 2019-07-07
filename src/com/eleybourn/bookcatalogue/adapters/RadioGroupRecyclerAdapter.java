@@ -88,7 +88,7 @@ public class RadioGroupRecyclerAdapter<T extends Entity>
         // this triggers a bind calls for the rows, which in turn set the checked status.
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
-            // use a post allowing the UI to update the radio buttons first (yes, purely for visuals)
+            // use a post allowing the UI to update the radio buttons first (purely for visuals)
             v.post(() -> mOnSelectionListener.onSelected(mSelectedItem));
         }
     }

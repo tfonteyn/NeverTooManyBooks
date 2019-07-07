@@ -40,7 +40,7 @@ public final class BackupManager {
     public static final String PREF_LAST_BACKUP_DATE = "Backup.LastDate";
     /** Last full backup file path. */
     public static final String PREF_LAST_BACKUP_FILE = "Backup.LastFile";
-    /** @see #isArchive(File). */
+    /** see {@link #isArchive(File)}. */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
 
     private BackupManager() {

@@ -313,7 +313,8 @@ public class BooklistStyle
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
-     * @param context for locale specific strings, will be {@code null} when doNew==false !
+     * @param context Current context, for accessing resources,
+     *                will be {@code null} when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
                             final boolean isNew,
@@ -395,7 +396,8 @@ public class BooklistStyle
 
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
 
-        mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid, isUserDefined());
+        mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid,
+                                                 isUserDefined());
 
         mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
                                        SUMMARY_SHOW_ALL);
@@ -512,6 +514,11 @@ public class BooklistStyle
         }
     }
 
+    /**
+     * Set both the internal name and the display-name.
+     *
+     * @param name to set
+     */
     private void setName(@NonNull final String name) {
         mName = name;
         mDisplayName.set(name);
@@ -521,7 +528,7 @@ public class BooklistStyle
      * @return {@code true} if this style is user defined.
      */
     public boolean isUserDefined() {
-        return (mNameResId == 0);
+        return mNameResId == 0;
     }
 
     /**
@@ -551,6 +558,8 @@ public class BooklistStyle
      *
      * @param all if false, then only the 'flat' Preferences
      *            if true, then also the groups/filters...
+     *
+     * @return map with all preferences for this style
      */
     @NonNull
     public Map<String, PPref> getPreferences(final boolean all) {
@@ -599,6 +608,17 @@ public class BooklistStyle
      * Preferences we don't have will be not be added.
      */
     public void updatePreferences(@NonNull final Map<String, PPref> newPrefs) {
+        SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
+        updatePreferences(ed, newPrefs);
+        ed.apply();
+    }
+
+    /**
+     * update the preferences of this style based on the values of the passed preferences.
+     * Preferences we don't have will be not be added.
+     */
+    public void updatePreferences(@NonNull final SharedPreferences.Editor ed,
+                                  @NonNull final Map<String, PPref> newPrefs) {
         Map<String, PPref> currentPreferences = getPreferences(true);
 
         for (PPref p : newPrefs.values()) {
@@ -607,7 +627,7 @@ public class BooklistStyle
             if (ourPPref != null) {
                 // if we do, then update our value
                 //noinspection unchecked
-                ourPPref.set(p.get());
+                ourPPref.set(ed, p.get());
             }
         }
     }
@@ -641,14 +661,6 @@ public class BooklistStyle
     }
 
     /**
-     * Used by built-in styles only. Set by user via preferences screen.
-     */
-    @SuppressWarnings("SameParameterValue")
-    void setScaleFactor(@IntRange(from = TEXT_SCALE_SMALL, to = TEXT_SCALE_LARGE) final int size) {
-        mScaleFontSize.set(size);
-    }
-
-    /**
      * @return scaling factor to apply to text size if needed.
      */
     public float getScaleFactor() {
@@ -662,6 +674,14 @@ public class BooklistStyle
             default:
                 return 1.0f;
         }
+    }
+
+    /**
+     * Used by built-in styles only. Set by user via preferences screen.
+     */
+    @SuppressWarnings("SameParameterValue")
+    void setScaleFactor(@IntRange(from = TEXT_SCALE_SMALL, to = TEXT_SCALE_LARGE) final int size) {
+        mScaleFontSize.set(size);
     }
 
     /**
@@ -748,7 +768,7 @@ public class BooklistStyle
         }
 
         // we'll collect the new Preferences to add here
-        Map<String, PPref> newPPrefs = new LinkedHashMap<>();
+        Map<String, PPref> allGroupsPreferences = new LinkedHashMap<>();
 
         // Clear the current groups, and rebuild, reusing old values where possible
         mStyleGroups.clear();
@@ -757,7 +777,7 @@ public class BooklistStyle
             // if we don't have the new one...
             if (current == null) {
                 // copy the groups PPrefs locally
-                newPPrefs.putAll(newGroup.getPreferences());
+                allGroupsPreferences.putAll(newGroup.getPreferences());
                 // and add a new instance of that group
                 mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(),
                                                            mUuid, isUserDefined()));
@@ -767,8 +787,8 @@ public class BooklistStyle
             }
         }
 
-        // Lastly, copy any Preference values from new groups.
-        updatePreferences(newPPrefs);
+        // Lastly, copy any Preference values from the new groups.
+        updatePreferences(allGroupsPreferences);
     }
 
     /**
@@ -891,12 +911,13 @@ public class BooklistStyle
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
 
-        Boolean legacyThumbnailScale = (Boolean)in.readObject();
+        Boolean legacyThumbnailScale = (Boolean) in.readObject();
         // Boolean: null=='use-defaults', false='normal', true='large'
         if (legacyThumbnailScale == null) {
             mThumbnailScale.set(ed, ImageUtils.SCALE_SMALL);
         } else {
-            mThumbnailScale.set(ed, legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM : ImageUtils.SCALE_SMALL);
+            mThumbnailScale.set(ed,
+                                legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM : ImageUtils.SCALE_SMALL);
         }
 
         mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
@@ -958,11 +979,17 @@ public class BooklistStyle
         mIsPreferred.set(true);
 
         // base class de-serialized the groups to legacy format, convert them to current format.
+        String list = null;
         for (BooklistGroup group : mGroups) {
             group.setUuid(mUuid);
-            mStyleGroups.add(group);
+            // add the group (kind)
+            list = mStyleGroups.add(ed, list, group);
+            // add the group preferences.
+            updatePreferences(ed, group.getPreferences());
         }
+        // null out the now redundant member variable.
         mGroups = null;
+        // finally write out the preference file. Note that the database is not updated yet.
         ed.apply();
     }
 
@@ -971,7 +998,7 @@ public class BooklistStyle
      * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param context needed for the 'name' of the style.
+     * @param context Current context, for accessing resources.
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
@@ -1087,6 +1114,9 @@ public class BooklistStyle
 
         private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
 
+        /**
+         * Constructor.
+         */
         PStyleGroups(@NonNull final String uuid,
                      final boolean isUserDefined) {
             super(Prefs.pk_bob_groups, uuid, isUserDefined);
@@ -1149,9 +1179,30 @@ public class BooklistStyle
             dest.writeList(mGroups);
         }
 
+        /**
+         * Add a new group to the end of the list.
+         *
+         * @param group to add
+         */
         void add(@NonNull final BooklistGroup group) {
             mGroups.add(group);
             super.add(group.getKind());
+        }
+
+        /**
+         * Add a new element to the end of the list.
+         *
+         * @param list  current list to add the group to, can be {@code null} or empty.
+         * @param group to add
+         *
+         * @return updated list string
+         */
+        @NonNull
+        String add(@NonNull final SharedPreferences.Editor ed,
+                   @Nullable String list,
+                   @NonNull final BooklistGroup group) {
+            mGroups.add(group);
+            return super.add(ed, list, group.getKind());
         }
 
         @Override

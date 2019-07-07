@@ -277,7 +277,7 @@ public class ISBN {
 
         switch (digits.size()) {
             case 10:
-                return (getChecksum(digits) == 0);
+                return getChecksum(digits) == 0;
             case 13:
                 // Start with 978 or 979
                 return digits.get(0) == 9 && digits.get(1) == 7
@@ -375,7 +375,7 @@ public class ISBN {
                     sum += d * multiplier;
                     multiplier--;
                 }
-                return (sum % 11);
+                return sum % 11;
 
             case 13:
                 for (int i = 0; i <= 12; i += 2) {
@@ -384,7 +384,7 @@ public class ISBN {
                 for (int i = 1; i < 12; i += 2) {
                     sum += digits.get(i) * 3;
                 }
-                return (sum % 10);
+                return sum % 10;
 
             default:
                 throw new java.lang.NumberFormatException("ISBN incorrect length");

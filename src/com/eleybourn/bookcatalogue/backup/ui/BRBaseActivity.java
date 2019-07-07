@@ -154,7 +154,7 @@ public abstract class BRBaseActivity
      *
      * @param file selected
      */
-    protected abstract void onFileSelected(@NonNull final File file);
+    protected abstract void onFileSelected(@NonNull File file);
 
     /**
      * Display the list.

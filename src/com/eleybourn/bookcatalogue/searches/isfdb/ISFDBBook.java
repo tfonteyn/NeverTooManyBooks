@@ -148,7 +148,7 @@ public class ISFDBBook
     }
 
     /**
-     * First "ContentBox" contains all basic details
+     * First "ContentBox" contains all basic details.
      * <pre>
      * {@code
      * <div class="ContentBox">
@@ -194,6 +194,8 @@ public class ISFDBBook
      * @param addSeriesFromToc whether to add any series found in the TOC to the book series.
      * @param fetchThumbnail   whether to get thumbnails as well
      * @param resources        for locale strings
+     *
+     * @return Bundle with book data
      */
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,

@@ -199,7 +199,9 @@ class GrImportAllTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
+            } catch (@NonNull final BookNotFoundException
+                    | AuthorizationException
+                    | IOException e) {
                 setException(e);
                 return false;
             }
@@ -699,7 +701,7 @@ class GrImportAllTask
     /**
      * Make a more informative description.
      *
-     * @param context Current context
+     * @param context Current context, for accessing resources.
      */
     @Override
     @NonNull

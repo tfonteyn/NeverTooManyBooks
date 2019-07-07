@@ -35,7 +35,8 @@
  * => an actual {@code Integer} (not used as such yet)
  * <p>
  * {@link com.eleybourn.bookcatalogue.booklist.prefs.PBitmask}
- * => an {@code Integer} used as a bitmask, used by {@link androidx.preference.MultiSelectListPreference}
+ * => an {@code Integer} used as a bitmask, used by
+ * {@link androidx.preference.MultiSelectListPreference}
  * <p>
  * {@link com.eleybourn.bookcatalogue.booklist.prefs.PInt}
  * => {@code Interface} implemented by PInteger, PBitmask to 'set' their values as {@code Integer}

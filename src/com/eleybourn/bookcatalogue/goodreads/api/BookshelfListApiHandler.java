@@ -61,7 +61,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  *        <book_count type='integer'>546</book_count>
  *        <description nil='true'></description>
  *        <display_fields></display_fields>
- * 	      <exclusive_flag type='boolean'>true</exclusive_flag>
+ *        <exclusive_flag type='boolean'>true</exclusive_flag>
  *        <featured type='boolean'>false</featured>
  *        <id type='integer'>16480894</id>
  *        <name>read</name>

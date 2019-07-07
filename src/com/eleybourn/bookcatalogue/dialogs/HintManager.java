@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * a 'Do not show again' option, that results in an update to the preferences which
  * are checked by this code.
  * <p>
- * To add a new hint, create a string resource and add it to mHints. Then, to display the
+ * To add a new hint, create a string resource and add it to HINTS. Then, to display the
  * hint, simply call HintManager.displayHint(a, stringId).
  *
  * @author Philip Warner
@@ -58,49 +58,49 @@ public final class HintManager {
 
     /** All hints managed by this class. */
     @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Hint> mHints = new HashMap<>();
+    private static final Map<Integer, Hint> HINTS = new HashMap<>();
 
     static {
-        mHints.put(R.string.hint_booklist_style_menu,
-                   new Hint("hint_booklist_style_menu"));
-        mHints.put(R.string.hint_booklist_styles_editor,
-                   new Hint("BOOKLIST_STYLES_EDITOR"));
-        mHints.put(R.string.hint_booklist_style_groups,
-                   new Hint("BOOKLIST_STYLE_GROUPS"));
-        mHints.put(R.string.hint_booklist_style_properties,
-                   new Hint("BOOKLIST_STYLE_PROPERTIES"));
+        HINTS.put(R.string.hint_booklist_style_menu,
+                  new Hint("hint_booklist_style_menu"));
+        HINTS.put(R.string.hint_booklist_styles_editor,
+                  new Hint("BOOKLIST_STYLES_EDITOR"));
+        HINTS.put(R.string.hint_booklist_style_groups,
+                  new Hint("BOOKLIST_STYLE_GROUPS"));
+        HINTS.put(R.string.hint_booklist_style_properties,
+                  new Hint("BOOKLIST_STYLE_PROPERTIES"));
         // keep, might need again if re-implemented
-        //mHints.put(R.string.hint_booklist_global_properties,
+        //HINTS.put(R.string.hint_booklist_global_properties,
         //         new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
 
-        mHints.put(R.string.hint_authors_book_may_appear_more_than_once,
-                   new Hint("BOOKLIST_MULTI_AUTHORS"));
-        mHints.put(R.string.hint_series_book_may_appear_more_than_once,
-                   new Hint("BOOKLIST_MULTI_SERIES"));
+        HINTS.put(R.string.hint_authors_book_may_appear_more_than_once,
+                  new Hint("BOOKLIST_MULTI_AUTHORS"));
+        HINTS.put(R.string.hint_series_book_may_appear_more_than_once,
+                  new Hint("BOOKLIST_MULTI_SERIES"));
 
-        mHints.put(R.string.hint_background_tasks,
-                   new Hint("BACKGROUND_TASKS"));
-        mHints.put(R.string.hint_background_task_events,
-                   new Hint("BACKGROUND_TASK_EVENTS"));
+        HINTS.put(R.string.hint_background_tasks,
+                  new Hint("BACKGROUND_TASKS"));
+        HINTS.put(R.string.hint_background_task_events,
+                  new Hint("BACKGROUND_TASK_EVENTS"));
 
-        mHints.put(R.string.gr_explain_goodreads_no_isbn,
-                   new Hint("explain_goodreads_no_isbn"));
-        mHints.put(R.string.gr_explain_goodreads_no_match,
-                   new Hint("explain_goodreads_no_match"));
+        HINTS.put(R.string.gr_explain_goodreads_no_isbn,
+                  new Hint("explain_goodreads_no_isbn"));
+        HINTS.put(R.string.gr_explain_goodreads_no_match,
+                  new Hint("explain_goodreads_no_match"));
 
-        mHints.put(R.string.hint_autorotate_camera_images,
-                   new Hint("hint_autorotate_camera_images"));
-        mHints.put(R.string.hint_view_only_book_details,
-                   new Hint("hint_view_only_book_details"));
-        mHints.put(R.string.hint_view_only_help,
-                   new Hint("hint_view_only_help"));
-        mHints.put(R.string.hint_book_list,
-                   new Hint("hint_book_list"));
-        mHints.put(R.string.hint_book_search_by_text,
-                   new Hint("hint_book_search_by_text"));
+        HINTS.put(R.string.hint_autorotate_camera_images,
+                  new Hint("hint_autorotate_camera_images"));
+        HINTS.put(R.string.hint_view_only_book_details,
+                  new Hint("hint_view_only_book_details"));
+        HINTS.put(R.string.hint_view_only_help,
+                  new Hint("hint_view_only_help"));
+        HINTS.put(R.string.hint_book_list,
+                  new Hint("hint_book_list"));
+        HINTS.put(R.string.hint_book_search_by_text,
+                  new Hint("hint_book_search_by_text"));
         // v200
-        mHints.put(R.string.pt_thumbnail_cropper_layer_type_summary,
-                   new Hint("hint_pref_layer_type"));
+        HINTS.put(R.string.pt_thumbnail_cropper_layer_type_summary,
+                  new Hint("hint_pref_layer_type"));
     }
 
     private HintManager() {
@@ -108,7 +108,7 @@ public final class HintManager {
 
     /** Reset all hints to that they will be displayed again. */
     public static void resetHints() {
-        for (Hint h : mHints.values()) {
+        for (Hint h : HINTS.values()) {
             h.reset();
         }
     }
@@ -120,7 +120,8 @@ public final class HintManager {
      * @param stringId identifier for "from where" we want the hint to be displayed.
      *                 This allows two different places in the code use the same hint,
      *                 but one place being 'disable the hint' and another 'show'.
-     * @param postRun  Optional Runnable to run after the hint was dismissed (or not displayed at all).
+     * @param postRun  Optional Runnable to run after the hint was dismissed
+     *                (or not displayed at all).
      * @param args     Optional arguments for the hint string
      */
     public static void displayHint(@NonNull final LayoutInflater inflater,
@@ -128,7 +129,7 @@ public final class HintManager {
                                    @Nullable final Runnable postRun,
                                    @Nullable final Object... args) {
         // Get the hint and return if it has been disabled.
-        final Hint hint = mHints.get(stringId);
+        final Hint hint = HINTS.get(stringId);
         if (hint == null) {
             // log but ignore.
             Logger.warnWithStackTrace(HintManager.class, "displayHint", "not found",

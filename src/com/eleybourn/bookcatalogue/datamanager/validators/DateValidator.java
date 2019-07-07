@@ -37,6 +37,8 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 public class DateValidator
         implements DataValidator {
 
+    /** Default to apply if the field is empty. */
+    @NonNull
     private final String mDefaultValue;
 
     /**

@@ -74,7 +74,7 @@ public class ImportOptionsDialogFragment
                 .setView(root)
                 .setTitle(R.string.import_options_dialog_title)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                .setPositiveButton(android.R.string.ok, ((d, which) -> {
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
                     updateOptions();
                     if (mListener.get() != null) {
                         mListener.get().onOptionsSet(mOptions);
@@ -84,7 +84,7 @@ public class ImportOptionsDialogFragment
                                          "WeakReference to listener was dead");
                         }
                     }
-                }))
+                })
                 .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
@@ -118,17 +118,17 @@ public class ImportOptionsDialogFragment
      * read the info block and check if we have valid dates.
      */
     private boolean archiveHasValidDates() {
-        boolean mArchiveHasValidDates;
+        boolean hasValidDates;
         //noinspection ConstantConditions
         try (BackupReader reader = BackupManager.getReader(mOptions.file)) {
             BackupInfo info = reader.getInfo();
             reader.close();
-            mArchiveHasValidDates = info.getAppVersionCode() >= 152;
+            hasValidDates = info.getAppVersionCode() >= 152;
         } catch (@NonNull final IOException e) {
             Logger.error(this, e);
-            mArchiveHasValidDates = false;
+            hasValidDates = false;
         }
-        return mArchiveHasValidDates;
+        return hasValidDates;
     }
 
     @Override

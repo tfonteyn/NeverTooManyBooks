@@ -62,7 +62,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * The bulk of space is used by the actual image file, not by the database.
  * To be reviewed when the location of the images can be user-configured.
  * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
- *
+ * <p>
  * note that {@link #DOM_WIDTH} and {@link #DOM_HEIGHT} are redundant/information only.
  * Lookup is done via the {@link #DOM_CACHE_ID} instead.
  *
@@ -237,7 +237,7 @@ public final class CoversDAO
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
             if (BuildConfig.DEBUG /* always */) {
-                Logger.debug(this,"close",
+                Logger.debug(this, "close",
                              "instances left: " + INSTANCE_COUNTER);
             }
 
@@ -437,8 +437,8 @@ public final class CoversDAO
                               final int newVersion) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.debugEnter(this, "onUpgrade",
-                             "Old database version: " + oldVersion,
-                             "Upgrading database: " + db.getPath());
+                                  "Old database version: " + oldVersion,
+                                  "Upgrading database: " + db.getPath());
             }
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);

@@ -36,20 +36,28 @@ import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationExcep
  */
 public interface ReaderEntity {
 
-    /** @return the original "file name" (archive entry name) of the object. */
+    /**
+     * @return the original "file name" (archive entry name) of the object.
+     */
     @NonNull
     String getName();
 
-    /** @return the type of this entity. */
+    /**
+     * @return the type of this entity.
+     */
     @NonNull
     BackupEntityType getType();
 
-    /** @return the Modified date from archive entry. */
+    /**
+     * @return the Modified date from archive entry.
+     */
     @NonNull
     Date getDateModified();
 
 
-    /** @return the stream to read the entity. */
+    /**
+     * @return the stream to read the entity.
+     */
     @NonNull
     InputStream getStream();
 
@@ -57,7 +65,9 @@ public interface ReaderEntity {
     void saveToDirectory(@NonNull File dir)
             throws IOException;
 
-    /** @return the data as a Serializable object. */
+    /**
+     * @return the data as a Serializable object.
+     */
     @NonNull
     <T extends Serializable> T getSerializable()
             throws IOException, DeserializationException;

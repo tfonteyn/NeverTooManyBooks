@@ -14,7 +14,7 @@ public class ExportOptions
         implements Parcelable {
 
     /**
-     * options as to *what* should be exported
+     * options as to *what* should be exported.
      */
     public static final int BOOK_CSV = 1;
     public static final int PREFERENCES = 1 << 1;
@@ -26,7 +26,7 @@ public class ExportOptions
     //public static final int IMPORT_7 = 1 << 7;
     public static final int DATABASE = 1 << 8;
 
-    /** Options value to indicate ALL things should be exported */
+    /** Options value to indicate ALL things should be exported. */
     public static final int ALL =
             PREFERENCES
                     | BOOK_LIST_STYLES

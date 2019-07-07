@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.settings.Prefs;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
- *
+ * <p>
  * The UUID's should never be changed.
  *
  * @author Philip Warner
@@ -61,6 +61,8 @@ public final class BooklistStyles {
 
 
     private static final int BUILTIN_AUTHOR_THEN_SERIES = -1;
+    /** default style when none is set yet. */
+    public static final int DEFAULT_STYLE_ID = BUILTIN_AUTHOR_THEN_SERIES;
     private static final String BUILTIN_AUTHOR_THEN_SERIES_UUID
             = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
     /**
@@ -73,9 +75,6 @@ public final class BooklistStyles {
                               R.string.style_builtin_author_series,
                               BooklistGroup.RowKind.AUTHOR,
                               BooklistGroup.RowKind.SERIES);
-
-    /** default style when none is set yet. */
-    public static final int DEFAULT_STYLE_ID = BUILTIN_AUTHOR_THEN_SERIES;
     private static final String DEFAULT_STYLE_UUID = BUILTIN_AUTHOR_THEN_SERIES_UUID;
 
     private static final int BUILTIN_UNREAD_AUTHOR_THEN_SERIES = -2;
@@ -161,7 +160,7 @@ public final class BooklistStyles {
             BUILTIN_LANGUAGE_UUID,
             BUILTIN_RATING_UUID,
             BUILTIN_BOOKSHELF_UUID,
-            BUILTIN_DATE_LAST_UPDATE_UUID
+            BUILTIN_DATE_LAST_UPDATE_UUID,
     };
 
     private BooklistStyles() {
@@ -413,7 +412,7 @@ public final class BooklistStyles {
      */
     @NonNull
     public static Map<String, BooklistStyle> getStyles(@NonNull final DAO db,
-                                                     final boolean all) {
+                                                       final boolean all) {
         // Get all styles: user
         Map<String, BooklistStyle> allStyles = getUserStyles(db);
         // Get all styles: builtin
@@ -535,8 +534,8 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to a uuid.
      *
-     * @param context for locale specific strings
-     * @param name      of the style
+     * @param context Current context, for accessing resources.
+     * @param name    of the style
      *
      * @return style uuid
      */

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -32,8 +33,8 @@ import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.picker.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.picker.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
@@ -278,7 +279,7 @@ public class AdminFragment
             UserMessage.showUserMessage(requireView(), R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
-                // If only 1, just use it
+                // If only one file found, just use it
                 importFromCSV(files.get(0));
             } else {
                 // If more than one, ask user which file
@@ -303,18 +304,39 @@ public class AdminFragment
         ImportOptions settings = new ImportOptions(file);
         settings.what = ImportOptions.BOOK_CSV;
 
-        FragmentManager fm = getChildFragmentManager();
-        //noinspection unchecked
-        mProgressDialog = (ProgressDialogFragment<Object, Integer>)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment.newInstance(
-                    R.string.progress_msg_importing, false, 0);
-            ImportCSVTask task = new ImportCSVTask(settings, mProgressDialog);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-            task.execute();
-        }
-        mProgressDialog.setTaskListener(mListener);
+        View content = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
+        content.findViewById(R.id.cbx_group).setVisibility(View.GONE);
+
+        Checkable radioNewAndUpdatedBooks = content.findViewById(R.id.radioNewAndUpdatedBooks);
+
+        //noinspection ConstantConditions
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.lbl_import_from_csv)
+                .setView(content)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+
+                    if (radioNewAndUpdatedBooks.isChecked()) {
+                        settings.what |= ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED;
+                    }
+
+                    FragmentManager fm = getChildFragmentManager();
+                    //noinspection unchecked
+                    mProgressDialog = (ProgressDialogFragment<Object, Integer>)
+                            fm.findFragmentByTag(ProgressDialogFragment.TAG);
+                    if (mProgressDialog == null) {
+                        mProgressDialog = ProgressDialogFragment.newInstance(
+                                R.string.progress_msg_importing, false, 0);
+                        ImportCSVTask task =
+                                new ImportCSVTask(getContext(), settings, mProgressDialog);
+                        mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+                        task.execute();
+                    }
+                    mProgressDialog.setTaskListener(mListener);
+                })
+
+                .create()
+                .show();
     }
 
     @Override
@@ -390,7 +412,8 @@ public class AdminFragment
     private void cleanupFiles() {
         //noinspection ConstantConditions
         String msg = getString(R.string.info_cleanup_files_text,
-                               StorageUtils.formatFileSize(getContext(), StorageUtils.purgeFiles(false)));
+                               StorageUtils.formatFileSize(getContext(),
+                                                           StorageUtils.purgeFiles(false)));
 
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_warning)

@@ -223,7 +223,8 @@ public class EditBookFieldsFragment
             Book book = mBookBaseFragmentModel.getBook();
 
             ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-            if (!list.isEmpty() && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(), list)) {
+            if (!list.isEmpty() && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(),
+                                                             list)) {
                 mBookBaseFragmentModel.setDirty(true);
                 book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
             }

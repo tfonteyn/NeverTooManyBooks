@@ -18,14 +18,19 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.MenuHandler;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.Site;
 import com.google.android.material.tabs.TabLayout;
 
+/**
+ * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
+ * SAVE: always save all tabs displayed.
+ * RESET: only resets the currently displayed tab.
+ * <p>
+ * TODO: decide if we want to use the explicit 'save' and 'use' button, or just onBackPressed.
+ */
 public class SearchAdminActivity
         extends BaseActivity {
 
@@ -41,6 +46,7 @@ public class SearchAdminActivity
     public static final int TAB_COVER_ORDER = 1;
     private static final int SHOW_ALL_TABS = -1;
 
+    private ViewPager mViewPager;
     private ViewPagerAdapter mAdapter;
 
     private boolean mIsDirty;
@@ -64,7 +70,7 @@ public class SearchAdminActivity
         int requestedTab = args == null ? SHOW_ALL_TABS
                                         : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
-        ViewPager viewPager = findViewById(R.id.tab_fragment);
+        mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
@@ -97,8 +103,8 @@ public class SearchAdminActivity
         }
 
         // fire up the adapter.
-        viewPager.setAdapter(mAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+        mViewPager.setAdapter(mAdapter);
+        tabLayout.setupWithViewPager(mViewPager);
     }
 
     private void initSingleTab(@NonNull final String tag,
@@ -111,30 +117,37 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        if (mIsDirty) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-                // runs when user clicks 'exit'
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            });
+        if (mUseScenario) {
+            doUse();
         } else {
-            setResult(Activity.RESULT_CANCELED);
-            super.onBackPressed();
+            doSave();
         }
+        finish();
+
+//        if (mIsDirty) {
+//            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+//                // runs when user clicks 'exit'
+//                setResult(Activity.RESULT_CANCELED);
+//                finish();
+//            });
+//        } else {
+//            setResult(Activity.RESULT_CANCELED);
+//            super.onBackPressed();
+//        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
-        if (mUseScenario) {
-            menu.add(Menu.NONE, R.id.MENU_USE, 0, R.string.btn_confirm_use)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        } else {
-            menu.add(Menu.NONE, R.id.MENU_SAVE,
-                     MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
-                .setIcon(R.drawable.ic_save)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        }
+//        if (mUseScenario) {
+//            menu.add(Menu.NONE, R.id.MENU_USE, 0, R.string.btn_confirm_use)
+//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//        } else {
+//            menu.add(Menu.NONE, R.id.MENU_SAVE,
+//                     MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
+//                .setIcon(R.drawable.ic_save)
+//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+//        }
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
             .setIcon(R.drawable.ic_undo)
@@ -147,51 +160,78 @@ public class SearchAdminActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        ArrayList<Site> list;
-
         switch (item.getItemId()) {
 
             case R.id.MENU_USE:
-                int sites = SearchSites.SEARCH_ALL;
-                list = ((SearchOrderFragment) mAdapter.getItem(0)).getList();
-                //noinspection ConstantConditions
-                for (Site site : list) {
-                    sites = site.isEnabled() ? sites | site.id
-                                             : sites & ~site.id;
-                }
-                Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
-                // don't commit any changes, we got data to use temporarily
-                setResult(Activity.RESULT_OK, data);
+                doUse();
                 finish();
                 return true;
 
             case R.id.MENU_SAVE:
-                if (mIsDirty) {
-                    //ENHANCE: compare this approach to what is used in EditBookFragment & children.
-                    // Decide later...
-                    list = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
-                    if (list != null) {
-                        SearchSites.setSearchOrder(list);
-                    }
-
-                    list = ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
-                    if (list != null) {
-                        SearchSites.setCoverSearchOrder(list);
-                    }
-                }
-
-                // no data to return
-                setResult(Activity.RESULT_OK);
+                doSave();
                 finish();
                 return true;
 
             case R.id.MENU_RESET:
-                SearchSites.reset();
+                switch (mViewPager.getCurrentItem()) {
+                    case TAB_ORDER:
+                        SearchSites.resetSearchOrder();
+                        ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER))
+                                .setList(SearchSites.getSites());
+                        break;
+                    case TAB_COVER_ORDER:
+                        SearchSites.resetCoverSearchOrder();
+                        ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER))
+                                .setList(SearchSites.getSitesForCoverSearches());
+                        break;
+                }
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Prepares and sets the activity result.
+     */
+    private void doUse() {
+
+        int sites = SearchSites.SEARCH_ALL;
+        ArrayList<Site> list = ((SearchOrderFragment)
+                mAdapter.getItem(mViewPager.getCurrentItem())).getList();
+        //noinspection ConstantConditions
+        for (Site site : list) {
+            sites = site.isEnabled() ? sites | site.id
+                                     : sites & ~site.id;
+        }
+        Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
+        // don't commit any changes, we got data to use temporarily
+        setResult(Activity.RESULT_OK, data);
+    }
+
+    /**
+     * Saves & sets the activity result.
+     */
+    private void doSave() {
+
+        if (mIsDirty) {
+            ArrayList<Site> list;
+            //ENHANCE: compare this approach to what is used in EditBookFragment & children.
+            // Decide later...
+            list = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
+            if (list != null) {
+                SearchSites.setSearchOrder(list);
+            }
+
+            list = ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
+            if (list != null) {
+                SearchSites.setCoverSearchOrder(list);
+            }
+        }
+
+        // no data to return
+        setResult(Activity.RESULT_OK);
     }
 
     private static class ViewPagerAdapter
@@ -251,7 +291,7 @@ public class SearchAdminActivity
             if (fragment == null) {
 
                 ArrayList<Site> list;
-                if (tag.equals(SearchOrderFragment.TAG + TAB_ORDER)) {
+                if ((SearchOrderFragment.TAG + TAB_ORDER).equals(tag)) {
                     list = SearchSites.getSites();
                 } else /* if (t.equals(SearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
                     list = SearchSites.getSitesForCoverSearches();

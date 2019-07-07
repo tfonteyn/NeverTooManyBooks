@@ -178,7 +178,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
 
     /**
-     * Dump the raw Bundle at update time of a book - LARGE!
+     * Dump the raw Bundle at update time of a book. LARGE!
      * {@link DAO#updateBook}
      */
     public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;

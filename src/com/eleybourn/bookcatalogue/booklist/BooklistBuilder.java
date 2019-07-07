@@ -309,7 +309,7 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param context (NOT cached, just used in the constructor)
+     * @param context Current context, for accessing resources.
      * @param style   Book list style to use
      */
     public BooklistBuilder(@NonNull final Context context,
@@ -2702,7 +2702,7 @@ public class BooklistBuilder
          * to build the resulting flat list table and build the portion of the SQL
          * that does the initial table load.
          * <p>
-         * 'INSERT INTO <mListTable> (mDomains) SELECT [expressions] FROM'
+         * 'INSERT INTO [mListTable] (mDomains) SELECT [expressions] FROM'
          * <p>
          * The from-tables, where-clause, order-by is build later.
          *

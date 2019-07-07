@@ -36,7 +36,7 @@ public class PBitmask
     }
 
     /**
-     * converts the Integer bitmask and stores it as a {@code Set<String>]
+     * converts the Integer bitmask and stores it as a {@code Set<String>}
      */
     @Override
     public void set(@Nullable final Integer value) {
@@ -50,7 +50,7 @@ public class PBitmask
     }
 
     /**
-     * converts the Integer bitmask and stores it as a {@code Set<String>}
+     * converts the Integer bitmask and stores it as a {@code Set<String>}.
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,

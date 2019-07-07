@@ -44,6 +44,11 @@ public class BookSearchBaseModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args Bundle with arguments
+     */
     public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
@@ -60,7 +65,7 @@ public class BookSearchBaseModel
     }
 
     /**
-     * NEVER close this database!
+     * NEVER close this database.
      *
      * @return the dao
      */
@@ -127,6 +132,8 @@ public class BookSearchBaseModel
     }
 
     public boolean hasSearchData() {
-        return !mIsbnSearchText.isEmpty() || !mAuthorSearchText.isEmpty() || !mTitleSearchText.isEmpty();
+        return !mIsbnSearchText.isEmpty()
+                || !mAuthorSearchText.isEmpty()
+                || !mTitleSearchText.isEmpty();
     }
 }

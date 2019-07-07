@@ -90,19 +90,16 @@ public final class SearchSites {
         /*
          * standard searches for full details.
          */
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, 0, 0));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, 1, 2));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, 2, 3));
+        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, 3, 4));
 
         // The proxy site has been broken since around April 2019.
         // 2019-05-26: still broken, disabling Amazon here for now.
-        Site amazon = Site.newSite(AMAZON, 0, 1);
+        Site amazon = Site.newSite(AMAZON, 4, 1);
         amazon.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(amazon);
-
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOODREADS, 1, 0));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(GOOGLE_BOOKS, 2, 2));
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(LIBRARY_THING, 3, 3));
-
-        // the data from ISFDB is **VERY** reliable, sadly access to the site is not.
-        SEARCH_ORDER_DEFAULTS.add(Site.newSite(ISFDB, 4, 4));
 
         // bottom of the list as the data from this site is not up to scratch. Disabled by default.
         Site openLibrary = Site.newSite(OPEN_LIBRARY, 5, 5);
@@ -112,7 +109,6 @@ public final class SearchSites {
         /*
          * dedicated cover lookup; does not use a reliability index.
          */
-
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(GOOGLE_BOOKS, 0));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(LIBRARY_THING, 1));
         COVER_SEARCH_ORDER_DEFAULTS.add(Site.newCoverSite(ISFDB, 2));
@@ -228,6 +224,14 @@ public final class SearchSites {
      */
     public static void reset() {
         setSearchOrder(SEARCH_ORDER_DEFAULTS);
+        setCoverSearchOrder(COVER_SEARCH_ORDER_DEFAULTS);
+    }
+
+    public static void resetSearchOrder() {
+        setSearchOrder(SEARCH_ORDER_DEFAULTS);
+    }
+
+    public static void resetCoverSearchOrder() {
         setCoverSearchOrder(COVER_SEARCH_ORDER_DEFAULTS);
     }
 

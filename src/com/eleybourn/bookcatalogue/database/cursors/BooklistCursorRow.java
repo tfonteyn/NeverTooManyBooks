@@ -198,14 +198,25 @@ public class BooklistCursorRow
             }
         }
 
+        //FIXME: seen once, can't reproduce:
+        //     android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
+        //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
+        //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
+        //        at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
+        //        at com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:338)
+        //        at com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow.getLevelText(BooklistCursorRow.java:201)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1551)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.access$400(BooksOnBookshelf.java:102)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:488)
         return formatRowGroup(context, level, mCursor.getString(mLevelCol[index]));
     }
 
     /**
      * Perform any special formatting for a row group.
      *
-     * @param level  Level of the row group
-     * @param source Source value
+     * @param context Current context
+     * @param level   Level of the row group
+     * @param source  Source value
      *
      * @return Formatted string, or original string when no special format
      * was needed or on any failure

@@ -56,8 +56,8 @@ class Queue
      *
      * @author Philip Warner
      */
-    public Queue(@NonNull final QueueManager manager,
-                 @NonNull final String queueName) {
+    Queue(@NonNull final QueueManager manager,
+          @NonNull final String queueName) {
 
         mName = queueName;
         mManager = manager;
@@ -129,7 +129,7 @@ class Queue
                     }
                 }
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             Logger.error(this, e);
         } finally {
             try {

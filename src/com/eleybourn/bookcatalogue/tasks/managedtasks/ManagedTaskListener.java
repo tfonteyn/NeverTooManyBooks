@@ -7,5 +7,5 @@ import androidx.annotation.NonNull;
  */
 public interface ManagedTaskListener {
 
-    void onTaskFinished(@NonNull final ManagedTask task);
+    void onTaskFinished(@NonNull ManagedTask task);
 }

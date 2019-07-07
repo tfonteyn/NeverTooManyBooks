@@ -86,8 +86,7 @@ public class CoverBrowserFragment
     private final GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_SMALL);
     /** The switcher will be used to display larger versions. */
     private ImageSwitcher mImageSwitcherView;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final int mImageSwitcherScaleFactor = ImageUtils.SCALE_X_LARGE;
+
     /** Prior to showing a preview, the switcher can show text updates. */
     private TextView mStatusTextView;
     private CoverBrowserViewModel mModel;
@@ -327,7 +326,7 @@ public class CoverBrowserFragment
                 // store the path. It will be send back to the caller.
                 mImageSwitcherView.setTag(R.id.TAG_ITEM, file.getAbsolutePath());
 
-                Bitmap bm = ImageUtils.createScaledBitmap(file, mImageSwitcherScaleFactor);
+                Bitmap bm = ImageUtils.createScaledBitmap(file, ImageUtils.SCALE_X_LARGE);
 
                 // ImageSwitcher does not accept a bitmap; wants a Drawable instead.
                 mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));

@@ -54,8 +54,18 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         }
     }
 
+    @Override
+    public void set(@NonNull final SharedPreferences.Editor ed,
+                    @Nullable final T value) {
+        if (value == null) {
+            ed.remove(getKey());
+        } else {
+            ed.putString(getKey(), TextUtils.join(DELIM, value));
+        }
+    }
+
     /**
-     * Bypass the real type
+     * Bypass the real type.
      */
     public void set(@Nullable final Set<String> value) {
         if (!mIsPersistent) {
@@ -69,16 +79,6 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         }
     }
 
-    @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final T value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putString(getKey(), TextUtils.join(DELIM, value));
-        }
-    }
-
     public void clear() {
         if (!mIsPersistent) {
             //noinspection ConstantConditions
@@ -89,34 +89,58 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     /**
-     * Add a new element to the end of the list
+     * Add a new element to the end of the list. The updated list is stored immediately.
      *
-     * @param element to add
+     * @param element Element to add
      */
     public void add(@NonNull final E element) {
         if (!mIsPersistent) {
             //noinspection ConstantConditions
             mNonPersistedValue.add(element);
         } else {
-            String value = App.getPrefs(mUuid).getString(getKey(), null);
-            if (value == null) {
-                value = String.valueOf(element);
-            } else {
-                value += DELIM + element;
-            }
-            App.getPrefs(mUuid).edit().putString(getKey(), value).apply();
+            SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
+            add(ed, App.getPrefs(mUuid).getString(getKey(), null), element);
+            ed.apply();
         }
     }
 
+    /**
+     * Add a new element to the end of the list.
+     *
+     * @param list    current list to add the element to, can be {@code null} or empty.
+     * @param element Element to add
+     *
+     * @return updated list string
+     */
+    @NonNull
+    public String add(@NonNull final SharedPreferences.Editor ed,
+                      @Nullable String list,
+                      @NonNull final E element) {
+
+        if (list == null) {
+            list = String.valueOf(element);
+        } else {
+            list += DELIM + element;
+        }
+        ed.putString(getKey(), list);
+
+        return list;
+    }
+
+    /**
+     * Remove an element from the list. The updated list is stored immediately.
+     *
+     * @param element to remove
+     */
     public void remove(@NonNull final E element) {
         if (!mIsPersistent) {
             //noinspection ConstantConditions
             mNonPersistedValue.remove(element);
         } else {
-            String values = App.getPrefs(mUuid).getString(getKey(), null);
-            if (values != null && !values.isEmpty()) {
+            String list = App.getPrefs(mUuid).getString(getKey(), null);
+            if (list != null && !list.isEmpty()) {
                 List<String> newList = new ArrayList<>();
-                for (String e : values.split(DELIM)) {
+                for (String e : list.split(DELIM)) {
                     if (!e.equals(String.valueOf(element))) {
                         newList.add(e);
                     }
@@ -124,7 +148,9 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                 if (newList.isEmpty()) {
                     remove();
                 } else {
-                    App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, newList)).apply();
+                    App.getPrefs(mUuid).edit()
+                       .putString(getKey(), TextUtils.join(DELIM, newList))
+                       .apply();
                 }
             }
         }

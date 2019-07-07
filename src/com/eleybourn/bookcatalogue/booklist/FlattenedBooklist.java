@@ -7,15 +7,12 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book IDs in
@@ -70,7 +67,7 @@ public class FlattenedBooklist
      */
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
-        TableDefinition table = TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition table = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         table.setName(tableName);
 
         mSyncedDb = db.getUnderlyingDatabase();
@@ -94,16 +91,17 @@ public class FlattenedBooklist
 
         SynchronizedDb syncedDb = db.getUnderlyingDatabase();
 
-        TableDefinition table = TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition table = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         table.setName(table.getName() + '_' + id);
         // no indexes, no constraints!
         table.create(syncedDb, false);
 
-        String sql = table.getInsertInto(DOM_PK_ID, DOM_FK_BOOK_ID)
-                + " SELECT " + navTable.dot(DOM_PK_ID) + ',' + listTable.dot(DOM_FK_BOOK_ID)
+        String sql = table.getInsertInto(DBDefinitions.DOM_PK_ID, DBDefinitions.DOM_FK_BOOK_ID)
+                + " SELECT " + navTable.dot(DBDefinitions.DOM_PK_ID)
+                + ',' + listTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                 + " FROM " + listTable.ref() + listTable.join(navTable)
-                + " WHERE " + listTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"
-                + " ORDER BY " + navTable.dot(DOM_PK_ID);
+                + " WHERE " + listTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + " NOT NULL"
+                + " ORDER BY " + navTable.dot(DBDefinitions.DOM_PK_ID);
 
         try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
             stmt.executeInsert();
@@ -153,11 +151,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID)
+                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DOM_PK_ID) + ">?"
-                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
-                    + " ORDER BY " + mTable.dot(DOM_PK_ID) + " ASC LIMIT 1";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
+                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
+                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -179,11 +178,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID)
+                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DOM_PK_ID) + "<?"
-                    + " AND " + mTable.dot(DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
-                    + " ORDER BY " + mTable.dot(DOM_PK_ID) + " DESC LIMIT 1";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
+                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>COALESCE(?,-1)"
+                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -207,9 +207,10 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DOM_PK_ID) + " || '/' || " + mTable.dot(DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID)
+                    + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DOM_PK_ID) + "=?";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
@@ -268,7 +269,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DOM_PK_ID) + "<=?";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
             stmt = mStatements.add(STMT_POSITION, sql);
         }
         stmt.bindLong(1, mPosition);

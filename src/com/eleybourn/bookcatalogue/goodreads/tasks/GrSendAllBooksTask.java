@@ -122,7 +122,7 @@ class GrSendAllBooksTask
     /**
      * Make a more informative description.
      *
-     * @param context Current context
+     * @param context Current context, for accessing resources.
      */
     @NonNull
     @Override

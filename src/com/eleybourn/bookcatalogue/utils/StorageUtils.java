@@ -717,7 +717,7 @@ public final class StorageUtils {
      * <p>
      * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
      *
-     * @param context Current context
+     * @param context Current context, for accessing resources.
      * @param bytes   to format
      *
      * @return formatted # bytes

@@ -86,6 +86,8 @@ public class BookCursor
     }
 
     /**
+     * Get a wrapper for the row data.
+     *
      * @return the row object
      */
     @NonNull

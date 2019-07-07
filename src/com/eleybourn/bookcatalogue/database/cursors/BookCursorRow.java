@@ -24,8 +24,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This
@@ -47,17 +46,17 @@ public class BookCursorRow
     public BookCursorRow(@NonNull final Cursor cursor) {
         super(cursor);
 
-        mMapper.addDomains(DOM_AUTHOR_FORMATTED_GIVEN_FIRST,
-                           DOM_BOOK_LOANEE);
+        mMapper.addDomains(DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST,
+                           DBDefinitions.DOM_BOOK_LOANEE);
     }
 
     @NonNull
     public final String getPrimaryAuthorNameFormattedGivenFirst() {
-        return mMapper.getString(DOM_AUTHOR_FORMATTED_GIVEN_FIRST);
+        return mMapper.getString(DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST);
     }
 
     @NonNull
     public final String getLoanedTo() {
-        return mMapper.getString(DOM_BOOK_LOANEE);
+        return mMapper.getString(DBDefinitions.DOM_BOOK_LOANEE);
     }
 }

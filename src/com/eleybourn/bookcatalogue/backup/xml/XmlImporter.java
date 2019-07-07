@@ -744,6 +744,8 @@ public class XmlImporter
         private final SharedPreferences.Editor mEditor;
 
         /**
+         * Constructor.
+         *
          * @param editor to write to
          */
         PreferencesReader(@NonNull final SharedPreferences.Editor editor) {

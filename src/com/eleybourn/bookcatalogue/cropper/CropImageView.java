@@ -25,7 +25,7 @@ class CropImageView
     @NonNull
     private final Context mContext;
     @Nullable
-    private CropHighlightView mMotionHighlightView = null;
+    private CropHighlightView mMotionHighlightView;
     private float mLastX;
     private float mLastY;
     private int mMotionEdge;

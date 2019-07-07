@@ -27,6 +27,13 @@ public class ValuePicker {
     @NonNull
     private final AlertDialog mDialog;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param title   Dialog title
+     * @param message Message to display at the top
+     */
     ValuePicker(@NonNull final Context context,
                 @Nullable final String title,
                 @Nullable final String message) {

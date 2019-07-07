@@ -371,6 +371,8 @@ public class App
     /**
      * Apply the user's preferred Theme (if it has changed).
      *
+     * @param context Current context to apply the theme to.
+     *
      * @return {@code true} if the theme was changed
      */
     public static boolean isThemeChanged(@NonNull final Context context) {

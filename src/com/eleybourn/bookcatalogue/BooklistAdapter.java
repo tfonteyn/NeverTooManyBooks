@@ -69,9 +69,11 @@ import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
  * Handles all views in a multi-type list showing books, authors, series etc.
  * <p>
  * Each row(level) needs to have a layout like:
- * <layout id="@id/ROW_INFO">
- * <TextView id="@id/name" />
- * ...
+ * <pre>
+ *      <layout id="@id/ROW_INFO">
+ *      <TextView id="@id/name" />
+ *      ...
+ * </pre>
  * <p>
  * ROW_INFO is important, as it's that one that gets shown/hidden when needed.
  *
@@ -585,20 +587,6 @@ public class BooklistAdapter
     public static class BookHolder
             extends RowViewHolder {
 
-        /** Database access. */
-        @NonNull
-        private final DAO mDb;
-
-        /** Bookshelves label resource string. */
-        @NonNull
-        private final String mShelvesLabel;
-        /** Location label resource string. */
-        @NonNull
-        private final String mLocationLabel;
-        /** Format string. */
-        @NonNull
-        private final String mName_colon_value;
-
         /** Pointer to the view that stores the related book field. */
         final TextView titleView;
         /** Pointer to the view that stores the related book field. */
@@ -611,6 +599,24 @@ public class BooklistAdapter
         final TextView publisherView;
         /** Pointer to the view that stores the related book field. */
         final TextView formatView;
+        /** Pointer to the view that stores the series number when it is a short piece of text. */
+        final TextView seriesNumView;
+        /** Pointer to the view that stores the series number when it is a long piece of text. */
+        final TextView seriesNumLongView;
+        /** The "I've read it" checkbox. */
+        final CompoundButton readView;
+        /** Database access. */
+        @NonNull
+        private final DAO mDb;
+        /** Bookshelves label resource string. */
+        @NonNull
+        private final String mShelvesLabel;
+        /** Location label resource string. */
+        @NonNull
+        private final String mLocationLabel;
+        /** Format string. */
+        @NonNull
+        private final String mName_colon_value;
         private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
                 new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
                     @Override
@@ -653,12 +659,6 @@ public class BooklistAdapter
                         }
                     }
                 };
-        /** Pointer to the view that stores the series number when it is a short piece of text. */
-        final TextView seriesNumView;
-        /** Pointer to the view that stores the series number when it is a long piece of text. */
-        final TextView seriesNumLongView;
-        /** The "I've read it" checkbox. */
-        final CompoundButton readView;
         /** Pointer to the view that stores the related book field. */
         private final ImageView coverView;
 

@@ -514,8 +514,8 @@ public class EditBookTocFragment
 
             @SuppressLint("InflateParams")
             @SuppressWarnings("ConstantConditions")
-            final View root = getActivity().getLayoutInflater()
-                                           .inflate(R.layout.dialog_toc_confirm, null);
+            View root = getActivity().getLayoutInflater()
+                                     .inflate(R.layout.dialog_toc_confirm, null);
 
             TextView textView = root.findViewById(R.id.content);
             if (hasToc) {

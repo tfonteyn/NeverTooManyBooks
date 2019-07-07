@@ -135,7 +135,8 @@ public class GoodreadsManager
     /** error string. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
-    private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API = "Unexpected status code from API: ";
+    private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
+            "Unexpected status code from API: ";
 
     /** Set to {@code true} when the credentials have been successfully verified. */
     private static boolean sHasValidCredentials;
@@ -263,6 +264,8 @@ public class GoodreadsManager
      * @param monthKey  bundle key
      * @param dayKey    bundle key
      * @param resultKey key to write to formatted date to
+     *
+     * @return the date string, or {@code null} if invalid
      */
     @SuppressLint("DefaultLocale")
     @Nullable
@@ -326,6 +329,8 @@ public class GoodreadsManager
     /**
      * Check if the access tokens are available (not if they are valid).
      * No network access.
+     *
+     * @return {@code true} if we already have credentials cached.
      */
     public static boolean hasCredentials() {
 
@@ -430,7 +435,7 @@ public class GoodreadsManager
     /**
      * Sign a request and submit it then return the raw text output.
      *
-     * @author Philip Warner
+     * @return the raw text output.
      */
     @NonNull
     public String executeRaw(@NonNull final HttpUriRequest request)
@@ -781,7 +786,9 @@ public class GoodreadsManager
                 if (okToSend && !grShelves.contains(canonicalShelfName)) {
                     try {
                         reviewId = addBookToShelf(shelf, grId);
-                    } catch (@NonNull final BookNotFoundException | IOException | AuthorizationException e) {
+                    } catch (@NonNull final BookNotFoundException
+                            | IOException
+                            | AuthorizationException e) {
                         return ExportDisposition.error;
                     }
                 }

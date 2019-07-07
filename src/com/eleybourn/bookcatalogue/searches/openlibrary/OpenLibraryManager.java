@@ -385,7 +385,7 @@ public class OpenLibraryManager
         // we only handle the first result for now.
         if (it.hasNext()) {
             String key = it.next();
-            String[] data = key.split((":"));
+            String[] data = key.split(":");
             if (data.length == 2 && "ISBN".equals(data[0])) {
                 return handleBook(data[1], fetchThumbnail, jsonObject.getJSONObject(key));
             }

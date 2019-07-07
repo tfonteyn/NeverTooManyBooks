@@ -381,7 +381,7 @@ public class CoverHandler {
             // Create a file to copy the image into
             try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
                 result.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, e);
                 return;
             }
@@ -423,7 +423,7 @@ public class CoverHandler {
                                           .openInputStream(selectedImageUri)) {
                 imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile());
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
                 Logger.error(this, e, "Unable to copy content to file");
             }
 
@@ -485,7 +485,7 @@ public class CoverHandler {
                 try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
                     rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
                     Logger.error(this, e);
                     return;
                 }
@@ -672,7 +672,8 @@ public class CoverHandler {
                         File destination = getCoverFile();
                         StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
-                        ImageUtils.setImageView(mCoverView, getCoverFile(), mMaxWidth, mMaxHeight, true);
+                        ImageUtils.setImageView(mCoverView, getCoverFile(),
+                                                mMaxWidth, mMaxHeight, true);
                     } else {
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this, "onActivityResult",

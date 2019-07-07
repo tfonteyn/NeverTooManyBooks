@@ -56,7 +56,7 @@ public class EditTocEntryDialogFragment
      *
      * @return the instance
      */
-    public static EditTocEntryDialogFragment newInstance(TocEntry tocEntry,
+    public static EditTocEntryDialogFragment newInstance(@NonNull final TocEntry tocEntry,
                                                          final boolean hasMultipleAuthors) {
         EditTocEntryDialogFragment frag = new EditTocEntryDialogFragment();
         Bundle args = new Bundle();
@@ -164,6 +164,6 @@ public class EditTocEntryDialogFragment
 
     public interface EditTocEntryResults {
 
-        void addOrUpdateEntry(@NonNull final TocEntry tocEntry);
+        void addOrUpdateEntry(@NonNull TocEntry tocEntry);
     }
 }

@@ -565,9 +565,7 @@ public final class ImageUtils {
         private Bitmap mBitmap;
         /** Flag indicating image was found in the cache. */
         private boolean mWasInCache;
-        /**
-         *
-         */
+
         private Exception mException;
 
         /**
@@ -651,7 +649,7 @@ public final class ImageUtils {
                     try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
                         mBitmap = coversDBAdapter.getImage(mUuid, mWidth, mHeight);
                     }
-                    mWasInCache = (mBitmap != null);
+                    mWasInCache = mBitmap != null;
                 }
 
                 // Make sure the view is still ... bla bla as above
@@ -665,7 +663,7 @@ public final class ImageUtils {
                     mBitmap = BitmapFactory.decodeFile(fileSpec, null);
                 }
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
                 mException = e;
                 Logger.error(this, e);
             }
@@ -707,7 +705,7 @@ public final class ImageUtils {
                         // so we extract the currently displayed one to send to the cache.
                         Drawable drawable = imageView.getDrawable();
                         if (drawable instanceof BitmapDrawable) {
-                            Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+                            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
                             // Queue the image to be written to the cache.
                             new ImageCacheWriterTask(mUuid, mWidth, mHeight, bitmap)
                                     .execute();
@@ -749,7 +747,7 @@ public final class ImageUtils {
          * Create a task that will compress the passed bitmap and write it to the database,
          * it will also be recycled if flag is set.
          *
-         * @param source     Raw bitmap to store
+         * @param source Raw bitmap to store
          */
         @UiThread
         private ImageCacheWriterTask(@NonNull final String uuid,

@@ -85,17 +85,17 @@ public class ISFDBManager
                 //TODO: do not use Application Context for String resources
                 Resources resources = App.getAppContext().getResources();
                 return new ISFDBBook().fetch(editions, isCollectSeriesInfoFromToc(),
-                                      fetchThumbnail, resources);
+                                             fetchThumbnail, resources);
             }
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
 
             //TODO: implement ISFDB search by author/title
             //replace spaces in author/title with %20
-            String urlText = getBaseURL() + "/cgi-bin/adv_search_results.cgi?" +
-                    "title_title%3A" + encodeSpaces(title) +
-                    "%2B" +
-                    "author_canonical%3A" + encodeSpaces(author);
+            String urlText = getBaseURL() + "/cgi-bin/adv_search_results.cgi?"
+                    + "title_title%3A" + encodeSpaces(title)
+                    + "%2B"
+                    + "author_canonical%3A" + encodeSpaces(author);
             throw new UnsupportedOperationException(urlText);
 
         }
@@ -105,9 +105,9 @@ public class ISFDBManager
     }
 
     /**
-     * replace spaces with %20
+     * replace spaces with %20.
      */
-    public String encodeSpaces(@NonNull final String s) {
+    private String encodeSpaces(@NonNull final String s) {
         return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

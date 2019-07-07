@@ -53,7 +53,8 @@ public class BookSearchByTextFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchCoordinatorId=" + mBookSearchBaseModel.getSearchCoordinatorId());
+                                          "SearchCoordinatorId="
+                                                  + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {

@@ -65,9 +65,9 @@ class CropHighlightView {
     private ModifyMode mMode = ModifyMode.None;
     /*** in image space. */
     private RectF mImageRect;
-    private boolean mMaintainAspectRatio = false;
+    private boolean mMaintainAspectRatio;
     private float mInitialAspectRatio;
-    private boolean mCircle = false;
+    private boolean mCircle;
 
     private Drawable mResizeDrawableWidth;
     private Drawable mResizeDrawableHeight;

@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
- * aka 'displayName'
+ * aka 'displayName'.
  */
 public interface Entity {
 
@@ -23,7 +23,7 @@ public interface Entity {
     /**
      * Optional.
      *
-     * @param context for locale specific strings
+     * @param context Current context, for accessing resources.
      *
      * @return the label to use.
      */

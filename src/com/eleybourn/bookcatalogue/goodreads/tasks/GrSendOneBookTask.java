@@ -60,6 +60,8 @@ class GrSendOneBookTask
 
     /**
      * Perform the main task.
+     *
+     * @return {@code true} for success
      */
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,

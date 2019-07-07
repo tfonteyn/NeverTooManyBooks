@@ -5,6 +5,14 @@
     style="@style/DialogFrame"
     >
 
+    <!-- control visibility of checkboxes. -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/cbx_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="cbx_books_csv,cbx_covers,cbx_preferences"
+        />
+
     <CheckBox
         android:id="@+id/cbx_books_csv"
         style="@style/OptionRow.Checkable"

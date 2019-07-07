@@ -31,7 +31,7 @@ public class ZoomedImageDialogFragment
     private static final String TAG = "ZoomedImageDialogFragment";
 
     /**
-     * (syntax sugar for newInstance)
+     * Syntax sugar for newInstance.
      */
     public static void show(@NonNull final FragmentManager fm,
                             @NonNull final File imageFile) {

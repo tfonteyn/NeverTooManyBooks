@@ -241,8 +241,8 @@ public final class Logger {
                 File backup = new File(StorageUtils.getErrorLog() + ".bak");
                 StorageUtils.renameFile(logFile, backup);
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
-            // Ignore backup failure...
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
+            // Ignore all backup failure...
         }
     }
 

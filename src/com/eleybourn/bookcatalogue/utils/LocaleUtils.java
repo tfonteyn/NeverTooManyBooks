@@ -553,9 +553,10 @@ public final class LocaleUtils {
         Locale cur = from(context);
         return "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
                 + "\nsSystemInitialLocale(cur)       : " + sSystemInitialLocale.getDisplayName(cur)
-                + "\nconfiguration.locale            : " + context.getResources().getConfiguration().locale.getDisplayName()
-                + "\nconfiguration.locale(cur)       : " + context.getResources().getConfiguration().locale.getDisplayName(
-                cur)
+                + "\nconfiguration.locale            : "
+                + context.getResources().getConfiguration().locale.getDisplayName()
+                + "\nconfiguration.locale(cur)       : "
+                + context.getResources().getConfiguration().locale.getDisplayName(cur)
 
                 + "\nLocale.getDefault()             : " + Locale.getDefault().getDisplayName()
                 + "\nLocale.getDefault(cur)          : " + Locale.getDefault().getDisplayName(cur)

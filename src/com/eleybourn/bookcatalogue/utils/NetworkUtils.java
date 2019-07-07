@@ -179,12 +179,12 @@ public final class NetworkUtils {
         @Override
         @NonNull
         public String toString() {
-            return "Connectivity{" +
-                    "hasEthernet=" + hasEthernet +
-                    ", hasWifi=" + hasWifi +
-                    ", hasBluetooth=" + hasBluetooth +
-                    ", hasMobile=" + hasMobile +
-                    '}';
+            return "Connectivity{"
+                    + "hasEthernet=" + hasEthernet
+                    + ", hasWifi=" + hasWifi
+                    + ", hasBluetooth=" + hasBluetooth
+                    + ", hasMobile=" + hasMobile
+                    + '}';
         }
 
         public enum Type {

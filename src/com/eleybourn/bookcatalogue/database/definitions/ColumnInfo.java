@@ -45,11 +45,11 @@ public class ColumnInfo {
     @NonNull
     public final StorageClass storageClass;
 
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings("unused")
     private final int position;
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings("unused")
     private final boolean allowNull;
-    @SuppressWarnings({"unused"})
+    @SuppressWarnings("unused")
     @Nullable
     private final String defaultValue;
 

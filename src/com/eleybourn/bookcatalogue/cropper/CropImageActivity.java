@@ -366,7 +366,7 @@ public class CropImageActivity
     /**
      * TODO: this code needs to change to use the decode/crop/encode single
      * step api so that we don't require that the whole (possibly large)
-     * bitmap doesn't have to be read into memory
+     * bitmap doesn't have to be read into memory.
      */
     private void onSaveClicked() {
         if (mIsSaving) {
@@ -482,7 +482,7 @@ public class CropImageActivity
                 // we saved the image
                 setResult(Activity.RESULT_OK, intent);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
                 Logger.error(this, e);
                 setResult(Activity.RESULT_CANCELED);
             }

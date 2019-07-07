@@ -91,8 +91,8 @@ public class FilePicker
             holder.nameView.setText(item.getName());
             holder.pathView.setText(item.getParent());
             holder.sizeView.setText(StorageUtils.formatFileSize(context, item.length()));
-            holder.lastModDateView.setText(DateUtils.toPrettyDateTime(mLocale,
-                                                                      new Date(item.lastModified())));
+            holder.lastModDateView
+                    .setText(DateUtils.toPrettyDateTime(mLocale, new Date(item.lastModified())));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

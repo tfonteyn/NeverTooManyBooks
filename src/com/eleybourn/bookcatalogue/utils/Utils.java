@@ -34,10 +34,6 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
-import com.eleybourn.bookcatalogue.R;
-
 /**
  * Left-over methods...
  */

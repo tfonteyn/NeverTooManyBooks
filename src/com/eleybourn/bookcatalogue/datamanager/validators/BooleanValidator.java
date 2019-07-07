@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 public class BooleanValidator
         implements DataValidator {
 
+    /** Default to apply if the field is empty. */
     private final boolean mDefaultValue;
 
     /**

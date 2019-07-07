@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -27,16 +29,18 @@ public class ImportCSVTask
     /**
      * Constructor.
      *
+     * @param context        Current context, for accessing resources.
      * @param settings       the import settings
      * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    public ImportCSVTask(@NonNull final ImportOptions settings,
+    public ImportCSVTask(@NonNull final Context context,
+                         @NonNull final ImportOptions settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
         super(R.id.TASK_ID_CSV_IMPORT, progressDialog);
 
         mSettings = settings;
-        mImporter = new CsvImporter(settings);
+        mImporter = new CsvImporter(context, settings);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ImportCSVTask
                               }
             );
 
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(this, e);
             mException = e;
 

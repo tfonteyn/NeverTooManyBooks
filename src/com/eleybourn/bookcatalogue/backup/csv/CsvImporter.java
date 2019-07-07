@@ -37,15 +37,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
-import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
@@ -101,20 +100,20 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param settings      {@link ImportOptions#file} is not used, as we must support
-     *                      reading from a stream.
-     *                      {@link ImportOptions##dateFrom} is not applicable
-     *                      {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
-     *                      Other flags are ignored, as this class only
-     *                      handles {@link ImportOptions#BOOK_CSV} anyhow.
+     * @param context  Current context, for accessing resources.
+     * @param settings {@link ImportOptions#file} is not used, as we must support
+     *                 reading from a stream.
+     *                 {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                 Other flags are ignored, as this class only
+     *                 handles {@link ImportOptions#BOOK_CSV} anyhow.
      */
     @UiThread
-    public CsvImporter(@NonNull final ImportOptions settings) {
+    public CsvImporter(@NonNull final Context context,
+                       @NonNull final ImportOptions settings) {
 
-        //TODO: do not use Application Context for String resources
-        Context context = App.getAppContext();
         mUnknownString = context.getString(R.string.unknown);
-        mProgress_msg_n_created_m_updated = context.getString(R.string.progress_msg_n_created_m_updated);
+        mProgress_msg_n_created_m_updated = context.getString(
+                R.string.progress_msg_n_created_m_updated);
 
         mDb = new DAO();
         mSettings = settings;
@@ -161,7 +160,7 @@ public class CsvImporter
 
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
-        // For now we require complete data.
+        // For now we require some id column + author/title
         // ENHANCE: Do a search if mandatory columns missing (e.g. allow 'import' of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
         // (i.e. if not an update)
@@ -174,18 +173,19 @@ public class CsvImporter
                              DBDefinitions.KEY_ID);
 
         // need some type of author name.
+        // ENHANCE: We should accept UPDATED books where the incoming row does not have a author.
         requireColumnOrThrow(book,
                              // aka author_details: preferred one as used in latest versions
                              CsvExporter.CSV_COLUMN_AUTHORS,
-                            // alternative column names we handle.
+                             // alternative column names we handle.
                              DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
                              DBDefinitions.KEY_AUTHOR_FORMATTED,
                              OLD_STYLE_AUTHOR_NAME
         );
 
-        // Do NOT force/check for a title.
-        // We accept UPDATED books where the incoming row does not have a title.
-        //requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
+        // need a title.
+        // ENHANCE: We should accept UPDATED books where the incoming row does not have a title.
+        requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
 
         final boolean updateOnlyIfNewer;
@@ -238,8 +238,13 @@ public class CsvImporter
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
 
                 // Lookup id's etc, but do not write to db! Storing the book data does all that
+
+                // check any of the pre-tested Author variations columns.
                 handleAuthors(mDb, book);
+                // check the dedicated Series column, or check if the title contains a series part.
                 handleSeries(mDb, book);
+
+                // optional
                 if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
                     handleAnthology(mDb, book);
                 }
@@ -631,7 +636,7 @@ public class CsvImporter
         }
 
         throw new ImportException(R.string.import_error_csv_file_must_contain_any_column,
-                                  (TextUtils.join(",", names)));
+                                  TextUtils.join(",", names));
     }
 
     private void requireNonBlankOrThrow(@NonNull final Book book,

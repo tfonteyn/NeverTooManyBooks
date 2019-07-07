@@ -92,6 +92,17 @@ public class SearchOrderFragment
     }
 
     /**
+     * Replace the current list
+     *
+     * @param list new list to display.
+     */
+    public void setList(@NonNull final ArrayList<Site> list) {
+        mList.clear();
+        mList.addAll(list);
+        mListAdapter.notifyDataSetChanged();
+    }
+
+    /**
      * @return the list, or {@code null} if this fragment was not displayed,
      * i.e. the list was not even loaded.
      */

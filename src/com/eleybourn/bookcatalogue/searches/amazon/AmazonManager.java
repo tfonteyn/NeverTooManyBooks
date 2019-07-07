@@ -79,6 +79,7 @@ public final class AmazonManager
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
+    private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
 
     /**
      * Constructor.
@@ -93,8 +94,9 @@ public final class AmazonManager
     }
 
     /**
-     * @param author to search for
-     * @param series to search for
+     * @param context Current context
+     * @param author  to search for
+     * @param series  to search for
      */
     public static void openWebsite(@NonNull final Context context,
                                    @Nullable final String author,
@@ -160,8 +162,6 @@ public final class AmazonManager
         return R.string.amazon;
     }
 
-    private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
-
     /**
      * This searches the amazon REST site based on a specific isbn.
      * <p>
@@ -222,7 +222,7 @@ public final class AmazonManager
     }
 
     /**
-     * replace spaces with %20
+     * replace spaces with %20.
      */
     private String encodeSpaces(@NonNull final String s) {
         return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));

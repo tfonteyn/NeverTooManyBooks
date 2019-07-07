@@ -31,6 +31,11 @@ public class AuthorWorksModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args      Bundle with arguments
+     */
     public void init(@NonNull final Bundle args) {
         long authorId = args.getLong(DBDefinitions.KEY_ID, 0);
         boolean withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, true);

@@ -34,8 +34,8 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
-import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -72,7 +72,6 @@ public abstract class BackupReaderAbstract
 
     /**
      * Constructor.
-     *
      */
     protected BackupReaderAbstract() {
         mDb = new DAO();
@@ -91,8 +90,7 @@ public abstract class BackupReaderAbstract
      */
     @Override
     public void restore(@NonNull final ImportOptions settings,
-                        @NonNull final ProgressListener listener
-    )
+                        @NonNull final ProgressListener listener)
             throws IOException, ImportException {
 
         mSettings = settings;
@@ -232,7 +230,8 @@ public abstract class BackupReaderAbstract
     private void restoreBooks(@NonNull final ReaderEntity entity)
             throws IOException, ImportException {
 
-        try (Importer importer = new CsvImporter(mSettings)) {
+        //TODO: do not use Application Context for String resources
+        try (Importer importer = new CsvImporter(App.getAppContext(), mSettings)) {
             importer.doBooks(entity.getStream(), null, mProgressListener);
         }
     }
@@ -277,19 +276,16 @@ public abstract class BackupReaderAbstract
             throws IOException {
 
         mProgressListener.onProgressStep(1, mProcessBooklistStyles);
-        BooklistStyle style = null;
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
-            style = entity.getSerializable();
+            BooklistStyle style = entity.getSerializable();
+            style.save(mDb);
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
                 Logger.debug(this, "restorePreV200Style", style);
             }
         } catch (@NonNull final DeserializationException e) {
             Logger.error(this, e, "Unable to restore style");
-        }
-
-        if (style != null) {
-            style.save(mDb);
         }
     }
 
