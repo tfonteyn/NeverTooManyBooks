@@ -437,7 +437,7 @@
     <string name="export_options_dialog_title">Wybierz, co zostanie wyeksportowane do archiwum.</string>
     <string name="field_not_set_with_brackets">(Nie ustawiony)</string>
     <string name="lbl_erase_cover_cache">Usuń pamięć podręczną okładki</string>
-    <string name="error_database_upgrade_failed">Nie można uaktualnić z wersji starszej niż 4.0.0</string>
+    <string name="error_database_upgrade_failed">Nie można uaktualnić z wersji starszej niż 5.2.2</string>
     <string name="hint_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
     <string name="hint_booklist_style_menu">To menu pozwala wybrać styl listy. Możesz także dostosować to menu, a także tworzyć własne style listy, wybierając „Dostosuj” na końcu listy.</string>
     <string name="hint_booklist_style_properties">Możesz użyć tego ekranu, aby ustawić charakterystykę konkretnego stylu listy książek. Możesz zmienić nazwę, edytować grupy, aby zmienić hierarchię, i dostosować różne inne preferencje, aby stworzyć styl, który uznasz za przydatny. Można również użyć „Filtry”, aby zmodyfikować wybór książek, które będą wyświetlane na liście. na przykład tylko pobierać książki, których jeszcze nie przeczytałeś i więcej.</string>

@@ -701,7 +701,7 @@
     <string name="book_format_trade_paperback">Rústica PUR</string>
     <string name="book_format_ebook">Libro electronico</string>
     <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
-    <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 4.0.0</string>
+    <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 5.2.2</string>
     <string name="error_not_available">%1$s no disponible</string>
     <string name="error_storage_not_accessible">Almacenamiento no accesible</string>
     <string name="error_storage_no_space_left">Almacenamiento insuficiente disponible</string>

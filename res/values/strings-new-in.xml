@@ -26,7 +26,7 @@
             * LibraryThing & ISFDB local id for future usage.\n
             * UI translations 99% complete.\n
             * Experimental: New Search website: OpenLibrary\n
-            * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
+            * Removed: Database upgrades only supported from version 5.2.2 or later.\n
             * Removed: The old “Classic” view is gone.\n
             * Bug fixes\n
         </p>]]>

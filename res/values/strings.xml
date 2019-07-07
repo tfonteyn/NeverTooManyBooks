@@ -118,8 +118,8 @@ TODO: uniform quotes in all string:
     <string name="error_search_configuration">Configuration error. Please open the Settings page and check your Search Site preferences.</string>
     <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
-    <!-- Users of versions older than 4.0.0 need to upgrade to 5.x first -->
-    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 4.0.0</string>
+    <!-- Users of versions older than 5.2.2 need to upgrade to 5.2.2 first -->
+    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 5.2.2</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->

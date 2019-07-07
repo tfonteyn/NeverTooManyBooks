@@ -670,7 +670,7 @@
     <string name="error_email_failed">E-posta gönderilemedi.</string>
     <string name="btn_options">Seçenekler</string>
     <string name="confirm_merge_bookshelves">Yeniden adlandırdığınız kitaplık zaten var. Onları birleştirmek ister misiniz?</string>
-    <string name="error_database_upgrade_failed">4.0.0\'dan daha eski bir sürümden yükseltme yapılamıyor</string>
+    <string name="error_database_upgrade_failed">5.2.2\'dan daha eski bir sürümden yükseltme yapılamıyor</string>
     <string name="error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_configuration">Yapılandırma hatası. Lütfen Ayarlar sayfasını açın ve Arama Sitesi tercihlerinizi kontrol edin.</string>
     <string name="error_storage_not_accessible">Depolama erişilebilir değil</string>

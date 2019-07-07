@@ -578,7 +578,7 @@
     <string name="error_not_available">%1$s není k dispozici</string>
     <string name="error_search_configuration">Chyba konfigurace. Otevřete stránku Nastavení a zkontrolujte předvolby vyhledávacího webu.</string>
     <string name="export_options_dialog_title">Vyberte, co bude exportováno do archivu.</string>
-    <string name="error_database_upgrade_failed">Nelze provést upgrade z verze starší než 4.0.0</string>
+    <string name="error_database_upgrade_failed">Nelze provést upgrade z verze starší než 5.2.2</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
     <string name="hint_view_only_help">Toto je obrazovka s neupravitelnými podrobnostmi knihy; můžete posouvat doleva nebo doprava a přejít k dalším knihám a knihu můžete upravit pomocí nabídky možností pomocí tlačítka nabídky nebo ikony přetékající nabídky.</string>
     <string name="import_export_option_xml_info">XML je pouze export, bez importu.</string>

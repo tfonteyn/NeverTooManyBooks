@@ -901,7 +901,7 @@
     <string name="lbl_first_publication_year">Erstes Veröffentlichungsjahr</string>
     <string name="info_share_book_im_reading">Ich lese “%1$s” von %2$s %3$s %4$s</string>
     <string name="error_database_upgrade_failed">
-        Upgrade von einer älteren Version als 4.0.0 ist nicht möglich
+        Upgrade von einer älteren Version als 5.2.2 ist nicht möglich
     </string>
     <string name="gr_tq_generic_task_info">Aufgaben-ID %1$d, Warteschlange um %2$s</string>
     <string name="menu_author_details">Alle Werke dieses Autors</string>

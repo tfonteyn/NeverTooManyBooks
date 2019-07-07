@@ -93,7 +93,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_TOC_ENTRIES
  * Uses the application context.
  * Singleton.
  */
-public class DBHelper
+public final class DBHelper
         extends SQLiteOpenHelper {
 
     /**
@@ -584,10 +584,16 @@ public class DBHelper
     }
 
     /**
+     * Since renaming the application, a direct upgrade from the original database is
+     * actually no longer needed/done. Migrating from BC to this rewritten version should
+     * be a simple 'backup to archive' in the old app, and an 'import from archive' in this app.
+     *
+     * Leaving the code here below for now, but it's bound to be completely removed soon.
+     *
      * This function is called each time the database is upgraded.
      * It will run all upgrade scripts between the oldVersion and the newVersion.
      * <p>
-     * Minimal application version 4.0.0 (database version 71). Older versions not supported.
+     * Minimal application version 5.2.2 (database version 82). Older versions not supported.
      * <p>
      * REMINDER: do not use [column].ref() or [table].create/createAll.
      * The 'current' definition might not match the upgraded definition!
@@ -609,7 +615,7 @@ public class DBHelper
                               "Old database version: " + oldVersion,
                               "Upgrading database: " + db.getPath());
         }
-        if (oldVersion < 71) {
+        if (oldVersion < 82) {
             throw new UpgradeException(R.string.error_database_upgrade_failed);
         }
 
@@ -624,11 +630,6 @@ public class DBHelper
 
         int curVersion = oldVersion;
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
-
-        // older version upgrades archived/execute in UpgradeDatabase
-        if (curVersion < 82) {
-            curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
-        }
 
         // db82 == app179 == 5.2.2 == last official version.
         if (curVersion < newVersion && curVersion == 82) {

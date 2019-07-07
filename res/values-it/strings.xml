@@ -692,7 +692,7 @@
     <string name="info_share_book_im_reading">Sto leggendo “%1$s” di %2$s %3$s %4$s</string>
     <string name="progress_msg_please_wait">Attendere prego…</string>
     <string name="warning_required_title_and_author">Manca il titolo e / o l\'autore.</string>
-    <string name="error_database_upgrade_failed">Impossibile eseguire l\'aggiornamento da una versione precedente alla 4.0.0</string>
+    <string name="error_database_upgrade_failed">Impossibile eseguire l\'aggiornamento da una versione precedente alla 5.2.2</string>
     <string name="book_format_hardcover">Rilegato</string>
     <string name="book_format_paperback">Paperback</string>
     <string name="book_format_ebook">eBook</string>

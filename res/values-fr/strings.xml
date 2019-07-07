@@ -754,7 +754,7 @@
     <string name="lbl_style">Style</string>
     <string name="error_not_available">%1$s indisponible</string>
     <string name="error_storage_not_accessible">Stockage non accessible</string>
-    <string name="error_database_upgrade_failed">Mise à niveau impossible à partir d\'une version antérieure à 4.0.0</string>
+    <string name="error_database_upgrade_failed">Mise à niveau impossible à partir d\'une version antérieure à 5.2.2</string>
     <string name="warning_required_title_and_author">Le titre et / ou l\'auteur sont manquants.</string>
     <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner?</string>
     <string name="import_export_option_xml_info">XML est uniquement exportable, pas d\'importation.</string>

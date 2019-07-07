@@ -56,7 +56,7 @@ public final class UpgradeMessageManager {
     /**
      * Get the upgrade message for the running app instance; caches the result for later use.
      *
-     * @param context for locale specific strings
+     * @param context Current context, for accessing resources.
      *
      * @return Upgrade message (or blank string)
      */

@@ -696,7 +696,7 @@
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
     <string name="error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_configuration">Σφάλμα διαμόρφωσης. Ανοίξτε τη σελίδα Ρυθμίσεις και ελέγξτε τις προτιμήσεις του ιστότοπου αναζήτησης.</string>
-    <string name="error_database_upgrade_failed">Δεν είναι δυνατή η αναβάθμιση από έκδοση μεγαλύτερη από 4.0.0</string>
+    <string name="error_database_upgrade_failed">Δεν είναι δυνατή η αναβάθμιση από έκδοση μεγαλύτερη από 5.2.2</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="import_export_option_xml_info">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
     <string name="import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>

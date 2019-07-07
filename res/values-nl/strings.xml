@@ -884,7 +884,7 @@
     <string name="error_not_available">%1$s niet beschikbaar</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>
     <string name="import_export_option_xml">Alle gegevens in XML formaat</string>
-    <string name="error_database_upgrade_failed">Upgraden vanaf een versie ouder dan 4.0.0 is niet ondersteunt</string>
+    <string name="error_database_upgrade_failed">Upgraden vanaf een versie ouder dan 5.2.2 is niet ondersteunt</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>

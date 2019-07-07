@@ -575,7 +575,7 @@
     <string name="lbl_currency">валюта</string>
     <string name="btn_options">опции</string>
     <string name="done">сделанный</string>
-    <string name="error_database_upgrade_failed">Невозможно обновить версию старше 4.0.0</string>
+    <string name="error_database_upgrade_failed">Невозможно обновить версию старше 5.2.2</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_search_configuration">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
     <string name="lbl_date_acquired">Дата покупки</string>

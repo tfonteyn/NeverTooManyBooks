@@ -33,7 +33,6 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 public class StartupViewModel
         extends ViewModel {
 
-
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Set<Integer> mAllTasks = new HashSet<>(6);
@@ -293,17 +292,6 @@ public class StartupViewModel
             }
             publishProgress(App.getAppContext().getString(R.string.progress_msg_optimizing));
             try {
-                if (App.getPrefs().getBoolean(
-                        UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
-                        false)) {
-                    UpgradeDatabase.v74_fixupAuthorsAndSeries(mDb);
-                    App.getPrefs()
-                       .edit()
-                       .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
-                       .apply();
-                }
-
-
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO3 codes
