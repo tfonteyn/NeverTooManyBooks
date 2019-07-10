@@ -15,7 +15,7 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
- * Given a Cursor, and a list of {@link DomainDefinition}, this class constructs a map with
+ * Given a Cursor, and a list of domains, this class constructs a map with
  * the column indexes as used with that Cursor.
  * <p>
  * Avoids the need to repeat writing code to get column indexes for named columns.
@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class ColumnMapper {
 
-    /** the cache with the column id's. WARNING: value will be -1 if column was not found. */
+    /** the cache with the column ID's. WARNING: value will be -1 if column was not found. */
     private final Map<String, Integer> mColumnIndexes = new HashMap<>();
     /** the mapped cursor. */
     private final Cursor mCursor;
@@ -40,15 +40,13 @@ public class ColumnMapper {
      * and the given set of domains.
      * No errors or Exception thrown at construction time.
      *
-     * @param cursor  to read from
-     * @param table   for which to map all registered columns, can be {@code null}.
-     * @param domains a list of domains (e.g. from other tables)
+     * @param cursor to read from
+     * @param table  for which to map all registered columns, can be {@code null}.
      *
-     * @see TableDefinition#addDomain(DomainDefinition) we don't always register a full set.
+     * @see TableDefinition#addDomain we don't always register a full set.
      */
     public ColumnMapper(@NonNull final Cursor cursor,
-                        @Nullable final TableDefinition table,
-                        @Nullable final DomainDefinition... domains)
+                        @Nullable final TableDefinition table)
             throws IllegalArgumentException {
         mCursor = cursor;
 
@@ -57,7 +55,6 @@ public class ColumnMapper {
                 mColumnIndexes.put(domain.name, mCursor.getColumnIndex(domain.name));
             }
         }
-        addDomains(domains);
     }
 
     /**
@@ -79,24 +76,24 @@ public class ColumnMapper {
      * Add additional domains after construction time.
      * Useful for child classes.
      *
-     * @param names a list of domain names
+     * @param domains a list of domains
      */
-    public void addDomains(@Nullable final String... names)
+    public void addDomains(@Nullable final String... domains)
             throws IllegalArgumentException {
-        if (names != null) {
-            for (String name : names) {
-                mColumnIndexes.put(name, mCursor.getColumnIndex(name));
+        if (domains != null) {
+            for (String domain : domains) {
+                mColumnIndexes.put(domain, mCursor.getColumnIndex(domain));
             }
         }
     }
 
     /**
-     * @param domain the domain to get
+     * @param domainName the domain to get
      *
      * @return {@code true} if this mapper contains the specified domain.
      */
-    public boolean contains(@NonNull final DomainDefinition domain) {
-        Integer index = mColumnIndexes.get(domain.name);
+    public boolean contains(@NonNull final String domainName) {
+        Integer index = mColumnIndexes.get(domainName);
         return (index != null) && (index != -1);
     }
 
@@ -123,60 +120,30 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain to get
-     *
-     * @return the string value of the column.
-     * A {@code null} value will be returned as an empty String.
-     *
-     * @throws ColumnNotPresentException if the column was not present.
-     */
-    @NonNull
-    public String getString(@NonNull final DomainDefinition domain)
-            throws ColumnNotPresentException {
-
-        Integer index = mColumnIndexes.get(domain.name);
-        if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
-        }
-        if (mCursor.isNull(index)) {
-            return "";
-        }
-        return mCursor.getString(index);
-    }
-
-    /**
-     * @param domain to get
+     * @param domainName to get
      *
      * @return the boolean value of the column ({@code null} comes back as false).
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public boolean getBoolean(@NonNull final DomainDefinition domain)
+    public boolean getBoolean(@NonNull final String domainName)
             throws ColumnNotPresentException {
-
-        Integer index = mColumnIndexes.get(domain.name);
-        if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
-        }
-//        if (mCursor.isNull(index)) {
-//            return null; // false
-//        }
-        return mCursor.getInt(index) == 1;
+        return getInt(domainName) == 1;
     }
 
     /**
-     * @param domain to get
+     * @param domainName to get
      *
      * @return the int value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public int getInt(@NonNull final DomainDefinition domain)
+    public int getInt(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domain.name);
+        Integer index = mColumnIndexes.get(domainName);
         if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
+            throw new ColumnNotPresentException(domainName);
         }
 //        if (mCursor.isNull(index)) {
 //            return null; // 0
@@ -185,18 +152,18 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain to get
+     * @param domainName to get
      *
      * @return the long value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    public long getLong(@NonNull final DomainDefinition domain)
+    public long getLong(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domain.name);
+        Integer index = mColumnIndexes.get(domainName);
         if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
+            throw new ColumnNotPresentException(domainName);
         }
 //        if (mCursor.isNull(index)) {
 //            return null; // 0
@@ -205,19 +172,18 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain to get
+     * @param domainName to get
      *
      * @return the double value of the column ({@code null} comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
-    @SuppressWarnings("WeakerAccess")
-    public double getDouble(@NonNull final DomainDefinition domain)
+    public double getDouble(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domain.name);
+        Integer index = mColumnIndexes.get(domainName);
         if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
+            throw new ColumnNotPresentException(domainName);
         }
 //        if (mCursor.isNull(index)) {
 //            return null; // 0
@@ -226,7 +192,7 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain to get
+     * @param domainName to get
      *
      * @return the byte[] value of the column.
      *
@@ -234,12 +200,12 @@ public class ColumnMapper {
      */
     @SuppressWarnings("unused")
     @Nullable
-    public byte[] getBlob(@NonNull final DomainDefinition domain)
+    public byte[] getBlob(@NonNull final String domainName)
             throws ColumnNotPresentException {
 
-        Integer index = mColumnIndexes.get(domain.name);
+        Integer index = mColumnIndexes.get(domainName);
         if ((index == null) || (index == -1)) {
-            throw new ColumnNotPresentException(domain.name);
+            throw new ColumnNotPresentException(domainName);
         }
         return mCursor.getBlob(index);
     }

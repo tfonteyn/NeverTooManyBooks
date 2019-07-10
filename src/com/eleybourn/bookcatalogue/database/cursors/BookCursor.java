@@ -34,13 +34,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 /**
- * Cursor implementation for book-related queries. The cursor wraps common
- * column lookups and reduces code clutter when accessing common columns by
- * providing a {@link BookCursorRow}
- * <p>
- * Note: why are the methods of BookCursorRow not simply here?
- * Answer: (I think) because this way we have two-way inheritance,
- * parts of the RowView can be re-used for different cursors.
+ * Cursor implementation for book-related queries providing a {@link MappedCursorRow}
  *
  * @author Philip Warner
  */
@@ -51,9 +45,9 @@ public class BookCursor
     /** column position for the id column. */
     private int mIdCol = -2;
 
-    /** Cached RowView for this cursor. */
+    /** Cached CursorRow for this cursor. */
     @Nullable
-    private BookCursorRow mBookCursorRow;
+    private MappedCursorRow mCursorRow;
 
     /**
      * Constructor.
@@ -77,9 +71,9 @@ public class BookCursor
      */
     public final long getId() {
         if (mIdCol < 0) {
-            mIdCol = getColumnIndex(DBDefinitions.DOM_PK_ID.name);
+            mIdCol = getColumnIndex(DBDefinitions.KEY_PK_ID);
             if (mIdCol < 0) {
-                throw new ColumnNotPresentException(DBDefinitions.DOM_PK_ID.name);
+                throw new ColumnNotPresentException(DBDefinitions.KEY_PK_ID);
             }
         }
         return getLong(mIdCol);
@@ -91,17 +85,19 @@ public class BookCursor
      * @return the row object
      */
     @NonNull
-    public BookCursorRow getCursorRow() {
-        if (mBookCursorRow == null) {
-            mBookCursorRow = new BookCursorRow(this);
+    public MappedCursorRow getCursorRow() {
+        if (mCursorRow == null) {
+            mCursorRow = new MappedCursorRow(this, DBDefinitions.TBL_BOOKS,
+                                             DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST,
+                                             DBDefinitions.KEY_LOANEE);
         }
-        return mBookCursorRow;
+        return mCursorRow;
     }
 
     @Override
     @CallSuper
     public void close() {
         super.close();
-        mBookCursorRow = null;
+        mCursorRow = null;
     }
 }

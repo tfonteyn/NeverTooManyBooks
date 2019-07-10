@@ -103,15 +103,15 @@
     <!-- book 3 -->
     <path
         android:fillColor="@color/red_600"
-        android:pathData="M300,0
+        android:pathData="M285,0
         v385
-        c 0, 5   -2, 10     -5, 10
-        h-50
-        c-2, 0   -5, -5     -5,-10
+        c 0, 5 -2, 10     -5, 10
+        h-25
+        c-2, 0 -5, -5     -5,-10
         v-285
-        c 0,-5    2,-10      5,-10
-        h50
-        c 2, 0    5,  5      5, 10
+        c 0,-5  2,-10      5,-10
+        h25
+        c 2, 0  5,  5      5, 10
         z"
         android:strokeWidth="1" />
 </vector>

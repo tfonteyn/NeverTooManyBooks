@@ -52,7 +52,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * The form allows entering free text, author, title.
  * <p>
- * The search gets the id's of matching books, and returns this list when the 'show' button
+ * The search gets the ID's of matching books, and returns this list when the 'show' button
  * is tapped. *Only* this list is returned; the original fields are not.
  *
  * @author Philip Warner

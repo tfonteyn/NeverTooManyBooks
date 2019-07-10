@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * Lets the user choose an archive file to backup to.
@@ -63,8 +64,7 @@ public class BackupActivity
 
                 @Override
                 public void onTaskCancelled(@Nullable final Integer taskId) {
-                    UserMessage.showUserMessage(BackupActivity.this,
-                                                R.string.progress_end_cancelled);
+                    UserMessage.show(BackupActivity.this, R.string.progress_end_cancelled);
                 }
 
                 /**
@@ -157,6 +157,11 @@ public class BackupActivity
         mFilenameView.setVisibility(View.VISIBLE);
         mFilenameView.setText(defaultFilename);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_save);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(v -> doBackup());
+
         setupList(savedInstanceState);
     }
 
@@ -171,13 +176,8 @@ public class BackupActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_SAVE,
-                 MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
-            .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);
@@ -186,13 +186,10 @@ public class BackupActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_HIDE_KEYBOARD:
                 Utils.hideKeyboard(getWindow().getDecorView());
-                return true;
-
-            case R.id.MENU_SAVE:
-                doBackup();
                 return true;
 
             default:
@@ -217,7 +214,7 @@ public class BackupActivity
         File file = new File(mRootDir.getAbsolutePath()
                                      + File.separator + mFilenameView.getText().toString().trim());
         if (file.exists() && !file.isFile()) {
-            UserMessage.showUserMessage(mListView, R.string.warning_select_a_non_directory);
+            UserMessage.show(mListView, R.string.warning_enter_valid_filename);
             return;
         }
 

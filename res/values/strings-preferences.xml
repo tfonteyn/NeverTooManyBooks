@@ -51,7 +51,7 @@
 
     <!-- ListPreference
      Implementation to use for
-     {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage}.
+     {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#show}.
  -->
     <string name="pt_ui_messages_use">Information messages</string>
     <string-array name="pe_ui_messages_use">

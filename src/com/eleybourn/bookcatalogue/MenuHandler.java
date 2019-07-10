@@ -30,8 +30,13 @@ import android.view.SubMenu;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
 
 /**
  * Handles re-usable menu items; both to create and to handle.
@@ -40,15 +45,18 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
  */
 public final class MenuHandler {
 
-    public static final int MENU_ORDER_HIDE_KEYBOARD = 1;
-    public static final int MENU_ORDER_SAVE = 5;
+    public static final int ORDER_HIDE_KEYBOARD = 1;
+    static final int ORDER_SAVE = 5;
 
-    public static final int MENU_ORDER_SEARCH_SITES = 20;
+    static final int ORDER_SEARCH_SITES = 20;
 
-    public static final int MENU_ORDER_UPDATE_FIELDS = 80;
-    public static final int MENU_ORDER_LENDING = 90;
-    public static final int MENU_ORDER_SHARE = 95;
-    private static final int MENU_ORDER_AMAZON = 99;
+    static final int ORDER_UPDATE_FIELDS = 70;
+    static final int ORDER_LENDING = 80;
+
+    static final int ORDER_SHARE = 90;
+    static final int ORDER_SEND_TO_GOODREADS = 92;
+    static final int ORDER_VIEW_BOOK_AT_SITE = 97;
+    private static final int ORDER_AMAZON = 99;
 
     private MenuHandler() {
     }
@@ -122,6 +130,82 @@ public final class MenuHandler {
         }
     }
 
+
+    static SubMenu addViewBookSubMenu(@NonNull final Menu menu) {
+        SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                                          R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                                          ORDER_VIEW_BOOK_AT_SITE,
+                                          R.string.menu_view_book_at_ellipsis)
+                              .setIcon(R.drawable.ic_link);
+        subMenu.add(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                    R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
+                    R.string.goodreads);
+        subMenu.add(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                    R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
+                    R.string.library_thing);
+        subMenu.add(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                    R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
+                    R.string.isfdb);
+        subMenu.add(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                    R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
+                    R.string.open_library);
+
+        return subMenu;
+    }
+
+    static void prepareViewBookSubMenu(@NonNull final Menu menu,
+                                       @NonNull final Book book) {
+        menu.setGroupVisible(
+                R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                0 != book.getLong(DBDefinitions.KEY_GOODREADS_ID)
+                        || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
+                        || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
+                        || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+    }
+
+    static boolean handleViewBookSubMenu(@NonNull final Context context,
+                                         @NonNull final MenuItem menuItem,
+                                         @NonNull final Book book) {
+        switch (menuItem.getItemId()) {
+            case R.id.SUBMENU_VIEW_BOOK_AT_SITE:
+                // after the user selects the submenu, we make individual items visible/hidden.
+                SubMenu menu = menuItem.getSubMenu();
+
+                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
+                                     0 != book.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
+                                     0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_ISFDB,
+                                     0 != book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
+                                     !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
+                // let the normal call flow go on, it will display the submenu
+                return false;
+
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
+                ISFDBManager.openWebsite(context, book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
+                GoodreadsManager.openWebsite(context,
+                                             book.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
+                LibraryThingManager.openWebsite(context,
+                                                book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
+                OpenLibraryManager.openWebsite(context,
+                                               book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID));
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
     /**
      * Add SubMenu for Amazon searches.
      * <p>
@@ -133,17 +217,18 @@ public final class MenuHandler {
      */
     static SubMenu addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                                          MENU_ORDER_AMAZON, R.string.amazon_ellipsis)
-                              .setIcon(R.drawable.ic_search)
-                              .setHeaderIcon(R.drawable.ic_search);
+                                          ORDER_AMAZON, R.string.amazon_ellipsis)
+                              .setIcon(R.drawable.ic_search);
 
         // we use the group to make the entry visible/invisible, hence it's == the actual id.
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR,
+                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
                     R.string.menu_amazon_books_by_author);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
                     R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
                     R.string.menu_amazon_books_by_author_in_series);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES,
+                    R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
                     R.string.menu_amazon_books_in_series);
 
         return subMenu;
@@ -212,4 +297,5 @@ public final class MenuHandler {
                 return false;
         }
     }
+
 }

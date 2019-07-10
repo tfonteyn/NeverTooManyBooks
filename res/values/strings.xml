@@ -225,10 +225,8 @@ TODO: uniform quotes in all string:
     <string name="warning_no_parent_directory_found">No parent directory found.</string>
     <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
     <string name="warning_select_an_existing_file">Please select an existing file.</string>
-    <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">
-        Please select a file that is not a directory.
-    </string>
+    <!-- Displayed when a file/save dialog results in an invalid file -->
+    <string name="warning_enter_valid_filename">Please enter a valid file name.</string>
 
     <string name="warning_bad_scanner">
         It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
@@ -505,7 +503,7 @@ TODO: uniform quotes in all string:
         is generally preferred. Please remember you can sometimes find the correct
         barcode on the inside front cover.
     </string>
-    <!-- 2018-12-26: modified text, translations need updating -->
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
         default styles menu. A “tick” indicates the style will be shown in the list,
@@ -515,14 +513,14 @@ TODO: uniform quotes in all string:
         the details of a specific style. If you cloned a style, and changed your mind, you
         will need to delete it yourself.
     </string>
-    <!-- 2018-12-26: modified text, translations need updating -->
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         You can use this screen to modify the hierarchy of headings for a specific book list style.
         A “tick” indicates the heading will be shown in the list, “un-tick” to hide it
         and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme
         right of each row up or down.
     </string>
-    <!-- 2018-12-26: modified text, translations need updating -->
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         You can use this screen to set the characteristics of a specific book list style.
         You can change the name, edit the groupings to change the hierarchy, and adjust a
@@ -571,6 +569,17 @@ TODO: uniform quotes in all string:
     <string name="hint_book_list">
         Tapping on a book will show you the details of the book.
         A long-press on an item in the list will give you more options.
+    </string>
+    <!-- Hint text displayed when user enters the 'Update fields from internet' screen -->
+    <string name="hint_update_fields_from_internet"><![CDATA[
+        Each field can be set to one of:
+        <ul>
+            <li>Copy if blank</li>
+            <li>Appends Extra Data (list fields only)</li>
+            <li>Overwrites existing data</li>
+            <li>Skip</li>
+        </ul>
+        External site id\'s are only processed if the site is actually contacted.]]>
     </string>
 
     <!-- ####################################################################################### -->
@@ -661,6 +670,8 @@ TODO: uniform quotes in all string:
     <string name="menu_show_more_ellipsis">Show more…</string>
     <string name="menu_show_fewer_ellipsis">Show fewer…</string>
     <string name="menu_customize_ellipsis">Customize…</string>
+
+    <string name="menu_view_book_at_ellipsis">View at…</string>
 
     <string name="menu_amazon_books_in_series">Books in this series</string>
     <string name="menu_amazon_books_by_author">Books by this author</string>

@@ -71,7 +71,8 @@ public class EditBookNotesFragment
         // do other stuff here that might affect the view.
 
         // Fix the focus order for the views
-        FocusSettings.fix(requireView());
+        //noinspection ConstantConditions
+        FocusSettings.fix(getView());
     }
 
     @CallSuper
@@ -94,9 +95,9 @@ public class EditBookNotesFragment
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field end = fields.getField(R.id.read_end);
-                if (end.getValue().toString().isEmpty()) {
-                    end.setValue(DateUtils.localSqlDateForToday());
+                Field read_end = fields.getField(R.id.read_end);
+                if (read_end.isEmpty()) {
+                    read_end.setValue(DateUtils.localSqlDateForToday());
                 }
             }
         });
@@ -159,7 +160,7 @@ public class EditBookNotesFragment
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        // Restore default visibility
-        showHideFields(false);
+        // hide unwanted fields
+        showOrHideFields(false);
     }
 }

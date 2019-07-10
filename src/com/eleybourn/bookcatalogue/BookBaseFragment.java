@@ -39,6 +39,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -86,12 +87,12 @@ public abstract class BookBaseFragment
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (book.getId() > 0) {
-                // EDIT existing book
+                // VIEW or EDIT existing book
                 actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             } else {
-                // NEW book
+                // EDIT NEW book
                 actionBar.setTitle(R.string.title_add_book);
                 actionBar.setSubtitle(null);
             }
@@ -139,7 +140,6 @@ public abstract class BookBaseFragment
     Field getField(@IdRes final int fieldId) {
         return mFields.getField(fieldId);
     }
-
 
     /**
      * Add any {@link Field} we need to {@link Fields}.
@@ -212,15 +212,17 @@ public abstract class BookBaseFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+                ArrayList<Long> bookIds = new ArrayList<>();
+                bookIds.add(book.getId());
                 Intent intentUpdateFields =
                         new Intent(getContext(), UpdateFieldsFromInternetActivity.class)
-                                .putExtra(DBDefinitions.KEY_ID, book.getId())
+                                .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
                                 .putExtra(DBDefinitions.KEY_TITLE,
                                           book.getString(DBDefinitions.KEY_TITLE))
                                 .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
                                           book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
+                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
@@ -236,14 +238,17 @@ public abstract class BookBaseFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
+            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    long bookId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
-                    if (bookId > 0) {
+                    //noinspection unchecked
+                    ArrayList<Long> bookIds = (ArrayList<Long>)
+                            data.getSerializableExtra(UniqueId.BKEY_ID_LIST);
+
+                    if (bookIds != null && bookIds.size() == 1) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
-                        mBookBaseFragmentModel.setBook(bookId);
+                        mBookBaseFragmentModel.setBook(bookIds.get(0));
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                             Logger.debug("BookBaseFragment.onActivityResult",
@@ -272,84 +277,113 @@ public abstract class BookBaseFragment
      * Hides unused fields if they have no useful data.
      * Should normally be called at the *end* of {@link #onLoadFieldsFromBook}
      * <p>
-     * Authors & Title are always visible as they are required fields.
+     * Authors & Title are always visible.
      * <p>
      * Series is done in:
-     * {@link EditBookFieldsFragment} #populateSeriesListField}
-     * {@link BookFragment}  #populateSeriesListField}
+     * {@link BookFragment}#populateSeriesListField}
+     * {@link EditBookFieldsFragment}#populateSeriesListField}
      * <p>
      * Special fields not checked here:
      * - toc
-     * - edition
      *
      * @param hideIfEmpty set to {@code true} when displaying; {@code false} when editing.
      */
-    void showHideFields(final boolean hideIfEmpty) {
+    void showOrHideFields(final boolean hideIfEmpty) {
         // reset to user-preferences.
         getFields().resetVisibility();
 
         // actual book
-        showHide(hideIfEmpty, R.id.coverImage);
-        showHide(hideIfEmpty, R.id.isbn, R.id.lbl_isbn);
-        showHide(hideIfEmpty, R.id.description, R.id.lbl_description);
+        setVisibility(R.id.coverImage, hideIfEmpty);
+        //  setVisibility(hideIfEmpty, R.id.toc, R.id.row_toc);
 
-        showHide(hideIfEmpty, R.id.pages, R.id.lbl_pages);
-        showHide(hideIfEmpty, R.id.format, R.id.lbl_format);
+        setVisibility(R.id.series, hideIfEmpty,
+                      R.id.lbl_series);
+        setVisibility(R.id.isbn, hideIfEmpty,
+                      R.id.lbl_isbn);
+        setVisibility(R.id.description, hideIfEmpty,
+                      R.id.lbl_description);
+        setVisibility(R.id.pages, hideIfEmpty,
+                      R.id.lbl_pages);
+        setVisibility(R.id.format, hideIfEmpty,
+                      R.id.lbl_format);
+        setVisibility(R.id.genre, hideIfEmpty,
+                      R.id.lbl_genre);
+        setVisibility(R.id.language, hideIfEmpty,
+                      R.id.lbl_language);
 
-        showHide(hideIfEmpty, R.id.genre, R.id.lbl_genre);
-        showHide(hideIfEmpty, R.id.language, R.id.lbl_language);
-        showHide(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
-//        showHide(hideIfEmpty, R.id.toc, R.id.row_toc);
+        setVisibility(R.id.publisher, hideIfEmpty);
+        setVisibility(R.id.date_published, hideIfEmpty);
+        setVisibility(R.id.first_publication, hideIfEmpty,
+                      R.id.lbl_first_publication);
+        setVisibility(R.id.price_listed, hideIfEmpty,
+                      R.id.price_listed_currency,
+                      R.id.lbl_price_listed);
 
-        showHide(hideIfEmpty, R.id.publisher);
-        showHide(hideIfEmpty, R.id.date_published);
-
-        // Hide the label if none of the publishing fields are shown.
-        setVisibilityGoneOr(R.id.lbl_publication_section, View.VISIBLE,
-                            R.id.publisher, R.id.date_published,
-                            R.id.price_listed, R.id.first_publication);
-
-        showHide(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
+        // Hide the Publication section label if none of the publishing fields are shown.
+        setSectionLabelVisibility(R.id.lbl_publication_section,
+                                  R.id.publisher,
+                                  R.id.date_published,
+                                  R.id.price_listed,
+                                  R.id.first_publication);
 
         // personal fields
-        showHide(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
-        showHide(hideIfEmpty, R.id.read);
+        setVisibility(R.id.loaned_to, hideIfEmpty);
+        setVisibility(R.id.read, hideIfEmpty);
+        setVisibility(R.id.notes, hideIfEmpty);
+        setVisibility(R.id.bookshelves, hideIfEmpty,
+                      R.id.lbl_bookshelves);
+        setVisibility(R.id.edition, hideIfEmpty,
+                      R.id.lbl_edition);
+        setVisibility(R.id.location, hideIfEmpty,
+                      R.id.lbl_location,
+                      R.id.lbl_location_long);
+        setVisibility(R.id.date_acquired, hideIfEmpty,
+                      R.id.lbl_date_acquired);
+        setVisibility(R.id.price_paid, hideIfEmpty,
+                      R.id.price_paid_currency,
+                      R.id.lbl_price_paid);
+        setVisibility(R.id.signed, hideIfEmpty,
+                      R.id.lbl_signed);
+        setVisibility(R.id.rating, hideIfEmpty,
+                      R.id.lbl_rating);
 
-        //showHide(hideIfEmpty, R.id.edition, R.id.lbl_edition);
+        setVisibility(R.id.read_start, hideIfEmpty,
+                      R.id.lbl_read_start);
+        setVisibility(R.id.read_end, hideIfEmpty,
+                      R.id.lbl_read_end);
+        // Hide the baseline for the read labels if both labels are gone.
+        setBaselineVisibility(R.id.lbl_read_start_end_baseline,
+                              R.id.lbl_read_start, R.id.lbl_read_end);
+        // Hide the baseline for the value field if the labels are gone.
+        setBaselineVisibility(R.id.read_start_end_baseline,
+                              R.id.lbl_read_start_end_baseline);
 
-        showHide(hideIfEmpty, R.id.notes);
-        showHide(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
-        showHide(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
-
-        showHide(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
-
-        showHide(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
-        showHide(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
-        // Hide the baseline if both fields are gone.
-        setVisibilityGoneOr(R.id.lbl_read_start_end_baseline, View.INVISIBLE,
-                            R.id.lbl_read_start, R.id.lbl_read_end);
-        // Hide the baseline if both fields are gone.
-        setVisibilityGoneOr(R.id.read_start_end_baseline, View.INVISIBLE,
-                            R.id.lbl_read_start_end_baseline);
-
-        showHide(hideIfEmpty, R.id.signed, R.id.lbl_signed);
-        showHide(hideIfEmpty, R.id.rating, R.id.lbl_rating);
-
-        showHide(hideIfEmpty, R.id.loaned_to);
+        // Hide the Notes label if none of the notes fields are shown.
+        setSectionLabelVisibility(R.id.lbl_notes,
+                                  R.id.notes,
+                                  R.id.lbl_edition,
+                                  R.id.lbl_signed,
+                                  R.id.lbl_date_acquired,
+                                  R.id.lbl_price_paid,
+                                  R.id.lbl_read_start,
+                                  R.id.lbl_read_end,
+                                  R.id.lbl_location);
 
         //NEWKIND: new fields
     }
 
     /**
-     * @param hideIfEmpty   hide the field if it's empty
+     * Set the visibility for the field.
+     *
      * @param fieldId       layout resource id of the field
+     * @param hideIfEmpty   hide the field if it's empty
      * @param relatedFields list of fields whose visibility will also be set, based
-     *                      on the first field
      */
-    private void showHide(final boolean hideIfEmpty,
-                          @IdRes final int fieldId,
-                          @NonNull @IdRes final int... relatedFields) {
-        View view = requireView().findViewById(fieldId);
+    private void setVisibility(@IdRes final int fieldId,
+                               final boolean hideIfEmpty,
+                               @NonNull @IdRes final int... relatedFields) {
+        //noinspection ConstantConditions
+        View view = getView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();
             if (hideIfEmpty) {
@@ -362,10 +396,8 @@ public abstract class BookBaseFragment
                         view.setVisibility(visibility);
 
                     } else if (!(view instanceof ImageView)) {
-                        // don't act on ImageView, but all other fields can be string tested.
-
-                        final String value = getField(fieldId).getValue().toString();
-                        visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
+                        // don't act on ImageView, but all other fields can be tested.
+                        visibility = !getField(fieldId).isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }
@@ -376,37 +408,51 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * If all 'fields' are View.GONE, set 'fieldToSet' to View.GONE as well.
-     * Otherwise, set 'fieldToSet' to the desired visibility.
+     * Syntax sugar.
+     * <p>
+     * If all 'fields' are View.GONE, set 'baselineFieldId' to View.GONE as well.
+     * Otherwise, set 'baselineFieldId' to View.INVISIBLE.
      *
-     * @param fieldToSet field to set
-     * @param visibility to use for the fieldToSet
-     * @param fields     to test
+     * @param baselineFieldId field to set
+     * @param fields          to check
      */
-    private void setVisibilityGoneOr(@IdRes final int fieldToSet,
-                                     final int visibility,
-                                     @NonNull @IdRes final int... fields) {
-        View baselineField = requireView().findViewById(fieldToSet);
-        if (baselineField != null) {
-            baselineField.setVisibility(isVisibilityGone(fields) ? View.GONE : visibility);
-        }
+    private void setBaselineVisibility(@IdRes final int baselineFieldId,
+                                       @NonNull @IdRes final int... fields) {
+        showOrHide(baselineFieldId, View.INVISIBLE, fields);
     }
 
     /**
-     * @param fields to check
+     * Syntax sugar.
+     * <p>
+     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
+     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
      *
-     * @return {@code true} if all fields have visibility == View.GONE
+     * @param sectionLabelId field to set
+     * @param fields         to check
      */
-    private boolean isVisibilityGone(@IdRes @NonNull final int[] fields) {
-        boolean isGone = true;
-        for (int fieldId : fields) {
-            View field = requireView().findViewById(fieldId);
-            if (field != null) {
-                // all fields must be gone to result into isGone==true
-                isGone = isGone && (field.getVisibility() == View.GONE);
-            }
+    private void setSectionLabelVisibility(@SuppressWarnings("SameParameterValue")
+                                           @IdRes final int sectionLabelId,
+                                           @NonNull @IdRes final int... fields) {
+        showOrHide(sectionLabelId, View.VISIBLE, fields);
+    }
+
+    /**
+     * If all 'fields' are View.GONE, set 'fieldToSet' to View.GONE as well.
+     * Otherwise, set 'fieldToSet' to the desired visibility.
+     *
+     * @param fieldToSet      field to set
+     * @param visibilityToSet to use for the fieldToSet
+     * @param fields          to test for having the same visibility
+     */
+    private void showOrHide(@IdRes final int fieldToSet,
+                            final int visibilityToSet,
+                            @NonNull @IdRes final int... fields) {
+        //noinspection ConstantConditions
+        View baselineField = getView().findViewById(fieldToSet);
+        if (baselineField != null) {
+            boolean allGone = hasSameVisibility(View.GONE, fields);
+            baselineField.setVisibility(allGone ? View.GONE : visibilityToSet);
         }
-        return isGone;
     }
 
     /**
@@ -417,13 +463,35 @@ public abstract class BookBaseFragment
      */
     void setVisibility(final int visibility,
                        @NonNull @IdRes final int... fields) {
-        View view = requireView();
+        View view = getView();
         for (int fieldId : fields) {
+            //noinspection ConstantConditions
             View field = view.findViewById(fieldId);
             if (field != null) {
                 field.setVisibility(visibility);
             }
         }
+    }
+
+    /**
+     * Check if all fields have the same visibility.
+     *
+     * @param visibility to check
+     * @param fields     to check
+     *
+     * @return {@code true} if all fields have the same visibility
+     */
+    private boolean hasSameVisibility(@SuppressWarnings("SameParameterValue") final int visibility,
+                                      @IdRes @NonNull final int[] fields) {
+        View view = getView();
+        for (int fieldId : fields) {
+            //noinspection ConstantConditions
+            View field = view.findViewById(fieldId);
+            if (field != null && field.getVisibility() != visibility) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static final class FocusSettings {

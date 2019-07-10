@@ -79,7 +79,7 @@ public class GoodreadsRegisterActivity
         // Auth button
         View authButton = findViewById(R.id.authorize);
         authButton.setOnClickListener(v -> {
-            UserMessage.showUserMessage(authButton, R.string.progress_msg_connecting);
+            UserMessage.show(authButton, R.string.progress_msg_connecting);
             new GoodreadsTasks.RequestAuthTask(mTaskListener).execute();
         });
 

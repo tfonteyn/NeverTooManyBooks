@@ -485,19 +485,19 @@ public class ListReviewsApiHandler
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
 
-        public static final String DBA_GR_BOOK_ID = DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name;
-        static final String DBA_ISBN = DBDefinitions.DOM_BOOK_ISBN.name;
+        public static final String DBA_GR_BOOK_ID = DBDefinitions.KEY_GOODREADS_ID;
+        static final String DBA_ISBN = DBDefinitions.KEY_ISBN;
 
-        static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
-        public static final String DBA_TITLE = DBDefinitions.DOM_TITLE.name;
-        public static final String DBA_PUBLISHER = DBDefinitions.DOM_BOOK_PUBLISHER.name;
-        public static final String DBA_DESCRIPTION = DBDefinitions.DOM_BOOK_DESCRIPTION.name;
-        public static final String DBA_FORMAT = DBDefinitions.DOM_BOOK_FORMAT.name;
-        public static final String DBA_PAGES = DBDefinitions.DOM_BOOK_PAGES.name;
-        static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
-        public static final String DBA_RATING = DBDefinitions.DOM_BOOK_RATING.name;
-        public static final String DBA_READ_START = DBDefinitions.DOM_BOOK_READ_START.name;
-        public static final String DBA_READ_END = DBDefinitions.DOM_BOOK_READ_END.name;
+        static final String DBA_AUTHOR_ID = DBDefinitions.KEY_FK_AUTHOR;
+        public static final String DBA_TITLE = DBDefinitions.KEY_TITLE;
+        public static final String DBA_PUBLISHER = DBDefinitions.KEY_PUBLISHER;
+        public static final String DBA_DESCRIPTION = DBDefinitions.KEY_DESCRIPTION;
+        public static final String DBA_FORMAT = DBDefinitions.KEY_FORMAT;
+        public static final String DBA_PAGES = DBDefinitions.KEY_PAGES;
+        static final String DBA_NOTES = DBDefinitions.KEY_NOTES;
+        public static final String DBA_RATING = DBDefinitions.KEY_RATING;
+        public static final String DBA_READ_START = DBDefinitions.KEY_READ_START;
+        public static final String DBA_READ_END = DBDefinitions.KEY_READ_END;
 
         private ReviewFields() {
         }

@@ -1486,14 +1486,21 @@ public class Fields {
          */
         @NonNull
         private final String mColumn;
+
         /** Accessor to use (automatically defined). */
         @NonNull
         private final FieldDataAccessor mFieldDataAccessor;
+
         /** FieldFormatter to use (can be {@code null}). */
         @Nullable
         FieldFormatter formatter;
+
+        /** indicates that "0" should be seen as "". Used for boolean/int type fields. */
+        private boolean mZeroIsEmpty;
+
         /** Is the field in use; i.e. is it enabled in the user-preferences. **/
         private boolean mIsUsed;
+
         /**
          * Option indicating that even though field has a column name, it should NOT be fetched
          * from a {@link DataManager} (or Bundle).
@@ -1501,6 +1508,7 @@ public class Fields {
          * into the {@link DataManager} (or Bundle).
          */
         private boolean mDoNoFetch;
+
         /** FieldValidator to use (can be {@code null}). */
         @Nullable
         private FieldValidator mFieldValidator;
@@ -1687,6 +1695,21 @@ public class Fields {
         }
 
         /**
+         * Set to {@code true} if a "0" content should be treated as "".
+         * Used for (not) displaying boolean and integer fields.
+         *
+         * @param zeroIsEmpty flag
+         *
+         * @return field (for chaining)
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        @NonNull
+        public Field setZeroIsEmpty(final boolean zeroIsEmpty) {
+            mZeroIsEmpty = zeroIsEmpty;
+            return this;
+        }
+
+        /**
          * Is the field in use; i.e. is it enabled in the user-preferences.
          *
          * @return {@code true} if the field *can* be visible
@@ -1778,6 +1801,16 @@ public class Fields {
         public void setValue(@NonNull final String source) {
             mFieldDataAccessor.setValue(source, this);
             mFields.get().afterFieldChange(this, source);
+        }
+
+        /**
+         * Convenience method to check if the value is considered 'empty'
+         *
+         * @return {@code true} if this field is empty.
+         */
+        public boolean isEmpty() {
+            String value = getValue().toString();
+            return value.isEmpty() || (mZeroIsEmpty && "0".equals(value));
         }
 
         /**

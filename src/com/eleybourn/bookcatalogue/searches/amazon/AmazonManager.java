@@ -123,9 +123,7 @@ public final class AmazonManager
         }
 
         String url = getBaseURL() + SUFFIX_BASE_URL + extra.trim();
-
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-
     }
 
     @NonNull

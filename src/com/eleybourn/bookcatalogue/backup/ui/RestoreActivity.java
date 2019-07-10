@@ -54,8 +54,7 @@ public class RestoreActivity
 
                 @Override
                 public void onTaskCancelled(@Nullable final Integer taskId) {
-                    UserMessage.showUserMessage(RestoreActivity.this,
-                                                R.string.progress_end_cancelled);
+                    UserMessage.show(RestoreActivity.this, R.string.progress_end_cancelled);
                     //TODO: add to the message that partial imports might have been done... blah blah
                 }
 
@@ -155,7 +154,7 @@ public class RestoreActivity
     protected void onFileSelected(@NonNull final File file) {
         // sanity check
         if (!file.exists() || !file.isFile()) {
-            UserMessage.showUserMessage(mListView, R.string.warning_select_an_existing_file);
+            UserMessage.show(mListView, R.string.warning_select_an_existing_file);
             return;
         }
 

@@ -226,7 +226,8 @@ public final class UpgradeDatabase {
                 "UPDATE " + table + " SET " + destination + "=?"
                         + " WHERE " + DBDefinitions.DOM_PK_ID + "=?");
 
-        try (Cursor cur = db.rawQuery("SELECT " + DBDefinitions.DOM_PK_ID + ',' + source + " FROM " + table,
+        try (Cursor cur = db.rawQuery("SELECT " + DBDefinitions.DOM_PK_ID
+                                              + ',' + source + " FROM " + table,
                                       null)) {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);

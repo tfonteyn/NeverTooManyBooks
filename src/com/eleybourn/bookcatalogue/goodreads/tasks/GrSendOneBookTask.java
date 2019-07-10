@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -69,9 +69,9 @@ class GrSendOneBookTask
 
         try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
-            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+            final MappedCursorRow cursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, bookCursorRow)) {
+                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
                     // quit on error
                     return false;
                 }

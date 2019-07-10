@@ -67,7 +67,8 @@ public class EditBookPublicationFragment
         // do other stuff here that might affect the view.
 
         // Fix the focus order for the views
-        FocusSettings.fix(requireView());
+        //noinspection ConstantConditions
+        FocusSettings.fix(getView());
     }
 
     /**
@@ -107,7 +108,7 @@ public class EditBookPublicationFragment
                        .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_date_published, false);
 
-        field = fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
+        field = fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
@@ -121,7 +122,7 @@ public class EditBookPublicationFragment
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        // Restore default visibility
-        showHideFields(false);
+        // hide unwanted fields
+        showOrHideFields(false);
     }
 }

@@ -462,7 +462,7 @@
     <string name="lbl_export_to_csv">Экспортировать в CSV файл</string>
     <string name="lbl_import_from_csv">Импортировать CSV файл</string>
     <string name="warning_select_an_existing_file">Пожалуйста, выберите существующий файл</string>
-    <string name="warning_select_a_non_directory">Пожалуйста, выберите файл (не папку)</string>
+    <string name="warning_enter_valid_filename">Пожалуйста, введите правильное имя файла.</string>
     <string name="lbl_copy_database">Экспорт базы данных</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>

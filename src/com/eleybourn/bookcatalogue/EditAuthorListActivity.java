@@ -89,7 +89,7 @@ public class EditAuthorListActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.showUserMessage(mAutoCompleteTextView, R.string.warning_required_name);
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_required_name);
             return;
         }
 
@@ -99,8 +99,7 @@ public class EditAuthorListActivity
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
-                UserMessage.showUserMessage(mAutoCompleteTextView,
-                                            R.string.warning_author_already_in_list);
+                UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
                 return;
             }
         }
@@ -244,7 +243,7 @@ public class EditAuthorListActivity
         static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(DBDefinitions.KEY_AUTHOR, author);
+            args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
             frag.setArguments(args);
             return frag;
         }

@@ -126,7 +126,7 @@ public class BookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // parent takes care of loading the book.
+        // parent takes care of initialising the Fields.
         super.onActivityCreated(savedInstanceState);
 
         initFlattenedBookList(savedInstanceState);
@@ -166,21 +166,22 @@ public class BookFragment
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
               .setFormatter(new Fields.LanguageFormatter());
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-              .setFormatter(new Fields.PagesFormatter());
+              .setFormatter(new Fields.PagesFormatter())
+              .setZeroIsEmpty(true);
         fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
               .setFormatter(dateFormatter);
-        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
+        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setFormatter(dateFormatter);
         fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
               .setFormatter(new Fields.PriceFormatter());
 
         // defined, but handled manually
-        fields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR);
+        fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
         // defined, but handled manually
-        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES);
+        fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
 
         Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
                                            UniqueId.BKEY_COVER_IMAGE)
@@ -198,7 +199,8 @@ public class BookFragment
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
               .setFormatter(new Fields.PriceFormatter());
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-              .setFormatter(new Fields.BookEditionsFormatter());
+              .setFormatter(new Fields.BookEditionsFormatter())
+              .setZeroIsEmpty(true);
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         fields.add(R.id.rating, DBDefinitions.KEY_RATING);
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
@@ -213,7 +215,8 @@ public class BookFragment
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         //noinspection ConstantConditions
         fields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
-              .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()));
+              .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
+              .setZeroIsEmpty(true);
 
         // defined, but handled manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
@@ -232,7 +235,8 @@ public class BookFragment
         // ENHANCE: could probably be replaced by a ViewPager
         // finally, enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        requireView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
+        //noinspection ConstantConditions
+        getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
     }
 
     @CallSuper
@@ -244,7 +248,7 @@ public class BookFragment
         if (bookId != 0) {
             mBookBaseFragmentModel.reload(bookId);
         }
-        // the super will kick of the process that triggers onLoadFieldsFromBook.
+        // the parent will kick of the process that triggers onLoadFieldsFromBook.
         super.onResume();
         Tracker.exitOnResume(this);
     }
@@ -274,69 +278,41 @@ public class BookFragment
 
         super.onLoadFieldsFromBook();
 
-        populateAuthorListField();
-        populateSeriesListField();
-
-        // handle 'text' DoNotFetch fields
-        ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
+        populateAuthorListField(book);
+        populateSeriesListField(book);
+        populateBookshelvesField(book);
         populateLoanedToField(mBookBaseFragmentModel.getLoanee());
 
         // handle non-text fields
-        populateToc();
+        populateToc(book);
 
         // hide unwanted and empty fields
-        showHideFields(true);
-
-        // can't use showHideFields as the field could contain "0" (as a String)
-        Field editionsField = getField(R.id.edition);
-        // only bother when it's in use
-        if (editionsField.isUsed()) {
-            if ("0".equals(editionsField.getValue().toString())) {
-                setVisibility(View.GONE, R.id.edition, R.id.lbl_edition);
-            } else {
-                setVisibility(View.VISIBLE, R.id.edition, R.id.lbl_edition);
-            }
-        }
+        showOrHideFields(true);
     }
 
     /**
      * The author field is a single csv String.
      */
-    private void populateAuthorListField() {
-        Field field = getField(R.id.author);
-        ArrayList<Author> list = mBookBaseFragmentModel
-                .getBook().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        int authorsCount = list.size();
-        // yes, there should not be a book without authors. But let's keep this 'universal'
-        boolean visible = authorsCount != 0;
-        if (visible) {
-            field.setValue(Csv.join(", ", list, Author::getLabel));
-            field.getView().setVisibility(View.VISIBLE);
-        } else {
-            field.setValue("");
-            field.getView().setVisibility(View.GONE);
-        }
+    private void populateAuthorListField(@NonNull final Book book) {
+        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        getField(R.id.author).setValue(Csv.join(", ", list, Author::getLabel));
     }
 
     /**
      * The series field is a single String with line-breaks between multiple series.
      * Each line will be prefixed with a "• "
      */
-    private void populateSeriesListField() {
-        Field field = getField(R.id.series);
-        ArrayList<Series> list = mBookBaseFragmentModel
-                .getBook().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        int seriesCount = list.size();
+    private void populateSeriesListField(@NonNull final Book book) {
+        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        getField(R.id.series).setValue(Csv.join("\n", list, false, "• ", Series::getLabel));
+    }
 
-        boolean visible = seriesCount != 0 && App.isUsed(DBDefinitions.KEY_SERIES);
-        if (visible) {
-            field.setValue(Csv.join("\n", list, false, "• ", Series::getLabel));
-            setVisibility(View.VISIBLE, R.id.series, R.id.lbl_series);
-        } else {
-            field.setValue("");
-            setVisibility(View.GONE, R.id.series, R.id.lbl_series);
-        }
+    /**
+     * The bookshelves field is a single csv String.
+     */
+    private void populateBookshelvesField(@NonNull final Book book) {
+        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        getField(R.id.bookshelves).setValue(Csv.join(", ", list, Bookshelf::getName));
     }
 
     /**
@@ -349,7 +325,6 @@ public class BookFragment
         Field field = getField(R.id.loaned_to);
         if (loanee != null && !loanee.isEmpty()) {
             field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
-            field.getView().setVisibility(View.VISIBLE);
             field.getView().setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /**
                  * yes, icons are not supported here, but:
@@ -361,21 +336,22 @@ public class BookFragment
                                                 @NonNull final View v,
                                                 @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                             MenuHandler.MENU_ORDER_LENDING, R.string.menu_loan_return_book)
+                             MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
                         .setIcon(R.drawable.ic_people);
                 }
             });
         } else {
             field.setValue("");
-            field.getView().setVisibility(View.GONE);
         }
     }
 
     /**
      * Show or hide the Table Of Content section.
      */
-    private void populateToc() {
-        Book book = mBookBaseFragmentModel.getBook();
+    private void populateToc(@NonNull final Book book) {
+
+        // we can get called more then once, so clear the view before populating it.
+        mTocView.removeAllViews();
 
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
@@ -384,12 +360,10 @@ public class BookFragment
                 && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
-        mTocView.removeAllViews();
-
         if (hasToc) {
             for (TocEntry item : tocList) {
-                View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
-                                                           mTocView, false);
+                View rowView = getLayoutInflater()
+                        .inflate(R.layout.row_toc_entry_with_author, mTocView, false);
 
                 TextView titleView = rowView.findViewById(R.id.title);
                 TextView authorView = rowView.findViewById(R.id.author);
@@ -479,21 +453,21 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 MenuHandler.MENU_ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
-            .setIcon(R.drawable.ic_search);
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             // Only one of these two is made visible.
             menu.add(R.id.MENU_BOOK_LOAN_ADD, R.id.MENU_BOOK_LOAN_ADD,
-                     MenuHandler.MENU_ORDER_LENDING, R.string.menu_loan_lend_book);
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_DELETE, R.id.MENU_BOOK_LOAN_DELETE,
-                     MenuHandler.MENU_ORDER_LENDING, R.string.menu_loan_return_book);
+                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
         }
 
-        menu.add(Menu.NONE, R.id.MENU_SHARE,
-                 MenuHandler.MENU_ORDER_SHARE, R.string.menu_share_this)
+        menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
+        MenuHandler.addViewBookSubMenu(menu);
         MenuHandler.addAmazonSearchSubMenu(menu);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -515,6 +489,7 @@ public class BookFragment
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_DELETE, isExistingBook && !isAvailable);
         }
 
+        MenuHandler.prepareViewBookSubMenu(menu, book);
         MenuHandler.prepareAmazonSearchSubMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
@@ -530,7 +505,7 @@ public class BookFragment
 
             case R.id.MENU_EDIT:
                 Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_ID, book.getId());
+                        .putExtra(DBDefinitions.KEY_PK_ID, book.getId());
                 startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
                 return true;
 
@@ -581,6 +556,10 @@ public class BookFragment
 
             default:
                 //noinspection ConstantConditions
+                if (MenuHandler.handleViewBookSubMenu(getContext(), item, book)) {
+                    return true;
+                }
+
                 if (MenuHandler.handleAmazonSearchSubMenu(getContext(), item, book)) {
                     return true;
                 }
@@ -617,7 +596,7 @@ public class BookFragment
     @CallSuper
     public void onPause() {
         //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
                                             mBookBaseFragmentModel.getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
         super.onPause();

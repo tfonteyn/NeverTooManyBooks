@@ -523,8 +523,7 @@
     <!-- Displayed when a file/open dialog results in selecting a non-exitant file -->
     <string name="warning_select_an_existing_file">Por favor, seleccione un fichero</string>
 
-    <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">Por favor, seleccione un fichero, no un directorio</string>
+    <string name="warning_enter_valid_filename">Por favor, introduzca un nombre de archivo válido.</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="lbl_copy_database">Exportar base de datos</string>

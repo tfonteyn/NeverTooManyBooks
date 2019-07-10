@@ -143,9 +143,9 @@ public class Author
     public Author(final long id,
                   @NonNull final ColumnMapper mapper) {
         mId = id;
-        mFamilyName = mapper.getString(DBDefinitions.DOM_AUTHOR_FAMILY_NAME);
-        mGivenNames = mapper.getString(DBDefinitions.DOM_AUTHOR_GIVEN_NAMES);
-        mIsComplete = mapper.getBoolean(DBDefinitions.DOM_AUTHOR_IS_COMPLETE);
+        mFamilyName = mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        mGivenNames = mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+        mIsComplete = mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
     }
 
     /** {@link Parcelable}. */
@@ -408,11 +408,11 @@ public class Author
             return false;
         }
         Author that = (Author) obj;
-        // if both 'exist' but have different id's -> different.
+        // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their id's are the same.
+        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mFamilyName, that.mFamilyName)
                 && Objects.equals(mGivenNames, that.mGivenNames)
                 && (mIsComplete == that.mIsComplete);

@@ -67,7 +67,7 @@ public class LibraryThingAdminActivity
                                    final Integer result,
                                    @Nullable final Exception e) {
 
-            UserMessage.showUserMessage(mDevKeyView, result);
+            UserMessage.show(mDevKeyView, result);
         }
     };
 
@@ -107,7 +107,7 @@ public class LibraryThingAdminActivity
                .apply();
 
             if (!devKey.isEmpty()) {
-                UserMessage.showUserMessage(mDevKeyView, R.string.progress_msg_connecting);
+                UserMessage.show(mDevKeyView, R.string.progress_msg_connecting);
                 new ValidateKey(mListener).execute();
             }
         });

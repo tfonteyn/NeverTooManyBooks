@@ -118,7 +118,7 @@ public class ExportOptionsDialogFragment
                 mOptions.dateFrom =
                         DateUtils.parseDate(dateSinceView.getText().toString().trim());
             } catch (@NonNull final RuntimeException e) {
-                UserMessage.showUserMessage(dateSinceView, R.string.date_not_set_with_brackets);
+                UserMessage.show(dateSinceView, R.string.date_not_set_with_brackets);
                 mOptions.what = ExportOptions.NOTHING;
             }
         }

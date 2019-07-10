@@ -3,7 +3,8 @@
     package="com.eleybourn.bookcatalogue"
     android:installLocation="auto"
     android:versionCode="200"
-    android:versionName="6.0.0">
+    android:versionName="6.0.0a"
+    >
     <!-- original package -->
     <!-- package="com.eleybourn.bookcatalogue" -->
     <!-- android:installLocation="auto" -->
@@ -29,10 +30,10 @@
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <provider
             android:name=".searches.SearchSuggestionProvider"

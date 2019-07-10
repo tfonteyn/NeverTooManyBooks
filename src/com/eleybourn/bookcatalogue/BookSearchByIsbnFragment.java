@@ -301,7 +301,8 @@ public class BookSearchByIsbnFragment
      */
     private void initKeypadButton(@IdRes final int id,
                                   @NonNull final String text) {
-        requireView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
+        //noinspection ConstantConditions
+        getView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
     }
 
     /**
@@ -350,7 +351,7 @@ public class BookSearchByIsbnFragment
                 msg = R.string.warning_x_is_not_a_valid_isbn;
             }
             //noinspection ConstantConditions
-            UserMessage.showUserMessage(mIsbnView, getString(msg, isbn));
+            UserMessage.show(mIsbnView, getString(msg, isbn));
             if (mScanMode) {
                 // reset the now-discarded details
                 mBookSearchBaseModel.clearSearchText();
@@ -395,7 +396,7 @@ public class BookSearchByIsbnFragment
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
                          (d, which) -> {
                              Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                     .putExtra(DBDefinitions.KEY_ID, existingId);
+                                     .putExtra(DBDefinitions.KEY_PK_ID, existingId);
                              startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                          });
 

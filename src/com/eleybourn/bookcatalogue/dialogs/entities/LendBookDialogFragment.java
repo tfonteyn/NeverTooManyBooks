@@ -93,8 +93,8 @@ public class LendBookDialogFragment
                                                      @NonNull final String title) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(DBDefinitions.KEY_ID, bookId);
-        args.putLong(DBDefinitions.KEY_AUTHOR, authorId);
+        args.putLong(DBDefinitions.KEY_PK_ID, bookId);
+        args.putLong(DBDefinitions.KEY_FK_AUTHOR, authorId);
         args.putString(DBDefinitions.KEY_TITLE, title);
         frag.setArguments(args);
         return frag;
@@ -110,7 +110,7 @@ public class LendBookDialogFragment
     public static LendBookDialogFragment newInstance(@NonNull final Book book) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(DBDefinitions.KEY_ID, book.getId());
+        args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
         args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
         frag.setArguments(args);
@@ -125,7 +125,7 @@ public class LendBookDialogFragment
 
         mDb = new DAO();
 
-        final long bookId = args.getLong(DBDefinitions.KEY_ID);
+        final long bookId = args.getLong(DBDefinitions.KEY_PK_ID);
 
         if (savedInstanceState == null) {
             // see if the string is there
@@ -133,11 +133,11 @@ public class LendBookDialogFragment
             // if not, we must have the id.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_AUTHOR)).getLabel();
+                mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR)).getLabel();
             }
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
-            mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR);
+            mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_FK_AUTHOR);
             mLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
         }
 
@@ -179,7 +179,7 @@ public class LendBookDialogFragment
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
                     if (newName.isEmpty()) {
-                        UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
+                        UserMessage.show(mLoaneeView, R.string.warning_required_name);
                         return;
                     }
                     dismiss();
@@ -297,7 +297,7 @@ public class LendBookDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_AUTHOR, mAuthorName);
+        outState.putString(DBDefinitions.KEY_FK_AUTHOR, mAuthorName);
         outState.putString(DBDefinitions.KEY_LOANEE, mLoanee);
     }
 

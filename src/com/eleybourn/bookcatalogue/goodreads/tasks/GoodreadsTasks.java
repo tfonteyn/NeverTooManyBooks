@@ -159,7 +159,7 @@ public final class GoodreadsTasks {
         // if auth failed, either first or second time, complain and bail out.
         if (result == GR_RESULT_CODE_AUTHORIZED_FAILED
                 || (result == GR_RESULT_CODE_AUTHORIZATION_NEEDED && taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
-            UserMessage.showUserMessage(
+            UserMessage.show(
                     view, context.getString(R.string.error_authorization_failed,
                                             context.getString(R.string.goodreads)));
             return;
@@ -178,7 +178,7 @@ public final class GoodreadsTasks {
                         context.startActivity(intent);
                     })
                     .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        UserMessage.showUserMessage(view, R.string.progress_msg_connecting);
+                        UserMessage.show(view, R.string.progress_msg_connecting);
                         new RequestAuthTask(listener).execute();
                     })
                     .create()
@@ -186,7 +186,7 @@ public final class GoodreadsTasks {
         } else {
             // authenticated fine, just show info results.
             if (success) {
-                UserMessage.showUserMessage(view, result);
+                UserMessage.show(view, result);
 
             } else {
                 // some non-auth related error occurred.
@@ -197,7 +197,7 @@ public final class GoodreadsTasks {
                 } else if (e != null) {
                     msg += ' ' + e.getLocalizedMessage();
                 }
-                UserMessage.showUserMessage(view, msg);
+                UserMessage.show(view, msg);
             }
         }
     }

@@ -1,6 +1,9 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,6 +49,12 @@ public class ISFDBManager
 
     public static boolean isCollectSeriesInfoFromToc() {
         return App.getPrefs().getBoolean(PREFS_SERIES_FROM_TOC, false);
+    }
+
+    public static void openWebsite(@NonNull final Context context,
+                                   final long bookId) {
+        String url = getBaseURL() + "/cgi-bin/pl.cgi?" + bookId;
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @Override

@@ -138,7 +138,7 @@ public class StartupActivity
             try {
                 int msgId = StorageUtils.initSharedDirectories();
                 if (msgId != 0) {
-                    UserMessage.showUserMessage(this, msgId);
+                    UserMessage.show(this, msgId);
                 }
             } catch (@NonNull final SecurityException ignore) {
             }
@@ -325,7 +325,7 @@ public class StartupActivity
 
         int msgId = StorageUtils.initSharedDirectories();
         if (msgId != 0) {
-            UserMessage.showUserMessage(this, msgId);
+            UserMessage.show(this, msgId);
         }
 
         return true;

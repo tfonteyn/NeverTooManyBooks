@@ -32,28 +32,28 @@ public final class UserMessage {
     private UserMessage() {
     }
 
-    public static void showUserMessage(@NonNull final Activity activity,
-                                       @StringRes final int message) {
+    public static void show(@NonNull final Activity activity,
+                            @StringRes final int message) {
         if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG)
-                    .show();
+            View view = activity.getWindow().getDecorView();
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    public static void showUserMessage(@NonNull final Activity activity,
-                                       @NonNull final String message) {
+    public static void show(@NonNull final Activity activity,
+                            @NonNull final String message) {
         if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG)
-                    .show();
+            View view = activity.getWindow().getDecorView();
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    public static void showUserMessage(@NonNull final View view,
-                                       @StringRes final int message) {
+    public static void show(@NonNull final View view,
+                            @StringRes final int message) {
         if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
@@ -61,8 +61,8 @@ public final class UserMessage {
         }
     }
 
-    public static void showUserMessage(@NonNull final View view,
-                                       @NonNull final String message) {
+    public static void show(@NonNull final View view,
+                            @NonNull final String message) {
         if (0 == App.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {

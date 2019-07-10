@@ -16,33 +16,13 @@
         >
 
         <TextView
-            android:id="@+id/title"
-            style="@style/TextDetail.Large.Title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SelectableText"
-            tools:text="Anna Karenina"
-            />
-
-        <TextView
-            android:id="@+id/author"
-            style="@style/TextDetail"
-            android:layout_marginStart="@dimen/indent2"
-            android:layout_marginBottom="@dimen/border1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:ignore="SelectableText"
-            tools:text="by Lev Tolstoy"
-            />
-
-        <TextView
             android:id="@+id/select_fields_blurb"
             style="@style/Blurb.Small"
             android:layout_marginStart="@dimen/indent2"
             android:text="@string/info_select_fields_to_update"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
+            app:layout_constraintTop_toTopOf="parent"
             />
 
         <androidx.core.widget.NestedScrollView

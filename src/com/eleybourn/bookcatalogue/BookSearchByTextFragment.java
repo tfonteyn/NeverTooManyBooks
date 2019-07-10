@@ -97,7 +97,8 @@ public class BookSearchByTextFragment
 
         populateAuthorList();
 
-        requireView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
             mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
             mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
             prepareSearch();

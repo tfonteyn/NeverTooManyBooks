@@ -379,11 +379,11 @@ public class TocEntry
             return false;
         }
         TocEntry that = (TocEntry) obj;
-        // if both 'exist' but have different id's -> different.
+        // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their id's are the same.
+        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mAuthor, that.mAuthor)
                 && Objects.equals(mTitle, that.mTitle)
                 && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);

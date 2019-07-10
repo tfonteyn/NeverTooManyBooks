@@ -63,7 +63,8 @@ public class AdminFragment
 
         @Override
         public void onTaskCancelled(@Nullable final Integer taskId) {
-            UserMessage.showUserMessage(requireView(), R.string.progress_end_cancelled);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.progress_end_cancelled);
         }
 
         /**
@@ -81,7 +82,8 @@ public class AdminFragment
                     if (success) {
                         onExportFinished();
                     } else if (e != null) {
-                        UserMessage.showUserMessage(requireView(), e.getLocalizedMessage());
+                        //noinspection ConstantConditions
+                        UserMessage.show(getView(), e.getLocalizedMessage());
                     }
                     break;
 
@@ -96,15 +98,17 @@ public class AdminFragment
                         } else {
                             msg = getString(R.string.error_import_failed);
                         }
-                        UserMessage.showUserMessage(requireView(), msg);
+                        //noinspection ConstantConditions
+                        UserMessage.show(getView(), msg);
                     }
                     break;
 
                 case R.id.TASK_ID_GR_IMPORT:
                 case R.id.TASK_ID_GR_SEND_BOOKS:
                 case R.id.TASK_ID_GR_REQUEST_AUTH:
+                    //noinspection ConstantConditions
                     GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                             requireView(), this);
+                                                             getView(), this);
                     break;
 
                 default:
@@ -136,9 +140,10 @@ public class AdminFragment
             mProgressDialog.setTaskListener(mListener);
         }
 
-        View root = requireView();
+        View root = getView();
 
         // Export (backup) to Archive
+        //noinspection ConstantConditions
         root.findViewById(R.id.lbl_backup)
             .setOnClickListener(v -> {
                 Intent intent = new Intent(getContext(), BackupActivity.class);
@@ -175,28 +180,28 @@ public class AdminFragment
         // Goodreads Import Synchronize
         root.findViewById(R.id.lbl_sync_with_goodreads)
             .setOnClickListener(v -> {
-                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                UserMessage.show(v, R.string.progress_msg_connecting);
                 new GoodreadsTasks.ImportTask(true, mListener).execute();
             });
 
         // Goodreads Import All
         root.findViewById(R.id.lbl_import_all_from_goodreads)
             .setOnClickListener(v -> {
-                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                UserMessage.show(v, R.string.progress_msg_connecting);
                 new GoodreadsTasks.ImportTask(false, mListener).execute();
             });
 
         // Goodreads Export Updated
         root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
             .setOnClickListener(v -> {
-                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                UserMessage.show(v, R.string.progress_msg_connecting);
                 new GoodreadsTasks.SendBooksTask(true, mListener).execute();
             });
 
         // Goodreads Export All
         root.findViewById(R.id.lbl_send_all_books_to_goodreads)
             .setOnClickListener(v -> {
-                UserMessage.showUserMessage(v, R.string.progress_msg_connecting);
+                UserMessage.show(v, R.string.progress_msg_connecting);
                 new GoodreadsTasks.SendBooksTask(false, mListener).execute();
             });
 
@@ -220,7 +225,7 @@ public class AdminFragment
         root.findViewById(R.id.lbl_reset_hints)
             .setOnClickListener(v -> {
                 HintManager.resetHints();
-                UserMessage.showUserMessage(v, R.string.hints_have_been_reset);
+                UserMessage.show(v, R.string.hints_have_been_reset);
             });
 
         /* Erase cover cache */
@@ -243,7 +248,7 @@ public class AdminFragment
         root.findViewById(R.id.lbl_copy_database)
             .setOnClickListener(v -> {
                 StorageUtils.exportDatabaseFiles();
-                UserMessage.showUserMessage(v, R.string.progress_end_backup_success);
+                UserMessage.show(v, R.string.progress_end_backup_success);
             });
     }
 
@@ -262,7 +267,8 @@ public class AdminFragment
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment.newInstance(
                     R.string.progress_msg_backing_up, false, 0);
-            ExportCSVTask task = new ExportCSVTask(settings, mProgressDialog);
+            //noinspection ConstantConditions
+            ExportCSVTask task = new ExportCSVTask(getContext(), settings, mProgressDialog);
             mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             task.execute();
         }
@@ -276,7 +282,8 @@ public class AdminFragment
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.isEmpty()) {
-            UserMessage.showUserMessage(requireView(), R.string.import_error_csv_file_not_found);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
                 // If only one file found, just use it
@@ -405,7 +412,8 @@ public class AdminFragment
             startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (@NonNull final NullPointerException e) {
             Logger.error(this, e);
-            UserMessage.showUserMessage(requireView(), R.string.error_email_failed);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_email_failed);
         }
     }
 
@@ -436,7 +444,7 @@ public class AdminFragment
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     if (!DebugReport.sendDebugInfo(getContext())) {
                         //noinspection ConstantConditions
-                        UserMessage.showUserMessage(getView(), R.string.error_email_failed);
+                        UserMessage.show(getView(), R.string.error_email_failed);
                     }
                 })
                 .create()

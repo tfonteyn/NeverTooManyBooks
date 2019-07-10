@@ -30,13 +30,11 @@ import java.io.Closeable;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 /**
- * Cursor object that makes the underlying BooklistBuilder available to users of the Cursor, as
- * well as providing some information about the builder objects.
- *
- * @author Philip Warner
+ * Cursor object that makes the underlying BooklistBuilder available to users of the Cursor.
  */
 public class BooklistCursor
         extends TrackedCursor
@@ -47,7 +45,7 @@ public class BooklistCursor
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor. */
     @Nullable
-    private BooklistCursorRow mRowView;
+    private BooklistMappedCursorRow mCursorRow;
 
     /**
      * Constructor.
@@ -70,6 +68,7 @@ public class BooklistCursor
     /**
      * @return the builder used to make this cursor.
      */
+    @Override
     @NonNull
     public BooklistBuilder getBuilder() {
         return mBuilder;
@@ -78,12 +77,13 @@ public class BooklistCursor
     /**
      * @return a RowView for this cursor. Constructs one if necessary.
      */
+    @Override
     @NonNull
-    public BooklistCursorRow getCursorRow() {
-        if (mRowView == null) {
-            mRowView = new BooklistCursorRow(this, mBuilder);
+    public BooklistMappedCursorRow getCursorRow() {
+        if (mCursorRow == null) {
+            mCursorRow = new BooklistMappedCursorRow(this, mBuilder.getStyle());
         }
-        return mRowView;
+        return mCursorRow;
     }
 
     @Override
@@ -91,7 +91,8 @@ public class BooklistCursor
     public String toString() {
         return "BooklistCursor{"
                 + "mBuilder=" + mBuilder
-                + "mRowView.getId()=" + (mRowView != null ? mRowView.getId() : "null")
+                + "mCursorRow.getId()=" + (mCursorRow != null ? mCursorRow.getLong(
+                DBDefinitions.KEY_PK_ID) : "null")
                 + '}';
     }
 }

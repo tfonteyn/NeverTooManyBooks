@@ -54,7 +54,7 @@ public class EditAuthorDialogFragment
     public static EditAuthorDialogFragment newInstance(@NonNull final Author author) {
         EditAuthorDialogFragment frag = new EditAuthorDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DBDefinitions.KEY_AUTHOR, author);
+        args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
         frag.setArguments(args);
         return frag;
     }
@@ -72,7 +72,7 @@ public class EditAuthorDialogFragment
         mDb.updateOrInsertAuthor(author, LocaleUtils.getPreferredLocal());
 
         Bundle data = new Bundle();
-        data.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
+        data.putLong(DBDefinitions.KEY_FK_AUTHOR, author.getId());
         if (mBookChangedListener.get() != null) {
             mBookChangedListener.get().onBookChanged(0, BookChangedListener.AUTHOR, data);
         } else {

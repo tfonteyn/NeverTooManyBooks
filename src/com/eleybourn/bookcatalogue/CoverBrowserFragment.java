@@ -249,7 +249,7 @@ public class CoverBrowserFragment
 
         if (mAlternativeEditions.isEmpty()) {
             dismiss();
-            UserMessage.showUserMessage(mStatusTextView, R.string.warning_no_editions);
+            UserMessage.show(mStatusTextView, R.string.warning_no_editions);
             return;
         }
 
@@ -301,7 +301,7 @@ public class CoverBrowserFragment
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            UserMessage.showUserMessage(mStatusTextView, R.string.warning_cover_not_found);
+            UserMessage.show(mStatusTextView, R.string.warning_cover_not_found);
             dismiss();
         }
     }
@@ -339,7 +339,7 @@ public class CoverBrowserFragment
 
         // Reset the switcher and info the user.
         mImageSwitcherView.setVisibility(View.GONE);
-        UserMessage.showUserMessage(mImageSwitcherView, R.string.warning_cover_not_found);
+        UserMessage.show(mImageSwitcherView, R.string.warning_cover_not_found);
         mStatusTextView.setText(R.string.info_tap_on_thumb);
     }
 

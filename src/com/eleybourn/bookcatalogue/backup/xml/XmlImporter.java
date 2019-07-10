@@ -830,7 +830,7 @@ public class XmlImporter
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
      * * - each filter has a tag
-     * * - actual groups are written as a set of id's (kinds)
+     * * - actual groups are written as a set of ID's (kinds)
      * * - each preference in a group has a tag.
      */
     static class StylesReader

@@ -64,7 +64,7 @@ public class MessageSwitch<T, U> {
 
     /** Handler object for posting to main thread and for testing if running on UI thread. */
     private static final Handler HANDLER = new Handler();
-    /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders. */
+    /** ID counter for unique sender ID's; set > 0 to allow for possible future static senders. */
     @NonNull
     private static final AtomicLong SENDER_ID_COUNTER = new AtomicLong(1024L);
 

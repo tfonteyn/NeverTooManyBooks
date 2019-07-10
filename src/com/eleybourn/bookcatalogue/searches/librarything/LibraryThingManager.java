@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -131,6 +132,12 @@ public class LibraryThingManager
     @NonNull
     public static String getBaseURL() {
         return BASE_URL;
+    }
+
+    public static void openWebsite(@NonNull final Context context,
+                                   final long bookId) {
+        String url = getBaseURL() + "/work/" + bookId;
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**

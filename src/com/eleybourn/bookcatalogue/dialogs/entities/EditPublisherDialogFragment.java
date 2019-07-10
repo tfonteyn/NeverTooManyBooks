@@ -108,7 +108,7 @@ public class EditPublisherDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
-                        UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                        UserMessage.show(mNameView, R.string.warning_required_name);
                         return;
                     }
                     dismiss();

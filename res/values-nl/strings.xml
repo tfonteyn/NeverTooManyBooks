@@ -682,7 +682,7 @@
     <string name="warning_select_an_existing_file">Selecteer aub een bestaand bestand</string>
 
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">Selecteer aub een bestand en geen map</string>
+    <string name="warning_enter_valid_filename">Voer aub een geldige bestandsnaam in.</string>
 
     <!-- Displayed in Admin menu advanced options
     (to make a copy of the internal database on the sdcard -->

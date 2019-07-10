@@ -37,7 +37,7 @@ public class Editions
      *
      * @param isbn to get editions for. MUST be valid.
      *
-     * @return a list with native ISFDB book id's pointing to individual editions
+     * @return a list with native ISFDB book ID's pointing to individual editions
      * (with the same isbn)
      *
      * @throws SocketTimeoutException on timeout

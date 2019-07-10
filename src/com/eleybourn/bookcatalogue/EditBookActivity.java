@@ -80,7 +80,7 @@ public class EditBookActivity
         BookBaseFragmentModel bookBaseFragmentModel = ViewModelProviders.of(this).get(
                 BookBaseFragmentModel.class);
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID,
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
                                             bookBaseFragmentModel.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         setResult(Activity.RESULT_OK, data);

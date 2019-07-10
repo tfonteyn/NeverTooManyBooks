@@ -120,7 +120,7 @@ public abstract class BackupWriterAbstract
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
 
-                Exporter mExporter = new CsvExporter(mSettings);
+                Exporter mExporter = new CsvExporter(App.getAppContext(), mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
                     infoValues.bookCount = mExporter.doBooks(output, mProgressListener);
                 }
@@ -266,7 +266,7 @@ public abstract class BackupWriterAbstract
         int skipped = 0;
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
-            final int uuidCol = cursor.getColumnIndex(DBDefinitions.DOM_BOOK_UUID.name);
+            final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
             while (cursor.moveToNext() && !mProgressListener.isCancelled()) {
                 String uuid = cursor.getString(uuidCol);
                 File cover = StorageUtils.getCoverFile(uuid);

@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  */
 public final class ScannerManager {
 
-    /** Unique IDs to associate with each supported scanner intent. */
+    /** Unique ID's to associate with each supported scanner intent. */
     public static final int SCANNER_ZXING_COMPATIBLE = 0;
     public static final int SCANNER_ZXING = 1;
     public static final int SCANNER_PIC2SHOP = 2;
@@ -160,7 +160,7 @@ public final class ScannerManager {
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();
         } catch (@NonNull final ActivityNotFoundException e) {
-            UserMessage.showUserMessage(activity, R.string.error_google_play_missing);
+            UserMessage.show(activity, R.string.error_google_play_missing);
             Logger.error(ScannerManager.class, e);
         }
     }

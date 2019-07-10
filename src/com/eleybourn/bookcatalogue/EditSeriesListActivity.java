@@ -99,7 +99,7 @@ public class EditSeriesListActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.showUserMessage(mAutoCompleteTextView, R.string.warning_required_name);
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_required_name);
             return;
         }
 
@@ -111,8 +111,7 @@ public class EditSeriesListActivity
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
-                UserMessage.showUserMessage(mAutoCompleteTextView,
-                                            R.string.warning_series_already_in_list);
+                UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
                 return;
             }
         }
@@ -239,7 +238,7 @@ public class EditSeriesListActivity
         static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(DBDefinitions.KEY_SERIES, series);
+            args.putParcelable(DBDefinitions.KEY_SERIES_TITLE, series);
             frag.setArguments(args);
             return frag;
         }
@@ -255,17 +254,17 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             Bundle args = requireArguments();
 
-            final Series series = args.getParcelable(DBDefinitions.KEY_SERIES);
+            final Series series = args.getParcelable(DBDefinitions.KEY_SERIES_TITLE);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
                 mSeriesName = series.getName();
                 mSeriesIsComplete = series.isComplete();
                 mSeriesNumber = series.getNumber();
             } else {
-                mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_SERIES);
+                mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
                 mSeriesIsComplete = savedInstanceState.getBoolean(
                         DBDefinitions.KEY_SERIES_IS_COMPLETE);
-                mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_SERIES_NUM);
+                mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
@@ -292,7 +291,7 @@ public class EditSeriesListActivity
                     .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                         mSeriesName = mNameView.getText().toString().trim();
                         if (mSeriesName.isEmpty()) {
-                            UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                            UserMessage.show(mNameView, R.string.warning_required_name);
                             return;
                         }
                         if (mIsCompleteView != null) {
@@ -322,9 +321,9 @@ public class EditSeriesListActivity
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_SERIES, mSeriesName);
+            outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesName);
             outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
-            outState.putString(DBDefinitions.KEY_SERIES_NUM, mSeriesNumber);
+            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mSeriesNumber);
         }
     }
 

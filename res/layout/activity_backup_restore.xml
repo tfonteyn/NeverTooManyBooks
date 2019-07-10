@@ -79,12 +79,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--
-        FloatingActionButton fab = mActivity.findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_cloud_download);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> doSomething());
-    -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         style="@style/FloatingActionButton"

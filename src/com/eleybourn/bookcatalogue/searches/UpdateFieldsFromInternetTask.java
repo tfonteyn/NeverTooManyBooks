@@ -174,13 +174,19 @@ public class UpdateFieldsFromInternetTask
      * <p>
      * This call is mutually exclusive with {@link #setBookId(long)}.
      *
-     * @param idList a list of book ids to update
+     * @param bookIds a list of book ID's to update
      */
-    public void setBookId(@NonNull final List<Long> idList) {
+    public void setBookId(@NonNull final List<Long> bookIds) {
         //TODO: not really happy exposing the DOM's here, but it will do for now.
         // Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                + " IN (" + Csv.join(",", idList) + ')';
+        if (bookIds.size() == 1) {
+            // tiny optimization
+            mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + '=' + bookIds.get(0);
+        } else {
+            mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + " IN (" + Csv.join(",", bookIds) + ')';
+        }
     }
 
     @Override

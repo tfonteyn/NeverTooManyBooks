@@ -32,7 +32,7 @@ import java.util.Hashtable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
@@ -93,7 +93,7 @@ public class BooklistPseudoCursor
     private final int[] mMruList;
     /** Cached RowView for this cursor. */
     @Nullable
-    private BooklistCursorRow mRowView;
+    private BooklistMappedCursorRow mCursorRow;
     /** The cursor to use for the last onMove() event. */
     private BooklistCursor mActiveCursor;
     /** Current MRU ring buffer position. */
@@ -123,6 +123,7 @@ public class BooklistPseudoCursor
     /**
      * @return the builder used to make this cursor.
      */
+    @Override
     @NonNull
     public BooklistBuilder getBuilder() {
         return mBuilder;
@@ -131,12 +132,13 @@ public class BooklistPseudoCursor
     /**
      * @return a CursorRow for this cursor. Constructs one if necessary.
      */
+    @Override
     @NonNull
-    public BooklistCursorRow getCursorRow() {
-        if (mRowView == null) {
-            mRowView = new BooklistCursorRow(this, mBuilder);
+    public BooklistMappedCursorRow getCursorRow() {
+        if (mCursorRow == null) {
+            mCursorRow = new BooklistMappedCursorRow(this, mBuilder.getStyle());
         }
-        return mRowView;
+        return mCursorRow;
     }
 
     /**

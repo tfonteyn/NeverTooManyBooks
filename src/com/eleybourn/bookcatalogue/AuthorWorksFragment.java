@@ -75,7 +75,8 @@ public class AuthorWorksFragment
         String title = mModel.getAuthor().getLabel() + " [" + mModel.getTocEntries().size() + ']';
         getActivity().setTitle(title);
 
-        RecyclerView listView = requireView().findViewById(android.R.id.list);
+        //noinspection ConstantConditions
+        RecyclerView listView = getView().findViewById(android.R.id.list);
         listView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
@@ -103,7 +104,7 @@ public class AuthorWorksFragment
                 // story in one book, goto that book.
                 if (bookIds.size() == 1) {
                     intent = new Intent(getContext(), BookDetailsActivity.class)
-                            .putExtra(DBDefinitions.KEY_ID, bookIds.get(0));
+                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
                     startActivity(intent);
 
                 } else {
@@ -111,7 +112,7 @@ public class AuthorWorksFragment
                     intent = new Intent(getContext(), BooksOnBookshelf.class)
                             // clear the back-stack. We want to keep BooksOnBookshelf on top
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            // bring up list, filtered on the book id's
+                            // bring up list, filtered on the book ID's
                             .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                     startActivity(intent);
                 }
@@ -119,7 +120,7 @@ public class AuthorWorksFragment
 
             case TocEntry.TYPE_BOOK:
                 intent = new Intent(getContext(), BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_ID, item.getId());
+                        .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
 
@@ -175,7 +176,7 @@ public class AuthorWorksFragment
 
                     case R.id.MENU_EDIT:
                         Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                                .putExtra(DBDefinitions.KEY_ID, item.getId());
+                                .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                         startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
                         return true;
 

@@ -175,18 +175,18 @@ public class EditBookFragment
                                                                     : R.string.btn_confirm_add;
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(Menu.NONE, R.id.MENU_SAVE,
-                 MenuHandler.MENU_ORDER_SAVE, saveOrAddText)
+                 MenuHandler.ORDER_SAVE, saveOrAddText)
             .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
-                 MenuHandler.MENU_ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
-            .setIcon(R.drawable.ic_search);
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -213,7 +213,8 @@ public class EditBookFragment
                 return true;
 
             case R.id.MENU_HIDE_KEYBOARD:
-                Utils.hideKeyboard(requireView());
+                //noinspection ConstantConditions
+                Utils.hideKeyboard(getView());
                 return true;
 
             default:
@@ -275,12 +276,12 @@ public class EditBookFragment
 //        // However, there is some data that we really do require...
 //        if (!book.containsKey(DBDefinitions.KEY_TITLE)
 //                || book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-//            UserMessage.showUserMessage(requireView(), R.string.warning_required_title);
+//            UserMessage.show(getView(), R.string.warning_required_title);
 //            return;
 //        }
 //
 //        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-//            UserMessage.showUserMessage(requireView(), R.string.warning_required_author_long);
+//            UserMessage.show(getView(), R.string.warning_required_author_long);
 //            return;
 //        }
 
@@ -314,7 +315,7 @@ public class EditBookFragment
     private void saveBook() {
         Book book = mBookBaseFragmentModel.saveBook();
 
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, book.getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finish();
     }

@@ -243,7 +243,7 @@ public class Datum {
      *
      * @param rawData Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, a {@code null} is returned as {@code false}
      */
     public boolean getBoolean(@NonNull final Bundle rawData) {
         Object o;
@@ -275,7 +275,7 @@ public class Datum {
      *
      * @param rawData Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, a {@code null} is returned as 0
      */
     public int getInt(@NonNull final Bundle rawData) {
         Object o;
@@ -307,7 +307,7 @@ public class Datum {
      *
      * @param rawData Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, a {@code null} is returned as 0
      */
     public long getLong(@NonNull final Bundle rawData) {
         Object o;
@@ -339,7 +339,7 @@ public class Datum {
      *
      * @param rawData Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, a {@code null} is returned as 0
      */
     @SuppressWarnings("WeakerAccess")
     public double getDouble(@NonNull final Bundle rawData) {
@@ -372,7 +372,7 @@ public class Datum {
      *
      * @param rawData Raw data
      *
-     * @return Value of the data
+     * @return Value of the data, a {@code null} is returned as 0
      */
     @SuppressWarnings("WeakerAccess")
     public float getFloat(@NonNull final Bundle rawData) {

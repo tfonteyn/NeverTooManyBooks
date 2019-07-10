@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * URGENT: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
+ * TODO: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
  * <p>
  * Interface definition for an exporter.
  *

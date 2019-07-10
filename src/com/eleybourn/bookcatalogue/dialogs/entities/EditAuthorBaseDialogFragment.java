@@ -50,7 +50,7 @@ public abstract class EditAuthorBaseDialogFragment
 
         Bundle args = requireArguments();
 
-        final Author author = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_AUTHOR));
+        final Author author = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR));
         if (savedInstanceState == null) {
             mFamilyName = author.getFamilyName();
             mGivenNames = author.getGivenNames();
@@ -92,8 +92,7 @@ public abstract class EditAuthorBaseDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mFamilyName = mFamilyNameView.getText().toString().trim();
                     if (mFamilyName.isEmpty()) {
-                        UserMessage.showUserMessage(mFamilyNameView,
-                                                    R.string.warning_required_name);
+                        UserMessage.show(mFamilyNameView, R.string.warning_required_name);
                         return;
                     }
 

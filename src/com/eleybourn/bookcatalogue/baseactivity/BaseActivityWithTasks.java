@@ -100,7 +100,7 @@ public abstract class BaseActivityWithTasks
                                    @NonNull final ManagedTask task) {
             String msg = task.getFinalMessage();
             if (msg != null && !msg.isEmpty()) {
-                UserMessage.showUserMessage(BaseActivityWithTasks.this, msg);
+                UserMessage.show(BaseActivityWithTasks.this, msg);
             }
         }
 
@@ -133,7 +133,7 @@ public abstract class BaseActivityWithTasks
          */
         @Override
         public void onTaskUserMessage(@NonNull final String message) {
-            UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
+            UserMessage.show(BaseActivityWithTasks.this, message);
         }
     };
 

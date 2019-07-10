@@ -339,7 +339,7 @@ public class CoverHandler {
         if (ISBN.isValid(isbn)) {
             getCoverBrowser(isbn);
         } else {
-            UserMessage.showUserMessage(mCoverView, R.string.warning_action_requires_isbn);
+            UserMessage.show(mCoverView, R.string.warning_action_requires_isbn);
         }
     }
 
@@ -433,14 +433,14 @@ public class CoverHandler {
             } else {
                 String msg = mResources.getString(R.string.warning_cover_copy_failed) + ". "
                         + mResources.getString(R.string.error_if_the_problem_persists);
-                UserMessage.showUserMessage(mCoverView, msg);
+                UserMessage.show(mCoverView, msg);
             }
         } else {
             /* Deal with the case where the chooser returns a {@code null} intent.
              * This seems to happen when the filename is not properly understood
              * by the chooser (e.g. an apostrophe in the file name confuses
              * ES File Explorer in the current version as of 23-Sep-2012. */
-            UserMessage.showUserMessage(mCoverView, R.string.warning_cover_copy_failed);
+            UserMessage.show(mCoverView, R.string.warning_cover_copy_failed);
         }
     }
 
@@ -584,7 +584,7 @@ public class CoverHandler {
 
         List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
-            UserMessage.showUserMessage(mCoverView, R.string.error_no_external_crop_app);
+            UserMessage.show(mCoverView, R.string.error_no_external_crop_app);
         } else {
             mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }

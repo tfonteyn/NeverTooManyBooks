@@ -173,8 +173,8 @@ public class Book
     public Intent getShareBookIntent(@NonNull final Context context) {
         String title = getString(DBDefinitions.KEY_TITLE);
         double rating = getDouble(DBDefinitions.KEY_RATING);
-        String author = getString(DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
-        String series = getString(DBDefinitions.DOM_SERIES_FORMATTED.name);
+        String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+        String series = getString(DBDefinitions.KEY_SERIES_FORMATTED);
         String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (!series.isEmpty()) {
@@ -226,16 +226,16 @@ public class Book
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();
 
-        // Do not copy identifiers.
+        // Do not copy any identifiers.
 //        DOM_PK_ID
 //        DOM_BOOK_UUID
 //        DOM_BOOK_LIBRARY_THING_ID
 //        DOM_BOOK_ISFDB_ID
-//        DOM_BOOK_GOODREADS_BOOK_ID
+//        DOM_BOOK_GOODREADS_ID
 
-        // Do not copy specific dates.
+        // Do not copy these specific dates.
 //        DOM_BOOK_DATE_ADDED
-//        DOM_LAST_UPDATE_DATE
+//        DOM_DATE_LAST_UPDATED
 //        DOM_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(DBDefinitions.KEY_TITLE,
@@ -261,8 +261,8 @@ public class Book
                            getString(DBDefinitions.KEY_PRICE_LISTED));
         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                            getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                           getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED));
+        bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                           getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
         bookData.putString(DBDefinitions.KEY_FORMAT,
                            getString(DBDefinitions.KEY_FORMAT));
         bookData.putString(DBDefinitions.KEY_GENRE,
@@ -351,7 +351,7 @@ public class Book
      * @return the book id.
      */
     public long getId() {
-        return getLong(DBDefinitions.KEY_ID);
+        return getLong(DBDefinitions.KEY_PK_ID);
     }
 
     /**
@@ -378,6 +378,8 @@ public class Book
 
         try (BookCursor book = db.fetchBookById(bookId)) {
             if (book.moveToFirst()) {
+                // clean slate
+                clear();
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
@@ -457,13 +459,12 @@ public class Book
      */
     @NonNull
     public String getAuthorTextShort(@NonNull final Context context) {
-        String newText;
-        List<Author> authors = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (authors.isEmpty()) {
+        List<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        if (list.isEmpty()) {
             return "";
         } else {
-            newText = authors.get(0).getLabel();
-            if (authors.size() > 1) {
+            String newText = list.get(0).getLabel();
+            if (list.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;
@@ -494,18 +495,17 @@ public class Book
 
     /**
      * TODO: use {@link DataAccessor}.
-     * <p>
-     * Build a formatted string for series list.
+     *
+     * @return a formatted string for series list.
      */
     @NonNull
     public String getSeriesTextShort(@NonNull final Context context) {
-        String newText;
-        ArrayList<Series> series = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (series.isEmpty()) {
+        List<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        if (list.isEmpty()) {
             return "";
         } else {
-            newText = series.get(0).getLabel();
-            if (series.size() > 1) {
+            String newText = list.get(0).getLabel();
+            if (list.size() > 1) {
                 newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;

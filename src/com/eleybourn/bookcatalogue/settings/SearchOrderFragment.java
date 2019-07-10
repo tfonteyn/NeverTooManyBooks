@@ -75,7 +75,7 @@ public class SearchOrderFragment
 
         mListAdapter = new SearchSiteListAdapter(
                 getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
-        // any change done in the adapter will set the book 'dirty'
+        // any change done in the adapter will set the data 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override

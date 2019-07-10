@@ -143,11 +143,11 @@ public class Series
     public Series(final long id,
                   @NonNull final ColumnMapper mapper) {
         mId = id;
-        mName = mapper.getString(DBDefinitions.DOM_SERIES_TITLE);
-        mIsComplete = mapper.getBoolean(DBDefinitions.DOM_SERIES_IS_COMPLETE);
+        mName = mapper.getString(DBDefinitions.KEY_SERIES_TITLE);
+        mIsComplete = mapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (mapper.contains(DBDefinitions.DOM_BOOK_SERIES_NUM)) {
-            mNumber = mapper.getString(DBDefinitions.DOM_BOOK_SERIES_NUM);
+        if (mapper.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
+            mNumber = mapper.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
         } else {
             mNumber = "";
         }
@@ -493,11 +493,11 @@ public class Series
             return false;
         }
         Series that = (Series) obj;
-        // if both 'exist' but have different id's -> different.
+        // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their id's are the same.
+        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mName, that.mName)
                 && (mIsComplete == that.mIsComplete)
                 && Objects.equals(mNumber, that.mNumber);

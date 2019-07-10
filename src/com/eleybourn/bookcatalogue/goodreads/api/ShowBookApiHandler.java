@@ -415,10 +415,10 @@ public abstract class ShowBookApiHandler
         // TODO: Evaluate if ShowBook should store GR book ID.
         // Pros: easier sync
         // Cons: Overwrite GR id when it should not
-        //if (mBookData.containsKey(BOOK_ID)) {
-        //	mBookData.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name,
-        //                    mBookData.getLong(BOOK_ID));
-        //}
+//        if (mBookData.containsKey(ShowBookFieldNames.BOOK_ID)) {
+//        	mBookData.putLong(DBDefinitions.KEY_GOODREADS_ID,
+//                            mBookData.getLong(ShowBookFieldNames.BOOK_ID));
+//        }
 
         // ENHANCE: Store WORK_ID = "__work_id" into GR_WORK_ID;
 
@@ -455,7 +455,7 @@ public abstract class ShowBookApiHandler
                                            ShowBookFieldNames.ORIG_PUBLICATION_YEAR,
                                            ShowBookFieldNames.ORIG_PUBLICATION_MONTH,
                                            ShowBookFieldNames.ORIG_PUBLICATION_DAY,
-                                           DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
+                                           DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
         // Build the publication date based on the components
         GoodreadsManager.buildDate(mBookData,
@@ -495,10 +495,10 @@ public abstract class ShowBookApiHandler
                 mBookData.putString(DBDefinitions.KEY_TITLE,
                                     thisTitle.substring(0, details.startChar - 1));
                 //if (mBookData.containsKey(ORIG_TITLE)) {
-                //	mBookData.putString(UniqueId.KEY_TITLE,
+                //	mBookData.putString(DBDefinitions.KEY_TITLE,
                 //                      mBookData.getString(ORIG_TITLE));
                 //} else {
-                //	mBookData.putString(UniqueId.KEY_TITLE,
+                //	mBookData.putString(DBDefinitions.KEY_TITLE,
                 //                      thisTitle.substring(0, details.startChar-1));
                 //}
             }

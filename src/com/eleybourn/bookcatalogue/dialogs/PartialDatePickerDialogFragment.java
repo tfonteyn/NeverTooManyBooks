@@ -173,12 +173,12 @@ public class PartialDatePickerDialogFragment
     private void checkAndSend() {
 
         if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-            UserMessage.showUserMessage(requireView(),
-                                        R.string.warning_if_day_set_month_and_year_must_be);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_if_day_set_month_and_year_must_be);
 
         } else if (mMonth != null && mMonth > 0 && mYear == null) {
-            UserMessage.showUserMessage(requireView(),
-                                        R.string.warning_if_month_set_year_must_be);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_if_month_set_year_must_be);
 
         } else {
             dismiss();

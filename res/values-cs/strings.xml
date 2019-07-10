@@ -601,7 +601,7 @@
     <string name="clear">Jasné</string>
     <string name="warning_required_at_least_one">Alespoň jedno pole nemůže být prázdné</string>
     <string name="X_select_bookshelves">Vyberte si regály</string>
-    <string name="warning_select_a_non_directory">Vyberte soubor, který není adresářem.</string>
+    <string name="warning_enter_valid_filename">Zadejte prosím platný název souboru.</string>
     <string name="warning_no_parent_directory_found">Nadřazený adresář nebyl nalezen</string>
     <string name="btn_confirm_new">Nový</string>
     <string name="title_edit_book_authors">Editovat autory knihy</string>

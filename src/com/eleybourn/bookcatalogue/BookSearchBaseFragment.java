@@ -84,7 +84,8 @@ public abstract class BookSearchBaseFragment
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {
-            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_no_internet_connection);
         }
     }
 
@@ -94,12 +95,12 @@ public abstract class BookSearchBaseFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.MENU_ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
             .setIcon(R.drawable.ic_keyboard_hide)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.MENU_ORDER_SEARCH_SITES, R.string.lbl_search_sites)
+                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -111,7 +112,8 @@ public abstract class BookSearchBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_HIDE_KEYBOARD:
-                Utils.hideKeyboard(requireView());
+                //noinspection ConstantConditions
+                Utils.hideKeyboard(getView());
                 return true;
 
             case R.id.MENU_PREFS_SEARCH_SITES:
@@ -159,12 +161,14 @@ public abstract class BookSearchBaseFragment
 
         //sanity check
         if (!mBookSearchBaseModel.hasSearchData()) {
-            UserMessage.showUserMessage(requireView(), R.string.warning_required_at_least_one);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_required_at_least_one);
             return false;
         }
         // Don't start search if we have no approved network... FAIL.
         if (!NetworkUtils.isNetworkAvailable()) {
-            UserMessage.showUserMessage(requireView(), R.string.error_no_internet_connection);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_no_internet_connection);
             return false;
         }
 
@@ -189,7 +193,8 @@ public abstract class BookSearchBaseFragment
 
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);
-            UserMessage.showUserMessage(requireView(), R.string.error_search_failed);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_search_failed);
 
         }
         mActivity.setResult(Activity.RESULT_CANCELED);

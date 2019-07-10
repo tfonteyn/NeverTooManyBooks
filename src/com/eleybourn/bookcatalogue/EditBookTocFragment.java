@@ -153,6 +153,7 @@ public class EditBookTocFragment
                                          EditBookTocFragment.this).execute();
                 }
             };
+
     @Nullable
     private Integer mEditPosition;
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
@@ -222,7 +223,8 @@ public class EditBookTocFragment
         // do other stuff here that might affect the view.
 
         // Fix the focus order for the views
-        FocusSettings.fix(requireView());
+        //noinspection ConstantConditions
+        FocusSettings.fix(getView());
     }
 
     @Override
@@ -252,7 +254,8 @@ public class EditBookTocFragment
         mMultipleAuthorsView = field.getView();
 
         // adding a new TOC entry
-        requireView().findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
@@ -289,8 +292,8 @@ public class EditBookTocFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
 
-        // Restore default visibility
-        showHideFields(false);
+        // hide unwanted fields
+        showOrHideFields(false);
     }
 
     /**
@@ -300,8 +303,8 @@ public class EditBookTocFragment
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
         // no special validation done.
-        mBookBaseFragmentModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
-                                                                mList);
+        mBookBaseFragmentModel.getBook()
+                              .putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     @Override
@@ -320,11 +323,12 @@ public class EditBookTocFragment
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 if (ISBN.isValid(mIsbn)) {
-                    UserMessage.showUserMessage(requireView(), R.string.progress_msg_connecting);
+                    //noinspection ConstantConditions
+                    UserMessage.show(getView(), R.string.progress_msg_connecting);
                     new ISFDBGetEditionsTask(mIsbn, this).execute();
                 } else {
-                    UserMessage.showUserMessage(requireView(),
-                                                R.string.warning_action_requires_isbn);
+                    //noinspection ConstantConditions
+                    UserMessage.show(getView(), R.string.warning_action_requires_isbn);
                 }
                 return true;
 
@@ -390,7 +394,8 @@ public class EditBookTocFragment
         if (!mISFDBEditions.isEmpty()) {
             new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc, this).execute();
         } else {
-            UserMessage.showUserMessage(requireView(), R.string.warning_no_editions);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_no_editions);
         }
     }
 
@@ -401,7 +406,8 @@ public class EditBookTocFragment
      */
     private void onGotISFDBBook(@Nullable final Bundle bookData) {
         if (bookData == null) {
-            UserMessage.showUserMessage(requireView(), R.string.warning_book_not_found);
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_book_not_found);
             return;
         }
 
@@ -422,10 +428,10 @@ public class EditBookTocFragment
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication =
-                bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
+                bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
         if (bookFirstPublication != null) {
-            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED, bookFirstPublication);
+            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
+                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
             }
         }
 
@@ -645,7 +651,7 @@ public class EditBookTocFragment
         /**
          * Constructor.
          *
-         * @param editions     List of ISFDB native ids
+         * @param editions     List of ISFDB native ID's
          * @param taskListener where to send the results to
          */
         @UiThread

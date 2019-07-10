@@ -516,7 +516,7 @@
     <string name="warning_select_an_existing_file">Prego selezionare un file esistente</string>
 
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">Prego selezionare un file, non una cartella</string>
+    <string name="warning_enter_valid_filename">Si prega di inserire un nome di file valido.</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="lbl_copy_database">Copia Archivio (per supporto tecnico)</string>

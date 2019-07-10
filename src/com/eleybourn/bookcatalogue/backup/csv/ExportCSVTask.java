@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -31,15 +33,17 @@ public class ExportCSVTask
     /**
      * Constructor.
      *
+     * @param context        Current context, for accessing resources.
      * @param settings       the export settings
      * @param progressDialog ProgressDialogFragment
      */
     @UiThread
-    public ExportCSVTask(@NonNull final ExportOptions settings,
+    public ExportCSVTask(@NonNull final Context context,
+                         @NonNull final ExportOptions settings,
                          @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
         super(R.id.TASK_ID_CSV_EXPORT, progressDialog);
 
-        mExporter = new CsvExporter(settings);
+        mExporter = new CsvExporter(context, settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
 

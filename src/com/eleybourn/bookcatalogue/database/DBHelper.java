@@ -40,7 +40,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_P
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISBN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
@@ -58,13 +58,13 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_S
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTRY_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTRY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
@@ -234,7 +234,7 @@ public final class DBHelper
     }
 
     /**
-     * Run at installation (and v200 upgrade) time to add the builtin style id's to the database.
+     * Run at installation (and v200 upgrade) time to add the builtin style ID's to the database.
      * This allows foreign keys to work.
      *
      * @param db the database
@@ -363,8 +363,8 @@ public final class DBHelper
         name = "after_delete_on_" + TBL_BOOK_BOOKSHELF;
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -378,10 +378,10 @@ public final class DBHelper
         name = "after_update_on" + TBL_BOOKSHELF;
         body = " AFTER UPDATE ON " + TBL_BOOKSHELF + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
                 + " WHERE " + DOM_PK_ID + " IN \n"
-                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
-                + " WHERE " + DOM_FK_BOOKSHELF_ID + "=Old." + DOM_PK_ID + ");\n"
+                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
+                + " WHERE " + DOM_FK_BOOKSHELF + "=Old." + DOM_PK_ID + ");\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -395,8 +395,8 @@ public final class DBHelper
 //        name = "after_delete_on_" + TBL_BOOK_AUTHOR;
 //        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR + " FOR EACH ROW\n"
 //                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-//                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
+//                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+//                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
 //                + " END";
 //
 //        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -414,18 +414,18 @@ public final class DBHelper
         name = "after_update_on" + TBL_AUTHORS;
         body = " AFTER UPDATE ON " + TBL_AUTHORS + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
 
                 + " WHERE " + DOM_PK_ID + " IN \n"
                 // actual books by this Author
-                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_AUTHOR
-                + " WHERE " + DOM_FK_AUTHOR_ID + "=Old." + DOM_PK_ID + ")\n"
+                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR
+                + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ")\n"
 
                 + " OR " + DOM_PK_ID + " IN \n"
                 // books with entries in anthologies by this Author
-                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
+                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
                 + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
-                + " WHERE " + DOM_FK_AUTHOR_ID + "=Old." + DOM_PK_ID + ");\n"
+                + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ");\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -439,8 +439,8 @@ public final class DBHelper
         name = "after_delete_on_" + TBL_BOOK_SERIES;
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -454,10 +454,10 @@ public final class DBHelper
         name = "after_update_on" + TBL_SERIES;
         body = " AFTER UPDATE ON " + TBL_SERIES + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
                 + " WHERE " + DOM_PK_ID + " IN \n"
-                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_SERIES
-                + " WHERE " + DOM_FK_SERIES_ID + "=Old." + DOM_PK_ID + ");\n"
+                + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_SERIES
+                + " WHERE " + DOM_FK_SERIES + "=Old." + DOM_PK_ID + ");\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -471,8 +471,8 @@ public final class DBHelper
         name = "after_delete_on_" + TBL_BOOK_LOANEE;
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -486,8 +486,8 @@ public final class DBHelper
         name = "after_update_on_" + TBL_BOOK_LOANEE;
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK_ID + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -501,8 +501,8 @@ public final class DBHelper
         name = "after_insert_on_" + TBL_BOOK_LOANEE;
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK_ID + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -526,14 +526,14 @@ public final class DBHelper
 
 
         /*
-         * If the ISBN of a {@link Book) is changed, reset external id's and sync dates.
+         * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
         name = "after_update_of_" + DOM_BOOK_ISBN + "_on_" + TBL_BOOKS;
         body = " AFTER UPDATE OF " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS + " FOR EACH ROW\n"
                 + " WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
                 + " BEGIN\n"
                 + "    UPDATE " + TBL_BOOKS + " SET "
-                + /* */ DOM_BOOK_GOODREADS_BOOK_ID + "=0"
+                + /* */ DOM_BOOK_GOODREADS_ID + "=0"
                 + ',' + DOM_BOOK_ISFDB_ID + "=0"
                 + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
                 + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
@@ -648,7 +648,7 @@ public final class DBHelper
             db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
                                + " ADD " + DOM_UUID + " text not null default ''");
 
-            // insert the builtin style id's so foreign key rules are possible.
+            // insert the builtin style ID's so foreign key rules are possible.
             prepareStylesTable(db);
 
             // convert user styles from serialized storage to SharedPreference xml.
@@ -749,29 +749,29 @@ public final class DBHelper
             // anthology-titles are now cross-book;
             // e.g. one 'story' can be present in multiple books
             db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
-                               + '(' + DOM_FK_BOOK_ID + " integer REFERENCES "
+                               + '(' + DOM_FK_BOOK + " integer REFERENCES "
                                + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                               + ',' + DOM_FK_TOC_ENTRY_ID + " integer REFERENCES "
+                               + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
                                + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
 
                                + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
-                               + ", PRIMARY KEY (" + DOM_FK_BOOK_ID
-                               + ',' + DOM_FK_TOC_ENTRY_ID + ')'
-                               + ", FOREIGN KEY (" + DOM_FK_BOOK_ID + ')'
+                               + ", PRIMARY KEY (" + DOM_FK_BOOK
+                               + ',' + DOM_FK_TOC_ENTRY + ')'
+                               + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
                                + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
-                               + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY_ID + ')'
+                               + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
                                + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
                                + ')');
 
             // move the existing book-anthology links to the new table
             db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                               + " SELECT " + DOM_FK_BOOK_ID + ',' + DOM_PK_ID + ','
+                               + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
                                + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
 
             // reorganise the original table
             recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
-                    /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
+                    /* remove fields: */ DOM_FK_BOOK.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
 
             // just for consistence, rename the table.
             db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);

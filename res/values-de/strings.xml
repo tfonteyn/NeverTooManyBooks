@@ -671,52 +671,31 @@
     <string name="lbl_advanced_options">Erweiterte Optionen</string>
     <string name="progress_msg_backing_up">Sichere…</string>
     <string name="progress_msg_importing">Importiere…</string>
-    <!--  Content description for the ‘up’ icon in the folder browser -->
     <string name="up_folder">Nach oben</string>
-    <!-- Displayed when a user tries to browse higher than the root directory,
-         or if the parent is unable to be read -->
-    <string name="warning_no_parent_directory_found">
-        Kein übergeordnetes Verzeichnis gefunden
-    </string>
-    <!--  For saving and opening exports or backups -->
+    <string name="warning_no_parent_directory_found">Kein übergeordnetes Verzeichnis gefunden</string>
     <string name="btn_confirm_open">Öffnen</string>
     <string name="lbl_export_to_csv">Sichern in eine CSV-Datei</string>
     <string name="lbl_import_from_csv">Import aus einer CSV-Datei</string>
-    <!-- Displayed when a file/open dialog results in selecting a non-exitant file -->
     <string name="warning_select_an_existing_file">Bitte wählen Sie eine bestehende Datei</string>
-
-    <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">
-        Bitte wählen Sie eine Datei, kein Verzeichnis
-    </string>
+    <string name="warning_enter_valid_filename">Bitte geben Sie einen gültigen Dateinamen ein.</string>
     <string name="lbl_copy_database">Datenbank exportieren</string>
-    <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import gescheitert.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_storage_not_readable">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
 
-    <!-- Short Heading for ‘Language’ field in book details -->
     <string name="lbl_language">Sprache</string>
-    <!--  Explanatory text for ‘import’ dialogue -->
-    <!-- Description of the ‘import all books’ option -->
     <string name="import_option_info_all_books">
         Alle Bücher aus diesem Archiv werden importiert. Vorhandene Bücher werden aktualisiert
         und neue Bücher hinzugefügt.
     </string>
-    <!-- Menu text for the ‘import/export new & changed’ option -->
     <string name="import_option_new_and_changed_books">Neue und aktualisierte Bücher</string>
-    <!-- Description of the ‘import new & changed’ option -->
     <string name="import_option_info_new_and_changed_books">
         Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu
         synchronisieren.
     </string>
-    <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">
         Diese Option wird für ältere Archivversionen nicht unterstützt.
     </string>
-    <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
     <!--  Explanatory text for ‘export’ dialogue -->
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->

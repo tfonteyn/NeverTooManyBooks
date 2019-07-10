@@ -76,7 +76,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_VIS
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_REAL_ROW_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ROOT_KEY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_SELECTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_SELECTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
@@ -86,21 +86,21 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_P
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANED_TO_SORT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
@@ -185,7 +185,7 @@ public class BooklistBuilder
      * SQL column: return 1 if the book is available, 0 if not.
      */
     private static final String X_BOOK_IS_AVAILABLE_AS_BOOLEAN = "CASE"
-            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE) + " IS NULL"
+            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
             + " THEN 1 ELSE 0"
             + " END";
 
@@ -193,8 +193,8 @@ public class BooklistBuilder
      * SQL column: return "" if the book is available, "loanee name" if not.
      */
     private static final String X_BOOK_IS_AVAILABLE_AS_TEXT = "CASE"
-            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE) + " IS NULL"
-            + "  THEN '' ELSE '" + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
+            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
+            + "  THEN '' ELSE '" + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
             + " END";
 
     private static final String X_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
@@ -202,7 +202,7 @@ public class BooklistBuilder
             + " THEN 1 ELSE 0"
             + " END";
 
-    /** Counter for BooklistBuilder IDs. */
+    /** Counter for BooklistBuilder ID's. */
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     /** Counter for 'flattened' book temp tables. */
@@ -290,7 +290,7 @@ public class BooklistBuilder
      * The builder will create the needed columns (domain) on the fly
      * and create INSERT statements to build the content of this table.
      * <p>
-     * URGENT: speculation.. use a VIEW instead ?
+     * ENHANCE: speculation.. use a VIEW instead ?
      */
     private TableDefinition mListTable;
     /**
@@ -367,7 +367,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Create a flattened table of ordered book IDs based on the underlying list.
+     * Create a flattened table of ordered book ID's based on the underlying list.
      *
      * @return the name of the created table.
      */
@@ -436,7 +436,7 @@ public class BooklistBuilder
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(() -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                     + " WHERE "
-                    + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
+                    + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
                     + "='" + DAO.encodeString(filter) + '\''
                     + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')');
         }
@@ -471,7 +471,7 @@ public class BooklistBuilder
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param filter a list of book id's.
+     * @param filter a list of book ID's.
      */
     public void setFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
@@ -543,7 +543,7 @@ public class BooklistBuilder
                               SummaryBuilder.FLAG_NONE);
             summary.addDomain(DOM_BL_NODE_ROW_KIND, "" + BooklistGroup.RowKind.BOOK,
                               SummaryBuilder.FLAG_NONE);
-            summary.addDomain(DOM_FK_BOOK_ID, TBL_BOOKS.dot(DOM_PK_ID),
+            summary.addDomain(DOM_FK_BOOK, TBL_BOOKS.dot(DOM_PK_ID),
                               SummaryBuilder.FLAG_NONE);
             summary.addDomain(DOM_BL_BOOK_COUNT, "1",
                               SummaryBuilder.FLAG_NONE);
@@ -570,7 +570,7 @@ public class BooklistBuilder
                         return "EXISTS(SELECT NULL FROM "
                                 + TBL_BOOK_BOOKSHELF.ref() + ' '
                                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
-                                + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID)
+                                + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF)
                                 + '=' + mFilterOnBookshelfId
                                 + ')';
                     } else {
@@ -584,10 +584,10 @@ public class BooklistBuilder
             summary.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(DOM_BOOK_UUID),
                               SummaryBuilder.FLAG_NONE);
 
-            // If we have a book ID to remember, then add the DOM_BL_SELECTED field,
+            // If we have a book ID to remember, then add the DOM_BL_NODE_SELECTED field,
             // and setup the expression.
             if (previouslySelectedBookId != 0) {
-                summary.addDomain(DOM_BL_SELECTED,
+                summary.addDomain(DOM_BL_NODE_SELECTED,
                                   TBL_BOOKS.dot(DOM_PK_ID) + '=' + previouslySelectedBookId,
                                   SummaryBuilder.FLAG_NONE);
             }
@@ -631,7 +631,7 @@ public class BooklistBuilder
 //                    groupCols.append(DAO.COLLATION);
 //                    groupCols.append(", ");
 //                }
-//                groupCols.append(DOM_BL_NODE_LEVEL.name);
+//                groupCols.append(DBDefinitions.DOM_BL_NODE_LEVEL);
 //                //mGroupColumnList = groupCols.toString();
 //            }
 
@@ -1053,7 +1053,7 @@ public class BooklistBuilder
         mSyncedDb.execSQL("CREATE TEMP VIEW " + viewTblName + " AS SELECT * FROM " + mListTable);
 
         //mSyncedDb.execSQL("Create Unique Index " + mListTable + "_IX_TG1 on " + mListTable +
-        // "(" + DOM_BL_NODE_LEVEL + ", " + sortedCols + ", " + DOM_FK_BOOK_ID + ")");
+        // "(" + DOM_BL_NODE_LEVEL + ", " + sortedCols + ", " + DOM_FK_BOOK + ")");
 
         // For each grouping, starting with the lowest, build a trigger to update
         // the next level up as necessary
@@ -1308,7 +1308,7 @@ public class BooklistBuilder
     String[] getListColumnNames() {
         // Get the domains
         List<DomainDefinition> domains = mListTable.getDomains();
-        // Make the array and allow for DOM_BL_ABSOLUTE_POSITION
+        // Make the array +1 for DOM_BL_ABSOLUTE_POSITION
         String[] names = new String[domains.size() + 1];
         // Copy domains
         for (int i = 0; i < domains.size(); i++) {
@@ -1386,7 +1386,7 @@ public class BooklistBuilder
      */
     public int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
-                           "SELECT COUNT(DISTINCT " + DOM_FK_BOOK_ID + ')'
+                           "SELECT COUNT(DISTINCT " + DOM_FK_BOOK + ')'
                                    + " FROM " + mListTable
                                    + " WHERE " + DOM_BL_NODE_LEVEL
                                    + '=' + (mStyle.groupCount() + 1));
@@ -1473,7 +1473,7 @@ public class BooklistBuilder
         String sql = "SELECT "
                 + mNavTable.dot(DOM_PK_ID) + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
                 + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
-                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
+                + " WHERE " + mListTable.dot(DOM_FK_BOOK) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
             ArrayList<BookRowInfo> rows = new ArrayList<>(cursor.getCount());
@@ -1591,7 +1591,7 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            // row position starts at 0, id's start at 1...
+            // row position starts at 0, ID's start at 1...
             final long rowId = absPos + 1;
 
             // Get the details of the passed row position.
@@ -1852,7 +1852,7 @@ public class BooklistBuilder
     }
 
     /**
-     * Simple equality: two builders are equal if their id's are the same.
+     * Simple equality: two builders are equal if their ID's are the same.
      */
     @Override
     public boolean equals(final Object o) {
@@ -2094,8 +2094,8 @@ public class BooklistBuilder
                 indexCols.append(',');
             }
 
-            sortCols.append(DOM_BL_NODE_LEVEL.name);
-            indexCols.append(DOM_BL_NODE_LEVEL.name);
+            sortCols.append(DOM_BL_NODE_LEVEL);
+            indexCols.append(DOM_BL_NODE_LEVEL);
 
             mOrderByColumns = sortCols.toString();
             mOrderByColumnsForBaseBuildIndex = indexCols.toString();
@@ -2150,7 +2150,7 @@ public class BooklistBuilder
 //            String ix1aSql = "CREATE INDEX " + table + "_IX1a ON " + table
 //                    + '(' + DOM_BL_NODE_LEVEL + ',' + mOrderByColumnsForBaseBuildIndex + ')';
 //            String ix2Sql = "CREATE UNIQUE INDEX " + table + "_IX2 ON " + table
-//                    + '(' + DOM_FK_BOOK_ID + ',' + DOM_PK_ID + ')';
+//                    + '(' + DOM_FK_BOOK + ',' + DOM_PK_ID + ')';
 //            String ix3Sql = "CREATE INDEX " + table + "_IX3 ON " + table
 //                    + '(' + mOrderByColumnsForBaseBuildIndex + ')';
 //            String ix3aSql = "CREATE INDEX " + table + "_IX3 ON " + table
@@ -2363,8 +2363,8 @@ public class BooklistBuilder
                               SummaryBuilder.FLAG_GROUPED);
 
                     // We also want the ID
-                    addDomain(DOM_FK_AUTHOR_ID,
-                              TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID),
+                    addDomain(DOM_FK_AUTHOR,
+                              TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR),
                               SummaryBuilder.FLAG_GROUPED);
 
                     // we want the isComplete flag
@@ -2391,8 +2391,8 @@ public class BooklistBuilder
 
                     // Group by ID (we want the ID available and there is a *chance* two
                     // series will have the same name...with bad data
-                    addDomain(DOM_FK_SERIES_ID,
-                              TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID),
+                    addDomain(DOM_FK_SERIES,
+                              TBL_BOOK_SERIES.dot(DOM_FK_SERIES),
                               SummaryBuilder.FLAG_GROUPED);
 
                     // We want the series position in the base data
@@ -2410,13 +2410,13 @@ public class BooklistBuilder
                     // so we convert it to a real (aka float).
                     addDomain(DOM_BL_SERIES_NUM_FLOAT,
                               "CAST("
-                                      + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + " AS REAL)",
+                                      + TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES) + " AS REAL)",
                               SummaryBuilder.FLAG_SORTED);
 
                     // We also add the base name as a sorted field for display purposes
                     // and in case of non-numeric data.
-                    addDomain(DOM_BOOK_SERIES_NUM,
-                              TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM),
+                    addDomain(DOM_BOOK_NUM_IN_SERIES,
+                              TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES),
                               SummaryBuilder.FLAG_SORTED);
 
                     // We want a counter of how many books use the series as a primary series,
@@ -2433,7 +2433,7 @@ public class BooklistBuilder
                               X_BOOK_IS_AVAILABLE_AS_BOOLEAN,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
-                    addDomain(DOM_BOOK_LOANEE,
+                    addDomain(DOM_LOANEE,
                               X_BOOK_IS_AVAILABLE_AS_TEXT,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     break;
@@ -2534,14 +2534,14 @@ public class BooklistBuilder
 
                 case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              yearGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                              yearGlob(TBL_BOOKS.dot(DOM_DATE_FIRST_PUBLICATION), false),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     // | sortDescendingMask);
                     break;
 
                 case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              monthGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
+                              monthGlob(TBL_BOOKS.dot(DOM_DATE_FIRST_PUBLICATION), false),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     // | sortDescendingMask);
                     break;
@@ -2614,33 +2614,33 @@ public class BooklistBuilder
 
                 case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              yearGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              yearGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
                                       | sortDescendingMask);
 
-                    addDomain(DOM_LAST_UPDATE_DATE,
+                    addDomain(DOM_DATE_LAST_UPDATED,
                               null,
                               SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                     break;
 
                 case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              monthGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              monthGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
                                       | sortDescendingMask);
 
-                    addDomain(DOM_LAST_UPDATE_DATE,
+                    addDomain(DOM_DATE_LAST_UPDATED,
                               null,
                               SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                     break;
 
                 case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY:
                     addDomain(booklistGroup.getDisplayDomain(),
-                              dayGlob(TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE), true),
+                              dayGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED
                                       | sortDescendingMask);
 
-                    addDomain(DOM_LAST_UPDATE_DATE,
+                    addDomain(DOM_DATE_LAST_UPDATED,
                               null,
                               SummaryBuilder.FLAG_SORTED | sortDescendingMask);
                     break;

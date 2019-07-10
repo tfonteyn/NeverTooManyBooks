@@ -84,7 +84,7 @@ public class BookBaseFragmentModel
 
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
-                    long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
+                    long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
                     // If the id is valid, load from database.
                     // or if it's 0, create a new 'empty' book.
                     mBook = new Book(bookId, mDb);

@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -166,8 +166,8 @@ public class BooklistAdapter
                     "Attempt to get type of item beyond end of cursor (" + mCursor + ")");
         } else {
             mCursor.moveToPosition(position);
-            BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
-            return row.getRowKind();
+            BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+            return row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND);
         }
     }
 
@@ -180,10 +180,10 @@ public class BooklistAdapter
                                             final int viewType) {
 
         //noinspection ConstantConditions
-        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
 
         // The view depends on the viewType + level.
-        View view = createView(parent, viewType, row.getLevel());
+        View view = createView(parent, viewType, row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
 
         // do holder type dependent init.
         return createHolder(viewType, view, row);
@@ -293,7 +293,7 @@ public class BooklistAdapter
      */
     private RowViewHolder createHolder(final int viewType,
                                        @NonNull final View itemView,
-                                       @NonNull final BooklistCursorRow row) {
+                                       @NonNull final BooklistMappedCursorRow row) {
 
         // a BookHolder is based on multiple columns, the holder itself will sort them out.
         if (viewType == RowKind.BOOK) {
@@ -313,12 +313,12 @@ public class BooklistAdapter
 
             case RowKind.AUTHOR:
                 return new CheckableStringHolder(itemView, columnIndex,
-                                                 DBDefinitions.DOM_AUTHOR_IS_COMPLETE.name,
+                                                 DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                                  R.string.field_not_set_with_brackets);
 
             case RowKind.SERIES:
                 return new CheckableStringHolder(itemView, columnIndex,
-                                                 DBDefinitions.DOM_SERIES_IS_COMPLETE.name,
+                                                 DBDefinitions.KEY_SERIES_IS_COMPLETE,
                                                  R.string.field_not_set_with_brackets);
 
             // Months are displayed by name
@@ -377,7 +377,7 @@ public class BooklistAdapter
         // position the data we need to bind.
         //noinspection ConstantConditions
         mCursor.moveToPosition(position);
-        BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+        BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
         // actual binding depends on the type of row (i.e. holder), so let the holder do it.
         holder.onBindViewHolder(row, mStyle);
     }
@@ -403,7 +403,7 @@ public class BooklistAdapter
         synchronized (mCursor) {
             final int savedPos = mCursor.getPosition();
             mCursor.moveToPosition(position);
-            BooklistCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
+            BooklistMappedCursorRow row = ((BooklistSupportProvider) mCursor).getCursorRow();
             section = row.getLevelText(context);
             mCursor.moveToPosition(savedPos);
         }
@@ -485,33 +485,33 @@ public class BooklistAdapter
                     return false;
                 }
 
-                ColumnMapper mapper = new ColumnMapper(cursor, null,
-                                                       DBDefinitions.DOM_AUTHOR_FORMATTED,
-                                                       DBDefinitions.DOM_BOOK_LOCATION,
-                                                       DBDefinitions.DOM_BOOK_FORMAT,
-                                                       DBDefinitions.DOM_BOOK_PUBLISHER,
-                                                       DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                                                       DBDefinitions.DOM_BOOKSHELF);
+                ColumnMapper mapper = new ColumnMapper(cursor, null);
+                mapper.addDomains(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                  DBDefinitions.KEY_LOCATION,
+                                  DBDefinitions.KEY_FORMAT,
+                                  DBDefinitions.KEY_PUBLISHER,
+                                  DBDefinitions.KEY_DATE_PUBLISHED,
+                                  DBDefinitions.KEY_BOOKSHELF);
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                    mAuthor = mapper.getString(DBDefinitions.DOM_AUTHOR_FORMATTED);
+                    mAuthor = mapper.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    mLocation = mapper.getString(DBDefinitions.DOM_BOOK_LOCATION);
+                    mLocation = mapper.getString(DBDefinitions.KEY_LOCATION);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mFormat = mapper.getString(DBDefinitions.DOM_BOOK_FORMAT);
+                    mFormat = mapper.getString(DBDefinitions.KEY_FORMAT);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    mShelves = mapper.getString(DBDefinitions.DOM_BOOKSHELF);
+                    mShelves = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mPublisher = mapper.getString(DBDefinitions.DOM_BOOK_PUBLISHER);
-                    String tmpPubDate = mapper.getString(DBDefinitions.DOM_BOOK_DATE_PUBLISHED);
+                    mPublisher = mapper.getString(DBDefinitions.KEY_PUBLISHER);
+                    String tmpPubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
                     // over optimisation ?
                     if (tmpPubDate.length() == 4) {
                         // 4 digits is just the year.
@@ -575,9 +575,9 @@ public class BooklistAdapter
         }
 
         @CallSuper
-        void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                               @NonNull final BooklistStyle style) {
-            absolutePosition = rowData.getAbsolutePosition();
+            absolutePosition = rowData.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
         }
     }
 
@@ -729,7 +729,7 @@ public class BooklistAdapter
 
         }
 
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -737,19 +737,18 @@ public class BooklistAdapter
             int imageMaxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
 
             // Title
-            titleView.setText(rowData.getTitle());
+            titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
 
             // Read
             if (App.isUsed(DBDefinitions.KEY_READ)) {
-                readView.setChecked(rowData.isRead());
+                readView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
             }
 
             // Series number
-            if (App.isUsed(DBDefinitions.KEY_SERIES)
-                    && rowData.hasSeriesNumber()) {
+            if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE) && rowData.hasSeriesNumber()) {
 
-                String number = rowData.getSeriesNumber();
-                if (number != null && !number.isEmpty()) {
+                String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+                if (!number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.
                     if (number.length() > 4) {
                         seriesNumView.setVisibility(View.GONE);
@@ -772,9 +771,9 @@ public class BooklistAdapter
             if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 // store the uuid for use in the onClick
-                coverView.setTag(R.id.TAG_UUID, rowData.getBookUuid());
+                coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
 
-                ImageUtils.setImageView(coverView, rowData.getBookUuid(),
+                ImageUtils.setImageView(coverView, rowData.getString(DBDefinitions.KEY_BOOK_UUID),
                                         imageMaxSize, imageMaxSize);
 
                 //Allow zooming by clicking on the image
@@ -795,7 +794,8 @@ public class BooklistAdapter
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.
-                new GetBookExtrasTask(itemView.getContext(), mDb, rowData.getBookId(),
+                new GetBookExtrasTask(itemView.getContext(), mDb,
+                                      rowData.getLong(DBDefinitions.KEY_FK_BOOK),
                                       mTaskListener, extraFields)
                         .execute();
             }
@@ -848,11 +848,11 @@ public class BooklistAdapter
             mVisibilityControlView = mRowDetailsView.findViewById(R.id.group);
         }
 
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            setText(rowData.getString(mSourceCol), rowData.getLevel());
+            setText(rowData.getString(mSourceCol), rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
 
         /**
@@ -930,7 +930,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -946,7 +946,7 @@ public class BooklistAdapter
                     Logger.error(this, e);
                 }
             }
-            setText(s, rowData.getLevel());
+            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
     }
 
@@ -969,7 +969,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -977,7 +977,7 @@ public class BooklistAdapter
             if (s != null && !s.isEmpty()) {
                 s = LocaleUtils.getDisplayName(itemView.getContext(), s);
             }
-            setText(s, rowData.getLevel());
+            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
     }
 
@@ -1000,14 +1000,14 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
             if (Datum.toBoolean(rowData.getString(mSourceCol), true)) {
-                setText(R.string.lbl_read, rowData.getLevel());
+                setText(R.string.lbl_read, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             } else {
-                setText(R.string.lbl_unread, rowData.getLevel());
+                setText(R.string.lbl_unread, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
             }
         }
     }
@@ -1032,7 +1032,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
@@ -1049,7 +1049,7 @@ public class BooklistAdapter
                     Logger.error(this, e);
                 }
             }
-            setText(s, rowData.getLevel());
+            setText(s, rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
     }
 
@@ -1078,7 +1078,7 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BooklistCursorRow rowData,
+        public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 

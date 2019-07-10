@@ -43,7 +43,7 @@ public class ISFDBBook
     private static final String BOOK_URL = "/cgi-bin/pl.cgi?%1$s";
     /**
      * ISFDB extra fields in the results for potential future usage.
-     * ENHANCE: pass and store these ISFDB id's
+     * ENHANCE: pass and store these ISFDB ID's
      */
 //    private static final String ISFDB_BKEY_AUTHOR_ID = "__ISFDB_AUTHORS_ID";
 //    private static final String ISFDB_BKEY_SERIES_ID = "__ISFDB_SERIES_ID";
@@ -138,7 +138,7 @@ public class ISFDBBook
     @Nullable
     private String mFirstPublication;
 
-    //ENHANCE: pass and store these ISFDB id's?
+    //ENHANCE: pass and store these ISFDB ID's?
 //    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
 //    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
 
@@ -264,7 +264,7 @@ public class ISFDBBook
                     if (as != null) {
                         for (Element a : as) {
                             mAuthors.add(Author.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFDB id's
+                            //ENHANCE: pass and store these ISFDB ID's
 //                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
@@ -291,7 +291,7 @@ public class ISFDBBook
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     //tmp = li.childNode(3).attr("href");
-                    //ENHANCE: pass and store these ISFDB id's
+                    //ENHANCE: pass and store these ISFDB ID's
                     //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
@@ -302,7 +302,7 @@ public class ISFDBBook
                     if (as != null) {
                         for (Element a : as) {
                             mSeries.add(Series.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFDB id's
+                            //ENHANCE: pass and store these ISFDB ID's
 //                            ISFDB_BKEY_SERIES_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
@@ -319,7 +319,7 @@ public class ISFDBBook
 //                        if (tmp.contains("/")) {
 //                            // UK Shilling was written as "1/-", for example:
 //                            // three shillings and six pence => 3/6
-//                            bookData.putString(UniqueId.KEY_PRICE_LISTED_CURRENCY, "???");
+//                            bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, "???");
 //                        }
                     } else {
                         String currencyCode = LocaleUtils.currencyToISO(data[0]);
@@ -403,7 +403,7 @@ public class ISFDBBook
 
         // store accumulated ArrayList's
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        //ENHANCE: pass and store these ISFDB id's
+        //ENHANCE: pass and store these ISFDB ID's
 //        bookData.putParcelableArrayList(ISFDB_BKEY_AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
 //        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
 
@@ -431,12 +431,12 @@ public class ISFDBBook
             // then this will have the first publication year for sure
             String d = digits(toc.get(0).getFirstPublication());
             if (d != null && !d.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED, d);
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found in the content
             if (mFirstPublication != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                    digits(mFirstPublication));
             } // else take the book pub date ... but that might be wrong....
         }

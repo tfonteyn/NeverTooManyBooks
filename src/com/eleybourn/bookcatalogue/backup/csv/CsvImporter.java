@@ -61,8 +61,6 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 
 /**
  * Implementation of Importer that reads a CSV file.
- * <p>
- * reminder: use UniqueId.KEY, not DOM. We are reading from file, putting into objects.
  *
  * @author pjw
  */
@@ -75,7 +73,7 @@ public class CsvImporter
     private static final char ESCAPE_CHAR = '\\';
     private static final char SEPARATOR = ',';
 
-    private static final String STRINGED_ID = DBDefinitions.KEY_ID;
+    private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;
 
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
@@ -155,7 +153,7 @@ public class CsvImporter
         // Version 1->3.3 export with family_name and author_id.
         // Version 3.4+ do not; latest versions make an attempt at escaping
         // characters etc to preserve formatting.
-        boolean fullEscaping = !book.containsKey(DBDefinitions.KEY_AUTHOR)
+        boolean fullEscaping = !book.containsKey(DBDefinitions.KEY_FK_AUTHOR)
                 || !book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
 
         // Make sure required fields in Book bundle are present.
@@ -170,7 +168,7 @@ public class CsvImporter
                              // preferred
                              DBDefinitions.KEY_BOOK_UUID,
                              // but an ID is also ok.
-                             DBDefinitions.KEY_ID);
+                             DBDefinitions.KEY_PK_ID);
 
         // need some type of author name.
         // ENHANCE: We should accept UPDATED books where the incoming row does not have a author.
@@ -230,14 +228,14 @@ public class CsvImporter
                     book.putString(csvColumnNames[i], csvDataRow[i]);
                 }
 
-                // Validate IDs
+                // Validate ID's
                 BookIds bids = new BookIds(book);
 
                 // check title
                 requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
 
-                // Lookup id's etc, but do not write to db! Storing the book data does all that
+                // Lookup ID's etc, but do not write to db! Storing the book data does all that
 
                 // check any of the pre-tested Author variations columns.
                 handleAuthors(mDb, book);
@@ -250,9 +248,9 @@ public class CsvImporter
                 }
 
                 // v5 has columns
-                // "bookshelf_id" == UniqueId.DOM_FK_BOOKSHELF_ID
+                // "bookshelf_id" == DBDefinitions.KEY_FK_BOOKSHELF
                 // => ignore, we don't / can't use it anyhow.
-                // "bookshelf" == UniqueId.KEY_BOOKSHELF
+                // "bookshelf" == DBDefinitions.KEY_BOOKSHELF
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
                 if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)
                         && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
@@ -332,7 +330,7 @@ public class CsvImporter
 
         final boolean hasUuid = !bids.uuid.isEmpty();
 
-        // Always import empty IDs...even if they are duplicates.
+        // Always import empty ID's...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !bids.hasNumericId) {
             return mDb.insertBook(book);
@@ -341,7 +339,7 @@ public class CsvImporter
         // we have a UUID or ID. We'll check if we already have the book.
         boolean exists = false;
 
-        // Let the UUID trump the ID; we may be importing someone else's list with bogus IDs
+        // Let the UUID trump the ID; we may be importing someone else's list with bogus ID's
         if (hasUuid) {
             long bookId = mDb.getBookIdFromUuid(bids.uuid);
             if (bookId != 0) {
@@ -383,7 +381,7 @@ public class CsvImporter
     }
 
     /**
-     * Database access is strictly limited to fetching id's.
+     * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of bookshelves.
      */
@@ -401,9 +399,9 @@ public class CsvImporter
     }
 
     /**
-     * Database access is strictly limited to fetching id's.
+     * Database access is strictly limited to fetching ID's.
      * <p>
-     * Ignore the actual value of the UniqueId.KEY_TOC_BITMASK! it will be
+     * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
     private void handleAnthology(@NonNull final DAO db,
@@ -413,7 +411,7 @@ public class CsvImporter
         if (!encodedList.isEmpty()) {
             ArrayList<TocEntry> list = StringList.getTocCoder().decode(encodedList, false);
             if (!list.isEmpty()) {
-                // fixup the id's
+                // fixup the ID's
                 ItemWithIdFixup.pruneList(db, list);
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
@@ -424,7 +422,7 @@ public class CsvImporter
     }
 
     /**
-     * Database access is strictly limited to fetching id's.
+     * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of series from whatever source is available.
      */
@@ -433,10 +431,10 @@ public class CsvImporter
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
-            if (book.containsKey(DBDefinitions.KEY_SERIES)) {
-                encodedList = book.getString(DBDefinitions.KEY_SERIES);
+            if (book.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
+                encodedList = book.getString(DBDefinitions.KEY_SERIES_TITLE);
                 if (!encodedList.isEmpty()) {
-                    String seriesNum = book.getString(DBDefinitions.KEY_SERIES_NUM);
+                    String seriesNum = book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                     encodedList += '(' + seriesNum + ')';
                 } else {
                     encodedList = null;
@@ -453,7 +451,7 @@ public class CsvImporter
     }
 
     /**
-     * Database access is strictly limited to fetching id's.
+     * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of authors from whatever source is available.
      */

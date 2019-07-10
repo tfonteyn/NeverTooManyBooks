@@ -240,8 +240,7 @@ public class CropImageActivity
                 }
 
                 if (mNumFaces > 1) {
-                    UserMessage.showUserMessage(mImageView,
-                                                "Multi face crop help not available.");
+                    UserMessage.show(mImageView, "Multi face crop help not available.");
                 }
             });
         }
@@ -269,7 +268,7 @@ public class CropImageActivity
         int msgId = checkStorage();
         // tell user if needed.
         if (msgId != 0) {
-            UserMessage.showUserMessage(mImageView, msgId);
+            UserMessage.show(mImageView, msgId);
         }
         Bundle args = getIntent().getExtras();
         if (args != null) {
@@ -482,7 +481,7 @@ public class CropImageActivity
                 // we saved the image
                 setResult(Activity.RESULT_OK, intent);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, e);
                 setResult(Activity.RESULT_CANCELED);
             }

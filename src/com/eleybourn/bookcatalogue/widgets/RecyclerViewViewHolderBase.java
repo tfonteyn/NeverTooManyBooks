@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.ItemTouchHelperViewHolder;
  * <li>a 'checkable' button</li>
  * <li>{@link ItemTouchHelperViewHolder}</li>
  * </ul>
- * Uses pre-defined id's:
+ * Uses pre-defined ID's:
  * <ul>
  * <li>R.id.TLV_ROW_DETAILS</li>
  * <li>R.id.TLV_ROW_DELETE</li>

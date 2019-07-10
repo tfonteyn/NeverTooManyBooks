@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -335,12 +335,12 @@ public class BooksOnBookshelfModel
     /**
      * Queue a rebuild of the underlying cursor and data.
      *
-     * @param isFullRebuild Indicates whole table structure needs rebuild,
-     *                      versus just do a reselect of underlying data
      * @param context       Current context, for accessing resources.
+     * @param isFullRebuild Indicates whole table structure needs rebuild,
+ *                      versus just do a reselect of underlying data
      */
-    public void initBookList(final boolean isFullRebuild,
-                             @NonNull final Context context) {
+    public void initBookList(@NonNull final Context context,
+                             final boolean isFullRebuild) {
 
         BooklistBuilder bookListBuilder;
 
@@ -366,7 +366,21 @@ public class BooksOnBookshelfModel
                                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                                           false);
 
-            // if we have a list of id's, ignore other criteria.
+            // external site ID's
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
+                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+                                          false);
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
+                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+                                          false);
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
+                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                                          false);
+            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
+                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+                                          false);
+
+            // if we have a list of ID's, ignore other criteria.
             if (mSearchCriteria.hasIdList()) {
                 bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
 
@@ -451,15 +465,15 @@ public class BooksOnBookshelfModel
      * @return formatted Author name
      */
     @Nullable
-    public String getAuthorFromRow(@NonNull final BooklistCursorRow row) {
-        if (row.hasAuthorId() && row.getAuthorId() > 0) {
-            Author author = mDb.getAuthor(row.getAuthorId());
+    public String getAuthorFromRow(@NonNull final BooklistMappedCursorRow row) {
+        if (row.hasAuthorId()) {
+            Author author = mDb.getAuthor(row.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
                 return author.getLabel();
             }
 
-        } else if (row.getRowKind() == BooklistGroup.RowKind.BOOK) {
-            List<Author> authors = mDb.getAuthorsByBookId(row.getBookId());
+        } else if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
+            List<Author> authors = mDb.getAuthorsByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0).getLabel();
             }
@@ -471,14 +485,14 @@ public class BooksOnBookshelfModel
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
-    public String getSeriesFromRow(@NonNull final BooklistCursorRow row) {
-        if (row.hasSeriesId() && row.getSeriesId() > 0) {
-            Series series = mDb.getSeries(row.getSeriesId());
+    public String getSeriesFromRow(@NonNull final BooklistMappedCursorRow row) {
+        if (row.hasSeriesId()) {
+            Series series = mDb.getSeries(row.getLong(DBDefinitions.KEY_FK_SERIES));
             if (series != null) {
                 return series.getName();
             }
-        } else if (row.getRowKind() == BooklistGroup.RowKind.BOOK) {
-            ArrayList<Series> series = mDb.getSeriesByBookId(row.getBookId());
+        } else if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
+            ArrayList<Series> series = mDb.getSeriesByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getName();
             }
@@ -585,15 +599,15 @@ public class BooksOnBookshelfModel
             if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
                 ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
             }
-            if (bundle.containsKey(DBDefinitions.KEY_SERIES)) {
-                series = bundle.getString(DBDefinitions.KEY_SERIES);
+            if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
+                series = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
             }
             if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
             }
             if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
                 //noinspection unchecked
-                bookList = (ArrayList<Long>) (bundle.get(UniqueId.BKEY_ID_LIST));
+                bookList = (ArrayList<Long>) bundle.getSerializable(UniqueId.BKEY_ID_LIST);
             }
         }
 
@@ -604,7 +618,7 @@ public class BooksOnBookshelfModel
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
                   .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
-                  .putExtra(DBDefinitions.KEY_SERIES, series)
+                  .putExtra(DBDefinitions.KEY_SERIES_TITLE, series)
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }

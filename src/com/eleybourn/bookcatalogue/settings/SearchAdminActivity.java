@@ -78,15 +78,13 @@ public class SearchAdminActivity
             case TAB_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_ORDER,
-                              R.string.lbl_books
-                );
+                              R.string.lbl_books);
                 break;
 
             case TAB_COVER_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                              R.string.lbl_cover
-                );
+                              R.string.lbl_cover);
                 break;
 
             default:
@@ -123,31 +121,10 @@ public class SearchAdminActivity
             doSave();
         }
         finish();
-
-//        if (mIsDirty) {
-//            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
-//                // runs when user clicks 'exit'
-//                setResult(Activity.RESULT_CANCELED);
-//                finish();
-//            });
-//        } else {
-//            setResult(Activity.RESULT_CANCELED);
-//            super.onBackPressed();
-//        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-//        if (mUseScenario) {
-//            menu.add(Menu.NONE, R.id.MENU_USE, 0, R.string.btn_confirm_use)
-//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//        } else {
-//            menu.add(Menu.NONE, R.id.MENU_SAVE,
-//                     MenuHandler.MENU_ORDER_SAVE, R.string.btn_confirm_save)
-//                .setIcon(R.drawable.ic_save)
-//                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-//        }
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
             .setIcon(R.drawable.ic_undo)
@@ -160,18 +137,8 @@ public class SearchAdminActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-
-            case R.id.MENU_USE:
-                doUse();
-                finish();
-                return true;
-
-            case R.id.MENU_SAVE:
-                doSave();
-                finish();
-                return true;
-
             case R.id.MENU_RESET:
                 switch (mViewPager.getCurrentItem()) {
                     case TAB_ORDER:
@@ -211,7 +178,7 @@ public class SearchAdminActivity
     }
 
     /**
-     * Saves & sets the activity result.
+     * Saves the settings & sets the activity result.
      */
     private void doSave() {
 

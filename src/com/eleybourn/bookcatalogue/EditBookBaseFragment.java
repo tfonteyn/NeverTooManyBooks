@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 /**
@@ -47,19 +48,17 @@ public abstract class EditBookBaseFragment<T>
         implements DataEditor {
 
     private final CheckListDialogFragment.CheckListResultsListener<T>
-            mCheckListResultsListener = (destinationFieldId, list) -> {
+            mCheckListResultsListener = (fieldId, list) -> {
         Book book = mBookBaseFragmentModel.getBook();
 
-        if (destinationFieldId == R.id.bookshelves) {
+        if (fieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            getField(destinationFieldId)
-                    .setValue(Bookshelf.toDisplayString(bsList));
+            getField(fieldId).setValue(Csv.join(", ", bsList, Bookshelf::getName));
 
-        } else if (destinationFieldId == R.id.edition) {
+        } else if (fieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getField(destinationFieldId)
-                    .setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
+            getField(fieldId).setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
 
@@ -185,7 +184,8 @@ public abstract class EditBookBaseFragment<T>
             return;
         }
 
-        View fieldButton = requireView().findViewById(fieldButtonId);
+        //noinspection ConstantConditions
+        View fieldButton = getView().findViewById(fieldButtonId);
 
         if (list.isEmpty()) {
             fieldButton.setEnabled(false);

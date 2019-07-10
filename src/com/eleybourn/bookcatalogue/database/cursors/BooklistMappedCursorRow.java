@@ -31,37 +31,26 @@ import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_ROW_KIND;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-
 /**
  * CursorRow object for the BooklistCursor.
  * <p>
- * Provides methods to perform common tasks on the 'current' row of the cursor.
- *
- * @author Philip Warner
+ * Provides methods access the 'level' texts and perform some common tasks on the 'current' row.
  */
-public class BooklistCursorRow
-        extends BookCursorRowBase {
+public class BooklistMappedCursorRow
+        extends MappedCursorRow {
 
-    /** Underlying builder object. */
+    /** Style to use while using this cursor. */
     @NonNull
-    private final BooklistBuilder mBuilder;
+    private final BooklistStyle mStyle;
 
     /**
      * level text. Uses a dynamically set domain.
@@ -74,94 +63,62 @@ public class BooklistCursorRow
     /**
      * Constructor.
      *
-     * @param cursor  Underlying Cursor
-     * @param builder Underlying Builder
+     * @param cursor Underlying Cursor
+     * @param style  to apply
      */
-    public BooklistCursorRow(@NonNull final Cursor cursor,
-                             @NonNull final BooklistBuilder builder) {
-        super(cursor);
-        mBuilder = builder;
-        mMapper.addDomains(DOM_FK_BOOK_ID,
+    public BooklistMappedCursorRow(@NonNull final Cursor cursor,
+                                   @NonNull final BooklistStyle style) {
+        super(cursor, DBDefinitions.TBL_BOOKS,
+              DBDefinitions.KEY_FK_BOOK,
 
-                           DOM_FK_SERIES_ID,
-                           DOM_SERIES_IS_COMPLETE,
-                           DOM_BOOK_SERIES_NUM,
+              DBDefinitions.KEY_FK_AUTHOR,
+              DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
 
-                           DOM_FK_AUTHOR_ID,
-                           DOM_AUTHOR_IS_COMPLETE,
+              DBDefinitions.KEY_FK_SERIES,
+              DBDefinitions.KEY_SERIES_IS_COMPLETE,
+              DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
 
-                           DOM_BL_ABSOLUTE_POSITION,
-                           DOM_BL_NODE_ROW_KIND,
-                           DOM_BL_NODE_LEVEL);
-    }
+              DBDefinitions.KEY_BL_ABSOLUTE_POSITION,
+              DBDefinitions.KEY_BL_NODE_ROW_KIND,
+              DBDefinitions.KEY_BL_NODE_LEVEL);
 
-    public long getBookId() {
-        return mMapper.getLong(DOM_FK_BOOK_ID);
-    }
-
-    public long getAuthorId() {
-        return mMapper.getLong(DOM_FK_AUTHOR_ID);
-    }
-
-    public boolean hasAuthorId() {
-        return mCursor.getColumnIndex(DOM_FK_AUTHOR_ID.name) >= 0;
-    }
-
-    public boolean isAuthorComplete() {
-        return mMapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
-    }
-
-    public long getSeriesId() {
-        return mMapper.getLong(DOM_FK_SERIES_ID);
-    }
-
-    public boolean hasSeriesId() {
-        return mCursor.getColumnIndex(DOM_FK_SERIES_ID.name) >= 0;
-    }
-
-    public boolean isSeriesComplete() {
-        return mMapper.getBoolean(DOM_SERIES_IS_COMPLETE);
+        mStyle = style;
     }
 
     /**
      * @return {@code true} if the list can display a series number.
      */
     public boolean hasSeriesNumber() {
-        return mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name) >= 0;
-    }
-
-    @Nullable
-    public String getSeriesNumber() {
-        return mMapper.getString(DOM_BOOK_SERIES_NUM);
+        return getColumnIndex(DBDefinitions.KEY_BOOK_NUM_IN_SERIES) >= 0;
     }
 
     /**
-     * Get the absolute position (index) of this row in the total list of rows.
-     * Note this is not the same as the {@link Cursor#getPosition()}.
+     * Convenience method to check if the cursor has a valid Author ID.
      *
-     * @return the absolute position
+     * @return {@code true} if the list can display an Author.
      */
-    public int getAbsolutePosition() {
-        return mMapper.getInt(DOM_BL_ABSOLUTE_POSITION);
+    public boolean hasAuthorId() {
+        return getColumnIndex(DBDefinitions.KEY_FK_AUTHOR) >= 0
+                && getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
     }
 
     /**
-     * @return the row kind for this row.
+     * Convenience method to check if the cursor has a valid Series ID.
+     *
+     * @return {@code true} if the list can display a Series.
      */
-    @IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX)
-    public int getRowKind() {
-        return mMapper.getInt(DOM_BL_NODE_ROW_KIND);
+    public boolean hasSeriesId() {
+        return getColumnIndex(DBDefinitions.KEY_FK_SERIES) >= 0
+                && getLong(DBDefinitions.KEY_FK_SERIES) > 0;
     }
 
     /**
-     * @return the level of this row.
+     * Get the full set of 'level' texts for this row.
+     *
+     * @param context Current context
+     *
+     * @return level-text array
      */
-    @IntRange(from = 1)
-    public int getLevel() {
-        return mMapper.getInt(DOM_BL_NODE_LEVEL);
-    }
-
-
     @Nullable
     public String[] getLevelText(@NonNull final Context context) {
         return new String[]{getLevelText(context, 1),
@@ -171,7 +128,8 @@ public class BooklistCursorRow
     /**
      * Get the text associated with the matching level group for the current item.
      *
-     * @param level to get
+     * @param context Current context
+     * @param level   to get
      *
      * @return the text for that level, or {@code null} if none present.
      */
@@ -179,7 +137,7 @@ public class BooklistCursorRow
     public String getLevelText(@NonNull final Context context,
                                @IntRange(from = 1) final int level) {
         // bail out if there is no data on level
-        if (mBuilder.getStyle().groupCount() < level) {
+        if (mStyle.groupCount() < level) {
             return null;
         }
         if (BuildConfig.DEBUG) {
@@ -191,24 +149,24 @@ public class BooklistCursorRow
 
         int index = level - 1;
         if (mLevelCol[index] < 0) {
-            final String name = mBuilder.getStyle().getGroupAt(index).getDisplayDomain().name;
-            mLevelCol[index] = mCursor.getColumnIndex(name);
+            final String name = mStyle.getGroupAt(index).getDisplayDomain().name;
+            mLevelCol[index] = getColumnIndex(name);
             if (mLevelCol[index] < 0) {
                 throw new ColumnNotPresentException(name);
             }
         }
 
-        //FIXME: seen once, can't reproduce:
+        //FIXME: from BoB, click book. Move sideways book to book (10.. 13x) then Back to BoB
         //     android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
         //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
         //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
         //        at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
         //        at com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:338)
-        //        at com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow.getLevelText(BooklistCursorRow.java:201)
+        //        at com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:201)
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1551)
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.access$400(BooksOnBookshelf.java:102)
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:488)
-        return formatRowGroup(context, level, mCursor.getString(mLevelCol[index]));
+        return formatRowGroup(context, level, getString(mLevelCol[index]));
     }
 
     /**
@@ -235,16 +193,16 @@ public class BooklistCursorRow
         }
 
         // sanity check.
-        if (mBuilder.getStyle().groupCount() < level) {
+        if (mStyle.groupCount() < level) {
             throw new IllegalArgumentException(
-                    "groupCount=" + mBuilder.getStyle().groupCount() + " < level=" + level);
+                    "groupCount=" + mStyle.groupCount() + " < level=" + level);
         }
 
         Locale locale = LocaleUtils.from(context);
 
         int index = level - 1;
 
-        switch (mBuilder.getStyle().getGroupKindAt(index)) {
+        switch (mStyle.getGroupKindAt(index)) {
             case BooklistGroup.RowKind.READ_STATUS:
                 switch (source) {
                     case "0":

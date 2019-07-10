@@ -74,7 +74,7 @@ public class EditSeriesDialogFragment
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DBDefinitions.KEY_SERIES, series);
+        args.putParcelable(DBDefinitions.KEY_SERIES_TITLE, series);
         frag.setArguments(args);
         return frag;
     }
@@ -85,13 +85,13 @@ public class EditSeriesDialogFragment
 
         mDb = new DAO();
 
-        Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
+        Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES_TITLE);
         Objects.requireNonNull(series);
         if (savedInstanceState == null) {
             mName = series.getName();
             mIsComplete = series.isComplete();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
@@ -118,7 +118,7 @@ public class EditSeriesDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
-                        UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                        UserMessage.show(mNameView, R.string.warning_required_name);
                         return;
                     }
                     mIsComplete = mIsCompleteView.isChecked();
@@ -134,7 +134,7 @@ public class EditSeriesDialogFragment
                     mDb.updateOrInsertSeries(series, LocaleUtils.getPreferredLocal());
 
                     Bundle data = new Bundle();
-                    data.putLong(DBDefinitions.KEY_SERIES, series.getId());
+                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, series.getId());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.SERIES, data);
                     } else {
@@ -166,7 +166,7 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_SERIES, mName);
+        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mName);
         outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
     }
 

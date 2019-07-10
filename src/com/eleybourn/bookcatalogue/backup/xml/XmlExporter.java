@@ -43,57 +43,14 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
 
 /**
  * WARNING: EXPERIMENTAL
@@ -505,7 +462,7 @@ public class XmlExporter
         for (Bookshelf bookshelf : list) {
             out.append('<' + XmlTags.XML_BOOKSHELF)
                .append(id(bookshelf.getId()))
-               .append(attr(DOM_BOOKSHELF.name, bookshelf.getName()))
+               .append(attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()))
                .append("/>\n");
             count++;
         }
@@ -532,18 +489,17 @@ public class XmlExporter
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
-            ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
-
+            ColumnMapper mapper = new ColumnMapper(cursor, DBDefinitions.TBL_AUTHORS);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_AUTHOR)
-                   .append(id(mapper.getLong(DOM_PK_ID)))
+                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
 
-                   .append(attr(DOM_AUTHOR_FAMILY_NAME.name,
-                                mapper.getString(DOM_AUTHOR_FAMILY_NAME)))
-                   .append(attr(DOM_AUTHOR_GIVEN_NAMES.name,
-                                mapper.getString(DOM_AUTHOR_GIVEN_NAMES)))
-                   .append(attr(DOM_AUTHOR_IS_COMPLETE.name,
-                                mapper.getInt(DOM_AUTHOR_IS_COMPLETE)))
+                   .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                                mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)))
+                   .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
+                                mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
+                   .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                                mapper.getInt(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
                    .append("/>\n");
                 count++;
             }
@@ -571,14 +527,14 @@ public class XmlExporter
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
-            ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES);
+            ColumnMapper mapper = new ColumnMapper(cursor, DBDefinitions.TBL_SERIES);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_SERIES)
-                   .append(id(mapper.getLong(DOM_PK_ID)))
-                   .append(attr(DOM_SERIES_TITLE.name,
-                                mapper.getString(DOM_SERIES_TITLE)))
-                   .append(attr(DOM_SERIES_IS_COMPLETE.name,
-                                mapper.getInt(DOM_SERIES_IS_COMPLETE)))
+                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
+                   .append(attr(DBDefinitions.KEY_SERIES_TITLE,
+                                mapper.getString(DBDefinitions.KEY_SERIES_TITLE)))
+                   .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                                mapper.getInt(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
                    .append("/>\n");
             }
         }
@@ -607,99 +563,99 @@ public class XmlExporter
            .append(">\n");
 
         try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom)) {
-            BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+            MappedCursorRow cursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
                 // basic ID
                 out.append('<' + XmlTags.XML_BOOK)
-                   .append(id(bookCursorRow.getId()))
-                   .append(attr(DOM_TITLE.name,
-                                bookCursorRow.getTitle()))
-                   .append(attr(DOM_BOOK_ISBN.name,
-                                bookCursorRow.getIsbn()))
+                   .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
+                   .append(attr(DBDefinitions.KEY_TITLE,
+                                cursorRow.getString(DBDefinitions.KEY_TITLE)))
+                   .append(attr(DBDefinitions.KEY_ISBN,
+                                cursorRow.getString(DBDefinitions.KEY_ISBN)))
                    .append("\n")
 
                    // publishing information
-                   .append(attr(DOM_BOOK_PUBLISHER.name,
-                                bookCursorRow.getPublisherName()))
-                   .append(attr(DOM_BOOK_DATE_PUBLISHED.name,
-                                bookCursorRow.getDatePublished()))
-                   .append(attr(DOM_FIRST_PUBLICATION.name,
-                                bookCursorRow.getFirstPublication()))
+                   .append(attr(DBDefinitions.KEY_PUBLISHER,
+                                cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
+                   .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
+                                cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                   .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                                cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
                    .append("\n")
-                   .append(attr(DOM_BOOK_FORMAT.name,
-                                bookCursorRow.getFormat()))
-                   .append(attr(DOM_BOOK_PAGES.name,
-                                bookCursorRow.getPages()))
-                   .append(attr(DOM_BOOK_GENRE.name,
-                                bookCursorRow.getGenre()))
-                   .append(attr(DOM_BOOK_LANGUAGE.name,
-                                bookCursorRow.getLanguageCode()))
-                   .append(attr(DOM_BOOK_TOC_BITMASK.name,
-                                bookCursorRow.getAnthologyBitMask()))
+                   .append(attr(DBDefinitions.KEY_FORMAT,
+                                cursorRow.getString(DBDefinitions.KEY_FORMAT)))
+                   .append(attr(DBDefinitions.KEY_PAGES,
+                                cursorRow.getString(DBDefinitions.KEY_PAGES)))
+                   .append(attr(DBDefinitions.KEY_GENRE,
+                                cursorRow.getString(DBDefinitions.KEY_GENRE)))
+                   .append(attr(DBDefinitions.KEY_LANGUAGE,
+                                cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
+                   .append(attr(DBDefinitions.KEY_TOC_BITMASK,
+                                cursorRow.getInt(DBDefinitions.KEY_TOC_BITMASK)))
                    .append("\n")
 
                    // reading facts
-                   .append(attr(DOM_BOOK_READ.name,
-                                bookCursorRow.getRead()))
-                   .append(attr(DOM_BOOK_READ_START.name,
-                                bookCursorRow.getReadStart()))
-                   .append(attr(DOM_BOOK_READ_END.name,
-                                bookCursorRow.getReadEnd()))
+                   .append(attr(DBDefinitions.KEY_READ,
+                                cursorRow.getInt(DBDefinitions.KEY_READ)))
+                   .append(attr(DBDefinitions.KEY_READ_START,
+                                cursorRow.getString(DBDefinitions.KEY_READ_START)))
+                   .append(attr(DBDefinitions.KEY_READ_END,
+                                cursorRow.getString(DBDefinitions.KEY_READ_END)))
                    .append("\n")
 
                    // price information
-                   .append(attr(DOM_BOOK_PRICE_LISTED.name,
-                                bookCursorRow.getListPrice()))
-                   .append(attr(DOM_BOOK_PRICE_LISTED_CURRENCY.name,
-                                bookCursorRow.getListPriceCurrency()))
-                   .append(attr(DOM_BOOK_PRICE_PAID.name,
-                                bookCursorRow.getPricePaid()))
-                   .append(attr(DOM_BOOK_PRICE_PAID_CURRENCY.name,
-                                bookCursorRow.getPricePaidCurrency()))
-                   .append(attr(DOM_BOOK_DATE_ACQUIRED.name,
-                                bookCursorRow.getDateAcquired()))
+                   .append(attr(DBDefinitions.KEY_PRICE_LISTED,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                   .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
+                   .append(attr(DBDefinitions.KEY_PRICE_PAID,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_PAID)))
+                   .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                                cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
+                   .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
+                                cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
                    .append("\n")
 
 
-                   .append(attr(DOM_BOOK_LOCATION.name,
-                                bookCursorRow.getLocation()))
-                   .append(attr(DOM_BOOK_RATING.name,
-                                bookCursorRow.getRating()))
-                   .append(attr(DOM_BOOK_SIGNED.name,
-                                bookCursorRow.getSigned()))
-                   .append(attr(DOM_BOOK_EDITION_BITMASK.name,
-                                bookCursorRow.getEditionBitMask()))
+                   .append(attr(DBDefinitions.KEY_LOCATION,
+                                cursorRow.getString(DBDefinitions.KEY_LOCATION)))
+                   .append(attr(DBDefinitions.KEY_RATING,
+                                cursorRow.getDouble(DBDefinitions.KEY_RATING)))
+                   .append(attr(DBDefinitions.KEY_SIGNED,
+                                cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
+                   .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
+                                cursorRow.getInt(DBDefinitions.KEY_EDITION_BITMASK)))
                    .append("\n")
 
-                   // external id's
-                   .append(attr(DOM_BOOK_LIBRARY_THING_ID.name,
-                                bookCursorRow.getLibraryThingBookId()))
-                   .append(attr(DOM_BOOK_OPEN_LIBRARY_ID.name,
-                                bookCursorRow.getOpenLibraryBookId()))
-                   .append(attr(DOM_BOOK_ISFDB_ID.name,
-                                bookCursorRow.getISFDBBookId()))
-                   .append(attr(DOM_BOOK_GOODREADS_BOOK_ID.name,
-                                bookCursorRow.getGoodreadsBookId()))
-                   .append(attr(DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name,
-                                bookCursorRow.getDateLastSyncedWithGoodreads()))
+                   // external ID's
+                   .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
+                                cursorRow.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
+                   .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
+                                cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
+                   .append(attr(DBDefinitions.KEY_ISFDB_ID,
+                                cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
+                   .append(attr(DBDefinitions.KEY_GOODREADS_ID,
+                                cursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID)))
+                   .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
+                                cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
                    .append("\n")
 
-                   .append(attr(DOM_BOOK_DATE_ADDED.name,
-                                bookCursorRow.getDateAdded()))
-                   .append(attr(DOM_LAST_UPDATE_DATE.name,
-                                bookCursorRow.getDateLastUpdated()))
-                   .append(attr(DOM_BOOK_UUID.name,
-                                bookCursorRow.getBookUuid()))
+                   .append(attr(DBDefinitions.KEY_DATE_ADDED,
+                                cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
+                   .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
+                                cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
+                   .append(attr(DBDefinitions.KEY_BOOK_UUID,
+                                cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
                    .append("\n")
 
-                   .append(attr(DOM_BOOK_LOANEE.name,
-                                bookCursorRow.getLoanedTo()))
+                   .append(attr(DBDefinitions.KEY_LOANEE,
+                                cursorRow.getString(DBDefinitions.KEY_LOANEE)))
                    .append(">\n");
 
-                out.append(tagWithCData(DOM_BOOK_DESCRIPTION.name, null,
-                                        bookCursorRow.getDescription()));
-                out.append(tagWithCData(DOM_BOOK_NOTES.name, null,
-                                        bookCursorRow.getNotes()));
+                out.append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
+                                        cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)));
+                out.append(tagWithCData(DBDefinitions.KEY_NOTES, null,
+                                        cursorRow.getString(DBDefinitions.KEY_NOTES)));
 
                 out.append("</" + XmlTags.XML_BOOK + ">\n");
                 count++;
@@ -1092,7 +1048,7 @@ public class XmlExporter
      * Supports a list of Styles.
      * <p>
      * - 'flat' preferences for the style.
-     * --- This includes the actual groups of the style: a CSV String of id's (kinds)
+     * --- This includes the actual groups of the style: a CSV String of ID's (kinds)
      * - Filters and Groups are flattened.
      * - each filter/group has a typed tag
      * - each preference in a group has a typed tag.

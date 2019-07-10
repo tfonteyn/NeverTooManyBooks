@@ -164,7 +164,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
-            tools:text="Series name (1)\nSeries name (2)"
+            tools:text="• Series name (1)\n• Series name (2)"
             />
 
         <!-- Table Of Content -->

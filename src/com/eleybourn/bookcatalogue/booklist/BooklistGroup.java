@@ -47,40 +47,10 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.UniqueMap;
-
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_DAY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_DAY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_PUBLISHED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_DAY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_YEAR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTER;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -115,20 +85,17 @@ public class BooklistGroup
 
     /** pre-v200 legacy support. DO NOT CHANGE. */
     private static final long serialVersionUID = 1012206875683862714L;
-
+    /** Flag indicating the style is user-defined -> our prefs must be persisted. */
+    final boolean mIsUserDefinedStyle;
     /**
      * the kind of row/group we represent, see {@link RowKind}.
      * <p>
      * Do not rename or move this variable, deserialization will break.
      */
     private final int kind;
-
     /** The name of the Preference file (comes from the style that contains this group. */
     @NonNull
     String mUuid;
-    /** Flag indicating the style is user-defined -> our prefs must be persisted. */
-    final boolean mIsUserDefinedStyle;
-
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
@@ -638,120 +605,120 @@ public class BooklistGroup
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a",
-                                  DOM_FK_AUTHOR_ID);
-            rowKind.setDisplayDomain(DOM_AUTHOR_FORMATTED);
+                                  DBDefinitions.DOM_FK_AUTHOR);
+            rowKind.setDisplayDomain(DBDefinitions.DOM_AUTHOR_FORMATTED);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(SERIES, R.string.lbl_series, "s",
-                                  DOM_FK_SERIES_ID);
-            rowKind.setDisplayDomain(DOM_SERIES_TITLE);
+                                  DBDefinitions.DOM_FK_SERIES);
+            rowKind.setDisplayDomain(DBDefinitions.DOM_SERIES_TITLE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             //all others will use the underlying domain as the displayDomain
             rowKind = new RowKind(GENRE, R.string.lbl_genre, "g",
-                                  DOM_BOOK_GENRE);
+                                  DBDefinitions.DOM_BOOK_GENRE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p",
-                                  DOM_BOOK_PUBLISHER);
+                                  DBDefinitions.DOM_BOOK_PUBLISHER);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(READ_STATUS, R.string.read_amp_unread, "r",
-                                  DOM_READ_STATUS);
+                                  DBDefinitions.DOM_READ_STATUS);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l",
-                                  DOM_BOOK_LOANEE);
+                                  DBDefinitions.DOM_LOANEE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp",
-                                  DOM_DATE_PUBLISHED_YEAR);
+                                  DBDefinitions.DOM_DATE_PUBLISHED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mnp",
-                                  DOM_DATE_PUBLISHED_MONTH);
+                                  DBDefinitions.DOM_DATE_PUBLISHED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t",
-                                  DOM_TITLE_LETTER);
+                                  DBDefinitions.DOM_TITLE_LETTER);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "yra",
-                                  DOM_DATE_ADDED_YEAR);
+                                  DBDefinitions.DOM_DATE_ADDED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "mna",
-                                  DOM_DATE_ADDED_MONTH);
+                                  DBDefinitions.DOM_DATE_ADDED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "dya",
-                                  DOM_DATE_ADDED_DAY);
+                                  DBDefinitions.DOM_DATE_ADDED_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt",
-                                  DOM_BOOK_FORMAT);
+                                  DBDefinitions.DOM_BOOK_FORMAT);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yrr",
-                                  DOM_DATE_READ_YEAR);
+                                  DBDefinitions.DOM_DATE_READ_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mnr",
-                                  DOM_DATE_READ_MONTH);
+                                  DBDefinitions.DOM_DATE_READ_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dyr",
-                                  DOM_DATE_READ_DAY);
+                                  DBDefinitions.DOM_DATE_READ_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc",
-                                  DOM_BOOK_LOCATION);
+                                  DBDefinitions.DOM_BOOK_LOCATION);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lang",
-                                  DOM_BOOK_LANGUAGE);
+                                  DBDefinitions.DOM_BOOK_LANGUAGE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yru",
-                                  DOM_DATE_LAST_UPDATE_YEAR);
+                                  DBDefinitions.DOM_DATE_LAST_UPDATE_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mnu",
-                                  DOM_DATE_UPDATE_MONTH);
+                                  DBDefinitions.DOM_DATE_UPDATE_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "dyu",
-                                  DOM_DATE_UPDATE_DAY);
+                                  DBDefinitions.DOM_DATE_UPDATE_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(RATING, R.string.lbl_rating, "rat",
-                                  DOM_BOOK_RATING);
+                                  DBDefinitions.DOM_BOOK_RATING);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf",
-                                  DOM_BOOKSHELF);
+                                  DBDefinitions.DOM_BOOKSHELF);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yrac",
-                                  DOM_DATE_ACQUIRED_YEAR);
+                                  DBDefinitions.DOM_DATE_ACQUIRED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mnac",
-                                  DOM_DATE_ACQUIRED_MONTH);
+                                  DBDefinitions.DOM_DATE_ACQUIRED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dyac",
-                                  DOM_DATE_ACQUIRED_DAY);
+                                  DBDefinitions.DOM_DATE_ACQUIRED_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUBLICATION_YEAR,
                                   R.string.lbl_first_publication_year, "yrfp",
-                                  DOM_DATE_FIRST_PUBLICATION_YEAR);
+                                  DBDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUBLICATION_MONTH,
                                   R.string.lbl_first_publication_month, "mnfp",
-                                  DOM_DATE_FIRST_PUBLICATION_MONTH);
+                                  DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             // NEWKIND: ROW_KIND_x

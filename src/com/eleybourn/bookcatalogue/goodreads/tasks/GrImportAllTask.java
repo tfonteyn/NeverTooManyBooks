@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -286,13 +286,13 @@ class GrImportAllTask
 
             if (found) {
                 // If found, update ALL related books
-                BookCursorRow bookCursorRow = cursor.getCursorRow();
+                MappedCursorRow cursorRow = cursor.getCursorRow();
                 do {
                     // Check for abort
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(db, bookCursorRow, review);
+                    updateBook(db, cursorRow, review);
                 } while (cursor.moveToNext());
             } else {
                 // Create the book
@@ -352,10 +352,10 @@ class GrImportAllTask
      * Update the book using the GR data.
      */
     private void updateBook(@NonNull final DAO db,
-                            @NonNull final BookCursorRow bookCursorRow,
+                            @NonNull final MappedCursorRow bookCursorRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
-        String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodreads();
+        String lastGrSync = bookCursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
         if (review.containsKey(ReviewFields.UPDATED)) {
             String lastUpdate = review.getString(ListReviewsApiHandler.ReviewFields.UPDATED);
@@ -369,7 +369,7 @@ class GrImportAllTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
-        db.updateBook(bookCursorRow.getId(), book,
+        db.updateBook(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
                       DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
@@ -399,7 +399,7 @@ class GrImportAllTask
      */
     @NonNull
     private Bundle buildBundle(@NonNull final DAO db,
-                               @Nullable final BookCursorRow bookCursorRow,
+                               @Nullable final MappedCursorRow bookCursorRow,
                                @NonNull final Bundle review) {
 
         Bundle bookData = new Bundle();
@@ -410,32 +410,32 @@ class GrImportAllTask
         // ReviewFields.DBA_NOTES);
 
         addStringIfNonBlank(review, ReviewFields.DBA_TITLE,
-                            bookData, DBDefinitions.DOM_TITLE.name);
+                            bookData, DBDefinitions.KEY_TITLE);
 
         addStringIfNonBlank(review, ReviewFields.DBA_DESCRIPTION,
-                            bookData, DBDefinitions.DOM_BOOK_DESCRIPTION.name);
+                            bookData, DBDefinitions.KEY_DESCRIPTION);
 
         addStringIfNonBlank(review, ReviewFields.DBA_FORMAT,
-                            bookData, DBDefinitions.DOM_BOOK_FORMAT.name);
+                            bookData, DBDefinitions.KEY_FORMAT);
 
         addStringIfNonBlank(review, ReviewFields.DBA_PUBLISHER,
-                            bookData, DBDefinitions.DOM_BOOK_PUBLISHER.name);
+                            bookData, DBDefinitions.KEY_PUBLISHER);
 
         addLongIfPresent(review, ReviewFields.DBA_GR_BOOK_ID,
-                         bookData, DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+                         bookData, DBDefinitions.KEY_GOODREADS_ID);
 
         // v200: Now storing as a string
         addStringIfNonBlank(review, ReviewFields.DBA_PAGES,
-                            bookData, DBDefinitions.DOM_BOOK_PAGES.name);
+                            bookData, DBDefinitions.KEY_PAGES);
 
         addDateIfValid(review, ReviewFields.DBA_READ_START,
-                       bookData, DBDefinitions.DOM_BOOK_READ_START.name);
+                       bookData, DBDefinitions.KEY_READ_START);
 
         String readEnd = addDateIfValid(review, ReviewFields.DBA_READ_END,
-                                        bookData, DBDefinitions.DOM_BOOK_READ_END.name);
+                                        bookData, DBDefinitions.KEY_READ_END);
 
         Double rating = addDoubleIfPresent(review, ReviewFields.DBA_RATING,
-                                           bookData, DBDefinitions.DOM_BOOK_RATING.name);
+                                           bookData, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
@@ -488,7 +488,7 @@ class GrImportAllTask
             authors = new ArrayList<>();
         } else {
             // it's an update. Get current authors.
-            authors = db.getAuthorsByBookId(bookCursorRow.getId());
+            authors = db.getAuthorsByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
         }
 
         for (Bundle grAuthor : grAuthors) {
@@ -510,7 +510,7 @@ class GrImportAllTask
                 if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
                 } else {
-                    allSeries = db.getSeriesByBookId(bookCursorRow.getId());
+                    allSeries = db.getSeriesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
                 Series newSeries = new Series(details.getName());
@@ -541,7 +541,7 @@ class GrImportAllTask
             if (bookCursorRow == null) {
                 bsList = new ArrayList<>();
             } else {
-                bsList = db.getBookshelvesByBookId(bookCursorRow.getId());
+                bsList = db.getBookshelvesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
             }
             // --- end 2019-02-04 ---
 
@@ -566,7 +566,7 @@ class GrImportAllTask
         if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ReviewFields.ADDED,
-                                bookData, DBDefinitions.DOM_BOOK_DATE_ADDED.name);
+                                bookData, DBDefinitions.KEY_DATE_ADDED);
 
             // fetch thumbnail
             String thumbnail;
@@ -594,7 +594,7 @@ class GrImportAllTask
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the GR update date.
         String now = DateUtils.utcSqlDateTimeForToday();
-        bookData.putString(DBDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE, now);
+        bookData.putString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE, now);
         bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;

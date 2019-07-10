@@ -613,7 +613,7 @@ public class SearchCoordinator {
         }
         for (String key : bookData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
-                    || DBDefinitions.KEY_DATE_FIRST_PUBLISHED.equals(key)) {
+                    || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(key, bookData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)

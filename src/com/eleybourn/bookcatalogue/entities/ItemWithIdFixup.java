@@ -26,7 +26,7 @@ public interface ItemWithIdFixup {
      * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (e.g. 'Amber Series' <==> 'Amber').
      *
-     * @param db   Database connection to lookup IDs
+     * @param db   Database connection to lookup ID's
      * @param list List to clean up
      * @param <T>  ItemWithIdFixup object
      *
@@ -34,7 +34,7 @@ public interface ItemWithIdFixup {
      */
     static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DAO db,
                                                          @NonNull final List<T> list) {
-        // weeding out duplicate ids
+        // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
         // weeding out duplicate uniqueNames.
         Set<String> names = new HashSet<>();

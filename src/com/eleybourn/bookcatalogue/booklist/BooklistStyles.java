@@ -212,7 +212,7 @@ public final class BooklistStyles {
      * NOTE: Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
      * <p>
-     * Note the hardcoded negative id's. These number should never be changed as they will
+     * Note the hardcoded negative ID's. These number should never be changed as they will
      * get stored in preferences and serialized. Take care not to add duplicates.
      *
      * @return a collection of all builtin styles.
@@ -517,7 +517,7 @@ public final class BooklistStyles {
     /**
      * Save the preferred style menu list.
      * <p>
-     * This list contains the id's for user-defined *AND* system-styles.
+     * This list contains the ID's for user-defined *AND* system-styles.
      *
      * @param styles full list of preferred styles to save 'in order'
      */

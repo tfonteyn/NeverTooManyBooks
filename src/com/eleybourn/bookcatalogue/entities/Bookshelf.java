@@ -17,7 +17,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
-import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 /**
@@ -113,8 +112,8 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final ColumnMapper mapper) {
         mId = id;
-        mName = mapper.getString(DBDefinitions.DOM_BOOKSHELF);
-        mStyleUuid = mapper.getString(DBDefinitions.DOM_UUID);
+        mName = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
+        mStyleUuid = mapper.getString(DBDefinitions.KEY_UUID);
 //        mCachedStyle = null;
     }
 
@@ -152,16 +151,6 @@ public class Bookshelf
         // the right thing todo would be: get a database, then get the 'real' default style.
         // as this is a lot of overkill for importing, we're just using the builtin default.
         return new Bookshelf(name, BooklistStyles.DEFAULT_STYLE);
-    }
-
-    /**
-     * Special Formatter.
-     *
-     * @return the list of bookshelves formatted as "shelf1, shelf2, shelf3, ...
-     */
-    @NonNull
-    public static String toDisplayString(@NonNull final List<Bookshelf> list) {
-        return Csv.join(", ", list, Bookshelf::getName);
     }
 
     /**
@@ -361,7 +350,7 @@ public class Bookshelf
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *     AND all other fields are equal</li>
+     * AND all other fields are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */
@@ -374,11 +363,11 @@ public class Bookshelf
             return false;
         }
         Bookshelf that = (Bookshelf) obj;
-        // if both 'exist' but have different id's -> different.
+        // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        // one or both are 'new' or their id's are the same.
+        // one or both are 'new' or their ID's are the same.
         return Objects.equals(mName, that.mName);
     }
 

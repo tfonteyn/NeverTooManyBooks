@@ -14,13 +14,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-
 /**
  * Intention is to create cleanup routines for some columns/tables
  * which can be run at upgrades, import, startup
@@ -98,8 +91,8 @@ public class DBCleaner {
         bookBookshelf(dryRun);
 
         // make sure these are '0' or '1'
-        booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
-        booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
+        booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_READ, dryRun);
+        booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED, dryRun);
 
         //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
@@ -140,12 +133,13 @@ public class DBCleaner {
      * @param dryRun {@code true} to run the update.
      */
     private void bookBookshelf(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
-                + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
+        String select = "SELECT DISTINCT " + DBDefinitions.DOM_FK_BOOK
+                + " FROM " + DBDefinitions.TBL_BOOK_BOOKSHELF
+                + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
         toLog(Tracker.State.Enter, select);
         if (!dryRun) {
-            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                    + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
+            String sql = "DELETE " + DBDefinitions.TBL_BOOK_BOOKSHELF
+                    + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }

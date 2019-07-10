@@ -127,7 +127,7 @@ public class GoodreadsSearchResultsActivity
             Logger.error(this, e, "Failed when searching Goodreads");
             String msg = getString(R.string.gr_error_while_searching)
                     + ' ' + getString(R.string.error_if_the_problem_persists);
-            UserMessage.showUserMessage(mListView, msg);
+            UserMessage.show(mListView, msg);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -135,7 +135,7 @@ public class GoodreadsSearchResultsActivity
 
         // Finish if no results, otherwise display them
         if (works.isEmpty()) {
-            UserMessage.showUserMessage(mListView, R.string.warning_no_matching_book_found);
+            UserMessage.show(mListView, R.string.warning_no_matching_book_found);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -154,7 +154,7 @@ public class GoodreadsSearchResultsActivity
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
         Logger.warnWithStackTrace(this, "doItemClick", msg);
-        UserMessage.showUserMessage(mListView, msg);
+        UserMessage.show(mListView, msg);
     }
 
     /**

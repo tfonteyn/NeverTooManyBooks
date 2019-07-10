@@ -1,5 +1,8 @@
 package com.eleybourn.bookcatalogue.searches.openlibrary;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -91,6 +94,12 @@ public class OpenLibraryManager
     public static String getBaseURL() {
         //noinspection ConstantConditions
         return App.getPrefs().getString(PREFS_HOST_URL, "https://openlibrary.org");
+    }
+
+    public static void openWebsite(@NonNull final Context context,
+                                   @NonNull final String bookId) {
+        String url = getBaseURL() + "/books/" + bookId;
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -452,7 +461,7 @@ public class OpenLibraryManager
 
 //        s = jsonObject.optString("pagination");
 //        if (!s.isEmpty()) {
-//            bookData.putString(UniqueId.KEY_PAGES, s);
+//            bookData.putString(DBDefinitions.KEY_PAGES, s);
 //        } else {
         i = result.optInt("number_of_pages");
         if (i > 0) {
@@ -482,7 +491,7 @@ public class OpenLibraryManager
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_BOOK_GOODREADS_ID, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_GOODREADS_ID, a.getString(0));
             }
         }
 

@@ -46,6 +46,9 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * <p>
  * To add a new hint, create a string resource and add it to HINTS. Then, to display the
  * hint, simply call HintManager.displayHint(a, stringId).
+ * <p>
+ * Note that hints are displayed as HTML spans. So any special formatting
+ * should be done inside a CDATA and use HTML tags.
  *
  * @author Philip Warner
  */
@@ -101,6 +104,8 @@ public final class HintManager {
         // v200
         HINTS.put(R.string.pt_thumbnail_cropper_layer_type_summary,
                   new Hint("hint_pref_layer_type"));
+        HINTS.put(R.string.hint_update_fields_from_internet,
+                  new Hint("hint_update_fields_from_internet"));
     }
 
     private HintManager() {
@@ -121,7 +126,7 @@ public final class HintManager {
      *                 This allows two different places in the code use the same hint,
      *                 but one place being 'disable the hint' and another 'show'.
      * @param postRun  Optional Runnable to run after the hint was dismissed
-     *                (or not displayed at all).
+     *                 (or not displayed at all).
      * @param args     Optional arguments for the hint string
      */
     public static void displayHint(@NonNull final LayoutInflater inflater,

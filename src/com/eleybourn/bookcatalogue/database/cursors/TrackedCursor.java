@@ -63,7 +63,7 @@ public class TrackedCursor
     /** Used as a collection of known cursors. */
     private static final Set<WeakReference<TrackedCursor>> CURSORS = new HashSet<>();
 
-    /** Static counter for unique cursor IDs, only ever goes up. */
+    /** Static counter for unique cursor ID's, only ever goes up. */
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 

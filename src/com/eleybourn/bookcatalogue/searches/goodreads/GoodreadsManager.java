@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -71,7 +72,8 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
@@ -345,6 +347,12 @@ public class GoodreadsManager
 
         return !(sAccessToken == null || sAccessToken.isEmpty()
                 || sAccessSecret == null || sAccessSecret.isEmpty());
+    }
+
+    public static void openWebsite(@NonNull final Context context,
+                                   final long bookId) {
+        String url = getBaseURL() + "/book/show/" + bookId;
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -641,7 +649,7 @@ public class GoodreadsManager
      */
     @NonNull
     public ExportDisposition sendOneBook(@NonNull final DAO db,
-                                         @NonNull final BookCursorRow bookCursorRow)
+                                         @NonNull final MappedCursorRow bookCursorRow)
             throws AuthorizationException,
                    IOException,
                    BookNotFoundException {
@@ -655,19 +663,19 @@ public class GoodreadsManager
          * - rating
          */
 
-        long bookId = bookCursorRow.getId();
+        long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
         Bundle grBook = null;
 
         // Get the list of shelves from goodreads. This is cached per instance of GoodreadsManager.
         GoodreadsBookshelves grShelfList = getShelves();
 
         // Get the book ISBN
-        String isbn = bookCursorRow.getIsbn();
+        String isbn = bookCursorRow.getString(DBDefinitions.KEY_ISBN);
         long grId;
 
         // See if the book has a goodreads ID and if it is valid.
         try {
-            grId = bookCursorRow.getGoodreadsBookId();
+            grId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID);
             if (grId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 grBook = getBookById(grId);
@@ -737,7 +745,7 @@ public class GoodreadsManager
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (bookCursorRow.isRead()) {
+                if (bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
                     //TEST: use a resource ? or is this a Goodreads string ?
                     pseudoShelf = "Read";
                 } else {
@@ -816,10 +824,10 @@ public class GoodreadsManager
                 //                  books.getNotes(), ((int)books.getRating()) );
                 // -> 'notes' has been disabled from the SQL.
                 updateReview(reviewId,
-                             bookCursorRow.isRead(),
-                             bookCursorRow.getReadEnd(),
+                             bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0,
+                             bookCursorRow.getString(DBDefinitions.KEY_READ_END),
                              null,
-                             (int) bookCursorRow.getRating());
+                             (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING));
 
             } catch (@NonNull final BookNotFoundException e) {
                 return ExportDisposition.error;

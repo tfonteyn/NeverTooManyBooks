@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 /**
  * IMPORTANT: do NOT auto-format! It will cause chaos in the order of definitions.
  *
- * Domain definitions.
+ * Domain definitions for {@link DAO} and {@link BooklistBuilder}.
  *
  * NOTE!!! Fields 'name' attribute must be in LOWER CASE.
  *
@@ -89,14 +89,18 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
 
     static {
+        // never change the "authors" "a" alias. It's hardcoded elsewhere.
         TBL_AUTHORS =
                 new TableDefinition("authors").setAlias("a");
+        // never change the "books" "b" alias. It's hardcoded elsewhere.
         TBL_BOOKS =
                 new TableDefinition("books").setAlias("b");
-        TBL_BOOKSHELF =
-                new TableDefinition("bookshelf").setAlias("bsh");
+        // never change the "series" "s" alias. It's hardcoded elsewhere.
         TBL_SERIES =
                 new TableDefinition("series").setAlias("s");
+
+        TBL_BOOKSHELF =
+                new TableDefinition("bookshelf").setAlias("bsh");
         TBL_TOC_ENTRIES =
                 new TableDefinition("anthology").setAlias("an");
 
@@ -123,46 +127,52 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_PK_ID;
 
     /** foreign key. */
-    public static final DomainDefinition DOM_FK_AUTHOR_ID;
+    public static final DomainDefinition DOM_FK_AUTHOR;
     /** foreign key. */
-    public static final DomainDefinition DOM_FK_BOOKSHELF_ID;
+    public static final DomainDefinition DOM_FK_BOOKSHELF;
     /** foreign key. */
-    public static final DomainDefinition DOM_FK_BOOK_ID;
+    public static final DomainDefinition DOM_FK_BOOK;
     /** foreign key. */
-    public static final DomainDefinition DOM_FK_SERIES_ID;
+    public static final DomainDefinition DOM_FK_SERIES;
     /** foreign key. */
     @SuppressWarnings("WeakerAccess")
-    public static final DomainDefinition DOM_FK_TOC_ENTRY_ID;
+    public static final DomainDefinition DOM_FK_TOC_ENTRY;
     /**
      * foreign key.
      * When a style is deleted, this key will be (re)set to
      * {@link BooklistStyles#DEFAULT_STYLE_ID}
      */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_FK_STYLE_ID;
 
-    public static final String KEY_ID = "_id";
-    public static final String KEY_AUTHOR = "author";
+    public static final String KEY_PK_ID = "_id";
+    public static final String KEY_FK_BOOK = "book";
+    public static final String KEY_FK_AUTHOR = "author";
+    public static final String KEY_FK_SERIES = "series_id";
+    private static final String KEY_FK_BOOKSHELF = "bookshelf";
+    private static final String KEY_FK_TOC_ENTRY = "anthology";
+    private static final String KEY_FK_STYLE = "style";
 
     static {
-        DOM_PK_ID = new DomainDefinition(KEY_ID);
+        DOM_PK_ID = new DomainDefinition(KEY_PK_ID);
 
-        DOM_FK_AUTHOR_ID =
-                new DomainDefinition(KEY_AUTHOR, ColumnInfo.TYPE_INTEGER, true)
+        DOM_FK_AUTHOR =
+                new DomainDefinition(KEY_FK_AUTHOR, ColumnInfo.TYPE_INTEGER, true)
                         .references(TBL_AUTHORS, "ON DELETE CASCADE ON UPDATE CASCADE");
-        DOM_FK_BOOKSHELF_ID =
-                new DomainDefinition("bookshelf", ColumnInfo.TYPE_INTEGER, true)
+        DOM_FK_BOOKSHELF =
+                new DomainDefinition(KEY_FK_BOOKSHELF, ColumnInfo.TYPE_INTEGER, true)
                         .references(TBL_BOOKSHELF, "ON DELETE CASCADE ON UPDATE CASCADE");
-        DOM_FK_BOOK_ID =
-                new DomainDefinition("book", ColumnInfo.TYPE_INTEGER, true)
+        DOM_FK_BOOK =
+                new DomainDefinition(KEY_FK_BOOK, ColumnInfo.TYPE_INTEGER, true)
                         .references(TBL_BOOKS, "ON DELETE CASCADE ON UPDATE CASCADE");
-        DOM_FK_SERIES_ID =
-                new DomainDefinition("series_id", ColumnInfo.TYPE_INTEGER, true)
+        DOM_FK_SERIES =
+                new DomainDefinition(KEY_FK_SERIES, ColumnInfo.TYPE_INTEGER, true)
                         .references(TBL_SERIES, "ON DELETE CASCADE ON UPDATE CASCADE");
-        DOM_FK_TOC_ENTRY_ID =
-                new DomainDefinition("anthology", ColumnInfo.TYPE_INTEGER, true)
+        DOM_FK_TOC_ENTRY =
+                new DomainDefinition(KEY_FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER, true)
                         .references(TBL_TOC_ENTRIES, "ON DELETE CASCADE ON UPDATE CASCADE");
         DOM_FK_STYLE_ID =
-                new DomainDefinition("style", ColumnInfo.TYPE_INTEGER, true)
+                new DomainDefinition(KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER, true)
                         .setDefault(BooklistStyles.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE");
     }
@@ -175,12 +185,12 @@ public final class DBDefinitions {
      */
     public static final DomainDefinition DOM_TITLE_OB;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
-    public static final DomainDefinition DOM_FIRST_PUBLICATION;
+    public static final DomainDefinition DOM_DATE_FIRST_PUBLICATION;
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_LAST_UPDATE_DATE;
+    public static final DomainDefinition DOM_DATE_LAST_UPDATED;
 
     public static final String KEY_TITLE = "title";
-    public static final String KEY_DATE_FIRST_PUBLISHED = "first_publication";
+    public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
     public static final String KEY_DATE_LAST_UPDATED = "last_update_date";
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
@@ -193,10 +203,10 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
-        DOM_FIRST_PUBLICATION =
-                new DomainDefinition(KEY_DATE_FIRST_PUBLISHED, ColumnInfo.TYPE_DATE, true)
+        DOM_DATE_FIRST_PUBLICATION =
+                new DomainDefinition(KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
-        DOM_LAST_UPDATE_DATE =
+        DOM_DATE_LAST_UPDATED =
                 new DomainDefinition(KEY_DATE_LAST_UPDATED, ColumnInfo.TYPE_DATETIME, true)
                         .setDefault("current_timestamp");
     }
@@ -218,6 +228,7 @@ public final class DBDefinitions {
     public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
     public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
+    public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
 
     static {
         DOM_AUTHOR_FAMILY_NAME =
@@ -244,7 +255,7 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT, true);
 
         DOM_AUTHOR_FORMATTED_GIVEN_FIRST =
-                new DomainDefinition("author_formatted_given_first", ColumnInfo.TYPE_TEXT, true);
+                new DomainDefinition(KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT, true);
     }
 
     /** {@link #TBL_SERIES). */
@@ -253,44 +264,52 @@ public final class DBDefinitions {
     /** {@link #TBL_SERIES}. */
     public static final DomainDefinition DOM_SERIES_IS_COMPLETE;
     /** {@link #TBL_SERIES). */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_SERIES_FORMATTED;
 
-    public static final String KEY_SERIES = "series_name";
+    public static final String KEY_SERIES_TITLE = "series_name";
+    public static final String KEY_SERIES_FORMATTED = "series_formatted";
     public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
 
     static {
         DOM_SERIES_TITLE =
-                new DomainDefinition(KEY_SERIES, ColumnInfo.TYPE_TEXT, true);
+                new DomainDefinition(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT, true);
         DOM_SERIES_TITLE_OB =
-                new DomainDefinition(KEY_SERIES + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_SERIES_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
                         .setPrePreparedOrderBy(true)
                         .setDefaultEmptyString();
         DOM_SERIES_IS_COMPLETE =
                 new DomainDefinition(KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN, true)
                         .setDefault(0);
         DOM_SERIES_FORMATTED =
-                new DomainDefinition("series_formatted", ColumnInfo.TYPE_TEXT, true);
+                new DomainDefinition(KEY_SERIES_FORMATTED, ColumnInfo.TYPE_TEXT, true);
     }
 
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_UUID;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PUBLISHER;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
     /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
     public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED_CURRENCY;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED;
@@ -303,10 +322,12 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LOCATION;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_READ;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_READ_START;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_READ_END;
@@ -315,8 +336,10 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. A rating goes from 0 to 5 stars, in 0.5 increments. */
     public static final DomainDefinition DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_DESCRIPTION;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_NOTES;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_ISFDB_ID;
@@ -325,8 +348,9 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID;
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_GOODREADS_BOOK_ID;
+    public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
     /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
     /** {@link #TBL_BOOKS} added to the collection. */
     public static final DomainDefinition DOM_BOOK_DATE_ADDED;
@@ -360,11 +384,11 @@ public final class DBDefinitions {
     public static final String KEY_ISFDB_ID = "isfdb_book_id";
     public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
     public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
-    public static final String KEY_BOOK_GOODREADS_ID = "goodreads_book_id";
+    public static final String KEY_GOODREADS_ID = "goodreads_book_id";
 
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
-    public static final String KEY_BOOK_GR_LAST_SYNC_DATE = "last_goodreads_sync_date";
+    public static final String KEY_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
 
     static {
         DOM_BOOK_UUID =
@@ -436,16 +460,19 @@ public final class DBDefinitions {
         DOM_BOOK_NOTES =
                 new DomainDefinition(KEY_NOTES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
-        DOM_BOOK_ISFDB_ID =
-                new DomainDefinition(KEY_ISFDB_ID, ColumnInfo.TYPE_INTEGER);
+
         DOM_BOOK_OPEN_LIBRARY_ID =
                 new DomainDefinition(KEY_OPEN_LIBRARY_ID, ColumnInfo.TYPE_TEXT);
+
+        DOM_BOOK_ISFDB_ID =
+                new DomainDefinition(KEY_ISFDB_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BOOK_LIBRARY_THING_ID =
                 new DomainDefinition(KEY_LIBRARY_THING_ID, ColumnInfo.TYPE_INTEGER);
-        DOM_BOOK_GOODREADS_BOOK_ID =
-                new DomainDefinition(KEY_BOOK_GOODREADS_ID, ColumnInfo.TYPE_INTEGER);
+        DOM_BOOK_GOODREADS_ID =
+                new DomainDefinition(KEY_GOODREADS_ID, ColumnInfo.TYPE_INTEGER);
+
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
-                new DomainDefinition(KEY_BOOK_GR_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
+                new DomainDefinition(KEY_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
                         .setDefault("'0000-00-00'");
         DOM_BOOK_DATE_ADDED =
                 new DomainDefinition(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME, true)
@@ -463,25 +490,26 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOK_SERIES}. */
-    public static final DomainDefinition DOM_BOOK_SERIES_NUM;
+    public static final DomainDefinition DOM_BOOK_NUM_IN_SERIES;
 
     /** {@link #TBL_BOOK_LOANEE}. */
-    public static final DomainDefinition DOM_BOOK_LOANEE;
+    public static final DomainDefinition DOM_LOANEE;
 
     /** Virtual. The type of a TOC entry. See {@link TocEntry#TYPE_TOC} */
     static final DomainDefinition DOM_TOC_TYPE;
 
-    public static final String KEY_SERIES_NUM = "series_num";
+    public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_LOANEE = "loaned_to";
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_TOC_TYPE = "type";
 
     static {
-        DOM_BOOK_SERIES_NUM =
-                new DomainDefinition(KEY_SERIES_NUM, ColumnInfo.TYPE_TEXT);
-        DOM_BOOK_LOANEE =
+        DOM_BOOK_NUM_IN_SERIES =
+                new DomainDefinition(KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT);
+        DOM_LOANEE =
                 new DomainDefinition(KEY_LOANEE, ColumnInfo.TYPE_TEXT, true);
-
         DOM_TOC_TYPE =
-                new DomainDefinition("type",ColumnInfo.TYPE_TEXT);
+                new DomainDefinition(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT);
     }
 
     /** {@link #TBL_BOOK_AUTHOR}. */
@@ -509,12 +537,15 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_UUID;
     static final DomainDefinition DOM_STYLE_IS_BUILTIN;
 
+    public static final String KEY_UUID = "uuid";
+
     static {
         DOM_UUID =
-                new DomainDefinition("uuid", ColumnInfo.TYPE_TEXT, true)
+                new DomainDefinition(KEY_UUID, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
 
         DOM_STYLE_IS_BUILTIN =
@@ -634,33 +665,42 @@ public final class DBDefinitions {
     /** {@link #TBL_ROW_NAVIGATOR} {@link BooklistBuilder} is node expanded. */
     public static final DomainDefinition DOM_BL_NODE_EXPANDED;
     /** {@link BooklistBuilder} the 'selected' book, i.e. the one to scroll back into view. */
-    public static final DomainDefinition DOM_BL_SELECTED;
+    public static final DomainDefinition DOM_BL_NODE_SELECTED;
+
+    public static final String KEY_BL_ABSOLUTE_POSITION = "abs_pos";
+    public static final String KEY_BL_NODE_ROW_KIND = "kind";
+    private static final String KEY_BL_ROOT_KEY = "root_key";
+    public static final String KEY_BL_NODE_LEVEL = "level";
+    private static final String KEY_BL_REAL_ROW_ID = "real_row_id";
+    private static final String KEY_BL_NODE_VISIBLE = "visible";
+    private static final String KEY_BL_NODE_EXPANDED = "expanded";
+    private static final String KEY_BL_NODE_SELECTED = "selected";
 
     static {
         DOM_BL_SERIES_NUM_FLOAT =
                 new DomainDefinition("series_num_float", ColumnInfo.TYPE_REAL);
         DOM_BL_ABSOLUTE_POSITION =
-                new DomainDefinition("abs_pos", ColumnInfo.TYPE_INTEGER, true);
+                new DomainDefinition(KEY_BL_ABSOLUTE_POSITION, ColumnInfo.TYPE_INTEGER, true);
         DOM_BL_NODE_ROW_KIND =
-                new DomainDefinition("kind", ColumnInfo.TYPE_INTEGER, true);
+                new DomainDefinition(KEY_BL_NODE_ROW_KIND, ColumnInfo.TYPE_INTEGER, true);
         DOM_BL_ROOT_KEY =
-                new DomainDefinition("root_key", ColumnInfo.TYPE_TEXT);
+                new DomainDefinition(KEY_BL_ROOT_KEY, ColumnInfo.TYPE_TEXT);
         DOM_BL_NODE_LEVEL =
-                new DomainDefinition("level", ColumnInfo.TYPE_INTEGER, true);
+                new DomainDefinition(KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER, true);
         DOM_BL_BOOK_COUNT =
                 new DomainDefinition("book_count", ColumnInfo.TYPE_INTEGER);
         DOM_BL_PRIMARY_SERIES_COUNT =
                 new DomainDefinition("primary_series_count", ColumnInfo.TYPE_INTEGER);
         DOM_BL_REAL_ROW_ID =
-                new DomainDefinition("real_row_id", ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition(KEY_BL_REAL_ROW_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BL_NODE_VISIBLE =
-                new DomainDefinition("visible", ColumnInfo.TYPE_INTEGER)
+                new DomainDefinition(KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
                         .setDefault(0);
         DOM_BL_NODE_EXPANDED =
-                new DomainDefinition("expanded", ColumnInfo.TYPE_INTEGER)
+                new DomainDefinition(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
                         .setDefault(0);
-        DOM_BL_SELECTED =
-                new DomainDefinition("selected", ColumnInfo.TYPE_BOOLEAN)
+        DOM_BL_NODE_SELECTED =
+                new DomainDefinition(KEY_BL_NODE_SELECTED, ColumnInfo.TYPE_BOOLEAN)
                         .setDefault(0);
     }
 
@@ -749,7 +789,7 @@ public final class DBDefinitions {
                              DOM_BOOK_ISBN,
                              DOM_BOOK_PUBLISHER,
                              DOM_BOOK_DATE_PUBLISHED,
-                             DOM_FIRST_PUBLICATION,
+                             DOM_DATE_FIRST_PUBLICATION,
 
                              DOM_BOOK_PRICE_LISTED,
                              DOM_BOOK_PRICE_LISTED_CURRENCY,
@@ -781,20 +821,20 @@ public final class DBDefinitions {
                              DOM_BOOK_ISFDB_ID,
                              DOM_BOOK_LIBRARY_THING_ID,
                              DOM_BOOK_OPEN_LIBRARY_ID,
-                             DOM_BOOK_GOODREADS_BOOK_ID,
+                             DOM_BOOK_GOODREADS_ID,
                              DOM_BOOK_GOODREADS_LAST_SYNC_DATE,
 
                              // internal data
                              DOM_BOOK_UUID,
                              DOM_BOOK_DATE_ADDED,
-                             DOM_LAST_UPDATE_DATE)
+                             DOM_DATE_LAST_UPDATED)
 
                  .setPrimaryKey(DOM_PK_ID)
                  .addIndex(DOM_TITLE_OB, false, DOM_TITLE_OB)
                  .addIndex(DOM_BOOK_ISBN, false, DOM_BOOK_ISBN)
                  .addIndex(DOM_BOOK_PUBLISHER, false, DOM_BOOK_PUBLISHER)
                  .addIndex(DOM_BOOK_UUID, true, DOM_BOOK_UUID)
-                 .addIndex(DOM_BOOK_GOODREADS_BOOK_ID, false, DOM_BOOK_GOODREADS_BOOK_ID)
+                 .addIndex(DOM_BOOK_GOODREADS_ID, false, DOM_BOOK_GOODREADS_ID)
                  .addIndex(DOM_BOOK_OPEN_LIBRARY_ID, false, DOM_BOOK_OPEN_LIBRARY_ID)
                  .addIndex(DOM_BOOK_ISFDB_ID, false, DOM_BOOK_ISFDB_ID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
@@ -810,78 +850,78 @@ public final class DBDefinitions {
 
 
         TBL_TOC_ENTRIES.addDomains(DOM_PK_ID,
-                                   DOM_FK_AUTHOR_ID,
+                                   DOM_FK_AUTHOR,
                                    DOM_TITLE,
                                    DOM_TITLE_OB,
-                                   DOM_FIRST_PUBLICATION)
+                                   DOM_DATE_FIRST_PUBLICATION)
                        .setPrimaryKey(DOM_PK_ID)
-                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR_ID)
-                       .addIndex(DOM_FK_AUTHOR_ID, false, DOM_FK_AUTHOR_ID)
+                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                       .addIndex(DOM_FK_AUTHOR, false, DOM_FK_AUTHOR)
                        .addIndex(DOM_TITLE_OB, false, DOM_TITLE_OB)
-                       .addIndex("pk", true, DOM_FK_AUTHOR_ID, DOM_TITLE_OB);
+                       .addIndex("pk", true, DOM_FK_AUTHOR, DOM_TITLE_OB);
         ALL_TABLES.put(TBL_TOC_ENTRIES.getName(), TBL_TOC_ENTRIES);
 
 
-        TBL_BOOK_AUTHOR.addDomains(DOM_FK_BOOK_ID,
-                                   DOM_FK_AUTHOR_ID,
+        TBL_BOOK_AUTHOR.addDomains(DOM_FK_BOOK,
+                                   DOM_FK_AUTHOR,
                                    DOM_BOOK_AUTHOR_POSITION)
-                       .setPrimaryKey(DOM_FK_BOOK_ID, DOM_BOOK_AUTHOR_POSITION)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK_ID)
-                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR_ID)
-                       .addIndex(DOM_FK_AUTHOR_ID, true,
-                                 DOM_FK_AUTHOR_ID,
-                                 DOM_FK_BOOK_ID)
-                       .addIndex(DOM_FK_BOOK_ID, true,
-                                 DOM_FK_BOOK_ID,
-                                 DOM_FK_AUTHOR_ID);
+                       .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
+                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                       .addIndex(DOM_FK_AUTHOR, true,
+                                 DOM_FK_AUTHOR,
+                                 DOM_FK_BOOK)
+                       .addIndex(DOM_FK_BOOK, true,
+                                 DOM_FK_BOOK,
+                                 DOM_FK_AUTHOR);
         ALL_TABLES.put(TBL_BOOK_AUTHOR.getName(), TBL_BOOK_AUTHOR);
 
 
-        TBL_BOOK_SERIES.addDomains(DOM_FK_BOOK_ID,
-                                   DOM_FK_SERIES_ID,
-                                   DOM_BOOK_SERIES_NUM,
+        TBL_BOOK_SERIES.addDomains(DOM_FK_BOOK,
+                                   DOM_FK_SERIES,
+                                   DOM_BOOK_NUM_IN_SERIES,
                                    DOM_BOOK_SERIES_POSITION)
-                       .setPrimaryKey(DOM_FK_BOOK_ID, DOM_BOOK_SERIES_POSITION)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK_ID)
-                       .addReference(TBL_SERIES, DOM_FK_SERIES_ID)
-                       .addIndex(DOM_FK_SERIES_ID, true,
-                                 DOM_FK_SERIES_ID,
-                                 DOM_FK_BOOK_ID,
-                                 DOM_BOOK_SERIES_NUM)
-                       .addIndex(DOM_FK_BOOK_ID, true,
-                                 DOM_FK_BOOK_ID,
-                                 DOM_FK_SERIES_ID,
-                                 DOM_BOOK_SERIES_NUM);
+                       .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)
+                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                       .addReference(TBL_SERIES, DOM_FK_SERIES)
+                       .addIndex(DOM_FK_SERIES, true,
+                                 DOM_FK_SERIES,
+                                 DOM_FK_BOOK,
+                                 DOM_BOOK_NUM_IN_SERIES)
+                       .addIndex(DOM_FK_BOOK, true,
+                                 DOM_FK_BOOK,
+                                 DOM_FK_SERIES,
+                                 DOM_BOOK_NUM_IN_SERIES);
         ALL_TABLES.put(TBL_BOOK_SERIES.getName(), TBL_BOOK_SERIES);
 
 
         TBL_BOOK_LOANEE.addDomains(DOM_PK_ID,
-                                   DOM_FK_BOOK_ID,
-                                   DOM_BOOK_LOANEE)
+                                   DOM_FK_BOOK,
+                                   DOM_LOANEE)
                        .setPrimaryKey(DOM_PK_ID)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK_ID)
-                       .addIndex(DOM_FK_BOOK_ID, true, DOM_FK_BOOK_ID);
+                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                       .addIndex(DOM_FK_BOOK, true, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
 
 
-        TBL_BOOK_BOOKSHELF.addDomains(DOM_FK_BOOK_ID,
-                                      DOM_FK_BOOKSHELF_ID)
-                          .setPrimaryKey(DOM_FK_BOOK_ID, DOM_FK_BOOKSHELF_ID)
-                          .addReference(TBL_BOOKS, DOM_FK_BOOK_ID)
-                          .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF_ID)
-                          .addIndex(DOM_FK_BOOK_ID, false, DOM_FK_BOOK_ID)
-                          .addIndex(DOM_FK_BOOKSHELF_ID, false, DOM_FK_BOOKSHELF_ID);
+        TBL_BOOK_BOOKSHELF.addDomains(DOM_FK_BOOK,
+                                      DOM_FK_BOOKSHELF)
+                          .setPrimaryKey(DOM_FK_BOOK, DOM_FK_BOOKSHELF)
+                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                          .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
+                          .addIndex(DOM_FK_BOOK, false, DOM_FK_BOOK)
+                          .addIndex(DOM_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF);
         ALL_TABLES.put(TBL_BOOK_BOOKSHELF.getName(), TBL_BOOK_BOOKSHELF);
 
 
-        TBL_BOOK_TOC_ENTRIES.addDomains(DOM_FK_BOOK_ID,
-                                        DOM_FK_TOC_ENTRY_ID,
+        TBL_BOOK_TOC_ENTRIES.addDomains(DOM_FK_BOOK,
+                                        DOM_FK_TOC_ENTRY,
                                         DOM_BOOK_TOC_ENTRY_POSITION)
-                            .setPrimaryKey(DOM_FK_BOOK_ID, DOM_FK_TOC_ENTRY_ID)
-                            .addReference(TBL_BOOKS, DOM_FK_BOOK_ID)
-                            .addReference(TBL_TOC_ENTRIES, DOM_FK_TOC_ENTRY_ID)
-                            .addIndex(DOM_FK_TOC_ENTRY_ID, false, DOM_FK_TOC_ENTRY_ID)
-                            .addIndex(DOM_FK_BOOK_ID, false, DOM_FK_BOOK_ID);
+                            .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TOC_ENTRY)
+                            .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                            .addReference(TBL_TOC_ENTRIES, DOM_FK_TOC_ENTRY)
+                            .addIndex(DOM_FK_TOC_ENTRY, false, DOM_FK_TOC_ENTRY)
+                            .addIndex(DOM_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
     }
 
@@ -990,7 +1030,7 @@ public final class DBDefinitions {
          * should NOT be added to {@link #ALL_TABLES}
          */
         TBL_ROW_NAVIGATOR_FLATTENED.addDomains(DOM_PK_ID,
-                                               DOM_FK_BOOK_ID)
+                                               DOM_FK_BOOK)
                                    .setPrimaryKey(DOM_PK_ID);
     }
 

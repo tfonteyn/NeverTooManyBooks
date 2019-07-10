@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -71,7 +71,7 @@ public class GoodreadsSearchCriteriaActivity
         mCriteriaView = findViewById(R.id.search_text);
 
         // Look for a book ID
-        long bookId = getIntent().getLongExtra(DBDefinitions.KEY_ID, 0);
+        long bookId = getIntent().getLongExtra(DBDefinitions.KEY_PK_ID, 0);
         // If we have a book, fill in criteria AND try a search
         if (bookId != 0) {
             // Initial value; try to build from passed book, if available.
@@ -81,24 +81,23 @@ public class GoodreadsSearchCriteriaActivity
 
             try (BookCursor cursor = mDb.fetchBookById(bookId)) {
                 if (!cursor.moveToFirst()) {
-                    UserMessage.showUserMessage(mCriteriaView,
-                                                R.string.warning_book_no_longer_exists);
+                    UserMessage.show(mCriteriaView, R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
                 }
-                final BookCursorRow bookCursorRow = cursor.getCursorRow();
+                final MappedCursorRow cursorRow = cursor.getCursorRow();
                 String s;
 
-                s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
+                s = cursorRow.getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
                 ((TextView) findViewById(R.id.author)).setText(s);
                 criteria.append(s).append(' ');
 
-                s = bookCursorRow.getTitle();
+                s = cursorRow.getString(DBDefinitions.KEY_TITLE);
                 ((TextView) findViewById(R.id.title)).setText(s);
                 criteria.append(s).append(' ');
 
-                s = bookCursorRow.getIsbn();
+                s = cursorRow.getString(DBDefinitions.KEY_ISBN);
                 ((TextView) findViewById(R.id.isbn)).setText(s);
                 criteria.append(s).append(' ');
             }
@@ -118,8 +117,7 @@ public class GoodreadsSearchCriteriaActivity
     private void doSearch() {
         String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
-            UserMessage.showUserMessage(mCriteriaView,
-                                        R.string.warning_please_enter_search_criteria);
+            UserMessage.show(mCriteriaView, R.string.warning_please_enter_search_criteria);
             return;
         }
 

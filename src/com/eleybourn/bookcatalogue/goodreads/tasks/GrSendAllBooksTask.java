@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -80,12 +80,12 @@ class GrSendAllBooksTask
 
         try (DAO db = new DAO();
              BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
-            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+            final MappedCursorRow cursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (bookCursor.moveToNext()) {
                 // Try to export one book
-                if (!sendOneBook(queueManager, context, grManager, db, bookCursorRow)) {
+                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
                     // quit on error
                     return false;
                 }

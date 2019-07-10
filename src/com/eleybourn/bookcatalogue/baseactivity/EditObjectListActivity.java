@@ -106,7 +106,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         // Look for id and title
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         if (args != null) {
-            mRowId = args.getLong(DBDefinitions.KEY_ID);
+            mRowId = args.getLong(DBDefinitions.KEY_PK_ID);
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
             mList = args.getParcelableArrayList(mBKey);
@@ -186,7 +186,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(mBKey, mList);
-        outState.putLong(DBDefinitions.KEY_ID, mRowId);
+        outState.putLong(DBDefinitions.KEY_PK_ID, mRowId);
         outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
     }
 

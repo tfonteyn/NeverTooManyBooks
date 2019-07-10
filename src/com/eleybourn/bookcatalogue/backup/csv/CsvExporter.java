@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -30,59 +32,23 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
-
 /**
  * Implementation of Exporter that creates a CSV file.
  * <p>
- * 2019-02-01 : no longer exporting bookshelf id's. They were not used during csv import anyhow.
- * Use xml export if you want id's.
+ * 2019-02-01 : no longer exporting bookshelf ID's. They were not used during csv import anyhow.
+ * Use xml export if you want ID's.
  *
  * @author pjw
  */
@@ -105,72 +71,71 @@ public class CsvExporter
 
     /** backup copies to keep. */
     private static final int COPIES = 5;
-    @NonNull
-    private final ExportOptions mSettings;
-
-    private final String mUnknownString;
-
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
      * The fields CSV_COLUMN_* are {@link StringList} encoded
      */
     private static final String EXPORT_FIELD_HEADERS =
-            "\"" + DOM_PK_ID + "\","
+            "\"" + DBDefinitions.KEY_PK_ID + "\","
                     + '"' + CSV_COLUMN_AUTHORS + "\","
-                    + '"' + DOM_TITLE + "\","
-                    + '"' + DOM_BOOK_ISBN + "\","
-                    + '"' + DOM_BOOK_PUBLISHER + "\","
-                    + '"' + DOM_BOOK_DATE_PUBLISHED + "\","
-                    + '"' + DOM_FIRST_PUBLICATION + "\","
-                    + '"' + DOM_BOOK_EDITION_BITMASK + "\","
-                    + '"' + DOM_BOOK_RATING + "\","
-                    + '"' + DOM_BOOKSHELF + "\","
-                    + '"' + DOM_BOOK_READ + "\","
+                    + '"' + DBDefinitions.KEY_TITLE + "\","
+                    + '"' + DBDefinitions.KEY_ISBN + "\","
+                    + '"' + DBDefinitions.KEY_PUBLISHER + "\","
+                    + '"' + DBDefinitions.KEY_DATE_PUBLISHED + "\","
+                    + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + "\","
+                    + '"' + DBDefinitions.KEY_EDITION_BITMASK + "\","
+                    + '"' + DBDefinitions.KEY_RATING + "\","
+                    + '"' + DBDefinitions.KEY_BOOKSHELF + "\","
+                    + '"' + DBDefinitions.KEY_READ + "\","
                     + '"' + CSV_COLUMN_SERIES + "\","
-                    + '"' + DOM_BOOK_PAGES + "\","
-                    + '"' + DOM_BOOK_NOTES + "\","
+                    + '"' + DBDefinitions.KEY_PAGES + "\","
+                    + '"' + DBDefinitions.KEY_NOTES + "\","
 
-                    + '"' + DOM_BOOK_PRICE_LISTED + "\","
-                    + '"' + DOM_BOOK_PRICE_LISTED_CURRENCY + "\","
-                    + '"' + DOM_BOOK_PRICE_PAID + "\","
-                    + '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\","
-                    + '"' + DOM_BOOK_DATE_ACQUIRED + "\","
+                    + '"' + DBDefinitions.KEY_PRICE_LISTED + "\","
+                    + '"' + DBDefinitions.KEY_PRICE_LISTED_CURRENCY + "\","
+                    + '"' + DBDefinitions.KEY_PRICE_PAID + "\","
+                    + '"' + DBDefinitions.KEY_PRICE_PAID_CURRENCY + "\","
+                    + '"' + DBDefinitions.KEY_DATE_ACQUIRED + "\","
 
-                    + '"' + DOM_BOOK_TOC_BITMASK + "\","
-                    + '"' + DOM_BOOK_LOCATION + "\","
-                    + '"' + DOM_BOOK_READ_START + "\","
-                    + '"' + DOM_BOOK_READ_END + "\","
-                    + '"' + DOM_BOOK_FORMAT + "\","
-                    + '"' + DOM_BOOK_SIGNED + "\","
-                    + '"' + DOM_BOOK_LOANEE + "\","
+                    + '"' + DBDefinitions.KEY_TOC_BITMASK + "\","
+                    + '"' + DBDefinitions.KEY_LOCATION + "\","
+                    + '"' + DBDefinitions.KEY_READ_START + "\","
+                    + '"' + DBDefinitions.KEY_READ_END + "\","
+                    + '"' + DBDefinitions.KEY_FORMAT + "\","
+                    + '"' + DBDefinitions.KEY_SIGNED + "\","
+                    + '"' + DBDefinitions.KEY_LOANEE + "\","
                     + '"' + CSV_COLUMN_TOC + "\","
-                    + '"' + DOM_BOOK_DESCRIPTION + "\","
-                    + '"' + DOM_BOOK_GENRE + "\","
-                    + '"' + DOM_BOOK_LANGUAGE + "\","
-                    + '"' + DOM_BOOK_DATE_ADDED + "\","
-                    + '"' + DOM_BOOK_LIBRARY_THING_ID + "\","
-                    + '"' + DOM_BOOK_OPEN_LIBRARY_ID + "\","
-                    + '"' + DOM_BOOK_ISFDB_ID + "\","
-                    + '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\","
-                    + '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\","
-                    + '"' + DOM_LAST_UPDATE_DATE + "\","
-                    + '"' + DOM_BOOK_UUID + '"'
+                    + '"' + DBDefinitions.KEY_DESCRIPTION + "\","
+                    + '"' + DBDefinitions.KEY_GENRE + "\","
+                    + '"' + DBDefinitions.KEY_LANGUAGE + "\","
+                    + '"' + DBDefinitions.KEY_DATE_ADDED + "\","
+                    + '"' + DBDefinitions.KEY_LIBRARY_THING_ID + "\","
+                    + '"' + DBDefinitions.KEY_OPEN_LIBRARY_ID + "\","
+                    + '"' + DBDefinitions.KEY_ISFDB_ID + "\","
+                    + '"' + DBDefinitions.KEY_GOODREADS_ID + "\","
+                    + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\","
+                    + '"' + DBDefinitions.KEY_DATE_LAST_UPDATED + "\","
+                    + '"' + DBDefinitions.KEY_UUID + '"'
                     + '\n';
+    @NonNull
+    private final ExportOptions mSettings;
+    private final String mUnknownString;
 
     /**
      * Constructor.
      *
-     * @param settings      {@link ExportOptions#file} is not used, as we must support writing
-     *                      to a stream. {@link ExportOptions#EXPORT_SINCE} and
-     *                      {@link ExportOptions#dateFrom} are respected.
-     *                      Other flags are ignored, as this method only
-     *                      handles {@link ExportOptions#BOOK_CSV} anyhow.
+     * @param context  Current context, for accessing resources.
+     * @param settings {@link ExportOptions#file} is not used, as we must support writing
+     *                 to a stream. {@link ExportOptions#EXPORT_SINCE} and
+     *                 {@link ExportOptions#dateFrom} are respected.
+     *                 Other flags are ignored, as this method only
+     *                 handles {@link ExportOptions#BOOK_CSV} anyhow.
      */
-    public CsvExporter(@NonNull final ExportOptions settings) {
+    public CsvExporter(@NonNull final Context context,
+                       @NonNull final ExportOptions settings) {
 
-        //TODO: do not use Application Context for String resources
-        mUnknownString = App.getAppContext().getString(R.string.unknown);
+        mUnknownString = context.getString(R.string.unknown);
 
         mSettings = settings;
         settings.validate();
@@ -213,7 +178,7 @@ public class CsvExporter
              BufferedWriter out = new BufferedWriter(
                      new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
-            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
+            final MappedCursorRow cursorRow = bookCursor.getCursorRow();
             int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -236,7 +201,7 @@ public class CsvExporter
                     authorStringList = mUnknownString + ", " + mUnknownString;
                 }
 
-                String title = bookCursorRow.getTitle();
+                String title = cursorRow.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank. This has not happened yet, but we
                 // know if does for author, so completeness suggests making sure all 'required'
                 // fields are non-blank.
@@ -245,52 +210,52 @@ public class CsvExporter
                 }
 
                 row.setLength(0);
-                row.append(formatCell(bookId))
-                   .append(formatCell(authorStringList))
-                   .append(formatCell(title))
-                   .append(formatCell(bookCursorRow.getIsbn()))
-                   .append(formatCell(bookCursorRow.getPublisherName()))
-                   .append(formatCell(bookCursorRow.getDatePublished()))
-                   .append(formatCell(bookCursorRow.getFirstPublication()))
-                   .append(formatCell(bookCursorRow.getEditionBitMask()))
+                row.append(format(bookId))
+                   .append(format(authorStringList))
+                   .append(format(title))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_ISBN)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
+                   .append(format(cursorRow.getInt(DBDefinitions.KEY_EDITION_BITMASK)))
 
-                   .append(formatCell(bookCursorRow.getRating()))
-                   .append(formatCell(StringList.getBookshelfCoder()
-                                                .encode(mDb.getBookshelvesByBookId(bookId))))
-                   .append(formatCell(bookCursorRow.getRead()))
-                   .append(formatCell(StringList.getSeriesCoder()
-                                                .encode(mDb.getSeriesByBookId(bookId))))
-                   .append(formatCell(bookCursorRow.getPages()))
-                   .append(formatCell(bookCursorRow.getNotes()))
+                   .append(format(cursorRow.getDouble(DBDefinitions.KEY_RATING)))
+                   .append(format(StringList.getBookshelfCoder()
+                                            .encode(mDb.getBookshelvesByBookId(bookId))))
+                   .append(format(cursorRow.getInt(DBDefinitions.KEY_READ)))
+                   .append(format(StringList.getSeriesCoder()
+                                            .encode(mDb.getSeriesByBookId(bookId))))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PAGES)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_NOTES)))
 
-                   .append(formatCell(bookCursorRow.getListPrice()))
-                   .append(formatCell(bookCursorRow.getListPriceCurrency()))
-                   .append(formatCell(bookCursorRow.getPricePaid()))
-                   .append(formatCell(bookCursorRow.getPricePaidCurrency()))
-                   .append(formatCell(bookCursorRow.getDateAcquired()))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
 
-                   .append(formatCell(bookCursorRow.getAnthologyBitMask()))
-                   .append(formatCell(bookCursorRow.getLocation()))
-                   .append(formatCell(bookCursorRow.getReadStart()))
-                   .append(formatCell(bookCursorRow.getReadEnd()))
-                   .append(formatCell(bookCursorRow.getFormat()))
-                   .append(formatCell(bookCursorRow.getSigned()))
-                   .append(formatCell(bookCursorRow.getLoanedTo()))
-                   .append(formatCell(StringList.getTocCoder()
-                                                .encode(mDb.getTocEntryByBook(bookId))))
-                   .append(formatCell(bookCursorRow.getDescription()))
-                   .append(formatCell(bookCursorRow.getGenre()))
-                   .append(formatCell(bookCursorRow.getLanguageCode()))
-                   .append(formatCell(bookCursorRow.getDateAdded()))
+                   .append(format(cursorRow.getInt(DBDefinitions.KEY_TOC_BITMASK)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_LOCATION)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_READ_START)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_READ_END)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_FORMAT)))
+                   .append(format(cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_LOANEE)))
+                   .append(format(StringList.getTocCoder()
+                                            .encode(mDb.getTocEntryByBook(bookId))))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_GENRE)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
 
-                   .append(formatCell(bookCursorRow.getLibraryThingBookId()))
-                   .append(formatCell(bookCursorRow.getOpenLibraryBookId()))
-                   .append(formatCell(bookCursorRow.getISFDBBookId()))
-                   .append(formatCell(bookCursorRow.getGoodreadsBookId()))
-                   .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodreads()))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
 
-                   .append(formatCell(bookCursorRow.getDateLastUpdated()))
-                   .append(formatCell(bookCursorRow.getBookUuid()));
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)));
 
                 // replace the comma at the end of the line with a '\n'
                 row.replace(row.length() - 1, row.length(), "\n");
@@ -310,13 +275,13 @@ public class CsvExporter
     }
 
     @NonNull
-    private String formatCell(final long cell) {
-        return formatCell(String.valueOf(cell));
+    private String format(final long cell) {
+        return format(String.valueOf(cell));
     }
 
     @NonNull
-    private String formatCell(final double cell) {
-        return formatCell(String.valueOf(cell));
+    private String format(final double cell) {
+        return format(String.valueOf(cell));
     }
 
     /**
@@ -327,7 +292,7 @@ public class CsvExporter
      * @return The formatted cell enclosed in escaped quotes and a trailing ','
      */
     @NonNull
-    private String formatCell(@Nullable final String cell) {
+    private String format(@Nullable final String cell) {
         try {
             if (cell == null || "null".equalsIgnoreCase(cell) || cell.trim().isEmpty()) {
                 return "\"\",";

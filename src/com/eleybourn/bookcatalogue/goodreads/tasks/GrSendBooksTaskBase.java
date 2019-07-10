@@ -21,16 +21,16 @@ import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
@@ -110,7 +110,7 @@ abstract class GrSendBooksTaskBase
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final DAO db,
-                        @NonNull final BookCursorRow bookCursorRow) {
+                        @NonNull final MappedCursorRow bookCursorRow) {
 
         GoodreadsManager.ExportDisposition disposition;
         Exception exportException = null;
@@ -121,7 +121,7 @@ abstract class GrSendBooksTaskBase
             exportException = e;
         }
 
-        long bookId = bookCursorRow.getId();
+        long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
 
         // Handle the result
         switch (disposition) {
@@ -310,7 +310,7 @@ abstract class GrSendBooksTaskBase
                             GrSendBookEvent event =
                                     (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
-                                    .putExtra(DBDefinitions.KEY_ID, event.getBookId());
+                                    .putExtra(DBDefinitions.KEY_PK_ID, event.getBookId());
                             context.startActivity(intent);
                         } catch (@NonNull final RuntimeException ignore) {
                             // not a book event?
@@ -323,7 +323,7 @@ abstract class GrSendBooksTaskBase
 //                BookEventHolder holder = (BookEventHolder)
 //                        view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
 //                Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class)
-//                        .putExtra(DBDefinitions.KEY_ID, holder.event.getId());
+//                        .putExtra(DBDefinitions.KEY_PK_ID, holder.event.getId());
 //                context.startActivity(intent);
 //            }));
 

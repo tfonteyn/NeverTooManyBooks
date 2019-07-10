@@ -74,7 +74,7 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
  * The database table now consists of a PK id, and a UUID column
  * The UUID serves as the name of the SharedPreference which describes the style.
  * Builtin styles are not stored in the database, and (internally) use a UUID==null
- * and negative id's.
+ * and negative ID's.
  * Every setting in a style is backed by a {@link PPref} which handles the storage of that setting.
  * *All* style settings are private to a style, there is no inheritance of global settings.
  * <p>
@@ -441,7 +441,7 @@ public class BooklistStyle
         mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
                                           Prefs.pk_bob_filter_loaned, mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_LOANEE);
+                                          DBDefinitions.DOM_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
     }
 
@@ -484,8 +484,8 @@ public class BooklistStyle
 
     /**
      * Accessor.
-     * Positive id's: user-defined styles
-     * Negative id's: builtin styles
+     * Positive ID's: user-defined styles
+     * Negative ID's: builtin styles
      * 0: a user-defined style which has not been saved yet
      */
     @Override
@@ -1121,7 +1121,7 @@ public class BooklistStyle
                      final boolean isUserDefined) {
             super(Prefs.pk_bob_groups, uuid, isUserDefined);
 
-            // load the group id's from the SharedPreference and populates the Group object list.
+            // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();
             for (int kind : get()) {
                 mGroups.add(BooklistGroup.newInstance(kind, uuid, isUserDefined));

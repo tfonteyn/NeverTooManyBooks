@@ -75,7 +75,7 @@ public class EditBookshelfListActivity
                     mList.clear();
                     mList.addAll(mDb.getBookshelves());
                     mAdapter.notifyDataSetChanged();
-                    Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
+                    Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
                     setResult(Activity.RESULT_OK, data);
                 }
             };
@@ -154,7 +154,7 @@ public class EditBookshelfListActivity
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    UserMessage.showUserMessage(this, R.string.warning_cannot_delete_1st_bs);
+                    UserMessage.show(this, R.string.warning_cannot_delete_1st_bs);
                 }
                 return true;
 
