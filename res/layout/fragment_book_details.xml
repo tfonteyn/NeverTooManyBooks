@@ -250,14 +250,13 @@
             android:id="@+id/lbl_price_listed"
             style="@style/FieldLabel.Inline"
             android:text="@string/lbl_price_listed"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/date_published"
             />
 
         <TextView
             android:id="@+id/price_listed"
             style="@style/TextDetail.Small"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed"
             app:layout_constraintTop_toBottomOf="@id/date_published"
             tools:ignore="SelectableText"
@@ -270,15 +269,13 @@
             android:id="@+id/lbl_first_publication"
             style="@style/FieldLabel.Inline"
             android:text="@string/lbl_first_publication"
+            app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             />
 
         <TextView
             android:id="@+id/first_publication"
             style="@style/TextDetail.Small"
-
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_first_publication"
             app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
             app:layout_constraintTop_toBottomOf="@id/price_listed"
             tools:ignore="SelectableText"
@@ -293,7 +290,7 @@
             android:layout_marginTop="@dimen/border1"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
+            app:layout_constraintTop_toBottomOf="@id/first_publication"
             />
 
         <TextView
