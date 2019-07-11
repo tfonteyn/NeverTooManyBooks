@@ -23,15 +23,15 @@ import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
  * To make it available, follow these steps:
  * <ol>
  * <li>Implement {@link SearchEngine} to create the new engine.</li>
- * <li>Add an identifier (bit) + add it to {@link #SEARCH_ALL}.</li>
+ * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_ALL}.</li>
  * <li>Add a name for it to {@link #getName}.<br>
- * This should be a hardcoded, single word, and will be user visible.</li>
+ * This should be a hardcoded, single word, no spaces, and will be user visible.</li>
  * <li>Add your new engine to {@link #getSearchEngine};</li>
  * <li>Create+add a new instance to {@link #SEARCH_ORDER_DEFAULTS}<br>
  * and {@link #COVER_SEARCH_ORDER_DEFAULTS}</li>
- * <li>Optional: add to res/xml/preferences.xml if the url should be editable.</li>
+ * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
+ * See the Amazon example in that xml file.</li>
  * </ol>
- *
  */
 public final class SearchSites {
 
@@ -125,17 +125,43 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);
     }
 
+    /* ************************************************************************************** */
+    static {
+
+        PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
+
+        /*
+         * Create the user configurable lists.
+         */
+        // we're going to use set(index,...), so make them big enough
+        sPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
+        sPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
+        // yes, this shows that sPreferredSearchOrder should be Map's but for now
+        // the code was done with List so this was the easiest to make them configurable.
+        // To be redone.
+        for (Site searchSite : SEARCH_ORDER_DEFAULTS) {
+            sPreferredSearchOrder.set(searchSite.getPriority(), searchSite);
+            PREFERRED_RELIABILITY_ORDER.set(searchSite.getReliability(), searchSite);
+        }
+        for (Site searchSite : COVER_SEARCH_ORDER_DEFAULTS) {
+            sPreferredCoverSearchOrder.set(searchSite.getPriority(), searchSite);
+        }
+    }
+
+    private SearchSites() {
+    }
+
     /**
      * Return the name for the site. This should/is a hardcoded single word.
      * It is used for:
      * <ol>
-     *     <li>User-visible name in the app settings.</li>
-     *     <li>As the key into the actual preferences.</li>
-     *     <li>Internal task(thread) name which in some circumstances will be user-visible.</li>
+     * <li>User-visible name in the app settings.</li>
+     * <li>As the key into the actual preferences.</li>
+     * <li>Internal task(thread) name which in some circumstances will be user-visible.</li>
      * </ol>
-     *
+     * <p>
      * As it's used as a prefs key, it should never be changed.
-     *
+     * <p>
      * Note: the name is also required in the actual {@link SearchEngine} as a {@code StringRes}
      * but the method here can not use that one without instantiating which we don't want here.
      *
@@ -190,33 +216,6 @@ public final class SearchSites {
             default:
                 throw new IllegalTypeException("Unexpected search source: " + id);
         }
-    }
-
-
-    /* ************************************************************************************** */
-    static {
-
-        PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
-
-        /*
-         * Create the user configurable lists.
-         */
-        // we're going to use set(index,...), so make them big enough
-        sPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
-        sPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
-        // yes, this shows that sPreferredSearchOrder should be Map's but for now
-        // the code was done with List so this was the easiest to make them configurable.
-        // To be redone.
-        for (Site searchSite : SEARCH_ORDER_DEFAULTS) {
-            sPreferredSearchOrder.set(searchSite.getPriority(), searchSite);
-            PREFERRED_RELIABILITY_ORDER.set(searchSite.getReliability(), searchSite);
-        }
-        for (Site searchSite : COVER_SEARCH_ORDER_DEFAULTS) {
-            sPreferredCoverSearchOrder.set(searchSite.getPriority(), searchSite);
-        }
-    }
-
-    private SearchSites() {
     }
 
     /**

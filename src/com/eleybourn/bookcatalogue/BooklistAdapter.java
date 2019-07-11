@@ -445,6 +445,8 @@ public class BooklistAdapter
         private String mLocation;
         /** Resulting publisher data. */
         private String mPublisher;
+        /** Resulting ISBN. */
+        private String mIsbn;
         /** Resulting Format data. */
         private String mFormat;
         /** Resulting author data. */
@@ -479,7 +481,7 @@ public class BooklistAdapter
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookExtrasTask " + mBookId);
 
-            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId, mExtraFields)) {
+            try (Cursor cursor = mDb.fetchBookExtrasById(mBookId)) {
                 // Bail out if we don't have a book.
                 if (!cursor.moveToFirst()) {
                     return false;
@@ -490,6 +492,7 @@ public class BooklistAdapter
                                   DBDefinitions.KEY_LOCATION,
                                   DBDefinitions.KEY_FORMAT,
                                   DBDefinitions.KEY_PUBLISHER,
+                                  DBDefinitions.KEY_ISBN,
                                   DBDefinitions.KEY_DATE_PUBLISHED,
                                   DBDefinitions.KEY_BOOKSHELF);
 
@@ -507,6 +510,10 @@ public class BooklistAdapter
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                     mShelves = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
+                }
+
+                if ((mExtraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
+                    mIsbn = mapper.getString(DBDefinitions.KEY_ISBN);
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
@@ -537,7 +544,7 @@ public class BooklistAdapter
             }
             // Fields not used will be null.
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher,
+                mTaskListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher, mIsbn,
                                                                 mFormat, mShelves, mLocation);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
@@ -555,6 +562,7 @@ public class BooklistAdapter
              */
             void onGetBookExtrasTaskFinished(@Nullable String author,
                                              @Nullable String publisher,
+                                             @Nullable String isbn,
                                              @Nullable String format,
                                              @Nullable String shelves,
                                              @Nullable String location);
@@ -598,6 +606,8 @@ public class BooklistAdapter
         /** Pointer to the view that stores the related book field. */
         final TextView publisherView;
         /** Pointer to the view that stores the related book field. */
+        final TextView isbnView;
+        /** Pointer to the view that stores the related book field. */
         final TextView formatView;
         /** Pointer to the view that stores the series number when it is a short piece of text. */
         final TextView seriesNumView;
@@ -622,11 +632,13 @@ public class BooklistAdapter
                     @Override
                     public void onGetBookExtrasTaskFinished(@Nullable final String author,
                                                             @Nullable final String publisher,
+                                                            @Nullable final String isbn,
                                                             @Nullable final String format,
                                                             @Nullable final String shelves,
                                                             @Nullable final String location) {
                         showOrHide(authorView, author);
                         showOrHide(publisherView, publisher);
+                        showOrHide(isbnView, isbn);
                         showOrHide(formatView, format);
                         showOrHide(bookshelvesView, mShelvesLabel, shelves);
                         showOrHide(locationView, mLocationLabel, location);
@@ -723,6 +735,10 @@ public class BooklistAdapter
             publisherView.setVisibility((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0
                                         ? View.VISIBLE : View.GONE);
 
+            isbnView = itemView.findViewById(R.id.isbn);
+            isbnView.setVisibility((extraFields & BooklistStyle.EXTRAS_ISBN) != 0
+                                        ? View.VISIBLE : View.GONE);
+
             formatView = itemView.findViewById(R.id.format);
             formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
                                      ? View.VISIBLE : View.GONE);
@@ -786,11 +802,12 @@ public class BooklistAdapter
             }
 
             // If there are extras to get, start a background task.
-            if ((extraFields & BooklistStyle.EXTRAS_LOWER16) != 0) {
+            if ((extraFields & BooklistStyle.EXTRAS_BY_TASK) != 0) {
                 // Fill in the extras field as blank initially.
                 bookshelvesView.setText("");
                 locationView.setText("");
                 publisherView.setText("");
+                isbnView.setText("");
                 formatView.setText("");
                 authorView.setText("");
                 // Queue the task.

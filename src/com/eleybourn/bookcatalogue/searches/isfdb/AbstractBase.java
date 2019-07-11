@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 
 import org.jsoup.Connection;
@@ -15,6 +16,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookTocFragment;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 
 abstract class AbstractBase {
 
@@ -52,12 +54,91 @@ abstract class AbstractBase {
      *
      * @return {@code true} when fetched and parsed ok.
      */
-    boolean loadPage(@NonNull final String url,
+    boolean loadPage(@NonNull String url,
                      final boolean redirect)
             throws SocketTimeoutException {
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                 Logger.debug(this, "loadPage", "url=" + url);
+            }
+
+            try (TerminatorConnection terminatorConnection = new TerminatorConnection(url)) {
+                HttpURLConnection con = terminatorConnection.getHttpURLConnection();
+
+                // added due to https://github.com/square/okhttp/issues/1517
+                // it's a server issue, this is a workaround.
+                con.setRequestProperty("Connection", "close");
+                // connect-timeout. Default is 5_000
+                con.setConnectTimeout(30_000);
+                // read-timeout. Default is 10_000
+                con.setReadTimeout(60_000);
+                // the default is true...
+                con.setInstanceFollowRedirects(true);
+
+                // GO!
+                terminatorConnection.open();
+                // the original url will change after a redirect.
+                // We need the actual url for further processing.
+                url = con.getURL().toString();
+
+                mDoc = Jsoup.parse(terminatorConnection.inputStream,
+                                   ISFDBManager.FORCE_CHARSET, url);
+
+            } catch (@NonNull final HttpStatusException e) {
+                Logger.error(this, e);
+                return false;
+
+            } catch (@NonNull final EOFException e) {
+                // this happens often with ISFDB... Google search says it's a server issue.
+                // not so sure that Google search is correct thought but what do I know...
+                // So, retry once.
+                if (afterEofTryAgain) {
+                    afterEofTryAgain = false;
+                    mDoc = null;
+                    return loadPage(url, redirect);
+                } else {
+                    return false;
+                }
+
+            } catch (@NonNull final SocketTimeoutException e) {
+                throw e;
+
+            } catch (@NonNull final IOException e) {
+                Logger.error(this, e, url);
+                return false;
+
+            }
+            // reset the flags.
+            afterBrokenRedirectTryAgain = true;
+            afterEofTryAgain = true;
+        }
+        return true;
+    }
+
+    /**
+     * Using Jsoup.connect(url) became problematic due to server character set encoding
+     * being different then what the server tells us.
+     * Rewritten in {@link #loadPage(String, boolean)}}
+     * TODO: delete this method...
+     * <p>
+     * Fetch the URL and parse it into {@link #mDoc}.
+     * <p>
+     * the connect call uses a set of defaults. For example the user-agent:
+     * {@link org.jsoup.helper.HttpConnection#DEFAULT_UA}
+     * <p>
+     * The content encoding by default is: "Accept-Encoding", "gzip"
+     *
+     * @param url      to fetch
+     * @param redirect {@code true} to follow redirects. This should normally be the default.
+     *
+     * @return {@code true} when fetched and parsed ok.
+     */
+    boolean loadPage_old(@NonNull final String url,
+                         final boolean redirect)
+            throws SocketTimeoutException {
+        if (mDoc == null) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+                Logger.debug(this, "loadPage_old", "url=" + url);
             }
             Connection con = Jsoup.connect(url)
                                   // added due to https://github.com/square/okhttp/issues/1517
@@ -86,22 +167,24 @@ abstract class AbstractBase {
                  */
                 mDoc = con.get();
 
-                if (!redirect && con.response().statusCode() == 303 && afterBrokenRedirectTryAgain) {
+                if (!redirect
+                        && con.response().statusCode() == 303
+                        && afterBrokenRedirectTryAgain) {
                     afterBrokenRedirectTryAgain = false;
 
                     Connection.Response response = con.response();
                     String location = response.header("Location");
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                        Logger.debug(this, "loadPage", "303",
+                        Logger.debug(this, "loadPage_old", "303",
                                      "Location=" + location);
                     }
 
                     // 2019-04-20: it seems the website was updated/fixed.
                     if (location != null) {
 
-                        // This is nasty... getting editions from ISFDB for a book where there is only
-                        // one edition results in a redirect 303 with header:
+                        // This is nasty... getting editions from ISFDB for a book where there
+                        // is only one edition results in a redirect 303 with header:
                         //    Location: http:/cgi-bin/pl.cgi?367574
                         // Note the single '/' after the protocol.
                         // The source code of Jsoup recognises this issue and tries to deal with it,
@@ -129,7 +212,7 @@ abstract class AbstractBase {
                         }
 
                         mDoc = null;
-                        return loadPage(location, false);
+                        return loadPage_old(location, false);
                     }
                     return false;
                 }
@@ -141,11 +224,11 @@ abstract class AbstractBase {
             } catch (@NonNull final EOFException e) {
                 // this happens often with ISFDB... Google search says it's a server issue.
                 // not so sure that Google search is correct thought but what do I know...
-                //So, retry once.
+                // So, retry once.
                 if (afterEofTryAgain) {
                     afterEofTryAgain = false;
                     mDoc = null;
-                    return loadPage(url, redirect);
+                    return loadPage_old(url, redirect);
                 } else {
                     return false;
                 }
@@ -164,6 +247,7 @@ abstract class AbstractBase {
         return true;
     }
 
+
     @NonNull
     String cleanUpName(@NonNull final String s) {
         return s.trim()
@@ -173,13 +257,25 @@ abstract class AbstractBase {
     }
 
     /**
-     * A url ends in ...?123.  Strip and return the '123' part.
+     * A url ends 'last'123.  Strip and return the '123' part.
      *
-     * @param url to handle
+     * @param url  to handle
+     * @param last character to look for as last-index
      *
      * @return the number
      */
+    long stripNumber(@NonNull final String url,
+                     final char last) {
+        int index = url.lastIndexOf(last) + 1;
+        if (index == 0) {
+            return 0;
+        }
+
+        return Long.parseLong(url.substring(index));
+    }
+
     long stripNumber(@NonNull final String url) {
         return Long.parseLong(url.split("\\?")[1]);
     }
+
 }

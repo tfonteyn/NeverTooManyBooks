@@ -211,7 +211,8 @@ public class UpdateFieldsFromInternetTask
                     mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
                 }
 
-                // always add the language if we have one, so we can use it for the locale details.
+                // always add the language to the ORIGINAL data if we have one,
+                // so we can use it for the Locale details when processing the results.
                 if (langCol > 0) {
                     String lang = books.getString(langCol);
                     if (lang != null && !lang.isEmpty()) {
@@ -439,9 +440,10 @@ public class UpdateFieldsFromInternetTask
         // Commit new data
         if (!newBookData.isEmpty()) {
 
-            // Get the language, if there was one. Otherwise use the original one.
+            // Get the language, if there was one requested for updating.
             String bookLang = newBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (bookLang == null || bookLang.isEmpty()) {
+                // Otherwise add the original one.
                 bookLang = mOriginalBookData.getString(DBDefinitions.KEY_LANGUAGE);
                 if (bookLang != null && !bookLang.isEmpty()) {
                     newBookData.putString(DBDefinitions.KEY_LANGUAGE, bookLang);

@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.AutoCompleteTextView;
 
@@ -109,6 +110,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUA
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
@@ -120,7 +122,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
@@ -1246,6 +1247,14 @@ public class DAO
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
+        // handle explicit presence of a single field with price and currency combined.
+        preprocessPrice(book, UniqueId.BKEY_PRICE_LISTED_WITH_CURRENCY,
+                        DBDefinitions.KEY_PRICE_LISTED,
+                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        preprocessPrice(book, UniqueId.BKEY_PRICE_PAID_WITH_CURRENCY,
+                        DBDefinitions.KEY_PRICE_PAID,
+                        DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+
         //ENHANCE: handle price fields for legacy embedded currencies.
         // Perhaps moving those to currency fields ?
 
@@ -1323,6 +1332,23 @@ public class DAO
                 if (o == null || o.toString().isEmpty()) {
                     book.remove(name);
                 }
+            }
+        }
+    }
+
+    private void preprocessPrice(@NonNull final Book book,
+                                 @NonNull final String keyPriceWithCurrency,
+                                 @NonNull final String keyPrice,
+                                 @NonNull final String keyPriceCurrency) {
+        if (book.containsKey(keyPriceWithCurrency)) {
+            Bundle dest = new Bundle();
+            LocaleUtils.splitPrice(book.getString(keyPriceWithCurrency),
+                                   keyPrice, keyPriceCurrency, dest);
+            String price = dest.getString(keyPrice);
+            if (price != null) {
+                book.putString(keyPrice, price);
+                String currency = dest.getString(keyPriceCurrency);
+                book.putString(keyPriceCurrency, currency != null ? currency : "");
             }
         }
     }
@@ -2712,15 +2738,12 @@ public class DAO
      * The columns fetched are limited to what is needed for the
      * {@link BooksOnBookshelf} so called "extras" fields.
      *
-     * @param bookId      to retrieve
-     * @param extraFields to get; used to optimize query
+     * @param bookId to retrieve
      *
      * @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public Cursor fetchBookExtrasById(final long bookId,
-                                      final int extraFields) {
-
+    public Cursor fetchBookExtrasById(final long bookId) {
         //A performance run (in UIThread!) on 983 books showed:
         // 1. withBookshelves==false; 799ms
         // 2. withBookshelves==true and complex SQL; 806ms
@@ -2730,15 +2753,7 @@ public class DAO
         // so nothing spectacular between 1/2,
         // but avoiding the extra fetch of option 3. is worth it.
 
-        // for now, we only optimize on fetching bookshelves or not.
-        // and honestly, it's almost not worth bothering.
-        if ((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-            return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITH_BOOKSHELVES,
-                                      new String[]{String.valueOf(bookId)});
-        } else {
-            return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS_WITHOUT_BOOKSHELVES,
-                                      new String[]{String.valueOf(bookId)});
-        }
+        return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS, new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -3864,7 +3879,8 @@ public class DAO
                 // Titles should only contain title, not SERIES
                 bindStringOrNull(stmt, 2, cursorRow.getString(DOM_TITLE.name) + "; " + titleText);
                 // We could add a 'series' column, or just add it as part of the description
-                bindStringOrNull(stmt, 3, cursorRow.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
+                bindStringOrNull(stmt, 3,
+                                 cursorRow.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
                 bindStringOrNull(stmt, 4, cursorRow.getString(DOM_BOOK_NOTES.name));
                 bindStringOrNull(stmt, 5, cursorRow.getString(DOM_BOOK_PUBLISHER.name));
                 bindStringOrNull(stmt, 6, cursorRow.getString(DOM_BOOK_GENRE.name));
@@ -4611,32 +4627,17 @@ public class DAO
 
         /**
          * Get the booklist extra fields including the bookshelves as a single csv string.
-         */
-        static final String BOOK_EXTRAS_WITHOUT_BOOKSHELVES = "SELECT "
-                + SqlColumns.AUTHOR_FORMATTED
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
-                + " FROM " + TBL_BOOKS.ref()
-                + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?"
-                // primary author only.
-                + " GROUP BY " + DOM_AUTHOR_FORMATTED
-                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
-                + " LIMIT 1";
-
-        /**
-         * Get the booklist extra fields including the bookshelves as a single csv string.
          * <p>
          * GROUP_CONCAT: The order of the concatenated elements is arbitrary.
          */
-        static final String BOOK_EXTRAS_WITH_BOOKSHELVES = "SELECT "
+        static final String BOOK_EXTRAS = "SELECT "
                 + SqlColumns.AUTHOR_FORMATTED
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
+                + ',' + TBL_BOOKS.dot(DOM_BOOK_ISBN)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
+
                 + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF)
                 /*                   */ + ",', ') AS " + DOM_BOOKSHELF
                 + " FROM " + TBL_BOOKS.ref()

@@ -102,7 +102,7 @@ public final class GoogleBooksManager
             SAXParser parser = factory.newSAXParser();
 
             // get the book list
-            try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
                 parser.parse(con.inputStream, handler);
             }
 
@@ -110,7 +110,7 @@ public final class GoogleBooksManager
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 String oneBookUrl = urlList.get(0);
-                try (TerminatorConnection con = TerminatorConnection.getConnection(oneBookUrl)) {
+                try (TerminatorConnection con = TerminatorConnection.openConnection(oneBookUrl)) {
                     parser.parse(con.inputStream, entryHandler);
                 }
             }

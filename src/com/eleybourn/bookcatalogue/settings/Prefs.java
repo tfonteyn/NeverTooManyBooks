@@ -91,6 +91,8 @@ public final class Prefs {
     public static final String pk_bob_show_author = "BookList.Style.Show.Author";
     /** Show publisher for each book. */
     public static final String pk_bob_show_publisher = "BookList.Style.Show.Publisher";
+    /** Show publisher for each book. */
+    public static final String pk_bob_show_isbn = "BookList.Style.Show.ISBN";
     /** Show format for each book. */
     public static final String pk_bob_show_format = "BookList.Style.Show.Format";
 

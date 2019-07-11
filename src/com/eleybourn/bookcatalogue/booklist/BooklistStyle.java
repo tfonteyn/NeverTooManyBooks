@@ -63,7 +63,6 @@ import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
-
 /**
  * Represents a specific style of book list (e.g. authors/series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
@@ -123,9 +122,14 @@ public class BooklistStyle
     public static final int EXTRAS_PUBLISHER = 1 << 3;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_AUTHOR = 1 << 4;
+    /** Extra book data to show at lowest level. */
+    public static final int EXTRAS_ISBN = 1 << 5;
+
 
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
-    public static final int EXTRAS_LOWER16 = 0xFF;
+    public static final int EXTRAS_BY_TASK =
+            EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_FORMAT
+            | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_ISBN;
 
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_THUMBNAIL = 0x100;
@@ -245,6 +249,7 @@ public class BooklistStyle
     private transient PBoolean mExtraShowLocation;
     private transient PBoolean mExtraShowAuthor;
     private transient PBoolean mExtraShowPublisher;
+    private transient PBoolean mExtraShowIsbn;
     private transient PBoolean mExtraShowFormat;
 
     /**
@@ -355,6 +360,7 @@ public class BooklistStyle
         mExtraShowLocation.set(in);
         mExtraShowAuthor.set(in);
         mExtraShowPublisher.set(in);
+        mExtraShowIsbn.set(in);
         mExtraShowFormat.set(in);
 
         mSortAuthorGivenNameFirst.set(in);
@@ -415,6 +421,7 @@ public class BooklistStyle
         mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined());
         mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined());
         mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid, isUserDefined());
+        mExtraShowIsbn = new PBoolean(Prefs.pk_bob_show_isbn, mUuid, isUserDefined());
         mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid, isUserDefined());
 
         // all filters
@@ -466,6 +473,7 @@ public class BooklistStyle
         mExtraShowLocation.writeToParcel(dest);
         mExtraShowAuthor.writeToParcel(dest);
         mExtraShowPublisher.writeToParcel(dest);
+        mExtraShowIsbn.writeToParcel(dest);
         mExtraShowFormat.writeToParcel(dest);
 
         mSortAuthorGivenNameFirst.writeToParcel(dest);
@@ -582,6 +590,7 @@ public class BooklistStyle
         map.put(mExtraShowBookshelves.getKey(), mExtraShowBookshelves);
         map.put(mExtraShowLocation.getKey(), mExtraShowLocation);
         map.put(mExtraShowPublisher.getKey(), mExtraShowPublisher);
+        map.put(mExtraShowIsbn.getKey(), mExtraShowIsbn);
         map.put(mExtraShowFormat.getKey(), mExtraShowFormat);
         map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
 
@@ -617,8 +626,8 @@ public class BooklistStyle
      * update the preferences of this style based on the values of the passed preferences.
      * Preferences we don't have will be not be added.
      */
-    public void updatePreferences(@NonNull final SharedPreferences.Editor ed,
-                                  @NonNull final Map<String, PPref> newPrefs) {
+    private void updatePreferences(@NonNull final SharedPreferences.Editor ed,
+                                   @NonNull final Map<String, PPref> newPrefs) {
         Map<String, PPref> currentPreferences = getPreferences(true);
 
         for (PPref p : newPrefs.values()) {
@@ -718,6 +727,10 @@ public class BooklistStyle
 
         if (mExtraShowPublisher.isTrue()) {
             extras |= EXTRAS_PUBLISHER;
+        }
+
+        if (mExtraShowIsbn.isTrue()) {
+            extras |= EXTRAS_ISBN;
         }
 
         if (mExtraShowFormat.isTrue()) {
@@ -1100,6 +1113,7 @@ public class BooklistStyle
                 + "\nmExtraShowLocation=" + mExtraShowLocation
                 + "\nmExtraShowAuthor=" + mExtraShowAuthor
                 + "\nmExtraShowPublisher=" + mExtraShowPublisher
+                + "\nmExtraShowIsbn=" + mExtraShowIsbn
                 + "\nmExtraShowFormat=" + mExtraShowFormat
                 + "\nmStyleGroups=" + mStyleGroups
                 + "\nmFilters=\n" + mFilters

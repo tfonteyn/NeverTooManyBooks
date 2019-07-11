@@ -386,6 +386,11 @@ public final class DBDefinitions {
     public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
     public static final String KEY_GOODREADS_ID = "goodreads_book_id";
 
+    // ENHANCE: the search engines already uses these where applicable, but not stored yet.
+    // Long
+    public static final String KEY_WORLDCAT_ID = "worldcat_ocl_book_id";
+
+
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
     public static final String KEY_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";

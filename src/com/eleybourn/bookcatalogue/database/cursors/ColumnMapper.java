@@ -17,6 +17,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 /**
  * Given a Cursor, and a list of domains, this class constructs a map with
  * the column indexes as used with that Cursor.
+ * This is a caching variation of the {@link Cursor#getColumnIndex(String)} method.
+ * The latter does a search for the column each time.
  * <p>
  * Avoids the need to repeat writing code to get column indexes for named columns.
  * <p>

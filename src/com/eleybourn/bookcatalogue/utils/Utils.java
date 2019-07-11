@@ -44,34 +44,19 @@ public final class Utils {
 
     /**
      * Only does web & email links. Most likely all we'll ever need.
-     *
-     * @param html Partial HTML
-     *
-     * @return Spannable with all links
-     *
-     * @see #linkifyHtml(String, int)
-     */
-    @NonNull
-    public static Spannable linkifyHtml(@NonNull final String html) {
-        return linkifyHtml(html, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
-    }
-
-    /**
+     * <p>
      * Linkify partial HTML. Linkify methods remove all spans before building links, this
      * method preserves them.
      * <p>
      * See:
      * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml
      *
-     * @param html        Partial HTML
-     * @param linkifyMask Linkify mask to use in Linkify.addLinks
+     * @param html Partial HTML
      *
      * @return Spannable with all links
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static Spannable linkifyHtml(@NonNull final String html,
-                                        final int linkifyMask) {
+    public static Spannable linkifyHtml(@NonNull final String html) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
         // Save the span details for later restoration
@@ -79,7 +64,7 @@ public final class Utils {
 
         // Build an empty spannable then add the links
         SpannableString buffer = new SpannableString(text);
-        Linkify.addLinks(buffer, linkifyMask);
+        Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
         // Add back the HTML spannable's
         for (URLSpan span : currentSpans) {

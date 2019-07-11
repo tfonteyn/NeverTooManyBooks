@@ -4,15 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -30,6 +33,11 @@ public final class LocaleUtils {
      * ENHANCE: surely this can be done more intelligently ?
      */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
+    /**
+     * Prices are split into currency and actual amount.
+     * Split on first digit, but leave it in the second part.
+     */
+    private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
     /**
      * The locale used at startup; so that we can revert to system locale if we want to.
      * TODO: move this to App, where it's actually (re)set.
@@ -300,6 +308,7 @@ public final class LocaleUtils {
         }
         return iso;
     }
+
     /**
      * Load a Resources set for the specified Locale.
      *
@@ -565,5 +574,55 @@ public final class LocaleUtils {
 
                 + "\nApp.isInNeedOfRecreating()      : " + App.isInNeedOfRecreating()
                 + "\nApp.isRecreating()              : " + App.isRecreating();
+    }
+
+    /**
+     * Takes a combined price field, and returns the value/currency in the Bundle.
+     *
+     * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
+     * @param keyPrice          bundle key for the value
+     * @param keyCurrency       bundle key for the currency
+     * @param destination       bundle to add the two keys to.
+     *
+     * @return {@code true} if processing was a success. {@code false} if we put the original value
+     * in the bundle under the keyPrice, and left keyCurrency empty.
+     */
+    public static boolean splitPrice(@NonNull final String priceWithCurrency,
+                                     @NonNull final String keyPrice,
+                                     @NonNull final String keyCurrency,
+                                     @NonNull final Bundle destination) {
+        String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
+        if (data.length == 1) {
+            destination.putString(keyPrice, priceWithCurrency);
+            destination.putString(keyCurrency, "");
+            // I don't think the Shilling/Pence from the UK ever had an
+            // international code.
+//              if (priceWithCurrency.contains("/")) {
+//                  // UK Shilling was written as "1/-", for example:
+//                  // three shillings and six pence => 3/6
+//                  destination.putString(keyCurrency, "???");
+//              }
+        } else {
+            String currencyCode = currencyToISO(data[0]);
+            if (currencyCode != null) {
+                try {
+                    Currency currency = Currency.getInstance(currencyCode);
+                    int decDigits = currency.getDefaultFractionDigits();
+                    // format with 'digits' decimal places
+                    Float price = Float.parseFloat(data[1]);
+                    String priceStr = String.format("%." + decDigits + 'f', price);
+
+                    destination.putString(keyPrice, priceStr);
+                    // re-get the code just in case it used a recognised but non-standard one
+                    destination.putString(keyCurrency, currency.getCurrencyCode());
+
+                } catch (@NonNull final NumberFormatException e) {
+                    destination.putString(keyPrice, data[1]);
+                    destination.putString(keyCurrency, currencyCode);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

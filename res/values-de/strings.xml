@@ -904,5 +904,6 @@
     <string name="unknown_uc">UNBEKANNT</string>
     <string name="title_delete_toc_entry">Titel löschen</string>
     <string name="confirm_delete_toc_entry">Wirklich den Titel “%1$s” von %2$s löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
+    <string name="menu_view_book_at_ellipsis">Anschauen auf…</string>
 
 </resources>

@@ -221,10 +221,13 @@ public class UpdateFieldsFromInternetFragment
         addField(DBDefinitions.KEY_DESCRIPTION, CopyIfBlank, R.string.lbl_description);
 
         addField(DBDefinitions.KEY_PAGES, CopyIfBlank, R.string.lbl_pages);
-        addField(DBDefinitions.KEY_PRICE_LISTED, CopyIfBlank, R.string.lbl_price_listed);
         addField(DBDefinitions.KEY_FORMAT, CopyIfBlank, R.string.lbl_format);
-        addField(DBDefinitions.KEY_GENRE, CopyIfBlank, R.string.lbl_genre);
         addField(DBDefinitions.KEY_LANGUAGE, CopyIfBlank, R.string.lbl_language);
+
+        // list price has related DBDefinitions.KEY_PRICE_LISTED
+        addField(DBDefinitions.KEY_PRICE_LISTED, CopyIfBlank, R.string.lbl_price_listed);
+
+        addField(DBDefinitions.KEY_GENRE, CopyIfBlank, R.string.lbl_genre);
 
         addField(DBDefinitions.KEY_ISFDB_ID, Overwrite, R.string.isfdb);
         addField(DBDefinitions.KEY_GOODREADS_ID, Overwrite, R.string.goodreads);
@@ -246,6 +249,23 @@ public class UpdateFieldsFromInternetFragment
         if (App.isUsed(fieldId)) {
             // CopyIfBlank by default, user can override.
             mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId, defaultUsage, false));
+        }
+    }
+
+    /**
+     * Called from {@link #startUpdate} to add any related fields with the same setting.
+     *
+     * @param fieldId        to check presence of
+     * @param relatedFieldId to add if fieldId was present
+     */
+    private void addRelatedField(@SuppressWarnings("SameParameterValue")
+                                 @NonNull final String fieldId,
+                                 @SuppressWarnings("SameParameterValue")
+                                 @NonNull final String relatedFieldId) {
+        FieldUsage field = mFieldUsages.get(fieldId);
+        if (field != null && field.isSelected()) {
+            mFieldUsages.put(relatedFieldId,
+                             new FieldUsage(relatedFieldId, 0, field.usage, field.isList()));
         }
     }
 
@@ -419,6 +439,8 @@ public class UpdateFieldsFromInternetFragment
             UserMessage.show(getView(), R.string.error_no_internet_connection);
             return;
         }
+
+        addRelatedField(DBDefinitions.KEY_PRICE_LISTED, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
 
         UpdateFieldsFromInternetTask updateTask =
                 new UpdateFieldsFromInternetTask(mTaskManager, mSearchSites, mFieldUsages,

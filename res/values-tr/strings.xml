@@ -709,4 +709,5 @@
     <string name="about_lbl_creators">İlk olarak:</string>
     <string name="unknown_uc">BİLİNMEYEN</string>
     <string name="title_delete_toc_entry">Başlığı sil</string>
+    <string name="menu_view_book_at_ellipsis">Üzerinde görüntülemek…</string>
 </resources>

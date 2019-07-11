@@ -85,11 +85,21 @@
         />
 
     <TextView
-        android:id="@+id/format"
+        android:id="@+id/isbn"
         style="@style/BooklistBook.BookInfo.Secondary"
         app:layout_constraintEnd_toStartOf="@id/read"
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/publisher"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_isbn"
+        />
+
+    <TextView
+        android:id="@+id/format"
+        style="@style/BooklistBook.BookInfo.Secondary"
+        app:layout_constraintEnd_toStartOf="@id/read"
+        app:layout_constraintStart_toEndOf="@id/coverImage"
+        app:layout_constraintTop_toBottomOf="@id/isbn"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_format"
         />

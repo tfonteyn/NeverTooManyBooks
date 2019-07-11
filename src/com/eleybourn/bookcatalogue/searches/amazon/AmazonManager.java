@@ -200,7 +200,7 @@ public final class AmazonManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.getConnection(PROXY_URL + query)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(PROXY_URL + query)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException

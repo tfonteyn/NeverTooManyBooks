@@ -83,6 +83,12 @@
 
             <SwitchPreference
                 android:defaultValue="false"
+                android:key="BookList.Style.Show.ISBN"
+                android:title="@string/lbl_isbn"
+                />
+
+            <SwitchPreference
+                android:defaultValue="false"
                 android:key="BookList.Style.Show.Bookshelves"
                 android:title="@string/lbl_bookshelves_long"
                 />

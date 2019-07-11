@@ -203,7 +203,7 @@ public class OpenLibraryManager
 
             // get and store the result into a string.
             String response;
-            try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+            try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
                 BufferedReader streamReader = new BufferedReader(
                         new InputStreamReader(con.inputStream, StandardCharsets.UTF_8));
                 String inputStr;

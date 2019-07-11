@@ -671,7 +671,7 @@ TODO: uniform quotes in all string:
     <string name="menu_show_fewer_ellipsis">Show fewer…</string>
     <string name="menu_customize_ellipsis">Customize…</string>
 
-    <string name="menu_view_book_at_ellipsis">View at…</string>
+    <string name="menu_view_book_at_ellipsis">View on…</string>
 
     <string name="menu_amazon_books_in_series">Books in this series</string>
     <string name="menu_amazon_books_by_author">Books by this author</string>

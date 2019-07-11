@@ -22,6 +22,9 @@ import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
+/**
+ * See notes in the package-info.java file.
+ */
 public class ISFDBManager
         implements SearchEngine {
 
@@ -34,6 +37,13 @@ public class ISFDBManager
 
     /** Type: {@code boolean}. */
     private static final String PREFS_SERIES_FROM_TOC = PREF_PREFIX + "seriesFromToc";
+
+    // The site claims to use ISO-8859-1, but the real encoding seems to be Windows-1252
+    // For example, a books list price with a specific currency symbol (e.g. dutch guilders)
+    // fails to be decoded unless we force Windows-1252
+//    public static final String FORCE_CHARSET="ISO-8859-1";
+//    public static final String FORCE_CHARSET="UTF-8";
+    static final String FORCE_CHARSET="Windows-1252";
 
     /**
      * Constructor.
@@ -51,6 +61,9 @@ public class ISFDBManager
         return App.getPrefs().getBoolean(PREFS_SERIES_FROM_TOC, false);
     }
 
+    /**
+     * Open a Book on ISFDB web site.
+     */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
         String url = getBaseURL() + "/cgi-bin/pl.cgi?" + bookId;

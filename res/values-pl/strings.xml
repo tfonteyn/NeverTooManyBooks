@@ -526,5 +526,6 @@
     <string name="unknown_uc">NIEZNANY</string>
     <string name="title_delete_toc_entry">Usuń tytuł</string>
     <string name="confirm_delete_toc_entry">Usuń tytuł “%1$s” przez %2$s” Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
+    <string name="menu_view_book_at_ellipsis">Widok na…</string>
 
 </resources>

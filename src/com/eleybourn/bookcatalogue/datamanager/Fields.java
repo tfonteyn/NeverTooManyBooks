@@ -752,7 +752,7 @@ public class Fields {
                 view.setText(Html.fromHtml(target.format(mRawValue)));
                 view.setFocusable(true);
                 view.setTextIsSelectable(true);
-                view.setAutoLinkMask(Linkify.ALL);
+                view.setAutoLinkMask(Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
             } else {
                 view.setText(target.format(mRawValue));
             }
@@ -1270,10 +1270,12 @@ public class Fields {
 
             try {
                 Float price = Float.parseFloat(source);
-                final NumberFormat currencyInstance =
-                        NumberFormat.getCurrencyInstance(field.getLocale());
-                currencyInstance.setCurrency(Currency.getInstance(mCurrencyCode));
-                return currencyInstance.format(price);
+                Currency currency = Currency.getInstance(mCurrencyCode);
+                //URGENT: the result is rather dire... most currency 'symbol' are shown as 3-char codes
+                // e.g. 'EUR','US$',...
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(field.getLocale());
+                currencyFormatter.setCurrency(currency);
+                return currencyFormatter.format(price);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IllegalArgumentException e) {
                 Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"

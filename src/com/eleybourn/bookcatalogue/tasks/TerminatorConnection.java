@@ -44,97 +44,26 @@ public final class TerminatorConnection
     /** milliseconds to wait between retries. */
     private static final int RETRY_AFTER_MS = 500;
 
-    @Nullable
-    public final BufferedInputStream inputStream;
+
+
     @NonNull
-    private final HttpURLConnection con;
+    private final HttpURLConnection mCon;
     @Nullable
-    private final Thread closingThread;
+    public BufferedInputStream inputStream;
+    @Nullable
+    private Thread closingThread;
+
+    private final int mKillDelayInMillis;
 
     private boolean isOpen;
 
     /**
      * Constructor.
      *
-     * @param url               URL to retrieve
-     * @param killDelayInMillis delay after which this connection will get killed if not closed yet.
-     *
+     * @param urlStr               URL to retrieve
      * @throws IOException on failure
      */
-    private TerminatorConnection(@NonNull final URL url,
-                                 final int killDelayInMillis)
-            throws IOException {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
-        }
-
-        con = (HttpURLConnection) url.openConnection();
-        con.setUseCaches(false);
-        con.setConnectTimeout(CONNECT_TIMEOUT);
-        con.setReadTimeout(READ_TIMEOUT);
-        // these are defaults
-        //con.setDoInput(true);
-        //con.setDoOutput(false);
-        //con.setRequestMethod("GET");
-
-        isOpen = true;
-        try {
-            inputStream = new BufferedInputStream(con.getInputStream());
-        } catch (@NonNull final IOException e) {
-            close();
-            throw e;
-        }
-
-        if (con.getResponseCode() >= 300) {
-            close();
-            throw new IOException("response: " + con.getResponseCode()
-                                          + ' ' + con.getResponseMessage());
-        }
-
-        // close the connection on a background task after a 'kill' timeout,
-        // so that we can cancel any runaway timeouts.
-        closingThread = new Thread(new TerminatorThread(this, killDelayInMillis));
-        closingThread.start();
-    }
-
-    /**
-     * Get a ConnectionInfo from a URL.
-     *
-     * <p>
-     * It is assumed we have a network.
-     * It is not assumed (will be tested) that the internet works.
-     *
-     * @param urlStr URL to retrieve
-     *
-     * @return ConnectionInfo
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    @NonNull
-    public static TerminatorConnection getConnection(@NonNull final String urlStr)
-            throws IOException {
-        return getConnection(urlStr, KILL_CONNECT_DELAY);
-    }
-
-    /**
-     * Get a ConnectionInfo from a URL.
-     *
-     * <p>
-     * It is assumed we have a network.
-     * It is not assumed (will be tested) that the internet works.
-     *
-     * @param urlStr            URL to retrieve
-     * @param killDelayInMillis delay after which this connection will get killed if not closed yet.
-     *
-     * @return ConnectionInfo
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    @NonNull
-    public static TerminatorConnection getConnection(@NonNull final String urlStr,
-                                                     final int killDelayInMillis)
+    public TerminatorConnection(@NonNull final String urlStr)
             throws IOException {
 
         final URL url = new URL(urlStr);
@@ -144,13 +73,73 @@ public final class TerminatorConnection
             throw new IOException("site cannot be contacted: " + urlStr);
         }
 
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+            Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
+        }
+
+        mKillDelayInMillis = KILL_CONNECT_DELAY;
+
+        mCon = (HttpURLConnection) url.openConnection();
+        mCon.setUseCaches(false);
+        mCon.setConnectTimeout(CONNECT_TIMEOUT);
+        mCon.setReadTimeout(READ_TIMEOUT);
+    }
+
+    @NonNull
+    public HttpURLConnection getHttpURLConnection() {
+        return mCon;
+    }
+
+    /**
+     * Convenience function. Get an *open* TerminatorConnection from a URL
+     *
+     * @param urlStr URL to retrieve
+     *
+     * @return the open connection
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    @NonNull
+    public static TerminatorConnection openConnection(@NonNull final String urlStr)
+            throws IOException {
+        TerminatorConnection tCon = new TerminatorConnection(urlStr);
+        tCon.open();
+        return tCon;
+    }
+
+    /**
+     * Perform the actual opening of the connection, initiate the InputStream
+     * and setup the killer-thread.
+     *
+     * @throws IOException on failure
+     */
+    public void open()
+            throws IOException {
+
         int nrOfTries = NR_OF_TRIES;
         while (true) {
             try {
-                return new TerminatorConnection(url, killDelayInMillis);
-                // retry for these exceptions.
+                // make the actual connection
+                inputStream = new BufferedInputStream(mCon.getInputStream());
+
+                // throw any error code after connect.
+                if (mCon.getResponseCode() >= 300) {
+                    close();
+                    throw new IOException("response: " + mCon.getResponseCode()
+                                                  + ' ' + mCon.getResponseMessage());
+                }
+
+                // close the connection on a background task after a 'kill' timeout,
+                // so that we can cancel any runaway timeouts.
+                closingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
+                closingThread.start();
+
+                isOpen = true;
+                return;
+
             } catch (@NonNull final SocketTimeoutException | FileNotFoundException | UnknownHostException e) {
-                // don't log here, we'll log higher up the chain.
+                // retry for these exceptions.
                 nrOfTries--;
                 if (nrOfTries-- == 0) {
                     throw e;
@@ -159,6 +148,11 @@ public final class TerminatorConnection
                     Thread.sleep(RETRY_AFTER_MS);
                 } catch (@NonNull final InterruptedException ignored) {
                 }
+
+            }  catch (@NonNull final IOException e) {
+                // give up for this exception.
+                close();
+                throw e;
             }
         }
     }
@@ -175,7 +169,7 @@ public final class TerminatorConnection
             } catch (@NonNull final IOException ignore) {
             }
         }
-        con.disconnect();
+        mCon.disconnect();
         isOpen = false;
         if (closingThread != null) {
             // dismiss the unneeded closing thread.
@@ -214,7 +208,7 @@ public final class TerminatorConnection
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                         Logger.debug(this, "run",
                                      "Closing TerminatorConnection: "
-                                             + mConnection.con.getURL());
+                                             + mConnection.mCon.getURL());
                     }
                     mConnection.close();
                 }

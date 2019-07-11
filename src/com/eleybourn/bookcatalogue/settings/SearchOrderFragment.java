@@ -35,7 +35,6 @@ public class SearchOrderFragment
     public static final String TAG = "SearchOrderFragment";
 
     private ArrayList<Site> mList;
-    @SuppressWarnings("FieldCanBeLocal")
     private SearchSiteListAdapter mListAdapter;
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;

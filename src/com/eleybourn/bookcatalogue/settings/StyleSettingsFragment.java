@@ -219,6 +219,9 @@ public class StyleSettingsFragment
         if ((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
             labels.add(getString(R.string.lbl_publisher));
         }
+        if ((extraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
+            labels.add(getString(R.string.lbl_isbn));
+        }
         if ((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
             labels.add(getString(R.string.lbl_format));
         }

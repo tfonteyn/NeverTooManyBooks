@@ -40,7 +40,7 @@ public interface TaskListener<Progress, Result> {
     void onTaskFinished(int taskId,
                         boolean success,
                         Result result,
-                        @Nullable final Exception e);
+                        @Nullable Exception e);
 
     /**
      * Optional cancellation callback.

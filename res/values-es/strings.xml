@@ -742,4 +742,5 @@
         Los libros en sí no serán borrados.
     </string>
     <string name="pg_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
+    <string name="menu_view_book_at_ellipsis">Ver en…</string>
 </resources>

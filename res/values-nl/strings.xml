@@ -904,4 +904,6 @@
     <string name="unknown_uc">ONBEKEND</string>
     <string name="title_delete_toc_entry">Titel verwijderen</string>
     <string name="confirm_delete_toc_entry">De titel “%1$s” door %2$s echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
+    <string name="menu_view_book_at_ellipsis">Bekijk op…</string>
+    <string name="book_format_digest">Digest</string>
 </resources>

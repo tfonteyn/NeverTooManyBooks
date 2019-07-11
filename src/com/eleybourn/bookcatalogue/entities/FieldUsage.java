@@ -49,6 +49,10 @@ public class FieldUsage {
         return usage != Usage.Skip;
     }
 
+    public boolean isList() {
+        return mIsList;
+    }
+
     @NonNull
     public String getLabel(@NonNull final Context context) {
         return context.getString(mNameStringId);

@@ -401,7 +401,7 @@ public final class ImageUtils {
                                    @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
-        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -422,7 +422,7 @@ public final class ImageUtils {
     @Nullable
     @WorkerThread
     public static byte[] getBytes(@NonNull final String url) {
-        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
+import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
@@ -95,6 +96,13 @@ public final class UniqueId {
     public static final String BKEY_TOC_ENTRY_ARRAY = "toc_titles_array";
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
+    /**
+     * Passing a combined 'currency'-'value' string.
+     * {@link DAO}#preprocessPrice(Book, String, String, String)} will split it just
+     * before storing the data.
+     */
+    public static final String BKEY_PRICE_LISTED_WITH_CURRENCY = "priceListedWithCurrency";
+    public static final String BKEY_PRICE_PAID_WITH_CURRENCY = "pricePaidWithCurrency";
 
     /** generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
@@ -216,7 +224,6 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_CANCELED = "cancelled";
-
 
     /* ****************************************************************************************** */
 

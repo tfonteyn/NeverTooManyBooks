@@ -16,6 +16,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Given an ISBN, search for other editions on the site.
+ *
+ * Uses JSoup screen scraping.
  */
 public class Editions
         extends AbstractBase {
@@ -55,15 +57,15 @@ public class Editions
 
         if (mDoc.location().contains("pl.cgi")) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            mEditions.add(new Edition(stripNumber(mDoc.location()), mDoc));
+            mEditions.add(new Edition(stripNumber(mDoc.location(), '?'), mDoc));
 
-        } else if (
-                // we might have have multiple editions.
-                // There seem to be two possible location urls:
-                mDoc.location().contains("title.cgi")
-                || mDoc.location().contains("se.cgi")) {
-
+        } else if (mDoc.location().contains("title.cgi")) {
+            // we have have multiple editions.
             findEntries(mDoc, "tr.table0", "tr.table1");
+        } else {
+            // dunno, let's log it
+            Logger.warn(this, "fetch",
+                        "location=" + mDoc.location());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
@@ -88,7 +90,7 @@ public class Editions
                 if (edLink != null) {
                     String url = edLink.attr("href");
                     if (url != null) {
-                        mEditions.add(new Edition(stripNumber(url)));
+                        mEditions.add(new Edition(stripNumber(url, '?')));
                     }
                 }
             }

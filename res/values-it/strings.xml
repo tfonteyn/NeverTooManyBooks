@@ -721,4 +721,5 @@
         I libri stessi non saranno cancellati.
     </string>
     <string name="pg_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
+    <string name="menu_view_book_at_ellipsis">Visualizza su…</string>
 </resources>

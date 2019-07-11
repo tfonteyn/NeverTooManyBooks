@@ -284,7 +284,7 @@ public class LibraryThingManager
         waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
@@ -418,7 +418,7 @@ public class LibraryThingManager
         waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // wrap parser exceptions in an IOException

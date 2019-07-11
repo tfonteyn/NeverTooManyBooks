@@ -795,5 +795,6 @@
     <string name="unknown_uc">INCONNU</string>
     <string name="title_delete_toc_entry">Supprimer le titre</string>
     <string name="confirm_delete_toc_entry">Vraiment supprimer le titre “%1$s” par %2$s? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
+    <string name="menu_view_book_at_ellipsis">Voir sur…</string>
 
 </resources>
