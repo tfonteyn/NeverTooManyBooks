@@ -67,10 +67,10 @@ public abstract class EditAuthorBaseDialogFragment
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mFamilyNameAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAuthorsFamilyName());
+                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
         ArrayAdapter<String> mGivenNameAdapter =
                 new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAuthorsGivenNames());
+                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
         // the dialog fields != screen fields.
         mFamilyNameView = root.findViewById(R.id.family_name);
@@ -92,7 +92,7 @@ public abstract class EditAuthorBaseDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mFamilyName = mFamilyNameView.getText().toString().trim();
                     if (mFamilyName.isEmpty()) {
-                        UserMessage.show(mFamilyNameView, R.string.warning_required_name);
+                        UserMessage.show(mFamilyNameView, R.string.warning_missing_name);
                         return;
                     }
 

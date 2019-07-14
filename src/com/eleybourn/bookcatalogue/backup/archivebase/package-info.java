@@ -64,12 +64,12 @@
  * Optional Data Entries: "snapshot.db"
  * ------------------------------------
  * A copy of the database.
- * Note: v5.2.2 does not write this file. Not sure if any older versions did.
+ * <b>Note:</b> v5.2.2 does not write this file. Not sure if any older versions did.
  * <p>
  * Optional Data Entries: "preferences"
  * ------------------------------------
  * <p>
- * Note: future versions may drop this entry when writing and instead write
+ * <b>Note:</b> future versions may drop this entry when writing and instead write
  * into an extendable xml file, for example "config.xml", section {@code <preferences>}
  * Reading legacy file *should* be preserved.
  * <p>
@@ -77,7 +77,7 @@
  * ------------------------------------------
  * Serialised User-defined BooklistStyle
  * <p>
- * Note: future versions may drop this entry when writing and instead write xml file(s)
+ * <b>Note:</b> future versions may drop this entry when writing and instead write xml file(s)
  * Reading legacy file *should* be preserved.
  * <p>
  * Optional Data Entries: "*.xml"

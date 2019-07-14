@@ -45,22 +45,20 @@ public final class TerminatorConnection
     private static final int RETRY_AFTER_MS = 500;
 
 
-
     @NonNull
     private final HttpURLConnection mCon;
+    private final int mKillDelayInMillis;
     @Nullable
     public BufferedInputStream inputStream;
     @Nullable
     private Thread closingThread;
-
-    private final int mKillDelayInMillis;
-
     private boolean isOpen;
 
     /**
      * Constructor.
      *
-     * @param urlStr               URL to retrieve
+     * @param urlStr URL to retrieve
+     *
      * @throws IOException on failure
      */
     public TerminatorConnection(@NonNull final String urlStr)
@@ -85,11 +83,6 @@ public final class TerminatorConnection
         mCon.setReadTimeout(READ_TIMEOUT);
     }
 
-    @NonNull
-    public HttpURLConnection getHttpURLConnection() {
-        return mCon;
-    }
-
     /**
      * Convenience function. Get an *open* TerminatorConnection from a URL
      *
@@ -106,6 +99,11 @@ public final class TerminatorConnection
         TerminatorConnection tCon = new TerminatorConnection(urlStr);
         tCon.open();
         return tCon;
+    }
+
+    @NonNull
+    public HttpURLConnection getHttpURLConnection() {
+        return mCon;
     }
 
     /**
@@ -138,7 +136,9 @@ public final class TerminatorConnection
                 isOpen = true;
                 return;
 
-            } catch (@NonNull final SocketTimeoutException | FileNotFoundException | UnknownHostException e) {
+            } catch (@NonNull final SocketTimeoutException
+                    | FileNotFoundException
+                    | UnknownHostException e) {
                 // retry for these exceptions.
                 nrOfTries--;
                 if (nrOfTries-- == 0) {
@@ -149,7 +149,7 @@ public final class TerminatorConnection
                 } catch (@NonNull final InterruptedException ignored) {
                 }
 
-            }  catch (@NonNull final IOException e) {
+            } catch (@NonNull final IOException e) {
                 // give up for this exception.
                 close();
                 throw e;

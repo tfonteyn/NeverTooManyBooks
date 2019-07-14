@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,7 +48,6 @@ import com.eleybourn.bookcatalogue.entities.FieldUsage;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTaskListener;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -85,10 +85,11 @@ public class UpdateFieldsFromInternetTask
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
+
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
-     * Note: do not make it local... we need a strong reference here.
+     * <b>Note:</b> do not make it local... we need a strong reference here.
      */
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinator.SearchFinishedListener mListener =
@@ -104,6 +105,7 @@ public class UpdateFieldsFromInternetTask
                     if (wasCancelled) {
                         // if the search was cancelled, propagate by cancelling ourselves.
                         cancelTask();
+
                     } else if (bookData.isEmpty()) {
                         // tell the user if the search failed.
                         mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
@@ -126,9 +128,10 @@ public class UpdateFieldsFromInternetTask
                     }
                 }
             };
-    /** WHERE clause to use in cursor, none by default, but see {@link #setBookId(long)}. */
-    @NonNull
-    private String mBookWhereClause = "";
+
+    /** List of book ID's to update, {@code null} for all books. */
+    @Nullable
+    private List<Long> mBookIds;
 
     /**
      * Constructor.
@@ -155,47 +158,40 @@ public class UpdateFieldsFromInternetTask
 
     /**
      * By default, the update is for all books. By calling this before starting the task,
-     * you can limit it to one book.
-     * <p>
-     * This call is mutually exclusive with {@link #setBookId(List)}.
-     *
-     * @param bookId for the book to update
-     */
-    public void setBookId(final long bookId) {
-        //TODO: not really happy exposing the DOM's here, but it will do for now.
-        // Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                + '=' + bookId;
-    }
-
-    /**
-     * By default, the update is for all books. By calling this before starting the task,
      * you can limit it to a set of books.
-     * <p>
-     * This call is mutually exclusive with {@link #setBookId(long)}.
      *
      * @param bookIds a list of book ID's to update
      */
     public void setBookId(@NonNull final List<Long> bookIds) {
-        //TODO: not really happy exposing the DOM's here, but it will do for now.
-        // Ideally the sql behind this becomes static and uses binds
-        if (bookIds.size() == 1) {
-            // tiny optimization
-            mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + '=' + bookIds.get(0);
-        } else {
-            mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + " IN (" + Csv.join(",", bookIds) + ')';
-        }
+        mBookIds = bookIds;
+    }
+
+    /**
+     * If you keep a handle to this task, then you can call this to check what book was last done.
+     *
+     * @return bookId
+     */
+    public long getLastBookIdDone() {
+        return mCurrentBookId;
+    }
+
+    /**
+     * Allows to set the 'lowest' Book ID to start from. See {@link DAO#fetchBooks(List, long)}
+     *
+     * @param fromBookIdOnwards the lowest book ID to start from.
+     *                          This allows to fetch a subset of the requested set.
+     *                          Defaults to 0, i.e. the full set.
+     */
+    public void setCurrentBookId(final long fromBookIdOnwards) {
+        mCurrentBookId = fromBookIdOnwards;
     }
 
     @Override
     public void runTask()
             throws InterruptedException {
         int progressCounter = 0;
-        // the 'order by' used in fetchBooksForFieldUpdate makes sure we update from 'oldest'
-        // book to 'newest'. So if we get interrupted, we can pick up the thread (arf...) later.
-        try (BookCursor books = mDb.fetchBooksForFieldUpdate(mBookWhereClause)) {
+
+        try (BookCursor books = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
 
             int langCol = books.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
 
@@ -234,12 +230,18 @@ public class UpdateFieldsFromInternetTask
                                                          mDb.getTocEntryByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-
                 // Make sure the searchable fields are not NULL
                 // (legacy data, and possibly set to null when adding new book)
                 String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
-                String author = mOriginalBookData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED, "");
                 String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
+                String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
+
+                // TEST: 2019-07-12: changed to 'given first' to make ISFDB author search work.
+//                String author = mOriginalBookData.getString(
+//                      DBDefinitions.KEY_AUTHOR_FORMATTED, "");
+                String author = mOriginalBookData.getString(
+                        DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
+
 
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
@@ -252,12 +254,9 @@ public class UpdateFieldsFromInternetTask
                     continue;
                 }
 
-                boolean wantCoverImage = mCurrentBookFieldUsages
-                        .containsKey(UniqueId.BKEY_COVER_IMAGE);
+                boolean wantCoverImage = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_IMAGE);
 
-                // at this point we know we want a search.
-
-                // Update the progress with a new base message.
+                // at this point we know we want a search, update the progress base message.
                 if (!title.isEmpty()) {
                     mTaskManager.sendHeaderUpdate(title);
                 } else {
@@ -265,17 +264,16 @@ public class UpdateFieldsFromInternetTask
                 }
 
                 // Start searching, then wait...
-                mSearchCoordinator.search(mSearchSites, author, title, isbn, wantCoverImage);
+                mSearchCoordinator.search(mSearchSites, isbn,
+                                          author, title, publisher, wantCoverImage);
 
                 mSearchLock.lock();
                 try {
-//                    Logger.info(this, "runTask","awaiting end of search");
                     /*
                      * Wait for the search to complete.
                      * After processing the results, it wil call mSearchDone.signal()
                      */
                     mSearchDone.await();
-//                    Logger.info(this, "runTask","search done, next!");
                 } finally {
                     mSearchLock.unlock();
                 }
@@ -299,6 +297,10 @@ public class UpdateFieldsFromInternetTask
 
     /**
      * See if there is a reason to fetch ANY data by checking which fields this book needs.
+     *
+     * @param requestedFields the FieldUsage map to clean up
+     *
+     * @return the consolidated FieldUsage map
      */
     private Map<String, FieldUsage> getCurrentBookFieldUsages(
             @NonNull final Map<String, FieldUsage> requestedFields) {
@@ -306,7 +308,7 @@ public class UpdateFieldsFromInternetTask
         Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
         for (FieldUsage usage : requestedFields.values()) {
             // Not selected, we don't want it
-            if (usage.isSelected()) {
+            if (usage.isWanted()) {
                 switch (usage.usage) {
                     case Merge:
                     case Overwrite:
@@ -328,7 +330,7 @@ public class UpdateFieldsFromInternetTask
         // Handle special cases first, 'default:' for the rest
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
-            case UniqueId.BKEY_COVER_IMAGE:
+            case UniqueId.BKEY_IMAGE:
                 File file = StorageUtils.getCoverFile(mCurrentUuid);
                 if (!file.exists() || file.length() == 0) {
                     fieldUsages.put(usage.fieldId, usage);
@@ -358,7 +360,7 @@ public class UpdateFieldsFromInternetTask
     }
 
     /**
-     * The Update task is done.
+     * The task is done.
      */
     @Override
     public void onTaskFinish() {
@@ -375,7 +377,8 @@ public class UpdateFieldsFromInternetTask
      */
     private void processSearchResults(@NonNull final Bundle newBookData) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.debug(this, "processSearchResults", "bookId=" + mCurrentBookId);
+            Logger.debug(this, "processSearchResults",
+                         "bookId=" + mCurrentBookId);
         }
 
         // Filter the data to remove keys we don't care about
@@ -383,7 +386,7 @@ public class UpdateFieldsFromInternetTask
         for (String key : newBookData.keySet()) {
             //noinspection ConstantConditions
             if (!mCurrentBookFieldUsages.containsKey(key)
-                    || !mCurrentBookFieldUsages.get(key).isSelected()) {
+                    || !mCurrentBookFieldUsages.get(key).isWanted()) {
                 toRemove.add(key);
             }
         }
@@ -395,7 +398,7 @@ public class UpdateFieldsFromInternetTask
         for (FieldUsage usage : mCurrentBookFieldUsages.values()) {
             if (newBookData.containsKey(usage.fieldId)) {
                 // Handle thumbnail specially
-                if (usage.fieldId.equals(UniqueId.BKEY_COVER_IMAGE)) {
+                if (usage.fieldId.equals(UniqueId.BKEY_IMAGE)) {
                     boolean copyThumb = false;
                     switch (usage.usage) {
                         case CopyIfBlank:
@@ -430,14 +433,14 @@ public class UpdateFieldsFromInternetTask
                             break;
 
                         case Overwrite:
-                            // Nothing to do; just use new data
+                            // Nothing to do; just use the new data
                             break;
                     }
                 }
             }
         }
 
-        // Commit new data
+        // Commit the new data
         if (!newBookData.isEmpty()) {
 
             // Get the language, if there was one requested for updating.

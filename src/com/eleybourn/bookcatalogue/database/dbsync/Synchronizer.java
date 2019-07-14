@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * Deadlocks are not possible because the implementation involves a single lock object.
  * <p>
- * NOTE: This lock can cause writer starvation since it does not introduce pending locks.
+ * <b>Note:</b> This lock can cause writer starvation since it does not introduce pending locks.
  *
  * @author Philip Warner
  */
@@ -122,11 +122,12 @@ public class Synchronizer {
 
     /**
      * Return when exclusive access is available.
-     * <p>
-     * - take a lock on the collection
-     * - see if there are any other locks
-     * - if not, return with the lock still held -- this prevents more EX or SH locks.
-     * - if there are other SH locks, wait for one to be release and loop.
+     * <ol>
+     * <li>take a lock on the collection</li>
+     * <li>see if there are any other locks</li>
+     * <li>if not, return with the lock still held -- this prevents more EX or SH locks.</li>
+     * <li>if there are other SH locks, wait for one to be release and loop.</li>
+     * </ol>
      */
     @NonNull
     SyncLock getExclusiveLock() {

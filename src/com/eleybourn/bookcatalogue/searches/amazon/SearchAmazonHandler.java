@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Currency;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -345,7 +344,7 @@ class SearchAmazonHandler
      */
     private void handleListPrice() {
         try {
-            int decDigits = Currency.getInstance(mCurrencyCode).getDefaultFractionDigits();
+            int decDigits = java.util.Currency.getInstance(mCurrencyCode).getDefaultFractionDigits();
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
@@ -516,7 +515,6 @@ class SearchAmazonHandler
         // not used for now... int mCount = Integer.parseInt(mBuilder.toString());
         //}
 
-        // Note:
         // Always reset the length. This is not entirely the right thing to do, but works
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and

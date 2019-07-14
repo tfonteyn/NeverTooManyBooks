@@ -334,7 +334,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_perm_data_setting"
-            android:key="App.network.mobile_data"
+            android:key="network.mobile_data"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_mobile_data" />
@@ -345,6 +345,18 @@
             android:title="@string/lbl_search_site_order">
             <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
+
+        <!-- key hardcoded to ISFDB as no other site has Publisher support for now
+            ENHANCE: pop up a dialog with checkboxes for all sites.
+        -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_search"
+            android:key="ISFDB.uses.publisher"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_search_uses_publisher" />
+
 
         <!-- key hardcoded to ISFDB as no other site has TOC support for now -->
         <SwitchPreference

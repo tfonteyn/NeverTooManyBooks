@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -77,7 +78,7 @@ public class BookFragment
     };
 
     private View mTocLabelView;
-    private View mTocButton;
+    private CompoundButton mTocButton;
     private LinearLayout mTocView;
 
     private NestedScrollView mNestedScrollView;
@@ -109,8 +110,20 @@ public class BookFragment
         mNestedScrollView = view.findViewById(R.id.topScroller);
 
         mTocLabelView = view.findViewById(R.id.lbl_toc);
-        mTocButton = view.findViewById(R.id.toc_button);
         mTocView = view.findViewById(R.id.toc);
+
+        mTocButton = view.findViewById(R.id.toc_button);
+        // show/hide the TOC as the user flips the switch.
+        mTocButton.setOnClickListener(v -> {
+            if (mTocView.getVisibility() == View.VISIBLE) {
+                // force a scroll; a manual scroll is no longer possible after the TOC closes.
+                mNestedScrollView.fullScroll(View.FOCUS_UP);
+                mTocView.setVisibility(View.GONE);
+
+            } else {
+                mTocView.setVisibility(View.VISIBLE);
+            }
+        });
 
         return view;
     }
@@ -184,7 +197,7 @@ public class BookFragment
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
 
         Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
-                                           UniqueId.BKEY_COVER_IMAGE)
+                                           UniqueId.BKEY_IMAGE)
                                       .setScale(IMAGE_SCALE);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
@@ -350,8 +363,11 @@ public class BookFragment
      */
     private void populateToc(@NonNull final Book book) {
 
-        // we can get called more then once, so clear the view before populating it.
+        // we can get called more then once (when user moves sideways to another book),
+        // so clear the view before populating it. Actual visibility is handled later.
         mTocView.removeAllViews();
+        mTocView.setVisibility(View.GONE);
+        mTocButton.setChecked(false);
 
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
@@ -370,6 +386,7 @@ public class BookFragment
                 TextView firstPubView = rowView.findViewById(R.id.year);
 
                 titleView.setText(item.getTitle());
+
                 // optional
                 if (authorView != null) {
                     authorView.setText(item.getAuthor().getLabel());
@@ -388,26 +405,12 @@ public class BookFragment
                 mTocView.addView(rowView);
             }
 
-            mTocButton.setOnClickListener(v -> {
-                if (mTocView.getVisibility() == View.VISIBLE) {
-                    // force a scroll; a manual scroll is no longer possible after the TOC closes.
-                    mNestedScrollView.fullScroll(View.FOCUS_UP);
-                    mTocView.setVisibility(View.GONE);
-
-                } else {
-                    mTocView.setVisibility(View.VISIBLE);
-                }
-            });
-
             mTocLabelView.setVisibility(View.VISIBLE);
             mTocButton.setVisibility(View.VISIBLE);
-            // do not show by default, user has to click button first.
-            //mTocView.setVisibility(View.VISIBLE);
 
         } else {
             mTocLabelView.setVisibility(View.GONE);
             mTocButton.setVisibility(View.GONE);
-            mTocView.setVisibility(View.GONE);
         }
     }
 
@@ -452,7 +455,7 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
-        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
                  MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
@@ -610,11 +613,6 @@ public class BookFragment
             extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onDown(@NonNull final MotionEvent e) {
-            return true;
-        }
-
-        @Override
         public boolean onFling(@NonNull final MotionEvent e1,
                                @NonNull final MotionEvent e2,
                                final float velocityX,
@@ -648,6 +646,11 @@ public class BookFragment
             } else {
                 return false;
             }
+        }
+
+        @Override
+        public boolean onDown(@NonNull final MotionEvent e) {
+            return true;
         }
     }
 }

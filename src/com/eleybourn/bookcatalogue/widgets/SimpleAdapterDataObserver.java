@@ -8,19 +8,28 @@ import androidx.recyclerview.widget.RecyclerView;
 public abstract class SimpleAdapterDataObserver
         extends RecyclerView.AdapterDataObserver {
 
-    public void onItemRangeChanged(int positionStart, int itemCount) {
+    @Override
+    public void onItemRangeChanged(final int positionStart,
+                                   final int itemCount) {
         onChanged();
     }
 
-    public void onItemRangeInserted(int positionStart, int itemCount) {
+    @Override
+    public void onItemRangeInserted(final int positionStart,
+                                    final int itemCount) {
         onChanged();
     }
 
-    public void onItemRangeRemoved(int positionStart, int itemCount) {
+    @Override
+    public void onItemRangeRemoved(final int positionStart,
+                                   final int itemCount) {
         onChanged();
     }
 
-    public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+    @Override
+    public void onItemRangeMoved(final int fromPosition,
+                                 final int toPosition,
+                                 final int itemCount) {
         onChanged();
     }
 }

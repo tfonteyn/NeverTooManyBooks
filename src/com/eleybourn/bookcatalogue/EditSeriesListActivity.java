@@ -99,7 +99,7 @@ public class EditSeriesListActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_required_name);
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_missing_name);
             return;
         }
 
@@ -291,7 +291,7 @@ public class EditSeriesListActivity
                     .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                         mSeriesName = mNameView.getText().toString().trim();
                         if (mSeriesName.isEmpty()) {
-                            UserMessage.show(mNameView, R.string.warning_required_name);
+                            UserMessage.show(mNameView, R.string.warning_missing_name);
                             return;
                         }
                         if (mIsCompleteView != null) {

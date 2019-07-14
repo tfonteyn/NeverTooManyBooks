@@ -38,6 +38,11 @@ public class TableInfo {
         mColumns = describeTable(db, tableName);
     }
 
+    /**
+     * Get the information on all columns.
+     *
+     * @return the collection of column information
+     */
     @NonNull
     public Collection<ColumnInfo> getColumns() {
         return mColumns.values();

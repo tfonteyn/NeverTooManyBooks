@@ -3,11 +3,9 @@
     package="com.eleybourn.bookcatalogue"
     android:installLocation="auto"
     android:versionCode="200"
-    android:versionName="6.0.0a"
+    android:versionName="6.0.0"
     >
     <!-- original package -->
-    <!-- package="com.eleybourn.bookcatalogue" -->
-    <!-- android:installLocation="auto" -->
     <!-- android:versionCode="179" -->
     <!-- android:versionName="5.2.2" -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -26,6 +24,10 @@
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:theme="@style/AppTheme.DayNight">
+
+        <meta-data
+            android:name="beta.build"
+            android:value="" />
 
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data

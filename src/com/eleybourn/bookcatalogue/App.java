@@ -170,7 +170,7 @@ public class App
     private static int sActivityRecreateStatus;
     /**
      * Give static methods access to our singleton.
-     * Note: never store a context in a static, use the instance instead
+     * <b>Note:</b> never store a context in a static, use the instance instead
      */
     private static App sInstance;
     /** Used to sent notifications regarding tasks. */

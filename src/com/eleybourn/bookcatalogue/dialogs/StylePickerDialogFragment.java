@@ -111,7 +111,7 @@ public class StylePickerDialogFragment
                     startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 })
                 .setPositiveButton(moreOrLess, (d, which) -> {
-                    // note: simply reloading the list would make more sense, but preventing
+                    // simply reloading the list would make more sense, but preventing
                     // the dialog from closing is headache inducing. This is easier.
                     //noinspection ConstantConditions
                     StylePickerDialogFragment.newInstance(getFragmentManager(),

@@ -39,7 +39,7 @@
                     android:text="@string/app_name"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textStyle="bold"
-                    tools:text="@string/app_name"
+                    tools:text="The app name"
                     />
 
                 <TextView
@@ -55,11 +55,24 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/beta_build"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
+                tools:ignore="SelectableText"
+                tools:text="beta build"
+                tools:visibility="visible"
+                />
+
+            <TextView
                 android:id="@+id/sourcecode6"
                 style="@style/Url"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/header"
+                app:layout_constraintTop_toBottomOf="@id/beta_build"
                 tools:ignore="SelectableText"
                 tools:text="sourcecode url"
                 />
@@ -75,7 +88,7 @@
             <TextView
                 android:id="@+id/contacts"
                 style="@style/SectionHeader"
-                android:text="@string/about_lbl_contacts"
+                android:text="@string/lbl_contacts"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/sourcecode6"
                 />
@@ -131,19 +144,11 @@
                 />
 
             <TextView
-                android:id="@+id/help_page"
-                style="@style/Url"
-                app:layout_constraintStart_toStartOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/sourcecode"
-                tools:ignore="SelectableText"
-                tools:text="help url"
-                />
-            <TextView
                 android:id="@+id/thanks"
                 style="@style/SectionHeader"
                 android:text="@string/about_lbl_special_thanks"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/help_page"
+                app:layout_constraintTop_toBottomOf="@id/sourcecode"
                 />
 
             <TextView

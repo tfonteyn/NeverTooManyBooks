@@ -187,7 +187,7 @@ public final class CoversDAO
      * We use this to allow caching of multiple copies of the same image (book uuid)
      * but with different dimensions.
      * <p>
-     * NOTE: Any changes to the resulting name MUST be reflected in {@link #delete}
+     * <b>Note:</b> Any changes to the resulting name MUST be reflected in {@link #delete}
      *
      * @param uuid      used to construct the cacheId
      * @param maxWidth  used to construct the cacheId

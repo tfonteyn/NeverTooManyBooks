@@ -68,9 +68,9 @@
     <string name="lbl_lend_to">Verleihe Buch an:</string>
     <string name="btn_loan_returned">Zurückgegeben</string>
     <string name="name">Name</string>
-    <string name="about_lbl_website">Webseite:</string>
-    <string name="about_lbl_sourcecode">Quellcode:</string>
-    <string name="about_lbl_contacts">Kontakt:</string>
+    <string name="lbl_website">Webseite:</string>
+    <string name="lbl_sourcecode">Quellcode:</string>
+    <string name="lbl_contacts">Kontakt:</string>
     <string name="menu_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
@@ -361,7 +361,7 @@
     <string name="lbl_search_criteria">Suchkriterien</string>
     <string name="menu_add_book_manually">Manuell hinzufügen</string>
     <string name="menu_search_internet">Internet durchsuchen</string>
-    <string name="show_results">Ergebnisse anzeigen</string>
+    <string name="btn_show_results">Ergebnisse anzeigen</string>
     <string name="rebuild_fts">FTS neu aufbauen\n(nur alpha!)</string>
     <string name="gr_title_send_book">Bücher zu Goodreads senden</string>
     <string name="gr_tq_legacy_task">Veraltete Aufgaben</string>
@@ -435,6 +435,7 @@
     <string name="hint">Hinweis</string>
     <string name="hint_reset_all_hints">Hinweise zurücksetzen</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Sie können hier die Liste der Stile einstellen, die in Ihrem Menü für Standard-Stile
         angezeigt werden.\n
@@ -446,6 +447,7 @@
         \nMit Klicks im Rest der Zeile können Sie die Details eines bestimmten Stils
         bearbeiten oder eingebaute Stile klonen.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Sie können hier die Hierarchie der Überschriften für einen bestimmten Bücherlistenstil
         ändern.\n
@@ -455,6 +457,7 @@
         \nWenn keine Stile gewählt werden, werden alle Stile angezeigt.\n
         \nZiehen Sie die Symbole ganz rechts, um die Reihenfolge zu ändern.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Sie können hier die Charakteristik eines bestimmten Bücherlistenstils bestimmen.\n
         \nSie können den Namen ändern, die Gruppierung bearbeiten und so die Hierarchie
@@ -544,9 +547,7 @@
         die für dieses Ereignis passen.
     </string>
     <string name="hints_have_been_reset">Hinweise wurden zurückgesetzt</string>
-    <string name="gr_tq_task_has_been_queued_in_background">
-        Aufgabe wurde im Hintergrund eingereiht
-    </string>
+    <string name="gr_tq_task_has_been_queued">Aufgabe wurde im Hintergrund eingereiht</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Das gewählte Buch hat keine ISBN; eine automatische Synchronisation mit Goodreads ist
@@ -586,7 +587,7 @@
         \nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie
         dafür auf ‘Anpassen’ am Ende der Liste.
     </string>
-    <string name="warning_required_name">Name darf nicht leer sein</string>
+    <string name="warning_missing_name">Name darf nicht leer sein</string>
     <string name="progress_msg_export_starting">Export startet…</string>
     <string name="menu_sort_and_style_ellipsis">Sortierung und Stil…</string>
     <string name="info_displaying_n_books_in_m_entries">
@@ -802,7 +803,7 @@
     </string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Inhalt</string>
-    <string name="warning_thing_already_exists">%1$s existiert bereits</string>
+    <string name="warning_x_already_exists">%1$s existiert bereits</string>
     <string name="lbl_publication">Veröffentlichung</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
@@ -866,7 +867,7 @@
     </string>
     <string name="error_not_available">%1$s nicht verfügbar</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
-    <string name="warning_required_title_and_author">Der Titel und / oder Autor fehlt.</string>
+    <string name="warning_missing_title_author">Der Titel und / oder Autor fehlt.</string>
     <string name="error_storage_not_accessible">Speicher nicht zugänglich</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
     <string name="menu_clear_filters">Filter löschen</string>

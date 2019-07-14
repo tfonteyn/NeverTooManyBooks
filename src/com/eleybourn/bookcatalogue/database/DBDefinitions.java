@@ -388,7 +388,8 @@ public final class DBDefinitions {
 
     // ENHANCE: the search engines already uses these where applicable, but not stored yet.
     // Long
-    public static final String KEY_WORLDCAT_ID = "worldcat_ocl_book_id";
+    public static final String KEY_WORLDCAT_ID = "worldcat_oclc_book_id";
+    public static final String KEY_LCCN_ID = "lccn_book_id";
 
 
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
@@ -959,7 +960,7 @@ public final class DBDefinitions {
          *
          * should NOT be added to {@link #ALL_TABLES}
          *
-         * {@link BooklistBuilder}
+         * This is an EXAMPLE only. The structure will depend on {@link BooklistBuilder}.
          *
          * _id	level	kind	book_count	primary_series_count	root_key	                book	format	                book_uuid	                        selected	read	title
          * 1	1	    13			                                fmt/Hardcover                       Hardcover	            1d872e0edbda2c86758d8fc889351716	0	        0
@@ -990,7 +991,8 @@ public final class DBDefinitions {
                                  DOM_BL_NODE_ROW_KIND,
                                  DOM_BL_BOOK_COUNT,
                                  DOM_BL_PRIMARY_SERIES_COUNT,
-                                 DOM_BL_ROOT_KEY)
+                                 DOM_BL_ROOT_KEY,
+                                 DOM_FK_BOOK)
                      .setPrimaryKey(DOM_PK_ID);
 
         /*

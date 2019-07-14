@@ -52,7 +52,9 @@ public class TarBackupWriter
     /**
      * Constructor.
      *
-     * @param container     Parent
+     * @param container Parent
+     *
+     * @throws IOException on failure
      */
     TarBackupWriter(@NonNull final TarBackupContainer container)
             throws IOException {
@@ -103,6 +105,8 @@ public class TarBackupWriter
      *
      * @param name of the entry in the archive
      * @param file actual file to store in the archive
+     *
+     * @throws IOException on failure
      */
     @Override
     public void putFile(@NonNull final String name,
@@ -121,6 +125,8 @@ public class TarBackupWriter
      *
      * @param name  of the entry in the archive
      * @param bytes bytes to write
+     *
+     * @throws IOException on failure
      */
     private void putByteArray(@NonNull final String name,
                               @NonNull final byte[] bytes)
@@ -136,6 +142,8 @@ public class TarBackupWriter
      * Sends the contents of a stream to the current archive entry.
      *
      * @param in Stream to be written to the archive; will be closed when done
+     *
+     * @throws IOException on failure
      */
     private void streamToArchive(@NonNull final InputStream in)
             throws IOException {

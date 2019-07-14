@@ -55,9 +55,9 @@
     <string name="lbl_lend_to">Şuna ödünç ver:</string>
     <string name="btn_loan_returned">Geri geldi</string>
     <string name="name">Ad</string>
-    <string name="about_lbl_website">İnteret Sayfası</string>
-    <string name="about_lbl_sourcecode">Kaynak kodu</string>
-    <string name="about_lbl_contacts">İletişim</string>
+    <string name="lbl_website">İnteret Sayfası</string>
+    <string name="lbl_sourcecode">Kaynak kodu</string>
+    <string name="lbl_contacts">İletişim</string>
     <string name="menu_about">Uygulama hakkında</string>
     <string name="lbl_price_listed">Fiyatı</string>
     <string name="lbl_update_fields">Alanları kendiliğinden doldur</string>
@@ -231,7 +231,7 @@
     <string name="lbl_search_criteria">Arama kriteri</string>
     <string name="menu_add_book_manually">El ile ekle</string>
     <string name="menu_search_internet">Genelağ\'da ara</string>
-    <string name="show_results">Sonuçları göster</string>
+    <string name="btn_show_results">Sonuçları göster</string>
     <string name="rebuild_fts">FTS\'yi yeniden yapıla\n(aşırı deneysel)</string>
     <string name="gr_title_send_book">Kitapları Goodreads\'e gönder</string>
     <string name="gr_tq_legacy_task">Eski görev</string>
@@ -291,6 +291,7 @@
     <string name="hint">İpucu</string>
     <string name="hint_reset_all_hints">İpuçlarını sıfırla</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Bu ekranı öntanımlı biçemler seçkesinde görüntülenecek biçemler dizelgesini düzenlemek için kullanabilirsiniz.
         Yeşil onay simgesi biçemin listede görüntüleneceğini, kırmızı artı ise görüntülenmeyeceğini belirtir.
@@ -300,12 +301,14 @@
         Bir satırda herhangi bir yere dokunmak o biçemin ayrıntılarını düzenleme olanağı tanır
         (veya çoğaltır, eğer yerleşik bir biçemse).
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Bu ekranı özel bir kitap dizelgesi biçemi hiyerarşisini düzenlemek için kullanabilirsiniz.\n
         \nYeşil onay simgesi başlığın listede görüntüleneceğini, kırmızı artı ise görüntülenmeyeceğini belirtir.
         Yeşil onay simgesine dokunmak onu kırmızı artıya dönüştürür, tersi de onay simgesi için geçerlidir.\n
         \nHiyerarşiyi sağ uçtaki simgeyi yukarı-aşağı taşıyarak değiştirebilirsiniz.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Bu ekranı seçilen kitap dizgesi biçeminin özelliklerini değiştirmek üzere kullanabilirsiniz.
         Buradan adını değiştirelibilr, hiyerarşiyi değiştirmek için öbeklendirmeyi
@@ -367,7 +370,7 @@
         Bir olaya tıklamak o olayla ilintili yapılabilecek eylemleri görüntülemenizi sağlar.
     </string>
     <string name="hints_have_been_reset">İpuçları sıfırlandı</string>
-    <string name="gr_tq_task_has_been_queued_in_background">Görev ardalanda kuyruğa yerleştirildi</string>
+    <string name="gr_tq_task_has_been_queued">Görev ardalanda kuyruğa yerleştirildi</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Seçili kitabın bir ISBN numarası yok, dolayısıyla Goodreads ile özdevinimli olarak eşitlenmesi olanaklı değil.
@@ -408,7 +411,7 @@
         \nEk olarak dizelgenin sonundaki ‘Kişiselleştir’ düğmesini kullanarak bu seçkeyi
         kişiselleştirebilir ve hatta kendi dizelge biçemlerinizi oluşturabilirsiniz.
     </string>
-    <string name="warning_required_name">Ad kısmı boş olamaz</string>
+    <string name="warning_missing_name">Ad kısmı boş olamaz</string>
     <string name="progress_msg_export_starting">Dışa aktarma başlıyor…</string>
     <string name="menu_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
@@ -654,7 +657,7 @@
     <string name="progress_msg_process_preferences">Tercihler…</string>
     <string name="progress_msg_please_wait">Lütfen bekle…</string>
     <string name="none">Hiçbiri</string>
-    <string name="warning_thing_already_exists">%1$s zaten var</string>
+    <string name="warning_x_already_exists">%1$s zaten var</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
     <string name="lbl_date_acquired_day">Alınan Gün</string>
@@ -677,7 +680,7 @@
     <string name="gr_btn_delete_credentials">Kimlik Bilgilerini Kaldır</string>
     <string name="gr_auth_blurb_part4">Bu uygulamayı zaten yetkilendirmiş görünüyorsunuz. Kimlik bilgilerini bu telefondan silmek istiyorsanız, aşağıdaki düğmeye basarak bunu yapabilirsiniz. Ancak, başvurunun Goodreads web sitesindeki kaydını silmek önemlidir.</string>
     <string name="lbl_search_sites">Siteleri Ara</string>
-    <string name="warning_required_title_and_author">Başlık ve / veya yazar eksik.</string>
+    <string name="warning_missing_title_author">Başlık ve / veya yazar eksik.</string>
     <string name="lbl_table_of_content">İçindekiler</string>
     <string name="menu_hide_keyboard">Klavyeyi gizle</string>
     <string name="lbl_first_publication_year">Yayının İlk Yılı</string>

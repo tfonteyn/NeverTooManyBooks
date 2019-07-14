@@ -45,7 +45,7 @@ public class FieldUsage {
         mIsList = isList;
     }
 
-    public boolean isSelected() {
+    public boolean isWanted() {
         return usage != Usage.Skip;
     }
 

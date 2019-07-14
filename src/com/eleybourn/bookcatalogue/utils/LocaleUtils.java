@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -309,6 +308,12 @@ public final class LocaleUtils {
         return iso;
     }
 
+
+    public static Resources getLocalizedResources() {
+        //TODO: should be using a user context.
+        return getLocalizedResources(App.getAppContext(), getPreferredLocal());
+    }
+
     /**
      * Load a Resources set for the specified Locale.
      *
@@ -587,6 +592,7 @@ public final class LocaleUtils {
      * @return {@code true} if processing was a success. {@code false} if we put the original value
      * in the bundle under the keyPrice, and left keyCurrency empty.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean splitPrice(@NonNull final String priceWithCurrency,
                                      @NonNull final String keyPrice,
                                      @NonNull final String keyCurrency,
@@ -606,14 +612,14 @@ public final class LocaleUtils {
             String currencyCode = currencyToISO(data[0]);
             if (currencyCode != null) {
                 try {
-                    Currency currency = Currency.getInstance(currencyCode);
+                    java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
                     int decDigits = currency.getDefaultFractionDigits();
                     // format with 'digits' decimal places
                     Float price = Float.parseFloat(data[1]);
                     String priceStr = String.format("%." + decDigits + 'f', price);
 
                     destination.putString(keyPrice, priceStr);
-                    // re-get the code just in case it used a recognised but non-standard one
+                    // re-get the code just in case it used a recognised but non-standard string
                     destination.putString(keyCurrency, currency.getCurrencyCode());
 
                 } catch (@NonNull final NumberFormatException e) {

@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
  * - manually provided or scanned ISBN.
  * - Author/Title.
  * <p>
- * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * <b>Note:</b> eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
 public class BookSearchActivity

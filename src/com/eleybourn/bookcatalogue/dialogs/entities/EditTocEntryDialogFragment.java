@@ -20,6 +20,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
@@ -99,7 +100,7 @@ public class EditTocEntryDialogFragment
             ArrayAdapter<String> authorAdapter =
                     new ArrayAdapter<>(getContext(),
                                        android.R.layout.simple_dropdown_item_1line,
-                                       mDb.getAuthorsFormattedName());
+                                       mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
             mAuthorTextView.setAdapter(authorAdapter);
 
             mAuthorTextView.setText(mTocEntry.getAuthor().getLabel());

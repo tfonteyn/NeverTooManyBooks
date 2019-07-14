@@ -211,7 +211,7 @@ public abstract class BookBaseFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+            case R.id.MENU_UPDATE_FROM_INTERNET:
                 ArrayList<Long> bookIds = new ArrayList<>();
                 bookIds.add(book.getId());
                 Intent intentUpdateFields =

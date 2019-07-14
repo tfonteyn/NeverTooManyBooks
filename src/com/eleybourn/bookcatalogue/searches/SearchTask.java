@@ -75,6 +75,9 @@ public class SearchTask
     private String mTitle;
     /** search criteria. */
     @Nullable
+    private String mPublisher;
+    /** search criteria. */
+    @Nullable
     private String mIsbn;
 
     /**
@@ -133,6 +136,14 @@ public class SearchTask
     }
 
     /**
+     * @param publisher to search for
+     */
+    public void setPublisher(@NonNull final String publisher) {
+        // trims might not be needed, but heck.
+        mPublisher = publisher.trim();
+    }
+
+    /**
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     public void setFetchThumbnail(final boolean fetchThumbnail) {
@@ -176,7 +187,7 @@ public class SearchTask
             // SEARCH!
             // manager checks the arguments
             //ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
-            mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mFetchThumbnail);
+            mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
                 // Look for series name in the book title and clean KEY_TITLE
                 checkForSeriesNameInTitle();

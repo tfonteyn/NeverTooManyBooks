@@ -55,9 +55,9 @@
     <string name="lbl_lend_to">Libro prestado a:</string>
     <string name="btn_loan_returned">Devuelto</string>
     <string name="name">Nombre</string>
-    <string name="about_lbl_website">Página web</string>
-    <string name="about_lbl_sourcecode">Código fuente</string>
-    <string name="about_lbl_contacts">Contacto</string>
+    <string name="lbl_website">Página web</string>
+    <string name="lbl_sourcecode">Código fuente</string>
+    <string name="lbl_contacts">Contacto</string>
     <string name="menu_about">Acerca de esta App</string>
     <string name="lbl_price_listed">Precio</string>
     <string name="lbl_update_fields">Actualización automática de campos</string>
@@ -235,7 +235,7 @@
     <string name="lbl_search_criteria">Criterio de búsqueda</string>
     <string name="menu_add_book_manually">Añadir manualmente</string>
     <string name="menu_search_internet">Buscar en internet</string>
-    <string name="show_results">Mostrar resultados</string>
+    <string name="btn_show_results">Mostrar resultados</string>
     <string name="rebuild_fts">Reconstruir FTS\n(alpha only!)</string>
     <string name="gr_title_send_book">Enviar libros a Goodreads</string>
     <string name="gr_tq_legacy_task">Operaciones obsoletas</string>
@@ -296,6 +296,7 @@
     <string name="hint">Sugerencia</string>
     <string name="hint_reset_all_hints">Resetear sugerencias</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Puede utilizar esta opción para configurar la lista de estilos que se mostrarán en su menú de estilos.
         \n\nUna marca verde indica que el estilo se mostrará en la lista, un aspa roja indica que no se mostrará.
@@ -305,12 +306,14 @@
         \n\nHaciendo clic en cualquier otro sitio de la línea podrá editar los detalles de un estilo específico
         (o copiarlo, si es un estilo predefinido).
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Puede utilizar esta opción para modificar la jerarquía de las cabeceras para un determinado estilo de listado.
         \n\nUna marca verde indica que el encabezado se mostrará en la lista, un aspa roja indica que no se mostrará.
         Al hacer clic sobre una marca verde se convierte en un aspa roja, y viceversa.
         \n\nPuede reordenar la jerarquía arrastrando el icono del extremo derecho de cada fila hacia arriba o hacia abajo.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Puede utilizar esta opción para configurar las características de un determinado estilo de listado.
         \n\nPuede cambiar el nombre, editar los grupos para cambiar la jerarquía y modificar otros parámetros para
@@ -382,7 +385,7 @@
         Haciendo clic sobre un evento podrá realizar distintas acciones según el tipo de evento.
     </string>
     <string name="hints_have_been_reset">Sugerencias reseteadas</string>
-    <string name="gr_tq_task_has_been_queued_in_background">Tarea añadida a la cola de tareas en segundo plano</string>
+    <string name="gr_tq_task_has_been_queued">Tarea añadida a la cola de tareas en segundo plano</string>
     <string name="progress_msg_upgrading">Actualizando…</string>
     <string name="gr_explain_goodreads_no_isbn">
         El libro seleccionado no tiene ISBN; no se puede sincronizar de forma automática con Goodreads.
@@ -421,7 +424,7 @@
         Esta opción le permite seleccionar el estilo de los listados.\n
         \nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando ‘Configurar’ al final de la lista.
     </string>
-    <string name="warning_required_name">El nombre no puede ser blanco</string>
+    <string name="warning_missing_name">El nombre no puede ser blanco</string>
     <string name="progress_msg_export_starting">Empezando exportación…</string>
     <string name="menu_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>
     <string name="info_displaying_n_books_in_m_entries">Se muestran %1$d libros, en %2$d entradas</string>
@@ -644,7 +647,7 @@
     <string name="lbl_update_day">Día de actualización</string>
 
     <string name="tab_lbl_content">Contenido</string>
-    <string name="warning_thing_already_exists">%1$s ya existe</string>
+    <string name="warning_x_already_exists">%1$s ya existe</string>
     <string name="error_email_failed">El envío del correo electrónico falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
     <string name="done">Hecho</string>
@@ -719,7 +722,7 @@
     <string name="menu_clear_filters">Borrar filtros</string>
     <string name="menu_author_details">Todas las obras de este autor.</string>
     <string name="progress_msg_please_wait">Por favor espera…</string>
-    <string name="warning_required_title_and_author">Falta el título y / o el autor.</string>
+    <string name="warning_missing_title_author">Falta el título y / o el autor.</string>
     <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
     <string name="none">Ninguno</string>
     <string name="menu_hide_keyboard">Ocultar teclado</string>

@@ -69,15 +69,22 @@ public final class GoogleBooksManager
     public Bundle search(@Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
+                         @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
 
         String query;
 
+        // %2B  +
+        // %3A  :
+        // %3C  <
+        // %3E  >
         if (ISBN.isValid(isbn)) {
+            // q=ISBN<isbn>
             query = "q=ISBN%3C" + isbn + "%3E";
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            // q=intitle:ttt+inauthor:aaa
             query = "q=" + "intitle%3A" + encodeSpaces(title)
                     + "%2Binauthor%3A" + encodeSpaces(author);
 
@@ -129,6 +136,7 @@ public final class GoogleBooksManager
      * replace spaces with %20.
      */
     private String encodeSpaces(@NonNull final String s) {
+//        return URLEncoder.encode(s, "UTF-8");
         return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

@@ -109,7 +109,7 @@ public class EditBookFieldsFragment
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
         Field coverImageField = fields.add(R.id.coverImage,
-                                           DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE)
+                                           DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
                                       .setScale(ImageUtils.SCALE_MEDIUM);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
@@ -207,9 +207,14 @@ public class EditBookFieldsFragment
             mBookBaseFragmentModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
-
         //noinspection ConstantConditions
-        getField(R.id.author).setValue(book.getAuthorTextShort(getContext()));
+        String name = book.getAuthorTextShort(getContext());
+        if (name.isEmpty() && book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+            // allow this fallback. It's used after a search that did not return results,
+            // in which case it contains whatever the user typed.
+            name = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+        }
+        getField(R.id.author).setValue(name);
     }
 
     private void populateSeriesListField(@NonNull final Book book) {

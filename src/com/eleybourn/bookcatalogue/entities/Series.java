@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 /**
  * Class to hold book-related series data.
  * <p>
- * Note:
+ * <b>Note:</b>
  * A Series as defined in the database is just id+name (and isComplete)
  * <p>
  * The number is of course related to the book itself.

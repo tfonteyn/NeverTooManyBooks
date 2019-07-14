@@ -179,7 +179,7 @@ public class LendBookDialogFragment
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
                     if (newName.isEmpty()) {
-                        UserMessage.show(mLoaneeView, R.string.warning_required_name);
+                        UserMessage.show(mLoaneeView, R.string.warning_missing_name);
                         return;
                     }
                     dismiss();

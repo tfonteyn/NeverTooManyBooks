@@ -217,7 +217,7 @@ public class CsvExporter
                    .append(format(cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                   .append(format(cursorRow.getInt(DBDefinitions.KEY_EDITION_BITMASK)))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
                    .append(format(cursorRow.getDouble(DBDefinitions.KEY_RATING)))
                    .append(format(StringList.getBookshelfCoder()
@@ -234,7 +234,7 @@ public class CsvExporter
                    .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
 
-                   .append(format(cursorRow.getInt(DBDefinitions.KEY_TOC_BITMASK)))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_LOCATION)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_READ_START)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_READ_END)))

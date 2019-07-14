@@ -17,10 +17,10 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
 public class BitmaskDataAccessor
         implements DataAccessor {
 
-    /** key of the real data object. */
+    /** this is the ACTUAL key into the 'rawData' object. */
     private final String mKey;
     /** the bit we're handling in this object. */
-    private final int mBitmask;
+    private final long mBitmask;
 
     /**
      * Constructor.
@@ -29,7 +29,7 @@ public class BitmaskDataAccessor
      * @param bitmask to manage
      */
     public BitmaskDataAccessor(@NonNull final String key,
-                               final int bitmask) {
+                               final long bitmask) {
         mKey = key;
         mBitmask = bitmask;
     }
@@ -37,14 +37,14 @@ public class BitmaskDataAccessor
     @NonNull
     @Override
     public Boolean get(@NonNull final Bundle rawData) {
-        return (rawData.getLong(mKey) & mBitmask) != 0;
+        return (Datum.toLong(rawData.get(mKey)) & mBitmask) != 0;
     }
 
     @Override
     public void put(@NonNull final Bundle rawData,
                     @NonNull final Object value) {
 
-        long bits = rawData.getLong(mKey);
+        long bits = Datum.toLong(rawData.get(mKey));
 
         if (Datum.toBoolean(value)) {
             // set the bit

@@ -27,8 +27,6 @@ public class BooleanDataAccessor
     @NonNull
     @Override
     public Boolean get(@NonNull final Bundle rawData) {
-        // The database stores booleans as integers. We also want to deal with non-integer values
-        // that somehow represent a boolean.
         return Datum.toBoolean(rawData.get(mKey));
     }
 

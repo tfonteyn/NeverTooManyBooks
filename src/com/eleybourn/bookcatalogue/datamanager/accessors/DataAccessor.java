@@ -50,7 +50,7 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  *
  * @author pjw
  */
-public interface DataAccessor {
+public interface DataAccessor<TIN,TOUT> {
 
     /*
     // example code:
@@ -69,7 +69,7 @@ public interface DataAccessor {
      * @return the raw value, or {@code null} if not present
      */
     @Nullable
-    Object get(@NonNull Bundle rawData);
+    TOUT get(@NonNull Bundle rawData);
 
     /**
      * Set the specified value.
@@ -78,7 +78,7 @@ public interface DataAccessor {
      * @param value   the actual value to set
      */
     void put(@NonNull Bundle rawData,
-             @NonNull Object value);
+             @NonNull TIN value);
 
     /**
      * Check if the key is present.

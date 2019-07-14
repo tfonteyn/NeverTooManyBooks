@@ -45,7 +45,7 @@ public final class Prefs {
     public static final String pk_ui_theme = "App.Theme";
     public static final String pk_ui_messages_use = "App.UserMessage";
 
-    public static final String pk_ui_network_mobile_data = "App.network.mobile_data";
+    public static final String pk_ui_network_mobile_data = "network.mobile_data";
 
     public static final String pk_thumbnails_zoom_upscale = "Image.Zoom.Upscale";
     public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";

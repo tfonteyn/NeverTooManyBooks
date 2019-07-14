@@ -632,7 +632,7 @@ public class CoverHandler {
     /**
      * Handles results from Camera, Image Gallery, Cropping.
      * <p>
-     * Note: rotating is done locally in {@link #rotateImage(long)}.
+     * <b>Note:</b> rotating is done locally in {@link #rotateImage(long)}.
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */

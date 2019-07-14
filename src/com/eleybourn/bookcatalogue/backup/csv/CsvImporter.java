@@ -19,7 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDoneException;
 import android.text.TextUtils;
 
@@ -98,19 +98,19 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param context  Current context, for accessing resources.
-     * @param settings {@link ImportOptions#file} is not used, as we must support
-     *                 reading from a stream.
-     *                 {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
-     *                 Other flags are ignored, as this class only
-     *                 handles {@link ImportOptions#BOOK_CSV} anyhow.
+     * @param resources Current resources.
+     * @param settings  {@link ImportOptions#file} is not used, as we must support
+     *                  reading from a stream.
+     *                  {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                  Other flags are ignored, as this class only
+     *                  handles {@link ImportOptions#BOOK_CSV} anyhow.
      */
     @UiThread
-    public CsvImporter(@NonNull final Context context,
+    public CsvImporter(@NonNull final Resources resources,
                        @NonNull final ImportOptions settings) {
 
-        mUnknownString = context.getString(R.string.unknown);
-        mProgress_msg_n_created_m_updated = context.getString(
+        mUnknownString = resources.getString(R.string.unknown);
+        mProgress_msg_n_created_m_updated = resources.getString(
                 R.string.progress_msg_n_created_m_updated);
 
         mDb = new DAO();

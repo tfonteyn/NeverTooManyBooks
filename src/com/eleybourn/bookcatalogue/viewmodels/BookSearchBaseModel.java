@@ -7,11 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BookSearchBaseFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 
 public class BookSearchBaseModel
         extends ViewModel {
@@ -35,6 +37,8 @@ public class BookSearchBaseModel
     private String mAuthorSearchText = "";
     @NonNull
     private String mTitleSearchText = "";
+    @NonNull
+    private String mPublisherSearchText = "";
 
 
     @Override
@@ -62,6 +66,7 @@ public class BookSearchBaseModel
         mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
+        mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
     }
 
     /**
@@ -93,6 +98,7 @@ public class BookSearchBaseModel
         mIsbnSearchText = "";
         mAuthorSearchText = "";
         mTitleSearchText = "";
+        mPublisherSearchText = "";
     }
 
     @NonNull
@@ -122,6 +128,15 @@ public class BookSearchBaseModel
         mTitleSearchText = titleSearchText;
     }
 
+    @NonNull
+    public String getPublisherSearchText() {
+         return mPublisherSearchText;
+    }
+
+    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
+        mPublisherSearchText = publisherSearchText;
+    }
+
     @Nullable
     public Intent getLastBookData() {
         return mLastBookData;
@@ -131,6 +146,12 @@ public class BookSearchBaseModel
         mLastBookData = lastBookData;
     }
 
+    /**
+     * At least one criteria must be available.
+     * The publisher is optional.
+     *
+     * @return {@code true} if we have something to search on.
+     */
     public boolean hasSearchData() {
         return !mIsbnSearchText.isEmpty()
                 || !mAuthorSearchText.isEmpty()

@@ -16,7 +16,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Given an ISBN, search for other editions on the site.
- *
+ * <p>
  * Uses JSoup screen scraping.
  */
 public class Editions
@@ -40,14 +40,13 @@ public class Editions
      * @param isbn to get editions for. MUST be valid.
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
-     * (with the same isbn)
      *
      * @throws SocketTimeoutException on timeout
      */
     public ArrayList<Edition> fetch(@NonNull final String isbn)
             throws SocketTimeoutException {
 
-        String url = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
+        String url = IsfdbManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
 
         // do not auto-redirect, handled manually. See the comments inside the loadPage method.
         if (!loadPage(url, false)) {
@@ -55,17 +54,42 @@ public class Editions
             return mEditions;
         }
 
+        return parseDoc();
+    }
+
+    /**
+     * @param url A fully qualified ISFDB search url
+     *
+     * @return a list with native ISFDB book ID's pointing to individual editions
+     *
+     * @throws SocketTimeoutException on timeout
+     */
+    @SuppressWarnings("WeakerAccess")
+    public ArrayList<Edition> fetchPath(@NonNull final String url)
+            throws SocketTimeoutException {
+
+        // do not auto-redirect, handled manually. See the comments inside the loadPage method.
+        if (!loadPage(url, false)) {
+            // failed to load, return an empty list.
+            return mEditions;
+        }
+
+        return parseDoc();
+    }
+
+    private ArrayList<Edition> parseDoc() {
         if (mDoc.location().contains("pl.cgi")) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
             mEditions.add(new Edition(stripNumber(mDoc.location(), '?'), mDoc));
 
-        } else if (mDoc.location().contains("title.cgi")) {
-            // we have have multiple editions.
+        } else if (mDoc.location().contains("title.cgi")
+                || mDoc.location().contains("adv_search_results.cgi")) {
+            // we have multiple editions.
             findEntries(mDoc, "tr.table0", "tr.table1");
         } else {
             // dunno, let's log it
-            Logger.warn(this, "fetch",
-                        "location=" + mDoc.location());
+            Logger.warnWithStackTrace(this, "fetch",
+                                      "location=" + mDoc.location());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
@@ -98,18 +122,18 @@ public class Editions
     }
 
     /**
-     * A data class for holding the ISFDB native book id and its doc (web page).
+     * A data class for holding the ISFDB native book id and its (optional) doc (web page).
      */
     public static class Edition {
 
         /** The ISFDB native book id. */
-        public final long isfdbId;
+        final long isfdbId;
         /**
          * If a fetch of editions resulted in a single book returned (via redirects),
          * then the doc is kept here for immediate processing.
          */
         @Nullable
-        public final Document doc;
+        final Document doc;
 
         /**
          * Constructor: we found a link to a book.

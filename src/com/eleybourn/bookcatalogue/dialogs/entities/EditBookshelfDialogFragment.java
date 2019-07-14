@@ -115,7 +115,7 @@ public class EditBookshelfDialogFragment
     private void doSave() {
         mName = mNameView.getText().toString().trim();
         if (mName.isEmpty()) {
-            UserMessage.show(mNameView, R.string.warning_required_name);
+            UserMessage.show(mNameView, R.string.warning_missing_name);
             return;
         }
 
@@ -126,7 +126,7 @@ public class EditBookshelfDialogFragment
         if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
             Context c = getContext();
             @SuppressWarnings("ConstantConditions")
-            String msg = c.getString(R.string.warning_thing_already_exists,
+            String msg = c.getString(R.string.warning_x_already_exists,
                                      c.getString(R.string.lbl_bookshelf));
             UserMessage.show(mNameView, msg);
             return;

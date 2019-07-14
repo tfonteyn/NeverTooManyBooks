@@ -60,7 +60,7 @@ import com.eleybourn.bookcatalogue.utils.UniqueMap;
  * IMPORTANT: The {@link #mDomains} must be set at runtime each time but that is ok as
  * they are only needed at list build time. They are NOT stored.
  * <p>
- * (Small) note: the way preferences are implemented means that all groups will add their
+ * <b>Note:</b> the way preferences are implemented means that all groups will add their
  * properties to the persisted state of a style. Not just the groups which are active/present
  * for that state. This is fine, as they won't get used unless activated.
  *

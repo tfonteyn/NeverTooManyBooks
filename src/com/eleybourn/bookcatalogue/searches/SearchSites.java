@@ -11,7 +11,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
@@ -74,6 +74,7 @@ public final class SearchSites {
     private static final ArrayList<Site> COVER_SEARCH_ORDER_DEFAULTS = new ArrayList<>();
     /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
+    private static final String UNEXPECTED_SEARCH_SOURCE_ERROR = "Unexpected search source: ";
 
     /** the users preferred search site order. */
     private static ArrayList<Site> sPreferredSearchOrder;
@@ -162,7 +163,7 @@ public final class SearchSites {
      * <p>
      * As it's used as a prefs key, it should never be changed.
      * <p>
-     * Note: the name is also required in the actual {@link SearchEngine} as a {@code StringRes}
+     * <b>Note:</b> the name is also required in the actual {@link SearchEngine} as a {@code StringRes}
      * but the method here can not use that one without instantiating which we don't want here.
      *
      * @param id for the site
@@ -185,7 +186,7 @@ public final class SearchSites {
                 return "OpenLibrary";
 
             default:
-                throw new IllegalTypeException("Unexpected search source: " + id);
+                throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
         }
     }
 
@@ -205,7 +206,7 @@ public final class SearchSites {
                 return new GoodreadsManager();
 
             case ISFDB:
-                return new ISFDBManager();
+                return new IsfdbManager();
 
             case LIBRARY_THING:
                 return new LibraryThingManager();
@@ -214,8 +215,13 @@ public final class SearchSites {
                 return new OpenLibraryManager();
 
             default:
-                throw new IllegalTypeException("Unexpected search source: " + id);
+                throw new IllegalTypeException(UNEXPECTED_SEARCH_SOURCE_ERROR + id);
         }
+    }
+
+
+    public static boolean usePublisher() {
+        return App.getPrefs().getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
     }
 
     /**

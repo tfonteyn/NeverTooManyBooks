@@ -203,6 +203,13 @@
         -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
+    <!-- SwitchPreference - some search engines can add the publisher to the search terms.
+        This is not always desirable, as they use "AND" to combine the terms.
+        So by default this is switched off.
+        -->
+    <string name="pt_search_uses_publisher">Search uses publisher</string>
+
+
     <!-- ####################################################################################### -->
 
 

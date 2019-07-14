@@ -23,6 +23,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 public class BookSearchByTextFragment
@@ -38,7 +39,6 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
-
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
                 /**
@@ -59,6 +59,24 @@ public class BookSearchByTextFragment
                     try {
                         if (!wasCancelled) {
                             mTaskManager.sendHeaderUpdate(R.string.progress_msg_adding_book);
+
+                            if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
+                                bookData.putString(DBDefinitions.KEY_TITLE,
+                                                   mTitleView.getText().toString().trim());
+                            }
+                            //noinspection ConstantConditions
+                            if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
+                                    || bookData.getParcelableArrayList(
+                                    UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+                                // does NOT use the array, that's reserved for verified names.
+                                bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                                   mAuthorView.getText().toString().trim());
+                            }
+                            if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
+                                bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                                                   mPublisherView.getText().toString().trim());
+                            }
+
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
                                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
@@ -66,6 +84,7 @@ public class BookSearchByTextFragment
                             // Clear the data entry fields ready for the next one
                             mAuthorView.setText("");
                             mTitleView.setText("");
+                            mPublisherView.setText("");
                         }
                     } finally {
                         // Clean up
@@ -75,7 +94,8 @@ public class BookSearchByTextFragment
                     }
                 }
             };
-
+    // ENHANCE: add auto-completion for publishers?
+    private EditText mPublisherView;
 
     @Override
     @Nullable
@@ -85,6 +105,10 @@ public class BookSearchByTextFragment
         View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
         mTitleView = view.findViewById(R.id.title);
         mAuthorView = view.findViewById(R.id.author);
+        mPublisherView = view.findViewById(R.id.publisher);
+        view.findViewById(R.id.publisher_group)
+            .setVisibility(SearchSites.usePublisher() ? View.VISIBLE : View.GONE);
+
         return view;
     }
 
@@ -92,8 +116,12 @@ public class BookSearchByTextFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mTitleView.setText(mBookSearchBaseModel.getTitleSearchText());
+        mAuthorView.setText(mBookSearchBaseModel.getAuthorSearchText());
+        mPublisherView.setText(mBookSearchBaseModel.getPublisherSearchText());
+
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_for);
+        getActivity().setTitle(R.string.lbl_search_for_books);
 
         populateAuthorList();
 
@@ -101,6 +129,7 @@ public class BookSearchByTextFragment
         getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
             mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
             mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
+            mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
             prepareSearch();
         });
 
@@ -167,24 +196,33 @@ public class BookSearchByTextFragment
         super.onPause();
         mBookSearchBaseModel.setAuthorSearchText(mAuthorView.getText().toString().trim());
         mBookSearchBaseModel.setTitleSearchText(mTitleView.getText().toString().trim());
+        mBookSearchBaseModel.setPublisherSearchText(mPublisherView.getText().toString().trim());
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mBookSearchBaseModel.getAuthorSearchText());
-        outState.putString(DBDefinitions.KEY_TITLE, mBookSearchBaseModel.getTitleSearchText());
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR,
+                           mBookSearchBaseModel.getAuthorSearchText());
+        outState.putString(DBDefinitions.KEY_TITLE,
+                           mBookSearchBaseModel.getTitleSearchText());
+        outState.putString(DBDefinitions.KEY_PUBLISHER,
+                           mBookSearchBaseModel.getPublisherSearchText());
     }
 
     /**
      * Setup the adapter for the Author AutoCompleteTextView field.
+     * Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
+     * search sites can copy with the formatted version.
      */
     private void populateAuthorList() {
         //noinspection ConstantConditions
         Locale locale = LocaleUtils.from(getContext());
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mBookSearchBaseModel.getDb().getAuthorsFormattedName();
+        final ArrayList<String> authors = mBookSearchBaseModel.getDb().getAuthorNames(
+                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+
         final Set<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
             uniqueNames.add(s.toUpperCase(locale));

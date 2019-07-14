@@ -691,8 +691,10 @@ public class TableDefinition
      *
      * @param name                Name to use for table
      * @param withConstraints     Flag indicating DOMAIN constraints should be applied.
-     * @param withTableReferences Flag indicating TABLE constraints (foreign keys) should be applied.
-     * @param ifNotExists         Flag indicating that creation should not be done if the table exists
+     * @param withTableReferences Flag indicating TABLE constraints (foreign keys)
+     *                            should be applied.
+     * @param ifNotExists         Flag indicating that creation should not be done if
+     *                            the table exists
      *
      * @return SQL to create table
      */
@@ -936,8 +938,8 @@ public class TableDefinition
         @NonNull
         String getPredicate() {
             if (mParentKey != null) {
-                return mParent.getAlias() + '.' + mParentKey.name +
-                        '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
+                return mParent.getAlias() + '.' + mParentKey.name
+                        + '=' + mChild.getAlias() + '.' + mDomains.get(0).name;
 
             } else {
                 List<DomainDefinition> pk = mParent.getPrimaryKey();

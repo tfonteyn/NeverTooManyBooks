@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class for parsing the output any web request that returns an XML response.
- * NOTE: this does not include general web page parsing since they often do not conform
+ * <b>Note:</b> this does not include general web page parsing since they often do not conform
  * to XML formatting standards.
  * <p>
  * This class is used with the {@link XmlFilter} class to call user-defined code at

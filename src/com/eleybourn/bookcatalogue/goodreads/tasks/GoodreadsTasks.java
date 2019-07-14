@@ -318,7 +318,7 @@ public final class GoodreadsTasks {
                     QueueManager.getQueueManager().enqueueTask(
                             new GrSendOneBookTask(mTaskDescription, mBookId),
                             QueueManager.Q_SMALL_JOBS);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                    return R.string.gr_tq_task_has_been_queued;
                 }
                 return msg;
             } catch (@NonNull final RuntimeException e) {
@@ -390,7 +390,7 @@ public final class GoodreadsTasks {
                     QueueManager.getQueueManager().enqueueTask(
                             new GrSendAllBooksTask(mTaskDescription, mUpdatesOnly),
                             QueueManager.Q_MAIN);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                    return R.string.gr_tq_task_has_been_queued;
                 }
                 return msg;
             } catch (@NonNull final RuntimeException e) {
@@ -462,7 +462,7 @@ public final class GoodreadsTasks {
                     QueueManager.getQueueManager().enqueueTask(
                             new GrImportAllTask(mTaskDescription, mIsSync),
                             QueueManager.Q_MAIN);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                    return R.string.gr_tq_task_has_been_queued;
                 }
                 return msg;
             } catch (@NonNull final RuntimeException e) {

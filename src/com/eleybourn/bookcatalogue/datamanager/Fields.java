@@ -49,9 +49,7 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -114,7 +112,7 @@ import com.google.android.material.button.MaterialButton;
  * -> validator -> (ContentValues or Object)</li>
  * </ul>
  * <p>
- * Usage Note:
+ * <b>Usage:</b>
  * <ol>
  * <li>Which Views to Add?
  * <br>
@@ -179,8 +177,7 @@ public class Fields {
      * When not found, the app crashes.
      * <p>
      * The following code is to help diagnose these cases, not avoid them.
-     * <p>
-     * NOTE: This does NOT entirely fix the problem, it gathers debug info.
+     * This does NOT entirely fix the problem, it gathers debug info.
      * but we have implemented one work-around
      * <p>
      * Work-around #1:
@@ -814,12 +811,6 @@ public class Fields {
                                   final int count) {
         }
 
-        /**
-         * FIXME: not very efficient... aside of when the user is typing,
-         * this ALSO gets called whenever the field content is set by the system
-         * This includes when the device is rotated, when a tab is changed...
-         * We should handle this in an onPause/onResume
-         */
         @Override
         public void afterTextChanged(@NonNull final Editable s) {
             String value;
@@ -1269,13 +1260,7 @@ public class Fields {
             }
 
             try {
-                Float price = Float.parseFloat(source);
-                Currency currency = Currency.getInstance(mCurrencyCode);
-                //URGENT: the result is rather dire... most currency 'symbol' are shown as 3-char codes
-                // e.g. 'EUR','US$',...
-                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(field.getLocale());
-                currencyFormatter.setCurrency(currency);
-                return currencyFormatter.format(price);
+                return jdkFormat(field, source);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IllegalArgumentException e) {
                 Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
@@ -1283,6 +1268,28 @@ public class Fields {
                 return mCurrencyCode + ' ' + source;
             }
         }
+
+        private String jdkFormat(@NonNull final Field field,
+                                 @NonNull final String source) {
+            Float price = Float.parseFloat(source);
+            java.util.Currency currency = java.util.Currency.getInstance(mCurrencyCode);
+            // the result is rather dire... most currency 'symbol' are shown as 3-char codes
+            // e.g. 'EUR','US$',...
+            java.text.NumberFormat currencyFormatter =
+                    java.text.NumberFormat.getCurrencyInstance(field.getLocale());
+            currencyFormatter.setCurrency(currency);
+            return currencyFormatter.format(price);
+        }
+
+        // experimental code... as it turned out, the ICU NumberFormatter is ICU level 60
+        // which means Android 9. Keeping this comment, but pointless to integrate for now.
+//        @TargetApi(24)
+//        private String icuFormat(@NonNull final Field field,
+//                                @NonNull final String source) {
+//            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
+//            com/ibm/icu/number/NumberFormatter.java
+//            and UnitWidth.NARROW
+//        }
     }
 
     /**

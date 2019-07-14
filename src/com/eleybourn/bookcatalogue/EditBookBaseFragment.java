@@ -58,7 +58,7 @@ public abstract class EditBookBaseFragment<T>
 
         } else if (fieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getField(fieldId).setValue(book.getString(DBDefinitions.KEY_EDITION_BITMASK));
+            getField(fieldId).setValue(String.valueOf(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
         }
     };
 

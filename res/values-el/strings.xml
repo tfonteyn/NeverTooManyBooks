@@ -55,9 +55,9 @@
     <string name="lbl_lend_to">Δανεισμός βιβλίου στον/στην:</string>
     <string name="btn_loan_returned">Έχει επιστραφεί</string>
     <string name="name">Όνομα</string>
-    <string name="about_lbl_website">Ιστοσελίδα:</string>
-    <string name="about_lbl_sourcecode">Πηγαίος Κώδικας:</string>
-    <string name="about_lbl_contacts">Επαφές:</string>
+    <string name="lbl_website">Ιστοσελίδα:</string>
+    <string name="lbl_sourcecode">Πηγαίος Κώδικας:</string>
+    <string name="lbl_contacts">Επαφές:</string>
     <string name="menu_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_update_fields">Αυτόματη ενημέρωση πεδίων</string>
@@ -231,7 +231,7 @@
     <string name="lbl_search_criteria">Κριτήρια αναζήτησης</string>
     <string name="menu_add_book_manually">Χειροκίνητη Προσθήκη</string>
     <string name="menu_search_internet">Αναζήτηση στο Internet</string>
-    <string name="show_results">Εμφάνιση αποτελεσμάτων</string>
+    <string name="btn_show_results">Εμφάνιση αποτελεσμάτων</string>
     <string name="rebuild_fts">Ανακατασκευή FTS\n(alpha μονο!)</string>
     <string name="gr_title_send_book">Αποστολή βιβλίων στο Goodreads</string>
     <string name="gr_tq_legacy_task">Legacy εργασία</string>
@@ -291,6 +291,7 @@
     <string name="hint">Συμβουλή</string>
     <string name="hint_reset_all_hints">Επαναφορά συμβουλών</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Σε αυτή την οθόνη μπορείτε να προσαρμόσετε τη λίστα των στυλ που θα εμφανίζεται στο μενού με τα προεπιλεγμένα στυλ σας.
         \n\nΤο πράσινο V δείχνει ότι το στυλ θα εμφανίζεται στη λίστα, ενώ το κόκκινο Χ δείχνει πως δεν θα εμφανίζεται.
@@ -300,12 +301,14 @@
         \n\nΠατώντας οπουδήποτε αλλού στη σειρά θα μπορείτε να επεξεργαστείτε τις λεπτομέρειες του συγκεκριμένου στυλ (ή να το αντιγράψετε, εαν
         είναι ενσωματωμένο στύλ).
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Σε αυτή την οθόνη μπορείτε να τροποποιήσετε την ιεραρχία των κεφαλίδων για ένα συγκεκριμένο στυλ λίστας βιβλίων.
         \n\nΤο πράσινο V δείχνει ότι η κεφαλίδα θα εμφανίζεται στη λίστα, ενώ το κόκκινο Χ δείχνει πως δεν θα εμφανίζεται.
         Πατώντας στο πράσινο V θα γίνει X και το αντίστροφο.
         \n\nΜπορείτε να αναδιατάξετε την ιεραρχία μεταφέροντας το εικονίδιο στο δεξί άκρο κάθε σειράς.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Σε αυτή την οθόνη μπορείτε να ορίσετε τα χαρακτηριστικά ενός συγκεκριμένου στυλ λίστας βιβλίων.
         \n\nΜπορείτε να αλλάξετε όνομα, να επεξεργαστείτε ομαδοποιήσεις, να αλλάξετε την ιεραρχία και να ρυθμίσετε μια ποικιλία άλλων
@@ -367,7 +370,7 @@
         Πατώντας σε ένα συμβάν μπορείτε να εκτελέσετε δίαφορες ενέργειες κατάλληλες γι\'αυτό.
     </string>
     <string name="hints_have_been_reset">Οι Συμβουλές έχουν επαναφερθεί</string>
-    <string name="gr_tq_task_has_been_queued_in_background">Η εργασία έχει μπει σε σειρά στο παρασκήνιο</string>
+    <string name="gr_tq_task_has_been_queued">Η εργασία έχει μπει σε σειρά στο παρασκήνιο</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Το επιλεγμένο βιβλίο δεν έχει κωδικό ISBN - δε γίνεται να συγχρονιστεί αυτόματα με το Goodreads.
@@ -399,7 +402,7 @@
     <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
     <string name="X_error_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
     <string name="hint_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας ‘Προσαρμογή’ στο τέλος της λίστας.</string>
-    <string name="warning_required_name">Το όνομα δε μπορεί να είναι κενό</string>
+    <string name="warning_missing_name">Το όνομα δε μπορεί να είναι κενό</string>
     <string name="progress_msg_export_starting">Εκκίνηση εξαγωγής…</string>
     <string name="menu_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
     <string name="info_displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
@@ -574,8 +577,8 @@
     <string name="lbl_edition_book_club">Έκδοση Βιβλίου Club</string>
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="import_options_dialog_title">Επιλέξτε τι θα εισαχθεί.</string>
-    <string name="warning_required_title_and_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
-    <string name="warning_thing_already_exists">Το %1$s υπάρχει ήδη</string>
+    <string name="warning_missing_title_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
+    <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη</string>
     <string name="progress_msg_process_preferences">Προτιμήσεις…</string>
     <string name="progress_msg_process_cover">Καλύπτει…</string>
     <string name="gr_tq_events_recorded">(%1$d καταγραφόμενα συμβάντα)</string>

@@ -218,7 +218,7 @@ class TaskQueueDAO {
      * Save the passed task back to the database. The parameter must be a Task that
      * is already in the database. This method is used to preserve a task state.
      * <p>
-     * NOTE: this code must not assume the task exists.
+     * <b>Note:</b> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task The task to be saved. Must exist in database.
@@ -256,7 +256,7 @@ class TaskQueueDAO {
     /**
      * Set the related task record as successfully completed.
      * <p>
-     * NOTE: this code must not assume the task exists.
+     * <b>Note:</b> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task Task object
@@ -344,7 +344,7 @@ class TaskQueueDAO {
     /**
      * Save and requeue the passed task.
      * <p>
-     * NOTE: this code must not assume the task exists.
+     * <b>Note:</b> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task task object to requeue.
@@ -370,7 +370,7 @@ class TaskQueueDAO {
     /**
      * Save and set the task as failed.
      * <p>
-     * NOTE: this code must not assume the task exists.
+     * <b>Note:</b> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task    Task that failed.
@@ -395,7 +395,7 @@ class TaskQueueDAO {
      * Store an Event object for later retrieval after task has completed. This is
      * analogous to writing a line to the 'log file' for the task.
      * <p>
-     * NOTE: this code must not assume the task exists.
+     * <b>Note:</b> this code must not assume the task exists.
      * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      */
     void storeTaskEvent(@NonNull final Task task,

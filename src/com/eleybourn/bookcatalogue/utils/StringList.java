@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
  * Can also be instantiated to allow the use of generic elements in the lists.
  * Contains some pre-defined static method for specific types; e.g. {@link Author} etc...
  *
- * @param <E>
+ * @param <E> the type of the elements stored in the string
  */
 public class StringList<E> {
 

@@ -40,7 +40,7 @@ public class ImportCSVTask
         super(R.id.TASK_ID_CSV_IMPORT, progressDialog);
 
         mSettings = settings;
-        mImporter = new CsvImporter(context, settings);
+        mImporter = new CsvImporter(context.getResources(), settings);
     }
 
     @Override

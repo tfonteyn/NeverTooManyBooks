@@ -154,7 +154,7 @@ public class BooklistAdapter
         // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
         // This code attempts to gather more details of how this error occurs.
         //
-        // NOTE: It DOES NOT fix the error; just gathers more debug info
+        // This DOES NOT fix the error; just gathers more debug info
         //
         if (mCursor == null) {
             return 0;
@@ -703,7 +703,7 @@ public class BooklistAdapter
 
             // visibility is independent from actual data, so set here.
             coverView = itemView.findViewById(R.id.coverImage);
-            if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
+            if (App.isUsed(UniqueId.BKEY_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 coverView.setVisibility(View.VISIBLE);
             } else {
@@ -784,7 +784,7 @@ public class BooklistAdapter
                 seriesNumLongView.setVisibility(View.GONE);
             }
 
-            if (App.isUsed(UniqueId.BKEY_COVER_IMAGE)
+            if (App.isUsed(UniqueId.BKEY_IMAGE)
                     && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
                 // store the uuid for use in the onClick
                 coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));

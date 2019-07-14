@@ -34,9 +34,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 /**
  * Class to handle TAR archive storage.
  * <p>
- * TAR files have some limitations: no application-defined metadata can be stored with the files, the
- * index is at the start, so it helps to know the entity size before it is written, and they usually
- * do not support random access.
+ * TAR files have some limitations: no application-defined metadata can be stored with
+ * the files, the index is at the start, so it helps to know the entity size before it
+ * is written, and they usually do not support random access.
  * <p>
  * So we:
  * <p>
@@ -63,7 +63,7 @@ public class TarBackupContainer
             Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
     /** Used in the storage and identification of data store in TAR file. */
     static final String BOOKS_FILE = "books.csv";
-    /** Used in the storage and identification of data store in TAR file */
+    /** Used in the storage and identification of data store in TAR file. */
     static final Pattern BOOKS_PATTERN =
             Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
     /** Used in the storage and identification of data store in TAR file. */
@@ -81,7 +81,7 @@ public class TarBackupContainer
     static final String XML_DATA = "data.xml";
     /** archives are written in this version. */
     private static final int VERSION_WRITTEN = 2;
-    /** we can still read archives from this version and up to our current version */
+    /** we can still read archives from this version and up to our current version. */
     private static final int VERSION_READ = 1;
     /** Backup file spec. */
     @NonNull
@@ -89,6 +89,8 @@ public class TarBackupContainer
 
     /**
      * Constructor.
+     *
+     * @param file to read from or write to.
      */
     public TarBackupContainer(@NonNull final File file) {
         mFile = file;
@@ -121,17 +123,11 @@ public class TarBackupContainer
         return VERSION_WRITTEN;
     }
 
-    /**
-     * We can still read this older version.
-     */
     @Override
     public int canReadVersion() {
         return VERSION_READ;
     }
 
-    /**
-     * @return {@code true} if valid
-     */
     @Override
     public boolean isValid() {
         // The reader will do basic validation.

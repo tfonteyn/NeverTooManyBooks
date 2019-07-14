@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
@@ -254,18 +254,22 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            View itemView;
+            switch (viewType) {
+                case TocEntry.TYPE_TOC:
+                    itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
+                    break;
+                case TocEntry.TYPE_BOOK:
+                    itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
+                    break;
+                default:
+                    throw new IllegalArgumentException("type=" + viewType);
+            }
 
-            View itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
-            return new Holder(itemView);
-        }
+            Holder holder = new Holder(itemView);
 
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-
-            TocEntry tocEntry = mModel.getTocEntries().get(position);
             // decorate the row depending on toc entry or actual book
-            switch (tocEntry.getType()) {
+            switch (viewType) {
                 case TocEntry.TYPE_TOC:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             mStoryIndicator, null, null, null);
@@ -277,8 +281,21 @@ public class AuthorWorksFragment
                     break;
 
                 default:
-                    throw new IllegalArgumentException("type=" + tocEntry.getType());
+                    throw new IllegalArgumentException("type=" + viewType);
             }
+            return holder;
+        }
+
+        @Override
+        public int getItemViewType(final int position) {
+            return mModel.getTocEntries().get(position).getType();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+
+            TocEntry tocEntry = mModel.getTocEntries().get(position);
 
             holder.titleView.setText(tocEntry.getTitle());
             // optional

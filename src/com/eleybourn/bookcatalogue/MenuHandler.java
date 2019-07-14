@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
 
@@ -183,7 +183,7 @@ public final class MenuHandler {
                 return false;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                ISFDBManager.openWebsite(context, book.getLong(DBDefinitions.KEY_ISFDB_ID));
+                IsfdbManager.openWebsite(context, book.getLong(DBDefinitions.KEY_ISFDB_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:

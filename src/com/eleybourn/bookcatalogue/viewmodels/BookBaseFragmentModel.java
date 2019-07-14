@@ -140,7 +140,7 @@ public class BookBaseFragmentModel
             long id = mDb.insertBook(mBook);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
-                if (mBook.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
+                if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();

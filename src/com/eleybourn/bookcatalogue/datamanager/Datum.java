@@ -79,7 +79,7 @@ public class Datum {
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      */
-    private static long toLong(@Nullable final Object o) {
+    public static long toLong(@Nullable final Object o) {
         if (o == null) {
             return 0;
         } else if (o instanceof Long) {
@@ -341,7 +341,6 @@ public class Datum {
      *
      * @return Value of the data, a {@code null} is returned as 0
      */
-    @SuppressWarnings("WeakerAccess")
     public double getDouble(@NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {

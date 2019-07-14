@@ -71,13 +71,18 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
+    <!-- Book title. -->
+    <style name="TextDetail.Small.BookTitle">
+        <item name="android:textStyle">italic</item>
+    </style>
+
     <!-- 'major' detail text field. -->
     <style name="TextDetail.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <!-- 'major' detail text field; for example the book title. Note: rename this style. -->
-    <style name="TextDetail.Large.Title">
+    <!-- Book title. -->
+    <style name="TextDetail.Large.BookTitle">
         <item name="android:textStyle">italic</item>
     </style>
 
@@ -342,6 +347,7 @@
 
     <!-- Text element in a 'level' header row -->
     <style name="BooklistBook.Section.Large">
+        <item name="android:paddingTop">@dimen/border1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
@@ -354,7 +360,8 @@
 
     <!-- Text element in a 'book' row -->
     <style name="BooklistBook.BookInfo" />
-    <style name="BooklistBook.BookInfo.Primary">
+    <style name="BooklistBook.BookInfo.Title">
+        <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     <style name="BooklistBook.BookInfo.Secondary">

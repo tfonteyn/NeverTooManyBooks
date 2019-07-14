@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
@@ -50,6 +51,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -81,10 +83,9 @@ public abstract class BackupWriterAbstract
     protected BackupWriterAbstract() {
         mDb = new DAO();
 
-        //TODO: do not use Application Context for String resources
-        Context context = App.getAppContext();
-        mProgress_msg_covers = context.getString(R.string.progress_msg_covers);
-        mProgress_msg_covers_skip = context.getString(R.string.progress_msg_covers_skip);
+        Resources resources = LocaleUtils.getLocalizedResources();
+        mProgress_msg_covers = resources.getString(R.string.progress_msg_covers);
+        mProgress_msg_covers_skip = resources.getString(R.string.progress_msg_covers_skip);
     }
 
     /**

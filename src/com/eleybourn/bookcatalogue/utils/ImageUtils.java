@@ -467,7 +467,7 @@ public final class ImageUtils {
     /**
      * Read {@link UniqueId#BKEY_FILE_SPEC_ARRAY}.
      * If there are images, pick the largest one, rename it, and delete the others.
-     * Finally, remove the key and set {@link UniqueId#BKEY_COVER_IMAGE} to true
+     * Finally, remove the key and set {@link UniqueId#BKEY_IMAGE} to true
      */
     @AnyThread
     public static void cleanupImages(@Nullable final Bundle /* in/out */ bookData) {
@@ -485,7 +485,7 @@ public final class ImageUtils {
         // Finally, cleanup the data
         bookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
         // and indicate we got a file with the default name
-        bookData.putBoolean(UniqueId.BKEY_COVER_IMAGE, true);
+        bookData.putBoolean(UniqueId.BKEY_IMAGE, true);
     }
 
     /**

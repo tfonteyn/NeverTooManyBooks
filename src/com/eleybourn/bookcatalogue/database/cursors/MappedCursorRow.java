@@ -37,6 +37,15 @@ public class MappedCursorRow {
     /**
      * Direct access to the cursor.
      *
+     * @return the number of rows in the cursor.
+     */
+    public int getCount() {
+        return mCursor.getCount();
+    }
+
+    /**
+     * Direct access to the cursor.
+     *
      * @param columnName to get
      *
      * @return the column index.

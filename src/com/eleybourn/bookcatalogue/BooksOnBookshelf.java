@@ -85,7 +85,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -332,7 +332,7 @@ public class BooksOnBookshelf
     /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
      * <p>
-     * Note: no longer triggers a rebuild, as it was getting messy who/when/where.
+     * <b>Note:</b> no longer triggers a rebuild, as it was getting messy who/when/where.
      * Caller takes care now.
      *
      * @return {@code true} if the selected shelf was changed (or set for the first time).
@@ -632,7 +632,7 @@ public class BooksOnBookshelf
      * @return Returns {@code true} if search launched, and {@code false} if the activity does
      * not respond to search.
      * <p>
-     * Note: uses the 'advanced' FTS search activity. To use the standard search,
+     * <b>Note:</b> uses the 'advanced' FTS search activity. To use the standard search,
      * comment this method out. The system will use {@link SearchSuggestionProvider}
      * as configured in res/xml/searchable.xml
      * <p>
@@ -663,6 +663,10 @@ public class BooksOnBookshelf
 
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
+
+        // This will use the currently displayed book list (the book ID's)
+        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
+            .setIcon(R.drawable.ic_cloud_download);
 
         menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_filters)
             .setIcon(R.drawable.ic_undo);
@@ -705,6 +709,17 @@ public class BooksOnBookshelf
             case R.id.MENU_CLEAR_FILTERS:
                 mModel.getSearchCriteria().clear();
                 initBookList(true);
+                return true;
+
+            case R.id.MENU_UPDATE_FROM_INTERNET:
+                // IMPORTANT: this is from an options menu selection.
+                // We pass the book ID's for the currently displayed list.
+                ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
+                Intent intentUpdateFields = new Intent(this,
+                                                       UpdateFieldsFromInternetActivity.class)
+                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
+                startActivityForResult(intentUpdateFields,
+                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
@@ -922,7 +937,7 @@ public class BooksOnBookshelf
                          R.string.gr_menu_send_to_goodreads)
                     .setIcon(R.drawable.ic_goodreads);
 
-                menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS,
                          R.string.menu_internet_update_fields)
                     .setIcon(R.drawable.ic_cloud_download);
@@ -977,7 +992,7 @@ public class BooksOnBookshelf
                              R.string.menu_set_complete)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
-                menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS,
                          R.string.menu_internet_update_fields)
                     .setIcon(R.drawable.ic_cloud_download);
@@ -998,7 +1013,7 @@ public class BooksOnBookshelf
                                  R.string.menu_set_complete)
                             .setIcon(R.drawable.ic_check_box_outline_blank);
                     }
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+                    menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                              MenuHandler.ORDER_UPDATE_FIELDS,
                              R.string.menu_internet_update_fields)
                         .setIcon(R.drawable.ic_cloud_download);
@@ -1111,7 +1126,9 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET: {
+            case R.id.MENU_UPDATE_FROM_INTERNET: {
+                // IMPORTANT: this is from a context click on a row.
+                // We pass the book ID's which are suited for that row.
                 ArrayList<Long> bookIds;
                 switch (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
                     case BooklistGroup.RowKind.BOOK:
@@ -1273,19 +1290,19 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                ISFDBManager.openWebsite(this, row.getLong(DBDefinitions.KEY_ISFDB_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_ISFDB_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                ISFDBManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                ISFDBManager.openWebsite(this, row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                ISFDBManager.openWebsite(this, row.getLong(DBDefinitions.KEY_OPEN_LIBRARY_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_OPEN_LIBRARY_ID));
                 return true;
 
             /* ********************************************************************************** */

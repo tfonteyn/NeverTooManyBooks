@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Implementation of TAR-specific reader functions.
- *
+ * <p>
  * Peeking is no longer used, but leaving it in for now.
  *
  * @author pjw
@@ -51,12 +51,12 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 public class TarBackupReader
         extends BackupReaderAbstract {
 
-    /** The data stream for the archive. */
-    @NonNull
-    private TarArchiveInputStream mInput;
     /** The INFO data read from the start of the archive. */
     @NonNull
     private final BackupInfo mInfo;
+    /** The data stream for the archive. */
+    @NonNull
+    private TarArchiveInputStream mInput;
     /** Used to allow 'peeking' at the input stream. */
     @Nullable
     private ReaderEntity mPushedEntity;
@@ -65,6 +65,8 @@ public class TarBackupReader
      * Constructor.
      *
      * @param container Parent
+     *
+     * @throws IOException on failure
      */
     TarBackupReader(@NonNull final TarBackupContainer container)
             throws IOException {
@@ -147,10 +149,13 @@ public class TarBackupReader
 
         // Create entity
         return new TarBackupReaderEntity(type, this, entry);
-
     }
 
     /**
+     * Detect the type of the passed entry.
+     *
+     * @param entry to get the type of
+     *
      * @return the TarArchiveEntry type.
      */
     @NonNull
@@ -200,6 +205,8 @@ public class TarBackupReader
 
     /**
      * Accessor used by TarEntityReader to get access to the stream data.
+     *
+     * @return the stream
      */
     @NonNull
     protected TarArchiveInputStream getInput() {

@@ -148,6 +148,10 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TOC_TYPE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
@@ -207,7 +211,7 @@ public class DAO
      * public static final String COLLATION = " Collate NOCASE ";
      * public static final String COLLATION = " Collate UNICODE ";
      * <p>
-     * NOTE: Important to have start/end spaces!
+     * <b>Note:</b> Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
     private static final int PREPARED_CACHE_SIZE = 20;
@@ -343,7 +347,7 @@ public class DAO
     /**
      * Constructor.
      * <p>
-     * Note: don't be tempted to turn this into a singleton...
+     * <b>Note:</b> don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dba which is).
      */
     public DAO() {
@@ -382,7 +386,7 @@ public class DAO
      * Get the synchronizer object for this database in case there is some other activity
      * that needs to be synced.
      * <p>
-     * Note: {@link Cursor#requery()} is the only thing found so far.
+     * <b>Note:</b> {@link Cursor#requery()} is the only thing found so far.
      *
      * @return the synchronizer
      */
@@ -398,7 +402,7 @@ public class DAO
      *
      * @return escaped value.
      * <p>
-     * Note: Using the compiled pattern is theoretically faster than using
+     * <b>Note:</b> Using the compiled pattern is theoretically faster than using
      * {@link String#replace(CharSequence, CharSequence)}.
      */
     @NonNull
@@ -599,10 +603,34 @@ public class DAO
     }
 
     /**
+     * Cuts of a trailing ", text" part of the passed in String.
+     * <p>
+     * The intention is to undo what {@link #preprocessTitle} does,
+     * so we can use the string for internet searches on less flexible sites.
+     * <p>
+     * This is certainly not ideal.
+     * The alternative would be to always store the original title
+     * and (as per settings) the preprocessed one in the database.
+     * But that would/could lead to the user having to edit TWO title fields... even less ideal.
+     *
+     * @param title to cut
+     *
+     * @return title without suffix.
+     */
+    public static String unMangleTitle(@NonNull final String title) {
+        int index = title.lastIndexOf(',');
+        if (index > 0) {
+            return title.substring(0, index);
+        } else {
+            return title;
+        }
+    }
+
+    /**
      * Convenience call for {@link #preprocessTitle(Context, String, Locale)}
      */
-    private static String preprocessTitle(@NonNull final String title,
-                                          @NonNull final Locale titleLocale) {
+    private String preprocessTitle(@NonNull final String title,
+                                   @NonNull final Locale titleLocale) {
         //TODO: should be using a user context.
         return preprocessTitle(App.getAppContext(), title, titleLocale);
     }
@@ -610,9 +638,9 @@ public class DAO
     /**
      * Convenience call for {@link #preprocessTitle(Context, String, Locale)}
      */
-    private static String preprocessTitle(@NonNull final String title,
-                                          @NonNull final Locale titleLocale,
-                                          final boolean isInsert) {
+    private String preprocessTitle(@NonNull final String title,
+                                   @NonNull final Locale titleLocale,
+                                   final boolean isInsert) {
         SharedPreferences sp = App.getPrefs();
         if ((isInsert && sp.getBoolean(Prefs.pk_reformat_titles_on_insert, true))
                 || (!isInsert && sp.getBoolean(Prefs.pk_reformat_titles_on_update, true))) {
@@ -628,8 +656,8 @@ public class DAO
      * Move "The, A, An" etc... to the end of the string.
      * <p>
      * IMPORTANT: the passed locale should be the locale of the title itself.
-     * e.g. the user has a phone set to locale Danish.
-     * But they use our app set to locale German.
+     * e.g. the user has a phone set to Locale Danish.
+     * But they use our app set to Locale German.
      * And the book they have is written in Spanish.
      * <p>
      * The passed 'userContext' should be based on German, the 'titleLocale' should be Spanish.
@@ -640,9 +668,9 @@ public class DAO
      *
      * @return formatted title
      */
-    private static String preprocessTitle(@NonNull final Context userContext,
-                                          @NonNull final String title,
-                                          @NonNull final Locale titleLocale) {
+    private String preprocessTitle(@NonNull final Context userContext,
+                                   @NonNull final String title,
+                                   @NonNull final Locale titleLocale) {
 
         String reorderPattern = LocaleUtils.getLocalizedResources(userContext, titleLocale)
                                            .getString(R.string.pg_reformat_titles_prefixes);
@@ -1108,33 +1136,34 @@ public class DAO
     }
 
     /**
-     * @return a complete list of author family names from the database.
-     * Used for {@link AutoCompleteTextView}.
+     * Get authors names for filling an {@link AutoCompleteTextView}.
+     *
+     * @param key type of name wanted, one of
+     *            {@link DBDefinitions#KEY_AUTHOR_FAMILY_NAME},
+     *            {@link DBDefinitions#KEY_AUTHOR_GIVEN_NAMES},
+     *            {@link DBDefinitions#KEY_AUTHOR_FORMATTED},
+     *            {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST}
+     *
+     * @return list of all author names.
      */
     @NonNull
-    public ArrayList<String> getAuthorsFamilyName() {
-        return getColumnAsList(SqlSelectFullTable.AUTHORS_FAMILY_NAMES,
-                               DOM_AUTHOR_FAMILY_NAME.name);
-    }
+    public ArrayList<String> getAuthorNames(@NonNull final String key) {
+        switch (key) {
+            case KEY_AUTHOR_FAMILY_NAME:
+                return getColumnAsList(SqlSelectFullTable.AUTHORS_FAMILY_NAMES, key);
 
-    /**
-     * @return a complete list of author given names from the database.
-     * Used for {@link AutoCompleteTextView}.
-     */
-    @NonNull
-    public ArrayList<String> getAuthorsGivenNames() {
-        return getColumnAsList(SqlSelectFullTable.AUTHORS_GIVEN_NAMES,
-                               DOM_AUTHOR_GIVEN_NAMES.name);
-    }
+            case KEY_AUTHOR_GIVEN_NAMES:
+                return getColumnAsList(SqlSelectFullTable.AUTHORS_GIVEN_NAMES, key);
 
-    /**
-     * @return a complete list of formatted author names from the database.
-     * Used for {@link AutoCompleteTextView}.
-     */
-    @NonNull
-    public ArrayList<String> getAuthorsFormattedName() {
-        return getColumnAsList(SqlSelectFullTable.AUTHORS_WITH_FORMATTED_NAMES,
-                               DOM_AUTHOR_FORMATTED.name);
+            case KEY_AUTHOR_FORMATTED:
+                return getColumnAsList(SqlSelectFullTable.AUTHORS_FORMATTED_NAMES, key);
+
+            case KEY_AUTHOR_FORMATTED_GIVEN_FIRST:
+                return getColumnAsList(SqlSelectFullTable.AUTHORS_FORMATTED_NAMES_GIVEN_FIRST, key);
+
+            default:
+                throw new IllegalArgumentException("key=" + key);
+        }
     }
 
     /**
@@ -1247,35 +1276,14 @@ public class DAO
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
-        // handle explicit presence of a single field with price and currency combined.
-        preprocessPrice(book, UniqueId.BKEY_PRICE_LISTED_WITH_CURRENCY,
-                        DBDefinitions.KEY_PRICE_LISTED,
-                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
-        preprocessPrice(book, UniqueId.BKEY_PRICE_PAID_WITH_CURRENCY,
-                        DBDefinitions.KEY_PRICE_PAID,
-                        DBDefinitions.KEY_PRICE_PAID_CURRENCY);
-
-        //ENHANCE: handle price fields for legacy embedded currencies.
-        // Perhaps moving those to currency fields ?
-
-        // Handle currencies making sure they are uppercase
-        if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
-            book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                           book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                               .toUpperCase(bookLocale));
-        }
-        if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
-            book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                               .toUpperCase(bookLocale));
-        }
-
+        // Handle all price related fields.
+        preprocessPrices(book, bookLocale);
 
         // Remove NULL fields that have default values defined in the database
         // or should never be NULL.
         for (String name : new String[]{
                 //ENHANCE: can we automate this list ? maybe by looping over the table def. ?
-                // Basically we want "NOT NULL fields which have STRING default.
+                // Basically we want "NOT NULL" fields which have STRING default.
                 DBDefinitions.KEY_ISBN,
                 DBDefinitions.KEY_PUBLISHER,
                 DBDefinitions.KEY_DATE_PUBLISHED,
@@ -1313,7 +1321,7 @@ public class DAO
         // "NOT NULL" fields + fields with a NON-String default
         // list correct/complete on 2019-03-27.
         for (String name : new String[]{
-                // auto-generated
+                // auto-generated in the database
                 DBDefinitions.KEY_BOOK_UUID,
                 // number
                 DBDefinitions.KEY_EDITION_BITMASK,
@@ -1336,20 +1344,60 @@ public class DAO
         }
     }
 
+    private void preprocessPrices(@NonNull final Book book,
+                                  @NonNull final Locale bookLocale) {
+
+        // handle a price without a currency.
+        if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
+                && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
+            preprocessPrice(book, DBDefinitions.KEY_PRICE_LISTED,
+                            DBDefinitions.KEY_PRICE_LISTED,
+                            DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        }
+        // handle a price without a currency.
+        if (book.containsKey(DBDefinitions.KEY_PRICE_PAID)
+                && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
+            preprocessPrice(book, DBDefinitions.KEY_PRICE_PAID,
+                            DBDefinitions.KEY_PRICE_PAID,
+                            DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+        }
+
+        // Handle currencies making sure they are uppercase
+        if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
+            book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                           book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+                               .toUpperCase(bookLocale));
+        }
+        if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
+            book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
+                               .toUpperCase(bookLocale));
+        }
+    }
+
+    /**
+     * Preprocess a price field, splitting it into value and currency fields.
+     * On any failure, no changes are made.
+     * On success, the 'keyPriceWithCurrency' is removed.
+     *
+     * @param book                 with price fields / where to store the result.
+     * @param keyPriceWithCurrency key to get the combined field
+     * @param keyPrice             key to store the value
+     * @param keyPriceCurrency     key to store the currency
+     */
     private void preprocessPrice(@NonNull final Book book,
                                  @NonNull final String keyPriceWithCurrency,
                                  @NonNull final String keyPrice,
                                  @NonNull final String keyPriceCurrency) {
-        if (book.containsKey(keyPriceWithCurrency)) {
-            Bundle dest = new Bundle();
-            LocaleUtils.splitPrice(book.getString(keyPriceWithCurrency),
-                                   keyPrice, keyPriceCurrency, dest);
-            String price = dest.getString(keyPrice);
-            if (price != null) {
-                book.putString(keyPrice, price);
-                String currency = dest.getString(keyPriceCurrency);
-                book.putString(keyPriceCurrency, currency != null ? currency : "");
-            }
+        Bundle dest = new Bundle();
+        LocaleUtils.splitPrice(book.getString(keyPriceWithCurrency),
+                               keyPrice, keyPriceCurrency, dest);
+        String price = dest.getString(keyPrice);
+        if (price != null) {
+            book.remove(keyPriceWithCurrency);
+            book.putString(keyPrice, price);
+            String currency = dest.getString(keyPriceCurrency);
+            book.putString(keyPriceCurrency, currency != null ? currency : "");
         }
     }
 
@@ -2645,7 +2693,7 @@ public class DAO
      *
      * @param bookId to retrieve
      *
-     * @return {@link Cursor} containing all records, if any
+     * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
@@ -2657,17 +2705,37 @@ public class DAO
     }
 
     /**
-     * Return a {@link BookCursor} for the given whereClause.
+     * Return a {@link BookCursor} for the given list of {@link Book} ID's.
+     * The caller can then retrieve columns as needed.
      *
-     * @param whereClause to add to books search criteria (without the keyword 'WHERE')
+     * @param bookIds           List of book ID's to update, {@code null} for all books.
+     * @param fromBookIdOnwards the lowest book ID to start from.
+     *                          This allows to fetch a subset of the requested set.
+     *                          Pass in 0 to get the full set.
      *
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksForFieldUpdate(@NonNull final String whereClause) {
+    public BookCursor fetchBooks(@Nullable final List<Long> bookIds,
+                                 final long fromBookIdOnwards) {
+        String whereClause;
+        if (bookIds == null || bookIds.isEmpty()) {
+            whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + ">=" + fromBookIdOnwards;
+
+        } else if (bookIds.size() == 1) {
+            whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + '=' + bookIds.get(0);
+
+        } else {
+            whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + " IN (" + Csv.join(",", bookIds) + ')'
+                    + " AND (" + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                    + ">=" + fromBookIdOnwards + ')';
+        }
+
         // the order by is used to be able to restart the update.
-        String sql = getAllBooksSql(whereClause)
-                + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
+        String sql = getAllBooksSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
@@ -2675,7 +2743,7 @@ public class DAO
 
     /**
      * Return a {@link BookCursor} for the given ISBN.
-     * Note: CAN RETURN MORE THAN ONE BOOK
+     * <b>Note:</b> MAY RETURN MORE THAN ONE BOOK
      *
      * @param isbnList list of ISBN(s) to retrieve
      *
@@ -3550,7 +3618,7 @@ public class DAO
 
     /**
      * Return a {@link BookCursor} for the given Goodreads book Id.
-     * Note: MAY RETURN MORE THAN ONE BOOK
+     * <b>Note:</b> MAY RETURN MORE THAN ONE BOOK
      *
      * @param grBookId to retrieve
      *
@@ -3782,7 +3850,7 @@ public class DAO
     /**
      * Send the book details from the cursor to the passed fts query.
      * <p>
-     * NOTE: This assumes a specific order for query parameters.
+     * <b>Note:</b> This assumes a specific order for query parameters.
      * If modified, then update {@link #insertFts} , {@link #updateFts} and {@link #rebuildFts}
      *
      * @param bookCursor Cursor of books to update
@@ -3898,7 +3966,7 @@ public class DAO
      * Bind a string or {@code null} value to a parameter since binding a {@code null}
      * in bindString produces an error.
      * <p>
-     * NOTE: We specifically want to use the default locale for this.
+     * <b>Note:</b> We specifically want to use the default locale for this.
      */
     private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
                                   final int position,
@@ -4092,7 +4160,7 @@ public class DAO
          * set of fields suitable for a select of a Book.
          * <p>
          * FIXME: could we not just do books.* ?
-         * Dev note: adding fields ? Now is a good time to update {@link Book#duplicate}/
+         * <b>Developer:</b> adding fields ? Now is a good time to update {@link Book#duplicate}/
          */
         private static final String BOOK = TBL_BOOKS.dotAs(DOM_PK_ID)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
@@ -4244,8 +4312,8 @@ public class DAO
                         + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
                         + " ELSE "
                         + DOM_SERIES_FORMATTED
-                        //TODO: do not use Application Context for String resources
-                        + " || ' " + App.getAppContext().getString(R.string.and_others) + '\''
+                        + " || ' " + LocaleUtils.getLocalizedResources()
+                                                .getString(R.string.and_others) + '\''
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;
     }
@@ -4320,9 +4388,19 @@ public class DAO
                         + " ORDER BY " + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
-        private static final String AUTHORS_WITH_FORMATTED_NAMES =
+        private static final String AUTHORS_FORMATTED_NAMES =
                 "SELECT "
                         + SqlColumns.AUTHOR_FORMATTED
+                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                        + " FROM " + TBL_AUTHORS.ref()
+                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
+                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
+
+        /** name only, for {@link AutoCompleteTextView}. */
+        private static final String AUTHORS_FORMATTED_NAMES_GIVEN_FIRST =
+                "SELECT "
+                        + SqlColumns.AUTHOR_FORMATTED_GIVEN_FIRST
                         + ',' + DOM_AUTHOR_FAMILY_NAME_OB
                         + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
                         + " FROM " + TBL_AUTHORS.ref()

@@ -2,7 +2,7 @@
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-    <string name="about_lbl_contacts">Contact:</string>
+    <string name="lbl_contacts">Contact:</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_num">No</string>
     <string name="X_lbl_series_num_long">Série No</string>
@@ -62,8 +62,8 @@
     <string name="lbl_lend_to">Prêter le livre à :</string>
     <string name="btn_loan_returned">Rendu</string>
     <string name="name">Nom</string>
-    <string name="about_lbl_website">Site web :</string>
-    <string name="about_lbl_sourcecode">Code source :</string>
+    <string name="lbl_website">Site web :</string>
+    <string name="lbl_sourcecode">Code source :</string>
     <string name="menu_about">À propos de cette application</string>
     <string name="lbl_price_listed">Liste de prix</string>
     <string name="lbl_update_fields">Mise à jour automatique des champs</string>
@@ -299,7 +299,7 @@
     <string name="lbl_search_criteria">Critères de recherche</string>
     <string name="menu_add_book_manually">Ajouter manuellement</string>
     <string name="menu_search_internet">Chercher sur Internet</string>
-    <string name="show_results">Montrer les résultats</string>
+    <string name="btn_show_results">Montrer les résultats</string>
     <string name="rebuild_fts">Re-construire FTS\n(alpha uniquement !)</string>
     <string name="gr_title_send_book">Envoyer les livres à Goodreads</string>
     <string name="gr_tq_legacy_task">Tâches obsolètes</string>
@@ -364,6 +364,7 @@
     <string name="lbl_preferred_styles">Styles favoris</string>
     <string name="title_edit_style">Modifier le style</string>
     <string name="title_clone_style">Cloner le style</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Vous pouvez utiliser cet écran pour personnaliser la liste de styles affichés dans le
         menu par défaut des styles.\n
@@ -375,6 +376,7 @@
         \nCliquer n\'importe où ailleurs sur une ligne vous permettra de modifier les détails d\'un
         style particulier (ou de le cloner, s\'il s\'agit d\'un style par défaut).
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Vous pouvez utiliser cet écran pour modifier la hiérarchie des en-têtes d\'une liste
         de livres particulière.\n
@@ -383,6 +385,7 @@
         \nIl est aussi possible de ré-ordonner la hiérarchie en faisant glisser l\'icône à
         l\'extrême droite de chaque ligne.
     </string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Vous pouvez utiliser cet écran pour définir les caractéristiques d\'un style particulier.\n
         \nVous pouvez changer le nom, modifier les regroupements pour changer la hiérarchie,
@@ -452,7 +455,7 @@
         Cliquer sur un événement vous permettra de réaliser un ensemble d\'actions appropriées pour cet événement.
     </string>
     <string name="hints_have_been_reset">Les astuces ont été réinitialisées.</string>
-    <string name="gr_tq_task_has_been_queued_in_background">La tâche a été placée en file d\'attente.</string>
+    <string name="gr_tq_task_has_been_queued">La tâche a été placée en file d\'attente.</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Les livres sélectionnés n\'ont pas d\'ISBN ; il est impossible de les synchroniser avec Goodreads.
@@ -491,7 +494,7 @@
         \nVous pouvez également personnaliser ce menu, ainsi que créer vos propres styles de liste,
         en cliquant sur « personnaliser » à la fin de la liste.
     </string>
-    <string name="warning_required_name">Le nom ne peut pas être vide</string>
+    <string name="warning_missing_name">Le nom ne peut pas être vide</string>
     <string name="progress_msg_export_starting">Démarrage de l\'export…</string>
     <string name="menu_sort_and_style_ellipsis">Tri &amp; style…</string>
     <string name="info_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
@@ -705,7 +708,7 @@
     <string name="menu_set_read">Marqué comme lu</string>
     <string name="menu_set_unread">Maqué comme non lu</string>
     <string name="tab_lbl_content">Contenu</string>
-    <string name="warning_thing_already_exists">%1$s existe déjà</string>
+    <string name="warning_x_already_exists">%1$s existe déjà</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
     <string name="done">Terminé</string>
@@ -755,7 +758,7 @@
     <string name="error_not_available">%1$s indisponible</string>
     <string name="error_storage_not_accessible">Stockage non accessible</string>
     <string name="error_database_upgrade_failed">Mise à niveau impossible à partir d\'une version antérieure à 5.2.2</string>
-    <string name="warning_required_title_and_author">Le titre et / ou l\'auteur sont manquants.</string>
+    <string name="warning_missing_title_author">Le titre et / ou l\'auteur sont manquants.</string>
     <string name="confirm_merge_bookshelves">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner?</string>
     <string name="import_export_option_xml_info">XML est uniquement exportable, pas d\'importation.</string>
     <string name="import_export_option_xml">Toutes les données au format XML</string>

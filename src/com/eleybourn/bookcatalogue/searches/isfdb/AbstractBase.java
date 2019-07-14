@@ -82,7 +82,7 @@ abstract class AbstractBase {
                 url = con.getURL().toString();
 
                 mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   ISFDBManager.FORCE_CHARSET, url);
+                                   IsfdbManager.CHARSET_DECODE_PAGE, url);
 
             } catch (@NonNull final HttpStatusException e) {
                 Logger.error(this, e);
@@ -203,11 +203,11 @@ abstract class AbstractBase {
                         // So we manually re-construct the edition url here.
                         if (location.startsWith("http:/") && location.charAt(6) != '/') {
                             // The single '/' is part of the location.
-                            location = ISFDBManager.getBaseURL() + location.substring(5);
+                            location = IsfdbManager.getBaseURL() + location.substring(5);
 
                         } else if (location.startsWith("https:/") && location.charAt(7) != '/') {
                             // The single '/' is part of the location.
-                            location = ISFDBManager.getBaseURL() + location.substring(6);
+                            location = IsfdbManager.getBaseURL() + location.substring(6);
 
                         }
 
@@ -273,9 +273,4 @@ abstract class AbstractBase {
 
         return Long.parseLong(url.substring(index));
     }
-
-    long stripNumber(@NonNull final String url) {
-        return Long.parseLong(url.split("\\?")[1]);
-    }
-
 }

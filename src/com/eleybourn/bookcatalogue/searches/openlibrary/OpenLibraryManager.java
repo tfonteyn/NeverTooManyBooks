@@ -162,11 +162,6 @@ public class OpenLibraryManager
         return NetworkUtils.isAlive(getBaseURL());
     }
 
-    /**
-     * {@link #search(String, String, String, boolean)} only implements isbn searches for now.
-     *
-     * @return {@code true}
-     */
     @Override
     public boolean isIsbnOnly() {
         return true;
@@ -186,8 +181,14 @@ public class OpenLibraryManager
     /**
      * https://openlibrary.org/dev/docs/api/books
      *
-     * <br>
-     * <br>{@inheritDoc}
+     * <br>Only the ISBN is supported.
+     *
+     * @param isbn      to lookup. Must be a valid ISBN
+     * @param author    unused
+     * @param title     unused
+     * @param publisher unused
+     *                  <br>
+     *                  <br>{@inheritDoc}
      */
     @NonNull
     @Override
@@ -195,6 +196,7 @@ public class OpenLibraryManager
     public Bundle search(@Nullable final String isbn,
                          @Nullable final /* not supported */ String author,
                          @Nullable final /* not supported */ String title,
+                         @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
 
@@ -487,11 +489,19 @@ public class OpenLibraryManager
             }
             a = o.optJSONArray("librarything");
             if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_LIBRARY_THING_ID, a.getString(0));
+                bookData.putLong(DBDefinitions.KEY_LIBRARY_THING_ID, a.getLong(0));
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putString(DBDefinitions.KEY_GOODREADS_ID, a.getString(0));
+                bookData.putLong(DBDefinitions.KEY_GOODREADS_ID, a.getLong(0));
+            }
+            a = o.optJSONArray("lccn");
+            if (a != null && a.length() > 0) {
+                bookData.putLong(DBDefinitions.KEY_LCCN_ID, a.getLong(0));
+            }
+            a = o.optJSONArray("oclc");
+            if (a != null && a.length() > 0) {
+                bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, a.getLong(0));
             }
         }
 

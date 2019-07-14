@@ -184,7 +184,7 @@ public class EditBookFragment
             .setIcon(R.drawable.ic_save)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(R.id.MENU_BOOK_UPDATE_FROM_INTERNET, R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+        menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
                  MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
@@ -200,7 +200,7 @@ public class EditBookFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        menu.setGroupVisible(R.id.MENU_BOOK_UPDATE_FROM_INTERNET,
+        menu.setGroupVisible(R.id.MENU_UPDATE_FROM_INTERNET,
                              mBookBaseFragmentModel.isExistingBook());
     }
 
@@ -244,7 +244,7 @@ public class EditBookFragment
     private void doSave() {
 
         // ask any fragment that has not gone into 'onPause' to add its fields.
-        // Note: we could just ask the 'current' fragment which would be enough.
+        // We could just ask the 'current' fragment which would be enough.
         // Call it an experiment...
         for (int p = 0; p < mPagerAdapter.getCount(); p++) {
             Fragment frag = mPagerAdapter.getItem(p);

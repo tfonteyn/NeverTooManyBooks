@@ -32,7 +32,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 /**
  * API call to get a Goodreads ID from an ISBN.
  * <p>
- * NOTE: THIS API DOES NOT RETURN XML. The text output is the ID.
+ * <b>Note:</b> THIS API DOES NOT RETURN XML. The text output is the ID.
  *
  * @author Philip Warner
  */

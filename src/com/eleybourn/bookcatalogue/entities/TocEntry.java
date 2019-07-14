@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 /**
  * Class to represent a single title within an TOC(Anthology).
  * <p>
- * Note:
+ * <b>Note:</b>
  * these are always insert/update'd ONLY when a book is insert/update'd
  * Hence writes are always a List<TocEntry> in one go. This circumvents the 'position' column
  * as the update will simply insert in-order and auto increment position.
@@ -304,7 +304,7 @@ public class TocEntry
     }
 
     /**
-     * Convenience method for {@link #TYPE_BOOK}
+     * Convenience method for {@link #TYPE_BOOK}.
      *
      * @return list of Authors.
      */

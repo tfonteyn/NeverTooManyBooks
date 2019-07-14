@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -42,6 +43,8 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  */
 public class About
         extends BaseActivity {
+
+    private static final String BETA_BUILD = "beta.build";
 
     @Override
     protected int getLayoutId() {
@@ -61,9 +64,16 @@ public class About
             view.setText(packageInfo.versionName);
         }
 
+        String beta = App.getManifestString(BETA_BUILD);
+        if (!beta.isEmpty()) {
+            view = findViewById(R.id.beta_build);
+            view.setVisibility(View.VISIBLE);
+            view.setText(beta);
+        }
+
         view = findViewById(R.id.sourcecode6);
         view.setText(Utils.linkifyHtml(
-                getString(R.string.url_sourcecode6, getString(R.string.about_lbl_sourcecode))));
+                getString(R.string.url_sourcecode6, getString(R.string.lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
 
@@ -76,17 +86,12 @@ public class About
         // Information to original creators site.
         view = findViewById(R.id.website);
         view.setText(Utils.linkifyHtml(
-                getString(R.string.url_website, getString(R.string.about_lbl_website))));
+                getString(R.string.url_website, getString(R.string.lbl_website))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.sourcecode);
         view.setText(Utils.linkifyHtml(
-                getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode))));
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-
-        view = findViewById(R.id.help_page);
-        view.setText(Utils.linkifyHtml(
-                getString(R.string.url_help, getString(R.string.help))));
+                getString(R.string.url_sourcecode, getString(R.string.lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 

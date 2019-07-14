@@ -168,9 +168,7 @@ public class BindableItemCursorAdapter
         // Cache the recent results; this is a optimization kludge based on the fact
         // that current code always call this method before getView(...)
         // so we can avoid one deserialization by caching here.
-        //
-        // NOTE: if this assumption fails, the code still works. It just runs slower.
-        //
+        // If this assumption fails, the code still works. It just runs slower.
         mLastItemViewTypePos = position;
         mLastItemViewType = resType;
         mLastItemViewTypeEvent = item;
@@ -222,7 +220,7 @@ public class BindableItemCursorAdapter
         /**
          * Get a new View object suitable for displaying this type of event.
          * <p>
-         * NOTE: A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW. If it needs
+         * <b>Note:</b> A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW. If it needs
          * to do this, create a new Event subclass or use a more complex view.
          *
          * @param inflater that can be used to create the view.

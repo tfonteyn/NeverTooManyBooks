@@ -125,7 +125,7 @@ public class TrackedCursor
      * Get the total number of open cursors; verifies that existing weak refs are valid
      * and removes from collection if not.
      * <p>
-     * Note: This is not a *cheap* operation.
+     * <b>Note:</b> This is not a *cheap* operation.
      */
     @SuppressWarnings({"unused"})
     public static long getCursorCount() {

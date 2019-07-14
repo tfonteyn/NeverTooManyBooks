@@ -1887,6 +1887,25 @@ public class BooklistBuilder
         return "ListTable\n" + listTableInfo.toString() + '\n' + navTableInfo.toString();
     }
 
+    @NonNull
+    public ArrayList<Long> getCurrentBookIdList() {
+        String sql = "SELECT " + DBDefinitions.KEY_FK_BOOK
+                + " FROM " + mListTable + " ORDER BY " + DBDefinitions.KEY_FK_BOOK;
+
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+            ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
+            if (cursor.moveToFirst()) {
+                do {
+                    Long id = (long) cursor.getInt(0);
+                    rows.add(id);
+                } while (cursor.moveToNext());
+                return rows;
+            } else {
+                return new ArrayList<>();
+            }
+        }
+    }
+
     public static class CompatibilityMode {
 
         /** BookList Compatibility mode property values. */
@@ -2333,7 +2352,7 @@ public class BooklistBuilder
          * Build each kind group.
          * <p>
          * ****************************************************************************************
-         * IMPORTANT NOTE: for each kind, the FIRST SORTED AND GROUPED domain should be the one
+         * <b>IMPORTANT:</b> for each kind, the FIRST SORTED AND GROUPED domain should be the one
          * that will be displayed at that level in the UI.
          * ****************************************************************************************
          */

@@ -95,8 +95,6 @@ public final class NetworkUtils {
      * url format: "http://some.site.com" or "https://secure.site.com"
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
-     * <p>
-     * FIXME: this fails if there is a DNS redirect ? using a dumb check on google DNS only for now.
      *
      * @param site url to check,
      *
@@ -109,9 +107,6 @@ public final class NetworkUtils {
         int port = url.startsWith("https://") ? 443 : 80;
         String host = url.split("//")[1].split("/")[0];
         return isAlive(host, port);
-
-        // test internet access instead
-//        return isGoogleAlive();
     }
 
     /**

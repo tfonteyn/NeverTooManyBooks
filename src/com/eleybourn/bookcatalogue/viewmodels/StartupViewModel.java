@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * Note: yes, this is overkill for the startup. Call it an experiment.
+ * <b>Note:</b> yes, this is overkill for the startup. Call it an experiment.
  */
 public class StartupViewModel
         extends ViewModel {

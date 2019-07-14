@@ -56,7 +56,7 @@ public class BooklistMappedCursorRow
      * level text. Uses a dynamically set domain.
      * Why 10 members? because at 2 it took me an hour to figure out why we had crashed...
      * i.o.w. there can be as many levels as there are groups,
-     * FIXME: Note that if a user adds more then 10 groups to a style, we'll crash...
+     * FIXME: If a user adds more then 10 groups to a style, we'll crash...
      */
     private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
 
@@ -157,6 +157,7 @@ public class BooklistMappedCursorRow
         }
 
         //FIXME: from BoB, click book. Move sideways book to book (10.. 13x) then Back to BoB
+
         //     android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
         //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
         //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
@@ -166,7 +167,28 @@ public class BooklistMappedCursorRow
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1551)
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.access$400(BooksOnBookshelf.java:102)
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:488)
-        return formatRowGroup(context, level, getString(mLevelCol[index]));
+
+        //    android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
+        //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
+        //        at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
+        //        at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
+        //        at com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor.getString(BooklistPseudoCursor.java:340)
+        //        at com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow.getString(MappedCursorRow.java:57)
+        //        at com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow.getLevelText(BooklistMappedCursorRow.java:170)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.setHeaderText(BooksOnBookshelf.java:1687)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf.access$400(BooksOnBookshelf.java:103)
+        //        at com.eleybourn.bookcatalogue.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
+        int columnIndex = mLevelCol[index];
+        // check copied from android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
+        if (-1 == columnIndex || getCount() == columnIndex) {
+            // This is a workaround, and not a fix.
+            Logger.warnWithStackTrace(this,"getLevelText",
+                                     "CursorIndexOutOfBoundsException: Index " + columnIndex
+                                             + " requested, with a size of "  + getCount());
+            return null;
+        } else {
+            return formatRowGroup(context, level, getString(columnIndex));
+        }
     }
 
     /**

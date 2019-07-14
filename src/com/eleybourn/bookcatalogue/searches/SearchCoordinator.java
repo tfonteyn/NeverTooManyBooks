@@ -35,11 +35,9 @@ import java.util.Map;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
@@ -131,6 +129,8 @@ public class SearchCoordinator {
     private String mAuthor;
     /** Original title for search. */
     private String mTitle;
+    /** Original publisher for search. */
+    private String mPublisher;
     /** Original ISBN for search. */
     private String mIsbn;
     /** Indicates original ISBN is really present and valid. */
@@ -214,20 +214,21 @@ public class SearchCoordinator {
 
     /**
      * Start a search.
-     *
-     * @param searchFlags    bitmask with sites to search,
+     *  @param searchFlags    bitmask with sites to search,
      *                       see {@link SearchSites#SEARCH_ALL} and individual flags
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
+     * @param isbn           to search for (can be empty)
      * @param author         to search for (can be empty)
      * @param title          to search for (can be empty)
-     * @param isbn           to search for (can be empty)
+     * @param publisher      to search for (can be empty)
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     public void search(final int searchFlags,
+                       @NonNull final String isbn,
                        @NonNull final String author,
                        @NonNull final String title,
-                       @NonNull final String isbn,
+                       @NonNull final String publisher,
                        final boolean fetchThumbnail) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
@@ -235,6 +236,7 @@ public class SearchCoordinator {
                               "isbn=" + isbn,
                               "author=" + author,
                               "title=" + title,
+                              "publisher=" + publisher,
                               "fetchThumbnail=" + fetchThumbnail);
         }
 
@@ -254,10 +256,12 @@ public class SearchCoordinator {
         }
 
         // Developer sanity check
+        // Note we don't care about publisher.
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException("Must specify at least one criteria non-empty:"
                                                        + " isbn=" + isbn
                                                        + ", author=" + author
+                                                       + ", publisher=" + publisher
                                                        + ", title=" + title);
         }
 
@@ -273,6 +277,7 @@ public class SearchCoordinator {
 
         mAuthor = author;
         mTitle = title;
+        mPublisher = publisher;
         mIsbn = isbn;
         mHasValidIsbn = ISBN.isValid(mIsbn);
 
@@ -393,6 +398,7 @@ public class SearchCoordinator {
         task.setIsbn(mIsbn);
         task.setAuthor(mAuthor);
         task.setTitle(mTitle);
+        task.setPublisher(mPublisher);
         task.setFetchThumbnail(mFetchThumbnail);
 
         synchronized (mManagedTasks) {
@@ -491,6 +497,10 @@ public class SearchCoordinator {
 
     /**
      * Combine all the data and create a book or display an error.
+     *
+     * 2019-07-12: removed the sending of user messages.
+     * If a single book as searched, ok... but for multiple searches they only confuse the user.
+     * => moving the check (if applicable) to the receiver of the results.
      */
     private void sendResults() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
@@ -534,35 +544,16 @@ public class SearchCoordinator {
         // If there are thumbnails present, pick the biggest, delete others and rename.
         ImageUtils.cleanupImages(mBookData);
 
-        // Try to use/construct isbn
+        // If we did not get an ISBN, use the originally we searched for.
         String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
         if (isbn == null || isbn.isEmpty()) {
-            // use the isbn we originally searched for.
-            isbn = mIsbn;
-        }
-        if (isbn != null && !isbn.isEmpty()) {
-            mBookData.putString(DBDefinitions.KEY_ISBN, isbn);
+            mBookData.putString(DBDefinitions.KEY_ISBN, mIsbn);
         }
 
-        // Try to use/construct title
+        // If we did not get an title, use the originally we searched for.
         String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (title == null || title.isEmpty()) {
-            // use the title we originally searched for.
-            title = mTitle;
-        }
-        if (title != null && !title.isEmpty()) {
-            mBookData.putString(DBDefinitions.KEY_TITLE, title);
-        }
-
-        // check required data
-        ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-
-        // If book not found or is missing required data, info the user
-        if (mBookData.isEmpty()) {
-            mTaskManager.sendUserMessage(R.string.warning_book_not_found);
-        } else if (authors == null || authors.isEmpty()
-                || title == null || title.isEmpty()) {
-            mTaskManager.sendUserMessage(R.string.warning_required_title_and_author);
+            mBookData.putString(DBDefinitions.KEY_TITLE, mTitle);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {

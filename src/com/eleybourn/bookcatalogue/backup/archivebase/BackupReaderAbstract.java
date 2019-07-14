@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -42,6 +43,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -76,11 +78,10 @@ public abstract class BackupReaderAbstract
     protected BackupReaderAbstract() {
         mDb = new DAO();
 
-        //TODO: do not use Application Context for String resources
-        Context context = App.getAppContext();
-        mProcessPreferences = context.getString(R.string.progress_msg_process_preferences);
-        mProcessCover = context.getString(R.string.progress_msg_process_cover);
-        mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
+        Resources resources = LocaleUtils.getLocalizedResources();
+        mProcessPreferences = resources.getString(R.string.progress_msg_process_preferences);
+        mProcessCover = resources.getString(R.string.progress_msg_process_cover);
+        mProcessBooklistStyles = resources.getString(R.string.progress_msg_process_booklist_style);
     }
 
     /**
@@ -230,8 +231,7 @@ public abstract class BackupReaderAbstract
     private void restoreBooks(@NonNull final ReaderEntity entity)
             throws IOException, ImportException {
 
-        //TODO: do not use Application Context for String resources
-        try (Importer importer = new CsvImporter(App.getAppContext(), mSettings)) {
+        try (Importer importer = new CsvImporter(LocaleUtils.getLocalizedResources(), mSettings)) {
             importer.doBooks(entity.getStream(), null, mProgressListener);
         }
     }

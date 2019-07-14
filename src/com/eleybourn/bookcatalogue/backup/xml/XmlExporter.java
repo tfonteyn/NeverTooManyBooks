@@ -591,7 +591,7 @@ public class XmlExporter
                    .append(attr(DBDefinitions.KEY_LANGUAGE,
                                 cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
                    .append(attr(DBDefinitions.KEY_TOC_BITMASK,
-                                cursorRow.getInt(DBDefinitions.KEY_TOC_BITMASK)))
+                                cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
                    .append("\n")
 
                    // reading facts
@@ -624,7 +624,7 @@ public class XmlExporter
                    .append(attr(DBDefinitions.KEY_SIGNED,
                                 cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
                    .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                cursorRow.getInt(DBDefinitions.KEY_EDITION_BITMASK)))
+                                cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
                    .append("\n")
 
                    // external ID's

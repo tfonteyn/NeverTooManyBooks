@@ -24,8 +24,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,8 +38,6 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -52,7 +48,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,17 +56,18 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditTocEntryDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
-import com.eleybourn.bookcatalogue.dialogs.entities.EditTocEntryDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.Editions;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbGetBookTask;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbGetEditionsTask;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbResultsListener;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -89,7 +85,7 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
- * Note: we also pass in 'this' as the task listener... no orientation changes ...
+ * <b>Note:</b> we also pass in 'this' as the task listener... no orientation changes ...
  * URGENT: needs ViewModel for the tasks!
  */
 public class EditBookTocFragment
@@ -120,9 +116,70 @@ public class EditBookTocFragment
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
-    private ArrayList<Editions.Edition> mISFDBEditions;
+    private ArrayList<Editions.Edition> mIsfdbEditions;
 
-    private boolean mIsCollectSeriesInfoFromToc;
+    private IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
+        /**
+         * we got one or more editions from ISFDB.
+         * Store the url's locally as the user might want to try the next in line
+         */
+        public void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
+            mIsfdbEditions = editions != null ? editions : new ArrayList<>();
+            if (!mIsfdbEditions.isEmpty()) {
+                new IsfdbGetBookTask(mIsfdbEditions, this).execute();
+            } else {
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.warning_no_editions);
+            }
+        }
+
+        /**
+         * we got a book.
+         *
+         * @param bookData our book from ISFDB.
+         */
+        @Override
+        public void onGotISFDBBook(@Nullable final Bundle bookData) {
+            if (bookData == null) {
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.warning_book_not_found);
+                return;
+            }
+
+            Book book = mBookBaseFragmentModel.getBook();
+
+            // update the book with series information that was gathered from the TOC
+            List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+            if (series != null && !series.isEmpty()) {
+                ArrayList<Series> inBook = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                // add, weeding out duplicates
+                for (Series s : series) {
+                    if (!inBook.contains(s)) {
+                        inBook.add(s);
+                    }
+                }
+                book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            }
+
+            // update the book with the first publication date that was gathered from the TOC
+            final String bookFirstPublication =
+                    bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+            if (bookFirstPublication != null) {
+                if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
+                    book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
+                }
+            }
+
+            // finally the TOC itself; not saved here but only put on display for the user to approve
+            FragmentManager fm = getChildFragmentManager();
+            if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
+                boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+                ConfirmToc.newInstance(bookData, hasOtherEditions).show(fm, ConfirmToc.TAG);
+            }
+
+        }
+    };
+
     private final ConfirmToc.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmToc.ConfirmTocResults() {
 
@@ -148,9 +205,9 @@ public class EditBookTocFragment
                  */
                 public void getNextEdition() {
                     // remove the top one, and try again
-                    mISFDBEditions.remove(0);
-                    new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc,
-                                         EditBookTocFragment.this).execute();
+                    mIsfdbEditions.remove(0);
+                    new IsfdbGetBookTask(mIsfdbEditions,
+                                         mIsfdbResultsListener).execute();
                 }
             };
 
@@ -213,9 +270,6 @@ public class EditBookTocFragment
             String unknown = getString(R.string.unknown);
             mBookAuthor = new Author(unknown, unknown);
         }
-
-        // use the preferences
-        mIsCollectSeriesInfoFromToc = ISFDBManager.isCollectSeriesInfoFromToc();
 
         // used to call Search sites to populate the TOC
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
@@ -325,7 +379,7 @@ public class EditBookTocFragment
                 if (ISBN.isValid(mIsbn)) {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
-                    new ISFDBGetEditionsTask(mIsbn, this).execute();
+                    new IsfdbGetEditionsTask(mIsbn, mIsfdbResultsListener).execute();
                 } else {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.warning_action_requires_isbn);
@@ -385,64 +439,6 @@ public class EditBookTocFragment
         }
     }
 
-    /**
-     * we got one or more editions from ISFDB.
-     * Store the url's locally as the user might want to try the next in line
-     */
-    private void onGotISFDBEditions(@Nullable final ArrayList<Editions.Edition> editions) {
-        mISFDBEditions = editions != null ? editions : new ArrayList<>();
-        if (!mISFDBEditions.isEmpty()) {
-            new ISFDBGetBookTask(mISFDBEditions, mIsCollectSeriesInfoFromToc, this).execute();
-        } else {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_no_editions);
-        }
-    }
-
-    /**
-     * we got a book.
-     *
-     * @param bookData our book from ISFDB.
-     */
-    private void onGotISFDBBook(@Nullable final Bundle bookData) {
-        if (bookData == null) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_book_not_found);
-            return;
-        }
-
-        Book book = mBookBaseFragmentModel.getBook();
-
-        // update the book with series information that was gathered from the TOC
-        List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-            // add, weeding out duplicates
-            for (Series s : series) {
-                if (!inBook.contains(s)) {
-                    inBook.add(s);
-                }
-            }
-            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
-        }
-
-        // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication =
-                bookData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
-        if (bookFirstPublication != null) {
-            if (book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
-                book.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
-            }
-        }
-
-        // finally the TOC itself; not saved here but only put on display for the user to approve
-        FragmentManager fm = getChildFragmentManager();
-        if (fm.findFragmentByTag(ConfirmToc.TAG) == null) {
-            boolean hasOtherEditions = (mISFDBEditions != null) && (mISFDBEditions.size() > 1);
-            ConfirmToc.newInstance(bookData, hasOtherEditions).show(fm, ConfirmToc.TAG);
-        }
-
-    }
 
     /**
      * Create a new entry.
@@ -584,115 +580,6 @@ public class EditBookTocFragment
                                  @NonNull List<TocEntry> tocEntries);
 
             void getNextEdition();
-        }
-    }
-
-    private static class ISFDBGetEditionsTask
-            extends AsyncTask<Void, Void, ArrayList<Editions.Edition>> {
-
-        @NonNull
-        private final String mIsbn;
-        @NonNull
-        private final WeakReference<EditBookTocFragment> mTaskListener;
-
-        /**
-         * Constructor.
-         *
-         * @param isbn         to search for
-         * @param taskListener to send results to
-         */
-        @UiThread
-        ISFDBGetEditionsTask(@NonNull final String isbn,
-                             @NonNull final EditBookTocFragment taskListener) {
-            mIsbn = isbn;
-            mTaskListener = new WeakReference<>(taskListener);
-        }
-
-        @Override
-        @Nullable
-        @WorkerThread
-        protected ArrayList<Editions.Edition> doInBackground(final Void... params) {
-            Thread.currentThread().setName("ISFDBGetEditionsTask " + mIsbn);
-            try {
-                return new Editions().fetch(mIsbn);
-            } catch (@NonNull final SocketTimeoutException e) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    Logger.warn(this, "doInBackground", e.getLocalizedMessage());
-                }
-                return null;
-            }
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@Nullable final ArrayList<Editions.Edition> result) {
-            // always send result, even if empty
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGotISFDBEditions(result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 "WeakReference to listener was dead");
-                }
-            }
-        }
-    }
-
-    private static class ISFDBGetBookTask
-            extends AsyncTask<Void, Void, Bundle> {
-
-        private final boolean mAddSeriesFromToc;
-        @NonNull
-        private final WeakReference<EditBookTocFragment> mTaskListener;
-
-        @NonNull
-        private final List<Editions.Edition> mEditions;
-
-        /**
-         * Constructor.
-         *
-         * @param editions     List of ISFDB native ID's
-         * @param taskListener where to send the results to
-         */
-        @UiThread
-        ISFDBGetBookTask(@NonNull final List<Editions.Edition> editions,
-                         final boolean addSeriesFromToc,
-                         @NonNull final EditBookTocFragment taskListener) {
-            mEditions = editions;
-            mAddSeriesFromToc = addSeriesFromToc;
-            mTaskListener = new WeakReference<>(taskListener);
-        }
-
-        @Override
-        @Nullable
-        @WorkerThread
-        protected Bundle doInBackground(final Void... params) {
-            Thread.currentThread().setName("ISFDBGetBookTask");
-            try {
-                //TODO: do not use Application Context for String resources
-                Resources resources = App.getAppContext().getResources();
-
-                return new ISFDBBook().fetch(mEditions, mAddSeriesFromToc, false, resources);
-            } catch (@NonNull final SocketTimeoutException e) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    Logger.warn(this, "doInBackground", e.getLocalizedMessage());
-                }
-                return null;
-            }
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@Nullable final Bundle result) {
-            // always send result, even if empty
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGotISFDBBook(result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 "WeakReference to listener was dead");
-                }
-            }
         }
     }
 

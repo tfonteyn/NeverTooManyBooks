@@ -99,7 +99,7 @@ abstract class EditStringBaseDialog {
     private void doSave() {
         String newText = mEditText.getText().toString().trim();
         if (newText.isEmpty()) {
-            UserMessage.show(mEditText, R.string.warning_required_name);
+            UserMessage.show(mEditText, R.string.warning_missing_name);
             return;
         }
         // if there are no differences, just bail out.

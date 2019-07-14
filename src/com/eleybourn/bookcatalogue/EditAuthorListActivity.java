@@ -79,7 +79,7 @@ public class EditAuthorListActivity
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
                                                   android.R.layout.simple_dropdown_item_1line,
-                                                  mDb.getAuthorsFormattedName());
+                                                  mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
 
         mAutoCompleteTextView = findViewById(R.id.author);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -89,7 +89,7 @@ public class EditAuthorListActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_required_name);
+            UserMessage.show(mAutoCompleteTextView, R.string.warning_missing_name);
             return;
         }
 

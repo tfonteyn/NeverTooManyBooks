@@ -69,14 +69,14 @@ public class FTSSearchActivity
 
     private String mAuthorSearchText;
     private String mTitleSearchText;
-    private String mGenericSearchText;
+    private String mKeywordsSearchText;
 
     /** search field. */
     private EditText mAuthorView;
     /** search field. */
     private EditText mTitleView;
     /** search field. */
-    private EditText mCSearchView;
+    private EditText mKeywordsView;
     /** show the number of results. */
     private TextView mBooksFound;
     /** The results list. */
@@ -121,7 +121,7 @@ public class FTSSearchActivity
     private void readArgs(@NonNull final Bundle args) {
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
         mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
-        mGenericSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
+        mKeywordsSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
     // reminder: when converting to a fragment, don't forget this:
@@ -150,7 +150,7 @@ public class FTSSearchActivity
 
         mAuthorView = findViewById(R.id.author);
         mTitleView = findViewById(R.id.title);
-        mCSearchView = findViewById(R.id.criteria);
+        mKeywordsView = findViewById(R.id.keywords);
 
         if (mAuthorSearchText != null) {
             mAuthorView.setText(mAuthorSearchText);
@@ -158,8 +158,8 @@ public class FTSSearchActivity
         if (mTitleSearchText != null) {
             mTitleView.setText(mTitleSearchText);
         }
-        if (mGenericSearchText != null) {
-            mCSearchView.setText(mGenericSearchText);
+        if (mKeywordsSearchText != null) {
+            mKeywordsView.setText(mKeywordsSearchText);
         }
 
         mDb = new DAO();
@@ -175,7 +175,7 @@ public class FTSSearchActivity
         // If the user changes any text, it's not idle
         mAuthorView.addTextChangedListener(mTextWatcher);
         mTitleView.addTextChangedListener(mTextWatcher);
-        mCSearchView.addTextChangedListener(mTextWatcher);
+        mKeywordsView.addTextChangedListener(mTextWatcher);
 
         // Handle the 'Search' button.
         findViewById(R.id.btn_search).setOnClickListener(v -> {
@@ -184,7 +184,7 @@ public class FTSSearchActivity
             finish();
         });
 
-        // Note: Timer will be started in OnResume().
+        // Timer will be started in OnResume().
     }
 
     @Override
@@ -217,7 +217,7 @@ public class FTSSearchActivity
         // Get search criteria
         mAuthorSearchText = mAuthorView.getText().toString().trim();
         mTitleSearchText = mTitleView.getText().toString().trim();
-        mGenericSearchText = mCSearchView.getText().toString().trim();
+        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0;
@@ -229,7 +229,7 @@ public class FTSSearchActivity
         String tmpMsg = null;
         try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
                                            mTitleSearchText,
-                                           mGenericSearchText)) {
+                                           mKeywordsSearchText)) {
             // Null return means searchFts thought parameters were effectively blank
             if (cursor != null) {
                 int count = cursor.getCount();
@@ -292,7 +292,7 @@ public class FTSSearchActivity
         // Get search criteria
         mAuthorSearchText = mAuthorView.getText().toString().trim();
         mTitleSearchText = mTitleView.getText().toString().trim();
-        mGenericSearchText = mCSearchView.getText().toString().trim();
+        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
 
         super.onPause();
     }
@@ -302,7 +302,7 @@ public class FTSSearchActivity
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
     }
 
     @Override

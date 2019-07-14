@@ -44,7 +44,7 @@ public class SearchOrderFragment
     @Override
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        mActivity= (SearchAdminActivity) context;
+        mActivity = (SearchAdminActivity) context;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SearchOrderFragment
         mListView.setHasFixedSize(true);
 
         mListAdapter = new SearchSiteListAdapter(
-                getContext(), mList, (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+                getContext(), mList, viewHolder -> mItemTouchHelper.startDrag(viewHolder));
         // any change done in the adapter will set the data 'dirty'
         // if changing the list externally, make sure to always notify the adapter.
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
@@ -91,17 +91,6 @@ public class SearchOrderFragment
     }
 
     /**
-     * Replace the current list
-     *
-     * @param list new list to display.
-     */
-    public void setList(@NonNull final ArrayList<Site> list) {
-        mList.clear();
-        mList.addAll(list);
-        mListAdapter.notifyDataSetChanged();
-    }
-
-    /**
      * @return the list, or {@code null} if this fragment was not displayed,
      * i.e. the list was not even loaded.
      */
@@ -115,6 +104,17 @@ public class SearchOrderFragment
             }
         }
         return mList;
+    }
+
+    /**
+     * Replace the current list.
+     *
+     * @param list new list to display.
+     */
+    public void setList(@NonNull final ArrayList<Site> list) {
+        mList.clear();
+        mList.addAll(list);
+        mListAdapter.notifyDataSetChanged();
     }
 
     private static class SearchSiteListAdapter

@@ -394,7 +394,7 @@ public final class StorageUtils {
                     }
                 }
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(StorageUtils.class, e, "Failed to open/scan/read /proc/mounts");
         }
 
@@ -527,7 +527,7 @@ public final class StorageUtils {
             // All OK, so rename to real output file
             renameFile(temp, out);
             return true;
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(StorageUtils.class, e);
         } finally {
             deleteFile(temp);
@@ -646,8 +646,9 @@ public final class StorageUtils {
     /**
      * Channels are FAST... TODO: replace old method with this one.
      * but needs testing, never used it on Android myself
+     *
+     * @throws IOException on failure
      */
-
     @SuppressWarnings("unused")
     private static void copyFile2(@NonNull final File source,
                                   @NonNull final File destination)

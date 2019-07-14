@@ -96,14 +96,6 @@ public final class UniqueId {
     public static final String BKEY_TOC_ENTRY_ARRAY = "toc_titles_array";
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-    /**
-     * Passing a combined 'currency'-'value' string.
-     * {@link DAO}#preprocessPrice(Book, String, String, String)} will split it just
-     * before storing the data.
-     */
-    public static final String BKEY_PRICE_LISTED_WITH_CURRENCY = "priceListedWithCurrency";
-    public static final String BKEY_PRICE_PAID_WITH_CURRENCY = "pricePaidWithCurrency";
-
     /** generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
     /** author search text. */
@@ -170,7 +162,7 @@ public final class UniqueId {
      * </ul>
      * <br>type: {@code boolean}
      */
-    public static final String BKEY_COVER_IMAGE = "thumbnail";
+    public static final String BKEY_IMAGE = "thumbnail";
 
     /**
      * A BooklistStyle.

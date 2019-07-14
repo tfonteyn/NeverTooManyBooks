@@ -113,9 +113,9 @@ public class StyleGroupsActivity
 
         // setup the adapter
         // The adapter for the list.
-        RecyclerViewAdapterBase listAdapter = new GroupWrapperListAdapter(this, mList,
-                                                                          vh -> mItemTouchHelper.startDrag(
-                                                                                  vh));
+        RecyclerViewAdapterBase listAdapter =
+                new GroupWrapperListAdapter(this, mList, vh -> mItemTouchHelper.startDrag(vh));
+
         listView.setAdapter(listAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
@@ -194,7 +194,7 @@ public class StyleGroupsActivity
         }
 
         // Apply any saved properties.
-        // Note: right now, we don't have any updated preferences other then the groups.
+        // For now we don't have any updated preferences other then the groups.
         mStyle.updatePreferences(allPreferences);
     }
 

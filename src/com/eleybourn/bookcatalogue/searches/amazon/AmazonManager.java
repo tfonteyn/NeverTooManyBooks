@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,20 +46,6 @@ import com.eleybourn.bookcatalogue.utils.Throttler;
  * failed to open stream: HTTP request failed!
  * HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
  * <p>
- * When executing the actual url:
- * {@code
- * <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
- * <Error>
- * <Code>RequestThrottled</Code>
- * <Message>
- * AWS Access Key ID: xxxxxxxxx. You are submitting requests too quickly.
- * Please retry your requests at a slower rate.
- * </Message>
- * </Error>
- * <RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
- * </ItemSearchErrorResponse>
- * <p>
- * }
  * 2019-04-20: it's the actual 'theagiledirector'.
  * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
  * but how.... seems AWS is dependent/linked to have a website.
@@ -176,6 +161,7 @@ public final class AmazonManager
     public Bundle search(@Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
+                         @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
 
@@ -185,7 +171,8 @@ public final class AmazonManager
             query = "isbn=" + isbn;
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            query = "author=" + encodeSpaces(author) + "&title=" + encodeSpaces(title);
+            query = "author=" + URLEncoder.encode(author, "UTF-8")
+                    + "&title=" + URLEncoder.encode(title, "UTF-8");
 
         } else {
             return new Bundle();
@@ -217,12 +204,5 @@ public final class AmazonManager
             throw new IOException(error);
         }
         return bookData;
-    }
-
-    /**
-     * replace spaces with %20.
-     */
-    private String encodeSpaces(@NonNull final String s) {
-        return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
     }
 }

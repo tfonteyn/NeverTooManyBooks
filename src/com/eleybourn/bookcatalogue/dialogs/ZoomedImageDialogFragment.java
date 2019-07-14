@@ -32,13 +32,15 @@ public class ZoomedImageDialogFragment
 
     /**
      * Syntax sugar for newInstance.
+     *
+     * @param image to display
      */
     public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final File imageFile) {
+                            @NonNull final File image) {
         // if there is no file, just silently ignore.
-        if (imageFile.exists()) {
+        if (image.exists()) {
             if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(imageFile).show(fm, TAG);
+                newInstance(image).show(fm, TAG);
             }
         }
     }

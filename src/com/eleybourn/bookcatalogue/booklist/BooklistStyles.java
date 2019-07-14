@@ -209,7 +209,7 @@ public final class BooklistStyles {
     /**
      * Static method to get all defined styles.
      * <p>
-     * NOTE: Do NOT call this in static initialization of application.
+     * <b>Note:</b> Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
      * <p>
      * Note the hardcoded negative ID's. These number should never be changed as they will

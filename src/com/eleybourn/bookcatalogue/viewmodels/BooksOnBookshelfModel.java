@@ -506,6 +506,12 @@ public class BooksOnBookshelfModel
         return mSearchCriteria;
     }
 
+    @NonNull
+    public ArrayList<Long> getCurrentBookIdList() {
+        //noinspection ConstantConditions
+        return mListCursor.getBuilder().getCurrentBookIdList();
+    }
+
     /**
      * Holder class for search criteria with some methods to bulk manipulate them.
      */

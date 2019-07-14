@@ -74,7 +74,7 @@
     <item name="MENU_GROUP_BOOK" type="id" />
     <item name="MENU_BOOK_DELETE" type="id" />
     <item name="MENU_BOOK_DUPLICATE" type="id" />
-    <item name="MENU_BOOK_UPDATE_FROM_INTERNET" type="id" />
+    <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
 
     <item name="MENU_BOOK_EDIT" type="id" />
     <item name="MENU_BOOK_EDIT_NOTES" type="id" />

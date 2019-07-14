@@ -181,9 +181,10 @@ public abstract class BookSearchBaseFragment
             mTaskManager.sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
             searchCoordinator.search(mBookSearchBaseModel.getSearchSites(),
+                                     mBookSearchBaseModel.getIsbnSearchText(),
                                      mBookSearchBaseModel.getAuthorSearchText(),
                                      mBookSearchBaseModel.getTitleSearchText(),
-                                     mBookSearchBaseModel.getIsbnSearchText(),
+                                     mBookSearchBaseModel.getPublisherSearchText(),
                                      true);
 
             // reset the details so we don't restart the search unnecessarily

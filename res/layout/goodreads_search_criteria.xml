@@ -7,6 +7,14 @@
     android:layout_height="match_parent"
     >
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/indent_fields"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/indent4"
+        />
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/original_details"
         android:layout_width="wrap_content"
@@ -29,11 +37,10 @@
         android:id="@+id/author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent2"
         android:hint="@string/lbl_author"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
         />
 
@@ -51,11 +58,10 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent2"
         android:hint="@string/lbl_title"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         />
 
@@ -73,11 +79,10 @@
         android:id="@+id/isbn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent2"
         android:hint="@string/lbl_isbn"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
         />
 
@@ -106,14 +111,14 @@
         android:inputType="textMultiLine"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
         tools:ignore="Autofill"
         />
 
     <Button
         android:id="@+id/btn_search"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:text="@string/menu_search"

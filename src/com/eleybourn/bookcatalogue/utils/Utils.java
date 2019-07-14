@@ -89,6 +89,8 @@ public final class Utils {
      * the ListView to the full height so all rows are visible (no scrolling).
      * <p>
      * Does nothing if the ListAdapter is {@code null}, or if the ListView is not visible.
+     *
+     * @param listView to adjust
      */
     @SuppressWarnings("unused")
     static void adjustListViewHeightBasedOnChildren(@NonNull final ListView listView) {

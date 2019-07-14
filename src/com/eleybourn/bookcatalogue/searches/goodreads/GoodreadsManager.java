@@ -850,6 +850,7 @@ public class GoodreadsManager
     public Bundle search(@Nullable final String isbn,
                          @Nullable final String author,
                          @Nullable final String title,
+                         @Nullable final /* not supported */ String publisher,
                          final /* not supported */ boolean fetchThumbnail)
             throws IOException, AuthorizationException {
 

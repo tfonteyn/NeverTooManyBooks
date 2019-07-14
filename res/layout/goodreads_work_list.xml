@@ -8,6 +8,14 @@
     android:layout_height="match_parent"
     >
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/indent_fields"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/indent4"
+        />
+
     <TextView
         android:id="@+id/lbl_author"
         style="@style/FieldLabel"
@@ -21,7 +29,7 @@
         style="@style/personalNameTextEntry"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
         tools:ignore="Autofill"
         />
@@ -39,7 +47,7 @@
         style="@style/titleTextEntryAutoComplete"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         tools:ignore="Autofill"
         />
@@ -56,17 +64,18 @@
         android:id="@+id/isbn"
         style="@style/EditText.Isbn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
         tools:ignore="Autofill,LabelFor"
         />
 
     <Button
         android:id="@+id/search"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:text="@string/menu_search"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
         />

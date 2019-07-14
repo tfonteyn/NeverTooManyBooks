@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
  * Searches the internet for book details based on ISBN or Author/Title.
  * Automatically updates fields of the book for which it finds new/extra data,
  * <p>
- * Note: eventually these 'hosting' activities are meant to go. The idea is to have ONE
+ * <b>Note:</b> eventually these 'hosting' activities are meant to go. The idea is to have ONE
  * hosting/main activity, which swaps in fragments as needed.
  */
 public class UpdateFieldsFromInternetActivity

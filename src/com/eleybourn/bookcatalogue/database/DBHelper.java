@@ -50,7 +50,6 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATI
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
@@ -333,7 +332,7 @@ public final class DBHelper
      *
      * <p>
      * Update FTS when:
-     * - Book: delete (note: update,insert is to complicated to use a trigger)
+     * - Book: delete (update,insert is to complicated to use a trigger)
      *
      * <p>
      * Others:
@@ -636,189 +635,180 @@ public final class DBHelper
             // db100 == app200 == 6.0.0;
             //noinspection UnusedAssignment
             curVersion = 100;
+            upgradeTo100(db, syncedDb);
 
-            // we're now using the 'real' cache directory
-            StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
-                                                     + File.separator + "tmp_images"));
-
-            // migrate old properties.
-            Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-
-            // add the UUID field for the move of styles to SharedPreferences
-            db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
-                               + " ADD " + DOM_UUID + " text not null default ''");
-
-            // insert the builtin style ID's so foreign key rules are possible.
-            prepareStylesTable(db);
-
-            // convert user styles from serialized storage to SharedPreference xml.
-            try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
-                                                           + " FROM " + TBL_BOOKLIST_STYLES,
-                                                   null)) {
-                while (stylesCursor.moveToNext()) {
-                    long id = stylesCursor.getLong(0);
-                    byte[] blob = stylesCursor.getBlob(1);
-                    BooklistStyle style;
-                    try {
-                        // de-serializing will in effect write out the preference file.
-                        style = SerializationUtils.deserializeObject(blob);
-                        // update db with the newly created prefs file name.
-                        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
-                                           + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
-                                           + " WHERE " + DOM_PK_ID + '=' + id);
-
-                    } catch (@NonNull final SerializationUtils.DeserializationException e) {
-                        Logger.error(this, e, "BooklistStyle id=" + id);
-                    }
-                }
-            }
-            // drop the serialized field.
-            recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
-                    /* remove field */ "style");
-
-            // add the foreign key rule pointing to the styles table.
-            recreateAndReloadTable(syncedDb, TBL_BOOKSHELF);
-
-
-
-            // this trigger was replaced.
-            db.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
-
-            // TEST: a proper upgrade from 82 to 100 with non-clean data
-
-            // Due to a number of code remarks, and some observation... do a clean of some columns.
-            // these two are due to a remark in the CSV exporter that (at one time?)
-            // the author name and title could be bad
-            final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
-            db.execSQL("UPDATE " + TBL_AUTHORS
-                               + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
-                               + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
-                               + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
-
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
-                               + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
-
-            // clean columns where we are adding a "not null default ''" constraint
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
-                               + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
-                               + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''"
-                               + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''"
-                               + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''"
-                               + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''"
-                               + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''"
-                               + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''"
-                               + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''"
-                               + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''"
-                               + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''"
-                               + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''"
-                               + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
-
-            // clean boolean columns where we have seen non-0/1 values.
-            // 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1"
-                               + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0"
-                               + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1"
-                               + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
-                               + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
-
-            // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
-            db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
-                    + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
-
-            // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
-            db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
-                               + " WHERE " + DOM_BOOKSHELF + " IS NULL");
-
-            // recreate to get column types & constraints properly updated.
-            recreateAndReloadTable(syncedDb, TBL_BOOKS);
-
-            // anthology-titles are now cross-book;
-            // e.g. one 'story' can be present in multiple books
-            db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
-                               + '(' + DOM_FK_BOOK + " integer REFERENCES "
-                               + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                               + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
-                               + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                               + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
-                               + ", PRIMARY KEY (" + DOM_FK_BOOK
-                               + ',' + DOM_FK_TOC_ENTRY + ')'
-                               + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
-                               + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
-                               + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
-                               + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
-                               + ')');
-
-            // move the existing book-anthology links to the new table
-            db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                               + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
-                               + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
-
-            // reorganise the original table
-            recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
-                    /* remove fields: */ DOM_FK_BOOK.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
-
-            // just for consistence, rename the table.
-            db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
-
-
-            // add the 'ORDER BY' columns
-            db.execSQL("ALTER TABLE " + TBL_BOOKS
-                               + " ADD " + DOM_TITLE_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
-
-            db.execSQL("ALTER TABLE " + TBL_SERIES
-                               + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
-
-            db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
-                               + " ADD " + DOM_TITLE_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
-
-            db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                               + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
-                                                  DOM_AUTHOR_FAMILY_NAME_OB);
-            db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                               + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
-            UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
-                                                  DOM_AUTHOR_GIVEN_NAMES_OB);
-
-            /* all books with a list price are assumed to be USD based on the only search up to v82
-             * being Amazon US (via proxy... so this is my best guess).
-             *
-             * FIXME: if a user has manually edited the list price, can we scan for currencies ?
-             *
-             * set all rows which have a price, to being in USD. Does not change the price field.
-             */
-            db.execSQL("UPDATE " + TBL_BOOKS
-                               + " SET " + DOM_BOOK_PRICE_LISTED_CURRENCY + "='USD'"
-                               + " WHERE NOT " + DOM_BOOK_PRICE_LISTED + "=''");
-
-            /* move cover files to a sub-folder.
-            Only files with matching rows in 'books' are moved. */
-            UpgradeDatabase.v200_moveCoversToDedicatedDirectory(db);
         }
 
         // Rebuild all indices
         createIndices(syncedDb, true);
         // Rebuild all triggers
         createTriggers(syncedDb);
+    }
+
+    private void upgradeTo100(@NonNull final SQLiteDatabase db,
+                              @NonNull final SynchronizedDb syncedDb) {
+        // we're now using the 'real' cache directory
+        StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
+                                                 + File.separator + "tmp_images"));
+
+        // migrate old properties.
+        Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+
+        // add the UUID field for the move of styles to SharedPreferences
+        db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
+                           + " ADD " + DOM_UUID + " text not null default ''");
+
+        // insert the builtin style ID's so foreign key rules are possible.
+        prepareStylesTable(db);
+
+        // convert user styles from serialized storage to SharedPreference xml.
+        try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
+                                                       + " FROM " + TBL_BOOKLIST_STYLES,
+                                               null)) {
+            while (stylesCursor.moveToNext()) {
+                long id = stylesCursor.getLong(0);
+                byte[] blob = stylesCursor.getBlob(1);
+                BooklistStyle style;
+                try {
+                    // de-serializing will in effect write out the preference file.
+                    style = SerializationUtils.deserializeObject(blob);
+                    // update db with the newly created prefs file name.
+                    db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
+                                       + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
+                                       + " WHERE " + DOM_PK_ID + '=' + id);
+
+                } catch (@NonNull final SerializationUtils.DeserializationException e) {
+                    Logger.error(this, e, "BooklistStyle id=" + id);
+                }
+            }
+        }
+        // drop the serialized field.
+        recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
+                /* remove field */ "style");
+
+        // add the foreign key rule pointing to the styles table.
+        recreateAndReloadTable(syncedDb, TBL_BOOKSHELF);
+
+
+        // this trigger was replaced.
+        db.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
+
+        // Due to a number of code remarks, and some observation... do a clean of some columns.
+        // these two are due to a remark in the CSV exporter that (at one time?)
+        // the author name and title could be bad
+        final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
+        db.execSQL("UPDATE " + TBL_AUTHORS
+                           + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
+                           + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
+                           + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
+
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
+                           + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
+
+        // clean columns where we are adding a "not null default ''" constraint
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
+                           + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
+                           + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''"
+                           + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''"
+                           + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''"
+                           + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''"
+                           + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''"
+                           + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''"
+                           + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''"
+                           + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''"
+                           + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''"
+                           + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''"
+                           + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
+
+        // clean boolean columns where we have seen non-0/1 values.
+        // 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1"
+                           + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0"
+                           + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1"
+                           + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
+                           + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
+
+        // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
+        db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
+                + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)");
+
+        // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
+        db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
+                           + " WHERE " + DOM_BOOKSHELF + " IS NULL");
+
+        // recreate to get column types & constraints properly updated.
+        recreateAndReloadTable(syncedDb, TBL_BOOKS);
+
+        // anthology-titles are now cross-book;
+        // e.g. one 'story' can be present in multiple books
+        db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
+                           + '(' + DOM_FK_BOOK + " integer REFERENCES "
+                           + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
+
+                           + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
+                           + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
+
+                           + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
+                           + ", PRIMARY KEY (" + DOM_FK_BOOK
+                           + ',' + DOM_FK_TOC_ENTRY + ')'
+                           + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
+                           + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
+                           + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
+                           + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
+                           + ')');
+
+        // move the existing book-anthology links to the new table
+        db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
+                           + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
+                           + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
+
+        // reorganise the original table
+        recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
+                /* remove fields: */ DOM_FK_BOOK.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
+
+        // just for consistence, rename the table.
+        db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
+
+
+        // add the 'ORDER BY' columns
+        db.execSQL("ALTER TABLE " + TBL_BOOKS
+                           + " ADD " + DOM_TITLE_OB + " text not null default ''");
+        UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
+
+        db.execSQL("ALTER TABLE " + TBL_SERIES
+                           + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
+        UpgradeDatabase.v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
+
+        db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
+                           + " ADD " + DOM_TITLE_OB + " text not null default ''");
+        UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
+
+        db.execSQL("ALTER TABLE " + TBL_AUTHORS
+                           + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
+        UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
+                                              DOM_AUTHOR_FAMILY_NAME_OB);
+        db.execSQL("ALTER TABLE " + TBL_AUTHORS
+                           + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
+        UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
+                                              DOM_AUTHOR_GIVEN_NAMES_OB);
+
+            /* move cover files to a sub-folder.
+            Only files with matching rows in 'books' are moved. */
+        UpgradeDatabase.v200_moveCoversToDedicatedDirectory(db);
     }
 
     public static class UpgradeException

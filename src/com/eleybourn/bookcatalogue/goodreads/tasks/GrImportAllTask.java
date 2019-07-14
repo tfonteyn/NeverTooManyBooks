@@ -267,7 +267,7 @@ class GrImportAllTask
 
         long grId = review.getLong(ReviewFields.DBA_GR_BOOK_ID);
 
-        // Find the books in our database - NOTE: may be more than one!
+        // Find the books in our database - there may be more than one!
         // First look by goodreads book ID
         BookCursor cursor = db.fetchBooksByGoodreadsBookId(grId);
         try {
@@ -382,7 +382,7 @@ class GrImportAllTask
         Book book = new Book(buildBundle(db, null, review));
         long id = db.insertBook(book);
         if (id > 0) {
-            if (book.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
+            if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
                 String uuid = db.getBookUuid(id);
                 // get the temporary downloaded file
                 File source = StorageUtils.getTempCoverFile();

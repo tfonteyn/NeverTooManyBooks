@@ -49,7 +49,7 @@ public interface SearchEngine {
 
         try {
             // ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
-            Bundle bookData = site.search(isbn, "", "", true);
+            Bundle bookData = site.search(isbn, "", "", "", true);
 
             ArrayList<String> imageList =
                     bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -88,6 +88,7 @@ public interface SearchEngine {
     Bundle search(@Nullable String isbn,
                   @Nullable String author,
                   @Nullable String title,
+                  final String publisher,
                   boolean fetchThumbnail)
             throws IOException, AuthorizationException;
 
@@ -101,7 +102,7 @@ public interface SearchEngine {
      * <p>
      * If a {@link SearchEngine} does not support a specific (and faster) way/api
      * to fetch a cover image, then this default method is used, delegating to the
-     * {@link #search(String, String, String, boolean)} method.
+     * {@link #search(String, String, String, String, boolean)} method.
      * <p>
      * A search for the book is done, with the 'fetchThumbnail' flag set to true.
      * Any {@link IOException} or {@link AuthorizationException} thrown are ignored and

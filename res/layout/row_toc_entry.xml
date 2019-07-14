@@ -11,11 +11,12 @@
         style="@style/TextDetail.Small"
         android:layout_width="0dp"
         android:textIsSelectable="false"
+        android:drawableStart="@drawable/ic_paragraph"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
+        tools:text="Sentinel, The"
         />
 
     <TextView
@@ -25,6 +26,6 @@
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="(1971)"
+        tools:text="(1951)"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

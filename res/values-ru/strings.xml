@@ -55,9 +55,9 @@
     <string name="lbl_lend_to">Одолжить книгу:</string>
     <string name="btn_loan_returned">Возвращена</string>
     <string name="name">Имя</string>
-    <string name="about_lbl_website">Веб-адрес проекта:</string>
-    <string name="about_lbl_sourcecode">Исходный код:</string>
-    <string name="about_lbl_contacts">Контакты разработчиков:</string>
+    <string name="lbl_website">Веб-адрес проекта:</string>
+    <string name="lbl_sourcecode">Исходный код:</string>
+    <string name="lbl_contacts">Контакты разработчиков:</string>
     <string name="menu_about">О приложении…</string>
     <string name="lbl_price_listed">Список цен</string>
     <string name="lbl_update_fields">Автоматическое обновление полей</string>
@@ -230,7 +230,7 @@
     <string name="lbl_search_criteria">Параметры поиска</string>
     <string name="menu_add_book_manually">Добавить вручную</string>
     <string name="menu_search_internet">Поиск в Интернете</string>
-    <string name="show_results">Показать результаты</string>
+    <string name="btn_show_results">Показать результаты</string>
     <string name="rebuild_fts">Переобрать FTS\n(только альфа-версия!)</string>
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
     <string name="gr_tq_legacy_task">Действующая задача</string>
@@ -290,16 +290,19 @@
     <string name="hint">Подсказка</string>
     <string name="hint_reset_all_hints">Сбросить подсказки</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
         Вы можете использовать это окно, чтобы настроить список стилей, которые будут отображаться в вашем меню стилей по умолчанию. \n\n
         Зеленая галочка показывает, что стиль будет показан в списке, красная - нет.\n\n
         Если не выделен ни один стиль, будут показаны все. \n\n
         Вы можете изменить порядок элементов, перетягивая за иконку, расположенную в правой части элемента.\n\n
         Нажате в любой другой части элемента позволит Вам редактировать выбранный стиль (или копировать его, если он встроенный)</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
         Вы можете использовать это окно, чтобы редактировать иерархию заголовков для определенного стиля списка книг.\n\n
         Зеленая галочка показывает, что заголовок будет показан в списке, красная - нет.\n\n
         Вы можете изменить порядок заголовков, перетягивая за иконку, расположенную в правой части элемента.\n\n</string>
+    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
         Вы можете использовать это окно, чтобы усатновить характеристики определенного стиля списка книг.\n\n
         Вы можете изменить имя, редактировать группировки, чтобы изменить иерархию и отрегулировать множество других настроек, чтобы создать полезный вам стиль.\n\n
@@ -359,7 +362,7 @@
         с фоновыми задачами. Клик по событию позволит осуществить множество действий,
         связанных с этим событием.</string>
     <string name="hints_have_been_reset">Подсказки сброшены</string>
-    <string name="gr_tq_task_has_been_queued_in_background">Задача поставлена в очередь в фоне</string>
+    <string name="gr_tq_task_has_been_queued">Задача поставлена в очередь в фоне</string>
     <string name="progress_msg_upgrading">Обновление…</string>
     <string name="gr_explain_goodreads_no_isbn">Выбранная книга не имеет ISBN; невозможно
         автоматически синхронизировать с Goodreads. Вот самое простое решение:
@@ -392,7 +395,7 @@
     <string name="hint_booklist_style_menu">
         Это меню позволяет Вам выбрать стиль списка.\n
         \nВы можете также настроить это меню и создать свои стили списков нажатием на \‘Настроить\’ в конце списка.</string>
-    <string name="warning_required_name">Имя не может быть пустым</string>
+    <string name="warning_missing_name">Имя не может быть пустым</string>
     <string name="progress_msg_export_starting">Начало экспорта…</string>
     <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="info_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
@@ -564,11 +567,11 @@
     <string name="import_export_option_xml">Все данные в формате XML</string>
     <string name="btn_confirm_use">использование</string>
     <string name="confirm_merge_bookshelves">Книжная полка, которую вы переименовываете, уже существует. Вы хотите объединить их?</string>
-    <string name="warning_required_title_and_author">Название и / или автор отсутствует.</string>
+    <string name="warning_missing_title_author">Название и / или автор отсутствует.</string>
     <string name="warning_required_at_least_one">Хотя бы одно поле не должно быть пустым.</string>
     <string name="tab_lbl_notes">заметки</string>
     <string name="style_builtin_acquired_date">приобретенный</string>
-    <string name="warning_thing_already_exists">%1$s уже существует</string>
+    <string name="warning_x_already_exists">%1$s уже существует</string>
     <string name="usage_skip">Пропускать</string>
     <string name="search_with_text">ищи: %1$s</string>
     <string name="menu_clear_filters">Сбросить фильтры</string>

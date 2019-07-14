@@ -475,8 +475,8 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK)
                 && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
             mBookData.putString(DBDefinitions.KEY_FORMAT,
-                                //TODO: do not use Application Context for String resources
-                                App.getAppContext().getString(R.string.book_format_ebook));
+                                LocaleUtils.getLocalizedResources()
+                                           .getString(R.string.book_format_ebook));
         }
 
         // Cleanup the title by removing series name, if present

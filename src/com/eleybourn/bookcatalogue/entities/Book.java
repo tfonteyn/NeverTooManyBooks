@@ -221,7 +221,7 @@ public class Book
      *
      * @return bundle with book data
      * <p>
-     * Dev note: keep in sync with {@link DAO} .SqlColumns#BOOK
+     * <b>Developer:</b> keep in sync with {@link DAO} .SqlColumns#BOOK
      */
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();

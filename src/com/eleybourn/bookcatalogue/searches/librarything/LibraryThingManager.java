@@ -71,7 +71,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * &apikey={DEVKEY}&isbn={ISBN}
  *
  * <p>
- * xml see {@link #search} header
+ * xml see {@link com.eleybourn.bookcatalogue.searches.SearchCoordinator#search} header
  * <p>
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
@@ -386,11 +386,12 @@ public class LibraryThingManager
      * Dev-key needed for this call.
      * <br>Only the ISBN is supported.
      *
-     * @param isbn   to lookup. Must be a valid ISBN
-     * @param author unused
-     * @param title  unused
-     *               <br>
-     *               <br>{@inheritDoc}
+     * @param isbn      to lookup. Must be a valid ISBN
+     * @param author    unused
+     * @param title     unused
+     * @param publisher unused
+     *                  <br>
+     *                  <br>{@inheritDoc}
      */
     @NonNull
     @Override
@@ -398,6 +399,7 @@ public class LibraryThingManager
     public Bundle search(@Nullable final String isbn,
                          @Nullable final /* not supported */ String author,
                          @Nullable final /* not supported */ String title,
+                         @Nullable final /* not supported */ String publisher,
                          final boolean fetchThumbnail)
             throws IOException {
 

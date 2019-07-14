@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-public class ISFDBBook
+public class IsfdbBook
         extends AbstractBase {
 
     /** file suffix for cover files. */
@@ -113,7 +113,6 @@ public class ISFDBBook
 //
 //        TYPE_MAP.put("non-fic", 0);
 //        TYPE_MAP.put("NONFICTION", 0);
-
     }
 
     /** accumulate all authors for this book. */
@@ -142,8 +141,78 @@ public class ISFDBBook
     }
 
     /**
-     * First "ContentBox" contains all basic details. IMORTANT: 2019-07: the format has changed!
-     * See below.
+     * @param isfdbId          ISFDB native book id
+     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param resources        for locale strings
+     *
+     * @return Bundle with book data
+     */
+    public Bundle fetch(final long isfdbId,
+                        final boolean fetchThumbnail,
+                        @NonNull final Resources resources)
+            throws SocketTimeoutException {
+
+        return fetch(IsfdbManager.getBaseURL() + String.format(BOOK_URL, isfdbId),
+                     fetchThumbnail, resources);
+    }
+
+    /**
+     * @param path             A fully qualified ISFDB search url
+     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param resources        for locale strings
+     *
+     * @return Bundle with book data
+     */
+    public Bundle fetch(@NonNull final String path,
+                        final boolean fetchThumbnail,
+                        @NonNull final Resources resources)
+            throws SocketTimeoutException {
+
+        mPath = path;
+
+        if (!loadPage(mPath, true)) {
+            return new Bundle();
+        }
+
+        return parseDoc(fetchThumbnail, resources);
+    }
+
+    /**
+     * @param editions         List of ISFDB Editions with native book id
+     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param resources        for locale strings
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
+                        final boolean fetchThumbnail,
+                        @NonNull final Resources resources)
+            throws SocketTimeoutException {
+
+        mEditions = editions;
+
+        Editions.Edition edition = editions.get(0);
+        mPath = IsfdbManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
+
+        // check if we already got the book
+        if (edition.doc != null) {
+            mDoc = edition.doc;
+        } else {
+            // nop, go get it.
+            if (!loadPage(mPath, true)) {
+                return new Bundle();
+            }
+        }
+
+        return parseDoc(fetchThumbnail, resources);
+    }
+
+    /**
+     * Parses the downloaded {@link #mDoc}.
+     * <p>
+     * First "ContentBox" contains all basic details.
+     * IMPORTANT: 2019-07: the format has slightly changed! See below.
      * <pre>
      * {@code
      * <div class="ContentBox">
@@ -183,8 +252,8 @@ public class ISFDBBook
      * </div>
      * }
      * </pre>
-     *
-     *
+     * <p>
+     * <p>
      * 20-19-07: new format:
      * <pre>
      * {@code
@@ -227,10 +296,10 @@ public class ISFDBBook
      *       </td>
      *   </table>
      * Cover art supplied by <a href="http://www.isfdb.org" target="_blank">ISFDB</a> on <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg" target="_blank">this Web page</a>
-     </div>
+     * </div>
      * }
      * </pre>
-     *
+     * <p>
      * => external ID's have their own section
      * Example from elsewhere:
      * <pre>
@@ -260,37 +329,16 @@ public class ISFDBBook
      * }
      * </pre>
      *
-     * @param editions         List of ISFDB native book id
-     * @param addSeriesFromToc whether to add any series found in the TOC to the book series.
      * @param fetchThumbnail   whether to get thumbnails as well
      * @param resources        for locale strings
      *
      * @return Bundle with book data
      */
-    @NonNull
-    public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
-                        final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail,
-                        @NonNull final Resources resources)
+    private Bundle parseDoc(final boolean fetchThumbnail,
+                            @NonNull final Resources resources)
             throws SocketTimeoutException {
 
         Bundle bookData = new Bundle();
-
-        mEditions = editions;
-
-        Editions.Edition edition = editions.get(0);
-        mPath = ISFDBManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
-
-        // check if we already got the book
-        if (edition.doc != null) {
-            mDoc = edition.doc;
-        } else {
-            // nop, go get it.
-            if (!loadPage(mPath, true)) {
-                return bookData;
-            }
-        }
-
         List<String> externalIdUrls = new ArrayList<>();
 
         Element contentBox = mDoc.select("div.contentbox").first();
@@ -299,9 +347,8 @@ public class ISFDBBook
         Elements lis = ul.children();
 
         String tmpString;
-        Node tmpNode;
         Element tmpElement;
-//9027406928
+
         for (Element li : lis) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                 Logger.debug(this, "fetch", li.toString());
@@ -356,7 +403,8 @@ public class ISFDBBook
                     tmpString = li.childNode(2).toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
                     // Cut that part out.
-                    tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll(Matcher.quoteReplacement(""));
+                    tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll(
+                            Matcher.quoteReplacement(""));
                     // and we're paranoid...
                     Date d = DateUtils.parseDate(tmpString);
                     if (d != null) {
@@ -391,7 +439,7 @@ public class ISFDBBook
                     }
                 } else if ("Pub. Series #:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
-                    // assume that the if we get here, then we added a "Pub. Series:" as last one.
+                    // assume that if we get here, then we added a "Pub. Series:" as last one.
                     mSeries.get(mSeries.size() - 1).setNumber(tmpString);
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
@@ -435,18 +483,11 @@ public class ISFDBBook
 //                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST,
 //                                           node_a.childNode(0).toString().trim());
 
+
+//                // notes now done separately, see further down.
 //                } else if ("Notes:".equalsIgnoreCase(fieldName)) {
 //                    tmp = li.childNode(1).childNode(1).toString().trim();
 //                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmp);
-
-
-                } else if ("Notes:".equalsIgnoreCase(fieldName)) {
-                    // copes with old-style Notes, where node 1/1 contained plain text
-                    // and 2018-07 style, where node 1/2 contains html.
-                    tmpNode = li.childNode(1);
-                    int tmpNotesNodeLength = tmpNode.childNodeSize();
-                    tmpString = tmpNode.childNode(tmpNotesNodeLength - 1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmpString);
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
                     // get the <ul>
@@ -461,7 +502,7 @@ public class ISFDBBook
                     }
 
 //                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-                      // add these to the authors as other sites do ?
+                    // add these to the authors as other sites do ?
 //                    Elements as = li.select("a");
 //                    if (as != null) {
 //                        for (Element a : as) {
@@ -478,6 +519,20 @@ public class ISFDBBook
             }
         }
 
+//        Elements recordIDDiv = contentBox.select("span.recordID");
+//        if (recordIDDiv != null) {
+//        }
+
+        Elements notesDiv = contentBox.select("div.notes");
+        if (notesDiv != null) {
+            tmpString = notesDiv.html();
+            // it should always have this at the start, but paranoia...
+            if (tmpString.startsWith("<b>Notes:</b>")) {
+                tmpString = tmpString.substring(13);
+            }
+            bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmpString);
+        }
+
         // ISFDB does not offer the books language on the main page (although they store
         // it in their database).
         //ENHANCE: they are adding language to the data.. revisit.
@@ -485,7 +540,7 @@ public class ISFDBBook
         bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
         // the table of content
-        ArrayList<TocEntry> toc = getTableOfContentList(addSeriesFromToc);
+        ArrayList<TocEntry> toc = getTocList(bookData);
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
         // store accumulated ArrayList's, do this *after* we got the TOC
@@ -535,240 +590,34 @@ public class ISFDBBook
             if (url.contains("www.worldcat.org")) {
                 // http://www.worldcat.org/oclc/60560136
                 bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, stripNumber(url, '/'));
-//            } else if (url.contains("amazon")) {
-                // not interested, this is an Amazon ASIN link. We already have the ISBN.
-//            } else if (url.contains("d-nb.info")) {
-                // http://d-nb.info/986851329
-                // DEUTSCHEN NATIONALBIBLIOTHEK
+
+            } else if (url.contains("lccn.loc.gov")) {
+                // Library of Congress (USA)
+                // http://lccn.loc.gov/2008299472
+                bookData.putLong(DBDefinitions.KEY_LCCN_ID, stripNumber(url, '/'));
+
+
 //            } else if (url.contains("explore.bl.uk")) {
                 // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?vid=BLVU1&docId=BLL01014057142
                 // British Library
-//            } else if (url.contains("lccn.loc.gov")) {
-                // Library of Congress (USA)
-                // http://lccn.loc.gov/2008299472
+
+//            } else if (url.contains("d-nb.info")) {
+                // http://d-nb.info/986851329
+                // DEUTSCHEN NATIONALBIBLIOTHEK
+
+//            } else if (url.contains("picarta.pica.nl")) {
+                // http://picarta.pica.nl/xslt/DB=3.9/XMLPRS=Y/PPN?PPN=802041833
+                // Nederlandse Bibliografie
+
+
+//           } else if (url.contains("tercerafundacion.net")) {
+                // Spanish
+                // https://tercerafundacion.net/biblioteca/ver/libro/2329
+
+//            } else if (url.contains("amazon")) {
+                // not interested, this is an Amazon ASIN link. We already have the ISBN.
             }
         }
-    }
-
-
-    @NonNull
-    public Bundle fetch_v1(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
-                        final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail,
-                        @NonNull final Resources resources)
-            throws SocketTimeoutException {
-
-        Bundle bookData = new Bundle();
-
-        mEditions = editions;
-
-        Editions.Edition edition = editions.get(0);
-        mPath = ISFDBManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId);
-
-        // check if we already got the book
-        if (edition.doc != null) {
-            mDoc = edition.doc;
-        } else {
-            // nop, go get it.
-            if (!loadPage(mPath, true)) {
-                return bookData;
-            }
-        }
-
-        Element contentBox = mDoc.select("div.contentbox").first();
-        Elements lis = contentBox.select("li");
-        String tmp;
-
-        for (Element li : lis) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                Logger.debug(this, "fetch", li.toString());
-            }
-            try {
-                Elements children = li.children();
-
-                String fieldName = null;
-
-                Element fieldLabelElement = children.first();
-                if (fieldLabelElement != null && fieldLabelElement.childNodeSize() > 0) {
-                    fieldName = fieldLabelElement.childNode(0).toString();
-                }
-
-                if (fieldName == null) {
-                    continue;
-                }
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                    Logger.debug(this, "fetch", "fieldName=`" + fieldName + '`');
-                }
-
-                if ("Publication:".equalsIgnoreCase(fieldName)) {
-                    mTitle = li.childNode(1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_TITLE, mTitle);
-
-                    // publication record.
-                    tmp = li.childNode(2).childNode(1).toString().trim();
-                    try {
-                        long record = Long.parseLong(tmp);
-                        bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
-                    } catch (@NonNull final NumberFormatException ignore) {
-                    }
-                } else if ("Author:".equalsIgnoreCase(fieldName)
-                        || "Authors:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
-                    if (as != null) {
-                        for (Element a : as) {
-                            mAuthors.add(Author.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFDB ID's
-//                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
-                        }
-                    }
-                } else if ("Date:".equalsIgnoreCase(fieldName)) {
-                    // dates are in fact displayed as YYYY-MM-DD which is very nice.
-                    tmp = li.childNode(2).toString().trim();
-                    // except that ISFDB uses 00 for the day/month when unknown ...
-                    // Cut that part out.
-                    tmp = UNKNOWN_M_D_PATTERN.matcher(tmp).replaceAll(Matcher.quoteReplacement(""));
-                    // and we're paranoid...
-                    Date d = DateUtils.parseDate(tmp);
-                    if (d != null) {
-                        bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           DateUtils.utcSqlDate(d));
-                    }
-
-                } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
-                    // always use the first one, as that will be the one used at publication
-                    tmp = li.childNode(1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_ISBN, digits(tmp));
-
-                    tmp = li.childNode(2).childNode(0).toString().trim();
-                    bookData.putString(ISFDB_BKEY_ISBN_2, digits(tmp));
-
-                } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
-                    //tmp = li.childNode(3).attr("href");
-                    //ENHANCE: pass and store these ISFDB ID's
-                    //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
-
-                    tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_PUBLISHER, tmp);
-
-                } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
-                    Elements as = li.select("a");
-                    if (as != null) {
-                        for (Element a : as) {
-                            mSeries.add(Series.fromString(a.text()));
-                            //ENHANCE: pass and store these ISFDB ID's
-//                            ISFDB_BKEY_SERIES_ID_LIST.add(stripNumber(a.attr("href")));
-                        }
-                    }
-
-                } else if ("Price:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(2).toString().trim();
-                    LocaleUtils.splitPrice(tmp,
-                                           DBDefinitions.KEY_PRICE_LISTED,
-                                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                           bookData);
-
-                } else if ("Pages:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(2).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_PAGES, tmp);
-
-                } else if ("Format:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(resources, tmp));
-
-                } else if ("Type:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(2).toString().trim();
-                    bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmp);
-                    Integer type = TYPE_MAP.get(tmp);
-                    if (type != null) {
-                        bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
-                    }
-
-                } else if ("Notes:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(1).childNode(1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmp);
-
-
-//                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
-//                    //TODO: if there are multiple art/artists... will this barf ?
-//                    tmp = li.childNode(2).attr("href");
-//                    bookData.putString(ISFDB_BKEY_BOOK_COVER_ART_URL, tmp);
-//
-//                    tmp = li.childNode(2).childNode(0).toString().trim();
-//                    bookData.putString(ISFDB_BKEY_BOOK_COVER_ART_TXT, tmp);
-//
-//                    // Cover artist
-//                    Node node_a = li.childNode(4);
-//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST_ID,
-//                                           String.valueOf(stripNumber(node_a.attr("href"))));
-//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST,
-//                                           node_a.childNode(0).toString().trim());
-//
-//                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-//                    Elements as = li.select("a");
-//                    if (as != null) {
-//                        for (Element a : as) {
-//                            StringList.addOrAppend(bookData, ISFDB_BKEY_BKEY_EDITORS_ID,
-//                                                   String.valueOf(stripNumber(a.attr("href"))));
-//                            StringList.addOrAppend(bookData, ISFDB_BKEY_EDITORS, a.text());
-//                        }
-//                    }
-                }
-            } catch (@NonNull final IndexOutOfBoundsException e) {
-                // does not happen now, but could happen if we come about non-standard entries,
-                // or if ISFDB website changes
-                Logger.error(this, e, "path: " + mPath + "\n\nLI: " + li.toString());
-            }
-        }
-
-        // ISFDB does not offer the books language on the main page (although they store
-        // it in their database).
-        // Default to a localised 'English" as ISFDB is after all (I presume) 95% english
-        bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
-
-        // the table of content
-        ArrayList<TocEntry> toc = getTableOfContentList(addSeriesFromToc);
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
-
-        // store accumulated ArrayList's, do this *after* we got the TOC
-        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
-        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
-
-        //ENHANCE: pass and store these ISFDB ID's
-//        bookData.putParcelableArrayList(ISFDB_BKEY_AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
-//        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
-
-        // set Anthology type
-        if (!toc.isEmpty()) {
-            int type = TocEntry.Authors.MULTIPLE_WORKS;
-            if (TocEntry.hasMultipleAuthors(toc)) {
-                type |= TocEntry.Authors.MULTIPLE_AUTHORS;
-            }
-            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
-        }
-
-        // try to deduce the first publication date
-        if (toc.size() == 1) {
-            // if the content table has only one entry,
-            // then this will have the first publication year for sure
-            String d = digits(toc.get(0).getFirstPublication());
-            if (d != null && !d.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
-            }
-        } else if (toc.size() > 1) {
-            // we gamble and take what we found in the content
-            if (mFirstPublication != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                   digits(mFirstPublication));
-            } // else take the book pub date ... but that might be wrong....
-        }
-
-        // optional fetch of the cover.
-        if (fetchThumbnail) {
-            fetchCover(bookData, mDoc.select("div.contentbox").first());
-        }
-
-        return bookData;
     }
 
     /**
@@ -804,9 +653,7 @@ public class ISFDBBook
      *         ...
      *     }
      * </pre>
-
-
-    */
+     */
     private void fetchCover(@NonNull final Bundle /* out */ bookData,
                             @NonNull final Element contentBox) {
         Element img = contentBox.selectFirst("img");
@@ -852,7 +699,7 @@ public class ISFDBBook
      * @throws SocketTimeoutException on timeout
      */
     @NonNull
-    private ArrayList<TocEntry> getTableOfContentList(final boolean addSeriesFromToc)
+    private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
         final ArrayList<TocEntry> results = new ArrayList<>();
@@ -860,6 +707,10 @@ public class ISFDBBook
         if (!loadPage(mPath, true)) {
             return results;
         }
+
+        boolean addSeriesFromToc = App.getPrefs()
+                                      .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+
         // <div class="ContentBox"> but there are two, so get last one
         Element contentBox = mDoc.select("div.contentbox").last();
         Elements lis = contentBox.select("li");
@@ -910,13 +761,14 @@ public class ISFDBBook
             ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
 
 
-            2019-07: translation information seems to be added:
+            2019-07: translation information seems to be added,
+            and a further sub-classification (here: 'juvenile')
 
-<li>
-<a href="http://www.isfdb.org/cgi-bin/title.cgi?1396251" dir="ltr">Jack van de Schaduwen</a> &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?25534" dir="ltr">Jack of Shadows</a>] &#8226; novel by
-<a href="http://www.isfdb.org/cgi-bin/ea.cgi?69" dir="ltr">Roger Zelazny</a>
- (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?1693" dir="ltr"><i>Jack of Shadows</i></a> 1971)
-
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238" dir="ltr">Zwerftocht Tussen de Sterren</a>
+            &#8226; juvenile
+            &#8226; (1973)
+            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29" dir="ltr">Robert A. Heinlein</a>
+            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233" dir="ltr"><i>Citizen of the Galaxy</i></a> 1957)
 
              */
             String liAsString = li.toString();
@@ -959,13 +811,15 @@ public class ISFDBBook
             // unlikely, but if so, then grab first book author
             if (author == null) {
                 author = mAuthors.get(0);
-                Logger.warn(this, "getTableOfContentList",
+                Logger.warn(this, "getTocList",
+                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(this, "getTableOfContentList",
+                Logger.warn(this, "getTocList",
+                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "ISFDB search for content found no title for li=" + li);
             }
 

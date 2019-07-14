@@ -48,9 +48,6 @@ import static com.eleybourn.bookcatalogue.entities.FieldUsage.Usage.Overwrite;
 
 /**
  * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
- * <p>
- * FIXME: ... re-test and see why the progress stops when run on all books.
- * Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
 public class UpdateFieldsFromInternetFragment
         extends Fragment {
@@ -207,7 +204,7 @@ public class UpdateFieldsFromInternetFragment
 
         addField(DBDefinitions.KEY_TITLE, CopyIfBlank, R.string.lbl_title);
         addField(DBDefinitions.KEY_ISBN, CopyIfBlank, R.string.lbl_isbn);
-        addField(UniqueId.BKEY_COVER_IMAGE, CopyIfBlank, R.string.lbl_cover);
+        addField(UniqueId.BKEY_IMAGE, CopyIfBlank, R.string.lbl_cover);
 
         addListField(UniqueId.BKEY_SERIES_ARRAY,
                      DBDefinitions.KEY_SERIES_TITLE, R.string.lbl_series);
@@ -263,7 +260,7 @@ public class UpdateFieldsFromInternetFragment
                                  @SuppressWarnings("SameParameterValue")
                                  @NonNull final String relatedFieldId) {
         FieldUsage field = mFieldUsages.get(fieldId);
-        if (field != null && field.isSelected()) {
+        if (field != null && field.isWanted()) {
             mFieldUsages.put(relatedFieldId,
                              new FieldUsage(relatedFieldId, 0, field.usage, field.isList()));
         }
@@ -302,13 +299,13 @@ public class UpdateFieldsFromInternetFragment
             fieldLabel.setText(usage.getLabel(getContext()));
 
             CompoundButton cb = row.findViewById(R.id.usage);
-            cb.setChecked(usage.isSelected());
+            cb.setChecked(usage.isWanted());
             cb.setText(usage.getUsageInfo(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
                 FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
-                cb.setChecked(fieldUsage.isSelected());
+                cb.setChecked(fieldUsage.isWanted());
                 cb.setText(fieldUsage.getUsageInfo(getContext()));
             });
 
@@ -383,7 +380,7 @@ public class UpdateFieldsFromInternetFragment
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
                 FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
-                if (fieldUsage.isSelected()) {
+                if (fieldUsage.isWanted()) {
                     return true;
                 }
             }
@@ -403,13 +400,13 @@ public class UpdateFieldsFromInternetFragment
         }
 
         // If the user has selected thumbnails...
-        final FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
+        final FieldUsage covers = mFieldUsages.get(UniqueId.BKEY_IMAGE);
         //noinspection ConstantConditions
-        if (isSingleBook() || !coversWanted.isSelected()) {
+        if (isSingleBook() || !covers.isWanted()) {
             // its a single book only; just download it.
             startUpdate();
         } else {
-            // check if they really want to download ALL
+            // check if the user really wants to download ALL covers
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -417,13 +414,13 @@ public class UpdateFieldsFromInternetFragment
                     .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .setNeutralButton(R.string.no, (d, which) -> {
-                        coversWanted.usage = CopyIfBlank;
-                        mFieldUsages.put(UniqueId.BKEY_COVER_IMAGE, coversWanted);
+                        covers.usage = CopyIfBlank;
+                        mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (d, which) -> {
-                        coversWanted.usage = Overwrite;
-                        mFieldUsages.put(UniqueId.BKEY_COVER_IMAGE, coversWanted);
+                        covers.usage = Overwrite;
+                        mFieldUsages.put(UniqueId.BKEY_IMAGE, covers);
                         startUpdate();
                     })
                     .create()
@@ -440,7 +437,10 @@ public class UpdateFieldsFromInternetFragment
             return;
         }
 
+        // add related fields.
+        // i.e. if we do the 'list-price' field, we'll also want its currency.
         addRelatedField(DBDefinitions.KEY_PRICE_LISTED, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+
 
         UpdateFieldsFromInternetTask updateTask =
                 new UpdateFieldsFromInternetTask(mTaskManager, mSearchSites, mFieldUsages,

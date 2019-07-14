@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbBook;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -98,7 +99,7 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager}. */
     public static final boolean LIBRARY_THING_MANAGER = false;
 
-    /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
+    /** {@link IsfdbBook}. */
     public static final boolean ISFDB_SEARCH = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager}. */

@@ -118,7 +118,7 @@ public class EditSeriesDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (d, which) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
-                        UserMessage.show(mNameView, R.string.warning_required_name);
+                        UserMessage.show(mNameView, R.string.warning_missing_name);
                         return;
                     }
                     mIsComplete = mIsCompleteView.isChecked();

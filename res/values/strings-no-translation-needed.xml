@@ -8,6 +8,8 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
+    <string name="beta_build">2019–07–12</string>
+
     <string name="url_sourcecode6" translatable="false">
         <![CDATA[
             <a href="https://github.com/tfonteyn/Book-Catalogue/tree/move-to-android-5">%1s</a>
@@ -40,11 +42,6 @@
             <a href="https://github.com/eleybourn/Book-Catalogue/">%1s</a>
         ]]>
     </string>
-    <string name="url_help" translatable="false">
-        <![CDATA[
-            <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Help">%1s</a>
-        ]]>
-    </string>
 
     <!-- External sites / trademarks  -->
     <string name="amazon" translatable="false">Amazon</string>
@@ -67,6 +64,5 @@
     <string name="debug_history" translatable="false">History</string>
     <string name="debug_test" translatable="false">Test something</string>
     <string name="debug_bob_tables" translatable="false">BoB tables</string>
-
 
 </resources>

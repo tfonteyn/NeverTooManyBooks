@@ -21,12 +21,13 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * Construction is done in two steps:
  * <ol>
  * <li>Create the table, fill it with data<br>
- * {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
- * <li>Use the normal constructor to start using the table</li>
+ * String tableName = {@link #createTable(DAO, TableDefinition, TableDefinition, int)}</li>
+ * <li>Use the normal constructor with the table name from 1. to start using the table</li>
  * </ol>
  *
- * Reminder: moveNext/Prev SQL concatenates/splits two columns. This is to get around the limitation
- * of {@link SQLiteStatement} only able to return a single column.
+ * Reminder: moveNext/Prev SQL concatenates/splits two columns.
+ * This is to get around the limitation of {@link SQLiteStatement}
+ * only able to return a single column.
  * Alternative is to use a raw query, but those cannot be re-used (pre-compiled).
  *
  * @author pjw

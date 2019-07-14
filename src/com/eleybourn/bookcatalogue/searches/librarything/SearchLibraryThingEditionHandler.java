@@ -72,7 +72,6 @@ class SearchLibraryThingEditionHandler
             String isbn = mBuilder.toString();
             mEditions.add(isbn);
         }
-        // Note:
         // Always reset the length. This is not entirely the right thing to do, but works
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and
