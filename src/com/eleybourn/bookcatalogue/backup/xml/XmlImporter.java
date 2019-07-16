@@ -126,10 +126,11 @@ public class XmlImporter
      * <p>
      * <br>{@inheritDoc}
      */
+    @NonNull
     @Override
-    public int doBooks(@NonNull final InputStream importStream,
-                       @Nullable final CoverFinder coverFinder,
-                       @NonNull final ProgressListener listener) {
+    public Results doBooks(@NonNull final InputStream importStream,
+                           @Nullable final CoverFinder coverFinder,
+                           @NonNull final ProgressListener listener) {
         throw new UnsupportedOperationException();
     }
 
@@ -628,8 +629,8 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                        Logger.warn(this, "TagInfo",
-                                    "invalid id in xml t: " + name);
+                    Logger.warn(this, "TagInfo",
+                                "invalid id in xml t: " + name);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);

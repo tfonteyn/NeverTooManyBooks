@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
  * Progress support for {@link AsyncTask}. There can only be ONE task at a time.
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
- *
+ * <p>
  * TODO: all in all.. this was a bad design. Redo!
  */
 public class ProgressDialogFragment<Progress, Result>
@@ -56,6 +56,9 @@ public class ProgressDialogFragment<Progress, Result>
 
     /** intermediate storage, as we'll only update this when progress is updated. */
     private int mMax;
+    private int mCurrent;
+    private boolean mIsIndeterminate;
+
     /** flag indicating the max value was updated. No need to add to onSaveInstanceState. */
     private boolean mUpdateMax;
     /** intermediate storage, needed for onSaveInstanceState. */
@@ -107,57 +110,57 @@ public class ProgressDialogFragment<Progress, Result>
         // re-creation (such as from a configuration change).
         // VERY IMPORTANT. We do not want this destroyed as our task would get killed!
         setRetainInstance(true);
+
+        Bundle args = requireArguments();
+        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+
+        args = savedInstanceState == null ? args : savedInstanceState;
+        // initial/current message.
+        mMessage = args.getString(BKEY_CURRENT_MESSAGE);
+        mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
+        mMax = args.getInt(BKEY_MAX);
+        mCurrent = args.getInt(BKEY_CURRENT_VALUE);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreateDialog(this, savedInstanceState);
-
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_task_progress, null);
 
         mMessageView = root.findViewById(R.id.progressMessage);
         mProgressBar = root.findViewById(R.id.progressBar);
+        mProgressBar.setIndeterminate(mIsIndeterminate);
 
-        Bundle args = requireArguments();
-
-        // these are fixed
-        @StringRes
-        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.progress_msg_please_wait);
-        boolean isIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
-        //noinspection ConstantConditions
-        mProgressBar.setIndeterminate(isIndeterminate);
-
-        // the other settings can live in the savedInstance
-        args = savedInstanceState == null ? args : savedInstanceState;
-
-        // initial/current message.
-        mMessage = args.getString(BKEY_CURRENT_MESSAGE);
-        if (mMessage != null) {
-            //noinspection ConstantConditions
-            mMessageView.setText(mMessage);
-        }
         // current and max values for a 'determinate' progress bar.
-        if (!isIndeterminate) {
-            mProgressBar.setProgress(args.getInt(BKEY_CURRENT_VALUE));
-            mMax = args.getInt(BKEY_MAX);
+        if (!mIsIndeterminate) {
+            mProgressBar.setProgress(mCurrent);
             if (mMax > 0) {
                 mProgressBar.setMax(mMax);
             }
         }
-        mWasCancelled = args.getBoolean(BKEY_WAS_CANCELLED);
+
+        if (mMessage != null) {
+            //noinspection ConstantConditions
+            mMessageView.setText(mMessage);
+        }
 
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(root)
                 .create();
-        if (titleId != 0) {
-            dialog.setTitle(titleId);
-        }
         // this is really needed, as it would be to easy to cancel without.
         // Cancel by 'back' press only.
         dialog.setCanceledOnTouchOutside(false);
+
+        //noinspection ConstantConditions
+        @StringRes
+        int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE,
+                                            R.string.progress_msg_please_wait);
+        if (titleId != 0) {
+            dialog.setTitle(titleId);
+        }
 
         Tracker.exitOnCreateDialog(this);
         return dialog;

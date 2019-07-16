@@ -107,7 +107,7 @@
         android:id="@+id/search_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/search_text_hint"
+        android:hint="@string/hint_search_text"
         android:inputType="textMultiLine"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"

@@ -226,7 +226,7 @@ public class StartupActivity
         }
 
         new AlertDialog.Builder(this)
-                .setTitle(R.string.about_lbl_upgrade)
+                .setTitle(R.string.lbl_upgrade)
                 .setIcon(R.drawable.ic_info_outline)
                 .setMessage(Html.fromHtml(upgradeMessage))
                 .setPositiveButton(android.R.string.ok, (d, which) -> {

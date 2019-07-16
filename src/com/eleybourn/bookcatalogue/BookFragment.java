@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -145,9 +145,9 @@ public class BookFragment
         initFlattenedBookList(savedInstanceState);
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(),
-                                    R.string.hint_view_only_help,
-                                    null);
+            TipManager.display(getLayoutInflater(),
+                               R.string.tip_view_only_help,
+                               null);
         }
     }
 
@@ -336,9 +336,12 @@ public class BookFragment
      */
     private void populateLoanedToField(@Nullable final String loanee) {
         Field field = getField(R.id.loaned_to);
+        // handle visibility here as this method can get called from anywhere.
+        View fieldView = field.getView();
         if (loanee != null && !loanee.isEmpty()) {
             field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
-            field.getView().setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            fieldView.setVisibility(View.VISIBLE);
+            fieldView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /**
                  * yes, icons are not supported here, but:
                  * TODO: convert to MenuPicker context menu.... if I can be bothered.
@@ -354,6 +357,7 @@ public class BookFragment
                 }
             });
         } else {
+            fieldView.setVisibility(View.GONE);
             field.setValue("");
         }
     }
@@ -456,7 +460,7 @@ public class BookFragment
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.menu_internet_update_fields)
+                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {

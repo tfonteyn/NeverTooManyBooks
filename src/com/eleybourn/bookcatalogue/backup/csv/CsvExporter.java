@@ -78,6 +78,8 @@ public class CsvExporter
      */
     private static final String EXPORT_FIELD_HEADERS =
             "\"" + DBDefinitions.KEY_PK_ID + "\","
+                    + '"' + DBDefinitions.KEY_BOOK_UUID + "\","
+                    + '"' + DBDefinitions.KEY_DATE_LAST_UPDATED + "\","
                     + '"' + CSV_COLUMN_AUTHORS + "\","
                     + '"' + DBDefinitions.KEY_TITLE + "\","
                     + '"' + DBDefinitions.KEY_ISBN + "\","
@@ -114,9 +116,7 @@ public class CsvExporter
                     + '"' + DBDefinitions.KEY_OPEN_LIBRARY_ID + "\","
                     + '"' + DBDefinitions.KEY_ISFDB_ID + "\","
                     + '"' + DBDefinitions.KEY_GOODREADS_ID + "\","
-                    + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\","
-                    + '"' + DBDefinitions.KEY_DATE_LAST_UPDATED + "\","
-                    + '"' + DBDefinitions.KEY_UUID + '"'
+                    + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\""
                     + '\n';
     @NonNull
     private final ExportOptions mSettings;
@@ -173,8 +173,8 @@ public class CsvExporter
         int numberOfBooksExported = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (DAO mDb = new DAO();
-             BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom);
+        try (DAO db = new DAO();
+             BookCursor bookCursor = db.fetchBooksForExport(mSettings.dateFrom);
              BufferedWriter out = new BufferedWriter(
                      new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
@@ -193,7 +193,7 @@ public class CsvExporter
                 long bookId = bookCursor.getId();
 
                 String authorStringList = StringList.getAuthorCoder()
-                                                    .encode(mDb.getAuthorsByBookId(bookId));
+                                                    .encode(db.getAuthorsByBookId(bookId));
 
                 // Sanity check: ensure author is non-blank. This HAPPENS.
                 // Probably due to constraint failures.
@@ -211,6 +211,8 @@ public class CsvExporter
 
                 row.setLength(0);
                 row.append(format(bookId))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
                    .append(format(authorStringList))
                    .append(format(title))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_ISBN)))
@@ -221,10 +223,10 @@ public class CsvExporter
 
                    .append(format(cursorRow.getDouble(DBDefinitions.KEY_RATING)))
                    .append(format(StringList.getBookshelfCoder()
-                                            .encode(mDb.getBookshelvesByBookId(bookId))))
+                                            .encode(db.getBookshelvesByBookId(bookId))))
                    .append(format(cursorRow.getInt(DBDefinitions.KEY_READ)))
                    .append(format(StringList.getSeriesCoder()
-                                            .encode(mDb.getSeriesByBookId(bookId))))
+                                            .encode(db.getSeriesByBookId(bookId))))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_PAGES)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_NOTES)))
 
@@ -242,7 +244,7 @@ public class CsvExporter
                    .append(format(cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_LOANEE)))
                    .append(format(StringList.getTocCoder()
-                                            .encode(mDb.getTocEntryByBook(bookId))))
+                                            .encode(db.getTocEntryByBook(bookId))))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_GENRE)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
@@ -252,10 +254,7 @@ public class CsvExporter
                    .append(format(cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
                    .append(format(cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
                    .append(format(cursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
-
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
-                   .append(format(cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)));
+                   .append(format(cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'
                 row.replace(row.length() - 1, row.length(), "\n");

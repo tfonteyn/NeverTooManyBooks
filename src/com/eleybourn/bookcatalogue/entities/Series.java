@@ -26,8 +26,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -251,60 +251,55 @@ public class Series
      * bill(1)
      *
      * @param list to check
-     *
-     * @return {@code true} is the list was modified in any way.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean pruneSeriesList(@NonNull final List<Series> list) {
+    public static void pruneSeriesList(List<Series> list) {
+        List<Series> toDelete = new ArrayList<>();
+        Map<String, Series> index = new HashMap<>();
 
-        // keep track of what we have
-        Map<String, Series> map = new HashMap<>();
-
-        // will be set to true if we deleted items.
-        boolean modified = false;
-
-        Iterator<Series> it = list.iterator();
-        while (it.hasNext()) {
-            Series series = it.next();
+        for (Series series : list) {
             Locale locale = series.getLocale();
 
             final String name = series.getName().trim().toLowerCase(locale);
-            if (!map.containsKey(name)) {
+            final boolean emptyNum = series.getNumber().trim().isEmpty();
+
+            if (!index.containsKey(name)) {
                 // Not there, so just add and continue
-                map.put(name, series);
+                index.put(name, series);
 
             } else {
                 // See if we can purge either one.
-                if (series.getNumber().trim().isEmpty()) {
-                    // Always delete series with empty numbers if an equally or more
-                    // specific one exists
-                    it.remove();
-                    modified = true;
-
+                if (emptyNum) {
+                    // Always delete Series with empty numbers if an equally or more specific one exists
+                    toDelete.add(series);
                 } else {
-                    // See if the one in 'index' also has a num
-                    Series orig = Objects.requireNonNull(map.get(name));
-                    if (orig.getNumber().trim().isEmpty()) {
-                        // Replace with this one, and delete the original
-                        map.put(name, series);
-                        it.remove();
-                        modified = true;
-
+                    // See if the previous one also has a number
+                    Series previous = index.get(name);
+                    //noinspection ConstantConditions
+                    if (previous.getNumber().trim().isEmpty()) {
+                        // Replace with this Series, and mark previous Series for delete
+                        index.put(name, series);
+                        toDelete.add(previous);
                     } else {
                         // Both have numbers. See if they are the same.
                         if (series.getNumber().trim().toLowerCase(locale)
-                                  .equals(orig.getNumber().trim().toLowerCase(locale))) {
-                            // Same exact series, delete this one
-                            it.remove();
-                            modified = true;
-                        } //else {
-                        // Nothing to do: same series, but different series position
+                                  .equals(previous.getNumber().trim().toLowerCase(locale))) {
+                            // Same exact Series, delete this one
+                            toDelete.add(series);
+                        }
+                        //else {
+                        // Nothing to do: this is a different series position
+                        // keep both
                         //}
                     }
                 }
             }
         }
-        return modified;
+
+        for (Series s : toDelete) {
+            list.remove(s);
+        }
+
+        toDelete.size();
     }
 
     /**
@@ -422,11 +417,12 @@ public class Series
         String numberStr;
         if (!mNumber.isEmpty()) {
             // for display reasons, start the number part with a space !
-            numberStr = " (" + mNumber + ')';
+            // the surrounding () are NOT escaped as they are part of the format.
+            numberStr = " (" + StringList.escapeListItem(mNumber, '(') + ')';
         } else {
             numberStr = "";
         }
-        return StringList.escapeListItem('(', mName) + numberStr;
+        return StringList.escapeListItem(mName, '(') + numberStr;
     }
 
     /**
@@ -465,6 +461,7 @@ public class Series
         mId = db.getSeriesId(this, locale);
         return mId;
     }
+
     /**
      * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.
@@ -480,7 +477,7 @@ public class Series
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *     AND all other fields are equal</li>
+     * AND all other fields are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */

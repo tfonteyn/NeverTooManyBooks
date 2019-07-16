@@ -75,6 +75,7 @@ public class OpenLibraryManager
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "OpenLibrary.";
 
+    /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /** param 1: isbn, param 2: L/M/S for the size. */

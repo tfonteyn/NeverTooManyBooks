@@ -3,10 +3,10 @@
 
 <resources>
 
-    <string name="hint">Aanwijzing</string>
-    <string name="hint_reset_all_hints">Herstel aanwijzingen</string>
-    <string name="hints_have_been_reset">Aanwijzingen zijn hersteld</string>
-    <string name="hint_booklist_styles_editor">
+    <string name="tip_dialog_title">Aanwijzing</string>
+    <string name="tip_reset_all">Herstel aanwijzingen</string>
+    <string name="tip_reset_done">Aanwijzingen zijn hersteld</string>
+    <string name="tip_booklist_styles_editor">
         U kunt dit scherm gebruiken om de lijst met stijlen aan te passen die in uw standaard
         stijlen menu wordt getoond.
         Een stijl kan worden aangevinkt om in de lijst getoond te worden, of afgevinkt om niet
@@ -16,7 +16,7 @@
         Overal elders op de lijn lang-drukken geeft de mogelijkheid de details van een bepaalde
         stijl te bewerken (of deze te klonen als het een ingebouwde stijl is).
     </string>
-    <string name="hint_booklist_style_groups">
+    <string name="tip_booklist_style_groups">
         U kunt dit scherm gebruiken om de hierarchie van de kopteksten voor een bepaalde
         boekenlijststijl te bewerken.
         Een koptekst kan worden aangevinkt om getoond te worden, of afgevinkt om niet
@@ -24,7 +24,7 @@
         U kunt de hierarchie herschikken door ze met het pictogram uiterst rechts van de
         lijn op en neer verslepen.
     </string>
-    <string name="hint_booklist_style_properties">
+    <string name="tip_booklist_style_properties">
         U kunt dit scherm gebruiken om de eigenschappen van een bepaalde boekenlijststijl te
         bewerken.
         U kunt de naam veranderen, de groepering bewerken om de hierarchie te veranderen en een
@@ -34,7 +34,7 @@
         boeken in de lijst aan te passen, bijvoorbeeld alleen die boeken die u nog niet heeft
         gelezen.
     </string>
-    <string name="X_hint_booklist_global_properties">
+    <string name="X_tip_booklist_global_properties">
         U kunt dit scherm gebruiken om de standaard eigenschappen van alle boekenlijststijlen
         in te stellen. De meeste eigenschappen kunnen worden overschreven door individuele stijlen,
         maar de standaardwaarden worden hier gedefinieerd. U kunt hier aangeven hoe de lijsten
@@ -42,51 +42,51 @@
         waar mogelijk, toegepast worden op alle stijlen.\n
         \nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
     </string>
-    <string name="hint_book_search_by_text">
+    <string name="tip_book_search_by_text">
         Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en
         verdient meestal de voorkeur. De juiste streepjescode kunt u meestal vinden aan de
         achterkant van de boekomslag.
     </string>
-    <string name="hint_authors_book_may_appear_more_than_once">
+    <string name="tip_authors_book_may_appear_more_than_once">
         Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst.
         Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden
         verwijderd uit de lijst.
     </string>
-    <string name="hint_series_book_may_appear_more_than_once">
+    <string name="tip_series_book_may_appear_more_than_once">
         Als boeken worden getoond in alle series, kunnen ze meermalen voorkomen in de lijst.
         Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden
         verwijderd uit de lijst.
     </string>
-    <string name="hint_background_tasks">
+    <string name="tip_background_tasks">
         Vanaf deze plaats kunt u de lopende taken zien en eveneens vorige taken die met fouten
         of ander vermeldingswaardige gebeurtenissen zijn beëindigd. Tikken op een taak laat u
         de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen
         (samen met de gerelateerde gebeurtenissen).
     </string>
-    <string name="hint_background_task_events">
+    <string name="tip_background_task_events">
         Vanaf hier kunt u de gebeurtenissen zien die zijn geassocieerd met op de achtergrond
         lopende taken. Tikken op een gebeurtenis laat u een aantal acties uitvoeren die
         samenhangen met die gebeurtenis.
     </string>
-    <string name="hint_booklist_style_menu">
+    <string name="tip_booklist_style_menu">
         Dit menu laat u de lijststijl selecteren.\n\n
         U kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op
         ‘Aanpassen’ onderaan de lijst.
     </string>
-    <string name="hint_autorotate_camera_images">
+    <string name="tip_autorotate_camera_images">
         Als u altijd uw camera-opnames dezelfde kant opdraait kunt u proberen de
         applicatie-instellingen te veranderen zodat dit automatisch gebeurt.
     </string>
-    <string name="hint_view_only_book_details">
+    <string name="tip_view_only_book_details">
         Wanneer u op een item in deze lijst tikt, kunt u nu kiezen naar een alleen-lezen
         detailoverzicht te gaan. Zie “Meer voorkeuren” voor de relevante instelling.
     </string>
-    <string name="hint_view_only_help">
+    <string name="tip_view_only_help">
         Dit is het alleen-lezen detailoverzicht. U kunt naar link en rechts vegen om naar
         andere boeken te gaan en u kunt het boek bewerken via het opties menu door gebruik
         te maken van de menuknop of overvloeiend menu-pictogram.
     </string>
-    <string name="hint_book_list">
+    <string name="tip_book_list">
         Tikken op een boek zal de details van het boek tonen, lang drukken op een
         titel in de lijst geeft verdere opties.
     </string>
@@ -162,7 +162,7 @@
     <string name="lbl_notes">Notities</string>
     <string name="lbl_lend_to">Leen boek aan:</string>
     <string name="lbl_price_listed">Prijs</string>
-    <string name="lbl_update_fields">Automatisch Velden bijwerken</string>
+    <string name="lbl_update_fields_long">Automatisch Velden bijwerken</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="X_lbl_loaned_to_long">Dit boek is uitgeleend aan:</string>
@@ -205,7 +205,6 @@
     <string name="title_add_book">Boek Toevoegen</string>
     <string name="menu_add_book">Boek Toevoegen…</string>
     <string name="title_delete_book">Boek verwijderen</string>
-    <string name="X_btn_confirm_add_book">Boek toevoegen</string>
     <string name="btn_confirm_update">Bijwerken</string>
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="X_info_no_books_yet">
@@ -216,7 +215,6 @@
     <string name="X_menu_sort_by">Sorteren op</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="menu_search">Zoeken</string>
-    <string name="X_btn_confirm_save_book">Boek opslaan</string>
     <string name="X_info_no_bookshelves_yet">
         U heef nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.
     </string>
@@ -253,7 +251,7 @@
         Google Goggles streepjescode scanner app installeren.
     </string>
     <string name="title_install_scan">Streepjescode Scanner Installeren</string>
-    <string name="about_lbl_upgrade">Sinds uw laatste upgrade</string>
+    <string name="lbl_upgrade">Sinds uw laatste upgrade</string>
     <string name="menu_edit_book">Boek bewerken</string>
     <string name="menu_edit_book_notes">Mijn Commentaar</string>
     <string name="menu_loan_lend_book">Boek uitlenen…</string>
@@ -313,7 +311,7 @@
     <string name="searching_open_library">Zoeken by OpenLibrary</string>
     <string name="X_select_bookshelves">Selecteer Boekenplanken</string>
 
-    <string name="field_not_set">Niet Ingevuld</string>
+    <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="X_menu_search_books">Zoek boeken</string>
 
     <string name="X_about_help_tap_here">Tik hier voor online help</string>
@@ -518,7 +516,7 @@
     <string name="gr_tq_menu_background_tasks">Achtergrondtaken</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Opschonen oude taken</string>
     <string name="gr_tq_btn_cleanup_old_events">Opschonen oude gebeurtenissen</string>
-    <string name="search_text_hint">Tekst en/of ISBN</string>
+    <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="menu_add_book_manually">Handmatig toevoegen</string>
     <string name="menu_search_internet">Internet doorzoeken</string>
     <string name="btn_show_results">Toon resultaten</string>
@@ -564,7 +562,7 @@
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resReportSendSuccessToast">Dank u!</string>
 
-    <string name="date_not_set_with_brackets">(geen datum)</string>
+    <string name="hint_date_not_set_with_brackets">(geen datum)</string>
     <string name="style_builtin_author_series">Auteur daarna Serie</string>
     <string name="style_builtin_series">Series</string>
     <string name="style_builtin_title_first_letter">Eerste letter v/d titel</string>
@@ -574,7 +572,7 @@
     <string name="style_builtin_publication_date">Publicatiedatum</string>
     <string name="style_builtin_added_date">Datum toegevoegd</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
-    <string name="field_not_set_with_brackets">(leeg)</string>
+    <string name="hint_field_not_set_with_brackets">(leeg)</string>
 
     <string name="progress_msg_rebuilding_search_index">Zoekindex opnieuw opbouwen…</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
@@ -693,11 +691,12 @@
     <string name="progress_msg_searching">Aan \'t zoeken…</string>
     <string name="progress_msg_adding_book">Boeken aan \'t toevoegen…</string>
     <string name="progress_msg_connecting">Website contacteren…</string>
-    <string name="progress_msg_covers">%1$d boekomslagen verwerkt (%2$d missend)</string>
+    <string name="progress_msg_covers_handled">%1$d boekomslagen verwerkt</string>
+    <string name="progress_msg_covers_handled_missing">%1$d boekomslagen verwerkt (%2$d missend)</string>
     <string name="progress_msg_backing_up">Aan \'t Back-uppen…</string>
     <string name="progress_msg_importing">Importeren…</string>
     <string name="progress_msg_n_created_m_updated">%1$d toegevoegd, %2$d bijgewerkt</string>
-    <string name="progress_msg_covers_skip">
+    <string name="progress_msg_covers_handled_missing_skipped">
         %1$d boekomslagen verwerkt (%2$d missend, %3$d overgeslagen)
     </string>
 
@@ -804,7 +803,7 @@
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/serie</string>
 
 
-    <string name="about_lbl_special_thanks">Speciale dankbetuiging</string>
+    <string name="lbl_special_thanks">Speciale dankbetuiging</string>
 
     <string name="about_translators">
         &APP_NAME; is het resultaat van de inspanning van vele personen en zou niet zo\'n
@@ -817,8 +816,8 @@
     <string name="pg_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
     <string name="menu_set_read">Markeer als gelezen</string>
     <string name="menu_set_unread">Markeer als ongelezen</string>
-    <string name="menu_internet_update_fields">Bijwerken velden</string>
-    <string name="search_with_text">Zoeken: %1$s</string>
+    <string name="lbl_update_fields">Bijwerken velden</string>
+    <string name="title_search_filtered_on_x">Gefiltered: %1$s</string>
     <string name="searching_isfdb">Zoeken bij ISFDB</string>
     <string name="title_send_mail">Bericht versturen…</string>
     <string name="error_storage_not_accessible">Opslag niet toegankelijk</string>
@@ -828,14 +827,14 @@
 
     <string name="progress_msg_saving_image">Scan wordt bewaard…</string>
     <string name="btn_confirm_use">Gebruik</string>
-    <string name="usage_skip">Overslaan</string>
+    <string name="lbl_field_usage_skip">Overslaan</string>
     <string name="info_share_book_im_reading">Ik lees %1$s door %2$s %3$s %4$s</string>
     <string name="error_search_configuration">
         Configuratie fout. Open de instellingen en kijk de Zoek-webpaginas na.
     </string>
     <string name="book_format_audiobook">Luisterboek</string>
     <string name="book_format_ebook">E-boek</string>
-    <string name="btn_merge">Samenvoegen</string>
+    <string name="btn_confirm_merge">Samenvoegen</string>
     <string name="btn_options">Opties</string>
     <string name="import_options_dialog_title">Selecteer wat U wil importeren.</string>
 
@@ -858,7 +857,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
 
-    <string name="menu_clear_filters">Filters verwijderen</string>
+    <string name="menu_clear_search_filters">Filters verwijderen</string>
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="book_format_hardcover">Hardcover</string>
     <string name="book_format_paperback">Pocket</string>
@@ -883,10 +882,15 @@
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
     <string name="progress_msg_searching_site">Zoeken bij %1$s</string>
     <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
-    <string name="about_lbl_creators">Oorspronkelijk door:</string>
+    <string name="lbl_creators">Oorspronkelijk door:</string>
     <string name="unknown_uc">ONBEKEND</string>
     <string name="title_delete_toc_entry">Titel verwijderen</string>
     <string name="confirm_delete_toc_entry">De titel “%1$s” door %2$s echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="menu_view_book_at_ellipsis">Bekijk op…</string>
     <string name="book_format_digest">Digest</string>
+    <string name="lbl_keywords">Trefwoorden</string>
+    <string name="warning_missing_title">De titel ontbreekt.</string>
+    <string name="warning_missing_author">De auteur ontbreekt.</string>
+    <string name="warning_isfdb_only">(alleen ondersteund door de ISFDB-website)</string>
+    <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
 </resources>

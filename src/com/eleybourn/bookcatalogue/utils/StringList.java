@@ -182,36 +182,27 @@ public class StringList<E> {
         return sTocUtils;
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
-    @NonNull
-    public static String escapeListItem(final char delim,
-                                        @NonNull final String s) {
-        return escapeListItem(delim, "", s);
-    }
-
     /**
-     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
+     * Convert a string by 'escaping' all instances of:
+     * {@link #MULTI_STRING_SEPARATOR}, '\', \'r', '\n', '\t' and any additional 'escapeChars'.
      * The escape char is '\'.
-     * <p>
-     * We also escape '(' as we use that to append extra info to string.
-     * <p>
-     * This is used to build text lists separated by the passed delimiter.
      *
-     * @param delim      delimiter used in stringList
-     * @param alsoEscape string with characters to escape. Case sensitive!
-     * @param s          String representing the list
+     * @param source      String to escape
+     * @param escapeChars additional characters to escape. Case sensitive!
      *
      * @return Converted string(trimmed)
      */
     @NonNull
-    public static String escapeListItem(final char delim,
-                                        @NonNull final String alsoEscape,
-                                        @NonNull final String s) {
+    public static String escapeListItem(@NonNull final String source,
+                                        final char... escapeChars) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+        for (int i = 0; i < source.length(); i++) {
+            char c = source.charAt(i);
             switch (c) {
+                case MULTI_STRING_SEPARATOR:
+                    sb.append("\\" + MULTI_STRING_SEPARATOR);
+                    break;
+
                 case '\\':
                     sb.append("\\\\");
                     break;
@@ -229,8 +220,12 @@ public class StringList<E> {
                     break;
 
                 default:
-                    if (c == delim || alsoEscape.indexOf(c) > -1) {
-                        sb.append('\\');
+                    for (char e : escapeChars) {
+                        if (c == e) {
+                            sb.append('\\');
+                            // break from for (char e : escapeChars)
+                            break;
+                        }
                     }
                     sb.append(c);
                     break;
@@ -250,23 +245,23 @@ public class StringList<E> {
     @NonNull
     public ArrayList<E> decode(@Nullable final String stringList,
                                final boolean allowBlank) {
-        return decode(MULTI_STRING_SEPARATOR, stringList, allowBlank);
+        return decode(stringList, allowBlank, MULTI_STRING_SEPARATOR);
     }
 
     /**
      * Decode a string list separated by 'delim' and
      * encoded by {@link #escapeListItem}.
      *
-     * @param delim      delimiter to use
      * @param stringList String representing the list
      * @param allowBlank Flag to allow adding empty (non-null) strings
+     * @param delim      delimiter to use
      *
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<E> decode(final char delim,
-                               @Nullable final String stringList,
-                               final boolean allowBlank) {
+    public ArrayList<E> decode(@Nullable final String stringList,
+                               final boolean allowBlank,
+                               final char delim) {
         StringBuilder sb = new StringBuilder();
         ArrayList<E> list = new ArrayList<>();
         if (stringList == null) {
@@ -279,7 +274,7 @@ public class StringList<E> {
             if (inEsc) {
                 switch (c) {
                     case '\\':
-                        sb.append(c);
+                        sb.append('\\');
                         break;
 
                     case 'r':
@@ -295,6 +290,7 @@ public class StringList<E> {
                         break;
 
                     default:
+                        // covers MULTI_STRING_SEPARATOR
                         sb.append(c);
                         break;
                 }
@@ -305,6 +301,7 @@ public class StringList<E> {
                     case '\\':
                         inEsc = true;
                         break;
+
                     default:
                         if (c == delim) {
                             String source = sb.toString().trim();

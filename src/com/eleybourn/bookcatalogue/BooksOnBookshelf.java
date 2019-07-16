@@ -64,7 +64,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StylePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
@@ -238,7 +238,7 @@ public class BooksOnBookshelf
         mModel.init(getIntent().getExtras(), savedInstanceState);
 
         // Restore bookshelf
-        mModel.setCurrentBookshelf(Bookshelf.getPreferred(this, mModel.getDb()));
+        mModel.setCurrentBookshelf(Bookshelf.getBookshelf(this, mModel.getDb(), true));
 
         // listen for the booklist being ready to display.
         mModel.getBuilderResult().observe(this, this::builderResultsAreReadyToDisplay);
@@ -623,7 +623,7 @@ public class BooksOnBookshelf
             searchText = getIntent().getDataString();
         }
         mModel.getSearchCriteria().setKeywords(searchText);
-        initSearchField(mModel.getSearchCriteria().getKeywords());
+        populateSearchField();
     }
 
     /**
@@ -668,7 +668,7 @@ public class BooksOnBookshelf
         menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
             .setIcon(R.drawable.ic_cloud_download);
 
-        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_filters)
+        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
             .setIcon(R.drawable.ic_undo);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -694,8 +694,8 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                HintManager.displayHint(getLayoutInflater(), R.string.hint_booklist_style_menu,
-                                        this::showStylePicker);
+                TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_menu,
+                                   this::showStylePicker);
                 return true;
 
             case R.id.MENU_EXPAND:
@@ -939,7 +939,7 @@ public class BooksOnBookshelf
 
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS,
-                         R.string.menu_internet_update_fields)
+                         R.string.lbl_update_fields_long)
                     .setIcon(R.drawable.ic_cloud_download);
 
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
@@ -994,7 +994,7 @@ public class BooksOnBookshelf
                 }
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS,
-                         R.string.menu_internet_update_fields)
+                         R.string.lbl_update_fields_long)
                     .setIcon(R.drawable.ic_cloud_download);
                 break;
 
@@ -1015,7 +1015,7 @@ public class BooksOnBookshelf
                     }
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                              MenuHandler.ORDER_UPDATE_FIELDS,
-                             R.string.menu_internet_update_fields)
+                             R.string.lbl_update_fields_long)
                         .setIcon(R.drawable.ic_cloud_download);
                 }
                 break;
@@ -1435,7 +1435,7 @@ public class BooksOnBookshelf
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             mModel.getSearchCriteria().from(extras, true);
-                            initSearchField(mModel.getSearchCriteria().getKeywords());
+                            populateSearchField();
                         }
                         mModel.setFullRebuild(true);
                     }
@@ -1464,8 +1464,8 @@ public class BooksOnBookshelf
 
                         if ((options & ImportOptions.PREFERENCES) != 0) {
                             // the imported prefs could have a different preferred bookshelf.
-                            Bookshelf newBookshelf = Bookshelf.getPreferred(this,
-                                                                            mModel.getDb());
+                            Bookshelf newBookshelf =
+                                    Bookshelf.getBookshelf(this, mModel.getDb(), true);
                             if (!mModel.getCurrentBookshelf().equals(newBookshelf)) {
                                 // if it was.. switch to it.
                                 mModel.setCurrentBookshelf(newBookshelf);
@@ -1591,16 +1591,15 @@ public class BooksOnBookshelf
 
     /**
      * display or hide the search text field in the header.
-     *
-     * @param searchText the text which was used for the search (if any).
      */
-    private void initSearchField(@Nullable final String searchText) {
+    private void populateSearchField() {
+        String searchText = mModel.getSearchCriteria().getDisplayString();
         TextView searchTextView = findViewById(R.id.search_text);
-        if (searchText == null || searchText.isEmpty()) {
+        if (searchText.isEmpty()) {
             searchTextView.setVisibility(View.GONE);
         } else {
             searchTextView.setVisibility(View.VISIBLE);
-            searchTextView.setText(getString(R.string.search_with_text, searchText));
+            searchTextView.setText(getString(R.string.title_search_filtered_on_x, searchText));
         }
     }
 
@@ -1608,10 +1607,10 @@ public class BooksOnBookshelf
      * Show the hints used in this class.
      */
     private void initHints() {
-        HintManager.displayHint(getLayoutInflater(),
-                                R.string.hint_view_only_book_details, null);
-        HintManager.displayHint(getLayoutInflater(),
-                                R.string.hint_book_list, null);
+        TipManager.display(getLayoutInflater(),
+                           R.string.tip_view_only_book_details, null);
+        TipManager.display(getLayoutInflater(),
+                           R.string.tip_book_list, null);
     }
 
     /**

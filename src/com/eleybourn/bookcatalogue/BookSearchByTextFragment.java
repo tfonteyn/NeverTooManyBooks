@@ -21,7 +21,7 @@ import java.util.Set;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -39,6 +39,8 @@ public class BookSearchByTextFragment
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
+    // ENHANCE: add auto-completion for publishers?
+    private EditText mPublisherView;
     private final SearchCoordinator.SearchFinishedListener mSearchFinishedListener =
             new SearchCoordinator.SearchFinishedListener() {
                 /**
@@ -94,8 +96,6 @@ public class BookSearchByTextFragment
                     }
                 }
             };
-    // ENHANCE: add auto-completion for publishers?
-    private EditText mPublisherView;
 
     @Override
     @Nullable
@@ -135,8 +135,7 @@ public class BookSearchByTextFragment
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(), R.string.hint_book_search_by_text,
-                                    null);
+            TipManager.display(getLayoutInflater(), R.string.tip_book_search_by_text, null);
         }
     }
 

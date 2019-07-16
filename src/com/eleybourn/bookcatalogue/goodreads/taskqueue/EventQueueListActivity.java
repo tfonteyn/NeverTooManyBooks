@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager.TipOwner;
 
 /**
  * Activity to display all Events in the QueueManager.
@@ -68,8 +68,8 @@ public class EventQueueListActivity
         cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(), R.string.hint_background_task_events,
-                                    null);
+            TipManager.display(getLayoutInflater(), R.string.tip_background_task_events,
+                               null);
         }
     }
 
@@ -85,20 +85,19 @@ public class EventQueueListActivity
         final Event event = (Event) v.getTag(R.id.TAG_GR_EVENT);
 
         // If it owns a hint, display it first
-        if (event instanceof HintOwner) {
-            HintManager.displayHint(getLayoutInflater(), ((HintOwner) event).getHint(),
-                                    () -> doContextMenu(parent, v, event, position, id));
+        if (event instanceof TipOwner) {
+            TipManager.display(getLayoutInflater(), ((TipOwner) event).getTip(),
+                               () -> showContextMenu(parent, v, event, position, id));
         } else {
-            // Just display context menu
-            doContextMenu(parent, v, event, position, id);
+            showContextMenu(parent, v, event, position, id);
         }
     }
 
-    private void doContextMenu(@NonNull final AdapterView<?> parent,
-                               @NonNull final View v,
-                               @NonNull final Event event,
-                               final int position,
-                               final long id) {
+    private void showContextMenu(@NonNull final AdapterView<?> parent,
+                                 @NonNull final View v,
+                                 @NonNull final Event event,
+                                 final int position,
+                                 final long id) {
         List<ContextDialogItem> items = new ArrayList<>();
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
         ContextDialogItem.showContextDialog(this, items);
@@ -111,9 +110,6 @@ public class EventQueueListActivity
         super.onDestroy();
     }
 
-    /**
-     * Let the Event bind itself.
-     */
     @Override
     public void bindView(@NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,

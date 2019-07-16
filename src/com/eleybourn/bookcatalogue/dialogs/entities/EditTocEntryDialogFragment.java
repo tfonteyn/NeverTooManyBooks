@@ -76,10 +76,20 @@ public class EditTocEntryDialogFragment
         mListener = new WeakReference<>(listener);
     }
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
+        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
+
+        mDb = new DAO();
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
         @SuppressWarnings("ConstantConditions")
         final View root = getActivity().getLayoutInflater()
                                        .inflate(R.layout.dialog_edit_book_toc, null);
@@ -87,13 +97,6 @@ public class EditTocEntryDialogFragment
         mAuthorTextView = root.findViewById(R.id.author);
         mTitleTextView = root.findViewById(R.id.title);
         mPubDateTextView = root.findViewById(R.id.first_publication);
-
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-
-        mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
-        mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
-
-        mDb = new DAO();
 
         if (mHasMultipleAuthors) {
             @SuppressWarnings("ConstantConditions")

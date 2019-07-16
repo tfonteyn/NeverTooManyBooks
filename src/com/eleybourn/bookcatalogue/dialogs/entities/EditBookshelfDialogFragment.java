@@ -80,10 +80,9 @@ public class EditBookshelfDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Context context = getContext();
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mBookshelf = requireArguments().getParcelable(BKEY_BOOKSHELF);
         Objects.requireNonNull(mBookshelf);
@@ -95,6 +94,11 @@ public class EditBookshelfDialogFragment
         }
 
         mDb = new DAO();
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
@@ -103,7 +107,7 @@ public class EditBookshelfDialogFragment
         mNameView.setText(mName);
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)
@@ -179,14 +183,13 @@ public class EditBookshelfDialogFragment
      */
     private void mergeShelves(@NonNull final Bookshelf source,
                               @NonNull final Bookshelf destination) {
-
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setTitle(R.string.title_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_merge, (d, which) -> {
+                .setPositiveButton(R.string.btn_confirm_merge, (d, which) -> {
                     d.dismiss();
 
                     // move all books from bookshelf to existingShelf

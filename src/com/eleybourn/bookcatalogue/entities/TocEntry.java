@@ -183,7 +183,7 @@ public class TocEntry
     public static TocEntry fromString(@NonNull final String encodedString) {
 
         List<String> list = new StringList<String>()
-                .decode(FIELD_SEPARATOR, encodedString, false);
+                .decode(encodedString, false, FIELD_SEPARATOR);
 
         Author author = Author.fromString(list.get(1));
         String title = list.get(0);
@@ -272,7 +272,7 @@ public class TocEntry
         } else {
             yearStr = "";
         }
-        return StringList.escapeListItem(FIELD_SEPARATOR, "(", mTitle) + yearStr
+        return StringList.escapeListItem(mTitle, FIELD_SEPARATOR, '(') + yearStr
                 + ' ' + FIELD_SEPARATOR + ' '
                 + mAuthor.stringEncoded();
     }

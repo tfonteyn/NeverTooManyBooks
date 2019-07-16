@@ -37,6 +37,7 @@ public class StylePickerDialogFragment
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
 
     private boolean mShowAllStyles;
+    private ArrayList<BooklistStyle> mBooklistStyles;
     private BooklistStyle mCurrentStyle;
 
     private WeakReference<StyleChangedListener> mListener;
@@ -68,20 +69,22 @@ public class StylePickerDialogFragment
         mListener = new WeakReference<>(listener);
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
         mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
 
-        ArrayList<BooklistStyle> list;
-
         try (DAO db = new DAO()) {
-            list = new ArrayList<>(BooklistStyles.getStyles(db, mShowAllStyles).values());
+            mBooklistStyles = new ArrayList<>(BooklistStyles.getStyles(db, mShowAllStyles).values());
         }
+    }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_styles_menu, null);
 
@@ -94,7 +97,7 @@ public class StylePickerDialogFragment
 
         //noinspection ConstantConditions
         RadioGroupRecyclerAdapter<BooklistStyle> adapter =
-                new RadioGroupRecyclerAdapter<>(getContext(), list, mCurrentStyle,
+                new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles, mCurrentStyle,
                                                 this::onStyleSelected);
 
         listView.setAdapter(adapter);
@@ -108,7 +111,8 @@ public class StylePickerDialogFragment
                 .setView(root)
                 .setNeutralButton(R.string.menu_customize_ellipsis, (d, which) -> {
                     Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
-                    startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                    // use the activity so we get the results there.
+                    getActivity().startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 })
                 .setPositiveButton(moreOrLess, (d, which) -> {
                     // simply reloading the list would make more sense, but preventing

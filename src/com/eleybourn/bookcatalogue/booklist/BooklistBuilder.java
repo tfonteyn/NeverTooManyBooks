@@ -2053,7 +2053,7 @@ public class BooklistBuilder
             }
 
             // Add BooklistStyle Filters but check if they are active
-            for (Filter filter : style.getFilters().values()) {
+            for (Filter filter : style.getFilters()) {
                 if (filter.isActive()) {
                     if (where.length() != 0) {
                         where.append(" AND ");

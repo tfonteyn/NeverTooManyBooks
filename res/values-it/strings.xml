@@ -12,7 +12,6 @@
     <string name="lbl_rating">Valutazione</string>
     <string name="lbl_is_read">Hai già letto questo libro?</string>
     <string name="lbl_pages">Pagine</string>
-    <string name="X_btn_confirm_add_book">Aggiungi libro</string>
     <string name="X_use_default_setting">Usa i parametri predefiniti</string>
     <string name="btn_confirm_update">Aggiorna</string>
     <string name="X_info_no_books_yet">Non ci sono libri in questa libreria. Per aggiungerne utilizza il menù nella parte inferiore dello schermo.</string>
@@ -20,7 +19,6 @@
     <string name="X_menu_sort_by">Ordina per</string>
     <string name="menu_collapse_all">Comprimi tutto</string>
     <string name="menu_search">Cerca</string>
-    <string name="X_btn_confirm_save_book">Salva libro</string>
     <string name="X_info_no_bookshelves_yet">Non hai creato ancora nessuna libreria. Per crearne utilizza il menù nella parte inferiore dello schermo.</string>
     <string name="X_menu_add_bookshelf">Crea libreria</string>
     <string name="menu_bookshelves">Librerie…</string>
@@ -43,7 +41,7 @@
     <string name="menu_administration_long">Funzioni amministratore</string>
     <string name="menu_administration">Amministratore</string>
     <string name="title_install_scan">Installa app per la scansione</string>
-    <string name="about_lbl_upgrade">Dal tuo ultimo aggiornamento</string>
+    <string name="lbl_upgrade">Dal tuo ultimo aggiornamento</string>
     <string name="menu_edit_book">Modifica libri</string>
     <string name="menu_edit_book_notes">I miei commenti</string>
     <string name="menu_loan_lend_book">Presta libro…</string>
@@ -59,7 +57,7 @@
     <string name="lbl_contacts">Contatti:</string>
     <string name="menu_about">Riguardo questa app</string>
     <string name="lbl_price_listed">Prezzo di listino</string>
-    <string name="lbl_update_fields">Aggiorna i campi automaticamente</string>
+    <string name="lbl_update_fields_long">Aggiorna i campi automaticamente</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="lbl_select_fields">Seleziona i campi</string>
 
@@ -101,9 +99,9 @@
     <string name="lbl_format">Formato</string>
     <string name="lbl_description">Descrizione</string>
     <string name="lbl_genre">Genere</string>
-    <string name="field_not_set">Non impostato</string>
+    <string name="hint_field_not_set">Non impostato</string>
     <string name="X_menu_search_books">Cerca libri</string>
-    <string name="hint_book_search_by_text">Aggiungere libri mediante codice ISBN è molto più preciso rispetto ad aggiungerli per autore e titolo ed è in genere consigliato. Nota che a volte il codice ISBN si trova all\'interno della copertina. \n\n</string>
+    <string name="tip_book_search_by_text">Aggiungere libri mediante codice ISBN è molto più preciso rispetto ad aggiungerli per autore e titolo ed è in genere consigliato. Nota che a volte il codice ISBN si trova all\'interno della copertina. \n\n</string>
     <string name="X_about_help_tap_here">Tocca qui per accedere all\'aiuto online</string>
     <string name="vldt_unable_to_get_value_for_x">Impossibile ottenere un valore per ‘%1$s’</string>
     <string name="vldt_integer_expected_for_x">È previsto un valore intero per ‘%1$s’</string>
@@ -228,7 +226,7 @@
     <string name="gr_tq_menu_background_tasks">Operazioni in background</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Cancella operazioni precedenti</string>
     <string name="gr_tq_btn_cleanup_old_events">Cancella eventi trascorsi</string>
-    <string name="search_text_hint">Testo e/o ISBN</string>
+    <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="lbl_search_criteria">Criteri di ricerca</string>
     <string name="menu_add_book_manually">Aggiungi Manualmente</string>
     <string name="menu_search_internet">Cerca in Internet</string>
@@ -265,7 +263,7 @@
     <string name="acra_resReportSendSuccessToast">Grazie!</string>
     <string name="lbl_read">Letto</string>
     <string name="lbl_unread">Non letto</string>
-    <string name="date_not_set_with_brackets">(data non indicata)</string>
+    <string name="hint_date_not_set_with_brackets">(data non indicata)</string>
     <string name="style_builtin_author_series">Autore e Collana</string>
     <string name="style_builtin_series">Collana</string>
     <string name="style_builtin_title_first_letter">Titolo (prima lettera)</string>
@@ -275,7 +273,7 @@
     <string name="style_builtin_publication_date">Data di pubblicazione</string>
     <string name="style_builtin_added_date">Data di inserimento</string>
     <string name="style_builtin_author_year">Autore ed Anno</string>
-    <string name="field_not_set_with_brackets">(vuoto)</string>
+    <string name="hint_field_not_set_with_brackets">(vuoto)</string>
     <string name="lbl_bookshelves_long">Librerie</string>
     <string name="lbl_bookshelves">Librerie</string>
     <string name="lbl_location">Locazione</string>
@@ -289,11 +287,11 @@
     <string name="menu_show_more_ellipsis">Mostra di più…</string>
     <string name="menu_show_fewer_ellipsis">Mostra meno…</string>
     <string name="menu_customize_ellipsis">Personalizza…</string>
-    <string name="hint">Suggerimento</string>
-    <string name="hint_reset_all_hints">Ripristina suggerimenti</string>
+    <string name="tip_dialog_title">Suggerimento</string>
+    <string name="tip_reset_all">Ripristina suggerimenti</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_styles_editor">
+    <string name="tip_booklist_styles_editor">
         In questa schermata è possibile personalizzare l\'elenco degli stili mostrata nel menu degli stili standard.
         \n\nUn segno di spunta verde indica che lo stile verrà mostrato nell\'elenco, mentre una croce rossa indica il contrario.
         Un click su un segno di spunta verde lo trasformerà in croce, e viceversa.
@@ -303,21 +301,21 @@
         (o di duplicarlo, se è uno stile predefinito).
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_groups">
+    <string name="tip_booklist_style_groups">
         In questa schermata è possibile modificare la struttura delle sezioni di uno specifico stile di elencazione dei libri.
         \n\nUn segno di spunta verde indica che la sezione verrà mostrato nell\'elenco, mentre una croce rossa indica il contrario.
         Un click su un segno di spunta verde lo trasformerà in croce, e viceversa.
         \n\nÈ possibile riordinare le sezioni trascinando verso l\'alto o il basso l\'icona presente al margine destro della riga.
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_properties">
+    <string name="tip_booklist_style_properties">
         In questa schermata è possibile scegliere le caratteristiche di uno specifico stile di elencazione dei libri.
         \n\nÈ possibile cambiarne il nome, modificare i raggruppamenti per cambiare la struttura, e regolare una varietà di
         altri parametri per ottenere lo stile desiderato.
         \n\nÈ anche possibile utilizzare ‘Filtra Libri’ per modificare la selezione di libri da mostrare nell\'elenco, ad es.
         per cercare solo i libri non ancora letti.
     </string>
-    <string name="X_hint_booklist_global_properties">
+    <string name="X_tip_booklist_global_properties">
         In questa schermata è possibile scegliere le caratteristiche di base di tutti gli
         stili di elencazione dei libri.
         La maggior parte delle proprietà possono essere modificate dagli stili individuali,
@@ -363,17 +361,17 @@
     <string name="gr_sync_with_goodreads">Sincronizza con Goodreads</string>
     <string name="X_menu_cover_options">Opzioni Copertine…</string>
     <string name="gr_tq_show_events_ellipsis">Mostra eventi…</string>
-    <string name="hint_authors_book_may_appear_more_than_once">Se mostrato per ciascun autore, uno stesso libro può risultare elencato più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
-    <string name="hint_series_book_may_appear_more_than_once">If mostrato in ciascuna serie, uno stesso libro pu\o comparire in lista più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
-    <string name="hint_background_tasks">
+    <string name="tip_authors_book_may_appear_more_than_once">Se mostrato per ciascun autore, uno stesso libro può risultare elencato più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
+    <string name="tip_series_book_may_appear_more_than_once">If mostrato in ciascuna serie, uno stesso libro pu\o comparire in lista più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
+    <string name="tip_background_tasks">
         Da qui puoi vedere le attività attualmente in corso così come le attività terminate con errori o altri eventi importanti.
         Un click su un\'attività ti permetterà di vedere gli eventi associati a tale attività così come di eliminare l\'attività (e gli eventi correlati).
     </string>
-    <string name="hint_background_task_events">
+    <string name="tip_background_task_events">
         Da qui puoi vedere gli eventi associati ad un\'attività in corso in sottofondo.
         Un click su un\'attività ti permetterà di eseguire le azioni possibili per quell\'attività.
     </string>
-    <string name="hints_have_been_reset">Suggerimenti azzerati</string>
+    <string name="tip_reset_done">Suggerimenti azzerati</string>
     <string name="gr_tq_task_has_been_queued">Attività messa in coda in sottofondo</string>
     <string name="progress_msg_upgrading">Sto aggiornando…</string>
     <string name="gr_explain_goodreads_no_isbn">
@@ -407,7 +405,7 @@
         È stato trovato più di un file; scegli un file da importare dall\'elenco qui sotto:
     </string>
     <string name="X_error_starting_import_arg">Si è verificato un problema all\'avvio dell\'importazione: %1$s</string>
-    <string name="hint_booklist_style_menu">
+    <string name="tip_booklist_style_menu">
         Questo menu permette di scegliere lo stile dell\'elenco.\n
         \nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su ‘Personalizza’ in fondo dell\'elenco.
     </string>
@@ -438,7 +436,7 @@
     <string name="gr_tq_last_error_e">Ultimo Errore: %1$s</string>
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
-    <string name="hint_autorotate_camera_images">Se ti trovi a ruotare le immagini acquisite sempre nella stessa direzione, puoi provare a modificare le impostazioni dell\'applicazione specificando una rotazione di default da applicare automaticamente.</string>
+    <string name="tip_autorotate_camera_images">Se ti trovi a ruotare le immagini acquisite sempre nella stessa direzione, puoi provare a modificare le impostazioni dell\'applicazione specificando una rotazione di default da applicare automaticamente.</string>
     <string name="progress_end_cancelled">Cancellato</string>
     <string name="progress_end_import_complete">Importazione Completata</string>
     <string name="progress_msg_searching">Ricerca…</string>
@@ -448,28 +446,17 @@
     <string name="lbl_x_pages">%1$d pagine</string>
     <string name="warning_bad_scanner">L\'applicazione prescelta per la scansione dei codici a barre sembra incompatibile con &APP_NAME;. Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
 
-     <!-- Hint text displayed when user enters the book listw -->
-    <string name="hint_view_only_book_details">Selezionando una voce in questo elenco, è ora
+    <string name="tip_view_only_book_details">Selezionando una voce in questo elenco, è ora
         disponibile una vista non modificabile dei dettagli del libro.
         Vedi “Altre Opzioni” per le regolazioni relative.
     </string>
-
-    <!-- Hint text displayed when user enters the 'read-only' book view -->
-    <string name="hint_view_only_help">Questa è la vista non modificabile dei dettagli del libro;
+    <string name="tip_view_only_help">Questa è la vista non modificabile dei dettagli del libro;
         puoi scorrere verso sinistra o verso destra per visualizzare altri libri,
         e puoi modificare il libro tramite il menu delle opzioni usando il pulsante del menu o l\'icona del menu di overflow.
     </string>
-
-    <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Dettagli</string>
-    <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-
-    <!-- Hint displayed when an export or database backup is done -->
-
-    <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_delete_credentials">Rimuovi credenziali</string>
 
-    <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         Questa applicazione sembra essere già stata autorizzata.
         Se desideri cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto.
@@ -477,98 +464,50 @@
         sito di Goodreads.
     </string>
 
-    <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
 
-    <!-- Admin option to import -->
     <string name="lbl_backup_to_archive">Crea Backup</string>
-    <!-- Admin option to import -->
     <string name="lbl_import_from_archive">Importa da Backup</string>
-
-    <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
         Un %3$s file chiamato %2$s è stato creato nella cartella \“%1$s\”.\n
         \nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso
         il tuo apparecchio venga danneggiato, perso o rubato.
     </string>
 
-    <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">%1$d copertine processate (%2$d mancanti)</string>
-    <!-- Heading in Admin activity -->
+    <string name="progress_msg_covers_handled">%1$d copertine processate</string>
+    <string name="progress_msg_covers_handled_missing">%1$d copertine processate (%2$d mancanti)</string>
     <string name="lbl_advanced_options">Opzioni Avanzate</string>
-    <!-- Showed in progress dialog when an import starts -->
     <string name="progress_msg_backing_up">Creazione backup in corso…</string>
-    <!-- Showed in progress dialog when an import starts -->
     <string name="progress_msg_importing">Importazione in corso…</string>
-
-    <!-- Content description for the 'up' icon in the folder browser -->
     <string name="up_folder">Su</string>
-
-    <!-- Displayed when a user tries to browse higher than the root directory, or if the parent is unable to be read -->
     <string name="warning_no_parent_directory_found">Nessuna directory superiore trovata</string>
-
-    <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Apri</string>
 
-    <!-- Admin option to export books -->
     <string name="lbl_export_to_csv">Esporta come File CSV</string>
-    <!-- Admin option to import books -->
     <string name="lbl_import_from_csv">Importa da File CSV</string>
-
-    <!-- Displayed when a file/open dialog results in selecting a non-exitant file -->
     <string name="warning_select_an_existing_file">Prego selezionare un file esistente</string>
-
-    <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_enter_valid_filename">Si prega di inserire un nome di file valido.</string>
-
-    <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="lbl_copy_database">Copia Archivio (per supporto tecnico)</string>
-    <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Importazione fallita.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
-    <!-- Displayed when any write operation to the sd card fails -->
     <string name="error_storage_not_readable">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
 
-    <!-- Short Heading for 'Language' field in book details -->
     <string name="lbl_language">Lingua</string>
-
-    <!--  Explanatory text for 'import' dialogue -->
-    <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Tutti i libri nell\'archivio saranno importati, aggiornando i libri già presenti e aggiungendo quelli nuovi.</string>
-    <!-- Menu text for the 'import/export new & changed' option -->
     <string name="import_option_new_and_changed_books">Libri nuovi ed aggiornati</string>
-    <!-- Description of the 'import new & changed' option -->
     <string name="import_option_info_new_and_changed_books">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
-    <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
-    <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d creati, %2$d aggiornati</string>
-
-    <!--  Explanatory text for 'export' dialogue -->
-
-    <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">
+    <string name="progress_msg_covers_handled_missing_skipped">
         %1$d copertine elaborate (%2$d mancanti, %3$d saltate)
     </string>
 
-    <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
-    <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Seleziona cosa esportare nell\'archivio.</string>
-    <!-- Text for button -->
     <string name="import_export_option_csv">Libri (CSV)</string>
-    <!-- Brief description -->
-    <!-- Text for button -->
     <string name="lbl_cover_images">Immagini delle copertine</string>
-    <!-- Brief description -->
-    <!-- Brief description -->
-
-    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_info_books_since_date">In via opzionale, specifica una data da usare per selezionare libri e/o copertine da esportare:</string>
-    <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Tutti i libri aggiunti o aggiornati dopo il giorno:</string>
-    <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
 
     <plurals name="displaying_n_books">
@@ -581,19 +520,16 @@
         <item quantity="other">%1$d libri trovati</item>
     </plurals>
 
-    <!-- Short text for 'n books' -->
     <plurals name="n_books">
         <item quantity="one">1 libro</item>
         <item quantity="other">%1$s libri</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
         <item quantity="one">1 copertina</item>
         <item quantity="other">%1$s copertine</item>
     </plurals>
 
-    <!-- Short text for 'n stars' -->
     <plurals name="n_stars">
         <item quantity="one">%1$s stella</item>
         <item quantity="other">%1$s stelle</item>
@@ -601,21 +537,14 @@
 
     <string name="progress_msg_reading_directory">Ricerca nella cartella…</string>
 
-    <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Data aggiornamento</string>
-    <!-- Name of the new style grouping (needs to be short). -->
     <string name="lbl_update_year">Anno di aggiornamento</string>
-    <!-- Name of the new style grouping (needs to be short). -->
     <string name="lbl_update_month">Mese di aggiornamento</string>
-    <!-- Name of the new style grouping (needs to be short). -->
     <string name="lbl_update_day">Giorno di aggiornamento</string>
 
-    <!-- This is an UPDATED string copied from earlier in the file; "Google Googles" (sic) was
-     removed from the list of scanners -->
     <string name="info_install_scanner">Per scansionare i libri mediante codice a barre ISBN,
         devi installare una app per la scansione come Barcode Scanner o Pic2shop.</string>
 
-    <!-- Credits in the 'about' dialog -->
     <string name="about_translators">
         &APP_NAME; è il prodotto degli sforzi di molte persone,
         e non sarebbe così largamente utilizzato senza il generoso aiuto dei nostri traduttori
@@ -645,7 +574,7 @@
     <string name="error_search_configuration">Errore di configurazione. Apri la Preferenze e verifica le impostazioni nelle pagine di ricerca.</string>
     <string name="lbl_search_sites">Cerca siti</string>
     <string name="lbl_search_site_order">Sequenza</string>
-    <string name="search_with_text">Ricerca: %1$s</string>
+    <string name="title_search_filtered_on_x">Filtrato: %1$s</string>
     <string name="btn_options">Opzioni</string>
     <string name="lbl_price_paid">Pagato</string>
     <string name="lbl_first_publication">Prima pubblicazione</string>
@@ -655,21 +584,21 @@
     <string name="lbl_date_acquired_month">Mese acquisito</string>
     <string name="lbl_date_acquired_year">Anno acquisito</string>
     <string name="lbl_is_complete">È completo</string>
-    <string name="btn_merge">Unire</string>
+    <string name="btn_confirm_merge">Unire</string>
     <string name="lbl_table_of_content">Tabella dei contenuti</string>
     <string name="book_format_audiobook">Audiolibro</string>
     <string name="progress_msg_process_preferences">Preferenze…</string>
     <string name="progress_msg_process_cover">Copertine…</string>
     <string name="warning_required_at_least_one">Almeno un campo non deve essere vuoto</string>
-    <string name="menu_internet_update_fields">Aggiorna campi</string>
+    <string name="lbl_update_fields">Aggiorna campi</string>
     <string name="progress_msg_process_booklist_style">Stili della lista di libri…</string>
-    <string name="usage_skip">Omettere</string>
+    <string name="lbl_field_usage_skip">Omettere</string>
     <string name="progress_msg_saving_image">Salvataggio dell\'immagine…</string>
     <string name="menu_amazon_books_in_series">Libri in questa serie</string>
     <string name="menu_amazon_books_by_author">Libri di questo autore</string>
     <string name="menu_amazon_books_by_author_in_series">Libri per autore / serie</string>
-    <string name="about_lbl_special_thanks">Ringraziamenti speciali</string>
-    <string name="hint_book_list">Toccando un libro ti mostrerà i dettagli del libro. Una pressione prolungata su un elemento nell\'elenco ti darà più opzioni.</string>
+    <string name="lbl_special_thanks">Ringraziamenti speciali</string>
+    <string name="tip_book_list">Toccando un libro ti mostrerà i dettagli del libro. Una pressione prolungata su un elemento nell\'elenco ti darà più opzioni.</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Libri</string>
@@ -683,7 +612,7 @@
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
     <string name="import_export_option_xml">Tutti i dati in formato XML</string>
     <string name="import_export_option_xml_info">XML è solo esportazione, non importa.</string>
-    <string name="menu_clear_filters">Cancella filtri</string>
+    <string name="menu_clear_search_filters">Cancella filtri</string>
     <string name="menu_author_details">Tutte le opere di questo autore</string>
     <string name="lbl_lending">Prestito</string>
     <string name="lbl_edition_book_club">Club del libro</string>
@@ -715,7 +644,7 @@
     <string name="title_edit_book_authors">Modifica autori di libri</string>
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
     <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
-    <string name="about_lbl_creators">Originariamente da:</string>
+    <string name="lbl_creators">Originariamente da:</string>
     <string name="unknown_uc">SCONOSCIUTO</string>
     <string name="title_delete_toc_entry">Elimina il titolo</string>
     <string name="confirm_delete_toc_entry">
@@ -725,4 +654,9 @@
     </string>
     <string name="pg_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
     <string name="menu_view_book_at_ellipsis">Visualizza su…</string>
+    <string name="lbl_keywords">Parole</string>
+    <string name="warning_missing_title">Il titolo manca</string>
+    <string name="warning_missing_author">L\'autore è mancante.</string>
+    <string name="warning_isfdb_only">(supportato solo dal sito Web ISFDB)</string>
+    <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
 </resources>

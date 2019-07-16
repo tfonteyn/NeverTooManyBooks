@@ -24,18 +24,19 @@ abstract class AbstractBase {
      * Trim extraneous punctuation and whitespace from the titles and authors.
      * <p>
      * Original code in {@link EditBookTocFragment} had:
-     * CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";
+     * {@code CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";}
      * <p>
      * Note that inside the square brackets of a character class, many
      * escapes are unnecessary that would be necessary outside of a character class.
      * So that became:
-     * private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";
+     * {@code private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";}
      * <p>
      * But given a title like "Introduction (The Father-Thing)"
      * you loose the ")" at the end, so remove that from the regex, see below
      */
     private static final String CLEANUP_TITLE_REGEX = "[,.':;`~@#$%^&*(\\-=_+]*$";
 
+    /** The parsed downloaded web page. */
     Document mDoc;
 
     private boolean afterEofTryAgain = true;
@@ -257,7 +258,7 @@ abstract class AbstractBase {
     }
 
     /**
-     * A url ends 'last'123.  Strip and return the '123' part.
+     * A url ends with 'last'123.  Strip and return the '123' part.
      *
      * @param url  to handle
      * @param last character to look for as last-index

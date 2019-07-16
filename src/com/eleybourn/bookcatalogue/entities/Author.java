@@ -174,7 +174,7 @@ public class Author
      * @param name a String containing the name
      */
     public static Author fromString(@NonNull String name) {
-        List<String> tmp = new StringList<String>().decode(FIELD_SEPARATOR, name, true);
+        List<String> tmp = new StringList<String>().decode(name, true, FIELD_SEPARATOR);
         if (tmp.size() > 1) {
             Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
             if (!matchSuffix.find()) {
@@ -332,9 +332,9 @@ public class Author
     public String stringEncoded() {
         // Always use givenNames even if blank because we need to KNOW they are blank.
         // There is a slim chance that family name may contain spaces (e.g. 'Anonymous Anarchists').
-        return StringList.escapeListItem(FIELD_SEPARATOR, mFamilyName)
+        return StringList.escapeListItem(mFamilyName, FIELD_SEPARATOR)
                 + FIELD_SEPARATOR + ' '
-                + StringList.escapeListItem(FIELD_SEPARATOR, mGivenNames);
+                + StringList.escapeListItem(mGivenNames, FIELD_SEPARATOR);
     }
 
     /**

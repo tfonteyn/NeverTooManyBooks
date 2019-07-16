@@ -58,6 +58,7 @@ public class EditPublisherDialogFragment
     /** Database access. */
     private DAO mDb;
 
+    private Publisher mPublisher;
     private String mName;
 
     private AutoCompleteTextView mNameView;
@@ -75,19 +76,24 @@ public class EditPublisherDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        mDb = new DAO();
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        Publisher publisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
-        Objects.requireNonNull(publisher);
+        mPublisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
+        Objects.requireNonNull(mPublisher);
         if (savedInstanceState == null) {
-            mName = publisher.getName();
+            mName = mPublisher.getName();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
         }
 
+        mDb = new DAO();
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
@@ -113,13 +119,13 @@ public class EditPublisherDialogFragment
                     }
                     dismiss();
 
-                    if (publisher.getName().equals(mName)) {
+                    if (mPublisher.getName().equals(mName)) {
                         return;
                     }
-                    mDb.updatePublisher(publisher.getName(), mName);
+                    mDb.updatePublisher(mPublisher.getName(), mName);
 
                     Bundle data = new Bundle();
-                    data.putString(DBDefinitions.KEY_PUBLISHER, publisher.getName());
+                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.PUBLISHER,
                                                                  data);

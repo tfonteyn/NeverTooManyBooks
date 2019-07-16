@@ -125,17 +125,7 @@ public class CoverBrowserFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(CoverBrowserViewModel.class);
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        final Fragment targetFragment = Objects.requireNonNull(getTargetFragment());
-
-        Bundle args = requireArguments();
-        String isbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
-        int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+        Objects.requireNonNull(getTargetFragment());
 
         if (savedInstanceState != null) {
             ArrayList<String> editions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
@@ -147,10 +137,15 @@ public class CoverBrowserFragment
             mSwitcherImageFileSpec = savedInstanceState.getString(BKEY_SWITCHER_FILE);
         }
 
-        mModel.init(isbn, initialSearchSites);
+        mModel = ViewModelProviders.of(this).get(CoverBrowserViewModel.class);
+        mModel.init(requireArguments());
         mModel.getEditions().observe(this, this::initGallery);
         mModel.getSwitcherImageFileSpec().observe(this, this::setSwitcherImage);
+    }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_cover_browser, null);
 
@@ -191,7 +186,8 @@ public class CoverBrowserFragment
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
-                targetFragment.onActivityResult(getTargetRequestCode(),
+                //noinspection ConstantConditions
+                getTargetFragment().onActivityResult(getTargetRequestCode(),
                                                 Activity.RESULT_OK, data);
             }
             // close the CoverBrowserFragment

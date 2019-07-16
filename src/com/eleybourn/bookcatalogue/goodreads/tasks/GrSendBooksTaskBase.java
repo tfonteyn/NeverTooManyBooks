@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
@@ -383,7 +383,7 @@ abstract class GrSendBooksTaskBase
      */
     private static class GrNoMatchEvent
             extends GrSendBookEvent
-            implements HintManager.HintOwner {
+            implements TipManager.TipOwner {
 
 
         private static final long serialVersionUID = 8764019100842546976L;
@@ -395,7 +395,7 @@ abstract class GrSendBooksTaskBase
 
         @Override
         @StringRes
-        public int getHint() {
+        public int getTip() {
             return R.string.gr_explain_goodreads_no_match;
         }
 
@@ -406,7 +406,7 @@ abstract class GrSendBooksTaskBase
      */
     private static class GrNoIsbnEvent
             extends GrSendBookEvent
-            implements HintManager.HintOwner {
+            implements TipManager.TipOwner {
 
 
         private static final long serialVersionUID = -8208929167310932723L;
@@ -418,7 +418,7 @@ abstract class GrSendBooksTaskBase
 
         @Override
         @StringRes
-        public int getHint() {
+        public int getTip() {
             return R.string.gr_explain_goodreads_no_isbn;
         }
 

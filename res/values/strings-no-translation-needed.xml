@@ -8,8 +8,6 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
-    <string name="beta_build">2019–07–12</string>
-
     <string name="url_sourcecode6" translatable="false">
         <![CDATA[
             <a href="https://github.com/tfonteyn/Book-Catalogue/tree/move-to-android-5">%1s</a>

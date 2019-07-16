@@ -101,18 +101,10 @@
             />
 
         <TextView
-            android:id="@+id/lbl_update_internet"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_content_copy"
-            android:text="@string/lbl_update_fields"
-            />
-
-
-        <TextView
-            android:id="@+id/lbl_reset_hints"
+            android:id="@+id/lbl_reset_tips"
             style="@style/OptionRow.Menu"
             android:drawableStart="@drawable/ic_undo"
-            android:text="@string/hint_reset_all_hints"
+            android:text="@string/tip_reset_all"
             />
 
         <TextView

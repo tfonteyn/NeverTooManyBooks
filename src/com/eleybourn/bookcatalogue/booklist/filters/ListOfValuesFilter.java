@@ -51,4 +51,14 @@ public class ListOfValuesFilter<T>
     public String getExpression() {
         return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ListOfValuesFilter{"
+                + "mTable=" + mTable
+                + ", mDomain=" + mDomain
+                + ", mCriteria=`" + mCriteria + '`'
+                + '}';
+    }
 }

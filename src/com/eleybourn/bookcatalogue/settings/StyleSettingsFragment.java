@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
 
 /**
@@ -86,8 +86,8 @@ public class StyleSettingsFragment
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(),
-                                    R.string.hint_booklist_style_properties, null);
+            TipManager.display(getLayoutInflater(),
+                               R.string.tip_booklist_style_properties, null);
         }
 
         // Set the summaries reflecting the current values for all basic Preferences.

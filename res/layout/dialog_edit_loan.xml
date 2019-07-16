@@ -37,7 +37,7 @@
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"
-        android:hint="@string/menu_loan_lend_book"
+        android:hint="@string/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/list_divider"

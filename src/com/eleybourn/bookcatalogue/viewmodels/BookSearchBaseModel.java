@@ -56,17 +56,17 @@ public class BookSearchBaseModel
     public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
+
+            mSearchCoordinatorId = args.getLong(BookSearchBaseFragment.BKEY_SEARCH_COORDINATOR_ID);
+
+            // optional, use ALL if not there
+            mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
+
+            mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
+            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+            mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
+            mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
         }
-
-        mSearchCoordinatorId = args.getLong(BookSearchBaseFragment.BKEY_SEARCH_COORDINATOR_ID);
-
-        // optional, use ALL if not there
-        mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
-
-        mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
-        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-        mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
-        mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
     }
 
     /**

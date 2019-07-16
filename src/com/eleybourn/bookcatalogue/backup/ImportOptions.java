@@ -59,6 +59,9 @@ public class ImportOptions
     @Nullable
     public File file;
 
+    @Nullable
+    public Importer.Results results;
+
     public ImportOptions() {
     }
 

@@ -91,7 +91,7 @@ public class LibraryThingManager
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "LibraryThing.";
 
-    /** Preference that contains the dev key for the user. */
+    /** Preference that contains the dev key for the user. Type: {@code String}. */
     public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
 
     /** Preference that controls display of alert about LibraryThing. */

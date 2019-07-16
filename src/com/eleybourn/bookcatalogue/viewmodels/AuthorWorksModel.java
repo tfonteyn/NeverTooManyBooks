@@ -3,9 +3,11 @@ package com.eleybourn.bookcatalogue.viewmodels;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.AuthorWorksFragment;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -21,7 +23,9 @@ public class AuthorWorksModel
 
     private boolean mAtLeastOneBookDeleted;
 
+    @Nullable
     private Author author;
+    @Nullable
     private ArrayList<TocEntry> mTocEntries;
 
     @Override
@@ -33,18 +37,19 @@ public class AuthorWorksModel
 
     /**
      * Pseudo constructor.
+     * If we already have been initialized and the incoming bookId has not changed, return silently.
      *
-     * @param args      Bundle with arguments
+     * @param args Bundle with arguments
      */
     public void init(@NonNull final Bundle args) {
         long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
-        boolean withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, true);
-
-        if (mDb == null || authorId != author.getId()) {
-
+        if (mDb == null) {
             mDb = new DAO();
+        }
+        if (author == null || authorId != author.getId()) {
             author = mDb.getAuthor(authorId);
             if (author != null) {
+                boolean withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, true);
                 mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);
             } else {
                 throw new IllegalArgumentException("author was NULL for id=" + authorId);
@@ -54,11 +59,13 @@ public class AuthorWorksModel
 
     @NonNull
     public Author getAuthor() {
+        Objects.requireNonNull(author);
         return author;
     }
 
     @NonNull
     public ArrayList<TocEntry> getTocEntries() {
+        Objects.requireNonNull(mTocEntries);
         return mTocEntries;
     }
 
@@ -68,6 +75,7 @@ public class AuthorWorksModel
     }
 
     public void delTocEntry(@NonNull final TocEntry item) {
+        Objects.requireNonNull(mTocEntries);
         switch (item.getType()) {
             case TocEntry.TYPE_TOC:
                 if (mDb.deleteTocEntry(item.getId()) == 1) {

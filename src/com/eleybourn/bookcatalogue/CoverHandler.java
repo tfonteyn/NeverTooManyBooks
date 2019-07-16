@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
@@ -252,9 +252,9 @@ public class CoverHandler {
             case R.id.SUBMENU_THUMB_ROTATE:
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
-                    HintManager.displayHint(LayoutInflater.from(mContext),
-                                            R.string.hint_autorotate_camera_images,
-                                            null);
+                    TipManager.display(LayoutInflater.from(mContext),
+                                       R.string.tip_autorotate_camera_images,
+                                       null);
                     mGotCameraImage = false;
                 }
                 return true;

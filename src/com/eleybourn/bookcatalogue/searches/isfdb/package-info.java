@@ -32,6 +32,10 @@
  *      <li>pl.cgi - This displays the bibliographic information for one publication.</li>
  * </ul>
  * <p>
+ *     The advanced search returns a URL with "adv_search_results.cgi" and <br>
+ *         (if searching for 'publications') a content the same as "title.cgi"
+ * </p>
+ * <p>
  * Web API: http://www.isfdb.org/wiki/index.php/Web_API
  * </p>
  * <p>

@@ -23,7 +23,8 @@ public class Editions
         extends AbstractBase {
 
     /** Search URL template. */
-    private static final String EDITIONS_URL = "/cgi-bin/se.cgi?arg=%s&type=ISBN";
+    private static final String EDITIONS_URL = IsfdbManager.CGI_BIN
+            + IsfdbManager.URL_SE_CGI + "?arg=%s&type=ISBN";
 
     /** List of ISFDB native book id for all found editions. */
     private final ArrayList<Edition> mEditions = new ArrayList<>();
@@ -77,19 +78,24 @@ public class Editions
         return parseDoc();
     }
 
+    /**
+     * Do the parsing of the Document
+     *
+     * @return list of editions found, can be empty, but never {@code null}
+     */
+    @NonNull
     private ArrayList<Edition> parseDoc() {
-        if (mDoc.location().contains("pl.cgi")) {
+        if (mDoc.location().contains(IsfdbManager.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
             mEditions.add(new Edition(stripNumber(mDoc.location(), '?'), mDoc));
 
-        } else if (mDoc.location().contains("title.cgi")
-                || mDoc.location().contains("adv_search_results.cgi")) {
+        } else if (mDoc.location().contains(IsfdbManager.URL_TITLE_CGI)
+                || mDoc.location().contains(IsfdbManager.URL_ADV_SEARCH_RESULTS_CGI)) {
             // we have multiple editions.
             findEntries(mDoc, "tr.table0", "tr.table1");
         } else {
             // dunno, let's log it
-            Logger.warnWithStackTrace(this, "fetch",
-                                      "location=" + mDoc.location());
+            Logger.warnWithStackTrace(this, "fetch", "location=" + mDoc.location());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {

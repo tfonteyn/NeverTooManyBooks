@@ -39,14 +39,14 @@ public interface Importer
      *
      * @param importStream Stream for reading data
      * @param coverFinder  (Optional) object to find a cover on the local device
-     *
      * @param listener     Progress and cancellation provider
-     * @return number of books handled (!= imported)
+     *
+     * @return {@link Results}
      *
      * @throws IOException on failure
      */
-    @SuppressWarnings("UnusedReturnValue")
-    int doBooks(@NonNull InputStream importStream,
+    @NonNull
+    Results doBooks(@NonNull InputStream importStream,
                 @Nullable CoverFinder coverFinder,
                 @NonNull ProgressListener listener)
             throws IOException, ImportException;
@@ -65,5 +65,13 @@ public interface Importer
         void copyOrRenameCoverFile(long srcId,
                                    @NonNull String uuidFromBook)
                 throws IOException;
+    }
+
+    class Results {
+        public int booksProcessed;
+        public int booksCreated;
+        public int booksUpdated;
+        public int booksFailed;
+        public int coversImported;
     }
 }

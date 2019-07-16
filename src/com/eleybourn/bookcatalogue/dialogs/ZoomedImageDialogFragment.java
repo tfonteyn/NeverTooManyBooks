@@ -30,6 +30,8 @@ public class ZoomedImageDialogFragment
     /** Fragment manager tag. */
     private static final String TAG = "ZoomedImageDialogFragment";
 
+    private File mImageFile;
+
     /**
      * Syntax sugar for newInstance.
      *
@@ -61,6 +63,14 @@ public class ZoomedImageDialogFragment
     }
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = requireArguments();
+        mImageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
+    }
+
+    @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -72,15 +82,11 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
-        Bundle args = requireArguments();
-
-        File imageFile = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
-
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         boolean upscale = App.getPrefs().getBoolean(Prefs.pk_thumbnails_zoom_upscale, true);
 
         ImageView imageView = view.findViewById(R.id.coverImage);
-        ImageUtils.setImageView(imageView, imageFile,
+        ImageUtils.setImageView(imageView, mImageFile,
                                 metrics.widthPixels,
                                 metrics.heightPixels,
                                 upscale);

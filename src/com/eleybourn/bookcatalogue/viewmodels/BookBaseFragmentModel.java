@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -34,6 +33,7 @@ public class BookBaseFragmentModel
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
     /** The Book this model represents. */
+
     private Book mBook;
 
     /**
@@ -115,6 +115,7 @@ public class BookBaseFragmentModel
         return mDb;
     }
 
+    @NonNull
     public Book getBook() {
         return mBook;
     }
@@ -135,6 +136,7 @@ public class BookBaseFragmentModel
         return mBook.getId() > 0;
     }
 
+    @NonNull
     public Book saveBook() {
         if (mBook.getId() == 0) {
             long id = mDb.insertBook(mBook);
@@ -163,6 +165,7 @@ public class BookBaseFragmentModel
         return mDb.getLoaneeByBookId(mBook.getId()) == null;
     }
 
+    @Nullable
     public String getLoanee() {
         return mBook.getLoanee(mDb);
     }
@@ -189,6 +192,11 @@ public class BookBaseFragmentModel
 
     public void refreshSeriesList() {
         mBook.refreshSeriesList(mDb);
+    }
+
+    @NonNull
+    public Bookshelf getBookshelf(@NonNull final Context context) {
+        return Bookshelf.getBookshelf(context, mDb, false);
     }
 
     /**
@@ -282,18 +290,5 @@ public class BookBaseFragmentModel
             mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
-    }
-
-    public Bookshelf getBookshelf(@NonNull final Context context) {
-        Bookshelf bookshelf = null;
-        String name = App.getPrefs().getString(Bookshelf.PREF_BOOKSHELF_CURRENT, null);
-        if (name != null && !name.isEmpty()) {
-            bookshelf = mDb.getBookshelfByName(name);
-        }
-        if (bookshelf == null) /* || name.isEmpty() */ {
-            // unlikely to be true, but use default just in case
-            bookshelf = Bookshelf.getDefaultBookshelf(context, mDb);
-        }
-        return bookshelf;
     }
 }

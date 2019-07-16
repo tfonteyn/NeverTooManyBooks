@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
+import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -713,7 +713,7 @@ public class XmlExporter
 
             // Filters with their Preferences
             out.append('<' + XmlTags.XML_FILTER_LIST + '>');
-            for (BooleanFilter filter : style.getFilters().values()) {
+            for (Filter filter : style.getFilters()) {
                 if (filter.isActive()) {
                     out.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
                 }

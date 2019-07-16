@@ -37,32 +37,39 @@ public abstract class EditAuthorBaseDialogFragment
     private AutoCompleteTextView mGivenNamesView;
     private Checkable mIsCompleteView;
 
+    private Author mAuthor;
     private String mFamilyName;
     private String mGivenNames;
     private boolean mIsComplete;
     WeakReference<BookChangedListener> mBookChangedListener;
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Context context = getContext();
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         mDb = new DAO();
 
         Bundle args = requireArguments();
 
-        final Author author = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR));
+        mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR));
         if (savedInstanceState == null) {
-            mFamilyName = author.getFamilyName();
-            mGivenNames = author.getGivenNames();
-            mIsComplete = author.isComplete();
+            mFamilyName = mAuthor.getFamilyName();
+            mGivenNames = mAuthor.getGivenNames();
+            mIsComplete = mAuthor.isComplete();
         } else {
             mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
             mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
+    }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
+
+        Context context = getContext();
 
         @SuppressWarnings("ConstantConditions")
         ArrayAdapter<String> mFamilyNameAdapter =
@@ -100,15 +107,15 @@ public abstract class EditAuthorBaseDialogFragment
                     mIsComplete = mIsCompleteView.isChecked();
                     dismiss();
 
-                    if (author.getFamilyName().equals(mFamilyName)
-                            && author.getGivenNames().equals(mGivenNames)
-                            && author.isComplete() == mIsComplete) {
+                    if (mAuthor.getFamilyName().equals(mFamilyName)
+                            && mAuthor.getGivenNames().equals(mGivenNames)
+                            && mAuthor.isComplete() == mIsComplete) {
                         return;
                     }
                     // Create a new Author as a holder for the changes.
                     Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
 
-                    confirmChanges(author, newAuthorData);
+                    confirmChanges(mAuthor, newAuthorData);
                 })
                 .create();
     }

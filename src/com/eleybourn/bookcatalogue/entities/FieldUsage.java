@@ -106,7 +106,7 @@ public class FieldUsage {
                 case Overwrite:
                     return R.string.lbl_field_usage_overwrite;
                 default:
-                    return R.string.usage_skip;
+                    return R.string.lbl_field_usage_skip;
             }
         }
     }

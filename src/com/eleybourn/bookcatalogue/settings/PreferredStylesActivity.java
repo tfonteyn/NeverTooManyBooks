@@ -49,7 +49,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.viewmodels.PreferredStylesViewModel;
@@ -123,8 +123,8 @@ public class PreferredStylesActivity
         setTitle(R.string.lbl_preferred_styles);
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(),
-                                    R.string.hint_booklist_styles_editor, null);
+            TipManager.display(getLayoutInflater(),
+                               R.string.tip_booklist_styles_editor, null);
         }
     }
 

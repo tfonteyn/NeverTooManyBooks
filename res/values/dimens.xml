@@ -29,6 +29,9 @@
     <dimen name="indent3">12dp</dimen>
     <dimen name="indent4">16dp</dimen>
 
+    <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
+    <dimen name="booklist_row_spacer">4dp</dimen>
+
     <!-- indent multiplier for the levels in the booklist:
         paddingIndent = (level-1) * booklist_level_indent -->
     <dimen name="booklist_level_indent">8dp</dimen>

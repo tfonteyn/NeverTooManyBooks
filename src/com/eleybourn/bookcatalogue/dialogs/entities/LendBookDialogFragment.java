@@ -74,8 +74,10 @@ public class LendBookDialogFragment
     /** Database access. */
     private DAO mDb;
 
+    private long mBookId;
     private AutoCompleteTextView mLoaneeView;
     private String mAuthorName;
+    private String mTitle;
     private String mLoanee;
     private WeakReference<BookChangedListener> mBookChangedListener;
 
@@ -117,15 +119,15 @@ public class LendBookDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Context context = getContext();
-        Bundle args = requireArguments();
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mDb = new DAO();
 
-        final long bookId = args.getLong(DBDefinitions.KEY_PK_ID);
+        Bundle args = requireArguments();
+        mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
+        mTitle = args.getString(DBDefinitions.KEY_TITLE);
 
         if (savedInstanceState == null) {
             // see if the string is there
@@ -135,17 +137,24 @@ public class LendBookDialogFragment
                 //noinspection ConstantConditions
                 mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR)).getLabel();
             }
-            mLoanee = mDb.getLoaneeByBookId(bookId);
+            mLoanee = mDb.getLoaneeByBookId(mBookId);
         } else {
             mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_FK_AUTHOR);
             mLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
         }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        Context context = getContext();
 
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
-        titleView.setText(args.getString(DBDefinitions.KEY_TITLE));
+        titleView.setText(mTitle);
+
         TextView authorView = root.findViewById(R.id.author);
         authorView.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
@@ -165,7 +174,7 @@ public class LendBookDialogFragment
                 .setNeutralButton(R.string.btn_loan_returned, (d, which) -> {
                     // the book was returned (inspect it for sub-nano damage), remove the loan data
                     dismiss();
-                    mDb.deleteLoan(bookId);
+                    mDb.deleteLoan(mBookId);
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.BOOK_LOANEE,
                                                                  null);
@@ -191,7 +200,7 @@ public class LendBookDialogFragment
                     mLoanee = newName;
 
                     // lend book, reluctantly...
-                    mDb.updateOrInsertLoan(bookId, mLoanee);
+                    mDb.updateOrInsertLoan(mBookId, mLoanee);
 
                     Bundle data = new Bundle();
                     data.putString(DBDefinitions.KEY_LOANEE, mLoanee);

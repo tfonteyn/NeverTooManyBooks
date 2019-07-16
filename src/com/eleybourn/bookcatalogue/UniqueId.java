@@ -100,7 +100,8 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_TEXT = "searchText";
     /** author search text. */
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
-
+    /** title search text. */
+    public static final String BKEY_SEARCH_TITLE = "searchTitle";
     /**
      * Search site flags as in {@link com.eleybourn.bookcatalogue.searches.SearchSites}.
      * <p>

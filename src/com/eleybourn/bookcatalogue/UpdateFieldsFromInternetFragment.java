@@ -30,7 +30,7 @@ import java.util.Objects;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.FieldUsage;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
@@ -176,8 +176,8 @@ public class UpdateFieldsFromInternetFragment
                                                        "update_from_internet");
         }
 
-        HintManager.displayHint(getLayoutInflater(),
-                                R.string.hint_update_fields_from_internet, null);
+        TipManager.display(getLayoutInflater(),
+                           R.string.tip_update_fields_from_internet, null);
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {

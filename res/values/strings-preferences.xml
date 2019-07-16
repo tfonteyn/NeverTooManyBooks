@@ -255,11 +255,31 @@
         <item>Books available</item>
     </string-array>
 
-    <!-- shared for all Filters: don't-use-filter (-1), filter-true (1), filter-false (0) -->
+    <!-- shared for all Boolean Filters: don't-use-filter (-1), filter-true (1), filter-false (0) -->
     <string-array name="pv_bob_filter_values">
         <item translatable="false">-1</item>
         <item translatable="false">1</item>
         <item translatable="false">0</item>
+    </string-array>
+
+    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all
+    NEWKIND: edition. -->
+    <string-array name="pe_bob_filter_edition">
+        <item>@string/lbl_edition_first_edition</item>
+        <item>@string/lbl_edition_first_impression</item>
+        <item>@string/lbl_edition_limited</item>
+        <item>@string/lbl_edition_book_club</item>
+    </string-array>
+    <!-- multi-select: use bitmask values: 1,2,4,8,... NEWKIND: edition.-->
+    <string-array name="pv_bob_filter_edition">
+        <!-- Book#EDITION_FIRST = 1 -->
+        <item translatable="false">1</item>
+        <!-- Book#EDITION_FIRST_IMPRESSION = 1 << 1 -->
+        <item translatable="false">2</item>
+        <!-- Book#EDITION_LIMITED = 1 << 2 -->
+        <item translatable="false">4</item>
+        <!-- Book#EDITION_BOOK_CLUB = 1 << 7 -->
+        <item translatable="false">128</item>
     </string-array>
 
     <!-- ####################################################################################### -->

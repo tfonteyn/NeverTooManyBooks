@@ -50,15 +50,20 @@ public class ImportOptionsDialogFragment
         return frag;
     }
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mOptions = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS);
+    }
+
     /**
      * Create the underlying dialog.
      */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mOptions = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_OPTIONS);
-
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_import_options, null);
 

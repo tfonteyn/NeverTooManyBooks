@@ -34,4 +34,14 @@ public class WildcardFilter
     public String getExpression() {
         return '(' + mTable.dot(mDomain) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "WildcardFilter{"
+                + "mTable=" + mTable
+                + ", mDomain=" + mDomain
+                + ", mCriteria=`" + mCriteria + '`'
+                + '}';
+    }
 }

@@ -64,6 +64,7 @@ public class EditSeriesDialogFragment
     private AutoCompleteTextView mNameView;
     private Checkable mIsCompleteView;
 
+    private Series mSeries;
     private String mName;
     private boolean mIsComplete;
     private WeakReference<BookChangedListener> mBookChangedListener;
@@ -79,22 +80,26 @@ public class EditSeriesDialogFragment
         return frag;
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mDb = new DAO();
 
-        Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES_TITLE);
-        Objects.requireNonNull(series);
+        mSeries = requireArguments().getParcelable(DBDefinitions.KEY_SERIES_TITLE);
+        Objects.requireNonNull(mSeries);
         if (savedInstanceState == null) {
-            mName = series.getName();
-            mIsComplete = series.isComplete();
+            mName = mSeries.getName();
+            mIsComplete = mSeries.isComplete();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
+    }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
 
@@ -124,17 +129,17 @@ public class EditSeriesDialogFragment
                     mIsComplete = mIsCompleteView.isChecked();
                     dismiss();
 
-                    if (series.getName().equals(mName)
-                            && series.isComplete() == mIsComplete) {
+                    if (mSeries.getName().equals(mName)
+                            && mSeries.isComplete() == mIsComplete) {
                         return;
                     }
-                    series.setName(mName);
-                    series.setComplete(mIsComplete);
+                    mSeries.setName(mName);
+                    mSeries.setComplete(mIsComplete);
 
-                    mDb.updateOrInsertSeries(series, LocaleUtils.getPreferredLocal());
+                    mDb.updateOrInsertSeries(mSeries, LocaleUtils.getPreferredLocal());
 
                     Bundle data = new Bundle();
-                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, series.getId());
+                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get().onBookChanged(0, BookChangedListener.SERIES, data);
                     } else {

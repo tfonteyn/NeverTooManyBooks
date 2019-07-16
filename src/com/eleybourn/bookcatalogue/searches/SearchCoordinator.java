@@ -101,14 +101,11 @@ public class SearchCoordinator {
     @SuppressWarnings("FieldCanBeLocal")
     private final SearchCoordinatorController mController = new SearchCoordinatorController() {
 
+        @Override
         public void requestAbort() {
             mTaskManager.cancelAllTasks();
         }
 
-        /**
-         *
-         * @return the search coordinator.
-         */
         @NonNull
         @Override
         public SearchCoordinator getSearchCoordinator() {

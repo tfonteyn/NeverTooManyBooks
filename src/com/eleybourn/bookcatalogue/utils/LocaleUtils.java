@@ -584,35 +584,30 @@ public final class LocaleUtils {
     /**
      * Takes a combined price field, and returns the value/currency in the Bundle.
      *
+     * <b>Note:</b>
+     * The UK (GBP) pre-decimal had Shilling/Pence as subdivisions of the pound.
+     * UK Shilling was written as "1/-", for example:
+     * three shillings and six pence => 3/6
+     * We don't convert this, but return that value as-is.
+     * It's used on the ISFDB web site.
+     * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal
+     *
      * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
      * @param keyPrice          bundle key for the value
      * @param keyCurrency       bundle key for the currency
      * @param destination       bundle to add the two keys to.
-     *
-     * @return {@code true} if processing was a success. {@code false} if we put the original value
-     * in the bundle under the keyPrice, and left keyCurrency empty.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean splitPrice(@NonNull final String priceWithCurrency,
-                                     @NonNull final String keyPrice,
-                                     @NonNull final String keyCurrency,
-                                     @NonNull final Bundle destination) {
+    public static void splitPrice(@NonNull final String priceWithCurrency,
+                                  @NonNull final String keyPrice,
+                                  @NonNull final String keyCurrency,
+                                  @NonNull final Bundle destination) {
         String[] data = SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN.split(priceWithCurrency, 2);
-        if (data.length == 1) {
-            destination.putString(keyPrice, priceWithCurrency);
-            destination.putString(keyCurrency, "");
-            // I don't think the Shilling/Pence from the UK ever had an
-            // international code.
-//              if (priceWithCurrency.contains("/")) {
-//                  // UK Shilling was written as "1/-", for example:
-//                  // three shillings and six pence => 3/6
-//                  destination.putString(keyCurrency, "???");
-//              }
-        } else {
+        if (data.length > 1) {
             String currencyCode = currencyToISO(data[0]);
-            if (currencyCode != null) {
+            if (currencyCode != null && currencyCode.length() == 3) {
                 try {
                     java.util.Currency currency = java.util.Currency.getInstance(currencyCode);
+
                     int decDigits = currency.getDefaultFractionDigits();
                     // format with 'digits' decimal places
                     Float price = Float.parseFloat(data[1]);
@@ -621,14 +616,26 @@ public final class LocaleUtils {
                     destination.putString(keyPrice, priceStr);
                     // re-get the code just in case it used a recognised but non-standard string
                     destination.putString(keyCurrency, currency.getCurrencyCode());
+                    return;
 
                 } catch (@NonNull final NumberFormatException e) {
+                    // accept the 'broken' price data[1]
                     destination.putString(keyPrice, data[1]);
                     destination.putString(keyCurrency, currencyCode);
-                    return false;
+                    return;
+
+                } catch (@NonNull final IllegalArgumentException e) {
+                    // Currency.getInstance sanity catch....
+                    if (BuildConfig.DEBUG) {
+                        Logger.error(LocaleUtils.class, e, "splitPrice",
+                                     "data[0]=" + data[0], "data[1]=" + data[1]);
+                    }
                 }
             }
         }
-        return true;
+
+        // fall back to the input
+        destination.putString(keyPrice, priceWithCurrency);
+        destination.putString(keyCurrency, "");
     }
 }

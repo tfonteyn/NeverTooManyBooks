@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -22,6 +23,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -68,6 +70,7 @@ public final class Prefs {
     public static final String pk_bob_style_name = "BookList.Style.Name";
     public static final String pk_bob_groups = "BookList.Style.Groups";
     public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
+    /** MultiSelectListPreference. */
     public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
 
     public static final String pk_bob_text_size = "BookList.Style.Scaling";
@@ -91,16 +94,21 @@ public final class Prefs {
     public static final String pk_bob_show_author = "BookList.Style.Show.Author";
     /** Show publisher for each book. */
     public static final String pk_bob_show_publisher = "BookList.Style.Show.Publisher";
-    /** Show publisher for each book. */
+    /** Show ISBN for each book. */
     public static final String pk_bob_show_isbn = "BookList.Style.Show.ISBN";
     /** Show format for each book. */
     public static final String pk_bob_show_format = "BookList.Style.Show.Format";
 
-    /** Booklist Filter. */
+    /** Booklist Filter - ListPreference. */
     public static final String pk_bob_filter_read = "BookList.Style.Filter.Read";
+    /** Booklist Filter - ListPreference. */
     public static final String pk_bob_filter_signed = "BookList.Style.Filter.Signed";
+    /** Booklist Filter - ListPreference. */
     public static final String pk_bob_filter_loaned = "BookList.Style.Filter.Loaned";
+    /** Booklist Filter - ListPreference. */
     public static final String pk_bob_filter_anthology = "BookList.Style.Filter.Anthology";
+    /** Booklist Filter - MultiSelectListPreference. */
+    public static final String pk_bob_filter_editions = "BookList.Style.Filter.Editions";
 
     /** Legacy preferences name, pre-v200. */
     public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
@@ -132,7 +140,13 @@ public final class Prefs {
      * @return the set
      */
     @NonNull
-    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
+    public static Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
+                                          @NonNull final Integer bitmask) {
+        // sanity check.
+        if (bitmask < 0) {
+            throw new IllegalArgumentException("bitmask=" + bitmask);
+        }
+
         Set<String> set = new HashSet<>();
         int tmp = bitmask;
         int bit = 1;
@@ -369,8 +383,8 @@ public final class Prefs {
                         ed.putInt(StartupActivity.PREF_STARTUP_COUNTDOWN, (Integer) oldValue);
                         break;
 
-                    case StartupActivity.PREF_STARTUP_COUNT:
-                        ed.putInt(key, (Integer) oldValue);
+                    case "Startup.StartCount":
+                        ed.putInt(StartupActivity.PREF_STARTUP_COUNT, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.BOOKSHELF":
@@ -421,7 +435,7 @@ public final class Prefs {
                     case "HintManager.Hint.hint_amazon_links_blurb":
                         // skip keys that make no sense to copy
                     case "UpgradeMessages.LastMessage":
-                    case UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED:
+                    case "Startup.FtsRebuildRequired":
                         break;
 
                     default:
@@ -437,8 +451,13 @@ public final class Prefs {
                                 ed.putString(key, tmp1);
                             }
 
-                        } else if (key.startsWith("HintManager")) {
-                            ed.putBoolean(key, (Boolean) oldValue);
+                        } else if (key.startsWith("HintManager.Hint.hint_")) {
+                            ed.putBoolean(key.replace("HintManager.Hint.hint_", TipManager.PREF_TIP),
+                                          (Boolean) oldValue);
+
+                        } else if (key.startsWith("HintManager.Hint.")) {
+                            ed.putBoolean(key.replace("HintManager.Hint.", TipManager.PREF_TIP),
+                                         (Boolean) oldValue);
 
                         } else if (key.startsWith("lt_hide_alert_")) {
                             ed.putString(key.replace("lt_hide_alert_",
@@ -478,6 +497,5 @@ public final class Prefs {
         // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
         oldPrefs.edit().clear().apply();
     }
-
 
 }

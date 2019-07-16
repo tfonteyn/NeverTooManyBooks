@@ -8,7 +8,6 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:padding="16dp"
-    android:background="@drawable/border"
     android:backgroundDimEnabled="true"
     android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
     android:windowBackground="@android:color/transparent"

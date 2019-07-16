@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 
 /**
  * Activity to display the available QueueManager Task object subclasses to the user.
@@ -60,7 +60,7 @@ public class TaskQueueListActivity
         cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldTasks());
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(), R.string.hint_background_tasks, null);
+            TipManager.display(getLayoutInflater(), R.string.tip_background_tasks, null);
         }
     }
 

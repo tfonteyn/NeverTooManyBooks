@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
@@ -40,6 +41,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.utils.Csv;
 
 /**
  * First attempt to split of into a model for BoB.
@@ -130,6 +132,7 @@ public class BooksOnBookshelfModel
      */
     private int mTopRowOffset;
     /** Currently selected bookshelf. */
+    @Nullable
     private Bookshelf mCurrentBookshelf;
 
     @Override
@@ -182,7 +185,7 @@ public class BooksOnBookshelfModel
         // Debug; makes list structures vary across calls to ensure code is correct...
         mCurrentPositionedBookId = -1;
 
-        // search criteria come only from the intent - if any.
+        // search criteria (if any) can only come from the intent, not from savedInstanceState
         if (extras != null) {
             mSearchCriteria.from(extras, true);
         }
@@ -205,37 +208,51 @@ public class BooksOnBookshelfModel
         }
     }
 
-
+    @NonNull
     public Bookshelf getCurrentBookshelf() {
+        Objects.requireNonNull(mCurrentBookshelf);
         return mCurrentBookshelf;
     }
 
+    /**
+     * Load and set the desired Bookshelf; do NOT set it as the preferred.
+     *
+     * @param currentBookshelf to use
+     */
     public void setCurrentBookshelf(@NonNull final Bookshelf currentBookshelf) {
         mCurrentBookshelf = currentBookshelf;
     }
 
+    /**
+     * Load and set the desired Bookshelf; do NOT set it as the preferred.
+     *
+     * @param id of Bookshelf
+     */
     public void setCurrentBookshelf(final long id) {
         mCurrentBookshelf = mDb.getBookshelf(id);
     }
 
+    /**
+     * Load and set the desired Bookshelf as the preferred.
+     *
+     * @param context Current context
+     * @param name    of desired Bookshelf
+     */
     public void setCurrentBookshelf(@NonNull final Context context,
-                                    @NonNull final String selected) {
-        mCurrentBookshelf = mDb.getBookshelfByName(selected);
-        // make sure the shelf exists.
-        if (mCurrentBookshelf == null) {
-            // shelf must have been deleted, switch to 'all book'
-            mCurrentBookshelf = Bookshelf.getAllBooksBookshelf(context, mDb);
-        }
-        // and make it the new default
+                                    @NonNull final String name) {
+
+        mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
         mCurrentBookshelf.setAsPreferred();
     }
 
     @NonNull
     public BooklistStyle getCurrentStyle() {
+        Objects.requireNonNull(mCurrentBookshelf);
         return mCurrentBookshelf.getStyle(mDb);
     }
 
     public void setCurrentStyle(@NonNull final BooklistStyle style) {
+        Objects.requireNonNull(mCurrentBookshelf);
         mCurrentBookshelf.setStyle(mDb, style);
     }
 
@@ -249,6 +266,7 @@ public class BooksOnBookshelfModel
     public void onStyleChanged(@NonNull final BooklistStyle style,
                                final int topRow,
                                @NonNull final RecyclerView listView) {
+        Objects.requireNonNull(mCurrentBookshelf);
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred();
@@ -337,10 +355,11 @@ public class BooksOnBookshelfModel
      *
      * @param context       Current context, for accessing resources.
      * @param isFullRebuild Indicates whole table structure needs rebuild,
- *                      versus just do a reselect of underlying data
+     *                      versus just do a reselect of underlying data
      */
     public void initBookList(@NonNull final Context context,
                              final boolean isFullRebuild) {
+        Objects.requireNonNull(mCurrentBookshelf);
 
         BooklistBuilder bookListBuilder;
 
@@ -368,16 +387,20 @@ public class BooksOnBookshelfModel
 
             // external site ID's
             bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+                                          DBDefinitions.TBL_BOOKS.dot(
+                                                  DBDefinitions.DOM_BOOK_ISFDB_ID),
                                           false);
             bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+                                          DBDefinitions.TBL_BOOKS.dot(
+                                                  DBDefinitions.DOM_BOOK_GOODREADS_ID),
                                           false);
             bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                                          DBDefinitions.TBL_BOOKS.dot(
+                                                  DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
                                           false);
             bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+                                          DBDefinitions.TBL_BOOKS.dot(
+                                                  DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
                                           false);
 
             // if we have a list of ID's, ignore other criteria.
@@ -391,7 +414,7 @@ public class BooksOnBookshelfModel
                 // Criteria supported by FTS
                 bookListBuilder.setFilter(mSearchCriteria.ftsAuthor,
                                           mSearchCriteria.ftsTitle,
-                                          mSearchCriteria.getKeywords());
+                                          mSearchCriteria.ftsKeywords);
 
                 // non-FTS
                 bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
@@ -492,7 +515,8 @@ public class BooksOnBookshelfModel
                 return series.getName();
             }
         } else if (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND) == BooklistGroup.RowKind.BOOK) {
-            ArrayList<Series> series = mDb.getSeriesByBookId(row.getLong(DBDefinitions.KEY_FK_BOOK));
+            ArrayList<Series> series = mDb.getSeriesByBookId(
+                    row.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getName();
             }
@@ -565,15 +589,32 @@ public class BooksOnBookshelfModel
             ftsKeywords = null;
             ftsAuthor = null;
             ftsTitle = null;
+
             series = null;
             loanee = null;
+
             bookList = null;
         }
 
+        /**
+         * Get a single string with all search words, for displaying.
+         *
+         * @return csv string, can be empty, never {@code null}.
+         */
+        @NonNull
+        public String getDisplayString() {
+            List<String> list = new ArrayList<>();
 
-        @Nullable
-        public String getKeywords() {
-            return ftsKeywords;
+            if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
+                list.add(ftsAuthor);
+            }
+            if (ftsTitle != null && !ftsTitle.isEmpty()) {
+                list.add(ftsTitle);
+            }
+            if (ftsKeywords != null && !ftsKeywords.isEmpty()) {
+                list.add(ftsKeywords);
+            }
+            return Csv.join(",", list);
         }
 
         public void setKeywords(@Nullable final String keywords) {
@@ -588,11 +629,12 @@ public class BooksOnBookshelfModel
          * Only copies the criteria which are set.
          * Criteria not set in the bundle, are preserved!
          *
-         * @param bundle with criteria.
+         * @param bundle     with criteria.
+         * @param clearFirst Flag to force clearing all before loading the new criteria
          */
         public void from(@NonNull final Bundle bundle,
-                         final boolean clear) {
-            if (clear) {
+                         final boolean clearFirst) {
+            if (clearFirst) {
                 clear();
             }
 
@@ -602,9 +644,10 @@ public class BooksOnBookshelfModel
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
                 ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             }
-            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
-                ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
+            if (bundle.containsKey(UniqueId.BKEY_SEARCH_TITLE)) {
+                ftsTitle = bundle.getString(UniqueId.BKEY_SEARCH_TITLE);
             }
+
             if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
                 series = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
             }
@@ -623,9 +666,11 @@ public class BooksOnBookshelfModel
         public void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
-                  .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
+                  .putExtra(UniqueId.BKEY_SEARCH_TITLE, ftsTitle)
+
                   .putExtra(DBDefinitions.KEY_SERIES_TITLE, series)
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
+
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 

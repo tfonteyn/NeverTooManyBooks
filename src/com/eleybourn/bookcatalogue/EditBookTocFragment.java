@@ -476,6 +476,7 @@ public class EditBookTocFragment
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
+        private boolean mHasOtherEditions;
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
@@ -503,15 +504,20 @@ public class EditBookTocFragment
             mListener = new WeakReference<>(listener);
         }
 
+        @Override
+        public void onCreate(@Nullable final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            Bundle args = requireArguments();
+            mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
+            mTocEntries = args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+            mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-            Bundle args = requireArguments();
-
-            boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
-            mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
-            mTocEntries = args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
 
             @SuppressLint("InflateParams")
@@ -542,7 +548,7 @@ public class EditBookTocFragment
             }
 
             // if we found multiple editions, allow a re-try with the next edition
-            if (hasOtherEditions) {
+            if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
                                  this::onGetNext);
             }

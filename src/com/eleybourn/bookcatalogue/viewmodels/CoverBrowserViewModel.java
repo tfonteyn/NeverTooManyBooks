@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.viewmodels;
 
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,11 +18,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.CoverBrowserFragment;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -48,17 +52,15 @@ public class CoverBrowserViewModel
     /**
      * Pseudo constructor.
      *
-     * @param isbn               of the book
-     * @param initialSearchSites default search sites for covers
+     * @param args Bundle
      */
-    public void init(@NonNull final String isbn,
-                     final int initialSearchSites) {
+    public void init(@NonNull final Bundle args) {
         if (mBaseIsbn != null) {
             return;
         }
 
-        mBaseIsbn = isbn;
-
+        mBaseIsbn = Objects.requireNonNull(args.getString(DBDefinitions.KEY_ISBN));
+        int initialSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
         // Create an object to manage the downloaded files
         mFileManager = new FileManager(initialSearchSites);
     }

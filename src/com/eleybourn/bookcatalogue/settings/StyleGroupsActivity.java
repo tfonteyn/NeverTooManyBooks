@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -132,8 +132,8 @@ public class StyleGroupsActivity
         }
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(getLayoutInflater(),
-                                    R.string.hint_booklist_style_groups, null);
+            TipManager.display(getLayoutInflater(),
+                               R.string.tip_booklist_style_groups, null);
         }
     }
 

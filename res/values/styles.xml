@@ -132,6 +132,7 @@
         <item name="android:layout_marginEnd">@dimen/indent2</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
+        <!-- 3 dots to indicate 3 characters. NOT an ellipsis. -->
         <item name="android:hint">...</item>
         <item name="android:ems">3</item>
         <item name="android:maxLength">3</item>
@@ -166,7 +167,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border1</item>
-        <item name="android:hint">@string/field_not_set</item>
+        <item name="android:hint">@string/hint_field_not_set</item>
     </style>
 
     <style name="DropDownMenu">
@@ -327,7 +328,7 @@
         <item name="android:layout_marginBottom">0dp</item>
     </style>
     <style name="BooklistBook.Row.Level1">
-        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginTop">@dimen/booklist_row_spacer</item>
     </style>
     <style name="BooklistBook.Row.Level2">
         <!--<item name="android:layout_marginTop">2dp</item>-->
@@ -527,5 +528,4 @@
     </style>
 
     <!-- *************************************************************************************** -->
-
 </resources>

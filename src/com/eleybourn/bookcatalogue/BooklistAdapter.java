@@ -314,12 +314,12 @@ public class BooklistAdapter
             case RowKind.AUTHOR:
                 return new CheckableStringHolder(itemView, columnIndex,
                                                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                                 R.string.field_not_set_with_brackets);
+                                                 R.string.hint_field_not_set_with_brackets);
 
             case RowKind.SERIES:
                 return new CheckableStringHolder(itemView, columnIndex,
                                                  DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                                 R.string.field_not_set_with_brackets);
+                                                 R.string.hint_field_not_set_with_brackets);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -328,18 +328,18 @@ public class BooklistAdapter
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
             case RowKind.DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(itemView, columnIndex, R.string.field_not_set_with_brackets);
+                return new MonthHolder(itemView, columnIndex, R.string.hint_field_not_set_with_brackets);
 
             // some special formatting holders
             case RowKind.RATING:
                 return new RatingHolder(itemView, columnIndex,
-                                        R.string.field_not_set_with_brackets);
+                                        R.string.hint_field_not_set_with_brackets);
             case RowKind.LANGUAGE:
                 return new LanguageHolder(itemView, columnIndex,
-                                          R.string.field_not_set_with_brackets);
+                                          R.string.hint_field_not_set_with_brackets);
             case RowKind.READ_STATUS:
                 return new ReadUnreadHolder(itemView, columnIndex,
-                                            R.string.field_not_set_with_brackets);
+                                            R.string.hint_field_not_set_with_brackets);
 
             // plain old Strings
 //            case RowKind.TITLE_LETTER:
@@ -361,7 +361,7 @@ public class BooklistAdapter
 //            case RowKind.DATE_LAST_UPDATE_DAY:
             default:
                 return new GenericStringHolder(itemView, columnIndex,
-                                               R.string.field_not_set_with_brackets);
+                                               R.string.hint_field_not_set_with_brackets);
         }
     }
 

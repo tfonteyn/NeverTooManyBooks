@@ -120,14 +120,12 @@
     <string name="lbl_rating">Hodnocení</string>
     <string name="lbl_is_read">Máte tuto knihu přečtenou?</string>
     <string name="lbl_pages">Počet stran</string>
-    <string name="X_btn_confirm_add_book">Přidat knihu</string>
     <string name="btn_confirm_update">Upravit</string>
     <string name="X_info_no_books_yet">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
     <string name="menu_expand_all">Rozbalit vše</string>
     <string name="X_menu_sort_by">Seřadit podle</string>
     <string name="menu_collapse_all">Sbalit vše</string>
     <string name="menu_search">Hledat</string>
-    <string name="X_btn_confirm_save_book">Uložit knihu</string>
     <string name="X_info_no_bookshelves_yet">Zatím nemáte vytvořenou žádnou knihovnu. Pro její vytvoření použijte menu ve spodní části obrazovky.</string>
     <string name="X_menu_add_bookshelf">Vytvořit knihovnu</string>
     <string name="menu_bookshelves">Knihovny…</string>
@@ -151,7 +149,7 @@
     <string name="menu_administration">Admin</string>
     <string name="info_install_scanner">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
     <string name="title_install_scan">Instalovat čtečku čárových kódů</string>
-    <string name="about_lbl_upgrade">Od Vaší poslední aktualizace</string>
+    <string name="lbl_upgrade">Od Vaší poslední aktualizace</string>
     <string name="menu_edit_book">Upravit knihu</string>
     <string name="menu_edit_book_notes">Váš komentář</string>
     <string name="menu_loan_lend_book">Půjčit knihu…</string>
@@ -167,7 +165,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="menu_about">O této aplikaci</string>
     <string name="lbl_price_listed">Seznam cen</string>
-    <string name="lbl_update_fields">Automaticky aktualizovat pole</string>
+    <string name="lbl_update_fields_long">Automaticky aktualizovat pole</string>
 
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="lbl_select_fields">Zvolit pole</string>
@@ -210,9 +208,9 @@
     <string name="lbl_format">Formát</string>
     <string name="lbl_description">Popis</string>
     <string name="lbl_genre">Žánr</string>
-    <string name="field_not_set">Nenastaveno</string>
+    <string name="hint_field_not_set">Nenastaveno</string>
     <string name="X_menu_search_books">Hledat knihy</string>
-    <string name="hint_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
+    <string name="tip_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
     <string name="X_about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="vldt_unable_to_get_value_for_x">Neznámá hodnota pro \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Očekávána číselná hodnota pro \‘%1$s\’</string>
@@ -312,7 +310,7 @@
     <string name="retry">Opakovat</string>
     <string name="bookshelf_my_books">Moje knihy</string>
 
-    <string name="search_text_hint">Vložit a/nebo ISBN</string>
+    <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="lbl_search_criteria">Kritéria pro vyhledávání</string>
     <string name="menu_add_book_manually">Přidat ručně</string>
     <string name="menu_search_internet">Prohledat internet</string>
@@ -340,7 +338,7 @@
     <string name="acra_resReportSendSuccessToast">Děkujeme!</string>
     <string name="lbl_read">Přečteno</string>
     <string name="lbl_unread">Nepřečteno</string>
-    <string name="date_not_set_with_brackets">(žádné datum)</string>
+    <string name="hint_date_not_set_with_brackets">(žádné datum)</string>
     <string name="style_builtin_author_series">Autor, následně série</string>
     <string name="style_builtin_series">Série</string>
     <string name="style_builtin_title_first_letter">První písmeno z titulu</string>
@@ -350,7 +348,7 @@
     <string name="style_builtin_publication_date">Datum vydání</string>
     <string name="style_builtin_added_date">Datum přidání</string>
     <string name="style_builtin_author_year">Autor, rok</string>
-    <string name="field_not_set_with_brackets">(prázdné)</string>
+    <string name="hint_field_not_set_with_brackets">(prázdné)</string>
     <string name="lbl_bookshelves">Police</string>
     <string name="lbl_credentials">Volitelná rozšíření</string>
     <string name="lbl_data_import_export">Import/Export dat</string>
@@ -362,11 +360,11 @@
     <string name="menu_show_more_ellipsis">Zobrazit vše…</string>
     <string name="menu_show_fewer_ellipsis">Zobrazit méně…</string>
     <string name="menu_customize_ellipsis">Přizpůsobit…</string>
-    <string name="hint">Rada</string>
-    <string name="hint_reset_all_hints">Obnovit rady</string>
+    <string name="tip_dialog_title">Rada</string>
+    <string name="tip_reset_all">Obnovit rady</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_styles_editor">
+    <string name="tip_booklist_styles_editor">
         Na této obrazovce máte možnost upravit seznam stylů, které budou zobrazeny ve Vašem defaultním menu stylů.\n
         \nZelená fajfka označuje ty styly, které budou v seznamu zobrazeny, červený křížek potom označuje ty, které budou skryty.
         Kliknutím na danou položku můžete přepínat mezi fajfkou a křížkem.\n
@@ -375,21 +373,21 @@
         \nKliknutí kamkoli jinam na řádek Vám umožní upravit detaily daného stylu (případně jeho naklonování).
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_groups">
+    <string name="tip_booklist_style_groups">
         Na této obrazovce můžete upravit hierarchii položek v daném stylu pro seznam knih.\n
         \nZelená fajfka označuje ty položky, které budou v seznamu zobrazeny, červený křížek potom označuje ty, které budou skryty.
         Kliknutím na danou položku můžete přepínat mezi fajfkou a křížkem.\n
         \nHierarchii jednotlivých položek je možné upravit přetažením ikony v pravé části řádku.
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_properties">
+    <string name="tip_booklist_style_properties">
         Na této obrazovce můžete upravit charakteristiky daného stylu pro seznam knih.\n
         \nK dispozici máte několik nástrojů, které Vám umožní přizpůsobit styl seznamu
         Vašim představám - můžete například měnit jména, nebo upravovat seskupení a měnit tak hierarchii.\n
         \nMůžete rovněž použít ‘filtry knih’ a určit tak, které knihy mají být v seznamu zobrazeny -
         například pouze vrácené knihy, které nemáte dosud přečtené.
     </string>
-    <string name="X_hint_booklist_global_properties">
+    <string name="X_tip_booklist_global_properties">
         Na této obrazovce máte možnost nastavit defaultní charakteristiky pro všechny styly
         seznamu knih. Většina charakteristik může být předefinována přímo u jednotlivých stylů,
         ale defalutní hodnoty můžete nastavit zde. Můžete změnit způsob zobrazení seznamu při
@@ -412,17 +410,17 @@
     <string name="btn_tell_me_more">Dozvědět se více</string>
     <string name="unknown">Neznámý</string>
     <string name="X_menu_cover_options">Možnosti obálky…</string>
-    <string name="hint_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
-    <string name="hint_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
-    <string name="hint_background_tasks">
+    <string name="tip_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
+    <string name="tip_background_tasks">
         Odtud můžete sledovat aktuálně běžící úlohy spolu s úlohami, které již byly ukončeny, ale při jejich provádění došlo k nějaké chybě.
         Kliknutí na událost Vám umožní prohlédnout si události spojené s danou úlohou, nebo její odstranění (spolu se souvisejícími událostmi).
     </string>
-    <string name="hint_background_task_events">
+    <string name="tip_background_task_events">
         Odtud můžete sledovat události spojené s úlohami na pozadí.
         Kliknutí na událost Vám umožní provést celou řadu akcí spojených s danou událostí.
     </string>
-    <string name="hints_have_been_reset">Rady byly obnoveny</string>
+    <string name="tip_reset_done">Rady byly obnoveny</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
 
     <string name="read_amp_unread">Přečteno amp; Nepřečteno</string>
@@ -440,7 +438,7 @@
         Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih
     </string>
     <string name="X_error_starting_import_arg">Vyskytl se problém při zahájení importu: %1$s</string>
-    <string name="hint_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.\n\n
+    <string name="tip_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.\n\n
         Prostřednictvím tlačítka \‘Přizpůsobit\’ (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.
     </string>
     <string name="warning_missing_name">Jméno nesmí být prázdné</string>
@@ -465,7 +463,7 @@
     <string name="searching_open_library">Vyhledávám na OpenLibrary</string>
     <string name="progress_msg_searching">Vyhledávání…</string>
     <string name="progress_msg_reading_directory">Čtení složek…</string>
-    <string name="btn_merge">Spojit</string>
+    <string name="btn_confirm_merge">Spojit</string>
     <string name="book_format_audiobook">Audio kniha</string>
     <string name="menu_author_details">Všechna díla tohoto autora</string>
     <string name="lbl_style">Styl</string>
@@ -473,9 +471,9 @@
     <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
     <string name="lbl_search_site_order">Objednávka</string>
     <string name="info_tap_on_image_to_select">Klikněte na velký obrázek a vyberte jej</string>
-    <string name="menu_clear_filters">Vymazat filtry</string>
+    <string name="menu_clear_search_filters">Vymazat filtry</string>
     <string name="lbl_copy_database">Zkopírujte databázi</string>
-    <string name="menu_internet_update_fields">Aktualizovat pole</string>
+    <string name="lbl_update_fields">Aktualizovat pole</string>
     <string name="warning_action_requires_isbn">Tato akce vyžaduje platné číslo ISBN.</string>
     <string name="vldt_failure">Selhání ověření.</string>
     <string name="title_import">Importovat</string>
@@ -484,7 +482,7 @@
     <string name="tab_lbl_notes">Poznámky</string>
     <string name="tab_lbl_details">Podrobnosti</string>
     <string name="title_send_mail">Poslat e-mailem…</string>
-    <string name="usage_skip">Vynechat</string>
+    <string name="lbl_field_usage_skip">Vynechat</string>
     <string name="btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
     <string name="lbl_currency">Měna</string>
     <string name="btn_confirm_use">Použití</string>
@@ -506,7 +504,7 @@
     <string name="menu_add_book_by_barcode_scan">Skenování čárového kódu / ISBN</string>
     <string name="lbl_price_paid">Cena zaplacena</string>
     <string name="style_builtin_acquired_date">Získáno</string>
-    <string name="search_with_text">Hledat: %1$s</string>
+    <string name="title_search_filtered_on_x">Filtrovaný: %1$s</string>
     <string name="style_builtin_read_date">Datum Čtení</string>
     <string name="style_builtin_update_date">Datum aktualizace</string>
     <string name="lbl_read_day">Čtení dne</string>
@@ -562,15 +560,16 @@
     <string name="progress_msg_export_starting">Exportovat výchozí…</string>
     <string name="progress_msg_importing">Import…</string>
     <string name="progress_msg_n_created_m_updated">%1$d vytvořeno, %2$d aktualizováno</string>
-    <string name="progress_msg_covers">Zpracované kryty %1$d (chybí %2$d)</string>
-    <string name="progress_msg_covers_skip">Zpracované kryty %1$d (chybí %2$d, %3$d přeskočeno)</string>
-    <string name="hint_book_list">Kliknutí na knihu vám ukáže podrobnosti o knize. Dlouhý stisk položky v seznamu vám poskytne více možností.</string>
-    <string name="hint_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
-    <string name="hint_view_only_book_details">Když klepnete na položku v tomto seznamu, můžete se nyní rozhodnout pro zobrazení podrobností o neupravitelných podrobnostech knihy. Viz Nastavení příslušného spínače.</string>
+    <string name="progress_msg_covers_handled">Zpracované kryty %1$d</string>
+    <string name="progress_msg_covers_handled_missing">Zpracované kryty %1$d (chybí %2$d)</string>
+    <string name="progress_msg_covers_handled_missing_skipped">Zpracované kryty %1$d (chybí %2$d, %3$d přeskočeno)</string>
+    <string name="tip_book_list">Kliknutí na knihu vám ukáže podrobnosti o knize. Dlouhý stisk položky v seznamu vám poskytne více možností.</string>
+    <string name="tip_autorotate_camera_images">Pokud se vždy nacházíte ve stejném směru, zkuste změnit předvolby aplikace tak, aby určovaly rotaci, která se použije automaticky.</string>
+    <string name="tip_view_only_book_details">Když klepnete na položku v tomto seznamu, můžete se nyní rozhodnout pro zobrazení podrobností o neupravitelných podrobnostech knihy. Viz Nastavení příslušného spínače.</string>
     <string name="info_displaying_n_books_in_m_entries">zobrazení %1$d knih v položkách %2$d</string>
     <string name="btn_options">Možnosti</string>
     <string name="btn_continue_editing">Pokračovat v úpravách</string>
-    <string name="about_lbl_special_thanks">Zvláštní poděkování</string>
+    <string name="lbl_special_thanks">Zvláštní poděkování</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="menu_set_complete">Nastavit na “kompletní”</string>
@@ -583,7 +582,7 @@
     <string name="export_options_dialog_title">Vyberte, co bude exportováno do archivu.</string>
     <string name="error_database_upgrade_failed">Nelze provést upgrade z verze starší než 5.2.2</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
-    <string name="hint_view_only_help">Toto je obrazovka s neupravitelnými podrobnostmi knihy; můžete posouvat doleva nebo doprava a přejít k dalším knihám a knihu můžete upravit pomocí nabídky možností pomocí tlačítka nabídky nebo ikony přetékající nabídky.</string>
+    <string name="tip_view_only_help">Toto je obrazovka s neupravitelnými podrobnostmi knihy; můžete posouvat doleva nebo doprava a přejít k dalším knihám a knihu můžete upravit pomocí nabídky možností pomocí tlačítka nabídky nebo ikony přetékající nabídky.</string>
     <string name="import_export_option_xml_info">XML je pouze export, bez importu.</string>
     <string name="import_export_option_xml">Všechna data ve formátu XML</string>
     <string name="info_share_book_im_reading">Čtu “%1$s” o %2$s %3$s %4$s</string>
@@ -617,7 +616,7 @@
     <string name="error_no_external_crop_app">Aplikace pro oříznutí obrázků nebyla nalezena</string>
 
     <string name="X_use_default_setting">Použít defaultní nastavení</string>
-    <string name="about_lbl_creators">Původně:</string>
+    <string name="lbl_creators">Původně:</string>
     <string name="book_format_ebook">ebook</string>
     <string name="book_format_hardcover">Tvrdý obal</string>
     <string name="book_format_paperback">Brožovaná kniha</string>
@@ -626,5 +625,10 @@
     <string name="title_delete_toc_entry">Smazat název</string>
     <string name="confirm_delete_toc_entry">Odstraňte název “%1$s” z %2$s? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
     <string name="menu_view_book_at_ellipsis">Výhled na…</string>
+    <string name="lbl_keywords">Klíčová slova</string>
+    <string name="warning_missing_title">Chybí název.</string>
+    <string name="warning_missing_author">Chybí autor.</string>
+    <string name="warning_isfdb_only">(podporuje pouze webová stránka ISFDB)</string>
+    <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
 
 </resources>

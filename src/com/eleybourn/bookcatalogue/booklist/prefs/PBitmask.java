@@ -26,6 +26,8 @@ public class PBitmask
      *
      * @param key          of the preference
      * @param uuid         the style id
+     * @param isPersistent {@code true} to have the value persisted.
+     *                     {@code false} for in-memory only.
      * @param defaultValue default to use if there is no global default
      */
     public PBitmask(@NonNull final String key,

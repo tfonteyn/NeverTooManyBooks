@@ -120,7 +120,7 @@ public class FTSSearchActivity
 
     private void readArgs(@NonNull final Bundle args) {
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
+        mTitleSearchText = args.getString(UniqueId.BKEY_SEARCH_TITLE);
         mKeywordsSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
@@ -179,7 +179,13 @@ public class FTSSearchActivity
 
         // Handle the 'Search' button.
         findViewById(R.id.btn_search).setOnClickListener(v -> {
-            Intent data = new Intent().putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+            Intent data = new Intent()
+                    // pass these for displaying to the user
+                    .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
+                    .putExtra(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText)
+                    .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
+                    // pass the book ID's for the list
+                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
@@ -301,7 +307,7 @@ public class FTSSearchActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TITLE, mTitleSearchText);
         outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
     }
 

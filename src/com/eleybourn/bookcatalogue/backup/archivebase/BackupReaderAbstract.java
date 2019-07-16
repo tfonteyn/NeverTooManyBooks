@@ -137,7 +137,7 @@ public abstract class BackupReaderAbstract
                     case Books:
                         if ((mSettings.what & ImportOptions.BOOK_CSV) != 0) {
                             // a CSV file with all book data
-                            restoreBooks(entity);
+                            mSettings.results = restoreBooks(entity);
                             entitiesRead |= ImportOptions.BOOK_CSV;
                         }
                         break;
@@ -204,10 +204,15 @@ public abstract class BackupReaderAbstract
                 entity = nextEntity();
             }
         } finally {
+            // report what we actually imported
             if (coverCount > 0) {
                 entitiesRead |= ImportOptions.COVERS;
+                // sanity check... we would not have covers unless we had books? or would we?
+                if (mSettings.results == null) {
+                    mSettings.results = new Importer.Results();
+                }
+                mSettings.results.coversImported = coverCount;
             }
-            // report what we actually imported
             mSettings.what = entitiesRead;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
@@ -228,11 +233,11 @@ public abstract class BackupReaderAbstract
      *
      * @throws IOException on failure
      */
-    private void restoreBooks(@NonNull final ReaderEntity entity)
+    private Importer.Results restoreBooks(@NonNull final ReaderEntity entity)
             throws IOException, ImportException {
 
         try (Importer importer = new CsvImporter(LocaleUtils.getLocalizedResources(), mSettings)) {
-            importer.doBooks(entity.getStream(), null, mProgressListener);
+            return importer.doBooks(entity.getStream(), null, mProgressListener);
         }
     }
 

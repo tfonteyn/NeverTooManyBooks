@@ -12,7 +12,6 @@
     <string name="lbl_rating">Bewertung</string>
     <string name="lbl_is_read">Haben Sie dieses Buch gelesen?</string>
     <string name="lbl_pages">Seiten</string>
-    <string name="X_btn_confirm_add_book">Buch hinzufügen</string>
     <string name="btn_confirm_update">Aktualisieren</string>
     <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
         Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.
@@ -22,7 +21,6 @@
     <string name="X_menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="menu_search">Suche</string>
-    <string name="X_btn_confirm_save_book">Buch speichern</string>
     <string name="X_info_no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt.
         Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.
     </string>
@@ -57,7 +55,7 @@
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
     <string name="menu_administration">Verwaltung</string>
     <string name="title_install_scan">Installiere Barcode Scanner</string>
-    <string name="about_lbl_upgrade">Seit der letzten Aktualisierung</string>
+    <string name="lbl_upgrade">Seit der letzten Aktualisierung</string>
     <string name="menu_edit_book">Buch bearbeiten</string>
     <string name="menu_edit_book_notes">Kommentar</string>
     <string name="menu_loan_lend_book">Buch verleihen…</string>
@@ -73,7 +71,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="menu_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
-    <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
+    <string name="lbl_update_fields_long">Automatische Aktualisierung der Felder</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="lbl_select_fields">Felder auswählen</string>
 
@@ -136,9 +134,9 @@
     <string name="lbl_format">Ausgaben</string>
     <string name="lbl_description">Beschreibung</string>
     <string name="lbl_genre">Genre</string>
-    <string name="field_not_set">Nicht gesetzt</string>
+    <string name="hint_field_not_set">Nicht gesetzt</string>
     <string name="X_menu_search_books">Suche Bücher</string>
-    <string name="hint_book_search_by_text">
+    <string name="tip_book_search_by_text">
         Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel
         und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte
         Barcode manchmal auf der Rückseite des Covers zu finden ist.
@@ -357,7 +355,7 @@
     <string name="gr_tq_menu_background_tasks">Aufgaben im Hintergrund</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Alte Aufgaben bereinigen</string>
     <string name="gr_tq_btn_cleanup_old_events">Alte Ereignisse bereinigen</string>
-    <string name="search_text_hint">Text und/oder ISBN</string>
+    <string name="hint_search_text">Text und/oder ISBN</string>
     <string name="lbl_search_criteria">Suchkriterien</string>
     <string name="menu_add_book_manually">Manuell hinzufügen</string>
     <string name="menu_search_internet">Internet durchsuchen</string>
@@ -408,7 +406,7 @@
     <string name="acra_resReportSendSuccessToast">Danke!</string>
     <string name="lbl_read">Gelesen</string>
     <string name="lbl_unread">Ungelesen</string>
-    <string name="date_not_set_with_brackets">(kein Datum)</string>
+    <string name="hint_date_not_set_with_brackets">(kein Datum)</string>
     <string name="style_builtin_author_series">Autor, danach Serie</string>
     <string name="style_builtin_series">Serie</string>
     <string name="style_builtin_title_first_letter">Erster Buchstabe des Titels</string>
@@ -418,7 +416,7 @@
     <string name="style_builtin_publication_date">Datum der Veröffentlichung</string>
     <string name="style_builtin_added_date">Erfassungsdatum</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
-    <string name="field_not_set_with_brackets">(leer)</string>
+    <string name="hint_field_not_set_with_brackets">(leer)</string>
     <string name="lbl_bookshelves_long">Bücherregale</string>
     <string name="lbl_bookshelves">Regale</string>
     <string name="lbl_location">Standort</string>
@@ -432,11 +430,11 @@
     <string name="menu_show_more_ellipsis">Mehr anzeigen…</string>
     <string name="menu_show_fewer_ellipsis">Weniger anzeigen…</string>
     <string name="menu_customize_ellipsis">Anpassen…</string>
-    <string name="hint">Hinweis</string>
-    <string name="hint_reset_all_hints">Hinweise zurücksetzen</string>
+    <string name="tip_dialog_title">Hinweis</string>
+    <string name="tip_reset_all">Hinweise zurücksetzen</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_styles_editor">
+    <string name="tip_booklist_styles_editor">
         Sie können hier die Liste der Stile einstellen, die in Ihrem Menü für Standard-Stile
         angezeigt werden.\n
         \nEin grüner Haken zeigt an, dass ein Stil in der Liste angezeigt
@@ -448,7 +446,7 @@
         bearbeiten oder eingebaute Stile klonen.
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_groups">
+    <string name="tip_booklist_style_groups">
         Sie können hier die Hierarchie der Überschriften für einen bestimmten Bücherlistenstil
         ändern.\n
         \nEin grüner Haken zeigt an, dass die Überschrift in der Liste angezeigt wird, und
@@ -458,7 +456,7 @@
         \nZiehen Sie die Symbole ganz rechts, um die Reihenfolge zu ändern.
     </string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_properties">
+    <string name="tip_booklist_style_properties">
         Sie können hier die Charakteristik eines bestimmten Bücherlistenstils bestimmen.\n
         \nSie können den Namen ändern, die Gruppierung bearbeiten und so die Hierarchie
         ändern und eine Vielzahl anderer Einstellungen anpassen, um einen Stil zu erstellen,
@@ -466,7 +464,7 @@
         \nEbenso ist es möglich, ‘Buchfilter’ zu verwenden, mit denen die Auswahl von
         Bücher in der Listenanzeige verändert wird, etwa um nur ungelesenen Bücher anzuzeigen.
     </string>
-    <string name="X_hint_booklist_global_properties">
+    <string name="X_tip_booklist_global_properties">
         Sie können hier die Standardcharakteristik aller Bücherlistenstile bestimmen.
         Die meisten Eigenschaften können in individuellen Stilen übersteuert werden,
         aber die Standardeinstellungen werden hier definiert.
@@ -527,26 +525,26 @@
     <string name="gr_sync_with_goodreads">Mit Goodreads synchronisieren</string>
     <string name="X_menu_cover_options">Umschlag-Einstellungen…</string>
     <string name="gr_tq_show_events_ellipsis">Ereignisse anzeigen…</string>
-    <string name="hint_authors_book_may_appear_more_than_once">
+    <string name="tip_authors_book_may_appear_more_than_once">
         Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird.
         In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.
     </string>
-    <string name="hint_series_book_may_appear_more_than_once">
+    <string name="tip_series_book_may_appear_more_than_once">
         Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jeder Serie angezeigt wird.
         In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.
     </string>
-    <string name="hint_background_tasks">
+    <string name="tip_background_tasks">
         Sie können hier die jetzt laufenden Aufgaben und erledigte, mit Fehlern oder anderen
         Ereignissen beendete Aufgaben sehen. Nach dem Klick auf eine Aufgabe können Sie die mit
         dieser Aufgabe verbundenen Ereignisse sehen und die Aufgabe mit den verbundenen
         Ereignissen löschen.
     </string>
-    <string name="hint_background_task_events">
+    <string name="tip_background_task_events">
         Sie können hier die mit einer Hintergrundaufgabe verbundenen Ereignisse sehen. Nach dem
         Klick auf ein Ereignis können Sie eine Vielzahl von Aktionen durchführen,
         die für dieses Ereignis passen.
     </string>
-    <string name="hints_have_been_reset">Hinweise wurden zurückgesetzt</string>
+    <string name="tip_reset_done">Hinweise wurden zurückgesetzt</string>
     <string name="gr_tq_task_has_been_queued">Aufgabe wurde im Hintergrund eingereiht</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
     <string name="gr_explain_goodreads_no_isbn">
@@ -582,7 +580,7 @@
         Mehr als eine Datei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste:
     </string>
     <string name="X_error_starting_import_arg">Problem beim Start des Imports: %1$s</string>
-    <string name="hint_booklist_style_menu">
+    <string name="tip_booklist_style_menu">
         Hier können Sie den Stil der Liste wählen.\n
         \nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie
         dafür auf ‘Anpassen’ am Ende der Liste.
@@ -624,7 +622,7 @@
     <string name="warning_if_month_set_year_must_be">
         Wenn das Monat angegeben wird, muss auch das Jahr angegeben werden.
     </string>
-    <string name="hint_autorotate_camera_images">
+    <string name="tip_autorotate_camera_images">
         Wenn Sie Bilder von der Kamera immer in dieselbe Richtung drehen müssen, versuchen Sie,
         die automatische Drehrichtung in den Einstellungen festzulegen.
     </string>
@@ -637,12 +635,12 @@
         Wir empfehlen, die App “Zxing Barcode Scanner” zu installieren. Falls sie bereits
         installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.
     </string>
-    <string name="hint_view_only_book_details">
+    <string name="tip_view_only_book_details">
         Nach einem Klick auf einen Eintrag in dieser Liste können Sie zu einer schreibgeschützten
         Ansicht der Buchdetails wechseln. Siehe “Weitere Einstellungen” für die relevante
         Einstellung.
     </string>
-    <string name="hint_view_only_help">
+    <string name="tip_view_only_help">
         Das ist die schreibgeschützte Ansicht der Buchdetails; Sie können nach links oder
         rechts wischen, um zu anderen Büchern zu wechseln, und ein Buch über das Menü
         “Einstellungen” mit Hilfe des Menü-Buttons oder des Menü-Symbols bearbeiten.
@@ -668,7 +666,8 @@
         \nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor
         Beschädigung, Verlust oder Diebstahl zu schützen.
     </string>
-    <string name="progress_msg_covers">%1$d Cover bearbeitet (%2$d offen)</string>
+    <string name="progress_msg_covers_handled">%1$d Cover bearbeitet</string>
+    <string name="progress_msg_covers_handled_missing">%1$d Cover bearbeitet (%2$d offen)</string>
     <string name="lbl_advanced_options">Erweiterte Optionen</string>
     <string name="progress_msg_backing_up">Sichere…</string>
     <string name="progress_msg_importing">Importiere…</string>
@@ -700,7 +699,7 @@
     <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
     <!--  Explanatory text for ‘export’ dialogue -->
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">
+    <string name="progress_msg_covers_handled_missing_skipped">
         %1$d Cover bearbeitet (%2$d fehlen, %3$d übersprungen)
     </string>
 
@@ -773,13 +772,13 @@
     <string name="menu_amazon_books_by_author_in_series">Bücher nach Autor/Serie</string>
 
     <!-- Hint text displayed when user enters the book listw -->
-    <string name="hint_book_list">
+    <string name="tip_book_list">
         Tippen Sie auf ein Buch, um dessen Details zu sehen. Ein langer Druck auf einen
         Listeneintrag zeigt weitere Optionen.
     </string>
 
     <!-- Heading in ‘about’ dialog -->
-    <string name="about_lbl_special_thanks">Danksagung</string>
+    <string name="lbl_special_thanks">Danksagung</string>
 
     <!-- Credits in the ‘about’ dialog -->
     <string name="about_translators">
@@ -831,7 +830,7 @@
     </string>
     <string name="lbl_search_sites">Suchmaschinen</string>
     <string name="lbl_search_site_order">Reihenfolge</string>
-    <string name="search_with_text">Suche: %1$s</string>
+    <string name="title_search_filtered_on_x">Gefiltert: %1$s</string>
     <string name="btn_options">Optionen</string>
     <string name="lbl_price_paid">Bezahlt</string>
     <string name="lbl_first_publication">Erstveröffentlichung</string>
@@ -841,16 +840,16 @@
     <string name="lbl_date_acquired_month">Monat erworben</string>
     <string name="lbl_date_acquired_year">Jahr erworben</string>
     <string name="lbl_is_complete">Ist komplett</string>
-    <string name="btn_merge">Vereinigen</string>
+    <string name="btn_confirm_merge">Vereinigen</string>
     <string name="lbl_table_of_content">Inhaltsverzeichnis</string>
     <string name="lbl_edition_book_club">Buchclub Edition</string>
     <string name="book_format_audiobook">Hörbuch</string>
     <string name="progress_msg_process_preferences">Einstellungen…</string>
     <string name="progress_msg_process_cover">Buchumschläge…</string>
     <string name="warning_required_at_least_one">Mindestens ein Feld darf nicht leer sein</string>
-    <string name="menu_internet_update_fields">Felder aktualisieren</string>
+    <string name="lbl_update_fields">Felder aktualisieren</string>
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
-    <string name="usage_skip">Überspringen</string>
+    <string name="lbl_field_usage_skip">Überspringen</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
@@ -870,7 +869,7 @@
     <string name="warning_missing_title_author">Der Titel und / oder Autor fehlt.</string>
     <string name="error_storage_not_accessible">Speicher nicht zugänglich</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
-    <string name="menu_clear_filters">Filter löschen</string>
+    <string name="menu_clear_search_filters">Filter löschen</string>
     <string name="searching_isfdb">Suche bei ISFDB</string>
     <string name="searching_open_library">Suche bei OpenLibrary</string>
     <string name="import_export_option_xml_info">XML ist nur Export, kein Import.</string>
@@ -901,10 +900,15 @@
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
     <string name="pg_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
-    <string name="about_lbl_creators">Ursprünglich von:</string>
+    <string name="lbl_creators">Ursprünglich von:</string>
     <string name="unknown_uc">UNBEKANNT</string>
     <string name="title_delete_toc_entry">Titel löschen</string>
     <string name="confirm_delete_toc_entry">Wirklich den Titel “%1$s” von %2$s löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="menu_view_book_at_ellipsis">Anschauen auf…</string>
+    <string name="lbl_keywords">Schlüsselwörter</string>
+    <string name="warning_missing_title">Der Titel fehlt.</string>
+    <string name="warning_missing_author">Der Autor fehlt.</string>
+    <string name="warning_isfdb_only">(wird nur von der ISFDB-Website unterstützt)</string>
+    <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
 
 </resources>

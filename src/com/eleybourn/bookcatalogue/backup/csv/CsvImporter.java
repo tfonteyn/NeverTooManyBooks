@@ -90,10 +90,7 @@ public class CsvImporter
 
     private final String mUnknownString;
 
-    @NonNull
-    private Integer mCreated = 0;
-    @NonNull
-    private Integer mUpdated = 0;
+    private final Results mResults = new Results();
 
     /**
      * Constructor.
@@ -119,7 +116,8 @@ public class CsvImporter
 
     @Override
     @WorkerThread
-    public int doBooks(@NonNull final InputStream importStream,
+    @NonNull
+    public Results doBooks(@NonNull final InputStream importStream,
                        @Nullable final CoverFinder coverFinder,
                        @NonNull final ProgressListener listener)
             throws IOException, ImportException {
@@ -134,7 +132,7 @@ public class CsvImporter
             importedList.add(line);
         }
         if (importedList.isEmpty()) {
-            return 0;
+            return mResults;
         }
 
         listener.setMax(importedList.size() - 1);
@@ -165,8 +163,10 @@ public class CsvImporter
 
         // need either UUID or ID
         requireColumnOrThrow(book,
-                             // preferred
+                             // preferred, the original "book_uuid"
                              DBDefinitions.KEY_BOOK_UUID,
+                             // as a courtesy, we also allow the plain "uuid"
+                             DBDefinitions.KEY_UUID,
                              // but an ID is also ok.
                              DBDefinitions.KEY_PK_ID);
 
@@ -254,7 +254,7 @@ public class CsvImporter
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
                 if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)
                         && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
-                    handleBookshelves(mDb, book);
+                    handleBookshelves(book);
                 }
 
                 // ready to update/insert into the database
@@ -284,7 +284,7 @@ public class CsvImporter
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
-                                               mCreated, mUpdated);
+                                               mResults.booksCreated, mResults.booksUpdated);
                     listener.onProgress(row, title + "\n(" + msg + ')');
                     lastUpdate = now;
                 }
@@ -303,11 +303,12 @@ public class CsvImporter
             // minus 1 for the headers.
             Logger.debugExit(this, "doBooks",
                              "Csv Import successful: rows processed: " + (row - 1),
-                             "created:" + mCreated,
-                             "updated: " + mUpdated);
+                             "created:" + mResults.booksCreated,
+                             "updated: " + mResults.booksUpdated);
         }
 
-        return row;
+        mResults.booksProcessed = row;
+        return mResults;
     }
 
     @Override
@@ -359,12 +360,21 @@ public class CsvImporter
 
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                mDb.updateBook(bids.bookId, book, DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
-                mUpdated++;
+                int rowsAffected = mDb.updateBook(bids.bookId, book,
+                                                  DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                if (rowsAffected == 1) {
+                    mResults.booksUpdated++;
+                } else {
+                    mResults.booksFailed++;
+                }
             }
         } else {
             bids.bookId = mDb.insertBook(bids.bookId, book);
-            mCreated++;
+            if (bids.bookId != -1) {
+                mResults.booksCreated++;
+            } else {
+                mResults.booksFailed++;
+            }
         }
 
         return bids.bookId;
@@ -385,12 +395,11 @@ public class CsvImporter
      * <p>
      * Get the list of bookshelves.
      */
-    private void handleBookshelves(@NonNull final DAO db,
-                                   @NonNull final Book book) {
+    private void handleBookshelves(@NonNull final Book book) {
         String encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
-                                              .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
-                                                      false);
+                                              .decode(encodedList, false, Bookshelf.MULTI_SHELF_SEPARATOR
+                                              );
         book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(DBDefinitions.KEY_BOOKSHELF);
@@ -669,8 +678,7 @@ public class CsvImporter
      */
     private static class BookIds {
 
-        @NonNull
-        final String uuid;
+        String uuid;
         long bookId;
         boolean hasNumericId;
 
@@ -700,13 +708,21 @@ public class CsvImporter
             }
 
             // Get the UUID, and remove from collection if null/blank
-            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
-            if (uuid.isEmpty()) {
-                // Remove any blank UUID column, just in case
-                if (book.containsKey(DBDefinitions.KEY_BOOK_UUID)) {
+            if (book.containsKey(DBDefinitions.KEY_BOOK_UUID)) {
+                uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+                if (uuid.isEmpty()) {
+                    // Remove any blank KEY_BOOK_UUID column
                     book.remove(DBDefinitions.KEY_BOOK_UUID);
                 }
+            } else if (book.containsKey(DBDefinitions.KEY_UUID)) {
+                // read, remove and store (if not empty) as KEY_BOOK_UUID
+                uuid = book.getString(DBDefinitions.KEY_UUID);
+                book.remove(DBDefinitions.KEY_UUID);
+                if (!uuid.isEmpty()) {
+                    book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);
+                }
             }
+
         }
     }
 }

@@ -95,6 +95,7 @@ TODO: uniform quotes in all string:
     <string name="error_columns_are_blank">Columns ‘%1$s’ are all blank at row %2$d</string>
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_no_internet_connection">Internet connection is not available.</string>
+    <string name="error_failed_x">Failed: %1$d</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
     <!-- generic backup failure -->
@@ -156,6 +157,7 @@ TODO: uniform quotes in all string:
 
     <string name="info_authorized">Authorized</string>
     <string name="info_not_authorized">Not Authorized</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
@@ -324,10 +326,12 @@ TODO: uniform quotes in all string:
     <string name="progress_msg_skip_title">Skipping “%1$s”</string>
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d created, %2$d updated</string>
+
+    <string name="progress_msg_covers_handled">%1$d covers processed</string>
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">%1$d covers processed (%2$d missing)</string>
+    <string name="progress_msg_covers_handled_missing">%1$d covers processed (%2$d missing)</string>
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers_skip">
+    <string name="progress_msg_covers_handled_missing_skipped">
         %1$d covers processed (%2$d missing, %3$d skipped)
     </string>
 
@@ -496,18 +500,18 @@ TODO: uniform quotes in all string:
     <string name="gr_tq_events_recorded">(%1$d events recorded)</string>
 
     <!-- ####################################################################################### -->
-    <!-- ========== Hints ========== -->
+    <!-- ========== Tips ========== -->
     <!-- ####################################################################################### -->
-    <string name="hint">Hint</string>
-    <string name="hint_reset_all_hints">Reset hints</string>
-    <string name="hints_have_been_reset">Hints have been reset</string>
+    <string name="tip_dialog_title">Hint</string>
+    <string name="tip_reset_all">Reset hints</string>
+    <string name="tip_reset_done">Hints have been reset</string>
 
-    <string name="hint_book_search_by_text">
+    <string name="tip_book_search_by_text">
         Adding books by ISBN is much more accurate than adding by author and title and
         is generally preferred. Please remember you can sometimes find the correct
         barcode on the inside front cover.
     </string>
-    <string name="hint_booklist_styles_editor">
+    <string name="tip_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
         default styles menu. A “tick” indicates the style will be shown in the list,
         “un-tick” to hide it and vice versa.  If no styles are ticked, then all styles will be
@@ -516,13 +520,13 @@ TODO: uniform quotes in all string:
         the details of a specific style. If you cloned a style, and changed your mind, you
         will need to delete it yourself.
     </string>
-    <string name="hint_booklist_style_groups">
+    <string name="tip_booklist_style_groups">
         You can use this screen to modify the hierarchy of headings for a specific book list style.
         A “tick” indicates the heading will be shown in the list, “un-tick” to hide it
         and vice versa.  You can re-order the hierarchy by dragging the icon at the extreme
         right of each row up or down.
     </string>
-    <string name="hint_booklist_style_properties">
+    <string name="tip_booklist_style_properties">
         You can use this screen to set the characteristics of a specific book list style.
         You can change the name, edit the groupings to change the hierarchy, and adjust a
         variety of other preferences to build a style that you find useful.
@@ -530,57 +534,52 @@ TODO: uniform quotes in all string:
         displayed in the list. e.g. to only retrieve books you have not read yet and more.
     </string>
 
-    <string name="hint_authors_book_may_appear_more_than_once">
+    <string name="tip_authors_book_may_appear_more_than_once">
         If shown for every author, a single book may appear more than once in a list.
         In such a case deleting one of those books will delete all instances from the list.
     </string>
-    <string name="hint_series_book_may_appear_more_than_once">
+    <string name="tip_series_book_may_appear_more_than_once">
         If shown in every series, a single book may appear more than once in a list.
         In such a case deleting one of those books will delete all instances from the list.
     </string>
-    <string name="hint_background_tasks">
+    <string name="tip_background_tasks">
         From here you can see the currently running tasks as well as previous tasks that have
         completed with errors or other notable events. Tapping on a task will allow you to see
         the events associated with that task as well as delete the task (and related events).
     </string>
-    <string name="hint_background_task_events">
+    <string name="tip_background_task_events">
         From here you can see the events associated with a background task. Tapping on a event
         will allow you to perform a variety of actions appropriate for that event.
     </string>
-    <string name="hint_booklist_style_menu">
+    <string name="tip_booklist_style_menu">
         This menu allows you to select the style of the list. You can also customize this menu,
         as well as create your own list styles, by tapping “Customize” at the end of the list.
     </string>
-    <string name="hint_autorotate_camera_images">
+    <string name="tip_autorotate_camera_images">
         If you find yourself always rotating camera images in the same direction,
         try changing the application preferences to specify a rotation to apply automatically.
     </string>
-    <!-- Hint text displayed when user enters the book list view -->
-    <string name="hint_view_only_book_details">
+    <!-- Tip text displayed when user enters the book list view -->
+    <string name="tip_view_only_book_details">
         When you tap on an item in this list, you can now choose to go to non-editable book
         details view. See Settings for the relevant switch.
     </string>
-    <!-- Hint text displayed when user enters the 'read-only' book view -->
-    <string name="hint_view_only_help">
+    <!-- Tip text displayed when user enters the 'read-only' book view -->
+    <string name="tip_view_only_help">
         This is the non-editable book details screen; you can swipe left or right to navigate
         to other books, and you can edit the book via the options menu using the menu button
         or overflow menu icon.
     </string>
-    <!-- Hint text displayed when user enters the book list -->
-    <string name="hint_book_list">
+    <!-- Tip text displayed when user enters the book list -->
+    <string name="tip_book_list">
         Tapping on a book will show you the details of the book.
         A long-press on an item in the list will give you more options.
     </string>
-    <!-- Hint text displayed when user enters the 'Update fields from internet' screen -->
-    <string name="hint_update_fields_from_internet"><![CDATA[
-        Each field can be set to one of:
-        <ul>
-            <li>Copy if blank</li>
-            <li>Appends Extra Data (list fields only)</li>
-            <li>Overwrites existing data</li>
-            <li>Skip</li>
-        </ul>
-        External site id\'s are only processed if the site is actually contacted.]]>
+    <!-- Tip text displayed when user enters the 'Update fields from internet' screen
+     The referred "View on…" is "menu_view_book_at_ellipsis" -->
+    <string name="tip_update_fields_from_internet">
+        External site id\'s are only processed if the site is actually contacted.\n
+        As a result the menu “View on…” will likewise only show what is available.
     </string>
 
     <!-- ####################################################################################### -->
@@ -640,6 +639,7 @@ TODO: uniform quotes in all string:
     <string name="menu_set_complete">Set “complete”</string>
     <string name="menu_set_incomplete">Set “incomplete”</string>
 
+    <string name="menu_edit_book">Edit Book</string>
     <string name="menu_edit_book_notes">My Comments</string>
 
     <string name="menu_author_details">All works by this author</string>
@@ -652,6 +652,7 @@ TODO: uniform quotes in all string:
     <string name="menu_cover_add_from_gallery">From Gallery…</string>
     <string name="menu_cover_add_from_camera">From Camera…</string>
     <string name="menu_cover_search_alt_editions">From Other Editions…</string>
+
     <string name="menu_cover_rotate">Rotate…</string>
     <string name="menu_cover_rotate_cw">Clockwise</string>
     <string name="menu_cover_rotate_ccw">Anti-Clockwise</string>
@@ -660,13 +661,17 @@ TODO: uniform quotes in all string:
     <string name="menu_expand_all">Expand All</string>
     <string name="menu_collapse_all">Collapse All</string>
 
+    <!-- menu option: lend out the current book. -->
+    <string name="menu_loan_lend_book">Lend Book to…</string>
+    <!-- menu option: the current book was returned. -->
+    <string name="menu_loan_return_book">Lend book is returned</string>
+
     <string name="menu_search">Search…</string>
     <string name="menu_search_internet">Search Internet</string>
-    <string name="menu_internet_update_fields">Update Fields</string>
 
     <string name="menu_share_this">Share</string>
     <string name="menu_sort_and_style_ellipsis">Sort &amp; Style…</string>
-    <string name="menu_clear_filters">Clear Filters</string>
+    <string name="menu_clear_search_filters">Clear Filters</string>
 
     <string name="menu_show_more_ellipsis">Show more…</string>
     <string name="menu_show_fewer_ellipsis">Show fewer…</string>
@@ -678,40 +683,18 @@ TODO: uniform quotes in all string:
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
 
-
-    <string name="menu_edit_book">Edit Book</string>
-
-    <!-- Screen title; must be short -->
-    <string name="title_backup">Backup</string>
-    <!-- Screen title; must be short -->
-    <string name="title_import">Import</string>
-
     <!-- a short + a longer description for Administration -->
     <string name="menu_administration">Admin</string>
     <string name="menu_administration_long">Administration Functions</string>
-
-    <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Import/Export</string>
-    <!-- Admin -->
-    <string name="lbl_backup_to_archive">Backup to Archive</string>
-    <!-- Admin -->
-    <string name="lbl_import_from_archive">Import from Archive</string>
-    <!-- Admin export books -->
-    <string name="lbl_export_to_csv">Export to CSV File</string>
-    <!-- Admin import books -->
-    <string name="lbl_import_from_csv">Import from CSV File</string>
-
-    <!-- Admin advanced - clear the cached images -->
-    <string name="lbl_erase_cover_cache">Erase cover cache</string>
-    <!-- Admin advanced - make a copy of the internal database to the public directory -->
-    <string name="lbl_copy_database">Export Database</string>
-
 
     <!-- ####################################################################################### -->
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
 
     <string name="title_add_book">Add book</string>
+    <!-- Screen title; must be short -->
+    <string name="title_backup">Backup</string>
+    <string name="title_cover">Book Cover</string>
     <string name="title_delete_book">Delete Book</string>
     <string name="title_delete_series">Delete Series</string>
     <string name="title_delete_toc_entry">Delete entry</string>
@@ -723,58 +706,52 @@ TODO: uniform quotes in all string:
     <string name="title_edit_style">Edit style</string>
     <string name="title_clone_style">Clone style</string>
 
+    <!-- Screen title; must be short -->
+    <string name="title_import">Import</string>
     <string name="title_import_book_data">Import Books</string>
     <string name="title_install_scan">Install Barcode Scanner</string>
 
-    <string name="title_cover">Book Cover</string>
+    <string name="title_search_filtered_on_x">Filtered: %1$s</string>
+    <string name="title_search_for">Search Author or Title</string>
+    <string name="title_search_isbn">ISBN Search</string>
+
+    <string name="title_send_mail">Send email…</string>
 
     <string name="title_select_an_action">Select an action</string>
     <string name="title_select_style">Select Style</string>
     <string name="title_select_image">Select Image</string>
     <string name="title_scope_of_change">Scope of Change</string>
-    <string name="title_search_for">Search Author or Title</string>
-    <string name="title_search_isbn">ISBN Search</string>
-    <string name="title_send_mail">Send email…</string>
 
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
 
-    <!-- positive response button texts; must be short. -->
-    <string name="X_btn_confirm_add_book">Add Book</string>
-    <string name="X_btn_confirm_save_book">Save Book</string>
-
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_add">Add</string>
     <string name="btn_confirm_new">New</string>
     <string name="btn_confirm_update">Update</string>
-
     <!-- For saving and opening exports or backups -->
     <string name="btn_confirm_open">Open</string>
     <!-- merging two bookshelves -->
-    <string name="btn_merge">Merge</string>
+    <string name="btn_confirm_merge">Merge</string>
+    <!-- 'use' the preferences/settings, but do not save them. -->
+    <string name="btn_confirm_use">Use</string>
 
     <!-- Big buttons on the Edit Book screen -->
     <string name="btn_set_authors">Set Authors…</string>
     <string name="btn_set_series">Set Series…</string>
-
     <!-- when warned you have unsaved edits -->
     <string name="btn_continue_editing">Continue Editing</string>
     <!-- exit the edit activity despite unsaved edits -->
     <string name="btn_confirm_exit">Exit</string>
-
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
-
-    <!-- hint text for the drag handle button in re-order-able lists -->
+    <!-- Tip text for the drag handle button in re-order-able lists -->
     <string name="btn_drag_handle">Drag me to reorder this list.</string>
-
-    <!-- 'use' the preferences/settings, but do not save them. -->
-    <string name="btn_confirm_use">Use</string>
-
     <!-- local search; button to request to show the books found. -->
     <string name="btn_show_results">Show Results</string>
-
+    <!-- Button text, to 'return' a loaned book -->
+    <string name="btn_loan_returned">Returned</string>
     <!-- generic response button texts -->
     <string name="btn_more_info">More Info.</string>
     <string name="btn_disable_message">Disable Message</string>
@@ -843,18 +820,22 @@ TODO: uniform quotes in all string:
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
-    <!-- Book editions flags -->
+    <!-- Book editions flags NEWKIND: edition. -->
     <string name="lbl_edition_first_edition">First Edition</string>
     <string name="lbl_edition_first_impression">First impression</string>
     <string name="lbl_edition_book_club">Bookclub edition</string>
     <string name="lbl_edition_limited">Limited</string>
 
-    <!-- Update Fields from internet choices -->
-    <string name="lbl_update_fields">Automatically Update Fields</string>
+    <!-- Update Fields from internet - short string, used in the option menu -->
+    <string name="lbl_update_fields">Update Fields</string>
+    <!-- Update Fields from internet - longer string, used in context menus -->
+    <string name="lbl_update_fields_long">Automatically Update Fields</string>
+
     <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_add_extra">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
+    <string name="lbl_field_usage_skip">Skip</string>
 
     <!-- heading/titles for settings/preference screens -->
     <string name="lbl_settings">Settings</string>
@@ -896,6 +877,31 @@ TODO: uniform quotes in all string:
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Advanced</string>
 
+    <!-- Admin GROUP -->
+    <string name="lbl_data_import_export">Import/Export</string>
+    <!-- Admin -->
+    <string name="lbl_backup_to_archive">Backup to Archive</string>
+    <!-- Admin -->
+    <string name="lbl_import_from_archive">Import from Archive</string>
+    <!-- Admin export books -->
+    <string name="lbl_export_to_csv">Export to CSV File</string>
+    <!-- Admin import books -->
+    <string name="lbl_import_from_csv">Import from CSV File</string>
+
+    <!-- Admin advanced - clear the cached images -->
+    <string name="lbl_erase_cover_cache">Erase cover cache</string>
+    <!-- Admin advanced - make a copy of the internal database to the public directory -->
+    <string name="lbl_copy_database">Export Database</string>
+
+    <!-- Label used in the list of Field visibility preferences. -->
+    <string name="lbl_lending">Lending</string>
+    <!-- a header, with a text field below where the user can type in a name -->
+    <string name="lbl_lend_to">Lend book to:</string>
+    <!-- a one line label, with the name of the person appended -->
+    <string name="lbl_loaned_to_name">On Loan to %1$s</string>
+    <string name="lbl_loaned">On Loan</string>
+
+
     <string name="lbl_details_have_changed">Details have changed</string>
     <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_cover_images">Cover images</string>
@@ -908,6 +914,16 @@ TODO: uniform quotes in all string:
 
     <string name="lbl_send_info">Send Debug Information</string>
     <string name="lbl_cleanup_files">Cleanup Files</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Hints for input fields.  == -->
+    <!-- ####################################################################################### -->
+    <string name="hint_search_text">Text and/or ISBN</string>
+    <!-- generic hint text for text input fields. -->
+    <string name="hint_field_not_set">Not Set</string>
+    <!-- generic place holder text for Book list rows -->
+    <string name="hint_field_not_set_with_brackets">(Not Set)</string>
+    <string name="hint_date_not_set_with_brackets">(no date)</string>
 
     <!-- ####################################################################################### -->
     <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
@@ -924,6 +940,15 @@ TODO: uniform quotes in all string:
     <string name="book_format_ebook">eBook</string>
     <!-- book format used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Defaults for bookshelf names == -->
+    <!-- ####################################################################################### -->
+
+    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
+    <string name="bookshelf_all_books">All Books</string>
+    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
+    <string name="bookshelf_my_books">My Books</string>
 
     <!-- ####################################################################################### -->
     <!-- == Build in styles == -->
@@ -966,11 +991,10 @@ TODO: uniform quotes in all string:
     <!-- Headings in 'about' dialog -->
     <string name="lbl_website">Web page</string>
     <string name="lbl_sourcecode">Source Code</string>
-
     <string name="lbl_contacts">Contacts</string>
-    <string name="about_lbl_special_thanks">Special Thanks</string>
-    <string name="about_lbl_upgrade">Since your last upgrade</string>
-    <string name="about_lbl_creators">Originally by:</string>
+    <string name="lbl_special_thanks">Special Thanks</string>
+    <string name="lbl_upgrade">Since your last upgrade</string>
+    <string name="lbl_creators">Originally by:</string>
 
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">
@@ -978,27 +1002,6 @@ TODO: uniform quotes in all string:
         use without the generous help of our volunteer translators
         (if we have forgotten someone, please tell us):
     </string>
-
-    <!-- ####################################################################################### -->
-    <!-- == strings specific to loaning a book == -->
-    <!-- ####################################################################################### -->
-
-    <!-- Label used in the list of Field visibility preferences. -->
-    <string name="lbl_lending">Lending</string>
-
-    <!-- menu option: lend out the current book. -->
-    <string name="menu_loan_lend_book">Lend Book to…</string>
-    <!-- menu option: lend out the current book. -->
-    <string name="menu_loan_return_book">Lend book is returned</string>
-
-    <string name="lbl_loaned">On Loan</string>
-    <!-- Button text, to 'return' a loaned book -->
-    <string name="btn_loan_returned">Returned</string>
-
-    <!-- a header, with a text field below where the user can type in a name -->
-    <string name="lbl_lend_to">Lend book to:</string>
-    <!-- a one line label, with the name of the person appended -->
-    <string name="lbl_loaned_to_name">On Loan to %1$s</string>
 
     <!-- ####################################################################################### -->
     <!-- === Import/Export specific strings == -->
@@ -1174,7 +1177,7 @@ TODO: uniform quotes in all string:
     <string name="X_use_default_setting">Use default values</string>
     <string name="X_about_help_tap_here">Please tap here to access the online help pages</string>
 
-    <string name="X_hint_booklist_global_properties">
+    <string name="X_tip_booklist_global_properties">
         You can use this screen to set the default characteristics of all book list styles.
         Most properties can be overridden by individual styles, but the default values are
         defined here. You can change how lists are displayed at startup, and adjust a
@@ -1186,26 +1189,10 @@ TODO: uniform quotes in all string:
     <!-- ========== need cleaning/renaming/moving...  ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- generic hint text for text input fields. -->
-    <string name="field_not_set">Not Set</string>
-    <!-- generic place holder text for Book list rows -->
-    <string name="field_not_set_with_brackets">(Not Set)</string>
-    <string name="date_not_set_with_brackets">(no date)</string>
-
-    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
-    <string name="bookshelf_all_books">All Books</string>
-    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
-    <string name="bookshelf_my_books">My Books</string>
-
-    <string name="search_with_text">Search: %1$s</string>
-
-    <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
-    <string name="usage_skip">Skip</string>
-    <string name="search_text_hint">Text and/or ISBN</string>
-
+    <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
+
     <string name="and_others">et. al.</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
-    <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
 </resources>

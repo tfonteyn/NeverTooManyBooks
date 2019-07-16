@@ -12,8 +12,8 @@
         <EditTextPreference
             android:icon="@drawable/ic_edit"
             android:key="BookList.Style.Name"
-            android:title="@string/name"
             android:selectAllOnFocus="true"
+            android:title="@string/name"
             />
 
         <PreferenceScreen
@@ -33,6 +33,7 @@
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_read"
                 android:entryValues="@array/pv_bob_filter_values"
+                android:icon="@drawable/ic_filter_list"
                 android:key="BookList.Style.Filter.Read"
                 android:title="@string/lbl_read"
                 />
@@ -41,6 +42,7 @@
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_signed"
                 android:entryValues="@array/pv_bob_filter_values"
+                android:icon="@drawable/ic_filter_list"
                 android:key="BookList.Style.Filter.Signed"
                 android:title="@string/lbl_signed"
                 />
@@ -49,6 +51,7 @@
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_anthology"
                 android:entryValues="@array/pv_bob_filter_values"
+                android:icon="@drawable/ic_filter_list"
                 android:key="BookList.Style.Filter.Anthology"
                 android:title="@string/lbl_anthology"
                 />
@@ -57,8 +60,18 @@
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_loaned"
                 android:entryValues="@array/pv_bob_filter_values"
+                android:icon="@drawable/ic_filter_list"
                 android:key="BookList.Style.Filter.Loaned"
                 android:title="@string/lbl_loaned"
+                />
+
+            <MultiSelectListPreference
+                android:defaultValue="@array/empty_array"
+                android:entries="@array/pe_bob_filter_edition"
+                android:entryValues="@array/pv_bob_filter_edition"
+                android:icon="@drawable/ic_filter_list"
+                android:key="BookList.Style.Filter.Editions"
+                android:title="@string/lbl_edition"
                 />
 
         </PreferenceScreen>

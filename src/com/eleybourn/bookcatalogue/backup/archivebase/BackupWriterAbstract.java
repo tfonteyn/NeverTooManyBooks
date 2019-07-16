@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 
@@ -84,8 +83,8 @@ public abstract class BackupWriterAbstract
         mDb = new DAO();
 
         Resources resources = LocaleUtils.getLocalizedResources();
-        mProgress_msg_covers = resources.getString(R.string.progress_msg_covers);
-        mProgress_msg_covers_skip = resources.getString(R.string.progress_msg_covers_skip);
+        mProgress_msg_covers = resources.getString(R.string.progress_msg_covers_handled_missing);
+        mProgress_msg_covers_skip = resources.getString(R.string.progress_msg_covers_handled_missing_skipped);
     }
 
     /**

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,6 +49,7 @@ import java.util.UUID;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooklistAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.filters.BitmaskFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBitmask;
@@ -129,7 +131,7 @@ public class BooklistStyle
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK =
             EXTRAS_BOOKSHELVES | EXTRAS_LOCATION | EXTRAS_FORMAT
-            | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_ISBN;
+                    | EXTRAS_PUBLISHER | EXTRAS_AUTHOR | EXTRAS_ISBN;
 
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_THUMBNAIL = 0x100;
@@ -262,12 +264,13 @@ public class BooklistStyle
      * <p>
      * The key in the Map is the actual preference key.
      */
-    private transient Map<String, BooleanFilter> mFilters;
+    private transient Map<String, Filter> mFilters;
 
     private transient BooleanFilter mFilterRead;
     private transient BooleanFilter mFilterSigned;
     private transient BooleanFilter mFilterAnthology;
     private transient BooleanFilter mFilterLoaned;
+    private transient BitmaskFilter mFilterEdition;
 
     /**
      * Constructor for system-defined styles.
@@ -369,6 +372,7 @@ public class BooklistStyle
         mFilterSigned.set(in);
         mFilterAnthology.set(in);
         mFilterLoaned.set(in);
+        mFilterEdition.set(in);
     }
 
     /**
@@ -428,28 +432,40 @@ public class BooklistStyle
         mFilters = new LinkedHashMap<>();
 
         mFilterRead = new BooleanFilter(R.string.lbl_read,
-                                        Prefs.pk_bob_filter_read, mUuid, isUserDefined(),
+                                        Prefs.pk_bob_filter_read,
+                                        mUuid, isUserDefined(),
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
         mFilterSigned = new BooleanFilter(R.string.lbl_signed,
-                                          Prefs.pk_bob_filter_signed, mUuid, isUserDefined(),
+                                          Prefs.pk_bob_filter_signed,
+                                          mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
         mFilterAnthology = new BooleanFilter(R.string.lbl_anthology,
-                                             Prefs.pk_bob_filter_anthology, mUuid, isUserDefined(),
+                                             Prefs.pk_bob_filter_anthology,
+                                             mUuid, isUserDefined(),
                                              DBDefinitions.TBL_BOOKS,
                                              DBDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
         mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
-                                          Prefs.pk_bob_filter_loaned, mUuid, isUserDefined(),
+                                          Prefs.pk_bob_filter_loaned,
+                                          mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
                                           DBDefinitions.DOM_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
+
+        mFilterEdition = new BitmaskFilter(R.string.lbl_edition,
+                                           Prefs.pk_bob_filter_editions,
+                                           mUuid, isUserDefined(),
+                                           DBDefinitions.TBL_BOOKS,
+                                           DBDefinitions.DOM_BOOK_EDITION_BITMASK);
+
+        mFilters.put(mFilterEdition.getKey(), mFilterEdition);
     }
 
     @Override
@@ -482,6 +498,7 @@ public class BooklistStyle
         mFilterSigned.writeToParcel(dest);
         mFilterAnthology.writeToParcel(dest);
         mFilterLoaned.writeToParcel(dest);
+        mFilterEdition.writeToParcel(dest);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -564,8 +581,8 @@ public class BooklistStyle
     /**
      * Get all of the preferences of this Style and its groups/filters.
      *
-     * @param all if false, then only the 'flat' Preferences
-     *            if true, then also the groups/filters...
+     * @param all {@code false} for only the 'flat' Preferences
+     *            {@code true} add also the groups/filters...
      *
      * @return map with all preferences for this style
      */
@@ -602,7 +619,9 @@ public class BooklistStyle
 
         if (all) {
             // all filters (both active and non-active)
-            map.putAll(mFilters);
+            for (Filter filter : mFilters.values()) {
+                map.put(filter.getKey(), (PPref) filter);
+            }
 
             // for each group used by the style, add its specific preferences to our list
             for (BooklistGroup group : mStyleGroups.getGroups()) {
@@ -863,8 +882,8 @@ public class BooklistStyle
      * @return ALL Filters (active and non-active)
      */
     @NonNull
-    public Map<String, BooleanFilter> getFilters() {
-        return mFilters;
+    public Collection<Filter> getFilters() {
+        return mFilters.values();
     }
 
     /**
@@ -893,7 +912,7 @@ public class BooklistStyle
     void setFilter(@NonNull final String key,
                    final boolean value) {
         //noinspection ConstantConditions
-        mFilters.get(key).set(value);
+        ((BooleanFilter) mFilters.get(key)).set(value);
     }
 
     /**

@@ -22,7 +22,7 @@ public final class Csv {
      * @param delim      delimiter, e.g. "," or ", " etc...
      * @param collection collection
      *
-     * @return csv string
+     * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delim,
@@ -42,7 +42,7 @@ public final class Csv {
      * @param collection collection
      * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
      *
-     * @return csv string
+     * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delim,
@@ -113,7 +113,7 @@ public final class Csv {
      * @param element for the list
      * @param length  nr of elements to generate
      *
-     * @return csv string
+     * @return csv string, can be empty, never {@code null}.
      */
     public static String join(@NonNull final CharSequence delim,
                               @NonNull final String element,

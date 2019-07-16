@@ -6,7 +6,7 @@
     >
 
     <TextView
-        android:id="@+id/hint"
+        android:id="@+id/content"
         style="@style/Blurb"
         android:layout_width="wrap_content"
         android:maxLines="20"

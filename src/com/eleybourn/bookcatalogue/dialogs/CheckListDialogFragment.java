@@ -96,19 +96,23 @@ public class CheckListDialogFragment<T>
         return frag;
     }
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = requireArguments();
+        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+
+        args = savedInstanceState == null ? args : savedInstanceState;
+        mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
+    }
+
     /**
      * Create the underlying dialog.
      */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Bundle args = requireArguments();
-        int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
-
-        args = savedInstanceState == null ? args : savedInstanceState;
-        mList = Objects.requireNonNull(args.getParcelableArrayList(BKEY_CHECK_LIST));
-
         @SuppressWarnings("ConstantConditions")
         @SuppressLint("InflateParams")
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
@@ -141,6 +145,9 @@ public class CheckListDialogFragment<T>
                 })
                 .create();
 
+        //noinspection ConstantConditions
+        @StringRes
+        int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         if (titleId != 0) {
             dialog.setTitle(titleId);
         }

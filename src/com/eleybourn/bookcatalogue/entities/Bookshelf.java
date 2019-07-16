@@ -52,14 +52,13 @@ public class Bookshelf
     public static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = '*';
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
+    /** String encoding use. */
+    private static final char FIELD_SEPARATOR = '*';
     private long mId;
     @NonNull
     private String mName;
-
     /**
      * the style uuid. Should never be exposed as it's not validated on its own.
      * Always call {@link #getStyle(DAO)}}
@@ -137,7 +136,7 @@ public class Bookshelf
      */
     public static Bookshelf fromString(@NonNull final String element) {
         List<String> list = new StringList<String>()
-                .decode(FIELD_SEPARATOR, element, false);
+                .decode(element, false, FIELD_SEPARATOR);
 
         String name = list.get(0);
         // check if we have a style
@@ -154,54 +153,46 @@ public class Bookshelf
     }
 
     /**
-     * Get the users preferred/current bookshelf with fallback to initial/all-books as needed.
+     * Get the named bookshelf with fallback to Default/AllBooks as needed.
      *
-     * @return the preferred bookshelf.
+     * @param name   of bookshelf to get
+     * @param useAll set to {@code true} to return the AllBooks shelf, instead the default
+     *               if the desired shelf was not found.
+     *
+     * @return the bookshelf.
      */
-    public static Bookshelf getPreferred(@NonNull final Context context,
-                                         @NonNull final DAO db) {
-        String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
-        if (bookshelfName != null && !bookshelfName.isEmpty()) {
-            // try to get the preferred shelf
-            Bookshelf bookshelf = db.getBookshelfByName(bookshelfName);
+    public static Bookshelf getBookshelf(@NonNull final Context context,
+                                         @NonNull final DAO db,
+                                         @Nullable final String name,
+                                         final boolean useAll) {
+        if (name != null && !name.isEmpty()) {
+            Bookshelf bookshelf = db.getBookshelfByName(name);
             if (bookshelf != null) {
                 return bookshelf;
+            } else if (useAll) {
+                // Caller wants "AllBooks" (instead of the default Bookshelf)
+                return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
+                                     BooklistStyles.getDefaultStyle(db));
             }
-            // shelf must have been deleted, switch to 'all book'
-            return getAllBooksBookshelf(context, db);
-
-        } else {
-            // no current shelf, start with initial shelf
-            return getDefaultBookshelf(context, db);
         }
-    }
 
-    /**
-     * Get the builtin default bookshelf (with the current/default style).
-     *
-     * @param db the database
-     *
-     * @return shelf
-     */
-    public static Bookshelf getDefaultBookshelf(@NonNull final Context context,
-                                                @NonNull final DAO db) {
-        return new Bookshelf(DEFAULT_ID,
-                             context.getString(R.string.bookshelf_my_books),
+        return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db));
     }
-
     /**
-     * Get the virtual 'all books' bookshelf (with the current/default style).
+     * Get the preferred bookshelf with fallback to Default/AllBooks as needed.
      *
-     * @param db the database
+     * @param useAll set to {@code true} to return the AllBooks shelf, instead the default
+     *               if the desired shelf was not found.
      *
-     * @return shelf
+     * @return the bookshelf.
      */
-    public static Bookshelf getAllBooksBookshelf(@NonNull final Context context,
-                                                 @NonNull final DAO db) {
-        return new Bookshelf(ALL_BOOKS,
-                             context.getString(R.string.bookshelf_all_books),
-                             BooklistStyles.getDefaultStyle(db));
+
+    public static Bookshelf getBookshelf(@NonNull final Context context,
+                                         @NonNull final DAO db,
+                                         final boolean useAll) {
+        String name = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
+        return getBookshelf(context, db, name, useAll);
     }
 
     /**

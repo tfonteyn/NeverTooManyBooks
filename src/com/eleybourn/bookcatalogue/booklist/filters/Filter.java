@@ -5,7 +5,15 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public interface Filter {
+public interface Filter<T> {
+
+    /**
+     * A Filter must implement this method. All others are optional.
+     *
+     * @return filter SQL expression, or {@code null} if not active.
+     */
+    @Nullable
+    String getExpression();
 
     /**
      * @param context Current context, for accessing resources.
@@ -26,10 +34,11 @@ public interface Filter {
         return getExpression() != null;
     }
 
-    /**
-     *
-     * @return filter SQL expression, or {@code null} if not active.
-     */
-    @Nullable
-    String getExpression();
+    default String getKey() {
+        throw new UnsupportedOperationException();
+    }
+
+    default T get() {
+        throw new UnsupportedOperationException();
+    }
 }

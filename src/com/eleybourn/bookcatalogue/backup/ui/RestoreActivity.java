@@ -80,10 +80,27 @@ public class RestoreActivity
                                     Prefs.migratePreV200preferences(
                                             Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                                 }
+                                String importMsg;
+                                if (result.results != null) {
+                                    importMsg = '\n'
+                                            + getString(R.string.progress_msg_n_created_m_updated,
+                                                        result.results.booksCreated,
+                                                        result.results.booksUpdated);
+                                    if (result.results.booksFailed > 0) {
+                                        importMsg += '\n'
+                                                + getString(R.string.error_failed_x,
+                                                            result.results.booksFailed);
+                                    }
+                                    importMsg += '\n'
+                                            + getString(R.string.progress_msg_covers_handled,
+                                                        result.results.coversImported);
+                                } else {
+                                    importMsg = getString(R.string.progress_end_import_complete);
+                                }
 
                                 new AlertDialog.Builder(RestoreActivity.this)
                                         .setTitle(R.string.lbl_import_from_archive)
-                                        .setMessage(R.string.progress_end_import_complete)
+                                        .setMessage(importMsg)
                                         .setPositiveButton(android.R.string.ok, (d, which) -> {
                                             d.dismiss();
                                             Intent data = new Intent().putExtra(

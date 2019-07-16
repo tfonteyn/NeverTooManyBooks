@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
 
 /**
- * Activity to edit a list of series provided in an {@code ArrayList<Series>}
+ * Activity to edit a list of mSeries provided in an {@code ArrayList<Series>}
  * and return an updated list.
  * <p>
  * Calling point is a Book; see {@link EditSeriesDialogFragment} for list
@@ -164,7 +164,7 @@ public class EditSeriesListActivity
 
         // if it's not, then we can simply re-use the old object.
         if (!usedByOthers) {
-            // Use the original series, but update its fields
+            // Use the original mSeries, but update its fields
             series.copyFrom(newSeries);
             Series.pruneSeriesList(mList);
             ItemWithIdFixup.pruneList(mDb, mList);
@@ -172,7 +172,7 @@ public class EditSeriesListActivity
             return;
         }
 
-        // At this point, we know the names are genuinely different and the old series is used
+        // At this point, we know the names are genuinely different and the old mSeries is used
         // in more than one place. Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
 
@@ -222,6 +222,7 @@ public class EditSeriesListActivity
         private Checkable mIsCompleteView;
         private EditText mNumberView;
 
+        private Series mSeries;
         private String mSeriesName;
         private boolean mSeriesIsComplete;
         private String mSeriesNumber;
@@ -249,23 +250,28 @@ public class EditSeriesListActivity
             mActivity = (EditSeriesListActivity) context;
         }
 
-        @NonNull
         @Override
-        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        public void onCreate(@Nullable final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             Bundle args = requireArguments();
 
-            final Series series = args.getParcelable(DBDefinitions.KEY_SERIES_TITLE);
+            mSeries = args.getParcelable(DBDefinitions.KEY_SERIES_TITLE);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
-                mSeriesName = series.getName();
-                mSeriesIsComplete = series.isComplete();
-                mSeriesNumber = series.getNumber();
+                mSeriesName = mSeries.getName();
+                mSeriesIsComplete = mSeries.isComplete();
+                mSeriesNumber = mSeries.getNumber();
             } else {
                 mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
                 mSeriesIsComplete = savedInstanceState.getBoolean(
                         DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
                                      .inflate(R.layout.dialog_edit_book_series, null);
@@ -299,9 +305,7 @@ public class EditSeriesListActivity
                         }
                         mSeriesNumber = mNumberView.getText().toString().trim();
                         dismiss();
-
-                        //noinspection ConstantConditions
-                        mActivity.processChanges(series, mSeriesName, mSeriesIsComplete,
+                        mActivity.processChanges(mSeries, mSeriesName, mSeriesIsComplete,
                                                  mSeriesNumber);
                     })
                     .create();

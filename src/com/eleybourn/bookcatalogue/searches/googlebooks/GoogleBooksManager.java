@@ -36,6 +36,7 @@ public final class GoogleBooksManager
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "GoogleBooks.";
 
+    /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
 

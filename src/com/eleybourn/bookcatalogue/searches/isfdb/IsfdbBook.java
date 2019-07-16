@@ -40,7 +40,8 @@ public class IsfdbBook
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
     /** Param 1: ISFDB native book id. */
-    private static final String BOOK_URL = "/cgi-bin/pl.cgi?%1$s";
+    private static final String BOOK_URL = IsfdbManager.CGI_BIN
+            + IsfdbManager.URL_PL_CGI + "?%1$s";
     /**
      * ISFDB extra fields in the results for potential future usage.
      * ENHANCE: pass and store these ISFDB ID's
@@ -55,13 +56,18 @@ public class IsfdbBook
     private static final String ISFDB_BKEY_ISBN_2 = "__ISFDB_ISBN2";
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
 
-    private static final Pattern YEAR_FROM_LI = Pattern.compile("&#x2022; \\(([1|2]\\d\\d\\d)\\)");
+    /**
+     * Either the Web page itself, and/or the JSoup parser has used both decimal and hex
+     * representation for the "•" character. Capturing all 3 possibilities here.
+     */
+    private static final String DOT = "(&#x2022;|&#8226;|•)";
+    /** Character used by the site as string divider/splitter. */
+    private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
+
+    private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
 
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
-
-    /** Character between the series name and the number. */
-    private static final Pattern SPLIT_SERIES_NUMBER_PATTERN = Pattern.compile("&#x2022;");
 
     /*
      * http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
@@ -141,11 +147,13 @@ public class IsfdbBook
     }
 
     /**
-     * @param isfdbId          ISFDB native book id
-     * @param fetchThumbnail   whether to get thumbnails as well
-     * @param resources        for locale strings
+     * @param isfdbId        ISFDB native book id
+     * @param fetchThumbnail whether to get thumbnails as well
+     * @param resources      for locale strings
      *
      * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException on timeout
      */
     public Bundle fetch(final long isfdbId,
                         final boolean fetchThumbnail,
@@ -157,11 +165,13 @@ public class IsfdbBook
     }
 
     /**
-     * @param path             A fully qualified ISFDB search url
-     * @param fetchThumbnail   whether to get thumbnails as well
-     * @param resources        for locale strings
+     * @param path           A fully qualified ISFDB search url
+     * @param fetchThumbnail whether to get thumbnails as well
+     * @param resources      for locale strings
      *
      * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException on timeout
      */
     public Bundle fetch(@NonNull final String path,
                         final boolean fetchThumbnail,
@@ -178,11 +188,13 @@ public class IsfdbBook
     }
 
     /**
-     * @param editions         List of ISFDB Editions with native book id
-     * @param fetchThumbnail   whether to get thumbnails as well
-     * @param resources        for locale strings
+     * @param editions       List of ISFDB Editions with native book id
+     * @param fetchThumbnail whether to get thumbnails as well
+     * @param resources      for locale strings
      *
      * @return Bundle with book data
+     *
+     * @throws SocketTimeoutException on timeout
      */
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
@@ -329,11 +341,12 @@ public class IsfdbBook
      * }
      * </pre>
      *
-     * @param fetchThumbnail   whether to get thumbnails as well
-     * @param resources        for locale strings
+     * @param fetchThumbnail whether to get thumbnails as well
+     * @param resources      for locale strings
      *
-     * @return Bundle with book data
+     * @return Bundle with book data, can be empty, but never {@code null}
      */
+    @NonNull
     private Bundle parseDoc(final boolean fetchThumbnail,
                             @NonNull final Resources resources)
             throws SocketTimeoutException {
@@ -591,10 +604,10 @@ public class IsfdbBook
                 // http://www.worldcat.org/oclc/60560136
                 bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, stripNumber(url, '/'));
 
-            } else if (url.contains("lccn.loc.gov")) {
+//            } else if (url.contains("lccn.loc.gov")) {
                 // Library of Congress (USA)
                 // http://lccn.loc.gov/2008299472
-                bookData.putLong(DBDefinitions.KEY_LCCN_ID, stripNumber(url, '/'));
+                // http://lccn.loc.gov/95-22691
 
 
 //            } else if (url.contains("explore.bl.uk")) {
@@ -673,7 +686,7 @@ public class IsfdbBook
     }
 
     /**
-     * Second ContentBox contains the TOC
+     * Second ContentBox contains the TOC.
      * <pre>
      *     {@code
      *
@@ -779,14 +792,15 @@ public class IsfdbBook
             for (Element a : aas) {
                 String href = a.attr("href");
 
-                if (title == null && href.contains("title.cgi")) {
+                if (title == null && href.contains(IsfdbManager.URL_TITLE_CGI)) {
                     title = cleanUpName(a.text());
                     //ENHANCE: tackle 'variant' titles later
 
-                } else if (author == null && href.contains("ea.cgi")) {
+                } else if (author == null && href.contains(IsfdbManager.URL_EA_CGI)) {
                     author = Author.fromString(cleanUpName(a.text()));
 
-                } else if (addSeriesFromToc && mSeries.isEmpty() && href.contains("pe.cgi")) {
+                } else if (addSeriesFromToc && mSeries.isEmpty()
+                        && href.contains(IsfdbManager.URL_PE_CGI)) {
                     String seriesName = a.text();
                     String seriesNum = "";
                     // check for the number; series don't always have a number
@@ -794,9 +808,7 @@ public class IsfdbBook
                     int end = liAsString.indexOf(']');
                     if (start > 1 && end > start) {
                         String tmp = liAsString.substring(start, end);
-                        // yes, hex... despite browser view-source shows &#8226;
-                        // (see comment section above)
-                        String[] data = SPLIT_SERIES_NUMBER_PATTERN.split(tmp);
+                        String[] data = DOT_PATTERN.split(tmp);
                         // check if there really was a series number
                         if (data.length > 1) {
                             seriesNum = Series.cleanupSeriesPosition(data[1]);
@@ -823,10 +835,10 @@ public class IsfdbBook
                             "ISFDB search for content found no title for li=" + li);
             }
 
-            // scan for first occurrence of "&#x2022; (1234)"
-            Matcher matcher = YEAR_FROM_LI.matcher(liAsString);
-            String year = matcher.find() ? matcher.group(1) : "";
-            // see if we can use it as a book year as well. e.g. if same title as book title
+            // scan for first occurrence of "• (1234)"
+            Matcher matcher = YEAR_PATTERN.matcher(liAsString);
+            String year = matcher.find() ? matcher.group(2) : "";
+            // see if we can use it as a book year as well. i.e. if same title as book title
             if (mFirstPublication == null && title.equalsIgnoreCase(mTitle)) {
                 mFirstPublication = year;
             }

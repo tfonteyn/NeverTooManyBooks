@@ -12,14 +12,12 @@
     <string name="lbl_rating">Ocena</string>
     <string name="lbl_is_read">Przeczytełeś tę książkę?</string>
     <string name="lbl_pages">Stron</string>
-    <string name="X_btn_confirm_add_book">Dodaj!</string>
     <string name="btn_confirm_update">Aktualizuj</string>
     <string name="X_info_no_books_yet">Na tej półce nie ma książek. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="menu_expand_all">Rozwiń wszystko</string>
     <string name="X_menu_sort_by">Sortuj wg</string>
     <string name="menu_collapse_all">Zwiń wszystko</string>
     <string name="menu_search">Szukaj</string>
-    <string name="X_btn_confirm_save_book">Zapisz książkę</string>
     <string name="X_info_no_bookshelves_yet">Nie utworzyłeś jeszcze żadnej półki. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="X_menu_add_bookshelf">Utwórz półkę</string>
     <string name="menu_bookshelves">Półkami…</string>
@@ -43,7 +41,7 @@
     <string name="menu_administration">Administracja</string>
     <string name="info_install_scanner">Do skanowania kodów kreskowych ISBN musisz zainstalować program Zxing Barcode Scanner. Naciśnij OK by to zrobić, lub Anuluj by zrezygnować z instalacji.</string>
     <string name="title_install_scan">Zainstaluj Barcode Scanner</string>
-    <string name="about_lbl_upgrade">Od ostatniej aktualizacji</string>
+    <string name="lbl_upgrade">Od ostatniej aktualizacji</string>
     <string name="menu_edit_book">Edytuj książkę</string>
     <string name="menu_edit_book_notes">Twoje komentarze</string>
     <string name="menu_loan_lend_book">Wypożycz książkę…</string>
@@ -59,7 +57,7 @@
     <string name="lbl_contacts">Kontakt:</string>
     <string name="menu_about">O programie</string>
     <string name="lbl_price_listed">Cena</string>
-    <string name="lbl_update_fields">Automatycznie aktualizuj pola wg danych z sieci</string>
+    <string name="lbl_update_fields_long">Automatycznie aktualizuj pola wg danych z sieci</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>
     <string name="lbl_select_fields">Wybierz pola</string>
 
@@ -101,9 +99,9 @@
     <string name="lbl_format">Format</string>
     <string name="lbl_description">Opis</string>
     <string name="lbl_genre">Gatunek</string>
-    <string name="field_not_set">Nie wybrany(a)</string>
+    <string name="hint_field_not_set">Nie wybrany(a)</string>
     <string name="X_menu_search_books">Przeszukaj książki</string>
-    <string name="hint_book_search_by_text">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
+    <string name="tip_book_search_by_text">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
     <string name="X_about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
     <string name="vldt_unable_to_get_value_for_x">Nie mogę pobrać wartości dla \‘%1$s\’</string>
     <string name="vldt_integer_expected_for_x">Oczekiwana wartość całkowita dla \‘%1$s\’</string>
@@ -235,7 +233,7 @@
     <string name="progress_msg_searching">Badawczy…</string>
     <string name="progress_msg_reading_directory">Czytanie folderów…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
-    <string name="btn_merge">Łączyć</string>
+    <string name="btn_confirm_merge">Łączyć</string>
     <string name="book_format_audiobook">Książka audio</string>
     <string name="menu_author_details">Wszystkie prace tego autora</string>
     <string name="lbl_styles">Style</string>
@@ -250,10 +248,10 @@
     <string name="lbl_cover">Okładka</string>
     <string name="info_tap_on_image_to_select">Stuknij w większy obraz, aby go wybrać</string>
     <string name="lbl_copy_database">Eksportuj bazę danych</string>
-    <string name="menu_clear_filters">Wyczyść filtry</string>
+    <string name="menu_clear_search_filters">Wyczyść filtry</string>
     <string name="menu_duplicate">Kopia</string>
     <string name="menu_cover_crop">Obciąć</string>
-    <string name="menu_internet_update_fields">Aktualizuj pola</string>
+    <string name="lbl_update_fields">Aktualizuj pola</string>
     <string name="warning_action_requires_isbn">Ta akcja wymaga prawidłowego numeru ISBN.</string>
     <string name="vldt_failure">Błąd walidacji.</string>
     <string name="title_import">Importuj</string>
@@ -264,8 +262,8 @@
     <string name="tab_lbl_content">Treści</string>
     <string name="unknown">Nieznany</string>
     <string name="title_send_mail">Wysłać email…</string>
-    <string name="usage_skip">Pomijać</string>
-    <string name="date_not_set_with_brackets">(Brak daty)</string>
+    <string name="lbl_field_usage_skip">Pomijać</string>
+    <string name="hint_date_not_set_with_brackets">(Brak daty)</string>
     <string name="btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
     <string name="lbl_currency">Waluta</string>
     <string name="menu_show_fewer_ellipsis">Pokaż mniej…</string>
@@ -279,7 +277,7 @@
     <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
     <string name="gr_btn_delete_credentials">Usuń poświadczenia</string>
     <string name="gr_tq_requested_task_is_already_queued">Żądane zadanie jest już w kolejce</string>
-    <string name="hint_reset_all_hints">Zresetuj wskazówki</string>
+    <string name="tip_reset_all">Zresetuj wskazówki</string>
     <string name="gr_tq_queued">W kolejce</string>
     <string name="menu_search_internet">Szukaj w Internecie</string>
     <string name="title_select_an_action">Wybierz akcję</string>
@@ -304,7 +302,7 @@
     <string name="lbl_search_criteria">Kryteria wyszukiwania</string>
     <string name="warning_please_enter_search_criteria">Wprowadź kryteria wyszukiwania</string>
     <string name="style_builtin_acquired_date">Nabyty</string>
-    <string name="search_with_text">Szukaj: %1$s</string>
+    <string name="title_search_filtered_on_x">Przefiltrowany: %1$s</string>
     <string name="title_edit_style">Edytuj styl</string>
     <string name="title_clone_style">Duplikat stylu</string>
     <string name="style_is_user_defined">Określony przez użytkownika</string>
@@ -315,7 +313,7 @@
     <string name="style_builtin_author_series">Autor, seria</string>
     <string name="style_builtin_added_date">Data dodania</string>
     <string name="style_builtin_update_date">Data aktualizacji</string>
-    <string name="search_text_hint">Tekst i / lub ISBN</string>
+    <string name="hint_search_text">Tekst i / lub ISBN</string>
     <string name="title_select_style">Wybierz styl</string>
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="style_builtin_title_first_letter">Tytuł pierwszej litery</string>
@@ -360,9 +358,9 @@
     <string name="lbl_export_to_csv">Eksportuj do pliku CSV</string>
     <string name="import_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
     <string name="import_export_option_csv">Książki (CSV)</string>
-    <string name="hints_have_been_reset">Wskazówki zostały zresetowane</string>
+    <string name="tip_reset_done">Wskazówki zostały zresetowane</string>
     <string name="import_error_csv_file_not_found">Nie znaleziono plików eksportu</string>
-    <string name="hint">Wskazówka</string>
+    <string name="tip_dialog_title">Wskazówka</string>
     <string name="import_option_info_all_books">Wszystkie książki w archiwum zostaną zaimportowane, aktualizując istniejące książki i dodając nowe.</string>
     <string name="import_option_info_new_and_changed_books">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="import_options_dialog_title">Wybierz, co zostanie zaimportowane.</string>
@@ -390,10 +388,11 @@
     <string name="progress_msg_export_starting">Eksportuj zaczynając…</string>
     <string name="progress_msg_importing">Importowanie…</string>
     <string name="progress_msg_n_created_m_updated">Utworzono %1$d, zaktualizowano %2$d</string>
-    <string name="progress_msg_covers">Objętych przetworzonych %1$d (brakuje %2$d)</string>
-    <string name="progress_msg_covers_skip">Obejmuje przetworzone %1$d (brak %2$d, pominięto %3$d)</string>
+    <string name="progress_msg_covers_handled">Objętych przetworzonych %1$d</string>
+    <string name="progress_msg_covers_handled_missing">Objętych przetworzonych %1$d (brakuje %2$d)</string>
+    <string name="progress_msg_covers_handled_missing_skipped">Obejmuje przetworzone %1$d (brak %2$d, pominięto %3$d)</string>
 
-    <string name="hint_book_list">Dotknięcie książki pokaże szczegóły książki. Długie naciśnięcie elementu na liście daje więcej opcji.</string>
+    <string name="tip_book_list">Dotknięcie książki pokaże szczegóły książki. Długie naciśnięcie elementu na liście daje więcej opcji.</string>
     <string name="gr_tq_menu_delete_task">Usuń zadanie</string>
     <string name="gr_tq_menu_delete_event">Usuń wydarzenie</string>
     <string name="gr_tq_last_error_e">Ostatni błąd: %1$s</string>
@@ -403,8 +402,8 @@
     <string name="gr_title_auth_access">Autoryzuj dostęp</string>
     <string name="gr_tq_show_events_ellipsis">Pokaż wydarzenia…</string>
     <string name="gr_tq_title_task_errors">Błędy zadania</string>
-    <string name="hint_autorotate_camera_images">Jeśli zawsze obracasz obrazy z kamery w tym samym kierunku, spróbuj zmienić preferencje aplikacji, aby określić obrót, który ma zostać zastosowany automatycznie.</string>
-    <string name="hint_view_only_book_details">Po dotknięciu elementu na tej liście możesz teraz przejść do widoku szczegółów książki, której nie można edytować. Zobacz Ustawienia odpowiedniego przełącznika.</string>
+    <string name="tip_autorotate_camera_images">Jeśli zawsze obracasz obrazy z kamery w tym samym kierunku, spróbuj zmienić preferencje aplikacji, aby określić obrót, który ma zostać zastosowany automatycznie.</string>
+    <string name="tip_view_only_book_details">Po dotknięciu elementu na tej liście możesz teraz przejść do widoku szczegółów książki, której nie można edytować. Zobacz Ustawienia odpowiedniego przełącznika.</string>
     <string name="info_displaying_n_books_in_m_entries">wyświetlanie %1$d książek, w %2$d wpisów</string>
     <string name="gr_tq_events_recorded">(Zarejestrowano wydarzenia %1$d)</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Oczyść stare zadania</string>
@@ -412,7 +411,7 @@
     <string name="btn_options">Opcje</string>
     <string name="btn_continue_editing">Kontynuuj edycję</string>
     <string name="bookshelf_my_books">Moje książki</string>
-    <string name="about_lbl_special_thanks">Szczególne podziękowania</string>
+    <string name="lbl_special_thanks">Szczególne podziękowania</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="confirm_merge_bookshelves">Zmieniona nazwa półki na książki już istnieje. Czy chcesz je połączyć?</string>
     <string name="gr_tq_generic_task_info">Identyfikator zadania %1$d, umieszczony w kolejce przy %2$s</string>
@@ -435,19 +434,19 @@
     <string name="error_authorization_failed">Autoryzacja %1$s nie powiodła się</string>
     <string name="error_search_configuration">Błąd konfiguracji. Otwórz stronę Ustawienia i sprawdź preferencje strony wyszukiwania.</string>
     <string name="export_options_dialog_title">Wybierz, co zostanie wyeksportowane do archiwum.</string>
-    <string name="field_not_set_with_brackets">(Nie ustawiony)</string>
+    <string name="hint_field_not_set_with_brackets">(Nie ustawiony)</string>
     <string name="lbl_erase_cover_cache">Usuń pamięć podręczną okładki</string>
     <string name="error_database_upgrade_failed">Nie można uaktualnić z wersji starszej niż 5.2.2</string>
-    <string name="hint_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
-    <string name="hint_booklist_style_menu">To menu pozwala wybrać styl listy. Możesz także dostosować to menu, a także tworzyć własne style listy, wybierając „Dostosuj” na końcu listy.</string>
-    <string name="hint_booklist_style_properties">Możesz użyć tego ekranu, aby ustawić charakterystykę konkretnego stylu listy książek. Możesz zmienić nazwę, edytować grupy, aby zmienić hierarchię, i dostosować różne inne preferencje, aby stworzyć styl, który uznasz za przydatny. Można również użyć „Filtry”, aby zmodyfikować wybór książek, które będą wyświetlane na liście. na przykład tylko pobierać książki, których jeszcze nie przeczytałeś i więcej.</string>
+    <string name="tip_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
+    <string name="tip_booklist_style_menu">To menu pozwala wybrać styl listy. Możesz także dostosować to menu, a także tworzyć własne style listy, wybierając „Dostosuj” na końcu listy.</string>
+    <string name="tip_booklist_style_properties">Możesz użyć tego ekranu, aby ustawić charakterystykę konkretnego stylu listy książek. Możesz zmienić nazwę, edytować grupy, aby zmienić hierarchię, i dostosować różne inne preferencje, aby stworzyć styl, który uznasz za przydatny. Można również użyć „Filtry”, aby zmodyfikować wybór książek, które będą wyświetlane na liście. na przykład tylko pobierać książki, których jeszcze nie przeczytałeś i więcej.</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_styles_editor">Możesz użyć tego ekranu, aby dostosować listę stylów, które będą wyświetlane w domyślnym menu stylów. „Zaznacz” wskazuje, że styl zostanie wyświetlony na liście, „odznacz”, aby go ukryć i odwrotnie. Jeśli żaden styl nie jest zaznaczony, zostaną wyświetlone wszystkie style. Możesz zmienić kolejność hierarchii, przeciągając ikonę w skrajnym prawym rogu każdego wiersza w górę lub w dół. Długie naciśnięcie w dowolnym innym miejscu w rzędzie pozwoli Ci edytować lub klonować szczegóły określonego stylu. Jeśli sklonowałeś styl i zmieniłeś zdanie, musisz go usunąć samodzielnie.</string>
+    <string name="tip_booklist_styles_editor">Możesz użyć tego ekranu, aby dostosować listę stylów, które będą wyświetlane w domyślnym menu stylów. „Zaznacz” wskazuje, że styl zostanie wyświetlony na liście, „odznacz”, aby go ukryć i odwrotnie. Jeśli żaden styl nie jest zaznaczony, zostaną wyświetlone wszystkie style. Możesz zmienić kolejność hierarchii, przeciągając ikonę w skrajnym prawym rogu każdego wiersza w górę lub w dół. Długie naciśnięcie w dowolnym innym miejscu w rzędzie pozwoli Ci edytować lub klonować szczegóły określonego stylu. Jeśli sklonowałeś styl i zmieniłeś zdanie, musisz go usunąć samodzielnie.</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_view_only_help">Jest to ekran szczegółów książki, którego nie można edytować; możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek, a także edytować książkę za pomocą menu opcji za pomocą przycisku menu lub ikony menu przepełnienia.</string>
+    <string name="tip_view_only_help">Jest to ekran szczegółów książki, którego nie można edytować; możesz przesuwać palcem w lewo lub w prawo, aby przejść do innych książek, a także edytować książkę za pomocą menu opcji za pomocą przycisku menu lub ikony menu przepełnienia.</string>
     <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="hint_booklist_style_groups">Możesz użyć tego ekranu, aby zmodyfikować hierarchię nagłówków dla określonego stylu listy książek. „Zaznacz” oznacza, że nagłówek zostanie wyświetlony na liście, „odznacz”, aby go ukryć i odwrotnie. Możesz zmienić kolejność hierarchii, przeciągając ikonę w skrajnym prawym rogu każdego wiersza w górę lub w dół.</string>
-    <string name="hint_series_book_may_appear_more_than_once">Jeśli jest wyświetlana w każdej serii, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
+    <string name="tip_booklist_style_groups">Możesz użyć tego ekranu, aby zmodyfikować hierarchię nagłówków dla określonego stylu listy książek. „Zaznacz” oznacza, że nagłówek zostanie wyświetlony na liście, „odznacz”, aby go ukryć i odwrotnie. Możesz zmienić kolejność hierarchii, przeciągając ikonę w skrajnym prawym rogu każdego wiersza w górę lub w dół.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Jeśli jest wyświetlana w każdej serii, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
     <string name="import_export_option_xml_info">XML jest tylko eksportem, bez importu.</string>
     <string name="import_export_option_xml">Wszystkie dane w formacie XML</string>
     <string name="info_share_book_im_reading">Czytam „%1$s” przez %2$s %3$s %4$s</string>
@@ -490,8 +489,8 @@
     <string name="gr_tq_occurred_at">(wystąpił przy %1$s)</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Spróbuj ponownie %1$d z %2$d dalej w %3$s</string>
     <string name="gr_tq_task_has_been_queued">Zadanie zostało umieszczone w kolejce w tle</string>
-    <string name="hint_background_task_events">Stąd możesz zobaczyć zdarzenia związane z zadaniem w tle. Stuknięcie w wydarzenie pozwoli ci wykonać różne akcje odpowiednie dla tego wydarzenia.</string>
-    <string name="hint_background_tasks">Stąd możesz zobaczyć aktualnie uruchomione zadania, jak również poprzednie zadania, które zakończyły się błędami lub innymi znaczącymi wydarzeniami. Stuknięcie zadania pozwoli ci zobaczyć zdarzenia związane z tym zadaniem, a także usunąć zadanie (i powiązane zdarzenia).</string>
+    <string name="tip_background_task_events">Stąd możesz zobaczyć zdarzenia związane z zadaniem w tle. Stuknięcie w wydarzenie pozwoli ci wykonać różne akcje odpowiednie dla tego wydarzenia.</string>
+    <string name="tip_background_tasks">Stąd możesz zobaczyć aktualnie uruchomione zadania, jak również poprzednie zadania, które zakończyły się błędami lub innymi znaczącymi wydarzeniami. Stuknięcie zadania pozwoli ci zobaczyć zdarzenia związane z tym zadaniem, a także usunąć zadanie (i powiązane zdarzenia).</string>
     <string name="acra_resToastText">
         &APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.
     </string>
@@ -512,7 +511,7 @@
     <string name="warning_enter_valid_filename">Wprowadź prawidłową nazwę pliku.</string>
     <string name="warning_no_parent_directory_found">Nie znaleziono katalogu nadrzędnego</string>
     <string name="X_error_starting_import_arg">Podczas uruchamiania importu wystąpił problem: %1$s</string>
-    <string name="X_hint_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
+    <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="btn_confirm_new">Nowy</string>
     <string name="title_edit_book_authors">Edytuj autorów książek</string>
     <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
@@ -521,7 +520,7 @@
         skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.
     </string>
     <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
-    <string name="about_lbl_creators">Pierwotnie przez:</string>
+    <string name="lbl_creators">Pierwotnie przez:</string>
     <string name="lbl_edition_book_club">Klub Książki</string>
     <string name="book_format_paperback">Miękka</string>
     <string name="book_format_ebook">ebook</string>
@@ -530,5 +529,10 @@
     <string name="title_delete_toc_entry">Usuń tytuł</string>
     <string name="confirm_delete_toc_entry">Usuń tytuł “%1$s” przez %2$s” Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="menu_view_book_at_ellipsis">Widok na…</string>
+    <string name="lbl_keywords">Słowa kluczowe</string>
+    <string name="warning_missing_title">Brakuje tytułu.</string>
+    <string name="warning_missing_author">Brakuje autora.</string>
+    <string name="warning_isfdb_only">(obsługiwane tylko przez stronę internetową ISFDB)</string>
+    <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
 
 </resources>

@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.picker.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
@@ -214,18 +214,11 @@ public class AdminFragment
 
 
 
-        /* Automatically Update Fields from internet*/
-        root.findViewById(R.id.lbl_update_internet)
-            .setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), UpdateFieldsFromInternetActivity.class);
-                startActivity(intent);
-            });
-
         /* Reset Hints */
-        root.findViewById(R.id.lbl_reset_hints)
+        root.findViewById(R.id.lbl_reset_tips)
             .setOnClickListener(v -> {
-                HintManager.resetHints();
-                UserMessage.show(v, R.string.hints_have_been_reset);
+                TipManager.reset();
+                UserMessage.show(v, R.string.tip_reset_done);
             });
 
         /* Erase cover cache */
