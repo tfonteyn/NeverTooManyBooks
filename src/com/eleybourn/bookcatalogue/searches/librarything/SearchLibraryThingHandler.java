@@ -6,6 +6,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -20,7 +22,138 @@ import com.eleybourn.bookcatalogue.entities.Series;
  * Parser Handler to collect the book data.
  * Search LibraryThing for an ISBN using the Web API.
  * <p>
+ * Another good example: (response not shown here)
+ * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&isbn=058603806X&apikey=x
+ * <p>
  * A typical (and thorough) LibraryThing ISBN response looks like:
+ *
+ * <pre>
+ *     http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&isbn=031285966X&apikey=x
+ *     {@code
+ *  <response stat="ok">
+ *    <ltml xmlns="http://www.librarything.com/" version="1.1">
+ *    <item id="81766" type="work">
+ *    <author id="397" authorcode="vancejack">Jack Vance</author>
+ *    <title>Alastor</title>
+ *    <rating>7.6</rating>
+ *    <url>http://www.librarything.com/work/81766</url>
+ *
+ *    <commonknowledge>
+ *      <fieldList>
+ *        <field type="25" name="firstwords" displayName="First words">
+ *          <versionList>
+ *            <version id="3207634" archived="0" lang="eng">
+ *              <date timestamp="1294088287">Mon, 03 Jan 2011 15:58:07 -0500</date>
+ *              <person id="580486">
+ *                <name>JSmith5528</name>
+ *                <url>http://www.librarything.com/profile/JSmith5528</url>
+ *              </person>
+ *              <factList>
+ *                <fact>
+ *                  ![CDATA[ <b>Trullion: Alastor ...blah blah ]]>
+ *                </fact>
+ *                <fact>
+ *                  ![CDATA[ <b>Marune: Alastor 933</b></br>Alastor Cl...blah blah ]]>
+ *                </fact>
+ *                <fact>
+ *                  ![CDATA[ <b>Wyst: Alastor 1716</b></br>Alastor Cluster, ...blah blah ]]>
+ *                </fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="26" name="lastwords" displayName="Last words">
+ *          <versionList>
+ *            <version id="3207632" archived="0" lang="eng">
+ *              <date timestamp="1294088250">Mon, 03 Jan 2011 15:57:30 -0500</date>
+ *              <person id="580486">
+ *                <name>JSmith5528</name>
+ *                <url>http://www.librarything.com/profile/JSmith5528</url>
+ *              </person>
+ *              <factList>
+ *                <fact>
+ *                  ![CDATA[ <b>Trullion: Alastor 2262</b></br>Glinnes moved after her,...blah blah ]]>
+ *                </fact>
+ *                <fact>
+ *                  ![CDATA[ <b>Marune: Alastor 933</b></br>"I don't know either." ]]>
+ *                </fact>
+ *                <fact>
+ *                  ![CDATA[ <b>Wyst: Alastor 1716</b></br>For this reason, s...blah blah ]]>
+ *                </fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="14" name="description" displayName="Description">
+ *          <versionList>
+ *            <version id="3207629" archived="0" lang="eng">
+ *              <date timestamp="1294087991">Mon, 03 Jan 2011 15:53:11 -0500</date>
+ *              <person id="580486">
+ *                <name>JSmith5528</name>
+ *                <url>http://www.librarything.com/profile/JSmith5528</url>
+ *              </person>
+ *              <factList>
+ *                <fact>
+ *                  ![CDATA[ Contains the following novels: <i></br>Trullion: Alast...blah blah ]]>
+ *                </fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="4" name="awards" displayName="Awards and honors">
+ *          <versionList>
+ *            <version id="2139252" archived="0" lang="eng">
+ *              <date timestamp="1264492371">Tue, 26 Jan 2010 02:52:51 -0500</date>
+ *              <person id="849103">
+ *                <name>LamontCranston</name>
+ *                <url>http://www.librarything.com/profile/LamontCranston</url>
+ *              </person>
+ *              <factList>
+ *                <fact>
+ *                  thisrecording.com 100 Greatest Science Fiction or Fantasy Nove...blah blah
+ *                </fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="16" name="originalpublicationdate" displayName="Original publication date">
+ *          <versionList>
+ *            <version id="788105" archived="0" lang="eng">
+ *              <date timestamp="1228946925">Wed, 10 Dec 2008 17:08:45 -0500</date>
+ *              <person id="178587">
+ *                <name>snellius</name>
+ *                <url>http://www.librarything.com/profile/snellius</url>
+ *              </person>
+ *              <factList>
+ *                <fact>1978 (omnibus)</fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="23" name="series" displayName="Series">
+ *          <versionList>
+ *            <version id="788102" archived="0" lang="eng">
+ *              <date timestamp="1228946925">Wed, 10 Dec 2008 17:08:45 -0500</date>
+ *              <person id="178587">
+ *                <name>snellius</name>
+ *                <url>http://www.librarything.com/profile/snellius</url>
+ *              </person>
+ *              <factList>
+ *                <fact>Alastor (4|Omnibus)</fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *      </fieldList>
+ *    </commonknowledge>
+ *  </item>
+ *  <legal>
+ * By using this data you agree to the LibraryThing API terms of service.
+ * </legal>
+ * </ltml>
+ * </response>
+ *     }
+ * </pre>
  *
  * <pre>
  * {@code
@@ -333,18 +466,18 @@ class SearchLibraryThingHandler
     /**
      * LibraryThing extra field "placesmentioned".
      * {@code
-     *  <fact>Mercury</fact>
-     *  <fact>New York, New York, USA</fact>
-     *  <fact>Roosevelt Building</fact>
+     * <fact>Mercury</fact>
+     * <fact>New York, New York, USA</fact>
+     * <fact>Roosevelt Building</fact>
      * }
      */
     private static final String LT_PLACES = "__places";
     /**
      * LibraryThing extra field "characternames".
      * {@code
-     *  <fact>Susan Calvin</fact>
-     *  <fact>Cutie (QT1)</fact>
-     *  <fact>Gregory Powell</fact>
+     * <fact>Susan Calvin</fact>
+     * <fact>Cutie (QT1)</fact>
+     * <fact>Gregory Powell</fact>
      * }
      */
     private static final String LT_CHARACTERS = "__characters";
@@ -353,11 +486,17 @@ class SearchLibraryThingHandler
      * <p>
      * The format of these entries is probably not a standard. TODO: get more examples first.
      * {@code
-     *  <fact>1950 (Collection)</fact>
-     *  <fact>1944 (Catch that Rabbit)</fact>
-     *  <fact>1945 (Escape!)</fact>
-     *  <fact>1946 (Evidence)</fact>
-     *  <fact>1950 (The Evitable Conflict)</fact>
+     * A short story collection:
+     * <fact>1950 (Collection)</fact>
+     * <fact>1944 (Catch that Rabbit)</fact>
+     * <fact>1945 (Escape!)</fact>
+     * <fact>1946 (Evidence)</fact>
+     * <fact>1950 (The Evitable Conflict)</fact>
+     * <p>
+     * An omnibus of multiple book:
+     * <fact>1978 (omnibus)</fact>
+     * <p>
+     * <p>
      * }
      */
     private static final String LT_ORIG_PUB_DATE = "__originalpublicationdate";
@@ -370,6 +509,8 @@ class SearchLibraryThingHandler
     /** XML tags we look for. */
     //private static final String XML_RESPONSE = "response";
     private static final String XML_AUTHOR = "author";
+    /** Highest level title. */
+    private static final String XML_TITLE = "title";
     /** {@code <item id="5196084" type="work">}. */
     private static final String XML_ITEM = "item";
     /** a 'field' (see below). */
@@ -377,12 +518,19 @@ class SearchLibraryThingHandler
     /** a 'fact' in a 'factlist' of a 'field'. */
     private static final String XML_FACT = "fact";
     /** fields. */
-    private static final String XML_FIELD_23_SERIES = "series";
     private static final String XML_FIELD_21_CANONICAL_TITLE = "canonicaltitle";
+    private static final String XML_FIELD_41_ORIG_TITLE = "originaltitle";
+    private static final String XML_FIELD_42_ALT_TITLES = "alternativetitles";
+
+    private static final String XML_FIELD_23_SERIES = "series";
+    private static final String XML_FIELD_40_PUB_SERIES = "publisherseries";
 
     private static final String XML_FIELD_02_PLACES = "placesmentioned";
     private static final String XML_FIELD_03_CHARACTERS = "characternames";
+    private static final String XML_FIELD_14_DESCRIPTION = "description";
     private static final String XML_FIELD_16_ORIG_PUB_DATE = "originalpublicationdate";
+    private static final String XML_FIELD_58_ORIG_LANG = "originallanguage";
+    private static final Pattern YEAR_PATTERN = Pattern.compile("([1|2]\\d\\d\\d)");
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -419,7 +567,16 @@ class SearchLibraryThingHandler
                                         @NonNull final String value) {
         String test = bundle.getString(key);
         if (test == null || test.isEmpty()) {
-            bundle.putString(key, value.trim());
+            String v = value.trim();
+            if (v.startsWith("![CDATA[")) {
+                v = v.substring(8);
+                // paranoia test
+                if (v.endsWith("]]>")) {
+                    v = v.substring(0, v.length() - 3);
+                }
+                v = v.trim();
+            }
+            bundle.putString(key, v);
         }
     }
 
@@ -450,23 +607,36 @@ class SearchLibraryThingHandler
         mBuilder.setLength(0);
 
         if (localName.equalsIgnoreCase(XML_FIELD)) {
-            // FIELD's are the main things we want. Once we are in a field we wait for a XML_FACT;
+            // FIELD's are the main things we want. Once we are in a field we wait for an XML_FACT;
             // these are read in the endElement() method.
             String fieldName = attributes.getValue("", XML_ATTR_NAME);
             if (fieldName != null) {
                 if (fieldName.equalsIgnoreCase(XML_FIELD_21_CANONICAL_TITLE)) {
                     mFieldType = FieldTypes.Title;
+                } else if (fieldName.equalsIgnoreCase(XML_FIELD_41_ORIG_TITLE)) {
+                    mFieldType = FieldTypes.OriginalTitle;
+                } else if (fieldName.equalsIgnoreCase(XML_FIELD_42_ALT_TITLES)) {
+                    mFieldType = FieldTypes.AltTitle;
+
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_23_SERIES)) {
                     mFieldType = FieldTypes.Series;
+                } else if (fieldName.equalsIgnoreCase(XML_FIELD_40_PUB_SERIES)) {
+                    mFieldType = FieldTypes.PubSeries;
+
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_02_PLACES)) {
                     mFieldType = FieldTypes.Places;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_03_CHARACTERS)) {
                     mFieldType = FieldTypes.Characters;
+                } else if (fieldName.equalsIgnoreCase(XML_FIELD_14_DESCRIPTION)) {
+                    mFieldType = FieldTypes.Description;
                 } else if (fieldName.equalsIgnoreCase(XML_FIELD_16_ORIG_PUB_DATE)) {
                     mFieldType = FieldTypes.OriginalPubDate;
+                } else if (fieldName.equalsIgnoreCase(XML_FIELD_58_ORIG_LANG)) {
+                    mFieldType = FieldTypes.OriginalLanguage;
                 }
             }
         } else if (localName.equalsIgnoreCase(XML_ITEM)) {
+            // <item id="1745230" type="work">
             String type = attributes.getValue("", XML_ATTR_TYPE);
             // leave hardcoded, it's a value for the attribute.
             if ("work".equalsIgnoreCase(type)) {
@@ -501,6 +671,9 @@ class SearchLibraryThingHandler
         } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
             mAuthors.add(Author.fromString(mBuilder.toString()));
 
+        } else if (localName.equalsIgnoreCase(XML_TITLE)) {
+            addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
+
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             // Process the XML_FACT according to the active XML_FIELD type.
             switch (mFieldType) {
@@ -513,17 +686,19 @@ class SearchLibraryThingHandler
                     mSeries.add(Series.fromString(mBuilder.toString()));
                     break;
 
-//                case Places:
-//                    StringList.addOrAppend(mBookData, LT_PLACES, mBuilder.toString());
-//                    break;
-//
-//                case Characters:
-//                    StringList.addOrAppend(mBookData, LT_CHARACTERS, mBuilder.toString());
-//                    break;
-//
-//                case OriginalPubDate:
-//                    StringList.addOrAppend(mBookData, LT_ORIG_PUB_DATE, mBuilder.toString());
-//                    break;
+                case Description:
+                    addIfNotPresent(mBookData, DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
+                    break;
+
+                case OriginalPubDate:
+                    if (!mBookData.containsKey(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)) {
+                        Matcher matcher = YEAR_PATTERN.matcher(mBuilder.toString());
+                        if (matcher.find()) {
+                            mBookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                                                matcher.group(1));
+                        }
+                    }
+                    break;
             }
         }
         // Always reset the length. This is not entirely the right thing to do, but works
@@ -550,6 +725,10 @@ class SearchLibraryThingHandler
      * Field types we are interested in.
      */
     private enum FieldTypes {
-        None, Author, Title, Series, Places, Characters, OriginalPubDate, Other
+        None, Other,
+        Title, Series, PubSeries,
+        Places, Characters, Description,
+        OriginalPubDate, OriginalLanguage, OriginalTitle,
+        AltTitle,
     }
 }
