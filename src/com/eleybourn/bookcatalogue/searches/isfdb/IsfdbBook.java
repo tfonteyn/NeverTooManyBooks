@@ -180,7 +180,7 @@ public class IsfdbBook
 
         mPath = path;
 
-        if (!loadPage(mPath, true)) {
+        if (loadPage(mPath, true) == null) {
             return new Bundle();
         }
 
@@ -212,7 +212,7 @@ public class IsfdbBook
             mDoc = edition.doc;
         } else {
             // nop, go get it.
-            if (!loadPage(mPath, true)) {
+            if (loadPage(mPath, true) == null) {
                 return new Bundle();
             }
         }
@@ -415,7 +415,7 @@ public class IsfdbBook
                     // dates are in fact displayed as YYYY-MM-DD which is very nice.
                     tmpString = li.childNode(2).toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
-                    // Cut that part out.
+                    // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll(
                             Matcher.quoteReplacement(""));
                     // and we're paranoid...
@@ -582,7 +582,7 @@ public class IsfdbBook
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
             }
         } else if (toc.size() > 1) {
-            // we gamble and take what we found in the content
+            // we gamble and take what we found in the TOC
             if (mFirstPublication != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                    digits(mFirstPublication));
@@ -717,7 +717,7 @@ public class IsfdbBook
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (!loadPage(mPath, true)) {
+        if (loadPage(mPath, true) == null) {
             return results;
         }
 
@@ -838,7 +838,8 @@ public class IsfdbBook
             // scan for first occurrence of "• (1234)"
             Matcher matcher = YEAR_PATTERN.matcher(liAsString);
             String year = matcher.find() ? matcher.group(2) : "";
-            // see if we can use it as a book year as well. i.e. if same title as book title
+            // see if we can use it as the first publication year for the book.
+            // i.e. if this entry has the same title as the book title
             if (mFirstPublication == null && title.equalsIgnoreCase(mTitle)) {
                 mFirstPublication = year;
             }

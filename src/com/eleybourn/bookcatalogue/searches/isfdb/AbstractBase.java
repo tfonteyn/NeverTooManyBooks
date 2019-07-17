@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -39,6 +40,10 @@ abstract class AbstractBase {
     /** The parsed downloaded web page. */
     Document mDoc;
 
+    /** the actual URL for the page we got (after redirects etc). */
+    @Nullable
+    String mPageUrl;
+
     private boolean afterEofTryAgain = true;
     private boolean afterBrokenRedirectTryAgain = true;
 
@@ -53,10 +58,12 @@ abstract class AbstractBase {
      * @param url      to fetch
      * @param redirect {@code true} to follow redirects. This should normally be the default.
      *
-     * @return {@code true} when fetched and parsed ok.
+     * @return the actual URL for the page we got (after redirects etc), or {@code null}
+     * on failure to load.
      */
-    boolean loadPage(@NonNull String url,
-                     final boolean redirect)
+    @Nullable
+    String loadPage(@NonNull String url,
+                    final boolean redirect)
             throws SocketTimeoutException {
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
@@ -78,16 +85,17 @@ abstract class AbstractBase {
 
                 // GO!
                 terminatorConnection.open();
+
                 // the original url will change after a redirect.
                 // We need the actual url for further processing.
-                url = con.getURL().toString();
-
+                mPageUrl = con.getURL().toString();
                 mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   IsfdbManager.CHARSET_DECODE_PAGE, url);
+                                   IsfdbManager.CHARSET_DECODE_PAGE, mPageUrl);
 
             } catch (@NonNull final HttpStatusException e) {
                 Logger.error(this, e);
-                return false;
+                mPageUrl = null;
+                return null;
 
             } catch (@NonNull final EOFException e) {
                 // this happens often with ISFDB... Google search says it's a server issue.
@@ -96,9 +104,11 @@ abstract class AbstractBase {
                 if (afterEofTryAgain) {
                     afterEofTryAgain = false;
                     mDoc = null;
+                    mPageUrl = null;
                     return loadPage(url, redirect);
                 } else {
-                    return false;
+                    mPageUrl = null;
+                    return null;
                 }
 
             } catch (@NonNull final SocketTimeoutException e) {
@@ -106,14 +116,15 @@ abstract class AbstractBase {
 
             } catch (@NonNull final IOException e) {
                 Logger.error(this, e, url);
-                return false;
+                mPageUrl = null;
+                return null;
 
             }
             // reset the flags.
             afterBrokenRedirectTryAgain = true;
             afterEofTryAgain = true;
         }
-        return true;
+        return mPageUrl;
     }
 
     /**
@@ -134,8 +145,8 @@ abstract class AbstractBase {
      *
      * @return {@code true} when fetched and parsed ok.
      */
-    boolean loadPage_old(@NonNull final String url,
-                         final boolean redirect)
+    boolean loadPageWithBrokenRedirectSupport(@NonNull final String url,
+                                              final boolean redirect)
             throws SocketTimeoutException {
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
@@ -213,7 +224,7 @@ abstract class AbstractBase {
                         }
 
                         mDoc = null;
-                        return loadPage_old(location, false);
+                        return loadPageWithBrokenRedirectSupport(location, false);
                     }
                     return false;
                 }
@@ -229,7 +240,7 @@ abstract class AbstractBase {
                 if (afterEofTryAgain) {
                     afterEofTryAgain = false;
                     mDoc = null;
-                    return loadPage_old(url, redirect);
+                    return loadPageWithBrokenRedirectSupport(url, redirect);
                 } else {
                     return false;
                 }

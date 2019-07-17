@@ -36,8 +36,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public final class DateUtils {
@@ -78,6 +81,11 @@ public final class DateUtils {
 
     /** List of formats we'll use to parse dates. */
     private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS;
+
+    /** Simple match for a 4 digit year. */
+    private static final SimpleDateFormat YEAR =
+            new SimpleDateFormat("yyyy", LocaleUtils.getSystemLocale());
+
 
     static {
         // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
@@ -177,6 +185,13 @@ public final class DateUtils {
         if (dateString == null || dateString.isEmpty()) {
             return null;
         }
+        // shortcut for plain 4 digit years.
+        if (dateString.length() == 4) {
+            try {
+                return YEAR.parse(dateString);
+            } catch (@NonNull final ParseException ignore) {
+            }
+        }
 
         // First try to parse using strict rules
         Date d = parseDate(dateString, false);
@@ -242,7 +257,7 @@ public final class DateUtils {
             throws NumberFormatException {
         switch (dateString.length()) {
             case 10:
-                // YYYY-MM-DD, full date parsing.
+                // YYYY-MM-DD
                 Date date = parseDate(dateString);
                 if (date != null) {
                     return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
@@ -254,13 +269,13 @@ public final class DateUtils {
                 return dateString;
 
             case 7:
-                // input: YYYY-MM, at least we presume it is... maybe add a sanity check ?
+                // input: YYYY-MM
                 int month = Integer.parseInt(dateString.substring(5));
                 // just swap: MMM YYYY
                 return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
 
             case 4:
-                // YYYY, at least we presume it is... maybe add a sanity check ?
+                // input: YYYY
                 return dateString;
 
             default:

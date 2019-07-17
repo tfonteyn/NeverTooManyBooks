@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,7 +51,7 @@ public class Editions
         String url = IsfdbManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
 
         // do not auto-redirect, handled manually. See the comments inside the loadPage method.
-        if (!loadPage(url, false)) {
+        if (loadPage(url, false) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
@@ -70,7 +71,7 @@ public class Editions
             throws SocketTimeoutException {
 
         // do not auto-redirect, handled manually. See the comments inside the loadPage method.
-        if (!loadPage(url, false)) {
+        if (loadPage(url, false) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
@@ -85,17 +86,25 @@ public class Editions
      */
     @NonNull
     private ArrayList<Edition> parseDoc() {
-        if (mDoc.location().contains(IsfdbManager.URL_PL_CGI)) {
-            // We got redirected to a book. Populate with the doc (web page) we got back.
-            mEditions.add(new Edition(stripNumber(mDoc.location(), '?'), mDoc));
+//        String pageUrl = mDoc.location();
+        String pageUrl = Objects.requireNonNull(mPageUrl);
 
-        } else if (mDoc.location().contains(IsfdbManager.URL_TITLE_CGI)
-                || mDoc.location().contains(IsfdbManager.URL_ADV_SEARCH_RESULTS_CGI)) {
-            // we have multiple editions.
-            findEntries(mDoc, "tr.table0", "tr.table1");
+        if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
+            // We got redirected to a book. Populate with the doc (web page) we got back.
+            mEditions.add(new Edition(stripNumber(pageUrl, '?'), mDoc));
+
+        } else if (pageUrl.contains(IsfdbManager.URL_TITLE_CGI)
+                || pageUrl.contains(IsfdbManager.URL_SE_CGI)
+                || pageUrl.contains(IsfdbManager.URL_ADV_SEARCH_RESULTS_CGI)) {
+            // we have multiple editions. We get here from one of:
+            // - direct link to the "title" of the publication; i.e. 'show the editions'
+            // - search or advanced-search for the title.
+
+            // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
+            findEntries(mDoc, "tr.table1", "tr.table0");
         } else {
             // dunno, let's log it
-            Logger.warnWithStackTrace(this, "fetch", "location=" + mDoc.location());
+            Logger.warnWithStackTrace(this, "fetch", "pageUrl=" + pageUrl);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
