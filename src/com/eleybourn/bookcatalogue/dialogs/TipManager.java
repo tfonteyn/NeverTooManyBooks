@@ -239,11 +239,7 @@ public final class TipManager {
          * @param show Flag indicating future visibility
          */
         private void setShowAgain(final boolean show) {
-            if (show) {
-                App.getPrefs().edit().putBoolean(mKey, true).apply();
-            } else {
-                App.getPrefs().edit().remove(mKey).apply();
-            }
+            App.getPrefs().edit().putBoolean(mKey, show).apply();
         }
 
         void reset() {
