@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -44,7 +42,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  * arrays of 'author' bundles.
  * <p>
  * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
- * With the exception of dates, which are collected as text strings.
+ * with the exception of dates, which are collected as text strings.
  * <p>
  * Typical result:
  * <pre>
@@ -97,18 +95,33 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 public class BookshelfListApiHandler
         extends ApiHandler {
 
+    private static final String URL = GoodreadsManager.BASE_URL
+            + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
+
     private SimpleXmlFilter mFilters;
 
-    public BookshelfListApiHandler(@NonNull final GoodreadsManager manager)
+    /**
+     * Constructor.
+     *
+     * @param grManager the Goodreads Manager
+     *
+     * @throws AuthorizationException with GoodReads
+     */
+    public BookshelfListApiHandler(@NonNull final GoodreadsManager grManager)
             throws AuthorizationException {
-        super(manager);
-        if (!manager.hasValidCredentials()) {
+        super(grManager);
+        if (!grManager.hasValidCredentials()) {
             throw new AuthorizationException(R.string.goodreads);
         }
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
     }
 
+    /**
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     @NonNull
     public Bundle run(final int page)
             throws AuthorizationException,
@@ -116,29 +129,13 @@ public class BookshelfListApiHandler
                    IOException {
         long t0 = System.nanoTime();
 
-        // Sort by update_dte (descending) so sync is faster.
-        // Specify 'shelf=all' because it seems goodreads returns
-        // the shelf that is selected in 'My Books' on the web interface by default.
-        final String urlBase = GoodreadsManager.BASE_URL
-                + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
-
-        final String url = String.format(urlBase, mManager.getDevKey(), page, mManager.getUserId());
-        HttpGet get = new HttpGet(url);
-
-        // Initial debug code:
-        //TrivialParser handler = new TrivialParser();
-        //mTaskManager.execute(get, handler, true);
-        //String s = handler.getHtml();
-        //Logger.info(s);
+        final String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());
 
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        mManager.executeGet(url, handler, true);
 
-        // Even thought it's only a GET, it needs a signature.
-        mManager.execute(get, handler, true);
-
-        // When we get here, the data has been collected but needs to be processed
-        // into standard form.
+        // When we get here, the data has been collected but needs processing into standard form.
         Bundle results = mFilters.getData();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {

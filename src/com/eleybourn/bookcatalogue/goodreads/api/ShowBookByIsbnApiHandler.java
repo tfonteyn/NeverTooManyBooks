@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
@@ -40,31 +38,35 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
 public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
-
     /**
      * Constructor.
      *
-     * @param manager GoodreadsManager
+     * @param grManager the Goodreads Manager
      */
-    public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
-        // TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
-        super(manager, true);
+    public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
     }
 
     /**
      * Perform a search and handle the results.
      *
-     * @param isbn           to use
+     * @param isbn           to search for
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the Bundle of book data.
+     *
+     * @throws ISBN.IsbnInvalidException if the isbn passed in was not valid.
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
     public Bundle get(@NonNull final String isbn,
                       final boolean fetchThumbnail)
             throws AuthorizationException,
                    BookNotFoundException,
-                   IOException {
+                   IOException,
+                   ISBN.IsbnInvalidException {
 
         if (!ISBN.isValid(isbn)) {
             throw new ISBN.IsbnInvalidException(isbn);
@@ -73,9 +75,7 @@ public class ShowBookByIsbnApiHandler
         // Setup API call
         String urlBase = GoodreadsManager.BASE_URL + "/book/isbn?format=xml&isbn=%1$s&key=%2$s";
         String url = String.format(urlBase, isbn, mManager.getDevKey());
-        HttpGet get = new HttpGet(url);
 
-        return sendRequest(get, fetchThumbnail);
+        return getBookData(url, fetchThumbnail);
     }
-
 }

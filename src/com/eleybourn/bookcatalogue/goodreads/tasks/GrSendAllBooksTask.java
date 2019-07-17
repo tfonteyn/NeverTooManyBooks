@@ -72,6 +72,9 @@ class GrSendAllBooksTask
      * Do the main of the task. Called from within {@link #run}
      * Deal with restarts by using mLastId as starting point.
      *
+     * @param context   Current context
+     * @param grManager the Goodreads Manager
+     *
      * @return {@code true} on success.
      */
     protected boolean send(@NonNull final QueueManager queueManager,

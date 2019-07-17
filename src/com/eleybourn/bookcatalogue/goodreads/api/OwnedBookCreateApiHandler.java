@@ -25,12 +25,10 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -40,7 +38,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
- * TODO: OwnedBookCreateHandler WORK IN PROGRESS.
+ * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS.
  * <p>
  * Typical response.
  * <pre>
@@ -71,15 +69,20 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
  * @author Philip Warner
  */
 @SuppressWarnings("unused")
-public class OwnedBookCreateHandler
+public class OwnedBookCreateApiHandler
         extends ApiHandler {
 
     //public enum ConditionCode {
     //  BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
     //}
 
-    public OwnedBookCreateHandler(@NonNull final GoodreadsManager manager) {
-        super(manager);
+    /**
+     * Constructor.
+     *
+     * @param grManager the Goodreads Manager
+     */
+    public OwnedBookCreateApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
     }
 
     /*
@@ -94,42 +97,50 @@ public class OwnedBookCreateHandler
      *    owned_book[original_purchase_date]: when book was acquired
      *    owned_book[condition_description]: description of book's condition
      *    owned_book[available_for_swap]: true or false, if book is available for swap
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     public void create(@NonNull final String isbn,
                        @NonNull final List<String> shelves)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
-        IsbnToIdHandler isbnToIdHandler = new IsbnToIdHandler(mManager);
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException,
+                   ISBN.IsbnInvalidException {
+        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
         long id;
 
         try {
-            id = isbnToIdHandler.isbnToId(isbn);
+            id = isbnToIdApiHandler.isbnToId(isbn);
         } catch (@NonNull final BookNotFoundException e) {
-            throw new ISBN.IsbnInvalidException(e);
+            throw new ISBN.IsbnInvalidException(isbn, e);
         }
 
-        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/owned_books.xml");
-
-        List<NameValuePair> parameters = new ArrayList<>();
-        parameters.add(new BasicNameValuePair("owned_book[book_id]", String.valueOf(id)));
-
-        post.setEntity(new UrlEncodedFormEntity(parameters));
+        String url = GoodreadsManager.BASE_URL + "/owned_books.xml";
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("owned_book[book_id]", String.valueOf(id));
 
         OwnedBookCreateParser handler = new OwnedBookCreateParser();
-        mManager.execute(post, handler, true);
+        mManager.executePost(url, parameters, handler, true);
 
-        ShelfAddBookHandler shelfAdd = new ShelfAddBookHandler(mManager);
+        AddBookToShelfApiHandler shelfAdd = new AddBookToShelfApiHandler(mManager);
         for (String shelf : shelves) {
             shelfAdd.add(shelf, handler.getBookId());
         }
     }
 
+    /**
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     public void create(@NonNull final String isbn,
                        @NonNull final String shelf)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
         List<String> shelves = new ArrayList<>();
         shelves.add(shelf);
         create(isbn, shelves);

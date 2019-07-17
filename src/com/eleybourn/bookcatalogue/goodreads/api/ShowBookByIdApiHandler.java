@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
@@ -39,19 +37,29 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 public class ShowBookByIdApiHandler
         extends ShowBookApiHandler {
 
-    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager manager) {
-        super(manager, true);
+    /**
+     * Constructor.
+     *
+     * @param grManager the Goodreads Manager
+     */
+    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
     }
 
     /**
      * Perform a search and handle the results.
      *
+     * @param id             the GoodReads book aka "work" id to get
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
-     * @return the array of GoodreadsWork objects.
+     * @return the Bundle of book data.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
-    public Bundle get(final long workId,
+    public Bundle get(final long id,
                       final boolean fetchThumbnail)
             throws AuthorizationException,
                    BookNotFoundException,
@@ -59,9 +67,8 @@ public class ShowBookByIdApiHandler
 
         // Setup API call
         String urlBase = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
-        String url = String.format(urlBase, workId, mManager.getDevKey());
-        HttpGet get = new HttpGet(url);
+        String url = String.format(urlBase, id, mManager.getDevKey());
 
-        return sendRequest(get, fetchThumbnail);
+        return getBookData(url, fetchThumbnail);
     }
 }

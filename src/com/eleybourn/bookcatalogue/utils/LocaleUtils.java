@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 
@@ -256,6 +257,28 @@ public final class LocaleUtils {
             return iso;
         }
         return displayName;
+    }
+
+    /**
+     * Try to convert a "language-country" to an ISO3 code.
+     *
+     * @param source a standard ISO string like "en" or "en-GB" or "en-GB*"
+     *
+     * @return the ISO3 code, or if conversion failed, the input string
+     */
+    @NonNull
+    public static String getISO3LanguageFromISO2(@NonNull final String source) {
+        // shortcut for English "en", "en-GB", etc
+        if ("en".equals(source) || source.startsWith("en-")) {
+            return "eng";
+        } else {
+            try {
+                Locale bl = new Locale(source.split("-")[0]);
+                return bl.getISO3Language();
+            } catch (@NonNull final MissingResourceException ignore) {
+                return source;
+            }
+        }
     }
 
     /**

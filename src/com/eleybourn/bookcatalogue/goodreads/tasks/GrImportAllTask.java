@@ -168,6 +168,8 @@ class GrImportAllTask
 
     /**
      * Repeatedly request review pages until we are done.
+     *
+     * @throws AuthorizationException with GoodReads
      */
     private boolean processReviews(@NonNull final QueueManager queueManager,
                                    @NonNull final DAO db)
@@ -422,7 +424,7 @@ class GrImportAllTask
                             bookData, DBDefinitions.KEY_PUBLISHER);
 
         addLongIfPresent(review, ReviewFields.DBA_GR_BOOK_ID,
-                         bookData, DBDefinitions.KEY_GOODREADS_ID);
+                         bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
         // v200: Now storing as a string
         addStringIfNonBlank(review, ReviewFields.DBA_PAGES,

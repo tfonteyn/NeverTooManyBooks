@@ -157,7 +157,7 @@ public final class MenuHandler {
                                        @NonNull final Book book) {
         menu.setGroupVisible(
                 R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                0 != book.getLong(DBDefinitions.KEY_GOODREADS_ID)
+                0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)
                         || 0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)
                         || 0 != book.getLong(DBDefinitions.KEY_ISFDB_ID)
                         || !book.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty());
@@ -172,7 +172,7 @@ public final class MenuHandler {
                 SubMenu menu = menuItem.getSubMenu();
 
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_GOODREADS,
-                                     0 != book.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                                     0 != book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
                                      0 != book.getLong(DBDefinitions.KEY_LIBRARY_THING_ID));
                 menu.setGroupVisible(R.id.MENU_VIEW_BOOK_AT_ISFDB,
@@ -188,7 +188,7 @@ public final class MenuHandler {
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
                 GoodreadsManager.openWebsite(context,
-                                             book.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                                             book.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:

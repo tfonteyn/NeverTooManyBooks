@@ -943,7 +943,7 @@ public class BooksOnBookshelf
                     .setIcon(R.drawable.ic_cloud_download);
 
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
-                boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_GOODREADS_ID);
+                boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_LIBRARY_THING_ID);
                 boolean hasOpenLibraryId =
                         !row.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty();
@@ -1294,7 +1294,7 @@ public class BooksOnBookshelf
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_ID));
+                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:

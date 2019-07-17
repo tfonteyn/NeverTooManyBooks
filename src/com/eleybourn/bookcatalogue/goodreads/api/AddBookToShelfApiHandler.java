@@ -24,12 +24,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
@@ -66,7 +62,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  *
  * @author Philip Warner
  */
-public class ShelfAddBookHandler
+public class AddBookToShelfApiHandler
         extends ApiHandler {
 
     private long mReviewId;
@@ -79,9 +75,11 @@ public class ShelfAddBookHandler
 
     /**
      * Constructor.
+     *
+     * @param grManager the Goodreads Manager
      */
-    public ShelfAddBookHandler(@NonNull final GoodreadsManager manager) {
-        super(manager);
+    public AddBookToShelfApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
         buildFilters();
     }
 
@@ -93,15 +91,15 @@ public class ShelfAddBookHandler
      *
      * @return reviewId
      *
-     * @throws IOException            on failure
      * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  at GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     public long add(@NonNull final String shelfName,
                     final long grBookId)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
         return doCall(shelfName, grBookId, false);
     }
@@ -112,15 +110,15 @@ public class ShelfAddBookHandler
      * @param shelfName GoodReads shelf name
      * @param grBookId  GoodReads book id
      *
-     * @throws IOException            on failure
      * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  at GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     public void remove(@NonNull final String shelfName,
                        final long grBookId)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
         doCall(shelfName, grBookId, true);
     }
@@ -134,35 +132,32 @@ public class ShelfAddBookHandler
      *
      * @return reviewId
      *
-     * @throws IOException            on failure
      * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  at GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     private long doCall(@NonNull final String shelfName,
                         final long grBookId,
                         final boolean isRemove)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
         mReviewId = 0;
 
-        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml");
+        String url = GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml";
 
-        ArrayList<NameValuePair> parameters = new ArrayList<>();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("book_id", String.valueOf(grBookId));
+        parameters.put("name", shelfName);
         if (isRemove) {
-            parameters.add(new BasicNameValuePair("a", "remove"));
+            parameters.put("a", "remove");
         }
-        parameters.add(new BasicNameValuePair("book_id", String.valueOf(grBookId)));
-        parameters.add(new BasicNameValuePair("name", shelfName));
-
-//        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
 
         // Use a parser based on the filters
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
         // Send call. Errors will result in an exception.
-        mManager.execute(post, handler, true);
+        mManager.executePost(url, parameters, handler, true);
 
         return mReviewId;
     }

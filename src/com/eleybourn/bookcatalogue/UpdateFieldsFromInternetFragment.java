@@ -227,7 +227,7 @@ public class UpdateFieldsFromInternetFragment
         addField(DBDefinitions.KEY_GENRE, CopyIfBlank, R.string.lbl_genre);
 
         addField(DBDefinitions.KEY_ISFDB_ID, Overwrite, R.string.isfdb);
-        addField(DBDefinitions.KEY_GOODREADS_ID, Overwrite, R.string.goodreads);
+        addField(DBDefinitions.KEY_GOODREADS_BOOK_ID, Overwrite, R.string.goodreads);
         addField(DBDefinitions.KEY_LIBRARY_THING_ID, Overwrite, R.string.library_thing);
         addField(DBDefinitions.KEY_OPEN_LIBRARY_ID, Overwrite, R.string.open_library);
     }

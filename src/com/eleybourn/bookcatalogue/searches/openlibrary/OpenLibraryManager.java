@@ -494,7 +494,7 @@ public class OpenLibraryManager
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_GOODREADS_ID, a.getLong(0));
+                bookData.putLong(DBDefinitions.KEY_GOODREADS_BOOK_ID, a.getLong(0));
             }
             a = o.optJSONArray("lccn");
             if (a != null && a.length() > 0) {

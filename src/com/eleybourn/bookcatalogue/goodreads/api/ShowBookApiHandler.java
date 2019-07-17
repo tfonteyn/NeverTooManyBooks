@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,14 +28,14 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
-import org.apache.http.client.methods.HttpGet;
-
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Format;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -177,15 +178,51 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  *          <name>Indigo</name>
  *          <link>http://www.goodreads.com/book_link/follow/9?book_id=50</link>
  *        </book_link>
- *        <book_link><id>4</id><name>Abebooks</name><link>http://www.goodreads.com/book_link/follow/4?book_id=50</link></book_link>
- *        <book_link><id>2</id><name>Half.com</name><link>http://www.goodreads.com/book_link/follow/2?book_id=50</link></book_link>
- *        <book_link><id>10</id><name>Audible</name><link>http://www.goodreads.com/book_link/follow/10?book_id=50</link></book_link>
- *        <book_link><id>5</id><name>Alibris</name><link>http://www.goodreads.com/book_link/follow/5?book_id=50</link></book_link>
- *        <book_link><id>2102</id><name>iBookstore</name><link>http://www.goodreads.com/book_link/follow/2102?book_id=50</link></book_link>
- *        <book_link><id>1602</id><name>Google eBooks</name><link>http://www.goodreads.com/book_link/follow/1602?book_id=50</link></book_link>
- *        <book_link><id>107</id><name>Better World Books</name><link>http://www.goodreads.com/book_link/follow/107?book_id=50</link></book_link>
- *        <book_link><id>7</id><name>IndieBound</name><link>http://www.goodreads.com/book_link/follow/7?book_id=50</link></book_link>
- *        <book_link><id>1</id><name>Amazon</name><link>http://www.goodreads.com/book_link/follow/1?book_id=50</link></book_link>
+ *        <book_link>
+ *            <id>4</id>
+ *            <name>Abebooks</name>
+ *            <link>http://www.goodreads.com/book_link/follow/4?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>2</id>
+ *            <name>Half.com</name>
+ *            <link>http://www.goodreads.com/book_link/follow/2?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>10</id>
+ *            <name>Audible</name>
+ *            <link>http://www.goodreads.com/book_link/follow/10?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>5</id>
+ *            <name>Alibris</name>
+ *            <link>http://www.goodreads.com/book_link/follow/5?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>2102</id>
+ *            <name>iBookstore</name
+ *            ><link>http://www.goodreads.com/book_link/follow/2102?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>1602</id>
+ *            <name>Google eBooks</name>
+ *            <link>http://www.goodreads.com/book_link/follow/1602?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>107</id>
+ *            <name>Better World Books</name>
+ *            <link>http://www.goodreads.com/book_link/follow/107?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>7</id>
+ *            <name>IndieBound</name>
+ *            <link>http://www.goodreads.com/book_link/follow/7?book_id=50</link>
+ *        </book_link>
+ *        <book_link>
+ *            <id>1</id>
+ *            <name>Amazon</name>
+ *            <link>http://www.goodreads.com/book_link/follow/1?book_id=50</link>
+ *        </book_link>
  *      </book_links>
  *      <series_works>
  *        <series_work>
@@ -212,31 +249,22 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 public abstract class ShowBookApiHandler
         extends ApiHandler {
 
-    /**
-     * Flag to indicate if request should be signed. Signed requests via ISB cause server errors
-     * and unsigned requests do not return review (not a big problem for searches)
-     */
-    private final boolean mRequireSignedRequest;
-
     // Current series being processed
 //    private int mCurrSeriesId = 0;
     private final XmlHandler mHandleSeriesStart = context -> {
 //        mCurrSeries = new Series();
     };
-
     private final XmlHandler mHandleSeriesId = context -> {
 //        try {
 //            mCurrSeriesId = Integer.parseInt(context.getBody());
 //        } catch (@NonNull final NumberFormatException ignore) {
 //        }
     };
-
     // Current author being processed
     //private long mCurrAuthorId = 0;
     private final XmlHandler mHandleAuthorStart = context -> {
 //        mCurrAuthor = new Author();
     };
-
     private final XmlHandler mHandleAuthorId = context -> {
 //        try {
 //            mCurrAuthorId = Long.parseLong(context.getBody());
@@ -246,6 +274,7 @@ public abstract class ShowBookApiHandler
 
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
+
     private final XmlHandler mHandleText = context -> {
         final String name = (String) context.getUserArg();
         mBookData.putString(name, context.getBody());
@@ -281,21 +310,23 @@ public abstract class ShowBookApiHandler
             } else if ("true".equalsIgnoreCase(s) || "t".equalsIgnoreCase(s)) {
                 b = true;
             } else {
-                b = (Long.parseLong(s) != 0);
+                b = Long.parseLong(s) != 0;
             }
             mBookData.putBoolean(name, b);
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
-    /** Local storage for series book appears in. */
+
+    /** Local storage for Series the book appears in. */
     @Nullable
     private ArrayList<Series> mSeries;
-    /** Local storage for author names. */
+    /** Local storage for Authors. */
     @Nullable
     private ArrayList<Author> mAuthors;
     /** Local storage for shelf names. */
     @Nullable
     private ArrayList<String> mShelves;
+
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
@@ -353,19 +384,22 @@ public abstract class ShowBookApiHandler
         }
     };
 
+    private Resources mResources;
+
     /**
      * Constructor.
      *
-     * @param manager              Goodreads manager
-     * @param requireSignedRequest set {@code true} if a request should be signed.
+     * @param grManager the Goodreads manager
      */
-    ShowBookApiHandler(@NonNull final GoodreadsManager manager,
-                       @SuppressWarnings("SameParameterValue") final boolean requireSignedRequest) {
+    ShowBookApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
 
-        super(manager);
-        mRequireSignedRequest = requireSignedRequest;
+        mResources = LocaleUtils.getLocalizedResources();
+
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
+
+
     }
 
     /**
@@ -382,13 +416,17 @@ public abstract class ShowBookApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param request        HttpGet request to use
-     * @param fetchThumbnail Indicates if thumbnail file should be retrieved
+     * @param url            url to get
+     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the Bundle of book data.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
-    Bundle sendRequest(@NonNull final HttpGet request,
+    Bundle getBookData(@NonNull final String url,
                        final boolean fetchThumbnail)
             throws AuthorizationException,
                    BookNotFoundException,
@@ -397,10 +435,9 @@ public abstract class ShowBookApiHandler
         mBookData = new Bundle();
         mShelves = null;
 
-        // Get a handler and run query.
+        // Get a handler and run the query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        // We sign the GET request so we get shelves
-        mManager.execute(request, handler, mRequireSignedRequest);
+        mManager.executeGet(url, handler, true);
 
         // When we get here, the data has been collected but needs processing into standard form.
 
@@ -412,41 +449,22 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // TODO: Evaluate if ShowBook should store GR book ID.
+        // TODO: Evaluate if ShowBook should store ShowBookFieldNames.BOOK_ID.
         // Pros: easier sync
         // Cons: Overwrite GR id when it should not
 //        if (mBookData.containsKey(ShowBookFieldNames.BOOK_ID)) {
-//        	mBookData.putLong(DBDefinitions.KEY_GOODREADS_ID,
-//                            mBookData.getLong(ShowBookFieldNames.BOOK_ID));
+//            mBookData.putLong(DBDefinitions.KEY_GOODREADS_BOOK_ID,
+//                              mBookData.getLong(ShowBookFieldNames.BOOK_ID));
 //        }
 
-        // ENHANCE: Store WORK_ID = "__work_id" into GR_WORK_ID;
+        // TODO: Evaluate if ShowBook should store ShowBookFieldNames.WORK_ID.
+//        if (mBookData.containsKey(ShowBookFieldNames.WORK_ID)) {
+//            mBookData.putLong(DBDefinitions.KEY_GOODREADS_WORK_ID,
+//                              mBookData.getLong(ShowBookFieldNames.WORK_ID));
+//        }
 
         if (fetchThumbnail) {
-            String bestImage = null;
-            if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
-                bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
-                if (hasNoCover(bestImage)
-                        && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
-                    bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
-                    if (hasNoCover(bestImage)) {
-                        bestImage = null;
-                    }
-                }
-            }
-            if (bestImage != null) {
-                String fileSpec = ImageUtils.saveImage(bestImage, GoodreadsTasks.FILENAME_SUFFIX);
-                if (fileSpec != null) {
-                    ArrayList<String> imageList = mBookData.getStringArrayList(
-                            UniqueId.BKEY_FILE_SPEC_ARRAY);
-                    if (imageList == null) {
-                        imageList = new ArrayList<>();
-                    }
-                    imageList.add(fileSpec);
-                    mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY,
-                                                 imageList);
-                }
-            }
+            handleThumbnail();
         }
 
         // TEST: Build the original publication date based on the components
@@ -474,12 +492,28 @@ public abstract class ShowBookApiHandler
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK)
                 && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
-            mBookData.putString(DBDefinitions.KEY_FORMAT,
-                                LocaleUtils.getLocalizedResources()
-                                           .getString(R.string.book_format_ebook));
+            String ebook = LocaleUtils.getLocalizedResources()
+                                      .getString(R.string.book_format_ebook);
+            mBookData.putString(DBDefinitions.KEY_FORMAT, ebook);
+
+        } else if (mBookData.containsKey(DBDefinitions.KEY_FORMAT)){
+            // normalise the format
+            String source = mBookData.getString(DBDefinitions.KEY_FORMAT);
+            if (source != null && !source.isEmpty()) {
+                mBookData.putString(DBDefinitions.KEY_FORMAT, Format.map(mResources, source));
+            }
+        }
+
+        if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
+            String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
+            if (source != null && !source.isEmpty()) {
+                mBookData.putString(DBDefinitions.KEY_LANGUAGE,
+                                    LocaleUtils.getISO3LanguageFromISO2(source));
+            }
         }
 
         // Cleanup the title by removing series name, if present
+        // Example: "<title>The Anome (Durdane, #1)</title>"
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String thisTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
@@ -494,13 +528,13 @@ public abstract class ShowBookApiHandler
                 // bad things to translations (it used the original language)
                 mBookData.putString(DBDefinitions.KEY_TITLE,
                                     thisTitle.substring(0, details.startChar - 1));
-                //if (mBookData.containsKey(ORIG_TITLE)) {
-                //	mBookData.putString(DBDefinitions.KEY_TITLE,
-                //                      mBookData.getString(ORIG_TITLE));
-                //} else {
-                //	mBookData.putString(DBDefinitions.KEY_TITLE,
-                //                      thisTitle.substring(0, details.startChar-1));
-                //}
+//                if (mBookData.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
+//                    mBookData.putString(DBDefinitions.KEY_TITLE,
+//                                        mBookData.getString(ShowBookFieldNames.ORIG_TITLE));
+//                } else {
+//                    mBookData.putString(DBDefinitions.KEY_TITLE,
+//                                        thisTitle.substring(0, details.startChar - 1));
+//                }
             }
         } else if (mBookData.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
             // if we did not get a title, but there is an original title, use that.
@@ -521,11 +555,34 @@ public abstract class ShowBookApiHandler
             mBookData.putStringArrayList(ShowBookFieldNames.SHELVES, mShelves);
         }
 
-
-        //ENHANCE: rating ? url ? country_code (publisher) ?
-
         // Return parsed results.
         return mBookData;
+    }
+
+    private void handleThumbnail() {
+        String bestImage = null;
+        if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
+            bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
+            if (hasNoCover(bestImage) && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
+                bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
+                if (hasNoCover(bestImage)) {
+                    bestImage = null;
+                }
+            }
+        }
+
+        if (bestImage != null) {
+            String fileSpec = ImageUtils.saveImage(bestImage, GoodreadsTasks.FILENAME_SUFFIX);
+            if (fileSpec != null) {
+                ArrayList<String> list =
+                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                if (list == null) {
+                    list = new ArrayList<>();
+                }
+                list.add(fileSpec);
+                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, list);
+            }
+        }
     }
 
     /**
@@ -537,80 +594,80 @@ public abstract class ShowBookApiHandler
 
         <GoodreadsResponse>
         ...
-            <book>
-                <id> 50 </id>
-                <title> Hatchet(Hatchet, #1) </title>
-                <isbn> 0689840926 </isbn>
-                <isbn13> 9780689840920 </isbn13>
+        <book>
+            <id> 50 </id>
+            <title> Hatchet(Hatchet, #1) </title>
+            <isbn> 0689840926 </isbn>
+            <isbn13> 9780689840920 </isbn13>
+            ...
+            <image_url> http://www.goodreads.com/images/nocover-111x148.jpg</image_url>
+            <small_image_url> http://www.goodreads.com/images/nocover-60x80.jpg</small_image_url>
+
+            <publication_year> 2000 </publication_year>
+            <publication_month> 4 </publication_month>
+            <publication_day> 1 </publication_day>
+
+            <publisher />
+            <language_code />
+            <is_ebook> false </is_ebook>
+            <description>
+                <p> Since it was first published in 1987, blah blah....</p></p>
+            </description>
+            <work>
                 ...
-                <image_url> http://www.goodreads.com/images/nocover-111x148.jpg</image_url>
-                <small_image_url> http://www.goodreads.com/images/nocover-60x80.jpg</small_image_url>
-
-                <publication_year> 2000 </publication_year>
-                <publication_month> 4 </publication_month>
-                <publication_day> 1 </publication_day>
-
-                <publisher />
-                <language_code />
-                <is_ebook> false </is_ebook>
-                <description>
-                    <p> Since it was first published in 1987, blah blah....</p></p>
-                 </description>
-                <work>
-                    ...
-                    <id type = "integer"> 1158125 </id>
-                    ...
-                    <original_publication_day type = "integer">1</original_publication_day>
-                    <original_publication_month type = "integer">1</original_publication_month>
-                    <original_publication_year type = "integer">1987</original_publication_year>
-                    <original_title> Hatchet </original_title>
-                    ...
-                </work>
-                <average_rating> 3.57 </average_rating>
-                <num_pages> 208 </num_pages>
-                <format> Hardcover </format>
+                <id type = "integer"> 1158125 </id>
                 ...
-                <url> http://www.goodreads.com/book/show/50.Hatchet</url>
-                <link> http://www.goodreads.com/book/show/50.Hatchet</link>
+                <original_publication_day type = "integer">1</original_publication_day>
+                <original_publication_month type = "integer">1</original_publication_month>
+                <original_publication_year type = "integer">1987</original_publication_year>
+                <original_title> Hatchet </original_title>
+                ...
+            </work>
+            <average_rating> 3.57 </average_rating>
+            <num_pages> 208 </num_pages>
+            <format> Hardcover </format>
+            ...
+            <url> http://www.goodreads.com/book/show/50.Hatchet</url>
+            <link> http://www.goodreads.com/book/show/50.Hatchet</link>
 
-                <authors>
-                    <author>
-                        <id> 18 </id>
-                        <name> Gary Paulsen</name>
+            <authors>
+                <author>
+                    <id> 18 </id>
+                    <name> Gary Paulsen</name>
+                    ...
+                </author>
+            </authors>
+            <my_review>
+                <id> 255221284 </id>
+                <rating> 0 </rating>
+                ...
+                <shelves>
+                    <shelf name = "sci-fi-fantasy" />
+                    <shelf name = "to-read" />
+                    <shelf name = "default" />
+                    <shelf name = "environment" />
+                    <shelf name = "games" />
+                    <shelf name = "history" />
+                </shelves>
+                ...
+                <date_added> Mon Jan 02 19:07:11 - 0800 2012 </date_added>
+                <date_updated> Sat Mar 03 08:10:09 - 0800 2012 </date_updated>
+                <body> Test again</body>
+            </my_review>
+            ...
+            <series_works>
+                <series_work>
+                    <id> 268218 </id>
+                    <user_position> 1 </user_position>
+                    <series>
+                        <id> 62223 </id>
+                        <title> Brian 's Saga</title>
                         ...
-                    </author>
-                </authors>
-                <my_review>
-                    <id> 255221284 </id>
-                    <rating> 0 </rating>
-                    ...
-                    <shelves>
-                        <shelf name = "sci-fi-fantasy" />
-                        <shelf name = "to-read" />
-                        <shelf name = "default" />
-                        <shelf name = "environment" />
-                        <shelf name = "games" />
-                        <shelf name = "history" />
-                    </shelves>
-                    ...
-                    <date_added> Mon Jan 02 19:07:11 - 0800 2012 </date_added>
-                    <date_updated> Sat Mar 03 08:10:09 - 0800 2012 </date_updated>
-                    <body> Test again</body>
-                </my_review>
-                ...
-                <series_works>
-                    <series_work>
-                        <id> 268218 </id>
-                        <user_position> 1 </user_position>
-                        <series>
-                            <id> 62223 </id>
-                            <title> Brian 's Saga</title>
-                            ...
-                        </series>
-                    </series_work>
-                </series_works>
-            </book>
-        </GoodreadsResponse>
+                    </series>
+                </series_work>
+            </series_works>
+        </book>
+    </GoodreadsResponse>
 */
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ID)
@@ -618,10 +675,12 @@ public abstract class ShowBookApiHandler
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_TITLE)
                  .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS,
                               XML_AUTHOR)
                  .setStartAction(mHandleAuthorStart)
                  .setEndAction(mHandleAuthorEnd);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS,
                               XML_SERIES_WORK)
                  .setStartAction(mHandleSeriesStart)
@@ -652,7 +711,8 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
                  .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
+                              XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
                               XML_ORIGINAL_PUBLICATION_DAY)
@@ -683,7 +743,8 @@ public abstract class ShowBookApiHandler
                               XML_AUTHOR, XML_NAME)
                  .setEndAction(mHandleAuthorName);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW, XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
+                              XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldNames.REVIEW_ID);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
                               XML_SHELVES)

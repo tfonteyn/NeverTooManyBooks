@@ -537,8 +537,10 @@ public class ISBN {
             super(message);
         }
 
-        public IsbnInvalidException(@Nullable final Exception inner) {
-            super(inner);
+        public IsbnInvalidException(@Nullable final String message,
+                                    @Nullable final Exception inner) {
+            super(message, inner);
+
         }
     }
 }

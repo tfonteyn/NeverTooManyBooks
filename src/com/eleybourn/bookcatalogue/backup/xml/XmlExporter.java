@@ -634,8 +634,8 @@ public class XmlExporter
                                 cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
                    .append(attr(DBDefinitions.KEY_ISFDB_ID,
                                 cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(attr(DBDefinitions.KEY_GOODREADS_ID,
-                                cursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID)))
+                   .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
+                                cursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
                    .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
                                 cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
                    .append("\n")

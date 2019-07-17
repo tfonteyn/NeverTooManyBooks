@@ -80,8 +80,8 @@ public interface SearchEngine {
      * @return bundle with book data. Can be empty, but never {@code null}.
      * ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
      *
-     * @throws IOException            on failure
-     * @throws AuthorizationException if the site rejects our credentials (if any)
+     * @throws AuthorizationException with GoodReads
+     * @throws IOException            on other failures
      */
     @WorkerThread
     @NonNull

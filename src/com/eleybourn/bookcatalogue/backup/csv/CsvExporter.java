@@ -115,7 +115,7 @@ public class CsvExporter
                     + '"' + DBDefinitions.KEY_LIBRARY_THING_ID + "\","
                     + '"' + DBDefinitions.KEY_OPEN_LIBRARY_ID + "\","
                     + '"' + DBDefinitions.KEY_ISFDB_ID + "\","
-                    + '"' + DBDefinitions.KEY_GOODREADS_ID + "\","
+                    + '"' + DBDefinitions.KEY_GOODREADS_BOOK_ID + "\","
                     + '"' + DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE + "\""
                     + '\n';
     @NonNull
@@ -253,7 +253,7 @@ public class CsvExporter
                    .append(format(cursorRow.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
                    .append(format(cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(format(cursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID)))
+                   .append(format(cursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
                    .append(format(cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'

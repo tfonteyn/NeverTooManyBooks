@@ -24,40 +24,46 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
- * TODO: ReviewUpdateHandler WORK IN PROGRESS.
+ * TODO: ReviewUpdateApiHandler WORK IN PROGRESS.
  *
  * @author Philip Warner
  */
-public class ReviewUpdateHandler
+public class ReviewUpdateApiHandler
         extends ApiHandler {
 
-    public ReviewUpdateHandler(@NonNull final GoodreadsManager manager) {
-
-        super(manager);
+    /**
+     * Constructor.
+     *
+     * @param grManager the Goodreads Manager
+     */
+    public ReviewUpdateApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
     }
 
+    /**
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     public void update(final long reviewId,
                        final boolean isRead,
                        @Nullable final String readAt,
                        @Nullable final String review,
                        final int rating)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
-        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/review/" + reviewId + ".xml");
+        String url = GoodreadsManager.BASE_URL + "/review/" + reviewId + ".xml";
+        Map<String, String> parameters = new HashMap<>();
 
 //        StringBuilder shelvesString = null;
 //        if (shelves != null && !shelves.isEmpty()) {
@@ -69,35 +75,32 @@ public class ReviewUpdateHandler
 //                shelvesString.append(',').append(shelves.get(i));
 //            }
 //        }
+//        if (shelvesString != null) {
+//            parameters.put("shelf", shelvesString.toString());
+//        }
 
         // Set the 'read' or 'to-read' shelf based on status.
         // Note a lot of point...it does not update goodreads!
-        List<NameValuePair> parameters = new ArrayList<>();
         if (isRead) {
-            parameters.add(new BasicNameValuePair("shelf", "read"));
+            parameters.put("shelf", "read");
         } else {
-            parameters.add(new BasicNameValuePair("shelf", "to-read"));
+            parameters.put("shelf", "to-read");
         }
-        //if (shelvesString != null)
-        //    parameters.add(new BasicNameValuePair("shelf", shelvesString.toString()));
 
         if (review != null) {
-            parameters.add(new BasicNameValuePair("review[review]", review));
+            parameters.put("review[review]", review);
         }
 
         if (readAt != null && !readAt.isEmpty()) {
-            parameters.add(new BasicNameValuePair("review[read_at]", readAt));
+            parameters.put("review[read_at]", readAt);
         }
 
         if (rating >= 0) {
-            parameters.add(new BasicNameValuePair("review[rating]", String.valueOf(rating)));
+            parameters.put("review[rating]", String.valueOf(rating));
         }
 
-//        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
-
         //ReviewUpdateParser handler = new ReviewUpdateParser();
-        mManager.execute(post, null, true);
+        mManager.executePost(url, parameters, null, true);
         //String s = handler.getHtml();
         //Logger.info(s);
         /* Typical response can be ignored, but is:

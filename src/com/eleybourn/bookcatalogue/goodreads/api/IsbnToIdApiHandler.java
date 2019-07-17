@@ -24,8 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
@@ -36,7 +34,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
  *
  * @author Philip Warner
  */
-public class IsbnToIdHandler
+public class IsbnToIdApiHandler
         extends ApiHandler {
 
     /** Param 1: isbn; param 2: dev key. */
@@ -45,10 +43,10 @@ public class IsbnToIdHandler
     /**
      * Constructor.
      *
-     * @param manager the Goodreads Manager
+     * @param grManager the Goodreads Manager
      */
-    public IsbnToIdHandler(@NonNull final GoodreadsManager manager) {
-        super(manager);
+    public IsbnToIdApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
     }
 
     /**
@@ -60,14 +58,18 @@ public class IsbnToIdHandler
      * key: Developer key (required).
      *
      * @param isbn with some luck, the ISBN for the requested book
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
-        HttpGet get = new HttpGet(String.format(URL, isbn, mManager.getDevKey()));
-        String s = mManager.executeRaw(get);
+        String url = String.format(URL, isbn, mManager.getDevKey());
+        String s = mManager.executeRaw(url, true);
         return Long.parseLong(s);
     }
 }

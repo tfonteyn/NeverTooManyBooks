@@ -49,10 +49,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -78,14 +83,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
+import com.eleybourn.bookcatalogue.goodreads.api.AddBookToShelfApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.AuthUserApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler.GrBookshelfFields;
-import com.eleybourn.bookcatalogue.goodreads.api.IsbnToIdHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.ReviewUpdateHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.IsbnToIdApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ReviewUpdateApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.ShelfAddBookHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
@@ -98,6 +103,8 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
+ * <p>
+ * IMPORTANT: all use of "org.apache.http" is now restricted to this class. Keep it that way!
  *
  * @author Philip Warner
  */
@@ -134,7 +141,8 @@ public class GoodreadsManager
     /** to control access to sLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
-    /** error string. */
+
+    /** error string used more then once. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
     private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
@@ -165,13 +173,14 @@ public class GoodreadsManager
     private final OAuthProvider mProvider;
 
     @Nullable
-    private IsbnToIdHandler mIsbnToIdHandler;
+    private IsbnToIdApiHandler mIsbnToIdApiHandler;
+    @Nullable
+    private AddBookToShelfApiHandler mAddBookToShelfApiHandler;
+    @Nullable
+    private ReviewUpdateApiHandler mReviewUpdateApiHandler;
+
     @Nullable
     private GoodreadsBookshelves mBookshelfList;
-    @Nullable
-    private ShelfAddBookHandler mAddBookHandler;
-    @Nullable
-    private ReviewUpdateHandler mReviewUpdater;
 
     /**
      * Constructor.
@@ -372,17 +381,70 @@ public class GoodreadsManager
 
     /**
      * Sign a request and submit it; then pass it off to a parser.
+     * Wrapper for {@link #execute(HttpUriRequest, DefaultHandler, boolean)}}
+     * to get all Apache API calls centralised.
      *
-     * @author Philip Warner
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
-    public void execute(@NonNull final HttpUriRequest request,
-                        @Nullable final DefaultHandler requestHandler,
-                        final boolean requiresSignature)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+    public void executeGet(@NonNull final String url,
+                           @Nullable final DefaultHandler requestHandler,
+                           final boolean requiresSignature)
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
-        // Sign the request
+        HttpGet request = new HttpGet(url);
+        execute(request, requestHandler, requiresSignature);
+    }
+
+    /**
+     * Sign a request and submit it; then pass it off to a parser.
+     * Wrapper for {@link #execute(HttpUriRequest, DefaultHandler, boolean)}}
+     * to get all Apache API calls centralised.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
+    public void executePost(@NonNull final String url,
+                            @Nullable final Map<String, String> parameterMap,
+                            @Nullable final DefaultHandler requestHandler,
+                            final boolean requiresSignature)
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
+
+        HttpPost request = new HttpPost(url);
+
+        if (parameterMap != null) {
+            List<NameValuePair> parameters = new ArrayList<>();
+            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            }
+            // TEST: both were used in separate call. Unifying to UTF-8 here.
+            request.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
+//            request.setEntity(new UrlEncodedFormEntity(parameters));
+        }
+
+        execute(request, requestHandler, requiresSignature);
+    }
+
+    /**
+     * Sign a request and submit it; then pass it off to a parser.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
+    private void execute(@NonNull final HttpUriRequest request,
+                         @Nullable final DefaultHandler requestHandler,
+                         final boolean requiresSignature)
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
+
         if (requiresSignature) {
             mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
             try {
@@ -402,7 +464,6 @@ public class GoodreadsManager
 
         // Submit the request and process result.
         HttpResponse response;
-        InputStream is;
         try {
             response = httpClient.execute(request);
 
@@ -417,12 +478,12 @@ public class GoodreadsManager
                 return;
             }
         }
-        is = entity.getContent();
 
         int code = response.getStatusLine().getStatusCode();
         switch (code) {
             case HttpURLConnection.HTTP_OK:
             case HttpURLConnection.HTTP_CREATED:
+                InputStream is = entity.getContent();
                 parseResponse(is, requestHandler);
                 break;
 
@@ -442,25 +503,51 @@ public class GoodreadsManager
 
     /**
      * Sign a request and submit it then return the raw text output.
+     * Wrapper for {@link #executeRaw(HttpUriRequest, boolean)}
+     * to get all Apache API calls centralised.
      *
      * @return the raw text output.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
-    public String executeRaw(@NonNull final HttpUriRequest request)
-            throws IOException,
-                   AuthorizationException,
-                   BookNotFoundException {
+    public String executeRaw(@NonNull final String url,
+                             final boolean requiresSignature)
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
 
-        // Sign the request
-        mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
-        try {
-            mConsumer.sign(request);
-        } catch (@NonNull final OAuthMessageSignerException
-                | OAuthExpectationFailedException
-                | OAuthCommunicationException e) {
-            throw new IOException(e);
+        return executeRaw(new HttpGet(url), requiresSignature);
+    }
+
+    /**
+     * Sign a request and submit it then return the raw text output.
+     *
+     * @return the raw text output.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
+    @NonNull
+    private String executeRaw(@NonNull final HttpUriRequest request,
+                              final boolean requiresSignature)
+            throws AuthorizationException,
+                   BookNotFoundException,
+                   IOException {
+
+        if (requiresSignature) {
+            mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
+            try {
+                mConsumer.sign(request);
+            } catch (@NonNull final OAuthMessageSignerException
+                    | OAuthExpectationFailedException
+                    | OAuthCommunicationException e) {
+                throw new IOException(e);
+            }
         }
-
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         waitUntilRequestAllowed();
 
@@ -545,6 +632,10 @@ public class GoodreadsManager
 
     /**
      * Wrapper to call ISBN->ID API.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @SuppressWarnings("unused")
     public long isbnToId(@NonNull final String isbn)
@@ -552,12 +643,19 @@ public class GoodreadsManager
                    BookNotFoundException,
                    IOException {
 
-        if (mIsbnToIdHandler == null) {
-            mIsbnToIdHandler = new IsbnToIdHandler(this);
+        if (mIsbnToIdApiHandler == null) {
+            mIsbnToIdApiHandler = new IsbnToIdApiHandler(this);
         }
-        return mIsbnToIdHandler.isbnToId(isbn);
+        return mIsbnToIdApiHandler.isbnToId(isbn);
     }
 
+    /**
+     * @return the shelves
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     @NonNull
     private GoodreadsBookshelves getShelves()
             throws AuthorizationException,
@@ -596,6 +694,10 @@ public class GoodreadsManager
      * Wrapper to call API to add book to shelf.
      *
      * @return reviewId
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     private long addBookToShelf(@NonNull final String shelfName,
                                 final long grBookId)
@@ -603,14 +705,18 @@ public class GoodreadsManager
                    BookNotFoundException,
                    IOException {
 
-        if (mAddBookHandler == null) {
-            mAddBookHandler = new ShelfAddBookHandler(this);
+        if (mAddBookToShelfApiHandler == null) {
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(this);
         }
-        return mAddBookHandler.add(shelfName, grBookId);
+        return mAddBookToShelfApiHandler.add(shelfName, grBookId);
     }
 
     /**
      * Wrapper to call API to remove a book from a shelf.
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     private void removeBookFromShelf(@NonNull final String shelfName,
                                      final long grBookId)
@@ -618,12 +724,17 @@ public class GoodreadsManager
                    BookNotFoundException,
                    IOException {
 
-        if (mAddBookHandler == null) {
-            mAddBookHandler = new ShelfAddBookHandler(this);
+        if (mAddBookToShelfApiHandler == null) {
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(this);
         }
-        mAddBookHandler.remove(shelfName, grBookId);
+        mAddBookToShelfApiHandler.remove(shelfName, grBookId);
     }
 
+    /**
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     private void updateReview(final long reviewId,
                               final boolean isRead,
                               @Nullable final String readAt,
@@ -633,10 +744,10 @@ public class GoodreadsManager
                    BookNotFoundException,
                    IOException {
 
-        if (mReviewUpdater == null) {
-            mReviewUpdater = new ReviewUpdateHandler(this);
+        if (mReviewUpdateApiHandler == null) {
+            mReviewUpdateApiHandler = new ReviewUpdateApiHandler(this);
         }
-        mReviewUpdater.update(reviewId, isRead, readAt, review, rating);
+        mReviewUpdateApiHandler.update(reviewId, isRead, readAt, review, rating);
     }
 
     /**
@@ -646,6 +757,10 @@ public class GoodreadsManager
      * @param bookCursorRow single book to send
      *
      * @return Disposition of book
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
     public ExportDisposition sendOneBook(@NonNull final DAO db,
@@ -675,7 +790,7 @@ public class GoodreadsManager
 
         // See if the book has a goodreads ID and if it is valid.
         try {
-            grId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_ID);
+            grId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
             if (grId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 grBook = getBookById(grId);
@@ -899,6 +1014,10 @@ public class GoodreadsManager
      * Wrapper to search for a book.
      *
      * @return Bundle of GoodreadsWork objects
+     *
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
      */
     @NonNull
     private Bundle getBookById(final long bookId)
@@ -919,12 +1038,18 @@ public class GoodreadsManager
      * Wrapper to search for a book.
      *
      * @return Bundle of GoodreadsWork objects
+     *
+     * @throws ISBN.IsbnInvalidException if the isbn passed in was not valid.
+     * @throws AuthorizationException    with GoodReads
+     * @throws BookNotFoundException     GoodReads does not have the book?
+     * @throws IOException               on other failures
      */
     @NonNull
     private Bundle getBookByIsbn(@Nullable final String isbn)
             throws AuthorizationException,
                    BookNotFoundException,
-                   IOException {
+                   IOException,
+                   ISBN.IsbnInvalidException {
 
         if (ISBN.isValid(isbn)) {
             ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
@@ -1068,7 +1193,8 @@ public class GoodreadsManager
      * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
-     * @author Philip Warner
+     * @throws AuthorizationException with GoodReads
+     * @throws IOException            on other failures
      */
     @WorkerThread
     public void handleAuthentication()

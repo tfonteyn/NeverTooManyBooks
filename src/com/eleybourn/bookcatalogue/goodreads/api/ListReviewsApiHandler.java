@@ -29,8 +29,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.http.client.methods.HttpGet;
-
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -47,8 +45,9 @@ import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
- * Class to implement the reviews.list api call. It queries based on the passed parameters
- * and returns a single Bundle containing all results.
+ * Class to implement the reviews.list api call.
+ * <p>
+ * It queries based on the passed parameters and returns a single Bundle containing all results.
  * The Bundle itself will contain other bundles: typically an array of 'Review' bundles,
  * each of which will contains arrays of 'author' bundles.
  * <p>
@@ -244,6 +243,17 @@ public class ListReviewsApiHandler
             = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy",
                                    LocaleUtils.getSystemLocale());
 
+    private static final String URL = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
+            + "key=%1$s"
+            + "&v=2"
+            + "&page=%2$s"
+            + "&per_page=%3$s"
+            // Sort by date_updated (descending) so sync is faster.
+            + "&sort=date_updated"
+            + "&order=d"
+            // Specify 'shelf=all' because it seems goodreads returns the shelf that is selected
+            // in 'My Books' on the web interface by default.
+            + "&shelf=all";
     /**
      * Listener to handle the contents of the date_updated field. We only
      * keep it if it is a valid date, and we store it in SQL format using
@@ -262,7 +272,6 @@ public class ListReviewsApiHandler
             date2Sql(bc.getData(), ReviewFields.UPDATED);
         }
     };
-
     /**
      * Listener to handle the contents of the date_added field. We only
      * keep it if it is a valid date, and we store it in SQL format using
@@ -281,20 +290,31 @@ public class ListReviewsApiHandler
             date2Sql(bc.getData(), ReviewFields.ADDED);
         }
     };
-
     private SimpleXmlFilter mFilters;
 
-    public ListReviewsApiHandler(@NonNull final GoodreadsManager manager)
+    /**
+     * Constructor.
+     *
+     * @param grManager the Goodreads Manager
+     *
+     * @throws AuthorizationException with GoodReads
+     */
+    public ListReviewsApiHandler(@NonNull final GoodreadsManager grManager)
             throws AuthorizationException {
 
-        super(manager);
-        if (!manager.hasValidCredentials()) {
+        super(grManager);
+        if (!grManager.hasValidCredentials()) {
             throw new AuthorizationException(R.string.goodreads);
         }
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
     }
 
+    /**
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws IOException            on other failures
+     */
     @NonNull
     public Bundle run(final int page,
                       final int perPage)
@@ -304,29 +324,13 @@ public class ListReviewsApiHandler
 
         long t0 = System.nanoTime();
 
-        // Sort by update_date (descending) so sync is faster.
-        // Specify 'shelf=all' because it seems goodreads returns the shelf that is selected
-        // in 'My Books' on the web interface by default.
-        final String urlBase = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
-                + "key=%1$s"
-                + "&v=2"
-                + "&page=%2$s"
-                + "&per_page=%3$s"
-                + "&sort=date_updated"
-                + "&order=d"
-                + "&shelf=all";
-
-        final String url = String.format(urlBase, mManager.getDevKey(), page, perPage,
+        final String url = String.format(URL, mManager.getDevKey(), page, perPage,
                                          mManager.getUserId());
-        HttpGet get = new HttpGet(url);
-
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        // Even thought it's only a GET, it needs a signature.
-        mManager.execute(get, handler, true);
+        mManager.executeGet(url, handler, true);
 
-        // When we get here, the data has been collected but needs to be processed
-        // into standard form.
+        // When we get here, the data has been collected but needs processing into standard form.
         Bundle results = mFilters.getData();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -467,10 +471,7 @@ public class ListReviewsApiHandler
      */
     public static final class ReviewFields {
 
-        static final String START = "__start";
-        static final String END = "__end";
         public static final String TOTAL = "__total";
-        static final String GR_REVIEW_ID = "__gr_review_id";
         public static final String ISBN13 = "__isbn13";
         public static final String SMALL_IMAGE = "__smallImage";
         public static final String LARGE_IMAGE = "__largeImage";
@@ -484,20 +485,21 @@ public class ListReviewsApiHandler
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
-
-        public static final String DBA_GR_BOOK_ID = DBDefinitions.KEY_GOODREADS_ID;
-        static final String DBA_ISBN = DBDefinitions.KEY_ISBN;
-
-        static final String DBA_AUTHOR_ID = DBDefinitions.KEY_FK_AUTHOR;
+        public static final String DBA_GR_BOOK_ID = DBDefinitions.KEY_GOODREADS_BOOK_ID;
         public static final String DBA_TITLE = DBDefinitions.KEY_TITLE;
         public static final String DBA_PUBLISHER = DBDefinitions.KEY_PUBLISHER;
         public static final String DBA_DESCRIPTION = DBDefinitions.KEY_DESCRIPTION;
         public static final String DBA_FORMAT = DBDefinitions.KEY_FORMAT;
         public static final String DBA_PAGES = DBDefinitions.KEY_PAGES;
-        static final String DBA_NOTES = DBDefinitions.KEY_NOTES;
         public static final String DBA_RATING = DBDefinitions.KEY_RATING;
         public static final String DBA_READ_START = DBDefinitions.KEY_READ_START;
         public static final String DBA_READ_END = DBDefinitions.KEY_READ_END;
+        static final String START = "__start";
+        static final String END = "__end";
+        static final String GR_REVIEW_ID = "__gr_review_id";
+        static final String DBA_ISBN = DBDefinitions.KEY_ISBN;
+        static final String DBA_AUTHOR_ID = DBDefinitions.KEY_FK_AUTHOR;
+        static final String DBA_NOTES = DBDefinitions.KEY_NOTES;
 
         private ReviewFields() {
         }

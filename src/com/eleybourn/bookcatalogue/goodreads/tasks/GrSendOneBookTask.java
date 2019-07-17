@@ -61,6 +61,9 @@ class GrSendOneBookTask
     /**
      * Perform the main task.
      *
+     * @param context   Current context
+     * @param grManager the Goodreads Manager
+     *
      * @return {@code true} for success
      */
     protected boolean send(@NonNull final QueueManager queueManager,

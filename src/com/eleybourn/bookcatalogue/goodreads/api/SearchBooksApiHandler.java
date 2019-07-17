@@ -25,12 +25,9 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import java.util.Map;
 
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -41,7 +38,6 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
  * Class to query and response to search.books api call.
- * <p>
  * <p>
  * Typical result:
  * <pre>
@@ -259,9 +255,11 @@ public class SearchBooksApiHandler
 
     /**
      * Constructor.
+     *
+     * @param grManager the Goodreads Manager
      */
-    public SearchBooksApiHandler(@NonNull final GoodreadsManager manager) {
-        super(manager);
+    public SearchBooksApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
         buildFilters();
     }
 
@@ -283,17 +281,17 @@ public class SearchBooksApiHandler
                    IOException {
 
         // Setup API call
-        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/search/index.xml");
-        List<NameValuePair> parameters = new ArrayList<>();
-        parameters.add(new BasicNameValuePair("q", query.trim()));
-        parameters.add(new BasicNameValuePair("key", mManager.getDevKey()));
+        String url = GoodreadsManager.BASE_URL + "/search/index.xml";
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("q", query.trim());
+        parameters.put("key", mManager.getDevKey());
 
-        post.setEntity(new UrlEncodedFormEntity(parameters));
+        // where the handlers will add data
         mWorks = new ArrayList<>();
 
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        mManager.execute(post, handler, false);
+        mManager.executePost(url, parameters, handler, false);
 
         // Return parsed results.
         return mWorks;
@@ -419,5 +417,4 @@ public class SearchBooksApiHandler
                               XML_SMALL_IMAGE_URL)
                  .setEndAction(mHandleSmallImageUrl);
     }
-
 }

@@ -25,8 +25,6 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.HttpPost;
-
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
@@ -68,9 +66,11 @@ public class AuthUserApiHandler
 
     /**
      * Constructor.
+     *
+     * @param grManager the Goodreads Manager
      */
-    public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
-        super(manager);
+    public AuthUserApiHandler(@NonNull final GoodreadsManager grManager) {
+        super(grManager);
         buildFilters();
     }
 
@@ -80,14 +80,13 @@ public class AuthUserApiHandler
      * @return Resulting User ID, 0 if error/none.
      */
     public long getAuthUser() {
-        // Setup API call
-        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/api/auth_user");
+        String url = GoodreadsManager.BASE_URL + "/api/auth_user";
 
         mUserId = 0;
         try {
             // Get a handler and run query.
             XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-            mManager.execute(post, handler, true);
+            mManager.executePost(url, null, handler, true);
             // Return user found.
             return mUserId;
         } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException

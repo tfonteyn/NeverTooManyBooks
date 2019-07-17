@@ -5,10 +5,12 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * System wide book format representation.
@@ -26,6 +28,7 @@ public final class Format {
 
     // use all lowercase keys!
     static {
+        // ISFDB abbreviations
         // mass market paperback
         MAPPER.put("mmpb", R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
@@ -36,6 +39,9 @@ public final class Format {
         MAPPER.put("audio cassette", R.string.book_format_audiobook);
         MAPPER.put("audio cd", R.string.book_format_audiobook);
         MAPPER.put("unknown", R.string.unknown);
+
+        // Some others
+        MAPPER.put("mass market paperback", R.string.book_format_paperback);
     }
 
     private Format() {

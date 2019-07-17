@@ -384,7 +384,8 @@ public final class DBDefinitions {
     public static final String KEY_ISFDB_ID = "isfdb_book_id";
     public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
     public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
-    public static final String KEY_GOODREADS_ID = "goodreads_book_id";
+    /** Book ID, not 'work' ID. */
+    public static final String KEY_GOODREADS_BOOK_ID = "goodreads_book_id";
 
     // ENHANCE: the search engines already uses these where applicable, but not stored yet.
     // Long
@@ -475,7 +476,7 @@ public final class DBDefinitions {
         DOM_BOOK_LIBRARY_THING_ID =
                 new DomainDefinition(KEY_LIBRARY_THING_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BOOK_GOODREADS_ID =
-                new DomainDefinition(KEY_GOODREADS_ID, ColumnInfo.TYPE_INTEGER);
+                new DomainDefinition(KEY_GOODREADS_BOOK_ID, ColumnInfo.TYPE_INTEGER);
 
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
                 new DomainDefinition(KEY_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)

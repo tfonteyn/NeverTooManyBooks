@@ -103,6 +103,9 @@ abstract class GrSendBooksTaskBase
     /**
      * Try to export one book.
      *
+     * @param context   Current context
+     * @param grManager the Goodreads Manager
+     *
      * @return {@code false} on failure, {@code true} on success
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
