@@ -33,7 +33,27 @@ import org.xml.sax.helpers.DefaultHandler;
  * An XML handler for the Google Books return.
  * Gets the total number of books found, and their id (which is a URL)
  * <p>
- * An example response looks like;
+ * VERY IMPORTANT:
+ * The response gives us a "feed" with multiple "entry" elements.
+ * What our code does it get the first "entry" and read the "id" element,
+ * which is a URL to the entry.
+ * We then pass this URL to {@link SearchGoogleBooksEntryHandler} which FETCHES THAT URL
+ * and parses it.
+ * <p>
+ * FIXME: the googlebooks feed/entry fetching is sub-optimal and ambiguous.
+ * <p>
+ * - So we do NOT parse the "entry" as delivered in the "feed"
+ * ==> waste of bandwidth.
+ * - a search for "9780575109735" shows that the data in the first "entry" of the "feed"
+ * CAN BE DIFFERENT then the data fetched from the entry url!
+ * ==> so google delivers (potentially) different results for "fee/entry1" versus directly
+ * fetching "entry1" ??
+ * <p>
+ * Speculation: this could be historical... perhaps when the code was first written,
+ * the feed/entry only contained the url and not the actual data?
+ *
+ * <p>
+ * Example responses:
  * <pre>
  *     {@code
  * <?xml version='1.0' encoding='UTF-8'?>
@@ -130,12 +150,18 @@ import org.xml.sax.helpers.DefaultHandler;
  *    <category scheme='http://schemas.google.com/g/2005#kind'
  *                term='http://schemas.google.com/books/2008#volume'/>
  *    <title type='text'>The Geeks' Guide to World Domination</title>
- *    <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown' href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
- *    <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
- *    <link rel='http://schemas.google.com/books/2008/preview' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
- *    <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
- *    <link rel='alternate' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1'/>
- *    <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
+ *    <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *      href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
+ *    <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *    <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
+ *    <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *      href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *    <link rel='alternate' type='text/html'
+ *      href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1'/>
+ *    <link rel='self' type='application/atom+xml'
+ *      href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
  *    <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *    <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  *    <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -155,11 +181,434 @@ import org.xml.sax.helpers.DefaultHandler;
  * </feed>
  * }
  * </pre>
+ *
+ *
+ * <pre>
+ *     {@code
+ *     https://books.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E
+ *
+ * <?xml version='1.0' encoding='UTF-8'?>
+ *  <feed xmlns='http://www.w3.org/2005/Atom'
+ *    xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
+ *    xmlns:gbs='http://schemas.google.com/books/2008'
+ *    xmlns:gd='http://schemas.google.com/g/2005'
+ *    xmlns:batch='http://schemas.google.com/gdata/batch'
+ *    xmlns:dc='http://purl.org/dc/terms'>
+ *    <id>http://www.google.com/books/feeds/volumes</id>
+ *    <updated>2019-07-17T09:02:42.000Z</updated>
+ *    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *    <title type='text'>Search results for ISBN&lt;0340198273&gt;</title>
+ *    <link rel='alternate' type='text/html' href='http://www.google.com'/>
+ *    <link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+ *      href='https://www.google.com/books/feeds/volumes'/>
+ *    <link rel='self' type='application/atom+xml'
+ *      href='https://www.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E'/>
+ *    <link rel='next' type='application/atom+xml'
+ *      href='https://www.google.com/books/feeds/volumes?q=ISBN%3C0340198273%3E&amp;start-index=11&amp;max-results=10'/>
+ *    <author>
+ *      <name>Google Books Search</name>
+ *      <uri>http://www.google.com</uri>
+ *    </author>
+ *    <generator version='beta'>Google Book Search data API</generator>
+ *    <openSearch:totalResults>427</openSearch:totalResults>
+ *    <openSearch:startIndex>1</openSearch:startIndex>
+ *    <openSearch:itemsPerPage>10</openSearch:itemsPerPage>
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Anome</title>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=1&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=IVnpNAAACAAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml' href='https://www.google.com/books/feeds/volumes/IVnpNAAACAAJ'/>
+ *      <gbs:contentVersion>preview-1.0.0</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
+ *      <dc:creator>Jack Vance</dc:creator>
+ *      <dc:date>1977</dc:date>
+ *      <dc:format>206 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>IVnpNAAACAAJ</dc:identifier>
+ *      <dc:identifier>ISBN:0340198273</dc:identifier>
+ *      <dc:identifier>ISBN:9780340198278</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <dc:publisher>Coronet</dc:publisher>
+ *      <dc:subject>English fiction</dc:subject>
+ *      <dc:title>The Anome</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/AYeaGwAACAAJ</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Faceless Man</title>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=2&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=AYeaGwAACAAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/AYeaGwAACAAJ'/>
+ *      <gbs:contentVersion>preview-1.0.0</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
+ *      <dc:creator>Jack Vance</dc:creator>
+ *      <dc:date>1983</dc:date>
+ *      <dc:format>224 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>AYeaGwAACAAJ</dc:identifier>
+ *      <dc:identifier>ISBN:0934438854</dc:identifier>
+ *      <dc:identifier>ISBN:9780934438858</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <dc:publisher>Underwood Books</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Faceless Man</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/sWuaFofonmIC</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Brave Free Men</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=sWuaFofonmIC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=3&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=sWuaFofonmIC&amp;rdid=book-sWuaFofonmIC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=sWuaFofonmIC&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/sWuaFofonmIC'/>
+ *      <gbs:contentVersion>0.1.1.0.preview.2</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>Jack Vance</dc:creator>
+ *      <dc:date>2011-12-19</dc:date>
+ *      <dc:description>If they were to fight the people must regain control of their own lives. Only then could Gastel recruit an elite corps of the liberated - the Brave Free Men - to fling against the Rogushkoi and fight to the death.</dc:description>
+ *      <dc:format>87 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>sWuaFofonmIC</dc:identifier>
+ *      <dc:identifier>ISBN:9780575109735</dc:identifier>
+ *      <dc:identifier>ISBN:0575109734</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='3.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='3.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>Hachette UK</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Brave Free Men</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/O_Ik7L1VSMsC</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Asutra</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=O_Ik7L1VSMsC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=4&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=O_Ik7L1VSMsC&amp;rdid=book-O_Ik7L1VSMsC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=O_Ik7L1VSMsC&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/O_Ik7L1VSMsC'/>
+ *      <gbs:contentVersion>0.1.1.0.preview.2</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>Jack Vance</dc:creator>
+ *      <dc:date>2011-12-19</dc:date>
+ *      <dc:description>For wild rumours come out of the hidden land of Caraz-and once again the musician must don the cloak of action, setting out on a dangerous quest for knowledge that will take him farther than he ever wanted to go: to the grim reaches of a ...</dc:description>
+ *      <dc:format>86 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>O_Ik7L1VSMsC</dc:identifier>
+ *      <dc:identifier>ISBN:9780575109742</dc:identifier>
+ *      <dc:identifier>ISBN:0575109742</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='3.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='3.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>Hachette UK</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Asutra</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/3Dm6V9QOPkoC</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Magnificent Showboats</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=3Dm6V9QOPkoC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=5&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=3Dm6V9QOPkoC&amp;rdid=book-3Dm6V9QOPkoC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=3Dm6V9QOPkoC&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/3Dm6V9QOPkoC'/>
+ *      <gbs:contentVersion>1.3.3.0.preview.2</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>Jack Vance</dc:creator>
+ *      <dc:date>2011-12-19</dc:date>
+ *      <dc:description>The Magnificent Showboats follows the farcical adventures of Apollon Zamp, owner of the showboat Miraldra&amp;#39;s Enchantment, and his troupe of acrobats, magicians and actors.</dc:description>
+ *      <dc:format>102 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>3Dm6V9QOPkoC</dc:identifier>
+ *      <dc:identifier>ISBN:9780575109599</dc:identifier>
+ *      <dc:identifier>ISBN:0575109599</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='2.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='2.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>Hachette UK</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Magnificent Showboats</dc:title>
+ *    </entry>
+ *
+ * <entry>
+ * <id>http://www.google.com/books/feeds/volumes/6RySDQAAQBAJ</id>
+ * <updated>2019-07-17T09:02:42.000Z</updated>
+ * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * <title type='text'>The Golden Amazon</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=6RySDQAAQBAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=6&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=6RySDQAAQBAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/6RySDQAAQBAJ'/>
+ *      <gbs:contentVersion>preview-1.0.0</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>John Russell Fearn</dc:creator>
+ *      <dc:date>2016-11-12</dc:date>
+ *      <dc:description>Here is an interplanetary story that will fill you with enthusiasm. She whipped the man she loved ... then rescued him from death. This is the Golden Amazon in all of her original pulp adventures with the original illustrations.</dc:description>
+ *      <dc:format>180 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>6RySDQAAQBAJ</dc:identifier>
+ *      <dc:identifier>ISBN:9781365528965</dc:identifier>
+ *      <dc:identifier>ISBN:1365528960</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <dc:publisher>Lulu.com</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Golden Amazon</dc:title>
+ * </entry>
+ * <entry>
+ * <id>http://www.google.com/books/feeds/volumes/NsdMAAAACAAJ</id>
+ * <updated>2019-07-17T09:02:42.000Z</updated>
+ * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * <title type='text'>Space Time and Nathaniel</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=NsdMAAAACAAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E&amp;cd=7&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=NsdMAAAACAAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/NsdMAAAACAAJ'/>
+ *      <gbs:contentVersion>preview-1.0.0</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
+ *      <dc:creator>Brian W. Aldiss</dc:creator>
+ *      <dc:date>2001-01-28</dc:date>
+ *      <dc:format>212 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>NsdMAAAACAAJ</dc:identifier>
+ *      <dc:identifier>ISBN:0755100557</dc:identifier>
+ *      <dc:identifier>ISBN:9780755100552</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <dc:publisher>House of Stratus Limited</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>Space Time and Nathaniel</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/Tp0sOVqefewC</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>Kavin's World</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=Tp0sOVqefewC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=8&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=Tp0sOVqefewC&amp;rdid=book-Tp0sOVqefewC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=Tp0sOVqefewC&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/Tp0sOVqefewC'/>
+ *      <gbs:contentVersion>0.1.1.0.preview.1</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>David Mason</dc:creator>
+ *      <dc:date>1999-12-01</dc:date>
+ *      <dc:format>221 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>Tp0sOVqefewC</dc:identifier>
+ *      <dc:identifier>ISBN:9781587150654</dc:identifier>
+ *      <dc:identifier>ISBN:1587150654</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='6.48' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='4.34' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>Wildside Press LLC</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>Kavin's World</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/4ZCy30OedPMC</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>Eighty Minute Hour</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=4ZCy30OedPMC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=9&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=4ZCy30OedPMC&amp;rdid=book-4ZCy30OedPMC&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=4ZCy30OedPMC&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/4ZCy30OedPMC'/>
+ *      <gbs:contentVersion>1.2.2.0.preview.2</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>Brian Aldiss</dc:creator>
+ *      <dc:date>2013-10-24</dc:date>
+ *      <dc:description>A Space Opera. An ambitious, incredible - Space Opera!</dc:description>
+ *      <dc:format>200 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>4ZCy30OedPMC</dc:identifier>
+ *      <dc:identifier>ISBN:9780007482450</dc:identifier>
+ *      <dc:identifier>ISBN:0007482450</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='2.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='2.99' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>HarperCollins UK</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>Eighty Minute Hour</dc:title>
+ *    </entry>
+ *
+ *    <entry>
+ *      <id>http://www.google.com/books/feeds/volumes/BccqAwAAQBAJ</id>
+ *      <updated>2019-07-17T09:02:42.000Z</updated>
+ *      <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *      <title type='text'>The Beast That Shouted Love at the Heart of the World</title>
+ *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *          href='http://books.google.com/books/content?id=BccqAwAAQBAJ&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;dq=ISBN%3C0340198273%3E&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/preview' type='text/html'
+ *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;printsec=frontcover&amp;dq=ISBN%3C0340198273%3E&amp;cd=10&amp;source=gbs_gdata'/>
+ *      <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml'
+ *          href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *      <link rel='http://schemas.google.com/books/2008/buylink' type='text/html'
+ *          href='https://play.google.com/store/books/details?id=BccqAwAAQBAJ&amp;rdid=book-BccqAwAAQBAJ&amp;rdot=1&amp;source=gbs_gdata'/>
+ *      <link rel='alternate' type='text/html'
+ *          href='http://books.google.com/books?id=BccqAwAAQBAJ&amp;dq=ISBN%3C0340198273%3E'/>
+ *      <link rel='self' type='application/atom+xml'
+ *          href='https://www.google.com/books/feeds/volumes/BccqAwAAQBAJ'/>
+ *      <gbs:contentVersion>1.19.19.0.preview.3</gbs:contentVersion>
+ *      <gbs:embeddability value='http://schemas.google.com/books/2008#embeddable'/>
+ *      <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
+ *      <dc:creator>Harlan Ellison</dc:creator>
+ *      <dc:date>2014-04-01</dc:date>
+ *      <dc:description>This groundbreaking collection brings together some of Harlan Ellison’s most innovative and intriguing stories, frightening and funny visions of human nature that can only come from the peerless Grand Master of Science Fiction. “One of ...</dc:description>
+ *      <dc:format>300 pages</dc:format>
+ *      <dc:format>book</dc:format>
+ *      <dc:identifier>BccqAwAAQBAJ</dc:identifier>
+ *      <dc:identifier>ISBN:9781497604896</dc:identifier>
+ *      <dc:identifier>ISBN:1497604893</dc:identifier>
+ *      <dc:language>en</dc:language>
+ *      <gbs:price type='SuggestedRetailPrice'>
+ *        <gd:money amount='10.79' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <gbs:price type='RetailPrice'>
+ *        <gd:money amount='7.34' currencyCode='GBP'/>
+ *      </gbs:price>
+ *      <dc:publisher>Open Road Media</dc:publisher>
+ *      <dc:subject>Fiction</dc:subject>
+ *      <dc:title>The Beast That Shouted Love at the Heart of the World</dc:title>
+ *      <dc:title>Stories</dc:title>
+ *    </entry>
+ *  </feed>
+ *     }
+ * </pre>
  */
 class SearchGoogleBooksHandler
         extends DefaultHandler {
 
-    /** Words in XML. */
+    /** XML tags/attrs we look for. */
     private static final String XML_ID = "id";
     private static final String XML_ENTRY = "entry";
 

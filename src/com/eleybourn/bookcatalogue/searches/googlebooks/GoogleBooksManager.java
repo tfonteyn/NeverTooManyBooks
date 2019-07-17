@@ -86,8 +86,10 @@ public final class GoogleBooksManager
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             // q=intitle:ttt+inauthor:aaa
-            query = "q=" + "intitle%3A" + encodeSpaces(title)
-                    + "%2Binauthor%3A" + encodeSpaces(author);
+            query = "q="
+                    + "intitle%3A" + encodeSpaces(title)
+                    + "%2B"
+                    + "inauthor%3A" + encodeSpaces(author);
 
         } else {
             return new Bundle();

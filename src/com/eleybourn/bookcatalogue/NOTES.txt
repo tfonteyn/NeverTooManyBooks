@@ -35,6 +35,8 @@ ENHANCE: XML Exporter / Importer
 
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 
+FIXME: rewrite the GoogleBooks xml handlers by merging them.
+
 TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
 https://github.com/mttkay/signpost
@@ -43,6 +45,7 @@ Issues checked: 813 down to 677 (inc)
 
 New fields:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
+==> LibraryThing seems to have fields for original title/language. Needs investigating.
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition[done], Print[done], and condition[TODO] (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 ==> superseded by 813

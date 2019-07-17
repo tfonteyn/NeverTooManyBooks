@@ -26,6 +26,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -133,6 +134,8 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * </entry>
  * }
  * </pre>
+ * <p>
+ * 0340198273
  */
 class SearchGoogleBooksEntryHandler
         extends DefaultHandler {
@@ -140,18 +143,55 @@ class SearchGoogleBooksEntryHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_GB";
 
-    /** XML tags we look for. */
-//  private static final String ID = "id";
+    /* XML tags/attrs we look for. */
+    /**
+     * Contains a direct link to this <entry>
+     * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
+     */
+    private static final String ID = "id";
+    /** <dc:creator>Jack Vance</dc:creator> */
     private static final String XML_AUTHOR = "creator";
+    /** <dc:title>The Anome</dc:title> */
     private static final String XML_TITLE = "title";
+    /**
+     * First one is the google book id. Not worth storing for now.
+     * <dc:identifier>IVnpNAAACAAJ</dc:identifier>
+     * <dc:identifier>ISBN:0340198273</dc:identifier>
+     * <dc:identifier>ISBN:9780340198278</dc:identifier>
+     */
     private static final String XML_ISBN = "identifier";
+    /**
+     * <dc:date>1977</dc:date>
+     * <dc:date>2011-12-19</dc:date>
+     */
     private static final String XML_DATE_PUBLISHED = "date";
+    /** <dc:publisher>Coronet</dc:publisher> */
     private static final String XML_PUBLISHER = "publisher";
+    /**
+     * <dc:format>206 pages</dc:format>
+     * <dc:format>book</dc:format>
+     */
     private static final String XML_FORMAT = "format";
+
     private static final String XML_LINK = "link";
+    /** <dc:subject>English fiction</dc:subject> */
     private static final String XML_GENRE = "subject";
+    /** <dc:description>If they were to fight ... </dc:description> */
     private static final String XML_DESCRIPTION = "description";
+    /** <dc:language>en</dc:language> */
     private static final String XML_LANGUAGE = "language";
+
+    //  *      <gbs:price type='SuggestedRetailPrice'>
+    // *        <gd:money amount='3.99' currencyCode='GBP'/>
+    // *      </gbs:price>
+    // *      <gbs:price type='RetailPrice'>
+    // *        <gd:money amount='3.99' currencyCode='GBP'/>
+    // *      </gbs:price>
+    private static final String XML_PRICE = "price";
+    private static final String XML_PRICE_SUGGESTED_RETAIL_PRICE = "SuggestedRetailPrice";
+    private static final String XML_PRICE_RETAIL_PRICE = "RetailPrice";
+    private static final String XML_MONEY = "money";
+
 
     /** flag if we should fetch a thumbnail. */
     private final boolean mFetchThumbnail;
@@ -164,6 +204,11 @@ class SearchGoogleBooksEntryHandler
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
 
+    private final Locale mLocale;
+
+    private boolean mInSuggestedRetailPriceTag = false;
+    private boolean mInRetailPriceTag = false;
+
     /**
      * Constructor.
      *
@@ -174,8 +219,16 @@ class SearchGoogleBooksEntryHandler
                                   final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
+
+        mLocale = LocaleUtils.getSystemLocale();
     }
 
+    /**
+     * Not present means either "not there" or "there, but empty".
+     *
+     * @param key   to use
+     * @param value to store
+     */
     private void addIfNotPresent(@NonNull final String key,
                                  @NonNull final String value) {
         String test = mBookData.getString(key);
@@ -225,6 +278,30 @@ class SearchGoogleBooksEntryHandler
                                                  imageList);
                 }
             }
+        } else if (XML_PRICE.equalsIgnoreCase(localName)) {
+            switch (attributes.getValue("", "type")) {
+                case XML_PRICE_SUGGESTED_RETAIL_PRICE:
+                    mInSuggestedRetailPriceTag = true;
+                    break;
+
+                case XML_PRICE_RETAIL_PRICE:
+                    mInRetailPriceTag = true;
+                    break;
+            }
+        } else if (XML_MONEY.equalsIgnoreCase(localName)) {
+
+            if (mInSuggestedRetailPriceTag) {
+                String currencyCode = attributes.getValue("", "currencyCode");
+                String amount = attributes.getValue("", "amount");
+                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
+                mBookData.putString(DBDefinitions.KEY_PRICE_LISTED, amount);
+                mInSuggestedRetailPriceTag = false;
+
+            } else if (mInRetailPriceTag) {
+                // future use ?
+                mInRetailPriceTag = false;
+
+            }
         }
     }
 
@@ -239,13 +316,14 @@ class SearchGoogleBooksEntryHandler
             throws SAXException {
         super.endElement(uri, localName, qName);
 
-        switch (localName.toLowerCase(LocaleUtils.getSystemLocale())) {
+        switch (localName.toLowerCase(mLocale)) {
             case XML_TITLE:
-                // there can be multiple listed, but only one 'primary'
+                // there can be multiple listed, we only take the first one found
                 addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
                 break;
 
             case XML_ISBN:
+                // there can be multiple listed, we take the 'longest'
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
@@ -258,7 +336,7 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_LANGUAGE:
-                // the language field can be empty, so check before.
+                // the language field can be empty, so check before storing it
                 String iso3code = mBuilder.toString();
                 if (!iso3code.isEmpty()) {
                     addIfNotPresent(DBDefinitions.KEY_LANGUAGE, iso3code);
@@ -266,10 +344,12 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
+                // take all we find
                 mAuthors.add(Author.fromString(mBuilder.toString()));
                 break;
 
             case XML_PUBLISHER:
+                // there can be multiple listed, we only take the first one found
                 addIfNotPresent(DBDefinitions.KEY_PUBLISHER, mBuilder.toString());
                 break;
 
@@ -282,6 +362,8 @@ class SearchGoogleBooksEntryHandler
                  * <dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
                  * <dc:format>288 pages</dc:format>
                  * <dc:format>book</dc:format>
+                 *
+                 * crude check for 'pages'
                  */
                 String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
@@ -292,8 +374,9 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_GENRE:
-                //ENHANCE: only the 'last' genre is used, add a 'genre' table and link up?
-                mBookData.putString(DBDefinitions.KEY_GENRE, mBuilder.toString());
+                // there can be multiple listed, we only take the first one found
+                // 2019-07-17: previously, we took the last one listed.
+                addIfNotPresent(DBDefinitions.KEY_GENRE, mBuilder.toString());
                 break;
 
             case XML_DESCRIPTION:
