@@ -512,7 +512,8 @@ class GrImportAllTask
                 if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
                 } else {
-                    allSeries = db.getSeriesByBookId(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
+                    allSeries = db.getSeriesByBookId(
+                            bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
                 Series newSeries = new Series(details.getName());
@@ -572,18 +573,23 @@ class GrImportAllTask
 
             // fetch thumbnail
             String thumbnail;
+            String size = "";
             String largeImage = review.getString(ReviewFields.LARGE_IMAGE);
             String smallImage = review.getString(ReviewFields.SMALL_IMAGE);
             if (hasCover(largeImage)) {
+                size = ReviewFields.LARGE_IMAGE;
                 thumbnail = largeImage;
             } else if (hasCover(smallImage)) {
+                size = ReviewFields.SMALL_IMAGE;
                 thumbnail = smallImage;
             } else {
                 thumbnail = null;
             }
 
             if (thumbnail != null) {
-                String fileSpec = ImageUtils.saveImage(thumbnail, GoodreadsTasks.FILENAME_SUFFIX);
+                String name = bookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
+                String fileSpec = ImageUtils.saveImage(thumbnail, name,
+                                                       GoodreadsTasks.FILENAME_SUFFIX + '_' + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);

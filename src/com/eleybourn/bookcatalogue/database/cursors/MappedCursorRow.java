@@ -46,6 +46,15 @@ public class MappedCursorRow {
     /**
      * Direct access to the cursor.
      *
+     * @return the position in the cursor.
+     */
+    public int getPosition(){
+        return mCursor.getPosition();
+    }
+
+    /**
+     * Direct access to the cursor.
+     *
      * @param columnName to get
      *
      * @return the column index.

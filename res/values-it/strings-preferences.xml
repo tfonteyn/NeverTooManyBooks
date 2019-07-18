@@ -11,7 +11,6 @@
         <item>Giornata / Notte</item>
         <item>Nero</item>
         <item>Chiaro</item>
-        <item>Chiaro 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Informare con</string>
@@ -76,7 +75,7 @@
         <item>Ruota di 180 gradi</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Ritaglia \‘Layer Type\’</string>
+    <string name="pt_thumbnail_cropper_layer_type">Ritaglia ‘Layer Type’</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Lasciare questa impostazione al valore predefinito a meno che non si verifichino arresti anomali durante il ritaglio delle immagini. Prova il software per hardware più sicuro ma più lento o forzato per meno sicuro, ma più veloce</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>

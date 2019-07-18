@@ -10,8 +10,7 @@
     <string-array name="pe_ui_theme">
         <item>Dag / Nacht</item>
         <item>Donker</item>
-        <item>Licht</item>
-        <item>Licht 2</item>
+        <item>Helder</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Informeren met</string>
@@ -77,7 +76,7 @@
     </string-array>
 
     <string name="pt_thumbnail_cropper_layer_type">Bijsnijden ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Gebruik \‘Standaard waarde\’ voor deze optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik \‘Software\’ voor veiliger maar trager, of forceer \‘Hardware\’ voor sneller, maar misschien minder stabiel.</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Gebruik ‘Standaard waarde’ voor deze optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik ‘Software’ voor veiliger maar trager, of forceer ‘Hardware’ voor sneller, maar misschien minder stabiel.</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Hardware</item>
@@ -160,8 +159,8 @@
     <string name="pv_bob_books_under_multiple_each_1s">Onder elke %1$s</string>
 
     <string name="pt_bob_format_author_name">Formaat van auteursnamen</string>
-    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bijv. \‘Gerard Reve\’</string>
-    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bijv. \‘Reve, Gerard\’</string>
+    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bvb. ‘Gerard Reve’</string>
+    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bvb. ‘Reve, Gerard’</string>
 
     <!-- ####################################################################################### -->
 

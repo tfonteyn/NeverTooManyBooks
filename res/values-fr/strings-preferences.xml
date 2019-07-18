@@ -11,7 +11,6 @@
         <item>Jour / Nuit</item>
         <item>Noir</item>
         <item>Clair</item>
-        <item>Clair 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Informer avec</string>
@@ -76,8 +75,8 @@
         <item>Faire tourner à 180°</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Recadrage \‘Layer Type\’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez \‘Logiciel\’ pour plus sûr mais plus lentement, ou forcez \‘Matériel\’ pour moins sûr, mais plus rapide.</string>
+    <string name="pt_thumbnail_cropper_layer_type">Recadrage ‘Layer Type’</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez ‘Logiciel’ pour plus sûr mais plus lentement, ou forcez ‘Matériel’ pour moins sûr, mais plus rapide.</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Matériel</item>

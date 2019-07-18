@@ -250,7 +250,7 @@
         Es muss mindestens ein Feld für die Aktualisierung ausgewählt werden
     </string>
     <string name="lbl_field_usage_copy_if_blank">Kopieren wenn leer</string>
-    <string name="lbl_field_usage_add_extra">hängt zusätzliche Daten an</string>
+    <string name="lbl_field_usage_append">hängt zusätzliche Daten an</string>
     <string name="lbl_field_usage_overwrite">überschreibt zusätzliche Daten</string>
     <string name="progress_msg_cancelling">Abbruch</string>
     <string name="progress_msg_starting_search">Beginn der Suche</string>

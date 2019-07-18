@@ -11,7 +11,6 @@
         <item>Día / Noche</item>
         <item>Negro</item>
         <item>Luz</item>
-        <item>Luz 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Informar con</string>
@@ -77,8 +76,8 @@
         <item>180 grados</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Recortar \‘Layer Type\’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe \‘Software\’ para un método más seguro pero más lento o fuerce \‘Hardware\’ para que sea menos seguro, pero más rápido</string>
+    <string name="pt_thumbnail_cropper_layer_type">Recortar ‘Layer Type’</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe ‘Software’ para un método más seguro pero más lento o fuerce ‘Hardware’ para que sea menos seguro, pero más rápido</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Hardware</item>

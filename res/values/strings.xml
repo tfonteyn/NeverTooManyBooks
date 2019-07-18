@@ -833,7 +833,7 @@ TODO: uniform quotes in all string:
 
     <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
-    <string name="lbl_field_usage_add_extra">Appends extra data</string>
+    <string name="lbl_field_usage_append">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
     <string name="lbl_field_usage_skip">Skip</string>
 

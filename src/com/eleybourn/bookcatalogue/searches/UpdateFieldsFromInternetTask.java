@@ -307,18 +307,20 @@ public class UpdateFieldsFromInternetTask
 
         Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
         for (FieldUsage usage : requestedFields.values()) {
-            // Not selected, we don't want it
-            if (usage.isWanted()) {
-                switch (usage.usage) {
-                    case Merge:
-                    case Overwrite:
-                        // Add and Overwrite mean we always get the data
-                        fieldUsages.put(usage.fieldId, usage);
-                        break;
-                    case CopyIfBlank:
-                        currentCopyIfBlank(fieldUsages, usage);
-                        break;
-                }
+            switch (usage.usage) {
+                case Append:
+                case Overwrite:
+                    // Append + Overwrite: we always need to get the data
+                    fieldUsages.put(usage.fieldId, usage);
+                    break;
+
+                case CopyIfBlank:
+                    currentCopyIfBlank(fieldUsages, usage);
+                    break;
+
+                case Skip:
+                    // duh...
+                    break;
             }
         }
 
@@ -428,8 +430,8 @@ public class UpdateFieldsFromInternetTask
                             copyIfBlank(usage.fieldId, newBookData);
                             break;
 
-                        case Merge:
-                            merge(usage.fieldId, newBookData);
+                        case Append:
+                            append(usage.fieldId, newBookData);
                             break;
 
                         case Overwrite:
@@ -461,26 +463,26 @@ public class UpdateFieldsFromInternetTask
      * Combines two ParcelableArrayList's, weeding out duplicates.
      *
      * @param <T>         type of the ArrayList elements
-     * @param listKey     for the ArrayList to combine
+     * @param key         for data
      * @param newBookData Destination Bundle where the combined list is updated
      */
-    private <T extends Parcelable> void merge(@NonNull final String listKey,
-                                              @NonNull final Bundle newBookData) {
-
+    private <T extends Parcelable> void append(@NonNull final String key,
+                                               @NonNull final Bundle newBookData) {
         // Get the list from the original, if it's present.
         ArrayList<T> destinationList = null;
-        if (mOriginalBookData.containsKey(listKey)) {
-            destinationList = mOriginalBookData.getParcelableArrayList(listKey);
+        if (mOriginalBookData.containsKey(key)) {
+            destinationList = mOriginalBookData.getParcelableArrayList(key);
         }
+
         // Otherwise use an empty list
         if (destinationList == null) {
             destinationList = new ArrayList<>();
         }
 
         // Get the list from the new data, if it's present.
-        ArrayList<T> newDataList = newBookData.getParcelableArrayList(listKey);
+        ArrayList<T> newDataList = newBookData.getParcelableArrayList(key);
         if (newDataList != null && !newDataList.isEmpty()) {
-            // do the actual merge by copying new data to the source list
+            // do the actual append by copying new data to the source list
             // if the latter does not already have the object.
             for (T item : newDataList) {
                 if (!destinationList.contains(item)) {
@@ -490,11 +492,11 @@ public class UpdateFieldsFromInternetTask
         }
 
         // Save the combined list to the new data bundle.
-        newBookData.putParcelableArrayList(listKey, destinationList);
+        newBookData.putParcelableArrayList(key, destinationList);
     }
 
     /**
-     * CopyIfBlank: replace null/empty data.
+     * If we already had this field in the original data, then remove the new stuff.
      */
     private void copyIfBlank(@NonNull final String key,
                              @NonNull final Bundle /* in/out */ newBookData) {

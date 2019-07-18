@@ -103,9 +103,10 @@ public class StartupActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         LocaleUtils.applyPreferred(this);
+        setTheme(App.getThemeResId());
+
+        super.onCreate(savedInstanceState);
 
         // the UI
         setContentView(R.layout.activity_startup);

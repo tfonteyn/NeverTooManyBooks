@@ -156,7 +156,7 @@
     <string name="confirm_apply_author_changed">Hai modificato l\‘autore da:\n  ‘%1$s’ a \n  ‘%2$s’\nCome desideri applicare questa modifica?\nNota: La scelta \’%3$s\' sarà applicata immediatamente.</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="title_scope_of_change">Intervallo modifica</string>
-    <string name="confirm_apply_series_changed">Hai modificato le serie da:\n  ‘%1$s’ a \n  ‘%2$s’\nCome desideri applicare questa modifica?\nNota: La scelta \‘%3$s\’ sarà applicata immediatamente.</string>
+    <string name="confirm_apply_series_changed">Hai modificato le serie da:\n  ‘%1$s’ a \n  ‘%2$s’\nCome desideri applicare questa modifica?\nNota: La scelta ‘%3$s’ sarà applicata immediatamente.</string>
     <string name="warning_unable_to_find_book">Impossibile trovare il libro specificato</string>
     <string name="list_and">e</string>
     <string name="confirm_delete_book">Il libro intitolato ‘%1$s’ verrà completamente cancellato da %2$s. Procedere?</string>
@@ -167,7 +167,7 @@
     <string name="warning_cover_not_found">Immagine non trovata</string>
     <string name="warning_select_min_1_field">Seleziona almeno un campo da aggiornare</string>
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
-    <string name="lbl_field_usage_add_extra">Aggiungi altri dati</string>
+    <string name="lbl_field_usage_append">Aggiungi altri dati</string>
     <string name="lbl_field_usage_overwrite">Sovrascrivi dati esistenti</string>
     <string name="progress_msg_cancelling">Annullamento</string>
     <string name="progress_msg_starting_search">Inizio ricerca</string>

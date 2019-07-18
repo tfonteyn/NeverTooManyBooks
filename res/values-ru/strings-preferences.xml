@@ -11,7 +11,6 @@
         <item>День / Ночь</item>
         <item>темный</item>
         <item>свет</item>
-        <item>свет 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Сообщить с</string>
@@ -73,7 +72,7 @@
         <item>Повернуть на 180</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Обрезать \‘Layer Type\’</string>
+    <string name="pt_thumbnail_cropper_layer_type">Обрезать ‘Layer Type’</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>

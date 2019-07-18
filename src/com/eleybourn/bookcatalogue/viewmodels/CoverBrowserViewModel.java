@@ -137,9 +137,9 @@ public class CoverBrowserViewModel
         mEditions.setValue(editions);
     }
 
-    public void fetchSwitcherImage(@NonNull final String isbn) {
+    public void fetchSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
 
-        GetSwitcherImageTask task = new GetSwitcherImageTask(isbn, mFileManager, this);
+        GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mFileManager, this);
         addTask(task);
         // use the alternative executor, so we get a result back without
         // waiting on the gallery tasks.
@@ -151,19 +151,62 @@ public class CoverBrowserViewModel
     }
 
     private void onGetSwitcherImageTaskFinished(@NonNull final GetSwitcherImageTask task,
-                                                @Nullable final String fileSpec) {
+                                                @NonNull final FileInfo fileInfo) {
         removeTask(task);
-        mSwitcherImageFileSpec.setValue(fileSpec);
+        mSwitcherImageFileSpec.setValue(fileInfo.fileSpec);
     }
 
     public void fetchGalleryImages(@NonNull final CoverBrowserFragment taskListener,
-                                   final int position,
                                    @NonNull final String isbn) {
-        GetGalleryImageTask task = new GetGalleryImageTask(taskListener, position, isbn,
-                                                           mFileManager);
+        GetGalleryImageTask task = new GetGalleryImageTask(taskListener, isbn, mFileManager);
 
         addTask(task);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Value class to return info about a file.
+     */
+    public static class FileInfo {
+
+        public String isbn;
+        public SearchEngine.ImageSizes size;
+        public String fileSpec;
+        public Site site;
+
+        /**
+         * Constructor.
+         */
+        FileInfo(@NonNull final String isbn,
+                 @NonNull final SearchEngine.ImageSizes size,
+                 @NonNull final String fileSpec,
+                 @NonNull final Site site) {
+            this.isbn = isbn;
+            this.size = size;
+            this.fileSpec = fileSpec;
+            this.site = site;
+        }
+
+        /**
+         * Failure constructor.
+         * <p>
+         * Some functions need to return a @NonNull FileInfo with a valid isbn while the fileSpec
+         * can be null. Use this constructor to do that.
+         */
+        FileInfo(@NonNull final String isbn) {
+            this.isbn = isbn;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "FileInfo{"
+                    + "isbn='" + isbn + '\''
+                    + ", size=" + size
+                    + ", fileSpec='" + fileSpec + '\''
+                    + ", site=" + site.getName()
+                    + '}';
+        }
     }
 
     /**
@@ -175,7 +218,7 @@ public class CoverBrowserViewModel
          * Downloaded files.
          * key = isbn + '_' + size.
          */
-        private final Map<String, String> mFiles = Collections.synchronizedMap(new HashMap<>());
+        private final Map<String, FileInfo> mFiles = Collections.synchronizedMap(new HashMap<>());
 
         /** Sites the user wants to search. */
         private final int mSearchSites;
@@ -235,17 +278,17 @@ public class CoverBrowserViewModel
          * <p>
          * ENHANCE: allow the user to prioritize the order on the fly.
          *
-         * @param isbn       ISBN of file
-         * @param position   DEBUG only.
-         * @param imageSizes a list of images sizes in order of preference
+         * @param isbn        ISBN of file
+         * @param primarySite try this site first
+         * @param imageSizes  a list of images sizes in order of preference
          *
-         * @return the fileSpec, or {@code null} if not found
+         * @return a {@link FileInfo} object
          */
-        @Nullable
+        @NonNull
         @WorkerThread
-        String download(@NonNull final String isbn,
-                        final int position,
-                        @NonNull final SearchEngine.ImageSizes... imageSizes) {
+        FileInfo download(@NonNull final String isbn,
+                          @Nullable final Site primarySite,
+                          @NonNull final SearchEngine.ImageSizes... imageSizes) {
 
             // use a local copy so we can disable sites on the fly.
             int currentSearchSites = mSearchSites;
@@ -256,20 +299,16 @@ public class CoverBrowserViewModel
             // The other way around we could get a site/small-size instead of otherSite/better-size.
             for (SearchEngine.ImageSizes size : imageSizes) {
                 String key = isbn + '_' + size;
-                String fileSpec = mFiles.get(key);
+                FileInfo fileInfo = mFiles.get(key);
 
                 // Do we already have a file and is it good ?
-                if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
+                if ((fileInfo != null) && fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty() && isGood(
+                        new File(fileInfo.fileSpec))) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                        Logger.debug(this, "download",
-                                     "FILESYSTEM",
-                                     "position=" + position,
-                                     "isbn=" + isbn,
-                                     "size=" + size,
-                                     "fileSpec=" + fileSpec);
+                        Logger.debug(this, "download", "FILESYSTEM", fileInfo);
                     }
                     // use it
-                    return fileSpec;
+                    return fileInfo;
 
                 } else {
                     // it was present but bad, remove it.
@@ -277,45 +316,17 @@ public class CoverBrowserViewModel
                 }
 
                 for (Site site : SearchSites.getSitesForCoverSearches()) {
-                    // Are we allowed to search this site ?
-                    if (site.isEnabled()
-                            // and should we search this site ?
-                            && ((currentSearchSites & site.id) != 0)
-                    ) {
-                        SearchEngine searchEngine = site.getSearchEngine();
-                        // try to get it.
-                        File file = searchEngine.getCoverImage(isbn, size);
+                    // Are we allowed to search this site ? and should we search this site ?
+                    if (site.isEnabled() && ((currentSearchSites & site.id) != 0)) {
 
-                        if (file != null && isGood(file)) {
-                            fileSpec = file.getAbsolutePath();
-                            mFiles.put(key, fileSpec);
-
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                Logger.debug(this, "download",
-                                             "FOUND",
-                                             "site=" + site.getName(),
-                                             "position=" + position,
-                                             "isbn=" + isbn,
-                                             "size=" + size,
-                                             "fileSpec=" + fileSpec);
-                            }
-                            // we got a file, break out and return it.
-                            return fileSpec;
-
-                        } else {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                                Logger.debug(this, "download",
-                                             "MISSING",
-                                             "site=" + site.getName(),
-                                             "position=" + position,
-                                             "isbn=" + isbn,
-                                             "size=" + size);
-                            }
+                        fileInfo = download(site, isbn, size);
+                        if (fileInfo != null) {
+                            return fileInfo;
                         }
 
                         // if the site we just searched only supports one image, disable it
                         // for THIS search
-                        if (!searchEngine.siteSupportsMultipleSizes()) {
+                        if (!site.getSearchEngine().siteSupportsMultipleSizes()) {
                             currentSearchSites &= ~site.id;
                         }
                     }
@@ -324,36 +335,69 @@ public class CoverBrowserViewModel
                 // give up
                 mFiles.remove(key);
             }
-            return null;
+            // we failed, but we still need to return the isbn.
+            return new FileInfo(isbn);
         }
 
-        /**
-         * Get the requested file, if available, otherwise return {@code null}.
-         *
-         * @param isbn  to search
-         * @param sizes required sizes in order to look for. First found is used.
-         *
-         * @return the file, or {@code null} if not found
-         */
         @Nullable
-        public File getFile(@NonNull final String isbn,
-                            @NonNull final SearchEngine.ImageSizes... sizes) {
-            for (SearchEngine.ImageSizes size : sizes) {
-                String fileSpec = mFiles.get(isbn + '_' + size);
-                if (fileSpec != null && !fileSpec.isEmpty()) {
-                    return new File(fileSpec);
+        private FileInfo download(final Site site,
+                                  @NonNull final String isbn,
+                                  final SearchEngine.ImageSizes size) {
+
+            File file = site.getSearchEngine().getCoverImage(isbn, size);
+            if (file != null && isGood(file)) {
+                String key = isbn + '_' + size;
+                FileInfo fileInfo = new FileInfo(isbn, size, file.getAbsolutePath(), site);
+                mFiles.put(key, fileInfo);
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                    Logger.debug(this, "download",
+                                 "FOUND", fileInfo);
+                }
+                return fileInfo;
+
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                    Logger.debug(this, "download",
+                                 "MISSING",
+                                 "site=" + site.getName(),
+                                 "isbn=" + isbn,
+                                 "size=" + size);
                 }
             }
             return null;
         }
 
         /**
+         * Get the requested FileInfo, if available, otherwise return {@code null}.
+         *
+         * @param isbn  to search
+         * @param sizes required sizes in order to look for. First found is used.
+         *
+         * @return the FileInfo
+         */
+        @NonNull
+        public FileInfo getFile(@NonNull final String isbn,
+                                @NonNull final SearchEngine.ImageSizes... sizes) {
+            for (SearchEngine.ImageSizes size : sizes) {
+                FileInfo fileInfo = mFiles.get(isbn + '_' + size);
+                if (fileInfo != null
+                        && fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
+                    return fileInfo;
+                }
+            }
+            // we failed, but we still need to return the isbn.
+            return new FileInfo(isbn);
+        }
+
+        /**
          * Clean up all files.
          */
         void purge() {
-            for (String fileSpec : mFiles.values()) {
-                if (fileSpec != null) {
-                    StorageUtils.deleteFile(new File(fileSpec));
+            for (FileInfo fileInfo : mFiles.values()) {
+                if (fileInfo != null
+                        && fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
+                    StorageUtils.deleteFile(new File(fileInfo.fileSpec));
                 }
             }
             mFiles.clear();
@@ -419,11 +463,10 @@ public class CoverBrowserViewModel
      * Fetch a thumbnail and stick it into the gallery.
      */
     static class GetGalleryImageTask
-            extends AsyncTask<Void, Void, String> {
+            extends AsyncTask<Void, Void, FileInfo> {
 
         @NonNull
         private final WeakReference<CoverBrowserFragment> mTaskListener;
-        private final int mPosition;
 
         @NonNull
         private final FileManager mFileManager;
@@ -440,25 +483,21 @@ public class CoverBrowserViewModel
          */
         @UiThread
         GetGalleryImageTask(@NonNull final CoverBrowserFragment taskListener,
-                            final int position,
                             @NonNull final String isbn,
                             @NonNull final FileManager fileManager) {
             mTaskListener = new WeakReference<>(taskListener);
-            mPosition = position;
             mIsbn = isbn;
             mFileManager = fileManager;
         }
 
         @Override
-        @Nullable
+        @NonNull
         @WorkerThread
-        protected String doInBackground(final Void... params) {
+        protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
             try {
-                return mFileManager.download(mIsbn,
-                                             mPosition,
-                                             // try to get a picture in this order of size.
-                                             // Stops at first one found.
+                // try to get a picture in this order of size. Stops at first one found.
+                return mFileManager.download(mIsbn, null,
                                              SearchEngine.ImageSizes.SMALL,
                                              SearchEngine.ImageSizes.MEDIUM,
                                              SearchEngine.ImageSizes.LARGE);
@@ -467,14 +506,15 @@ public class CoverBrowserViewModel
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
                 // can be thrown, but for some reason javac does not think so.
             }
-            return null;
+            // we failed, but we still need to return the isbn.
+            return new FileInfo(mIsbn);
         }
 
         @Override
-        protected void onCancelled(@Nullable final String result) {
+        protected void onCancelled(@NonNull final FileInfo result) {
             // let the caller clean up.
             if (mTaskListener.get() != null) {
-                mTaskListener.get().updateGallery(this, mPosition, result);
+                mTaskListener.get().updateGallery(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCancelled",
@@ -485,10 +525,10 @@ public class CoverBrowserViewModel
 
         @Override
         @UiThread
-        protected void onPostExecute(@Nullable final String result) {
+        protected void onPostExecute(@NonNull final FileInfo result) {
             // always callback; even with a bad result.
             if (mTaskListener.get() != null) {
-                mTaskListener.get().updateGallery(this, mPosition, result);
+                mTaskListener.get().updateGallery(this, result);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onPostExecute",
@@ -502,43 +542,44 @@ public class CoverBrowserViewModel
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
     static class GetSwitcherImageTask
-            extends AsyncTask<Void, Void, String> {
+            extends AsyncTask<Void, Void, FileInfo> {
 
+        @NonNull
+        private final FileInfo mFileInfo;
         @NonNull
         private final WeakReference<CoverBrowserViewModel> mTaskListener;
         @NonNull
         private final FileManager mFileManager;
-        @NonNull
-        private final String mIsbn;
 
         /**
          * Constructor.
          *
-         * @param isbn         book to search
+         * @param fileInfo     book to search
          * @param fileManager  for downloads
          * @param taskListener to send results to
          */
         @UiThread
-        GetSwitcherImageTask(@NonNull final String isbn,
+        GetSwitcherImageTask(@NonNull final CoverBrowserViewModel.FileInfo fileInfo,
                              @NonNull final FileManager fileManager,
                              @NonNull final CoverBrowserViewModel taskListener) {
+            mFileInfo = fileInfo;
             mTaskListener = new WeakReference<>(taskListener);
 
             mFileManager = fileManager;
-            mIsbn = isbn;
         }
 
         @Override
-        @Nullable
+        @NonNull
         @WorkerThread
-        protected String doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetSwitcherImageTask " + mIsbn);
+        protected FileInfo doInBackground(final Void... params) {
+            Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
             try {
-                return mFileManager.download(mIsbn,
-                                             -1,
+                return mFileManager.download(mFileInfo.isbn,
+                                             // try this site first.
+                                             mFileInfo.site,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
-                                             SearchEngine.ImageSizes.LARGE,
+                                             null, SearchEngine.ImageSizes.LARGE,
                                              SearchEngine.ImageSizes.MEDIUM,
                                              SearchEngine.ImageSizes.SMALL);
 
@@ -546,11 +587,12 @@ public class CoverBrowserViewModel
                 // tad annoying... java.io.InterruptedIOException: thread interrupted
                 // can be thrown, but for some reason javac does not think so.
             }
-            return null;
+            // we failed, but we still need to return the isbn.
+            return new FileInfo(mFileInfo.isbn);
         }
 
         @Override
-        protected void onCancelled(final String result) {
+        protected void onCancelled(@NonNull final FileInfo result) {
             // let the caller clean up.
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);
@@ -564,7 +606,7 @@ public class CoverBrowserViewModel
 
         @Override
         @UiThread
-        protected void onPostExecute(@Nullable final String result) {
+        protected void onPostExecute(@NonNull final FileInfo result) {
             // always callback; even with a bad result.
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);

@@ -80,10 +80,10 @@ public class CoverBrowserFragment
     /** Populated by {@link #initGallery(ArrayList)} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
+    @Nullable
+    private final GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
-    @Nullable
-    private final GalleryAdapter mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_SMALL);
     /** The switcher will be used to display larger versions. */
     private ImageSwitcher mImageSwitcherView;
 
@@ -188,7 +188,7 @@ public class CoverBrowserFragment
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment().onActivityResult(getTargetRequestCode(),
-                                                Activity.RESULT_OK, data);
+                                                     Activity.RESULT_OK, data);
             }
             // close the CoverBrowserFragment
             dismiss();
@@ -263,37 +263,36 @@ public class CoverBrowserFragment
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      *
      * @param task     the task that finished
-     * @param position for which we got an image (or can confirm no image was available)
-     * @param fileSpec the file we got, or {@code null}.
+     * @param fileInfo the file we got, if any
      */
     public void updateGallery(@NonNull final AsyncTask task,
-                              final int position,
-                              @Nullable final String fileSpec) {
+                              @NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
         mModel.removeTask(task);
         Objects.requireNonNull(mGalleryAdapter);
 
+        int index = mAlternativeEditions.indexOf(fileInfo.isbn);
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "updateGallery",
-                         "position=" + position,
-                         "fileSpec=" + fileSpec);
+            Logger.debug(this, "updateGallery", fileInfo);
         }
 
-        if (fileSpec != null && !fileSpec.isEmpty()) {
+        if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the gallery view
-            File imageFile = new File(fileSpec);
+            File imageFile = new File(fileInfo.fileSpec);
             if (imageFile.exists()) {
                 imageFile.deleteOnExit();
-                mGalleryAdapter.notifyItemChanged(position);
+                mGalleryAdapter.notifyItemChanged(index);
                 return;
             }
         }
 
         // Remove the defunct view from the gallery
-        // sanity check...
-        if (position >= 0) {
-            mAlternativeEditions.remove(position);
-            mGalleryAdapter.notifyItemRemoved(position);
+
+        if (index >= 0) {
+            mAlternativeEditions.remove(fileInfo.isbn);
+            mGalleryAdapter.notifyItemRemoved(index);
         }
+
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
@@ -363,6 +362,9 @@ public class CoverBrowserFragment
         @NonNull
         final ImageView imageView;
 
+        @Nullable
+        CoverBrowserViewModel.FileInfo fileInfo;
+
         Holder(@NonNull final ImageView itemView) {
             super(itemView);
             imageView = itemView;
@@ -403,41 +405,41 @@ public class CoverBrowserFragment
             String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
-            File imageFile = mModel.getFileManager().getFile(isbn,
-                                                             SearchEngine.ImageSizes.SMALL,
-                                                             SearchEngine.ImageSizes.MEDIUM,
-                                                             SearchEngine.ImageSizes.LARGE);
+            holder.fileInfo = mModel.getFileManager().getFile(isbn,
+                                                              SearchEngine.ImageSizes.SMALL,
+                                                              SearchEngine.ImageSizes.MEDIUM,
+                                                              SearchEngine.ImageSizes.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
-                             "position=" + position,
-                             "isbn=" + isbn,
-                             "fileSpec=" + imageFile);
+                             "fileInfo=" + holder.fileInfo);
             }
+            if (holder.fileInfo.fileSpec != null) {
+                File imageFile = new File(holder.fileInfo.fileSpec);
+                // See if file is present.
+                if (imageFile.exists()) {
+                    ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
 
-            // See if file is present.
-            if (imageFile != null) {
-                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
+                } else {
+                    // Not present; use a placeholder.
+                    holder.imageView.setImageResource(R.drawable.ic_image);
+                    // and queue a request for it.
+                    if (!mDismissing) {
+                        try {
+                            mModel.fetchGalleryImages(CoverBrowserFragment.this, isbn);
 
-            } else {
-                // Not present; use a placeholder.
-                holder.imageView.setImageResource(R.drawable.ic_image);
-                // and queue a request for it.
-                if (!mDismissing) {
-                    try {
-                        mModel.fetchGalleryImages(CoverBrowserFragment.this, position, isbn);
-
-                    } catch (@NonNull final RejectedExecutionException e) {
-                        // some books have a LOT of editions... Dr. Asimov
-                        if (BuildConfig.DEBUG /* always */) {
-                            Logger.debug(this, "onBindViewHolder",
-                                         "position=" + position,
-                                         "isbn=" + isbn,
-                                         "Exception msg=" + e.getLocalizedMessage());
+                        } catch (@NonNull final RejectedExecutionException e) {
+                            // some books have a LOT of editions... Dr. Asimov
+                            if (BuildConfig.DEBUG /* always */) {
+                                Logger.debug(this, "onBindViewHolder",
+                                             "isbn=" + isbn,
+                                             "Exception msg=" + e.getLocalizedMessage());
+                            }
                         }
                     }
                 }
             }
+
             // image from gallery clicked -> load it into the larger preview (imageSwitcher).
             holder.imageView.setOnClickListener(v -> {
                 // set & show the placeholder.
@@ -445,7 +447,7 @@ public class CoverBrowserFragment
                 mImageSwitcherView.setVisibility(View.VISIBLE);
                 mStatusTextView.setText(R.string.progress_msg_loading);
                 // start a task to fetch the image
-                mModel.fetchSwitcherImage(isbn);
+                mModel.fetchSwitcherImage(holder.fileInfo);
             });
         }
 

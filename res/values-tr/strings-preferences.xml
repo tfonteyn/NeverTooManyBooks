@@ -11,7 +11,6 @@
         <item>Gündüz / Gece</item>
         <item>Karanlık</item>
         <item>ışık</item>
-        <item>ışık 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">İle bilgilendir</string>
@@ -73,8 +72,8 @@
         <item>180 derece döndür</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp \‘Layer Type\’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için \‘Donanım\’ için \‘Yazılım\’ deneyin, ancak daha hızlı</string>
+    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp ‘Layer Type’</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için ‘Donanım’ için ‘Yazılım’ deneyin, ancak daha hızlı</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Donanım</item>

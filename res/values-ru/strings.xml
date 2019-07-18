@@ -104,14 +104,14 @@
     <string name="X_menu_search_books">Искать книги</string>
     <string name="tip_book_search_by_text">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги. \n\n</string>
     <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
-    <string name="vldt_unable_to_get_value_for_x">Невозможно получить значение для: \‘%1$s\’</string>
-    <string name="vldt_integer_expected_for_x">Введите целое значение: \‘%1$s\’</string>
-    <string name="vldt_real_expected_for_x">Введите действительное число: \‘%1$s\’</string>
-    <string name="vldt_date_expected_for_x">Введите дату: \‘%1$s\’</string>
-    <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for \‘%1$s\’</string>
-    <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: \‘%1$s\’</string>
-    <string name="vldt_blank_required_for_x">Требуется пустое значение: \‘%1$s\’</string>
-    <string name="vldt_failed_for_x">Проверка не удалась для \‘%1$s\’</string>
+    <string name="vldt_unable_to_get_value_for_x">Невозможно получить значение для: ‘%1$s’</string>
+    <string name="vldt_integer_expected_for_x">Введите целое значение: ‘%1$s’</string>
+    <string name="vldt_real_expected_for_x">Введите действительное число: ‘%1$s’</string>
+    <string name="vldt_date_expected_for_x">Введите дату: ‘%1$s’</string>
+    <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: ‘%1$s’</string>
+    <string name="vldt_blank_required_for_x">Требуется пустое значение: ‘%1$s’</string>
+    <string name="vldt_failed_for_x">Проверка не удалась для ‘%1$s’</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
     <string name="error_backup_failed">Резервное копирование не удалось</string>
@@ -149,18 +149,18 @@
     <string name="X_menu_edit_author">Редактирование автора…</string>
     <string name="X_menu_edit_series">Редактирование серии…</string>
     <string name="title_delete_series">Удаление серии</string>
-    <string name="confirm_delete_series">Действительно удалить серию \‘%1$s\’?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
+    <string name="confirm_delete_series">Действительно удалить серию ‘%1$s’?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
     <string name="X_title_select_cover">Выбрать обложку</string>
     <string name="X_warning_no_isbn_no_editions">Нельзя получить издание книги без ISBN</string>
     <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
     <string name="X_unsaved_edits_title">Несохранённые изменения</string>
-    <string name="confirm_apply_author_changed">Вы изменили имя автора с:\n  \‘%1$s\’ на \n  \‘%2$s\’\nКак вы хотите применить это изменение?\nЗамечание: выбор \‘%3$s\’ будет применён немедленно.</string>
+    <string name="confirm_apply_author_changed">Вы изменили имя автора с:\n  ‘%1$s’ на \n  ‘%2$s’\nКак вы хотите применить это изменение?\nЗамечание: выбор ‘%3$s’ будет применён немедленно.</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="title_scope_of_change">Масштаб изменения</string>
-    <string name="confirm_apply_series_changed">Вы изменили название серии с:\n  \‘%1$s\’ на \n  \‘%2$s\’\nКак вы хотите применить это изменение?\nЗамечание: выбор \‘%3$s\’ будет применён немедленно.</string>
+    <string name="confirm_apply_series_changed">Вы изменили название серии с:\n  ‘%1$s’ на \n  ‘%2$s’\nКак вы хотите применить это изменение?\nЗамечание: выбор ‘%3$s’ будет применён немедленно.</string>
     <string name="warning_unable_to_find_book">Поиск указанной книги не удался</string>
     <string name="list_and">и</string>
-    <string name="confirm_delete_book">Книга с названием \‘%1$s\’ будет полностью удалена %2$s. Вы уверены?</string>
+    <string name="confirm_delete_book">Книга с названием ‘%1$s’ будет полностью удалена %2$s. Вы уверены?</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
     <string name="info_tap_on_thumb">Щёлкните по миниатюре для просмотра большого изображения</string>
@@ -168,7 +168,7 @@
     <string name="warning_cover_not_found">Изображение не найдено</string>
     <string name="warning_select_min_1_field">Выберите хотя бы одно поле для обновления</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
-    <string name="lbl_field_usage_add_extra">Добавляет дополнительные данные</string>
+    <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_overwrite">Перезаписывает существующие данные</string>
     <string name="progress_msg_cancelling">Отменяется</string>
     <string name="progress_msg_starting_search">Поиск начинается</string>
@@ -186,7 +186,7 @@
     <string name="btn_reset">Сброс</string>
     <string name="debug_send_info_text">Нажмите кнопку внизу экрана для сбора информации о недавних аварийных выключения программы или об иных ошибках и отправьте эту информацию нашим разработчикам. Создастся копия вашей базы и лог файлов. Если вы не хотите отправлять какой-либо из этих файлов, удалите его из приложений письма до отправки.</string>
     <string name="lbl_send_info">Отправить отладочную информацию</string>
-    <string name="info_cleanup_files_text">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой \‘Отправить информацию\’.</string>
+    <string name="info_cleanup_files_text">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой ‘Отправить информацию’.</string>
     <string name="lbl_cleanup_files">Очистка файлов</string>
     <string name="megabytes">%.2fМб</string>
     <string name="kilobytes">%.2fкб</string>
@@ -392,7 +392,7 @@
     <string name="X_error_starting_import_arg">Возникла проблема при начале импорта: %1$s</string>
     <string name="tip_booklist_style_menu">
         Это меню позволяет Вам выбрать стиль списка.\n
-        \nВы можете также настроить это меню и создать свои стили списков нажатием на \‘Настроить\’ в конце списка.</string>
+        \nВы можете также настроить это меню и создать свои стили списков нажатием на ‘Настроить’ в конце списка.</string>
     <string name="warning_missing_name">Имя не может быть пустым</string>
     <string name="progress_msg_export_starting">Начало экспорта…</string>
     <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>

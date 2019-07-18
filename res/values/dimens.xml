@@ -44,12 +44,4 @@
     Used to make other elements the same height. -->
     <dimen name="edit_text_height">48dp</dimen>
 
-
-
-    <!-- FastScrollerOverlay line 1 - equivalent size from ?android:attr/textAppearanceLarge -->
-    <dimen name="fso_text_primary">22sp</dimen>
-    <!-- FastScrollerOverlay line 2 - equivalent size from ?android:attr/textAppearanceMedium -->
-    <dimen name="fso_text_secondary">18sp</dimen>
-
-
 </resources>

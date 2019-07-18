@@ -54,8 +54,10 @@ public interface SearchEngine {
             ArrayList<String> imageList =
                     bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
+                // simply get the first one.
                 File found = new File(imageList.get(0));
-                File coverFile = new File(found.getAbsolutePath() + '_' + isbn);
+                // let the system resolve any path variations
+                File coverFile = new File(found.getAbsolutePath());
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
             }

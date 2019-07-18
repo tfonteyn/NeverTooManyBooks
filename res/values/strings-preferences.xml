@@ -39,14 +39,12 @@
         <item>Day / Night</item>
         <item>Dark</item>
         <item>Light</item>
-        <item>Light 2</item>
     </string-array>
     <!-- NEWKIND: APP THEME. -->
     <string-array name="pv_ui_theme">
         <item translatable="false">0</item>
         <item translatable="false">1</item>
         <item translatable="false">2</item>
-        <item translatable="false">3</item>
     </string-array>
 
     <!-- ListPreference
@@ -334,9 +332,9 @@
     <string-array name="pv_cover_scale_factor">
         <item translatable="false">1</item>
         <item translatable="false">2</item>
-        <item translatable="false">4</item>
-        <item translatable="false">6</item>
-        <item translatable="false">9</item>
+        <item translatable="false">3</item>
+        <item translatable="false">5</item>
+        <item translatable="false">8</item>
         <item translatable="false">12</item>
     </string-array>
 

@@ -104,7 +104,7 @@ public final class GoogleBooksManager
 
         // The entry handler takes care of an individual book ('entry')
         SearchGoogleBooksEntryHandler entryHandler =
-                new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail);
+                new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail, isbn);
 
         String url = getBaseURL() + "/books/feeds/volumes?" + query;
 

@@ -211,6 +211,7 @@ class SearchAmazonHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
 
+    private static final String AMAZON_ASIN = "__ASIN";
     /**
      * XML tags we look for.
      * They are mixed-case, hence we use .equalsIgnoreCase and not a switch
@@ -228,6 +229,7 @@ class SearchAmazonHandler
     private static final String XML_E_ISBN = "EISBN";
     private static final String XML_EAN = "EAN";
     private static final String XML_ISBN_OLD = "EAN";
+    private static final String XML_ASIN = "ASIN";
     private static final String XML_DATE_PUBLISHED = "PublicationDate";
     private static final String XML_PUBLISHER = "Publisher";
     private static final String XML_PAGES = "NumberOfPages";
@@ -504,6 +506,10 @@ class SearchAmazonHandler
                     mBookData.putString(DBDefinitions.KEY_ISBN, tmp);
                 }
 
+            } else if (localName.equalsIgnoreCase(XML_ASIN)) {
+                addIfNotPresent(mBookData, AMAZON_ASIN,
+                                mBuilder.toString());
+
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
@@ -529,7 +535,8 @@ class SearchAmazonHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
-            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, FILENAME_SUFFIX);
+            String name = mBookData.getString(AMAZON_ASIN, "");
+            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, name, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

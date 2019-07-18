@@ -149,7 +149,7 @@ public class OpenLibraryManager
 
         // Fetch, then save it with a suffix
         String fileSpec = ImageUtils.saveImage(String.format(BASE_URL_COVERS, isbn, sizeParam),
-                                               FILENAME_SUFFIX + '_' + isbn + '_' + size);
+                                               isbn, FILENAME_SUFFIX + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -509,17 +509,20 @@ public class OpenLibraryManager
         if (fetchThumbnail) {
             // get the largest cover image available.
             o = result.optJSONObject("cover");
+            String size = "large";
             if (o != null) {
-                String url = o.optString("large");
+                String url = o.optString(size);
                 if (url.isEmpty()) {
-                    url = o.optString("medium");
+                    size = "medium";
+                    url = o.optString(size);
                     if (url.isEmpty()) {
-                        url = o.optString("small");
+                        size = "small";
+                        url = o.optString(size);
                     }
                 }
                 // we assume that the download will work if there is a url.
                 if (!url.isEmpty()) {
-                    String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX);
+                    String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

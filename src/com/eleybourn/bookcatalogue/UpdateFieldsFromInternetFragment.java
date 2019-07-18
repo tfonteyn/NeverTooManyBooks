@@ -199,53 +199,75 @@ public class UpdateFieldsFromInternetFragment
      * Entries are displayed in the order they are added here.
      */
     private void initFields() {
-        addListField(UniqueId.BKEY_AUTHOR_ARRAY,
-                     DBDefinitions.KEY_FK_AUTHOR, R.string.lbl_author);
 
-        addField(DBDefinitions.KEY_TITLE, CopyIfBlank, R.string.lbl_title);
-        addField(DBDefinitions.KEY_ISBN, CopyIfBlank, R.string.lbl_isbn);
-        addField(UniqueId.BKEY_IMAGE, CopyIfBlank, R.string.lbl_cover);
+        addListField(R.string.lbl_author, DBDefinitions.KEY_FK_AUTHOR,
+                     UniqueId.BKEY_AUTHOR_ARRAY);
 
-        addListField(UniqueId.BKEY_SERIES_ARRAY,
-                     DBDefinitions.KEY_SERIES_TITLE, R.string.lbl_series);
-        addListField(UniqueId.BKEY_TOC_ENTRY_ARRAY,
-                     DBDefinitions.KEY_TOC_BITMASK, R.string.lbl_table_of_content);
+        addField(R.string.lbl_title, CopyIfBlank, DBDefinitions.KEY_TITLE);
+        addField(R.string.lbl_isbn, CopyIfBlank, DBDefinitions.KEY_ISBN);
+        addField(R.string.lbl_cover, CopyIfBlank, UniqueId.BKEY_IMAGE);
 
-        addField(DBDefinitions.KEY_PUBLISHER, CopyIfBlank, R.string.lbl_publisher);
-        addField(DBDefinitions.KEY_DATE_PUBLISHED, CopyIfBlank, R.string.lbl_date_published);
-        addField(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, CopyIfBlank,
-                 R.string.lbl_first_publication);
-        addField(DBDefinitions.KEY_DESCRIPTION, CopyIfBlank, R.string.lbl_description);
+        addListField(R.string.lbl_series, DBDefinitions.KEY_SERIES_TITLE,
+                     UniqueId.BKEY_SERIES_ARRAY);
 
-        addField(DBDefinitions.KEY_PAGES, CopyIfBlank, R.string.lbl_pages);
-        addField(DBDefinitions.KEY_FORMAT, CopyIfBlank, R.string.lbl_format);
-        addField(DBDefinitions.KEY_LANGUAGE, CopyIfBlank, R.string.lbl_language);
+        addListField(R.string.lbl_table_of_content, DBDefinitions.KEY_TOC_BITMASK,
+                     UniqueId.BKEY_TOC_ENTRY_ARRAY);
+
+        addField(R.string.lbl_publisher, CopyIfBlank,
+                 DBDefinitions.KEY_PUBLISHER);
+        addField(R.string.lbl_date_published, CopyIfBlank,
+                 DBDefinitions.KEY_DATE_PUBLISHED);
+        addField(R.string.lbl_first_publication, CopyIfBlank,
+                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+
+        addField(R.string.lbl_description, CopyIfBlank, DBDefinitions.KEY_DESCRIPTION);
+
+        addField(R.string.lbl_pages, CopyIfBlank, DBDefinitions.KEY_PAGES);
+        addField(R.string.lbl_format, CopyIfBlank, DBDefinitions.KEY_FORMAT);
+        addField(R.string.lbl_language, CopyIfBlank, DBDefinitions.KEY_LANGUAGE);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(DBDefinitions.KEY_PRICE_LISTED, CopyIfBlank, R.string.lbl_price_listed);
+        addField(R.string.lbl_price_listed, CopyIfBlank, DBDefinitions.KEY_PRICE_LISTED);
 
-        addField(DBDefinitions.KEY_GENRE, CopyIfBlank, R.string.lbl_genre);
+        addField(R.string.lbl_genre, CopyIfBlank, DBDefinitions.KEY_GENRE);
 
-        addField(DBDefinitions.KEY_ISFDB_ID, Overwrite, R.string.isfdb);
-        addField(DBDefinitions.KEY_GOODREADS_BOOK_ID, Overwrite, R.string.goodreads);
-        addField(DBDefinitions.KEY_LIBRARY_THING_ID, Overwrite, R.string.library_thing);
-        addField(DBDefinitions.KEY_OPEN_LIBRARY_ID, Overwrite, R.string.open_library);
+        addField(R.string.isfdb, Overwrite, DBDefinitions.KEY_ISFDB_ID);
+        addField(R.string.goodreads, Overwrite, DBDefinitions.KEY_GOODREADS_BOOK_ID);
+        addField(R.string.library_thing, Overwrite, DBDefinitions.KEY_LIBRARY_THING_ID);
+        addField(R.string.open_library, Overwrite, DBDefinitions.KEY_OPEN_LIBRARY_ID);
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param fieldId      Field name to use in FieldUsages + check for visibility
-     * @param defaultUsage default Usage for this field
      * @param nameStringId Field label string resource id
+     * @param defaultUsage default Usage for this field
+     * @param fieldId      Field name to use in FieldUsages + check for visibility
      */
-    private void addField(@NonNull final String fieldId,
-                          final FieldUsage.Usage defaultUsage,
-                          @StringRes final int nameStringId) {
+    private void addField(@StringRes final int nameStringId,
+                          @NonNull final FieldUsage.Usage defaultUsage,
+                          @NonNull final String fieldId) {
 
         if (App.isUsed(fieldId)) {
-            // CopyIfBlank by default, user can override.
-            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId, defaultUsage, false));
+            mFieldUsages.put(fieldId, new FieldUsage(nameStringId, defaultUsage,
+                                                     false, fieldId));
+        }
+    }
+
+    /**
+     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
+     *
+     * @param nameStringId Field label string resource id
+     * @param visField     Field name to check for visibility.
+     * @param fieldId      List-field name to use in FieldUsages
+     */
+    private void addListField(@StringRes final int nameStringId,
+                              @NonNull final String visField,
+                              @NonNull final String fieldId) {
+
+        if (App.isUsed(visField)) {
+            mFieldUsages.put(fieldId, new FieldUsage(nameStringId, FieldUsage.Usage.Append,
+                                                     true, fieldId));
         }
     }
 
@@ -262,26 +284,7 @@ public class UpdateFieldsFromInternetFragment
         FieldUsage field = mFieldUsages.get(fieldId);
         if (field != null && field.isWanted()) {
             mFieldUsages.put(relatedFieldId,
-                             new FieldUsage(relatedFieldId, 0, field.usage, field.isList()));
-        }
-    }
-
-    /**
-     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
-     * The default usage is always to append new data (Merge).
-     *
-     * @param fieldId      List-field name to use in FieldUsages
-     * @param visField     Field name to check for visibility.
-     * @param nameStringId Field label string resource id
-     */
-    private void addListField(@NonNull final String fieldId,
-                              @NonNull final String visField,
-                              @StringRes final int nameStringId) {
-
-        if (App.isUsed(visField)) {
-            // Merge by default, user can override.
-            mFieldUsages.put(fieldId, new FieldUsage(fieldId, nameStringId,
-                                                     FieldUsage.Usage.Merge, true));
+                             new FieldUsage(0, field.usage, field.canAppend(), relatedFieldId));
         }
     }
 

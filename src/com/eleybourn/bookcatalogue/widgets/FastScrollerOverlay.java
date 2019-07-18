@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.reflect.Field;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
 
@@ -50,12 +51,8 @@ import com.eleybourn.bookcatalogue.widgets.cfs.CFSRecyclerView;
  * before it adds the decorator.
  * So switching between the two solutions is limited to editing the XML.
  * </strong>
- * <p>
- * Dimensions used for 1st and 2nd lines of text:
- * <ul>
- * <li>R.dimen.cfs_text_size_large;     fallback: 22sp</li>
- * <li>R.dimen.cfs_text_size_medium;    fallback: 18sp</li>
- * </ul>
+ *
+ * The text size is hardcoded to Large/Medium and the color to textColorPrimary
  */
 public class FastScrollerOverlay
         extends RecyclerView.ItemDecoration {
@@ -132,21 +129,10 @@ public class FastScrollerOverlay
 
         mOverlayDrawable = overlayDrawable;
 
-        Resources resources = context.getResources();
-        float size;
-        try {
-            size = resources.getDimension(R.dimen.fso_text_primary);
-        } catch (@NonNull final Resources.NotFoundException e) {
-            size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceLarge));
-        }
-        mPrimaryTextSize = size;
-
-        try {
-            size = resources.getDimension(R.dimen.fso_text_secondary);
-        } catch (@NonNull final Resources.NotFoundException e) {
-            size = resources.getDimension(getAttr(context, android.R.attr.textAppearanceMedium));
-        }
-        mSecondaryTextSize = size;
+        mPrimaryTextSize = getTextSize(context, android.R.attr.textAppearanceLarge);
+        mSecondaryTextSize = getTextSize(context, android.R.attr.textAppearanceMedium);
+        @ColorInt
+        int textColor = getColor(context, android.R.attr.textColorPrimary);
 
         // Determine the overlay size
         mOverlaySize = (int) (SIZE_MULTIPLIER * mPrimaryTextSize);
@@ -156,15 +142,33 @@ public class FastScrollerOverlay
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setTextSize(mPrimaryTextSize);
         mTextPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mTextPaint.setColor(textColor);
 
         mTextDecent = mTextPaint.descent();
     }
 
-    private static int getAttr(@NonNull final Context context,
-                               @AttrRes final int attr) {
+    private static int getColor(@NonNull final Context context,
+                                @SuppressWarnings("SameParameterValue") @AttrRes final int attr) {
+        Resources.Theme theme = context.getTheme();
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+        //API: 23
+//        return context.getResources().getColor(tv.resourceId, theme);
+        return context.getResources().getColor(tv.resourceId);
+    }
+
+    private static int getTextSize(@NonNull final Context context,
+                                   @AttrRes final int attr) {
         TypedValue tv = new TypedValue();
         context.getTheme().resolveAttribute(attr, tv, true);
-        return tv.resourceId;
+
+        int[] textSizeAttr = new int[]{android.R.attr.textSize};
+        int indexOfAttrTextSize = 0;
+        TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
+        int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
+        ta.recycle();
+
+        return textSize;
     }
 
     /**

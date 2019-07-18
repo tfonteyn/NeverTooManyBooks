@@ -36,18 +36,20 @@ public final class ImageUtils {
 
     /*
      * Scaling of thumbnails.
-     * Must be kept in sync with res/xml/preferences_book_style#pv_cover_scale_factor
+     * Must be kept in sync with res/values/strings-preferences.xml#pv_cover_scale_factor
+     *
+     * res/xml/preferences_book_style.xml contains the default set to 2
      */
     /** Thumbnail Scaling. */
     public static final int SCALE_X_SMALL = 1;
     /** Thumbnail Scaling. */
     public static final int SCALE_SMALL = 2;
     /** Thumbnail Scaling. */
-    public static final int SCALE_MEDIUM = 4;
+    public static final int SCALE_MEDIUM = 3;
     /** Thumbnail Scaling. */
-    public static final int SCALE_LARGE = 6;
+    public static final int SCALE_LARGE = 5;
     /** Thumbnail Scaling. */
-    public static final int SCALE_X_LARGE = 9;
+    public static final int SCALE_X_LARGE = 8;
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 12;
 
@@ -390,17 +392,23 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and save to a file.
      *
-     * @param url  Image file URL
-     * @param name for the file.
+     * ENHANCE: unify the naming elements of the file.
+     *
+     * @param url    Image file URL
+     * @param name   for the file.
+     * @param suffix optional suffix
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
     @Nullable
     @WorkerThread
     public static String saveImage(@NonNull final String url,
-                                   @NonNull final String name) {
+                                   @NonNull final String name,
+                                   @Nullable final String suffix) {
+
+        final File file = StorageUtils.getTempCoverFile(name, suffix);
+
         boolean success = false;
-        final File file = StorageUtils.getTempCoverFile(name);
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {

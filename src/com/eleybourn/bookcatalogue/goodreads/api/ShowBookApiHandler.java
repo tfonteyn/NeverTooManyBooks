@@ -28,8 +28,6 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
-import java.util.MissingResourceException;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -572,7 +570,8 @@ public abstract class ShowBookApiHandler
         }
 
         if (bestImage != null) {
-            String fileSpec = ImageUtils.saveImage(bestImage, GoodreadsTasks.FILENAME_SUFFIX);
+            String name = mBookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
+            String fileSpec = ImageUtils.saveImage(bestImage, name, GoodreadsTasks.FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> list =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

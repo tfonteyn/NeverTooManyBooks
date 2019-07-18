@@ -11,7 +11,6 @@
         <item>Ημέρα / Νύχτα</item>
         <item>Σκούρο</item>
         <item>Φως</item>
-        <item>Φως 2</item>
     </string-array>
 
     <string name="pt_ui_messages_use">Ενημερώστε με</string>
@@ -76,8 +75,8 @@
         <item>Περιστροφή 180 μοίρες</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας \‘Layer Type\’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το \‘Λογισμικό\’ για ασφαλέστερο αλλά πιο αργό ή για \‘υλισμικό\’ για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
+    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας ‘Layer Type’</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το ‘Λογισμικό’ για ασφαλέστερο αλλά πιο αργό ή για ‘υλισμικό’ για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>υλισμικό</item>

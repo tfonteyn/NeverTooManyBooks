@@ -182,7 +182,7 @@
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_given_names">Voornamen</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
-    <string name="lbl_field_usage_add_extra">Voegt extra gegevens toe</string>
+    <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_overwrite">Overschrijft bestaande gegevens</string>
     <string name="lbl_send_info">Zend debug informatie</string>
     <string name="lbl_cleanup_files">Bestanden opschonen</string>

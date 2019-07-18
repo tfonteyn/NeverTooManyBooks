@@ -17,8 +17,8 @@ public class FieldUsage {
     /** a key, usually from {@link UniqueId}. */
     @NonNull
     public final String fieldId;
-    /** is the field a list type. */
-    private final boolean mIsList;
+    /** Is the field capable of appending extra data. */
+    private final boolean mAllowAppend;
     /** label to show to the user. */
     @StringRes
     private final int mNameStringId;
@@ -30,27 +30,27 @@ public class FieldUsage {
     /**
      * Constructor.
      *
-     * @param fieldId      key
      * @param nameStringId label to show to the user.
      * @param usage        how to use this field.
-     * @param isList       {@code true} if this field is a list type.
+     * @param allowAppend  {@code true} if this field is capable of appending extra data.
+     * @param fieldId      key
      */
-    public FieldUsage(@NonNull final String fieldId,
-                      @StringRes final int nameStringId,
+    public FieldUsage(@StringRes final int nameStringId,
                       @NonNull final Usage usage,
-                      final boolean isList) {
+                      final boolean allowAppend,
+                      @NonNull final String fieldId) {
         this.fieldId = fieldId;
         mNameStringId = nameStringId;
         this.usage = usage;
-        mIsList = isList;
+        mAllowAppend = allowAppend;
     }
 
     public boolean isWanted() {
         return usage != Usage.Skip;
     }
 
-    public boolean isList() {
-        return mIsList;
+    public boolean canAppend() {
+        return mAllowAppend;
     }
 
     @NonNull
@@ -66,28 +66,28 @@ public class FieldUsage {
     /**
      * Cycle to the next Usage stage.
      * <p>
-     * if (isList): Skip -> CopyIfBlank -> Merge -> Overwrite -> Skip
+     * if (canAppend): Skip -> CopyIfBlank -> Append -> Overwrite -> Skip
      * else       : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
     public void nextState() {
-        usage = usage.nextState(mIsList);
+        usage = usage.nextState(mAllowAppend);
     }
 
     public enum Usage {
-        Skip, CopyIfBlank, Merge, Overwrite;
+        Skip, CopyIfBlank, Append, Overwrite;
 
         @NonNull
-        Usage nextState(final boolean isList) {
+        Usage nextState(final boolean allowAppend) {
             switch (this) {
                 case Skip:
                     return CopyIfBlank;
                 case CopyIfBlank:
-                    if (isList) {
-                        return Merge;
+                    if (allowAppend) {
+                        return Append;
                     } else {
                         return Overwrite;
                     }
-                case Merge:
+                case Append:
                     return Overwrite;
 
                 //case Overwrite:
@@ -101,8 +101,8 @@ public class FieldUsage {
             switch (this) {
                 case CopyIfBlank:
                     return R.string.lbl_field_usage_copy_if_blank;
-                case Merge:
-                    return R.string.lbl_field_usage_add_extra;
+                case Append:
+                    return R.string.lbl_field_usage_append;
                 case Overwrite:
                     return R.string.lbl_field_usage_overwrite;
                 default:

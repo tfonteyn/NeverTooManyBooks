@@ -31,12 +31,15 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -160,8 +163,7 @@ public class App
     private static final int[] APP_THEMES = {
             R.style.AppTheme_DayNight,
             R.style.AppTheme_Dark,
-            R.style.AppTheme_Light_Blue,
-            R.style.AppTheme_Light_Red,
+            R.style.AppTheme_Light,
             };
     /**
      * internal; check if an Activity should do a 'recreate()'.
@@ -258,10 +260,10 @@ public class App
     }
 
     /**
-     * @param context for getting the theme
-     * @param attr    resource id to get
+     * @param context Current context
+     * @param attr    attribute id to resolve
      *
-     * @return resolved attribute
+     * @return resource id
      */
     @IdRes
     public static int getAttr(@NonNull final Context context,
@@ -269,6 +271,48 @@ public class App
         TypedValue tv = new TypedValue();
         context.getTheme().resolveAttribute(attr, tv, true);
         return tv.resourceId;
+    }
+
+    /**
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *
+     * @return A single color value in the form 0xAARRGGBB.
+     */
+    @SuppressWarnings("unused")
+    @ColorInt
+    public static int getColor(@NonNull final Context context,
+                               @AttrRes final int attr) {
+        Resources.Theme theme = context.getTheme();
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+        //API: 23
+//        return context.getResources().getColor(tv.resourceId, theme);
+        return context.getResources().getColor(tv.resourceId);
+    }
+
+    /**
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *                Must be a type that has "android.R.attr.textSize" value.
+     *
+     * @return Attribute dimension value multiplied by the appropriate
+     * metric and truncated to integer pixels, or -1 if not defined.
+     */
+    @SuppressWarnings("unused")
+    public static int getTextSize(@NonNull final Context context,
+                                  @AttrRes final int attr) {
+        Resources.Theme theme = context.getTheme();
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+
+        int[] textSizeAttr = new int[]{android.R.attr.textSize};
+        int indexOfAttrTextSize = 0;
+        TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
+        int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
+        ta.recycle();
+
+        return textSize;
     }
 
     /**
@@ -560,7 +604,7 @@ public class App
         super.onConfigurationChanged(newConfig);
 
         if (BuildConfig.DEBUG /* always */) {
-            //API 24: newConfig.getLocales().get(0)
+            //API: 24: newConfig.getLocales().get(0)
             Logger.debug(this, "onConfigurationChanged", newConfig.locale);
         }
 

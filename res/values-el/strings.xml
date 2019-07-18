@@ -103,14 +103,14 @@
     <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="tip_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
     <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
-    <string name="vldt_unable_to_get_value_for_x">Δεν βρέθηκε τιμή για \‘%1$s\’</string>
-    <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για \‘%1$s\’</string>
-    <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για \‘%1$s\’</string>
-    <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για \‘%1$s\’</string>
-    <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για \‘%1$s\’</string>
-    <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για \‘%1$s\’</string>
-    <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για \‘%1$s\’</string>
-    <string name="vldt_failed_for_x">Η επικύρωση απέτυχε για \‘%1$s\’</string>
+    <string name="vldt_unable_to_get_value_for_x">Δεν βρέθηκε τιμή για ‘%1$s’</string>
+    <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για ‘%1$s’</string>
+    <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για ‘%1$s’</string>
+    <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για ‘%1$s’</string>
+    <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για ‘%1$s’</string>
+    <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για ‘%1$s’</string>
+    <string name="vldt_failed_for_x">Η επικύρωση απέτυχε για ‘%1$s’</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
@@ -148,18 +148,18 @@
     <string name="X_menu_edit_author">Επεξεργασία Συγγραφέα…</string>
     <string name="X_menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
-    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά \‘%1$s\’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
+    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά ‘%1$s’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="X_warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
-    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n  \‘%1$s\’ σε \n  \‘%2$s\’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \‘%3$s\’ θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n ‘%1$s’ σε \n ‘%2$s’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή ‘%3$s’ θα εφαρμοστεί στιγμιαία.</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
-    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n  \‘%1$s\’ σε \n  \‘%2$s\’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \‘%3$s\’ θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n ‘%1$s’ σε \n  ‘%2$s’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή ‘%3$s’ θα εφαρμοστεί στιγμιαία.</string>
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="list_and">και</string>
-    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \‘%1$s\’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
+    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο ‘%1$s’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="info_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
@@ -167,7 +167,7 @@
     <string name="warning_cover_not_found">Εικόνα δεν βρέθηκε</string>
     <string name="warning_select_min_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
-    <string name="lbl_field_usage_add_extra">Προσθέτει επιπλέον δεδομένα</string>
+    <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_overwrite">Αντικαθιστά υπάρχοντα δεδομένα</string>
     <string name="progress_msg_cancelling">Ακυρώνεται</string>
     <string name="progress_msg_starting_search">Έναρξη Αναζήτησης</string>
@@ -185,7 +185,7 @@
     <string name="btn_reset">Επαναφορά</string>
     <string name="debug_send_info_text">Πατήστε στο παρακάτω κουμπί για να αποστείλετε αναφορά σφαλμάτων και προβλημάτων σε κάποιον προγραμματιστή μας. Θα δημιουργηθεί αντίγραφο ολόκληρης της βάσης δεδομένων σας καθώς και των αρχείων log. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του email πριν την αποστολή.</string>
     <string name="lbl_send_info">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
-    <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί \‘Αποστολή πληροφοριών\’.</string>
+    <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί ‘Αποστολή πληροφοριών’.</string>
     <string name="lbl_cleanup_files">Εκκαθάριση αρχείων</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
@@ -447,7 +447,7 @@
     <string name="lbl_backup_to_archive">Αντίγραφο ασφαλείας στο Αρχείο</string>
     <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
     <string name="export_info_success_archive_details">
-        ;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο \“%1$s\”.\n
+        ;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο ‘%1$s’.\n
         \nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση
         που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.
     </string>

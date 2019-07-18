@@ -374,7 +374,7 @@ public class LibraryThingManager
 
         // Fetch, then save it with a suffix
         String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
-        String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
+        String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }

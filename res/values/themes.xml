@@ -38,7 +38,6 @@
     <!-- =========== -->
     <!-- Dark theme. -->
     <!-- =========== -->
-    <!--<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">-->
     <style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 
         <!-- ==================== -->
@@ -59,11 +58,10 @@
 
     </style>
 
-    <!-- =================== -->
-    <!-- Light theme - Blue. -->
-    <!-- =================== -->
-    <!--<style name="AppTheme.Light.Blue" parent="Theme.AppCompat.Light.NoActionBar">-->
-    <style name="AppTheme.Light.Blue" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- ============ -->
+    <!-- Light theme. -->
+    <!-- ============ -->
+    <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
 
         <!-- ==================== -->
         <!-- Application specific -->
@@ -82,28 +80,4 @@
         <item name="colorAccent">@color/blue_a200</item>
 
     </style>
-
-    <!-- ================== -->
-    <!-- Light theme - Red. -->
-    <!-- ================== -->
-    <!--<style name="AppTheme.Light.Red" parent="Theme.AppCompat.Light.NoActionBar">-->
-    <style name="AppTheme.Light.Red" parent="Theme.MaterialComponents.Light.NoActionBar">
-
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
-
-        <item name="border_color">@color/grey_500</item>
-        <item name="checked_icon_tint">@color/green_a700</item>
-        <item name="completed_icon_tint">@color/amber_a700</item>
-
-        <!-- ============================ -->
-        <!-- Theme Color palette -->
-        <!-- ============================ -->
-
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
-        <item name="colorAccent">@color/red_a200</item>
-    </style>
-
 </resources>

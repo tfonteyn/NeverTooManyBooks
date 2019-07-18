@@ -61,7 +61,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
  * See:
  * http://developer.android.com/guide/topics/graphics/hardware-accel.html
  * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
- * so for API level > 11, we turn it off manually.
+ * so for API: level > 11, we turn it off manually.
  * <p>
  * 2018-11-30: making this a configuration option.
  */
@@ -377,7 +377,8 @@ public class CoverHandler {
                                                 bitmap.getWidth(), bitmap.getHeight(),
                                                 matrix, true);
 
-            File cameraFile = StorageUtils.getTempCoverFile("camera" + sTempImageCounter);
+            File cameraFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
+                                                            "_camera");
             // Create a file to copy the image into
             try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
                 result.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -596,7 +597,7 @@ public class CoverHandler {
      */
     @NonNull
     private File getCroppedTempCoverFile() {
-        return StorageUtils.getTempCoverFile("cropped" + sTempImageCounter);
+        return StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter), "_cropped");
     }
 
     /**

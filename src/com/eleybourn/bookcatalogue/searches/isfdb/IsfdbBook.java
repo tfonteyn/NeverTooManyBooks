@@ -672,7 +672,12 @@ public class IsfdbBook
         Element img = contentBox.selectFirst("img");
         if (img != null) {
             String url = img.attr("src");
-            String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX);
+            String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
+            if (isbn.isEmpty()) {
+                isbn = bookData.getString(DBDefinitions.KEY_ISFDB_ID, "");
+            }
+            String fileSpec = ImageUtils.saveImage(url, isbn, FILENAME_SUFFIX);
+
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

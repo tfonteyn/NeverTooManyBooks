@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -97,7 +98,14 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * <updated>2010-03-01T07:31:23.000Z</updated>
  * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
  * <title type='text'>The Geeks' Guide to World Domination</title>
- * <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown' href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
+ * <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
+ *      href='http://bks3.books.google.com/books?
+ *      id=lf2EMetoLugC
+ *      &amp;printsec=frontcover
+ *      &amp;img=1
+ *      &amp;zoom=5
+ *      &amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA
+ *      &amp;source=gbs_gdata'/>
  * <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  * <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
  * <link rel='alternate' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;ie=ISO-8859-1'/>
@@ -195,6 +203,7 @@ class SearchGoogleBooksEntryHandler
 
     /** flag if we should fetch a thumbnail. */
     private final boolean mFetchThumbnail;
+    private final String mIsbn;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -211,14 +220,15 @@ class SearchGoogleBooksEntryHandler
 
     /**
      * Constructor.
-     *
-     * @param bookData       Bundle to save results in
+     *  @param bookData       Bundle to save results in
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
-                                  final boolean fetchThumbnail) {
+                                  final boolean fetchThumbnail,
+                                  @Nullable final String isbn) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
+        mIsbn = isbn;
 
         mLocale = LocaleUtils.getSystemLocale();
     }
@@ -266,7 +276,12 @@ class SearchGoogleBooksEntryHandler
                     .equals(attributes.getValue("", "rel"))) {
 
                 String thumbnail = attributes.getValue("", "href");
-                String fileSpec = ImageUtils.saveImage(thumbnail, FILENAME_SUFFIX);
+                String name = mBookData.getString(DBDefinitions.KEY_ISBN,"");
+                if (name.isEmpty()) {
+                    // just use something...
+                    name = mIsbn != null ? mIsbn : String.valueOf(System.currentTimeMillis());
+                }
+                String fileSpec = ImageUtils.saveImage(thumbnail, name, FILENAME_SUFFIX);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -274,8 +289,7 @@ class SearchGoogleBooksEntryHandler
                         imageList = new ArrayList<>();
                     }
                     imageList.add(fileSpec);
-                    mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY,
-                                                 imageList);
+                    mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {

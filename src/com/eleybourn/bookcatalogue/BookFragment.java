@@ -115,13 +115,17 @@ public class BookFragment
         mTocButton = view.findViewById(R.id.toc_button);
         // show/hide the TOC as the user flips the switch.
         mTocButton.setOnClickListener(v -> {
+            // note that the button is explicitly (re)set.
+            // If user clicks to fast it gets out of sync.
             if (mTocView.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
                 mNestedScrollView.fullScroll(View.FOCUS_UP);
                 mTocView.setVisibility(View.GONE);
+                mTocButton.setChecked(false);
 
             } else {
                 mTocView.setVisibility(View.VISIBLE);
+                mTocButton.setChecked(true);
             }
         });
 

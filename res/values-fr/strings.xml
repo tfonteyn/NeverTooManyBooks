@@ -199,7 +199,7 @@
     <string name="warning_cover_not_found">Image non trouvée</string>
     <string name="warning_select_min_1_field">Choisissez au moins un champ à mettre à jour</string>
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
-    <string name="lbl_field_usage_add_extra">Ajouter des données supplémentaires</string>
+    <string name="lbl_field_usage_append">Ajouter des données supplémentaires</string>
     <string name="lbl_field_usage_overwrite">Remplacer les données existantes</string>
     <string name="progress_msg_cancelling">Annulation en cours</string>
     <string name="progress_msg_starting_search">Démarrage en cours</string>

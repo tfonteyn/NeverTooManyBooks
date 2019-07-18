@@ -108,6 +108,8 @@ public class BooksOnBookshelf
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
+    private TextView mFilterTextView;
+
     /** Listener for GoodreadsTasks. */
     private final TaskListener<Object, Integer> mOnGoodreadsTaskListener =
             new TaskListener<Object, Integer>() {
@@ -263,6 +265,7 @@ public class BooksOnBookshelf
         initAdapter(null);
 
         // details for the header of the list.
+        mFilterTextView = findViewById(R.id.search_text);
         mBookCountView = findViewById(R.id.book_count);
         mHeaderTextView[0] = findViewById(R.id.level_1_text);
         mHeaderTextView[1] = findViewById(R.id.level_2_text);
@@ -623,7 +626,7 @@ public class BooksOnBookshelf
             searchText = getIntent().getDataString();
         }
         mModel.getSearchCriteria().setKeywords(searchText);
-        populateSearchField();
+//        setFilterTextField();
     }
 
     /**
@@ -1435,7 +1438,7 @@ public class BooksOnBookshelf
                         Bundle extras = data.getExtras();
                         if (extras != null) {
                             mModel.getSearchCriteria().from(extras, true);
-                            populateSearchField();
+//                            setFilterTextField();
                         }
                         mModel.setFullRebuild(true);
                     }
@@ -1590,20 +1593,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * display or hide the search text field in the header.
-     */
-    private void populateSearchField() {
-        String searchText = mModel.getSearchCriteria().getDisplayString();
-        TextView searchTextView = findViewById(R.id.search_text);
-        if (searchText.isEmpty()) {
-            searchTextView.setVisibility(View.GONE);
-        } else {
-            searchTextView.setVisibility(View.VISIBLE);
-            searchTextView.setText(getString(R.string.title_search_filtered_on_x, searchText));
-        }
-    }
-
-    /**
      * Show the hints used in this class.
      */
     private void initHints() {
@@ -1614,14 +1603,15 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Convenience wrapper method that handles the 3 steps of preparing the list header.
+     * Convenience wrapper method that handles the 4 steps of preparing the list header.
      *
      * @param listHasItems Flag to indicate there are in fact items in the list
      *
      * @return {@code true} if the header should display the 'level' texts.
      */
     private boolean setupListHeader(final boolean listHasItems) {
-        populateBookCountField();
+        setFilterTextField();
+        setBookCountField();
         final boolean showHeaderTexts = setHeaderTextVisibility();
         // Set the initial details to the current first visible row.
         if (listHasItems && showHeaderTexts) {
@@ -1631,9 +1621,22 @@ public class BooksOnBookshelf
     }
 
     /**
+     * display or hide the search text field in the header.
+     */
+    private void setFilterTextField() {
+        String filterText = mModel.getSearchCriteria().getDisplayString();
+        if (filterText.isEmpty()) {
+            mFilterTextView.setVisibility(View.GONE);
+        } else {
+            mFilterTextView.setVisibility(View.VISIBLE);
+            mFilterTextView.setText(getString(R.string.title_search_filtered_on_x, filterText));
+        }
+    }
+
+    /**
      * Display the number of books in the current list.
      */
-    private void populateBookCountField() {
+    private void setBookCountField() {
         int showHeaderFlags = mModel.getCurrentStyle().getShowHeaderInfo();
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             int totalBooks = mModel.getTotalBooks();

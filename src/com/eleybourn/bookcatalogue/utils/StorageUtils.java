@@ -220,10 +220,16 @@ public final class StorageUtils {
     }
 
     /**
-     * @return a temp cover file 'name'.
+     * @param name   for the file.
+     * @param suffix optional suffix
+     *
+     * @return a temp cover file spec.
      */
-    public static File getTempCoverFile(@NonNull final String name) {
-        return new File(getTemp() + File.separator + "tmp" + name + ".jpg");
+    public static File getTempCoverFile(@NonNull final String name,
+                                        @Nullable final String suffix) {
+        return new File(getTemp() + File.separator
+                                + "tmp" + name + (suffix != null ? suffix: "")
+                                + ".jpg");
     }
 
     /**
