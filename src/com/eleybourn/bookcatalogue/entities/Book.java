@@ -625,7 +625,13 @@ public class Book
 
     @Nullable
     public String getLoanee(@NonNull final DAO db) {
-        return db.getLoaneeByBookId(getId());
+        // Hopefully we have it in the last cursor we fetched.
+        if (containsKey(DBDefinitions.KEY_LOANEE)) {
+            return getString(DBDefinitions.KEY_LOANEE);
+        } else {
+            // if not, take the long road.
+            return db.getLoaneeByBookId(getId());
+        }
     }
 
     /**

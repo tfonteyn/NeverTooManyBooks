@@ -64,9 +64,9 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistMappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.StylePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditAuthorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.entities.EditPublisherDialogFragment;
@@ -108,8 +108,6 @@ public class BooksOnBookshelf
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
-    private TextView mFilterTextView;
-
     /** Listener for GoodreadsTasks. */
     private final TaskListener<Object, Integer> mOnGoodreadsTaskListener =
             new TaskListener<Object, Integer>() {
@@ -122,8 +120,8 @@ public class BooksOnBookshelf
                                                              getWindow().getDecorView(), this);
                 }
             };
-
     private final List<String> mBookshelfNameList = new ArrayList<>();
+    private TextView mFilterTextView;
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -915,9 +913,7 @@ public class BooksOnBookshelf
                     .setIcon(R.drawable.ic_edit);
 
                 if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
-                    boolean isAvailable = null == mModel.getDb().getLoaneeByBookId(
-                            row.getLong(DBDefinitions.KEY_FK_BOOK));
-                    if (isAvailable) {
+                    if (mModel.isAvailable(row.getLong(DBDefinitions.KEY_FK_BOOK))) {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
                                  MenuHandler.ORDER_LENDING,
                                  R.string.menu_loan_lend_book)
@@ -952,12 +948,11 @@ public class BooksOnBookshelf
                         !row.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID).isEmpty();
 
                 if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId) {
-                    SubMenu subMenu =
-                            menu.addSubMenu(Menu.NONE,
-                                            R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                                            MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
-                                            R.string.menu_view_book_at_ellipsis)
-                                .setIcon(R.drawable.ic_link);
+                    SubMenu subMenu = menu.addSubMenu(Menu.NONE,
+                                                      R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                                                      MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
+                                                      R.string.menu_view_book_at_ellipsis)
+                                          .setIcon(R.drawable.ic_link);
                     if (hasIsfdbId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
                                     R.string.isfdb)
@@ -1095,34 +1090,36 @@ public class BooksOnBookshelf
 
         FragmentManager fm = getSupportFragmentManager();
 
+        long bookId;
+
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_DELETE:
                 String title = row.getString(DBDefinitions.KEY_TITLE);
-                List<Author> authors = mModel.getDb().getAuthorsByBookId(
-                        row.getLong(DBDefinitions.KEY_FK_BOOK));
+                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
+                List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBookAlert(this, title, authors, () -> {
-                    mModel.getDb().deleteBook(row.getLong(DBDefinitions.KEY_FK_BOOK));
-                    mBookChangedListener.onBookChanged(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                       BookChangedListener.BOOK_WAS_DELETED,
-                                                       null);
+                    mModel.getDb().deleteBook(bookId);
+                    mBookChangedListener
+                            .onBookChanged(bookId, BookChangedListener.BOOK_WAS_DELETED, null);
                 });
                 return true;
 
             case R.id.MENU_BOOK_READ:
                 // toggle the read status
-                if (mModel.getDb().setBookRead(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                               !row.getBoolean(DBDefinitions.KEY_READ))) {
+                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
+                if (mModel.getDb().setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
 //                    Bundle data = new Bundle();
 //                    data.putBoolean(KEY_READ, !row.isRead());
 //                    data.putInt(UniqueId.POSITION, row.getPosition());
-                    mBookChangedListener.onBookChanged(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                       BookChangedListener.BOOK_READ, null);
+                    mBookChangedListener
+                            .onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
                 }
                 return true;
 
             case R.id.MENU_BOOK_EDIT: {
+                bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 Intent intent = new Intent(this, EditBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, row.getLong(DBDefinitions.KEY_FK_BOOK));
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
             }
@@ -1135,8 +1132,9 @@ public class BooksOnBookshelf
                 ArrayList<Long> bookIds;
                 switch (row.getInt(DBDefinitions.KEY_BL_NODE_ROW_KIND)) {
                     case BooklistGroup.RowKind.BOOK:
+                        bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                         bookIds = new ArrayList<>();
-                        bookIds.add(row.getLong(DBDefinitions.KEY_FK_BOOK));
+                        bookIds.add(bookId);
                         break;
 
                     case BooklistGroup.RowKind.AUTHOR:

@@ -275,7 +275,6 @@ public class LendBookDialogFragment
         return list;
     }
 
-
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,

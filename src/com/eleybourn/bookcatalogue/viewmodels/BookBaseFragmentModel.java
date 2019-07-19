@@ -162,7 +162,8 @@ public class BookBaseFragmentModel
      * @return {@code true} if the book is available for lending.
      */
     public boolean isAvailable() {
-        return mDb.getLoaneeByBookId(mBook.getId()) == null;
+        String loanee = getLoanee();
+        return loanee == null || getLoanee().isEmpty();
     }
 
     @Nullable

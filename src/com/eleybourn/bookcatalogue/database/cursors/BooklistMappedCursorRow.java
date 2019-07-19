@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -170,16 +171,20 @@ public class BooklistMappedCursorRow
         //        at com.eleybourn.bookcatalogue.BooksOnBookshelf$4.onScrolled(BooksOnBookshelf.java:489)
 
         int columnIndex = mLevelCol[index];
-        // check copied from android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
-        if (-1 == getPosition() || getCount() == getPosition()) {
-            // This is a workaround + debug, and not a fix.
-            // obv. we could just catch CursorIndexOutOfBoundsException instead... but that's not a fix.
-            Logger.warnWithStackTrace(this,"getLevelText",
-                                     "CursorIndexOutOfBoundsException: Index " + columnIndex
-                                             + " requested, with a size of "  + getCount());
+        try {
+            //booom
+            String text = getString(columnIndex);
+
+            return formatRowGroup(context, level, text);
+
+        } catch (CursorIndexOutOfBoundsException e) {
+            Logger.warnWithStackTrace(this,
+                                      "columnIndex=" + columnIndex,
+                                      "level=" + level,
+                                      "index=" + index,
+                                      "getCount=" + getCount(),
+                                      "getPosition=" + getPosition());
             return null;
-        } else {
-            return formatRowGroup(context, level, getString(columnIndex));
         }
     }
 

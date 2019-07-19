@@ -482,6 +482,11 @@ public class BooksOnBookshelfModel
     }
 
 
+    public boolean isAvailable(final long bookId) {
+        String loanee = mDb.getLoaneeByBookId(bookId);
+        return  (loanee == null) || loanee.isEmpty();
+    }
+
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
