@@ -424,9 +424,9 @@ public class DAO
      * there are still non-fatal anomalies.
      */
     @SuppressWarnings("unused")
-    public static void debugPrintReferenceCount(@Nullable final String msg) {
+    public static void debugPrintReferenceCount(@Nullable final String message) {
         if (sSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg, sSyncedDb.getUnderlyingDatabase());
+            SynchronizedDb.printRefCount(message, sSyncedDb.getUnderlyingDatabase());
         }
     }
 

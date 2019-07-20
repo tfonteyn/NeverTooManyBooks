@@ -38,6 +38,8 @@ import com.eleybourn.bookcatalogue.dialogs.picker.FilePicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
+import com.eleybourn.bookcatalogue.goodreads.tasks.ImportTask;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendBooksTask;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
@@ -107,8 +109,7 @@ public class AdminFragment
                 case R.id.TASK_ID_GR_SEND_BOOKS:
                 case R.id.TASK_ID_GR_REQUEST_AUTH:
                     //noinspection ConstantConditions
-                    GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                             getView(), this);
+                    GoodreadsTasks.handleResult(taskId, success, result, e, getView(), this);
                     break;
 
                 default:
@@ -181,28 +182,28 @@ public class AdminFragment
         root.findViewById(R.id.lbl_sync_with_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new GoodreadsTasks.ImportTask(true, mListener).execute();
+                new ImportTask(true, mListener).execute();
             });
 
         // Goodreads Import All
         root.findViewById(R.id.lbl_import_all_from_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new GoodreadsTasks.ImportTask(false, mListener).execute();
+                new ImportTask(false, mListener).execute();
             });
 
         // Goodreads Export Updated
         root.findViewById(R.id.lbl_send_updated_books_to_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new GoodreadsTasks.SendBooksTask(true, mListener).execute();
+                new SendBooksTask(true, mListener).execute();
             });
 
         // Goodreads Export All
         root.findViewById(R.id.lbl_send_all_books_to_goodreads)
             .setOnClickListener(v -> {
                 UserMessage.show(v, R.string.progress_msg_connecting);
-                new GoodreadsTasks.SendBooksTask(false, mListener).execute();
+                new SendBooksTask(false, mListener).execute();
             });
 
         /* Start the activity that shows the active GoodReads tasks. */

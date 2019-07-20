@@ -25,9 +25,9 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
+import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -96,13 +96,12 @@ public abstract class BaseActivity
 
     /**
      * When resuming, recreate activity if needed.
-     *
+     * <p>
      * The current (2nd) incarnation of restart-logic is still rather broken
      * as it does not deal with back-stack.
      * URGENT:    if (getThemeFromThisContext != App.getTheme) then recreate() ...
-     *
+     * <p>
      * https://www.hidroh.com/2015/02/25/support-multiple-themes-android-app-part-2/
-     *
      */
     @Override
     @CallSuper

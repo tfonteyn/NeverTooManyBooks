@@ -64,7 +64,8 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * with size: large,medium,small
  * <br>
  * <p>
- * REST api: http://www.librarything.com/services/rest/documentation/1.1/
+ * REST api: <a href="http://www.librarything.com/services/rest/documentation/1.1/">
+ *     http://www.librarything.com/services/rest/documentation/1.1/</a>
  * <p>
  * Details via ISBN:
  * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork

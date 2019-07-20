@@ -97,11 +97,11 @@ public class SynchronizedDb {
      * <p>
      * Utility routine, purely for debugging ref count issues (mainly Android 2.1).
      *
-     * @param msg Message to display (relating to context)
-     * @param db  Database object
+     * @param message Message to display (relating to context)
+     * @param db      Database object
      **/
     @SuppressWarnings({"JavaReflectionMemberAccess"})
-    public static void printRefCount(@Nullable final String msg,
+    public static void printRefCount(@Nullable final String message,
                                      @NonNull final SQLiteDatabase db) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
             System.gc();
@@ -109,9 +109,9 @@ public class SynchronizedDb {
                 Field f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
                 f.setAccessible(true);
                 int refs = (Integer) f.get(db);
-                if (msg != null) {
+                if (message != null) {
                     Logger.debug(SynchronizedDb.class, "printRefCount",
-                                 "DBRefs (" + msg + "): " + refs);
+                                 "DBRefs (" + message + "): " + refs);
 //                    if (refs < 100) {
 //                        Logger.debug(SynchronizedDb.class, "printRefCount",
 //                                     "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
@@ -136,7 +136,8 @@ public class SynchronizedDb {
      * causing crashes.
      * <p>
      * About the SQLite version:
-     * https://developer.android.com/reference/android/database/sqlite/package-summary
+     * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
+     *     https://developer.android.com/reference/android/database/sqlite/package-summary</a>
      * API 27   3.19
      * API 26   3.18
      * API 24   3.9

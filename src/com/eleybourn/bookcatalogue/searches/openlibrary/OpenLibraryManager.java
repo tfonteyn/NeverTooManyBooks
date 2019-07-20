@@ -40,11 +40,11 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
- * https://openlibrary.org/developers/api
+ * <a href="https://openlibrary.org/developers/api">https://openlibrary.org/developers/api</a>
  * <p>
  * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
  * <p>
- * https://openlibrary.org/dev/docs/api/books
+ * <a href="https://openlibrary.org/dev/docs/api/books">https://openlibrary.org/dev/docs/api/books</a>
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
  * <li> response format: jscmd=data:<br>
@@ -104,7 +104,7 @@ public class OpenLibraryManager
     }
 
     /**
-     * https://openlibrary.org/dev/docs/api/covers
+     * <a href="https://openlibrary.org/dev/docs/api/covers">https://openlibrary.org/dev/docs/api/covers</a>
      * <p>
      * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
      * <p>
@@ -180,7 +180,8 @@ public class OpenLibraryManager
     }
 
     /**
-     * https://openlibrary.org/dev/docs/api/books
+     * <a href="https://openlibrary.org/dev/docs/api/books">
+     *     https://openlibrary.org/dev/docs/api/books</a>
      *
      * <br>Only the ISBN is supported.
      *

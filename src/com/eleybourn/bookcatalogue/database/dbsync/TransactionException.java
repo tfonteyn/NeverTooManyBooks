@@ -10,12 +10,12 @@ public class TransactionException
     public TransactionException() {
     }
 
-    public TransactionException(@Nullable final String msg) {
-        super(msg);
+    public TransactionException(@Nullable final String message) {
+        super(message);
     }
 
-    public TransactionException(@Nullable final String msg,
-                                @Nullable final Exception inner) {
-        super(msg, inner);
+    public TransactionException(@Nullable final String message,
+                                @Nullable final Exception cause) {
+        super(message, cause);
     }
 }

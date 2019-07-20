@@ -50,7 +50,6 @@ import com.eleybourn.bookcatalogue.utils.Throttler;
  * Initial requests from here was failing first time. FIXME: cut the dependency on that proxy.
  * but how.... seems AWS is dependent/linked to have a website.
  */
-@SuppressWarnings("HtmlTagCanBeJavadocTag")
 public final class AmazonManager
         implements SearchEngine {
 

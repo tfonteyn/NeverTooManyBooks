@@ -26,12 +26,12 @@ public class IntegerFilter
     private final TableDefinition mTable;
     private final DomainDefinition mDomain;
 
-    public IntegerFilter(@StringRes final int labelId,
-                         @NonNull final String key,
-                         @NonNull final String uuid,
-                         final boolean isPersistent,
-                         @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                         @NonNull final DomainDefinition domain) {
+    IntegerFilter(@StringRes final int labelId,
+                  @NonNull final String key,
+                  @NonNull final String uuid,
+                  final boolean isPersistent,
+                  @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
+                  @NonNull final DomainDefinition domain) {
         super(key, uuid, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;

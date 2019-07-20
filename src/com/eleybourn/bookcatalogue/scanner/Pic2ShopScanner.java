@@ -95,7 +95,10 @@ public class Pic2ShopScanner
     }
 
     /**
-     * just for reference: https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes
+     * Pro version of the package.
+     *
+     * <a href="https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes">
+     *     https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes</a>
      * The Pro package does not implement all those.
      * The example code at github lists:
      * String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};

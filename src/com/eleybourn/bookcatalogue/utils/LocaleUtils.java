@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 
@@ -51,6 +50,8 @@ public final class LocaleUtils {
      * Needs to be called from main thread at App startup.
      * <p>
      * It's guarded against being called more then once.
+     *
+     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
      */
     @UiThread
     public static void init(@NonNull final Locale systemLocale) {
@@ -62,10 +63,8 @@ public final class LocaleUtils {
             // key in map should always be lowercase
             CURRENCY_MAP.put("", "");
             CURRENCY_MAP.put("€", "EUR");
-        /*
-        English
-        https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language
-         */
+
+            // English
             CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
             CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
             CURRENCY_MAP.put("£", "GBP"); // British Pound
@@ -76,7 +75,6 @@ public final class LocaleUtils {
             CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
 
             // supported locales (including pre-euro)
-
             CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
             CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
             CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
@@ -613,7 +611,8 @@ public final class LocaleUtils {
      * three shillings and six pence => 3/6
      * We don't convert this, but return that value as-is.
      * It's used on the ISFDB web site.
-     * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal
+     * <a href="https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal">
+     *     https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
      *
      * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
      * @param keyPrice          bundle key for the value

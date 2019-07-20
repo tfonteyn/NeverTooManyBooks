@@ -225,13 +225,13 @@ public class Synchronizer {
 
         private static final long serialVersionUID = -6266684663589932716L;
 
-        LockException(@Nullable final String msg) {
-            super(msg);
+        LockException(@Nullable final String message) {
+            super(message);
         }
 
-        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
-                      @Nullable final Exception inner) {
-            super(msg, inner);
+        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String message,
+                      @Nullable final Exception cause) {
+            super(message, cause);
         }
     }
 

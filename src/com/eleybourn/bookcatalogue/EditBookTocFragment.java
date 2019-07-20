@@ -118,7 +118,7 @@ public class EditBookTocFragment
     @Nullable
     private ArrayList<Editions.Edition> mIsfdbEditions;
 
-    private IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
+    private final IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
         /**
          * we got one or more editions from ISFDB.
          * Store the url's locally as the user might want to try the next in line

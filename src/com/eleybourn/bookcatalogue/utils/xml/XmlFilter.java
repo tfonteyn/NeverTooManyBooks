@@ -33,7 +33,7 @@ import java.util.Map;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
+ * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
  * objects build a tree of filters and XmlHandler objects that make this process more manageable.
  * <p>

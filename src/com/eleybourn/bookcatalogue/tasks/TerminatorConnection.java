@@ -71,7 +71,7 @@ public final class TerminatorConnection
             throw new IOException("site cannot be contacted: " + urlStr);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+        if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
             Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
         }
 

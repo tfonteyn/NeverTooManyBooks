@@ -5,12 +5,10 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * System wide book format representation.

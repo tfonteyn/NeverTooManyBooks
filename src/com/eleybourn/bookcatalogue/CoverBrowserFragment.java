@@ -342,6 +342,7 @@ public class CoverBrowserFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        //TODO: editions are stored in the model. Get rid of this duplication.
         if (!mAlternativeEditions.isEmpty()) {
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }

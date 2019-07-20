@@ -26,13 +26,15 @@ public class ColumnInfo {
     /**
      * boolean is the same as Integer(storing 0,1) , but kept for clarity.
      * <p>
-     * https://sqlite.org/datatype3.html#boolean_datatype
+     * <a href="https://sqlite.org/datatype3.html#boolean_datatype">
+     *     https://sqlite.org/datatype3.html#boolean_datatype</a>
      */
     public static final String TYPE_BOOLEAN = "boolean";
     /**
      * Date and datetime are kept for clarity.
      * <p>
-     * https://sqlite.org/datatype3.html#date_and_time_datatype
+     * <a href="https://sqlite.org/datatype3.html#date_and_time_datatype">
+     *     https://sqlite.org/datatype3.html#date_and_time_datatype</a>
      */
     public static final String TYPE_DATE = "date";
     public static final String TYPE_DATETIME = "datetime";
@@ -100,7 +102,8 @@ public class ColumnInfo {
     /**
      * Mapping types to storage classes.
      * <p>
-     * https://sqlite.org/datatype3.html#storage_classes_and_datatypes
+     * <a href="https://sqlite.org/datatype3.html#storage_classes_and_datatypes">
+     *     https://sqlite.org/datatype3.html#storage_classes_and_datatypes</a>
      */
     public enum StorageClass {
         Integer, Real, Text, Blob;

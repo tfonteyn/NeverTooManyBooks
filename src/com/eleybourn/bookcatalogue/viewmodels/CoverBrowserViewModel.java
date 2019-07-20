@@ -169,7 +169,7 @@ public class CoverBrowserViewModel
      */
     public static class FileInfo {
 
-        public String isbn;
+        public final String isbn;
         public SearchEngine.ImageSizes size;
         public String fileSpec;
         public Site site;

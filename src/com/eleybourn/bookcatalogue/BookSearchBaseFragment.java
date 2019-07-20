@@ -37,7 +37,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "BookSearchBaseFragment";
+    private static final String TAG = "BookSearchBaseFragment";
 
     /** stores an active search id, or 0 when none active. */
     public static final String BKEY_SEARCH_COORDINATOR_ID = TAG + ":SearchCoordinatorId";

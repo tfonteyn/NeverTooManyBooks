@@ -7,13 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BookSearchBaseFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.settings.Prefs;
 
 public class BookSearchBaseModel
         extends ViewModel {

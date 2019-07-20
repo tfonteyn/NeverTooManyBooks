@@ -1262,7 +1262,7 @@ public class Fields {
             try {
                 return jdkFormat(field, source);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IllegalArgumentException e) {
+            } catch (@NonNull final IllegalArgumentException e) {
                 Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
                         + " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;

@@ -1,12 +1,8 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 

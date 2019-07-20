@@ -820,7 +820,7 @@ public class TableDefinition
     /**
      * Supported/used table types.
      * <p>
-     * https://sqlite.org/fts3.html
+     * <a href=https://sqlite.org/fts3.html">https://sqlite.org/fts3.html</a>
      */
     public enum TableTypes {
         Standard, Temporary, FTS3, FTS4;

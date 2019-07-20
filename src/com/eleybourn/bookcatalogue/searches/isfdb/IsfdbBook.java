@@ -70,7 +70,8 @@ public class IsfdbBook
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
 
     /*
-     * http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
+     * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
+     *     http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
      *
      * ANTHOLOGY. A publication containing fiction by more than one author,
      * not written in collaboration

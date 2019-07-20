@@ -91,8 +91,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean SEARCH_INTERNET = false;
 
     /**
-     * GoodReads search + the sync API.
-     * {@link com.eleybourn.bookcatalogue.searches.goodreads}.
+     * GoodReads API.
+     * {@link com.eleybourn.bookcatalogue.goodreads}.
      */
     public static final boolean GOODREADS = false;
 
@@ -192,6 +192,11 @@ public final class DEBUG_SWITCHES {
 
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
+
+    /**
+     * Dump (just) the URL used in {@link com.eleybourn.bookcatalogue.tasks.TerminatorConnection}.
+     */
+    public static final boolean DUMP_HTTP_URL = true;
 
     /**
      * Dump entire HTTP response to System.out.
