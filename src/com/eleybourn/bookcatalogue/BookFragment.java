@@ -36,8 +36,8 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.entities.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -86,10 +86,12 @@ public class BookFragment
     /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
-    /** Handle next/previous paging in the flattened booklist. */
+    /** Registered with the Activity. */
+    private View.OnTouchListener mOnTouchListener;
+
+    /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
 
-    //<editor-fold desc="Fragment startup">
     /** Contains the flattened book list for next/previous paging. */
     private BookFragmentModel mBookFragmentModel;
 
@@ -140,13 +142,21 @@ public class BookFragment
      * </ul>
      * {@inheritDoc}
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         // parent takes care of initialising the Fields.
         super.onActivityCreated(savedInstanceState);
 
-        initFlattenedBookList(savedInstanceState);
+        mBookFragmentModel = ViewModelProviders.of(this).get(BookFragmentModel.class);
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
+
+        // ENHANCE: could probably be replaced by a ViewPager
+        // finally, enable the listener for flings
+        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
+        mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 
         if (savedInstanceState == null) {
             TipManager.display(getLayoutInflater(),
@@ -242,20 +252,6 @@ public class BookFragment
         fields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void initFlattenedBookList(@Nullable final Bundle savedInstanceState) {
-        mBookFragmentModel = ViewModelProviders.of(this).get(BookFragmentModel.class);
-
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
-
-        // ENHANCE: could probably be replaced by a ViewPager
-        // finally, enable the listener for flings
-        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        //noinspection ConstantConditions
-        getView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
-    }
-
     @CallSuper
     @Override
     public void onResume() {
@@ -267,12 +263,24 @@ public class BookFragment
         }
         // the parent will kick of the process that triggers onLoadFieldsFromBook.
         super.onResume();
+
+        ((BookDetailsActivity) mActivity).registerOnTouchListener(mOnTouchListener);
+
         Tracker.exitOnResume(this);
     }
 
-    //</editor-fold>
+    @Override
+    @CallSuper
+    public void onPause() {
+        ((BookDetailsActivity) mActivity).unregisterOnTouchListener(mOnTouchListener);
 
-    //<editor-fold desc="Populate">
+        //  set the current visible book id as the result data.
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
+                                            mBookBaseFragmentModel.getBook().getId());
+        mActivity.setResult(Activity.RESULT_OK, data);
+
+        super.onPause();
+    }
 
     /**
      * <p>
@@ -421,11 +429,6 @@ public class BookFragment
             mTocButton.setVisibility(View.GONE);
         }
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Menu handlers">
-
 
     /**
      * @param menuItem that was selected
@@ -579,8 +582,6 @@ public class BookFragment
         }
     }
 
-    //</editor-fold>
-
     @Override
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
@@ -603,19 +604,13 @@ public class BookFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onPause() {
-        //  set the current visible book id as the result data.
-        Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
-                                            mBookBaseFragmentModel.getBook().getId());
-        mActivity.setResult(Activity.RESULT_OK, data);
-        super.onPause();
-    }
 
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
+     *
+     * <a href="https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures">
+     * https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures</a>
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
@@ -633,7 +628,8 @@ public class BookFragment
 
             // Make sure we have considerably more X-velocity than Y-velocity;
             // otherwise it might be a scroll.
-            if (Math.abs(velocityX / velocityY) > 2) {
+            //TEST: 2019-07-20: original was "2" but 1.5 seems to be easier/enough
+            if (Math.abs(velocityX / velocityY) > 1.5) {
                 boolean moved;
                 // Work out which way to move, and do it.
                 if (velocityX > 0) {

@@ -21,23 +21,28 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for showing a book.
- * <p>
- * <b>Note:</b> eventually these 'hosting' activities are meant to go. The idea is to have ONE
- * hosting/main activity, which swaps in fragments as needed.
  */
 public class BookDetailsActivity
         extends BaseActivity {
+
+    private List<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -58,5 +63,22 @@ public class BookDetailsActivity
               .replace(R.id.main_fragment, frag, BookFragment.TAG)
               .commit();
         }
+    }
+    ;
+
+    public void registerOnTouchListener(@NonNull final View.OnTouchListener listener) {
+        mOnTouchListeners.add(listener);
+    }
+
+    public void unregisterOnTouchListener(@NonNull final View.OnTouchListener listener) {
+        mOnTouchListeners.remove(listener);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(@NonNull final MotionEvent ev) {
+        for (View.OnTouchListener listener : mOnTouchListeners) {
+            listener.onTouch(null, ev);
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
