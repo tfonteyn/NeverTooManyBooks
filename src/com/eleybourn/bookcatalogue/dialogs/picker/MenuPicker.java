@@ -46,7 +46,7 @@ public class MenuPicker<T>
                       @NonNull final Menu menu,
                       @NonNull final T userObject,
                       @NonNull final ContextItemSelected<T> listener) {
-        super(context, title, null);
+        super(context, title, null, false);
 
         mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {
@@ -83,7 +83,7 @@ public class MenuPicker<T>
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
-        final Drawable mSubMenuPointer;
+        private final Drawable mSubMenuPointer;
         @NonNull
         private final List<MenuItem> mList = new ArrayList<>();
         @NonNull

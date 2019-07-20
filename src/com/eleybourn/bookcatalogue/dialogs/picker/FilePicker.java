@@ -40,7 +40,7 @@ public class FilePicker
                       @Nullable final String message,
                       @NonNull final List<File> files,
                       @NonNull final PickListener<File> handler) {
-        super(context, title, message);
+        super(context, title, message, true);
 
         final FileItemListAdapter adapter = new FileItemListAdapter(context, files, item -> {
             dismiss();

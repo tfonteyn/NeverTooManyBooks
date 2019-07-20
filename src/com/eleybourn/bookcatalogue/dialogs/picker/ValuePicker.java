@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.dialogs.picker;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import com.eleybourn.bookcatalogue.R;
 /**
  * Provides an AlertDialog with an optional title and message.
  * The content is a list of options, behaving like a menu.
+ * Set an OnClickListener on each item in the adapter,
+ * and call {@link PickListener#onPicked(Object)} from it.
  * <p>
  * So you basically get a 'deluxe' {@link PopupMenu}.
  */
@@ -30,16 +33,17 @@ public class ValuePicker {
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param title   Dialog title
-     * @param message Message to display at the top
+     * @param context    Current context
+     * @param title      Dialog title
+     * @param message    Message to display at the top
+     * @param showCancel set to {@code true} to show a 'cancel' button.
      */
     ValuePicker(@NonNull final Context context,
                 @Nullable final String title,
-                @Nullable final String message) {
+                @Nullable final String message,
+                final boolean showCancel) {
 
-        // Build the base dialog
-        final View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
+        View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
         // Optional message
         TextView messageView = root.findViewById(R.id.message);
@@ -57,11 +61,14 @@ public class ValuePicker {
 //        mListView.addItemDecoration(
 //                new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
-        // there is no 'positive' button. The user chooses one of the list options instead.
         mDialog = new AlertDialog.Builder(context)
                 .setView(root)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .create();
+
+        if (showCancel) {
+            mDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                              context.getText(android.R.string.cancel), (d, which) -> d.dismiss());
+        }
 
         // optional title
         if (title != null && !title.isEmpty()) {

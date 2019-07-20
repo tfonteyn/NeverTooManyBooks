@@ -42,7 +42,7 @@ public class FieldPicker<T>
                        @Nullable final String title,
                        @NonNull final Field field,
                        @NonNull final List<T> list) {
-        super(context, title, null);
+        super(context, title, null, true);
 
         final FieldListAdapter<T> adapter =
                 new FieldListAdapter<>(context, field, list, item -> {
