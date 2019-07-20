@@ -8,11 +8,12 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
+import oauth.signpost.exception.OAuthNotAuthorizedException;
+
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * Simple class to run in background and verify Goodreads credentials then
@@ -32,13 +33,13 @@ public class AuthorizationResultCheckTask
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
 
-        GoodreadsManager grMgr = new GoodreadsManager();
+        GoodreadsManager grManager = new GoodreadsManager();
         try {
-            grMgr.handleAuthentication();
-            if (grMgr.hasValidCredentials()) {
+            grManager.handleAuthenticationAfterAuthorization();
+            if (grManager.hasValidCredentials()) {
                 return true;
             }
-        } catch (@NonNull final AuthorizationException | IOException e) {
+        } catch (@NonNull final OAuthNotAuthorizedException | IOException e) {
             mException = e;
         }
         return false;

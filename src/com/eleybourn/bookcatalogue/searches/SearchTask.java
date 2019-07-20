@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 /**
  * Searches a single {@link SearchEngine},
@@ -193,7 +193,7 @@ public class SearchTask
                 checkForSeriesNameInTitle();
             }
 
-        } catch (@NonNull final AuthorizationException e) {
+        } catch (@NonNull final CredentialsException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(e);
 

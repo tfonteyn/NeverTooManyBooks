@@ -41,18 +41,22 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
  */
 public class GoodreadsWork {
 
-    public String title;
-    public String imageUrl;
-    public String smallImageUrl;
     public Long bookId;
     public Long workId;
-    public Long pubDay;
-    public Long pubMonth;
-    public Long pubYear;
-    public Double rating;
+
+    public String title;
     public Long authorId;
     public String authorName;
 
+    public Long pubDay;
+    public Long pubMonth;
+    public Long pubYear;
+
+    public Double rating;
+
+    public String imageUrl;
+    public String smallImageUrl;
+    
     @Nullable
     private byte[] imageBytes;
     private WeakReference<ImageView> mImageView;
@@ -70,6 +74,7 @@ public class GoodreadsWork {
      *
      * @param imageView ImageView to display cover image
      */
+    @UiThread
     void fillImageView(@NonNull final ImageView imageView) {
         synchronized (this) {
             if (imageBytes == null) {
@@ -82,7 +87,7 @@ public class GoodreadsWork {
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification
                 imageView.setTag(R.id.TAG_GR_WORK, this);
-                //QueueManager.getQueueManager().bringTaskToFront(imageTaskId);
+
             } else {
                 // We already have an image, so just expand it.
                 imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
@@ -106,6 +111,7 @@ public class GoodreadsWork {
     /**
      * Called in UI thread by background task when it has finished.
      */
+    @UiThread
     private void onGetImageTaskFinished(@NonNull final byte[] bytes) {
         imageBytes = bytes;
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsSearchActivity;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
@@ -33,7 +34,8 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -42,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-abstract class GrSendBooksTaskBase
+abstract class SendBooksLegacyTaskBase
         extends BaseTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
@@ -60,8 +62,37 @@ abstract class GrSendBooksTaskBase
      *
      * @param description for the task
      */
-    GrSendBooksTaskBase(@NonNull final String description) {
+    SendBooksLegacyTaskBase(@NonNull final String description) {
         super(description);
+    }
+
+    /**
+     * Check that no other sync-related jobs are queued, and that Goodreads is
+     * authorized for this app.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @return StringRes id of message for user,
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
+     */
+    @WorkerThread
+    @StringRes
+    static int checkWeCanExport() {
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
+            return R.string.gr_tq_requested_task_is_already_queued;
+        }
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
+            return R.string.gr_tq_import_task_is_already_queued;
+        }
+
+        // Make sure GR is authorized for this app
+        GoodreadsManager grManager = new GoodreadsManager();
+        if (grManager.hasValidCredentials()) {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
+        } else {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
+        }
     }
 
     /**
@@ -72,13 +103,11 @@ abstract class GrSendBooksTaskBase
     @Override
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
-        boolean result = false;
 
         if (NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
             GoodreadsManager grManager = new GoodreadsManager();
-            // Ensure we are allowed
             if (grManager.hasValidCredentials()) {
-                result = send(queueManager, context, grManager);
+                return send(queueManager, context, grManager);
             } else {
                 Logger.warnWithStackTrace(this, "no valid credentials");
             }
@@ -90,7 +119,7 @@ abstract class GrSendBooksTaskBase
             Logger.warn(this, "run", "network or site not available");
         }
 
-        return result;
+        return false;
     }
 
     /**
@@ -115,19 +144,18 @@ abstract class GrSendBooksTaskBase
                         @NonNull final DAO db,
                         @NonNull final MappedCursorRow bookCursorRow) {
 
-        GoodreadsManager.ExportDisposition disposition;
+        GoodreadsManager.ExportResult result;
         Exception exportException = null;
         try {
-            disposition = grManager.sendOneBook(db, bookCursorRow);
-        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
-            disposition = GoodreadsManager.ExportDisposition.error;
+            result = grManager.sendOneBook(db, bookCursorRow);
+        } catch (@NonNull final BookNotFoundException | CredentialsException | IOException e) {
+            result = GoodreadsManager.ExportResult.error;
             exportException = e;
         }
 
         long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
 
-        // Handle the result
-        switch (disposition) {
+        switch (result) {
             case sent:
                 // Record the change
                 db.setGoodreadsSyncDate(bookId);
@@ -157,11 +185,12 @@ abstract class GrSendBooksTaskBase
                 queueManager.updateTask(this);
                 return false;
         }
+
         return true;
     }
 
     /**
-     * All Event objects resulting from sending books to goodreads.
+     * All Event objects resulting from sending books to Goodreads.
      *
      * @author Philip Warner
      */
@@ -197,7 +226,7 @@ abstract class GrSendBooksTaskBase
          */
         void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
-            GrSendOneBookTask task = new GrSendOneBookTask(
+            SendOneBookLegacyTask task = new SendOneBookLegacyTask(
                     context.getString(R.string.gr_send_book_to_goodreads, mBookId),
                     mBookId);
             qm.enqueueTask(task, QueueManager.Q_SMALL_JOBS);
@@ -319,13 +348,14 @@ abstract class GrSendBooksTaskBase
                             // not a book event?
                         }
                     }));
-            // ENHANCE: Reinstate goodreads search when goodreads work.editions API is available
+
+            // ENHANCE: Reinstate Goodreads search when Goodreads work.editions API is available
 //            // SEARCH GOODREADS
 //            items.add(new ContextDialogItem(
 //                    context.getString(R.string.searching_goodreads), () -> {
 //                BookEventHolder holder = (BookEventHolder)
-//                        view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-//                Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class)
+//                        view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
+//                Intent intent = new Intent(context, GoodreadsSearchActivity.class)
 //                        .putExtra(DBDefinitions.KEY_PK_ID, holder.event.getId());
 //                context.startActivity(intent);
 //            }));

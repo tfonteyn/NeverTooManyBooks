@@ -20,202 +20,147 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
  * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS.
  * <p>
- * Typical response.
- * <pre>
- *  {@code
- *  <owned-book>
- *    <available-for-swap type='boolean'>false</available-for-swap>
- *    <book-id type='integer'>9376943</book-id>
- *    <book-trades-count type='integer'>0</book-trades-count>
- *    <comments-count type='integer'>0</comments-count>
- *    <condition-code type='integer' nil='true'></condition-code>
- *    <condition-description nil='true'></condition-description>
- *    <created-at type='datetime'>2012-01-01T07:08:47-08:00</created-at>
- *    <current-owner-id type='integer'>5129458</current-owner-id>
- *    <current-owner-name nil='true'></current-owner-name>
- *    <id type='integer'>5431803</id>
- *    <last-comment-at type='datetime' nil='true'></last-comment-at>
- *    <original-purchase-date type='datetime' nil='true'></original-purchase-date>
- *    <original-purchase-location nil='true'></original-purchase-location>
- *    <review-id type='integer' nil='true'></review-id>
- *    <swappable-flag type='boolean'>false</swappable-flag>
- *    <unique-code nil='true'></unique-code>
- *    <updated-at type='datetime'>2012-01-01T07:08:47-08:00</updated-at>
- *    <work-id type='integer'>14260549</work-id>
- *  </owned-book>
- *  }
- * </pre>
+ * owned_books.create   —   Add to books owned.
  *
- * @author Philip Warner
+ * <a href="https://www.goodreads.com/api/index#owned_books.create">
+ *     https://www.goodreads.com/api/index#owned_books.create</a>
  */
 @SuppressWarnings("unused")
 public class OwnedBookCreateApiHandler
         extends ApiHandler {
 
-    //public enum ConditionCode {
-    //  BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
-    //}
+    private static final String URL = GoodreadsManager.BASE_URL + "/owned_books.xml";
 
     /**
      * Constructor.
      *
      * @param grManager the Goodreads Manager
-     */
-    public OwnedBookCreateApiHandler(@NonNull final GoodreadsManager grManager) {
-        super(grManager);
-    }
-
-    /*
-     * URL: http://www.goodreads.com/owned_books.xml
-     * HTTP method: POST
-     * Parameters:
-     *    owned_book[condition_code]: one of 10 (brand new), 20 (like new), 30 (very good),
-     *    40 (good), 50 (acceptable), 60 (poor)
-     *    owned_book[unique_code]: BookCrossing id (BCID)
-     *    owned_book[original_purchase_location]: where this book was acquired
-     *    owned_book[book_id]: id of the book (required)
-     *    owned_book[original_purchase_date]: when book was acquired
-     *    owned_book[condition_description]: description of book's condition
-     *    owned_book[available_for_swap]: true or false, if book is available for swap
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException with GoodReads
      */
-    public void create(@NonNull final String isbn,
-                       @NonNull final List<String> shelves)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException,
-                   ISBN.IsbnInvalidException {
-        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
-        long id;
-
-        try {
-            id = isbnToIdApiHandler.isbnToId(isbn);
-        } catch (@NonNull final BookNotFoundException e) {
-            throw new ISBN.IsbnInvalidException(isbn, e);
+    public OwnedBookCreateApiHandler(@NonNull final GoodreadsManager grManager)
+            throws CredentialsException {
+        super(grManager);
+        if (!grManager.hasValidCredentials()) {
+            throw new CredentialsException(R.string.goodreads);
         }
 
-        String url = GoodreadsManager.BASE_URL + "/owned_books.xml";
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("owned_book[book_id]", String.valueOf(id));
+        // buildFilters();
+    }
 
-        OwnedBookCreateParser handler = new OwnedBookCreateParser();
-        mManager.executePost(url, parameters, handler, true);
 
-        AddBookToShelfApiHandler shelfAdd = new AddBookToShelfApiHandler(mManager);
-        for (String shelf : shelves) {
-            shelfAdd.add(shelf, handler.getBookId());
+    /**
+     * @param isbn         the book
+     * @param dateAcquired (optional)
+     *
+     * @return the Goodreads book ID
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException            on other failures
+     */
+    public long create(@NonNull final String isbn,
+                       @Nullable final String dateAcquired)
+            throws CredentialsException,
+                   BookNotFoundException,
+                   IOException {
+
+        if (ISBN.isValid(isbn)) {
+            IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
+            long grBookId = isbnToIdApiHandler.isbnToId(isbn);
+            create(grBookId, dateAcquired);
+            return grBookId;
+
+        } else {
+            throw new BookNotFoundException(isbn);
         }
     }
 
     /**
+     * URL: http://www.goodreads.com/owned_books.xml
+     * HTTP method: POST
+     * Parameters:
+     * <ul>
+     * <li>owned_book[book_id]: id of the book (required)</li>
+     * <li>owned_book[condition_code]: one of 10 (brand new), 20 (like new),<br>
+     * 30 (very good), 40 (good), 50 (acceptable), 60 (poor)</li>
+     * <li>owned_book[condition_description]: description of book's condition</li>
+     * <li>owned_book[original_purchase_date]: when book was purchased</li>
+     * <li>owned_book[original_purchase_location]: where this book was purchased</li>
+     * <li>owned_book[unique_code]: BookCrossing id (BCID)</li>
+     * </ul>
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @param grBookId     Goodreads book id
+     * @param dateAcquired (optional)
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException            on other failures
      */
-    public void create(@NonNull final String isbn,
-                       @NonNull final String shelf)
-            throws AuthorizationException,
+    public void create(final long grBookId,
+                       @Nullable final String dateAcquired)
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
-        List<String> shelves = new ArrayList<>();
-        shelves.add(shelf);
-        create(isbn, shelves);
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("owned_book[book_id]", String.valueOf(grBookId));
+        if (dateAcquired != null) {
+            parameters.put("owned_book[original_purchase_date]", dateAcquired);
+        }
+
+        //XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        executePost(URL, parameters, null, true);
     }
 
-    private static class OwnedBookCreateParser
-            extends DefaultHandler {
-
-        private static final String XML_BOOK_ID = "book-id";
-        private static final String XML_OWNED_BOOK_ID = "id";
-        private static final String XML_WORK_ID = "work-id";
-
-        private final StringBuilder mBuilder = new StringBuilder();
-        private int mBookId;
-        //private int mOwnedBookId;
-        //private int mWorkId;
-
-        @Override
-        @CallSuper
-        public void characters(@NonNull final char[] ch,
-                               final int start,
-                               final int length)
-                throws SAXException {
-            super.characters(ch, start, length);
-            mBuilder.append(ch, start, length);
-        }
-
-        public int getBookId() {
-            return mBookId;
-        }
-
-        //public int getOwnedBookId() {
-        //  return mOwnedBookId;
-        //}
-        //
-        //public int getWorkId() {
-        //  return mWorkId;
-        //}
-
-        @Override
-        @CallSuper
-        public void startElement(@NonNull final String uri,
-                                 @NonNull final String localName,
-                                 @NonNull final String qName,
-                                 @NonNull final Attributes attributes)
-                throws SAXException {
-            super.startElement(uri, localName, qName, attributes);
-
-            // reset the string. See note in endElement() for a discussion.
-            mBuilder.setLength(0);
-
-        }
-
-        @Override
-        @CallSuper
-        public void endElement(@NonNull final String uri,
-                               @NonNull final String localName,
-                               @NonNull final String qName)
-                throws SAXException, NumberFormatException {
-            super.endElement(uri, localName, qName);
-
-            if (localName.equalsIgnoreCase(XML_BOOK_ID)) {
-                mBookId = Integer.parseInt(mBuilder.toString());
-            }
-            //else if (localName.equalsIgnoreCase(XML_OWNED_BOOK_ID)) {
-            //mOwnedBookId = Integer.parseInt( mBuilder.toString() );
-            //} else if (localName.equalsIgnoreCase(XML_WORK_ID)) {
-            //mWorkId = Integer.parseInt( mBuilder.toString() );
-            //}
-
-            // Always reset the length. This is not entirely the right thing to do, but works
-            // because we always want strings from the lowest level (leaf) XML elements.
-            // To be completely correct, we should maintain a stack of builders that are pushed and
-            // popped as each startElement/endElement is called. But lets not be pedantic for now.
-            mBuilder.setLength(0);
-        }
-    }
+    /*
+     * Build filters to process typical output.
+     *
+     * Typical response:
+     * <pre>
+     *  {@code
+     *  <owned-book>
+     *    <available-for-swap type='boolean'>false</available-for-swap>
+     *    <book-id type='integer'>9376943</book-id>
+     *    <book-trades-count type='integer'>0</book-trades-count>
+     *    <comments-count type='integer'>0</comments-count>
+     *    <condition-code type='integer' nil='true'></condition-code>
+     *    <condition-description nil='true'></condition-description>
+     *    <created-at type='datetime'>2012-01-01T07:08:47-08:00</created-at>
+     *    <current-owner-id type='integer'>5129458</current-owner-id>
+     *    <current-owner-name nil='true'></current-owner-name>
+     *    <id type='integer'>5431803</id>
+     *    <last-comment-at type='datetime' nil='true'></last-comment-at>
+     *    <original-purchase-date type='datetime' nil='true'></original-purchase-date>
+     *    <original-purchase-location nil='true'></original-purchase-location>
+     *    <review-id type='integer' nil='true'></review-id>
+     *    <swappable-flag type='boolean'>false</swappable-flag>
+     *    <unique-code nil='true'></unique-code>
+     *    <updated-at type='datetime'>2012-01-01T07:08:47-08:00</updated-at>
+     *    <work-id type='integer'>14260549</work-id>
+     *  </owned-book>
+     *  }
+     * </pre>
+     */
+//    private void buildFilters() {
+//        // We only care about book-id:
+//        XmlFilter.buildFilter(mRootFilter, XML_REVIEW, "book-id")
+//                 .setEndAction(mHandleBookId);
+//    }
 }

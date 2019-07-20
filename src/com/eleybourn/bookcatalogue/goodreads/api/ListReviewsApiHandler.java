@@ -29,13 +29,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
@@ -45,193 +43,10 @@ import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
- * Class to implement the reviews.list api call.
- * <p>
- * It queries based on the passed parameters and returns a single Bundle containing all results.
- * The Bundle itself will contain other bundles: typically an array of 'Review' bundles,
- * each of which will contains arrays of 'author' bundles.
- * <p>
- * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
- * with the exception of dates, which are collected as text strings.
- * <p>
- * Typical result:
- * <pre>
- * {@code
- *   <GoodreadsResponse>
- *     <Request>
- *     ...
- *     </Request>
- *     <reviews start="3" end="4" total="933">
- *       <review>
- *         <id>276860380</id>
- *         <book>
- *           <id type="integer">951750</id>
- *           <isbn>0583120911</isbn>
- *           <isbn13>9780583120913</isbn13>
- *           <text_reviews_count type="integer">2</text_reviews_count>
- *           <title>
- *             <![CDATA[The Dying Earth]]>
- *           </title>
- *           <image_url>
- *               http://photo.goodreads.com/books/1294108593m/951750.jpg
- *           </image_url>
- *           <small_image_url>
- *               http://photo.goodreads.com/books/1294108593s/951750.jpg
- *           </small_image_url>
- *           <link>
- *               http://www.goodreads.com/book/show/951750.The_Dying_Earth
- *           </link>
- *           <num_pages>159</num_pages>
- *           <format></format>
- *           <edition_information></edition_information>
- *           <publisher></publisher>
- *           <publication_day>20</publication_day>
- *           <publication_year>1972</publication_year>
- *           <publication_month>4</publication_month>
- *           <average_rating>3.99</average_rating>
- *           <ratings_count>713</ratings_count>
- *           <description>
- *             <![CDATA[]]>
- *           </description>
+ * "reviews.list"   —   Get the books on a members shelf.
  *
- *           <authors>
- *             <author>
- *               <id>5376</id>
- *               <name><![CDATA[Jack Vance]]></name>
- *               <image_url>
- *                   <![CDATA[http://photo.goodreads.com/authors/1207604643p5/5376.jpg]]>
- *               </image_url>
- *               <small_image_url>
- *                   <![CDATA[http://photo.goodreads.com/authors/1207604643p2/5376.jpg]]>
- *               </small_image_url>
- *               <link>
- *                   <![CDATA[http://www.goodreads.com/author/show/5376.Jack_Vance]]>
- *               </link>
- *               <average_rating>3.94</average_rating>
- *               <ratings_count>12598</ratings_count>
- *               <text_reviews_count>844</text_reviews_count>
- *             </author>
- *           </authors>
- *           <published>1972</published>
- *         </book>
- *
- *        * <rating>0</rating>
- *        * <votes>0</votes>
- *        * <spoiler_flag>false</spoiler_flag>
- *        * <spoilers_state>none</spoilers_state>
- *        *
- *       <shelves>
- *         <shelf name="sci-fi-fantasy" />
- *         <shelf name="to-read" />
- *       </shelves>
- *
- *       <recommended_for><![CDATA[]]></recommended_for>
- *       <recommended_by><![CDATA[]]></recommended_by>
- *       <started_at></started_at>
- *       <read_at></read_at>
- *       <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
- *       <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
- *       <read_count></read_count>
- *       <body>
- *         <![CDATA[]]>
- *       </body>
- *       <comments_count>0</comments_count>
- *
- *       <url>
- *           <![CDATA[http://www.goodreads.com/review/show/276860380]]>
- *       </url>
- *       <link>
- *           <![CDATA[http://www.goodreads.com/review/show/276860380]]>
- *       </link>
- *       <owned>0</owned>
- *     </review>
- *
- *     <review>
- *       <id>273090417</id>
- *       <book>
- *         <id type="integer">2042540</id>
- *         <isbn>0722129203</isbn>
- *         <isbn13>9780722129203</isbn13>
- *         <text_reviews_count type="integer">0</text_reviews_count>
- *         <title>
- *           <![CDATA[The Fallible Fiend]]>
- *         </title>
- *         <image_url>
- *             http://www.goodreads.com/images/nocover-111x148.jpg
- *         </image_url>
- *         <small_image_url>
- *             http://www.goodreads.com/images/nocover-60x80.jpg
- *         </small_image_url>
- *         <link>
- *             http://www.goodreads.com/book/show/2042540.The_Fallible_Fiend
- *         </link>
- *         <num_pages></num_pages>
- *         <format></format>
- *         <edition_information></edition_information>
- *         <publisher></publisher>
- *         <publication_day></publication_day>
- *         <publication_year></publication_year>
- *         <publication_month></publication_month>
- *
- *         <average_rating>3.55</average_rating>
- *         <ratings_count>71</ratings_count>
- *         <description>
- *           <![CDATA[]]>
- *         </description>
- *
- *         <authors>
- *           <author>
- *             <id>3305</id>
- *             <name>
- *                 <![CDATA[L. Sprague de Camp]]>
- *             </name>
- *             <image_url>
- *                 <![CDATA[http://photo.goodreads.com/authors/1218217726p5/3305.jpg]]>
- *             </image_url>
- *             <small_image_url>
- *                 <![CDATA[http://photo.goodreads.com/authors/1218217726p2/3305.jpg]]>
- *             </small_image_url>
- *             <link>
- *                 <![CDATA[http://www.goodreads.com/author/show/3305.L_Sprague_de_Camp]]>
- *             </link>
- *             <average_rating>3.78</average_rating>
- *             <ratings_count>9424</ratings_count>
- *             <text_reviews_count>441</text_reviews_count>
- *           </author>
- *         </authors>
- *         <published></published>
- *       </book>
- *
- *       <rating>0</rating>
- *       <votes>0</votes>
- *       <spoiler_flag>false</spoiler_flag>
- *       <spoilers_state>none</spoilers_state>
- *       <shelves>
- *         <shelf name="read" />
- *         <shelf name="sci-fi-fantasy" />
- *       </shelves>
- *       <recommended_for><![CDATA[]]></recommended_for>
- *       <recommended_by><![CDATA[]]></recommended_by>
- *       <started_at></started_at>
- *
- *       <read_at></read_at>
- *       <date_added>Mon Feb 06 03:40:52 -0800 2012</date_added>
- *       <date_updated>Mon Feb 06 03:40:52 -0800 2012</date_updated>
- *       <read_count></read_count>
- *       <body>
- *         <![CDATA[]]>
- *       </body>
- *       <comments_count>0</comments_count>
- *
- *       <url><![CDATA[http://www.goodreads.com/review/show/273090417]]></url>
- *       <link><![CDATA[http://www.goodreads.com/review/show/273090417]]></link>
- *       <owned>0</owned>
- *     </review>
- *
- *   </reviews>
- * </GoodreadsResponse>
- * }
- * </pre>
+ * <a href="https://www.goodreads.com/api/index#reviews.list">
+ *     https://www.goodreads.com/api/index#reviews.list</a>
  *
  * @author Philip Warner
  */
@@ -243,6 +58,14 @@ public class ListReviewsApiHandler
             = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy",
                                    LocaleUtils.getSystemLocale());
 
+    /**
+     * Parameters.
+     *
+     * 1: key
+     * 2: page
+     * 3: reviews per page
+     * 4: user id
+     */
     private static final String URL = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
             + "key=%1$s"
             + "&v=2"
@@ -251,7 +74,7 @@ public class ListReviewsApiHandler
             // Sort by date_updated (descending) so sync is faster.
             + "&sort=date_updated"
             + "&order=d"
-            // Specify 'shelf=all' because it seems goodreads returns the shelf that is selected
+            // Specify 'shelf=all' because it seems Goodreads returns the shelf that is selected
             // in 'My Books' on the web interface by default.
             + "&shelf=all";
     /**
@@ -269,9 +92,10 @@ public class ListReviewsApiHandler
         public void onFinish(@NonNull final BuilderContext bc,
                              @NonNull final ElementContext c) {
 
-            date2Sql(bc.getData(), ReviewFields.UPDATED);
+            date2Sql(bc.getData(), ReviewField.UPDATED);
         }
     };
+
     /**
      * Listener to handle the contents of the date_added field. We only
      * keep it if it is a valid date, and we store it in SQL format using
@@ -287,9 +111,10 @@ public class ListReviewsApiHandler
         public void onFinish(@NonNull final BuilderContext bc,
                              @NonNull final ElementContext c) {
 
-            date2Sql(bc.getData(), ReviewFields.ADDED);
+            date2Sql(bc.getData(), ReviewField.ADDED);
         }
     };
+
     private SimpleXmlFilter mFilters;
 
     /**
@@ -297,53 +122,225 @@ public class ListReviewsApiHandler
      *
      * @param grManager the Goodreads Manager
      *
-     * @throws AuthorizationException with GoodReads
+     * @throws CredentialsException with GoodReads
      */
     public ListReviewsApiHandler(@NonNull final GoodreadsManager grManager)
-            throws AuthorizationException {
-
+            throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
-            throw new AuthorizationException(R.string.goodreads);
+            throw new CredentialsException(R.string.goodreads);
         }
-        // Build the XML filters needed to get the data we're interested in.
+
         buildFilters();
     }
 
     /**
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws CredentialsException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException            on other failures
      */
     @NonNull
-    public Bundle run(final int page,
+    public Bundle get(final int page,
                       final int perPage)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
-        long t0 = System.nanoTime();
-
         final String url = String.format(URL, mManager.getDevKey(), page, perPage,
                                          mManager.getUserId());
-        // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        mManager.executeGet(url, handler, true);
-
-        // When we get here, the data has been collected but needs processing into standard form.
-        Bundle results = mFilters.getData();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debug(this, "run", "Found "
-                    + results.getLong(ReviewFields.TOTAL)
-                    + " books in " + (System.nanoTime() - t0) + "nano");
-        }
-
-        return results;
+        executeGet(url, handler, true);
+        return mFilters.getData();
     }
 
     /**
      * Setup filters to process the XML parts we care about.
+     *
+     * It queries based on the passed parameters and returns a single Bundle containing all results.
+     * The Bundle itself will contain other bundles: typically an array of 'Review' bundles,
+     * each of which will contains arrays of 'author' bundles.
+     * <p>
+     * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
+     * with the exception of dates, which are collected as text strings.
+     * <p>
+     * Typical result:
+     * <pre>
+     * {@code
+     *   <GoodreadsResponse>
+     *     <Request>
+     *     ...
+     *     </Request>
+     *     <reviews start="3" end="4" total="933">
+     *       <review>
+     *         <id>276860380</id>
+     *         <book>
+     *           <id type="integer">951750</id>
+     *           <isbn>0583120911</isbn>
+     *           <isbn13>9780583120913</isbn13>
+     *           <text_reviews_count type="integer">2</text_reviews_count>
+     *           <title>
+     *             <![CDATA[The Dying Earth]]>
+     *           </title>
+     *           <image_url>
+     *               http://photo.goodreads.com/books/1294108593m/951750.jpg
+     *           </image_url>
+     *           <small_image_url>
+     *               http://photo.goodreads.com/books/1294108593s/951750.jpg
+     *           </small_image_url>
+     *           <link>
+     *               http://www.goodreads.com/book/show/951750.The_Dying_Earth
+     *           </link>
+     *           <num_pages>159</num_pages>
+     *           <format></format>
+     *           <edition_information></edition_information>
+     *           <publisher></publisher>
+     *           <publication_day>20</publication_day>
+     *           <publication_year>1972</publication_year>
+     *           <publication_month>4</publication_month>
+     *           <average_rating>3.99</average_rating>
+     *           <ratings_count>713</ratings_count>
+     *           <description>
+     *             <![CDATA[]]>
+     *           </description>
+     *
+     *           <authors>
+     *             <author>
+     *               <id>5376</id>
+     *               <name><![CDATA[Jack Vance]]></name>
+     *               <image_url>
+     *                   <![CDATA[http://photo.goodreads.com/authors/1207604643p5/5376.jpg]]>
+     *               </image_url>
+     *               <small_image_url>
+     *                   <![CDATA[http://photo.goodreads.com/authors/1207604643p2/5376.jpg]]>
+     *               </small_image_url>
+     *               <link>
+     *                   <![CDATA[http://www.goodreads.com/author/show/5376.Jack_Vance]]>
+     *               </link>
+     *               <average_rating>3.94</average_rating>
+     *               <ratings_count>12598</ratings_count>
+     *               <text_reviews_count>844</text_reviews_count>
+     *             </author>
+     *           </authors>
+     *           <published>1972</published>
+     *         </book>
+     *
+     *        * <rating>0</rating>
+     *        * <votes>0</votes>
+     *        * <spoiler_flag>false</spoiler_flag>
+     *        * <spoilers_state>none</spoilers_state>
+     *        *
+     *       <shelves>
+     *         <shelf name="sci-fi-fantasy" />
+     *         <shelf name="to-read" />
+     *       </shelves>
+     *
+     *       <recommended_for><![CDATA[]]></recommended_for>
+     *       <recommended_by><![CDATA[]]></recommended_by>
+     *       <started_at></started_at>
+     *       <read_at></read_at>
+     *       <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
+     *       <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
+     *       <read_count></read_count>
+     *       <body>
+     *         <![CDATA[]]>
+     *       </body>
+     *       <comments_count>0</comments_count>
+     *
+     *       <url>
+     *           <![CDATA[http://www.goodreads.com/review/show/276860380]]>
+     *       </url>
+     *       <link>
+     *           <![CDATA[http://www.goodreads.com/review/show/276860380]]>
+     *       </link>
+     *       <owned>0</owned>
+     *     </review>
+     *
+     *     <review>
+     *       <id>273090417</id>
+     *       <book>
+     *         <id type="integer">2042540</id>
+     *         <isbn>0722129203</isbn>
+     *         <isbn13>9780722129203</isbn13>
+     *         <text_reviews_count type="integer">0</text_reviews_count>
+     *         <title>
+     *           <![CDATA[The Fallible Fiend]]>
+     *         </title>
+     *         <image_url>
+     *             http://www.goodreads.com/images/nocover-111x148.jpg
+     *         </image_url>
+     *         <small_image_url>
+     *             http://www.goodreads.com/images/nocover-60x80.jpg
+     *         </small_image_url>
+     *         <link>
+     *             http://www.goodreads.com/book/show/2042540.The_Fallible_Fiend
+     *         </link>
+     *         <num_pages></num_pages>
+     *         <format></format>
+     *         <edition_information></edition_information>
+     *         <publisher></publisher>
+     *         <publication_day></publication_day>
+     *         <publication_year></publication_year>
+     *         <publication_month></publication_month>
+     *
+     *         <average_rating>3.55</average_rating>
+     *         <ratings_count>71</ratings_count>
+     *         <description>
+     *           <![CDATA[]]>
+     *         </description>
+     *
+     *         <authors>
+     *           <author>
+     *             <id>3305</id>
+     *             <name>
+     *                 <![CDATA[L. Sprague de Camp]]>
+     *             </name>
+     *             <image_url>
+     *                 <![CDATA[http://photo.goodreads.com/authors/1218217726p5/3305.jpg]]>
+     *             </image_url>
+     *             <small_image_url>
+     *                 <![CDATA[http://photo.goodreads.com/authors/1218217726p2/3305.jpg]]>
+     *             </small_image_url>
+     *             <link>
+     *                 <![CDATA[http://www.goodreads.com/author/show/3305.L_Sprague_de_Camp]]>
+     *             </link>
+     *             <average_rating>3.78</average_rating>
+     *             <ratings_count>9424</ratings_count>
+     *             <text_reviews_count>441</text_reviews_count>
+     *           </author>
+     *         </authors>
+     *         <published></published>
+     *       </book>
+     *
+     *       <rating>0</rating>
+     *       <votes>0</votes>
+     *       <spoiler_flag>false</spoiler_flag>
+     *       <spoilers_state>none</spoilers_state>
+     *       <shelves>
+     *         <shelf name="read" />
+     *         <shelf name="sci-fi-fantasy" />
+     *       </shelves>
+     *       <recommended_for><![CDATA[]]></recommended_for>
+     *       <recommended_by><![CDATA[]]></recommended_by>
+     *       <started_at></started_at>
+     *
+     *       <read_at></read_at>
+     *       <date_added>Mon Feb 06 03:40:52 -0800 2012</date_added>
+     *       <date_updated>Mon Feb 06 03:40:52 -0800 2012</date_updated>
+     *       <read_count></read_count>
+     *       <body>
+     *         <![CDATA[]]>
+     *       </body>
+     *       <comments_count>0</comments_count>
+     *
+     *       <url><![CDATA[http://www.goodreads.com/review/show/273090417]]></url>
+     *       <link><![CDATA[http://www.goodreads.com/review/show/273090417]]></link>
+     *       <owned>0</owned>
+     *     </review>
+     *
+     *   </reviews>
+     * </GoodreadsResponse>
+     * }
+     * </pre>
      */
     private void buildFilters() {
 
@@ -355,55 +352,55 @@ public class ListReviewsApiHandler
                 //      ...
                 //  </Request>
                 //  <reviews start="3" end="4" total="933">
-                .s(XML_REVIEWS).isArray(ReviewFields.REVIEWS)
-                .longAttr(XML_START, ReviewFields.START)
-                .longAttr(XML_END, ReviewFields.END)
-                .longAttr(XML_TOTAL, ReviewFields.TOTAL)
+                .s(XML_REVIEWS).asArray(ReviewField.REVIEWS)
+                .longAttr(XML_START, ReviewField.START)
+                .longAttr(XML_END, ReviewField.END)
+                .longAttr(XML_TOTAL, ReviewField.TOTAL)
                 //      <review>
-                .s(XML_REVIEW).isArrayItem()
+                .s(XML_REVIEW).asArrayItem()
                 //          <id>276860380</id>
-                .longBody(XML_ID, ReviewFields.GR_REVIEW_ID)
+                .longBody(XML_ID, ReviewField.GR_REVIEW_ID)
                 //          <book>
                 .s(XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XML_ID, ReviewFields.DBA_GR_BOOK_ID)
+                .longBody(XML_ID, ReviewField.DBA_GR_BOOK_ID)
                 //              <isbn>0583120911</isbn>
-                .stringBody(XML_ISBN, ReviewFields.DBA_ISBN)
+                .stringBody(XML_ISBN, ReviewField.DBA_ISBN)
                 //              <isbn13>9780583120913</isbn13>
-                .stringBody(XML_ISBN_13, ReviewFields.ISBN13)
+                .stringBody(XML_ISBN_13, ReviewField.ISBN13)
                 //              ...
                 //              <title><![CDATA[The Dying Earth]]></title>
-                .stringBody(XML_TITLE, ReviewFields.DBA_TITLE)
+                .stringBody(XML_TITLE, ReviewField.DBA_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody(XML_IMAGE_URL, ReviewFields.LARGE_IMAGE)
+                .stringBody(XML_IMAGE_URL, ReviewField.LARGE_IMAGE)
                 //              <small_image_url>
                 //      http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody(XML_SMALL_IMAGE_URL, ReviewFields.SMALL_IMAGE)
+                .stringBody(XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
                 //              ...
                 //              <num_pages>159</num_pages>
-                .longBody(XML_NUM_PAGES, ReviewFields.DBA_PAGES)
+                .longBody(XML_NUM_PAGES, ReviewField.DBA_PAGES)
                 //              <format></format>
-                .stringBody(XML_FORMAT, ReviewFields.DBA_FORMAT)
+                .stringBody(XML_FORMAT, ReviewField.DBA_FORMAT)
                 //              <publisher></publisher>
-                .stringBody(XML_PUBLISHER, ReviewFields.DBA_PUBLISHER)
+                .stringBody(XML_PUBLISHER, ReviewField.DBA_PUBLISHER)
                 //              <publication_day>20</publication_day>
-                .longBody(XML_PUBLICATION_DAY, ReviewFields.PUB_DAY)
+                .longBody(XML_PUBLICATION_DAY, ReviewField.PUB_DAY)
                 //              <publication_year>1972</publication_year>
-                .longBody(XML_PUBLICATION_YEAR, ReviewFields.PUB_YEAR)
+                .longBody(XML_PUBLICATION_YEAR, ReviewField.PUB_YEAR)
                 //              <publication_month>4</publication_month>
-                .longBody(XML_PUBLICATION_MONTH, ReviewFields.PUB_MONTH)
+                .longBody(XML_PUBLICATION_MONTH, ReviewField.PUB_MONTH)
                 //              <description><![CDATA[]]></description>
-                .stringBody(XML_DESCRIPTION, ReviewFields.DBA_DESCRIPTION)
+                .stringBody(XML_DESCRIPTION, ReviewField.DBA_DESCRIPTION)
                 //              ...
                 //              <authors>
-                .s(XML_AUTHORS).isArray(ReviewFields.AUTHORS)
+                .s(XML_AUTHORS).asArray(ReviewField.AUTHORS)
                 //                  <author>
-                .s(XML_AUTHOR).isArrayItem()
+                .s(XML_AUTHOR).asArrayItem()
                 //                      <id>5376</id>
-                .longBody(XML_ID, ReviewFields.DBA_AUTHOR_ID)
+                .longBody(XML_ID, ReviewField.DBA_AUTHOR_ID)
                 //                      <name><![CDATA[Jack Vance]]></name>
-                .stringBody(XML_NAME, ReviewFields.AUTHOR_NAME_GF)
+                .stringBody(XML_NAME, ReviewField.AUTHOR_NAME_GF)
                 //                      ...
                 //                  </author>
                 //              </authors>
@@ -411,30 +408,30 @@ public class ListReviewsApiHandler
                 //          </book>
                 .popTo(XML_REVIEW)
                 //          <rating>0</rating>
-                .doubleBody(XML_RATING, ReviewFields.DBA_RATING)
+                .doubleBody(XML_RATING, ReviewField.DBA_RATING)
                 //          ...
                 //          <shelves>
-                .s(XML_SHELVES).isArray(ReviewFields.SHELVES)
+                .s(XML_SHELVES).asArray(ReviewField.SHELVES)
                 //              <shelf name="sci-fi-fantasy" />
-                .s(XML_SHELF).isArrayItem()
-                .stringAttr(XML_NAME, ReviewFields.SHELF)
+                .s(XML_SHELF).asArrayItem()
+                .stringAttr(XML_NAME, ReviewField.SHELF)
                 .popTo(XML_REVIEW)
                 //              <shelf name="to-read" />
                 //          </shelves>
                 //          ...
                 //          <started_at></started_at>
-                .stringBody(XML_STARTED_AT, ReviewFields.DBA_READ_START)
+                .stringBody(XML_STARTED_AT, ReviewField.DBA_READ_START)
                 //          <read_at></read_at>
-                .stringBody(XML_READ_AT, ReviewFields.DBA_READ_END)
+                .stringBody(XML_READ_AT, ReviewField.DBA_READ_END)
                 //          <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 .s(XML_DATE_ADDED)
-                .stringBody(ReviewFields.ADDED).setListener(mAddedListener).pop()
+                .stringBody(ReviewField.ADDED).setListener(mAddedListener).pop()
                 //          <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
                 .s(XML_DATE_UPDATED)
-                .stringBody(ReviewFields.UPDATED).setListener(mUpdatedListener).pop()
+                .stringBody(ReviewField.UPDATED).setListener(mUpdatedListener).pop()
                 //          ...
                 //          <body><![CDATA[]]></body>
-                .stringBody(XML_BODY, ReviewFields.DBA_NOTES).pop()
+                .stringBody(XML_BODY, ReviewField.DBA_NOTES).pop()
                 //          ...
                 //          <owned>0</owned>
                 //      </review>
@@ -469,7 +466,7 @@ public class ListReviewsApiHandler
      *
      * @author Philip Warner
      */
-    public static final class ReviewFields {
+    public static final class ReviewField {
 
         public static final String TOTAL = "__total";
         public static final String ISBN13 = "__isbn13";
@@ -485,6 +482,7 @@ public class ListReviewsApiHandler
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
+
         public static final String DBA_GR_BOOK_ID = DBDefinitions.KEY_GOODREADS_BOOK_ID;
         public static final String DBA_TITLE = DBDefinitions.KEY_TITLE;
         public static final String DBA_PUBLISHER = DBDefinitions.KEY_PUBLISHER;
@@ -494,6 +492,7 @@ public class ListReviewsApiHandler
         public static final String DBA_RATING = DBDefinitions.KEY_RATING;
         public static final String DBA_READ_START = DBDefinitions.KEY_READ_START;
         public static final String DBA_READ_END = DBDefinitions.KEY_READ_END;
+
         static final String START = "__start";
         static final String END = "__end";
         static final String GR_REVIEW_ID = "__gr_review_id";
@@ -501,7 +500,7 @@ public class ListReviewsApiHandler
         static final String DBA_AUTHOR_ID = DBDefinitions.KEY_FK_AUTHOR;
         static final String DBA_NOTES = DBDefinitions.KEY_NOTES;
 
-        private ReviewFields() {
+        private ReviewField() {
         }
     }
 }

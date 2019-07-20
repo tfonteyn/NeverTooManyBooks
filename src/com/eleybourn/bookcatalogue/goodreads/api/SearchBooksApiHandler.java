@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,159 +30,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
- * Class to query and response to search.books api call.
- * <p>
- * Typical result:
- * <pre>
- *  {@code
- *  <GoodreadsResponse>
- *    <Request>
- *      <authentication>true</authentication>
- *      <key><![CDATA[...]]></key>
- *      <method><![CDATA[ search_index ]]></method>
- *    </Request>
+ * search.books   —   Find books by title, author, or ISBN.
  *
- *    <search>
- *      <query>
- *        <![CDATA[ ender ]]>
- *      </query>
- *      <results-start>1</results-start>
- *      <results-end>20</results-end>
- *      <total-results>245</total-results>
- *      <source>Goodreads</source>
- *      <query-time-seconds>0.03</query-time-seconds>
- *      <results>
- *        <work>
- *          <books_count type="integer">91</books_count>
- *          <id type="integer">2422333</id>
- *          <original_publication_day type="integer">1</original_publication_day>
- *          <original_publication_month type="integer">1</original_publication_month>
- *          <original_publication_year type="integer">1985</original_publication_year>
- *          <ratings_count type="integer">208674</ratings_count>
- *          <text_reviews_count type="integer">11428</text_reviews_count>
- *          <average_rating>4.19</average_rating>
- *          <best_book>
- *            <id type="integer">375802</id>
- *            <title>Ender's Game (Ender's Saga, #1)</title>
- *            <author>
- *              <id type="integer">589</id>
- *              <name>Orson Scott Card</name>
- *            </author>
- *            <my_review>
- *              <id>154477749</id>
- *              <book>
- *                <id type="integer">375802</id>
- *                <isbn>0812550706</isbn>
- *                <isbn13>9780812550702</isbn13>
- *                <text_reviews_count type="integer">9861</text_reviews_count>
- *                <title>
- *                  <![CDATA[ Ender's Game (Ender's Saga, #1) ]]>
- *                </title>
- *                <image_url>
- *                  http://photo.goodreads.com/books/1316636769m/375802.jpg
- *                </image_url>
- *                <small_image_url>
- *                  http://photo.goodreads.com/books/1316636769s/375802.jpg
- *                </small_image_url>
- *                <link>
- *                  http://www.goodreads.com/book/show/375802.Ender_s_Game
- *                </link>
- *                <num_pages>324</num_pages>
- *                <publisher>Tor Science Fiction</publisher>
- *                <publication_day>15</publication_day>
- *                <publication_year>1994</publication_year>
- *                <publication_month>7</publication_month>
- *                <average_rating>4.19</average_rating>
- *                <ratings_count>208674</ratings_count>
- *                <description>
- *                  <![CDATA[blah blah...]]>
- *                </description>
- *                <authors>
- *                  <author>
- *                    <id>589</id>
- *                    <name>
- *                      <![CDATA[ Orson Scott Card ]]>
- *                    </name>
- *                    <image_url>
- *                      <![CDATA[
- *                        http://photo.goodreads.com/authors/1294099952p5/589.jpg
- *                      ]]>
- *                    </image_url>
- *                    <small_image_url>
- *                      <![CDATA[
- *                      http://photo.goodreads.com/authors/1294099952p2/589.jpg
- *                      ]]>
- *                    </small_image_url>
- *                    <link>
- *                      <![CDATA[
- *                      http://www.goodreads.com/author/show/589.Orson_Scott_Card
- *                      ]]>
- *                    </link>
- *                    <average_rating>3.93</average_rating>
- *                    <ratings_count>533747</ratings_count>
- *                    <text_reviews_count>30262</text_reviews_count>
- *                  </author>
- *                </authors>
- *                <published>1985</published>
- *              </book>
- *              <rating>4</rating>
- *              <votes>0</votes>
- *              <spoiler_flag>false</spoiler_flag>
- *              <spoilers_state>none</spoilers_state>
- *              <shelves>
- *                <shelf name="read"/>
- *                <shelf name="test"/>
- *                <shelf name="sci-fi-fantasy"/>
- *              </shelves>
- *              <recommended_for>
- *                <![CDATA[ ]]>
- *              </recommended_for>
- *              <recommended_by>
- *                <![CDATA[ ]]>
- *              </recommended_by>
- *              <started_at/>
- *              <read_at>Wed May 01 00:00:00 -0700 1991</read_at>
- *              <date_added>Tue Mar 15 01:51:42 -0700 2011</date_added>
- *              <date_updated>Sun Jan 01 05:43:30 -0800 2012</date_updated>
- *              <read_count/>
- *              <body>
- *                <![CDATA[ ]]>
- *              </body>
- *              <comments_count>0</comments_count>
- *              <url>
- *                <![CDATA[ http://www.goodreads.com/review/show/154477749 ]]>
- *              </url>
- *              <link>
- *                <![CDATA[ http://www.goodreads.com/review/show/154477749 ]]>
- *              </link>
- *              <owned>1</owned>
- *            </my_review>
- *            <image_url>
- *              http://photo.goodreads.com/books/1316636769m/375802.jpg
- *            </image_url>
- *            <small_image_url>
- *              http://photo.goodreads.com/books/1316636769s/375802.jpg
- *            </small_image_url>
- *          </best_book>
- *        </work>
- *      </results>
- *    </search>
- * </GoodreadsResponse>
- *  }
- *  </pre>
+ * <a href="https://www.goodreads.com/api/index#search.books">
+ *     https://www.goodreads.com/api/index#search.books</a>
  *
  * @author Philip Warner
  */
 public class SearchBooksApiHandler
         extends ApiHandler {
+
+    private static final String URL = GoodreadsManager.BASE_URL + "/search/index.xml";
 
     /** List of GoodreadsWork objects that result from a search. */
     @Nullable
@@ -192,17 +61,18 @@ public class SearchBooksApiHandler
     /**
      * At the START of a "work" tag, we create a new work.
      */
-    private final XmlHandler mHandleWorkStart = context -> mCurrentWork = new GoodreadsWork();
+    private final XmlHandler mHandleWorkStart = context ->
+            mCurrentWork = new GoodreadsWork();
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
     private final XmlHandler mHandleWorkEnd = context -> {
-        //mCurrentWork.requestImage();
         mWorks.add(mCurrentWork);
         mCurrentWork = null;
     };
-    private final XmlHandler mHandleWorkId =
-            context -> mCurrentWork.workId = Long.parseLong(context.getBody());
+    private final XmlHandler mHandleWorkId = context ->
+            mCurrentWork.workId = Long.parseLong(context.getBody());
+
     private final XmlHandler mHandlePubDay = context -> {
         try {
             mCurrentWork.pubDay = Long.parseLong(context.getBody());
@@ -221,14 +91,17 @@ public class SearchBooksApiHandler
         } catch (@NonNull final NumberFormatException ignored) {
         }
     };
+
     private final XmlHandler mHandleBookId =
             context -> mCurrentWork.bookId = Long.parseLong(context.getBody());
     private final XmlHandler mHandleBookTitle =
             context -> mCurrentWork.title = context.getBody();
+
     private final XmlHandler mHandleAuthorId =
             context -> mCurrentWork.authorId = Long.parseLong(context.getBody());
     private final XmlHandler mHandleAuthorName =
             context -> mCurrentWork.authorName = context.getBody();
+
     private final XmlHandler mHandleImageUrl =
             context -> mCurrentWork.imageUrl = context.getBody();
     private final XmlHandler mHandleSmallImageUrl =
@@ -257,9 +130,17 @@ public class SearchBooksApiHandler
      * Constructor.
      *
      * @param grManager the Goodreads Manager
+     *
+     * @throws CredentialsException with GoodReads
      */
-    public SearchBooksApiHandler(@NonNull final GoodreadsManager grManager) {
+    @WorkerThread
+    public SearchBooksApiHandler(@NonNull final GoodreadsManager grManager)
+            throws CredentialsException {
         super(grManager);
+        if (!grManager.hasValidCredentials()) {
+            throw new CredentialsException(R.string.goodreads);
+        }
+
         buildFilters();
     }
 
@@ -270,18 +151,18 @@ public class SearchBooksApiHandler
      *
      * @return the array of GoodreadsWork objects.
      *
-     * @throws IOException            on failure
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  at GoodReads
+     * @throws IOException           on failure
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException at GoodReads
      */
     @NonNull
+    @WorkerThread
     public List<GoodreadsWork> search(@NonNull final String query)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         // Setup API call
-        String url = GoodreadsManager.BASE_URL + "/search/index.xml";
         Map<String, String> parameters = new HashMap<>();
         parameters.put("q", query.trim());
         parameters.put("key", mManager.getDevKey());
@@ -291,7 +172,7 @@ public class SearchBooksApiHandler
 
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        mManager.executePost(url, parameters, handler, false);
+        executePost(URL, parameters, handler, false);
 
         // Return parsed results.
         return mWorks;
@@ -318,50 +199,147 @@ public class SearchBooksApiHandler
 
     /**
      * Setup filters to process the XML parts we care about.
+     * <p>
+     * Typical result:
+     * <pre>
+     *  {@code
+     *  <GoodreadsResponse>
+     *    <Request>
+     *      <authentication>true</authentication>
+     *      <key><![CDATA[...]]></key>
+     *      <method><![CDATA[ search_index ]]></method>
+     *    </Request>
+     *
+     *    <search>
+     *      <query>
+     *        <![CDATA[ ender ]]>
+     *      </query>
+     *      <results-start>1</results-start>
+     *      <results-end>20</results-end>
+     *      <total-results>245</total-results>
+     *      <source>Goodreads</source>
+     *      <query-time-seconds>0.03</query-time-seconds>
+     *      <results>
+     *        <work>
+     *          <books_count type="integer">91</books_count>
+     *          <id type="integer">2422333</id>
+     *          <original_publication_day type="integer">1</original_publication_day>
+     *          <original_publication_month type="integer">1</original_publication_month>
+     *          <original_publication_year type="integer">1985</original_publication_year>
+     *          <ratings_count type="integer">208674</ratings_count>
+     *          <text_reviews_count type="integer">11428</text_reviews_count>
+     *          <average_rating>4.19</average_rating>
+     *          <best_book>
+     *            <id type="integer">375802</id>
+     *            <title>Ender's Game (Ender's Saga, #1)</title>
+     *            <author>
+     *              <id type="integer">589</id>
+     *              <name>Orson Scott Card</name>
+     *            </author>
+     *            <my_review>
+     *              <id>154477749</id>
+     *              <book>
+     *                <id type="integer">375802</id>
+     *                <isbn>0812550706</isbn>
+     *                <isbn13>9780812550702</isbn13>
+     *                <text_reviews_count type="integer">9861</text_reviews_count>
+     *                <title>
+     *                  <![CDATA[ Ender's Game (Ender's Saga, #1) ]]>
+     *                </title>
+     *                <image_url>
+     *                  http://photo.goodreads.com/books/1316636769m/375802.jpg
+     *                </image_url>
+     *                <small_image_url>
+     *                  http://photo.goodreads.com/books/1316636769s/375802.jpg
+     *                </small_image_url>
+     *                <link>
+     *                  http://www.goodreads.com/book/show/375802.Ender_s_Game
+     *                </link>
+     *                <num_pages>324</num_pages>
+     *                <publisher>Tor Science Fiction</publisher>
+     *                <publication_day>15</publication_day>
+     *                <publication_year>1994</publication_year>
+     *                <publication_month>7</publication_month>
+     *                <average_rating>4.19</average_rating>
+     *                <ratings_count>208674</ratings_count>
+     *                <description>
+     *                  <![CDATA[blah blah...]]>
+     *                </description>
+     *                <authors>
+     *                  <author>
+     *                    <id>589</id>
+     *                    <name>
+     *                      <![CDATA[ Orson Scott Card ]]>
+     *                    </name>
+     *                    <image_url>
+     *                      <![CDATA[
+     *                        http://photo.goodreads.com/authors/1294099952p5/589.jpg
+     *                      ]]>
+     *                    </image_url>
+     *                    <small_image_url>
+     *                      <![CDATA[
+     *                      http://photo.goodreads.com/authors/1294099952p2/589.jpg
+     *                      ]]>
+     *                    </small_image_url>
+     *                    <link>
+     *                      <![CDATA[
+     *                      http://www.goodreads.com/author/show/589.Orson_Scott_Card
+     *                      ]]>
+     *                    </link>
+     *                    <average_rating>3.93</average_rating>
+     *                    <ratings_count>533747</ratings_count>
+     *                    <text_reviews_count>30262</text_reviews_count>
+     *                  </author>
+     *                </authors>
+     *                <published>1985</published>
+     *              </book>
+     *              <rating>4</rating>
+     *              <votes>0</votes>
+     *              <spoiler_flag>false</spoiler_flag>
+     *              <spoilers_state>none</spoilers_state>
+     *              <shelves>
+     *                <shelf name="read"/>
+     *                <shelf name="test"/>
+     *                <shelf name="sci-fi-fantasy"/>
+     *              </shelves>
+     *              <recommended_for>
+     *                <![CDATA[ ]]>
+     *              </recommended_for>
+     *              <recommended_by>
+     *                <![CDATA[ ]]>
+     *              </recommended_by>
+     *              <started_at/>
+     *              <read_at>Wed May 01 00:00:00 -0700 1991</read_at>
+     *              <date_added>Tue Mar 15 01:51:42 -0700 2011</date_added>
+     *              <date_updated>Sun Jan 01 05:43:30 -0800 2012</date_updated>
+     *              <read_count/>
+     *              <body>
+     *                <![CDATA[ ]]>
+     *              </body>
+     *              <comments_count>0</comments_count>
+     *              <url>
+     *                <![CDATA[ http://www.goodreads.com/review/show/154477749 ]]>
+     *              </url>
+     *              <link>
+     *                <![CDATA[ http://www.goodreads.com/review/show/154477749 ]]>
+     *              </link>
+     *              <owned>1</owned>
+     *            </my_review>
+     *            <image_url>
+     *              http://photo.goodreads.com/books/1316636769m/375802.jpg
+     *            </image_url>
+     *            <small_image_url>
+     *              http://photo.goodreads.com/books/1316636769s/375802.jpg
+     *            </small_image_url>
+     *          </best_book>
+     *        </work>
+     *      </results>
+     *    </search>
+     * </GoodreadsResponse>
+     *  }
+     *  </pre>
      */
     private void buildFilters() {
-    /*
-       Stuff we care about
-
-        <GoodreadsResponse>
-            ...
-            <search>
-                ...
-                <results-start>1</results-start>
-                <results-end>20</results-end>
-                <total-results>245</total-results>
-                ...
-                <results>
-                    <work>
-                        <books_count type="integer">91</books_count>
-                        <id type="integer">2422333</id>
-                        <original_publication_day type="integer">1</original_publication_day>
-                        <original_publication_month type="integer">1</original_publication_month>
-                        <original_publication_year type="integer">1985</original_publication_year>
-                        <ratings_count type="integer">208674</ratings_count>
-                        ...
-                        <average_rating>4.19</average_rating>
-                        <best_book>
-                            <id type="integer">375802</id>
-                            <title>Ender's Game (Ender's Saga, #1)</title>
-                            <author>
-                                <id type="integer">589</id>
-                                <name>Orson Scott Card</name>
-                            </author>
-                            ...
-                            <image_url>
-                                http://photo.goodreads.com/books/1316636769m/375802.jpg
-                            </image_url>
-                            <small_image_url>
-                                http://photo.goodreads.com/books/1316636769s/375802.jpg
-                            </small_image_url>
-                        </best_book>
-                    </work>
-                </results>
-            </search>
-        </GoodreadsResponse>
-        */
-
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULTS_START)
                  .setEndAction(mHandleResultsStart);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULTS_END)
@@ -391,30 +369,24 @@ public class SearchBooksApiHandler
 
         // "Best book"
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_ID)
+                              XML_BEST_BOOK, XML_ID)
                  .setEndAction(mHandleBookId);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_TITLE)
+                              XML_BEST_BOOK, XML_TITLE)
                  .setEndAction(mHandleBookTitle);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_AUTHOR, XML_ID)
+                              XML_BEST_BOOK, XML_AUTHOR, XML_ID)
                  .setEndAction(mHandleAuthorId);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_AUTHOR, XML_NAME)
+                              XML_BEST_BOOK, XML_AUTHOR, XML_NAME)
                  .setEndAction(mHandleAuthorName);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_IMAGE_URL)
+                              XML_BEST_BOOK, XML_IMAGE_URL)
                  .setEndAction(mHandleImageUrl);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULT, XML_WORK,
-                              XML_BEST_BOOK,
-                              XML_SMALL_IMAGE_URL)
+                              XML_BEST_BOOK, XML_SMALL_IMAGE_URL)
                  .setEndAction(mHandleSmallImageUrl);
     }
 }

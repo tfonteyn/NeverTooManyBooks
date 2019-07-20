@@ -83,6 +83,7 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
@@ -116,8 +117,8 @@ public class BooksOnBookshelf
                                            final boolean success,
                                            @StringRes final Integer result,
                                            @Nullable final Exception e) {
-                    GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                             getWindow().getDecorView(), this);
+                    GoodreadsTasks.handleResult(taskId, success, result, e,
+                                                getWindow().getDecorView(), this);
                 }
             };
     private final List<String> mBookshelfNameList = new ArrayList<>();
@@ -934,7 +935,7 @@ public class BooksOnBookshelf
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
                          MenuHandler.ORDER_SEND_TO_GOODREADS,
                          R.string.gr_menu_send_to_goodreads)
-                    .setIcon(R.drawable.ic_goodreads);
+                    .setIcon(R.drawable.ic_goodreads2);
 
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
                          MenuHandler.ORDER_UPDATE_FIELDS,
@@ -1190,8 +1191,8 @@ public class BooksOnBookshelf
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
                 //TEST sendOneBook
-                new GoodreadsTasks.SendOneBookTask(this, row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                   mOnGoodreadsTaskListener)
+                new SendOneBookTask(this, row.getLong(DBDefinitions.KEY_FK_BOOK),
+                                    mOnGoodreadsTaskListener)
                         .execute();
                 return true;
 

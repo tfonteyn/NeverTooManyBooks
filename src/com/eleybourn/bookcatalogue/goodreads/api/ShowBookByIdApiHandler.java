@@ -27,22 +27,31 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 /**
- * Class to call the search.books api (using a Goodreads 'work' ID).
+ * book.show   —   Get the reviews for a book given a Goodreads book id.
+ *
+ * <a href="https://www.goodreads.com/api/index#book.show">
+ * https://www.goodreads.com/api/index#book.show</a>
  *
  * @author Philip Warner
  */
 public class ShowBookByIdApiHandler
         extends ShowBookApiHandler {
 
+    private static final String URL = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
+
     /**
      * Constructor.
      *
      * @param grManager the Goodreads Manager
+     *
+     * @throws CredentialsException with GoodReads
      */
-    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager grManager) {
+    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager grManager)
+            throws CredentialsException {
         super(grManager);
     }
 
@@ -54,21 +63,18 @@ public class ShowBookByIdApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
     public Bundle get(final long id,
                       final boolean fetchThumbnail)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
-        // Setup API call
-        String urlBase = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
-        String url = String.format(urlBase, id, mManager.getDevKey());
-
+        String url = String.format(URL, id, mManager.getDevKey());
         return getBookData(url, fetchThumbnail);
     }
 }

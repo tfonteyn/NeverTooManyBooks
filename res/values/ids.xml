@@ -52,6 +52,7 @@
     <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
     <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
     <item name="TASK_ID_GR_IMPORT" type="id" />
+    <item name="TASK_ID_GR_GET_WORKS" type="id" />
 
     <!-- END predefined AsyncTask ids -->
 
@@ -109,14 +110,7 @@
     <item name="MENU_COLLAPSE" type="id" />
     <item name="MENU_CLEAR_FILTERS" type="id" />
 
-    <!-- debug options for the options menu; only shown in debug mode. -->
-    <item name="SUBMENU_DEBUG" type="id" />
-    <item name="MENU_DEBUG_DUMP_PREFS" type="id" />
-    <item name="MENU_DEBUG_DUMP_STYLE" type="id" />
-    <item name="MENU_DEBUG_DUMP_TRACKER" type="id" />
-    <item name="MENU_DEBUG_DUMP_BOB_TABLES" type="id" />
-    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id" />
-    <item name="MENU_DEBUG_RUN_TEST" type="id" />
+    <item name="MENU_SEARCH_GOODREADS" type="id" />
 
     <!-- View a book at an external site. -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />
@@ -152,6 +146,16 @@
     <item name="MENU_RESET" type="id" />
     <!-- options menu -->
     <item name="MENU_HIDE_KEYBOARD" type="id" />
+
+
+    <!-- debug options for the options menu; only shown in debug mode. -->
+    <item name="SUBMENU_DEBUG" type="id" />
+    <item name="MENU_DEBUG_DUMP_PREFS" type="id" />
+    <item name="MENU_DEBUG_DUMP_STYLE" type="id" />
+    <item name="MENU_DEBUG_DUMP_TRACKER" type="id" />
+    <item name="MENU_DEBUG_DUMP_BOB_TABLES" type="id" />
+    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id" />
+    <item name="MENU_DEBUG_RUN_TEST" type="id" />
 
     <!-- END predefined menu items -->
 

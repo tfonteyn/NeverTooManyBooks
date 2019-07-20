@@ -10,9 +10,13 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 
 /**
+ * Thrown when for some reason a website rejects our requests.
+ * This could be due to Authorization and/or Authentication.
+ * Maybe this should be split in two classes.
+ *
  * Note that the exception message can/will be shown to the end-user.
  */
-public class AuthorizationException
+public class CredentialsException
         extends Exception
         implements FormattedMessageException {
 
@@ -22,13 +26,24 @@ public class AuthorizationException
     @StringRes
     private final int mSite;
 
-    public AuthorizationException(@StringRes final int site) {
+    /**
+     * Constructor.
+     *
+     * @param site String resource id with the name of the site.
+     */
+    public CredentialsException(@StringRes final int site) {
         mSite = site;
     }
 
-    public AuthorizationException(@StringRes final int site,
-                                  @NonNull final Throwable inner) {
-        super(inner);
+    /**
+     * Constructor.
+     *
+     * @param site  String resource id with the name of the site.
+     * @param cause the cause
+     */
+    public CredentialsException(@StringRes final int site,
+                                @NonNull final Throwable cause) {
+        super(cause);
         mSite = site;
     }
 

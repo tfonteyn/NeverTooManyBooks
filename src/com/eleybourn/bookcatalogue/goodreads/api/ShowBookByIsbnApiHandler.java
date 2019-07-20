@@ -27,23 +27,33 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
- * Class to call the search.books api (using an ISBN).
+ * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
+ *
+ * <a href="https://www.goodreads.com/api/index#book.show_by_isbn">
+ *     https://www.goodreads.com/api/index#book.show_by_isbn</a>
  *
  * @author Philip Warner
  */
 public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
+    private static final String URL = GoodreadsManager.BASE_URL
+            + "/book/isbn?format=xml&isbn=%1$s&key=%2$s";
+
     /**
      * Constructor.
      *
      * @param grManager the Goodreads Manager
+     *
+     * @throws CredentialsException with GoodReads
      */
-    public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager grManager) {
+    public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager grManager)
+            throws CredentialsException {
         super(grManager);
     }
 
@@ -55,27 +65,22 @@ public class ShowBookByIsbnApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws ISBN.IsbnInvalidException if the isbn passed in was not valid.
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @throws CredentialsException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException            on other failures
      */
     @NonNull
     public Bundle get(@NonNull final String isbn,
                       final boolean fetchThumbnail)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
-                   IOException,
-                   ISBN.IsbnInvalidException {
+                   IOException {
 
         if (!ISBN.isValid(isbn)) {
-            throw new ISBN.IsbnInvalidException(isbn);
+            throw new BookNotFoundException(isbn);
         }
 
-        // Setup API call
-        String urlBase = GoodreadsManager.BASE_URL + "/book/isbn?format=xml&isbn=%1$s&key=%2$s";
-        String url = String.format(urlBase, isbn, mManager.getDevKey());
-
+        String url = String.format(URL, isbn, mManager.getDevKey());
         return getBookData(url, fetchThumbnail);
     }
 }

@@ -26,6 +26,8 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,21 +53,21 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewFields;
+import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewField;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
- * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
+ * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
  * they have placed on bookshelves, irrespective of whether they have rated or reviewed the book.
  * <p>
  * A Task *MUST* be serializable.
@@ -73,7 +75,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  *
  * @author Philip Warner
  */
-class GrImportAllTask
+class ImportLegacyTask
         extends BaseTask {
 
     private static final long serialVersionUID = -3535324410982827612L;
@@ -100,15 +102,15 @@ class GrImportAllTask
     /** Date at which this job started downloading first page. */
     @Nullable
     private Date mStartDate;
-    /** Lookup table of bookshelves defined currently and their goodreads canonical names. */
+    /** Lookup table of bookshelves defined currently and their Goodreads canonical names. */
     @Nullable
     private transient Map<String, String> mBookshelfLookup;
 
     /**
      * Constructor.
      */
-    GrImportAllTask(@NonNull final String description,
-                    final boolean isSync) {
+    ImportLegacyTask(@NonNull final String description,
+                     final boolean isSync) {
 
         super(description);
 
@@ -140,6 +142,35 @@ class GrImportAllTask
     }
 
     /**
+     * Check that no other sync-related jobs are queued, and that Goodreads is
+     * authorized for this app.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @return StringRes id of message for user,
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
+     */
+    @WorkerThread
+    @StringRes
+    static int checkWeCanImport() {
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
+            return R.string.gr_tq_requested_task_is_already_queued;
+        }
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
+            return R.string.gr_tq_export_task_is_already_queued;
+        }
+
+        // Make sure GR is authorized for this app
+        GoodreadsManager grManager = new GoodreadsManager();
+        if (grManager.hasValidCredentials()) {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
+        } else {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
+        }
+    }
+
+    /**
      * Do the actual work.
      *
      * @return {@code false} to requeue, {@code true} for success
@@ -149,18 +180,18 @@ class GrImportAllTask
                        @NonNull final Context context) {
 
         try (DAO db = new DAO()) {
-            // Load the goodreads reviews
+            // Load the Goodreads reviews
             boolean ok = processReviews(queueManager, db);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
-                        new GrSendAllBooksTask(context.getString(R.string.gr_title_send_book),
-                                               true),
+                        new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
+                                                true),
                         QueueManager.Q_MAIN);
             }
             return ok;
-        } catch (@NonNull final AuthorizationException e) {
+        } catch (@NonNull final CredentialsException e) {
             Logger.error(this, e);
             throw new RuntimeException(e.getLocalizedMessage());
         }
@@ -169,11 +200,11 @@ class GrImportAllTask
     /**
      * Repeatedly request review pages until we are done.
      *
-     * @throws AuthorizationException with GoodReads
+     * @throws CredentialsException with GoodReads
      */
     private boolean processReviews(@NonNull final QueueManager queueManager,
                                    @NonNull final DAO db)
-            throws AuthorizationException {
+            throws CredentialsException {
 
         GoodreadsManager gr = new GoodreadsManager();
         ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
@@ -196,20 +227,20 @@ class GrImportAllTask
                 if (mStartDate == null) {
                     runDate = new Date();
                 }
-                books = api.run(currPage, BOOKS_PER_PAGE);
+                books = api.get(currPage, BOOKS_PER_PAGE);
                 // If we succeeded, and this is the first time, save the date
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
             } catch (@NonNull final BookNotFoundException
-                    | AuthorizationException
+                    | CredentialsException
                     | IOException e) {
                 setException(e);
                 return false;
             }
 
             // Get the total, and if first call, save the object again so the UI can update.
-            mTotalBooks = (int) books.getLong(ListReviewsApiHandler.ReviewFields.TOTAL);
+            mTotalBooks = (int) books.getLong(ListReviewsApiHandler.ReviewField.TOTAL);
             if (mFirstCall) {
                 // So the details get updated
                 queueManager.updateTask(this);
@@ -218,7 +249,7 @@ class GrImportAllTask
 
             // Get the reviews array and process it
             ArrayList<Bundle> reviews =
-                    books.getParcelableArrayList(ListReviewsApiHandler.ReviewFields.REVIEWS);
+                    books.getParcelableArrayList(ListReviewsApiHandler.ReviewField.REVIEWS);
 
             if (reviews == null || reviews.isEmpty()) {
                 break;
@@ -231,7 +262,7 @@ class GrImportAllTask
                 }
 
                 if (mUpdatesAfter != null) {
-                    String upd = review.getString(ListReviewsApiHandler.ReviewFields.UPDATED);
+                    String upd = review.getString(ReviewField.UPDATED);
                     if (upd != null && upd.compareTo(mUpdatesAfter) > 0) {
                         return true;
                     }
@@ -267,10 +298,10 @@ class GrImportAllTask
     private void processReview(@NonNull final DAO db,
                                @NonNull final Bundle review) {
 
-        long grId = review.getLong(ReviewFields.DBA_GR_BOOK_ID);
+        long grId = review.getLong(ReviewField.DBA_GR_BOOK_ID);
 
         // Find the books in our database - there may be more than one!
-        // First look by goodreads book ID
+        // First look by Goodreads book ID
         BookCursor cursor = db.fetchBooksByGoodreadsBookId(grId);
         try {
             boolean found = cursor.moveToFirst();
@@ -308,13 +339,13 @@ class GrImportAllTask
     }
 
     /**
-     * Passed a goodreads shelf name, return the best matching local bookshelf name,
+     * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
      * @param db          Database adapter
      * @param grShelfName Goodreads shelf name
      *
-     * @return Local name, or goodreads name if no match
+     * @return Local name, or Goodreads name if no match
      */
     @Nullable
     private String translateBookshelf(@NonNull final DAO db,
@@ -345,7 +376,7 @@ class GrImportAllTask
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
         List<String> list = new ArrayList<>(5);
-        addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewFields.ISBN13));
+        addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewField.ISBN13));
         addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
         return list;
     }
@@ -359,8 +390,8 @@ class GrImportAllTask
         // Get last date book was sent to GR (may be null)
         String lastGrSync = bookCursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE);
         // If the review has an 'updated' date, then see if we can compare to book
-        if (review.containsKey(ReviewFields.UPDATED)) {
-            String lastUpdate = review.getString(ListReviewsApiHandler.ReviewFields.UPDATED);
+        if (review.containsKey(ListReviewsApiHandler.ReviewField.UPDATED)) {
+            String lastUpdate = review.getString(ReviewField.UPDATED);
             // If last update in GR was before last GR sync of book, then don't bother
             // updating book. This typically happens if the last update in GR was from us.
             if (lastUpdate != null && lastUpdate.compareTo(lastGrSync) < 0) {
@@ -396,7 +427,7 @@ class GrImportAllTask
     }
 
     /**
-     * Build a book bundle based on the goodreads 'review' data. Some data is just copied
+     * Build a book bundle based on the Goodreads 'review' data. Some data is just copied
      * while other data is processed (e.g. dates) and other are combined (authors & series).
      */
     @NonNull
@@ -406,37 +437,36 @@ class GrImportAllTask
 
         Bundle bookData = new Bundle();
 
-        //ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn goodreads notes
+        //ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
         // Do not sync Notes<->Review. We will add a 'Review' field later.
-        //addStringIfNonBlank(review, ReviewFields.DBA_NOTES, book,
-        // ReviewFields.DBA_NOTES);
+        //addStringIfNonBlank(review, ReviewField.DBA_NOTES, book, ReviewField.DBA_NOTES);
 
-        addStringIfNonBlank(review, ReviewFields.DBA_TITLE,
+        addStringIfNonBlank(review, ListReviewsApiHandler.ReviewField.DBA_TITLE,
                             bookData, DBDefinitions.KEY_TITLE);
 
-        addStringIfNonBlank(review, ReviewFields.DBA_DESCRIPTION,
+        addStringIfNonBlank(review, ReviewField.DBA_DESCRIPTION,
                             bookData, DBDefinitions.KEY_DESCRIPTION);
 
-        addStringIfNonBlank(review, ReviewFields.DBA_FORMAT,
+        addStringIfNonBlank(review, ReviewField.DBA_FORMAT,
                             bookData, DBDefinitions.KEY_FORMAT);
 
-        addStringIfNonBlank(review, ReviewFields.DBA_PUBLISHER,
+        addStringIfNonBlank(review, ReviewField.DBA_PUBLISHER,
                             bookData, DBDefinitions.KEY_PUBLISHER);
 
-        addLongIfPresent(review, ReviewFields.DBA_GR_BOOK_ID,
+        addLongIfPresent(review, ReviewField.DBA_GR_BOOK_ID,
                          bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
         // v200: Now storing as a string
-        addStringIfNonBlank(review, ReviewFields.DBA_PAGES,
+        addStringIfNonBlank(review, ReviewField.DBA_PAGES,
                             bookData, DBDefinitions.KEY_PAGES);
 
-        addDateIfValid(review, ReviewFields.DBA_READ_START,
+        addDateIfValid(review, ReviewField.DBA_READ_START,
                        bookData, DBDefinitions.KEY_READ_START);
 
-        String readEnd = addDateIfValid(review, ReviewFields.DBA_READ_END,
+        String readEnd = addDateIfValid(review, ReviewField.DBA_READ_END,
                                         bookData, DBDefinitions.KEY_READ_END);
 
-        Double rating = addDoubleIfPresent(review, ReviewFields.DBA_RATING,
+        Double rating = addDoubleIfPresent(review, ReviewField.DBA_RATING,
                                            bookData, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
@@ -468,9 +498,9 @@ class GrImportAllTask
          * Build the publication date based on the components
          */
         String pubDate = GoodreadsManager.buildDate(review,
-                                                    ReviewFields.PUB_YEAR,
-                                                    ReviewFields.PUB_MONTH,
-                                                    ReviewFields.PUB_DAY,
+                                                    ReviewField.PUB_YEAR,
+                                                    ReviewField.PUB_MONTH,
+                                                    ReviewField.PUB_DAY,
                                                     null);
         if (pubDate != null && !pubDate.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
@@ -479,7 +509,7 @@ class GrImportAllTask
         /*
          * process the Authors
          */
-        ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ReviewFields.AUTHORS);
+        ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ReviewField.AUTHORS);
         if (grAuthors == null) {
             Logger.warnWithStackTrace(this, "grAuthors was null");
             return bookData;
@@ -494,7 +524,7 @@ class GrImportAllTask
         }
 
         for (Bundle grAuthor : grAuthors) {
-            String name = grAuthor.getString(ReviewFields.AUTHOR_NAME_GF);
+            String name = grAuthor.getString(ReviewField.AUTHOR_NAME_GF);
             if (name != null && !name.trim().isEmpty()) {
                 authors.add(Author.fromString(name));
             }
@@ -530,8 +560,8 @@ class GrImportAllTask
         /*
          * Process any bookshelves.
          */
-        if (review.containsKey(ReviewFields.SHELVES)) {
-            ArrayList<Bundle> grShelves = review.getParcelableArrayList(ReviewFields.SHELVES);
+        if (review.containsKey(ReviewField.SHELVES)) {
+            ArrayList<Bundle> grShelves = review.getParcelableArrayList(ReviewField.SHELVES);
             if (grShelves == null) {
                 Logger.warnWithStackTrace(this, "grShelves was null");
                 return bookData;
@@ -549,7 +579,8 @@ class GrImportAllTask
             // --- end 2019-02-04 ---
 
             for (Bundle shelfBundle : grShelves) {
-                String bsName = translateBookshelf(db, shelfBundle.getString(ReviewFields.SHELF));
+                String bsName = translateBookshelf(db, shelfBundle.getString(
+                        ListReviewsApiHandler.ReviewField.SHELF));
 
                 if (bsName != null && !bsName.isEmpty()) {
                     bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
@@ -568,19 +599,19 @@ class GrImportAllTask
          */
         if (bookCursorRow == null) {
             // Use the GR added date for new books
-            addStringIfNonBlank(review, ReviewFields.ADDED,
+            addStringIfNonBlank(review, ReviewField.ADDED,
                                 bookData, DBDefinitions.KEY_DATE_ADDED);
 
             // fetch thumbnail
             String thumbnail;
             String size = "";
-            String largeImage = review.getString(ReviewFields.LARGE_IMAGE);
-            String smallImage = review.getString(ReviewFields.SMALL_IMAGE);
+            String largeImage = review.getString(ReviewField.LARGE_IMAGE);
+            String smallImage = review.getString(ReviewField.SMALL_IMAGE);
             if (hasCover(largeImage)) {
-                size = ReviewFields.LARGE_IMAGE;
+                size = ReviewField.LARGE_IMAGE;
                 thumbnail = largeImage;
             } else if (hasCover(smallImage)) {
-                size = ReviewFields.SMALL_IMAGE;
+                size = ListReviewsApiHandler.ReviewField.SMALL_IMAGE;
                 thumbnail = smallImage;
             } else {
                 thumbnail = null;
@@ -589,7 +620,7 @@ class GrImportAllTask
             if (thumbnail != null) {
                 String name = bookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
                 String fileSpec = ImageUtils.saveImage(thumbnail, name,
-                                                       GoodreadsTasks.FILENAME_SUFFIX + '_' + size);
+                                                       GoodreadsManager.FILENAME_SUFFIX + '_' + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);

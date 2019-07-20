@@ -172,9 +172,8 @@
             android:name=".cropper.CropImageActivity"
             android:theme="@style/AppTheme.FullScreen"
             />
-        <!-- These Goodreads activities are commented out (waiting on API access) -->
-        <activity android:name=".goodreads.GoodreadsSearchCriteriaActivity" />
-        <activity android:name=".goodreads.GoodreadsSearchResultsActivity" />
+        <!-- This Goodreads activity is commented out (waiting on API access) -->
+        <activity android:name=".goodreads.GoodreadsSearchActivity" />
         <!--
              The callback-activity after we requested authorizing this application
              for the current user to Goodreads.

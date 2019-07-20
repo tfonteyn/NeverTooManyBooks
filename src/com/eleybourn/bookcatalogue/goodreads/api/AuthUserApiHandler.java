@@ -26,37 +26,23 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
- * API handler for the authUser call. Just gets the current user details.
+ * API handler for the "auth.user" call. Just gets the current user details.
  * <p>
- * Typical response.
- * <pre>
- *  {@code
- *  <GoodreadsResponse>
- *    <Request>
- *      <authentication>true</authentication>
- *      <key><![CDATA[...]]></key>
- *      <method><![CDATA[api_auth_user]]></method>
- *    </Request>
- *
- *    <user id="5129458">
- *      <name><![CDATA[Grunthos]]></name>
- *      <link>
- *        <![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]>
- *      </link>
- *    </user>
- *   </GoodreadsResponse>
- *   }
- * </pre>
+ * <a href="https://www.goodreads.com/api/index#auth.user">
+ *     https://www.goodreads.com/api/index#auth.user</a>
  *
  * @author Philip Warner
  */
 public class AuthUserApiHandler
         extends ApiHandler {
+
+    private static final String URL = GoodreadsManager.BASE_URL + "/api/auth_user";
 
     private static final String XML_USER = "user";
 
@@ -71,6 +57,8 @@ public class AuthUserApiHandler
      */
     public AuthUserApiHandler(@NonNull final GoodreadsManager grManager) {
         super(grManager);
+        // don't ...if (!grManager.hasValidCredentials()) {
+
         buildFilters();
     }
 
@@ -80,16 +68,15 @@ public class AuthUserApiHandler
      * @return Resulting User ID, 0 if error/none.
      */
     public long getAuthUser() {
-        String url = GoodreadsManager.BASE_URL + "/api/auth_user";
-
         mUserId = 0;
         try {
             // Get a handler and run query.
             XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-            mManager.executePost(url, null, handler, true);
+            executePost(URL, null, handler, true);
             // Return user found.
             return mUserId;
-        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException
+
+        } catch (@NonNull final BookNotFoundException | CredentialsException | IOException
                 | RuntimeException e) {
             return 0;
         }
@@ -97,6 +84,26 @@ public class AuthUserApiHandler
 
     /**
      * Setup filters to process the XML parts we care about.
+     * <p>
+     * Typical response.
+     * <pre>
+     *  {@code
+     *  <GoodreadsResponse>
+     *    <Request>
+     *      <authentication>true</authentication>
+     *      <key><![CDATA[...]]></key>
+     *      <method><![CDATA[api_auth_user]]></method>
+     *    </Request>
+     *
+     *    <user id="5129458">
+     *      <name><![CDATA[Grunthos]]></name>
+     *      <link>
+     *        <![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]>
+     *      </link>
+     *    </user>
+     *   </GoodreadsResponse>
+     *   }
+     * </pre>
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER)

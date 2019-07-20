@@ -160,13 +160,13 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter isArray(@NonNull final String arrayName) {
+    public SimpleXmlFilter asArray(@NonNull final String arrayName) {
         mContexts.get(mContexts.size() - 1).setArray(arrayName);
         return this;
     }
 
     @NonNull
-    public SimpleXmlFilter isArrayItem() {
+    public SimpleXmlFilter asArrayItem() {
         mContexts.get(mContexts.size() - 1).setArrayItem();
         return this;
     }

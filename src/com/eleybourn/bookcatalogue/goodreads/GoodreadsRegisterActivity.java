@@ -32,13 +32,14 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
+import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
- * Activity to allow the user to authorize the application to access their Goodreads account and
- * to explain Goodreads.
+ * Activity to allow the user to authorize the application to access their
+ * Goodreads account and to explain Goodreads.
  *
  * @author Philip Warner
  */
@@ -52,15 +53,15 @@ public class GoodreadsRegisterActivity
                                            final boolean success,
                                            final Integer result,
                                            @Nullable final Exception e) {
-                    GoodreadsTasks.handleGoodreadsTaskResult(taskId, success, result, e,
-                                                             getWindow().getDecorView(),
-                                                             mTaskListener);
+                    GoodreadsTasks.handleResult(taskId, success, result, e,
+                                                getWindow().getDecorView(),
+                                                mTaskListener);
                 }
             };
 
     @Override
     protected int getLayoutId() {
-        return R.layout.goodreads_register;
+        return R.layout.activity_goodreads_register;
     }
 
     @Override
@@ -80,7 +81,7 @@ public class GoodreadsRegisterActivity
         View authButton = findViewById(R.id.authorize);
         authButton.setOnClickListener(v -> {
             UserMessage.show(authButton, R.string.progress_msg_connecting);
-            new GoodreadsTasks.RequestAuthTask(mTaskListener).execute();
+            new RequestAuthTask(mTaskListener).execute();
         });
 
         // Forget credentials
@@ -89,7 +90,7 @@ public class GoodreadsRegisterActivity
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
             blurbButton.setVisibility(View.VISIBLE);
-            blurbButton.setOnClickListener(v -> GoodreadsManager.forgetCredentials());
+            blurbButton.setOnClickListener(v -> GoodreadsManager.resetCredentials());
         } else {
             blurb.setVisibility(View.GONE);
             blurbButton.setVisibility(View.GONE);

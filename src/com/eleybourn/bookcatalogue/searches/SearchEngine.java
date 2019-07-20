@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -31,7 +31,7 @@ public interface SearchEngine {
      * or does not support isbn searches.
      * <p>
      * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-     * Any {@link IOException} or {@link AuthorizationException} thrown are ignored and
+     * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
      * {@code null} returned.
      *
      * @param isbn to search for
@@ -61,7 +61,7 @@ public interface SearchEngine {
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
             }
-        } catch (@NonNull final IOException | AuthorizationException e) {
+        } catch (@NonNull final IOException | CredentialsException e) {
             Logger.error(SearchSites.class, e);
         }
 
@@ -82,7 +82,7 @@ public interface SearchEngine {
      * @return bundle with book data. Can be empty, but never {@code null}.
      * ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
      *
-     * @throws AuthorizationException with GoodReads
+     * @throws CredentialsException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
@@ -92,7 +92,7 @@ public interface SearchEngine {
                   @Nullable String title,
                   final String publisher,
                   boolean fetchThumbnail)
-            throws IOException, AuthorizationException;
+            throws IOException, CredentialsException;
 
     /**
      * Get a cover image.
@@ -107,7 +107,7 @@ public interface SearchEngine {
      * {@link #search(String, String, String, String, boolean)} method.
      * <p>
      * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-     * Any {@link IOException} or {@link AuthorizationException} thrown are ignored and
+     * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
      * {@code null} returned.
      */
     @Nullable

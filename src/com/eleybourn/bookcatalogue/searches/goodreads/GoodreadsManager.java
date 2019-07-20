@@ -35,34 +35,12 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -74,7 +52,6 @@ import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -82,20 +59,22 @@ import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelves;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.goodreads.api.AddBookToShelfApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.AuthUserApiHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler.GrBookshelfFields;
 import com.eleybourn.bookcatalogue.goodreads.api.IsbnToIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ReviewUpdateApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
+import com.eleybourn.bookcatalogue.goodreads.api.ShelvesListApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldName;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.searches.SearchEngine;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -103,8 +82,6 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
- * <p>
- * IMPORTANT: all use of "org.apache.http" is now restricted to this class. Keep it that way!
  *
  * @author Philip Warner
  */
@@ -117,39 +94,38 @@ public class GoodreadsManager
      */
     public static final String WEBSITE = "https://www.goodreads.com";
     public static final String BASE_URL = WEBSITE;
-
+    /** file suffix for cover files. */
+    public static final String FILENAME_SUFFIX = "_GR";
+    /** Goodreads virtual shelf name. */
+    private static final String SHELF_READ = "Read";
+    /** Goodreads virtual shelf name. */
+    private static final String SHELF_TO_READ = "To Read";
+    /** Goodreads virtual shelf name. */
+    private static final String SHELF_DEFAULT = "Default";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "GoodReads.";
-
     /** last time we synced with Goodreads. */
     private static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "LastSyncDate";
+
+    /** Used when requesting the website for authorization. Only temporarily stored. */
+    private static final String REQUEST_TOKEN = PREF_PREFIX + "RequestToken.Token";
+    private static final String REQUEST_SECRET = PREF_PREFIX + "RequestToken.Secret";
 
     /** authorization tokens. */
     private static final String ACCESS_TOKEN = PREF_PREFIX + "AccessToken.Token";
     private static final String ACCESS_SECRET = PREF_PREFIX + "AccessToken.Secret";
-    private static final String REQUEST_TOKEN = PREF_PREFIX + "RequestToken.Token";
-    private static final String REQUEST_SECRET = PREF_PREFIX + "RequestToken.Secret";
 
     /** meta data keys in manifest. */
     private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
     private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
-
     /** the developer keys. */
     private static final String DEV_KEY = App.getManifestString(GOODREADS_DEV_KEY);
     private static final String DEV_SECRET = App.getManifestString(GOODREADS_DEV_SECRET);
-
     /** to control access to sLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
-
-    /** error string used more then once. */
-    private static final String INVALID_CREDENTIALS =
-            "Goodreads credentials need to be validated before accessing user data";
-    private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
-            "Unexpected status code from API: ";
-
     /** Set to {@code true} when the credentials have been successfully verified. */
-    private static boolean sHasValidCredentials;
+    public static boolean sHasValidCredentials;
     /** Cached when credentials have been verified. */
     @Nullable
     private static String sAccessToken;
@@ -172,15 +148,23 @@ public class GoodreadsManager
     /** OAuth helpers. */
     private final OAuthProvider mProvider;
 
+    /** Cache this common handler. */
     @Nullable
     private IsbnToIdApiHandler mIsbnToIdApiHandler;
+    /** Cache this common handler. */
     @Nullable
     private AddBookToShelfApiHandler mAddBookToShelfApiHandler;
+    /** Cache this common handler. */
     @Nullable
     private ReviewUpdateApiHandler mReviewUpdateApiHandler;
 
+    /** Cached list of shelves. */
     @Nullable
-    private GoodreadsBookshelves mBookshelfList;
+    private GoodreadsShelves mShelvesList;
+
+    /** error string. */
+    private static final String INVALID_CREDENTIALS =
+            "Goodreads credentials need to be validated before accessing user data";
 
     /**
      * Constructor.
@@ -190,7 +174,8 @@ public class GoodreadsManager
      * BASE_URL + "/oauth/access_token",
      * BASE_URL + "/oauth/authorize"
      * <p>
-     * 2019-06-05: https://www.goodreads.com/api/documentation
+     * 2019-06-05: <a href="https://www.goodreads.com/api/documentation">
+     *     https://www.goodreads.com/api/documentation</a>
      * <p>
      * /oauth/authorize?mobile=1
      */
@@ -201,14 +186,19 @@ public class GoodreadsManager
                 BASE_URL + "/oauth/access_token",
                 BASE_URL + "/oauth/authorize?mobile=1");
 
-        if (hasCredentials()) {
-            mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
-        }
+        // get the credentials
+        hasCredentials();
     }
 
     @NonNull
     public static String getBaseURL() {
         return BASE_URL;
+    }
+
+    public static void openWebsite(@NonNull final Context context,
+                                   final long bookId) {
+        String url = getBaseURL() + "/book/show/" + bookId;
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -222,7 +212,7 @@ public class GoodreadsManager
      * simultaneously, one will return immediately, one will return 1 second later,
      * another two seconds etc.
      */
-    private static void waitUntilRequestAllowed() {
+    public static void waitUntilRequestAllowed() {
 
         long now = System.currentTimeMillis();
         long wait;
@@ -246,7 +236,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Create canonical representation based on the best guess as to the goodreads rules.
+     * Create canonical representation based on the best guess as to the Goodreads rules.
      *
      * @param name to bless
      *
@@ -303,7 +293,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Get the date at which the last goodreads synchronization was run.
+     * Get the date at which the last Goodreads synchronization was run.
      *
      * @return Last date
      */
@@ -313,7 +303,7 @@ public class GoodreadsManager
     }
 
     /**
-     * Set the date at which the last goodreads synchronization was run.
+     * Set the date at which the last Goodreads synchronization was run.
      *
      * @param date Last date
      */
@@ -326,7 +316,7 @@ public class GoodreadsManager
     /**
      * Clear the credentials from the preferences and local cache.
      */
-    public static void forgetCredentials() {
+    public static void resetCredentials() {
 
         sAccessToken = "";
         sAccessSecret = "";
@@ -337,11 +327,22 @@ public class GoodreadsManager
            .apply();
     }
 
+    @AnyThread
+    public static boolean hasKey() {
+        boolean hasKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
+        if (!hasKey) {
+            Logger.warn(GoodreadsManager.class, "hasKey", "Goodreads dev key not available");
+        }
+        return hasKey;
+    }
+
     /**
-     * Check if the access tokens are available (not if they are valid).
+     * Get the stored token values from prefs.
+     * This is token availability only, we don't check if they are valid here.
+     * <p>
      * No network access.
      *
-     * @return {@code true} if we already have credentials cached.
+     * @return {@code true} if we have credentials.
      */
     public static boolean hasCredentials() {
 
@@ -350,273 +351,29 @@ public class GoodreadsManager
             return true;
         }
 
-        // Get the stored token values from prefs, and setup the consumer if present
+        // Get the stored token values from prefs
         sAccessToken = App.getPrefs().getString(ACCESS_TOKEN, null);
         sAccessSecret = App.getPrefs().getString(ACCESS_SECRET, null);
 
-        return !(sAccessToken == null || sAccessToken.isEmpty()
-                || sAccessSecret == null || sAccessSecret.isEmpty());
+        return sAccessToken != null && !sAccessToken.isEmpty()
+                && sAccessSecret != null && !sAccessSecret.isEmpty();
     }
 
-    public static void openWebsite(@NonNull final Context context,
-                                   final long bookId) {
-        String url = getBaseURL() + "/book/show/" + bookId;
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-    }
-
-    /**
-     * Create an HttpClient with specifically set buffer sizes to deal with
-     * potentially exorbitant settings on some HTC handsets.
-     */
-    @NonNull
-    private HttpClient newHttpClient() {
-
-        HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, 30_000);
-        HttpConnectionParams.setSocketBufferSize(params, 8192);
-        HttpConnectionParams.setLinger(params, 0);
-        HttpConnectionParams.setTcpNoDelay(params, false);
-        return new DefaultHttpClient(params);
-    }
-
-    /**
-     * Sign a request and submit it; then pass it off to a parser.
-     * Wrapper for {@link #execute(HttpUriRequest, DefaultHandler, boolean)}}
-     * to get all Apache API calls centralised.
-     *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
-     */
-    public void executeGet(@NonNull final String url,
-                           @Nullable final DefaultHandler requestHandler,
-                           final boolean requiresSignature)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        HttpGet request = new HttpGet(url);
-        execute(request, requestHandler, requiresSignature);
-    }
-
-    /**
-     * Sign a request and submit it; then pass it off to a parser.
-     * Wrapper for {@link #execute(HttpUriRequest, DefaultHandler, boolean)}}
-     * to get all Apache API calls centralised.
-     *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
-     */
-    public void executePost(@NonNull final String url,
-                            @Nullable final Map<String, String> parameterMap,
-                            @Nullable final DefaultHandler requestHandler,
-                            final boolean requiresSignature)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        HttpPost request = new HttpPost(url);
-
-        if (parameterMap != null) {
-            List<NameValuePair> parameters = new ArrayList<>();
-            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-                parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-            // TEST: both were used in separate call. Unifying to UTF-8 here.
-            request.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
-//            request.setEntity(new UrlEncodedFormEntity(parameters));
-        }
-
-        execute(request, requestHandler, requiresSignature);
-    }
-
-    /**
-     * Sign a request and submit it; then pass it off to a parser.
-     *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
-     */
-    private void execute(@NonNull final HttpUriRequest request,
-                         @Nullable final DefaultHandler requestHandler,
-                         final boolean requiresSignature)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        if (requiresSignature) {
-            mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
-            try {
-                mConsumer.sign(request);
-            } catch (@NonNull final OAuthMessageSignerException
-                    | OAuthExpectationFailedException
-                    | OAuthCommunicationException e) {
-                throw new IOException(e);
-            }
-        }
-
-        // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        waitUntilRequestAllowed();
-
-        // Get a new client
-        HttpClient httpClient = newHttpClient();
-
-        // Submit the request and process result.
-        HttpResponse response;
-        try {
-            response = httpClient.execute(request);
-
-        } catch (@NonNull final ClientProtocolException e) {
-            throw new IOException(e);
-        }
-
-        HttpEntity entity = response.getEntity();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS && DEBUG_SWITCHES.DUMP_HTTP_RESPONSE) {
-            entity.writeTo(System.out);
-            if (!entity.isRepeatable()) {
-                return;
-            }
-        }
-
-        int code = response.getStatusLine().getStatusCode();
-        switch (code) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                InputStream is = entity.getContent();
-                parseResponse(is, requestHandler);
-                break;
-
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                sHasValidCredentials = false;
-                throw new AuthorizationException(R.string.goodreads);
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new BookNotFoundException();
-
-            default:
-                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
-                                              + response.getStatusLine().getStatusCode()
-                                              + '/' + response.getStatusLine().getReasonPhrase());
-        }
-    }
-
-    /**
-     * Sign a request and submit it then return the raw text output.
-     * Wrapper for {@link #executeRaw(HttpUriRequest, boolean)}
-     * to get all Apache API calls centralised.
-     *
-     * @return the raw text output.
-     *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
-     */
-    @NonNull
-    public String executeRaw(@NonNull final String url,
-                             final boolean requiresSignature)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        return executeRaw(new HttpGet(url), requiresSignature);
-    }
-
-    /**
-     * Sign a request and submit it then return the raw text output.
-     *
-     * @return the raw text output.
-     *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
-     */
-    @NonNull
-    private String executeRaw(@NonNull final HttpUriRequest request,
-                              final boolean requiresSignature)
-            throws AuthorizationException,
-                   BookNotFoundException,
-                   IOException {
-
-        if (requiresSignature) {
-            mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
-            try {
-                mConsumer.sign(request);
-            } catch (@NonNull final OAuthMessageSignerException
-                    | OAuthExpectationFailedException
-                    | OAuthCommunicationException e) {
-                throw new IOException(e);
-            }
-        }
-        // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        waitUntilRequestAllowed();
-
-        // Get a new client
-        HttpClient httpClient = newHttpClient();
-
-        // Submit the request then process result.
-        HttpResponse response = httpClient.execute(request);
-
-        StringBuilder html = new StringBuilder();
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-            InputStream in = entity.getContent();
-            if (in != null) {
-                while (true) {
-                    int i = in.read();
-                    if (i == -1) {
-                        break;
-                    }
-                    html.append((char) i);
-                }
-            }
-        }
-
-        int code = response.getStatusLine().getStatusCode();
-        switch (code) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                return html.toString();
-
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                sHasValidCredentials = false;
-                throw new AuthorizationException(R.string.goodreads);
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new BookNotFoundException();
-
-            default:
-                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
-                                              + response.getStatusLine().getStatusCode()
-                                              + '/' + response.getStatusLine().getReasonPhrase());
-        }
-    }
-
-    /**
-     * Pass a response off to a parser.
-     *
-     * @author Philip Warner
-     */
-    private void parseResponse(@NonNull final InputStream is,
-                               @Nullable final DefaultHandler handler)
+    public void sign(@NonNull final HttpUriRequest request)
             throws IOException {
-
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+        mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
         try {
-            SAXParser parser = factory.newSAXParser();
-            parser.parse(is, handler);
-            // wrap parser exceptions in an IOException
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
-            }
+            mConsumer.sign(request);
+        } catch (@NonNull final OAuthMessageSignerException
+                | OAuthExpectationFailedException
+                | OAuthCommunicationException e) {
             throw new IOException(e);
         }
     }
 
     @SuppressWarnings("unused")
-    @Nullable
-    public String getUsername() {
+    public String getUserName() {
+        // don't call hasCredentials(), if we don't have them at this time, blame the developer.
         if (!sHasValidCredentials) {
             throw new IllegalStateException(INVALID_CREDENTIALS);
         }
@@ -624,6 +381,7 @@ public class GoodreadsManager
     }
 
     public long getUserId() {
+        // don't call hasCredentials(), if we don't have them at this time, blame the developer.
         if (!sHasValidCredentials) {
             throw new IllegalStateException(INVALID_CREDENTIALS);
         }
@@ -633,13 +391,13 @@ public class GoodreadsManager
     /**
      * Wrapper to call ISBN->ID API.
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @SuppressWarnings("unused")
     public long isbnToId(@NonNull final String isbn)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
@@ -650,194 +408,195 @@ public class GoodreadsManager
     }
 
     /**
-     * @return the shelves
+     * Fetch all our shelves from Goodreads.
+     * We only fetch them once and cache them.
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @return the Goodreads shelves
+     *
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
-    private GoodreadsBookshelves getShelves()
-            throws AuthorizationException,
+    private GoodreadsShelves getShelves()
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
-        if (mBookshelfList == null) {
-            Map<String, GoodreadsBookshelf> map = new HashMap<>();
-            BookshelfListApiHandler handler = new BookshelfListApiHandler(this);
-            int page = 1;
-            while (true) {
-                Bundle result = handler.run(page);
-                List<Bundle> grShelves = result.getParcelableArrayList(GrBookshelfFields.SHELVES);
-                if (grShelves == null || grShelves.isEmpty()) {
-                    break;
-                }
-
-                for (Bundle grShelf : grShelves) {
-                    GoodreadsBookshelf shelf = new GoodreadsBookshelf(grShelf);
-                    map.put(shelf.getName(), shelf);
-                }
-
-                if (result.getLong(GrBookshelfFields.END) >= result.getLong(
-                        GrBookshelfFields.TOTAL)) {
-                    break;
-                }
-
-                page++;
-            }
-            mBookshelfList = new GoodreadsBookshelves(map);
+        if (mShelvesList == null) {
+            ShelvesListApiHandler handler = new ShelvesListApiHandler(this);
+            Map<String, GoodreadsShelf> map = handler.getAll();
+            mShelvesList = new GoodreadsShelves(map);
         }
-        return mBookshelfList;
+        return mShelvesList;
     }
 
     /**
      * Wrapper to call API to add book to shelf.
      *
+     * @param grBookId  GoodReads book id
+     * @param shelfName GoodReads shelf name
+     *
      * @return reviewId
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
-    private long addBookToShelf(@NonNull final String shelfName,
-                                final long grBookId)
-            throws AuthorizationException,
+    private long addBookToShelf(final long grBookId,
+                                @NonNull final String shelfName)
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(this);
         }
-        return mAddBookToShelfApiHandler.add(shelfName, grBookId);
+        return mAddBookToShelfApiHandler.add(grBookId, shelfName);
     }
 
     /**
      * Wrapper to call API to remove a book from a shelf.
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @param grBookId  GoodReads book id
+     * @param shelfName GoodReads shelf name
+     *
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
-    private void removeBookFromShelf(@NonNull final String shelfName,
-                                     final long grBookId)
-            throws AuthorizationException,
+    private void removeBookFromShelf(final long grBookId,
+                                     @NonNull final String shelfName)
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(this);
         }
-        mAddBookToShelfApiHandler.remove(shelfName, grBookId);
+        mAddBookToShelfApiHandler.remove(grBookId, shelfName);
     }
 
     /**
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * Update a fixed set of fields; see method parameters.
+     * <p>
+     * Depending on the state of 'isRead', the date fields will determine which shelf is used.
+     *
+     * @param reviewId   to update
+     * @param isRead     Flag to indicate we finished reading this book.
+     * @param readStart  (optional) Date when we started reading this book, YYYY-MM-DD format
+     * @param readEnd    (optional) Date when we finished reading this book, YYYY-MM-DD format
+     * @param rating     Rating 0-5 with 0 == No rating
+     * @param reviewText (optional) Text for the review
+     *
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     private void updateReview(final long reviewId,
                               final boolean isRead,
-                              @Nullable final String readAt,
-                              @SuppressWarnings("SameParameterValue") @Nullable final String review,
-                              final int rating)
-            throws AuthorizationException,
+                              @Nullable final String readStart,
+                              @Nullable final String readEnd,
+                              final int rating,
+                              @SuppressWarnings("SameParameterValue") @Nullable final String reviewText)
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         if (mReviewUpdateApiHandler == null) {
             mReviewUpdateApiHandler = new ReviewUpdateApiHandler(this);
         }
-        mReviewUpdateApiHandler.update(reviewId, isRead, readAt, review, rating);
+        mReviewUpdateApiHandler.update(reviewId, isRead, readStart, readEnd, rating, reviewText);
     }
 
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
+     * Summary what the cursor row has to have:
+     * <ul>
+     * <li>{@link DBDefinitions#KEY_PK_ID}</li>
+     * <li>{@link DBDefinitions#KEY_GOODREADS_BOOK_ID}</li>
+     * <li>{@link DBDefinitions#KEY_ISBN}</li>
+     * <li>{@link DBDefinitions#KEY_READ}</li>
+     * <li>{@link DBDefinitions#KEY_READ_START}</li>
+     * <li>{@link DBDefinitions#KEY_READ_END}</li>
+     * <li>{@link DBDefinitions#KEY_RATING}</li>
+     * </ul>
      *
      * @param db            DB connection
      * @param bookCursorRow single book to send
      *
      * @return Disposition of book
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
-    public ExportDisposition sendOneBook(@NonNull final DAO db,
-                                         @NonNull final MappedCursorRow bookCursorRow)
-            throws AuthorizationException,
+    public ExportResult sendOneBook(@NonNull final DAO db,
+                                    @NonNull final MappedCursorRow bookCursorRow)
+            throws CredentialsException,
                    IOException,
                    BookNotFoundException {
 
-        /* summary what the cursor row has to have:
-         * - id
-         * - goodreads id
-         * - isbn
-         * - read
-         * - readEndDate
-         * - rating
-         */
 
         long bookId = bookCursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        String isbn = bookCursorRow.getString(DBDefinitions.KEY_ISBN);
+
+        // Get the list of shelves from Goodreads. This is cached per instance of GoodreadsManager.
+        GoodreadsShelves grShelfList = getShelves();
+
+        long grBookId;
         Bundle grBook = null;
 
-        // Get the list of shelves from goodreads. This is cached per instance of GoodreadsManager.
-        GoodreadsBookshelves grShelfList = getShelves();
-
-        // Get the book ISBN
-        String isbn = bookCursorRow.getString(DBDefinitions.KEY_ISBN);
-        long grId;
-
-        // See if the book has a goodreads ID and if it is valid.
+        // See if the book has a Goodreads ID and if it is valid.
         try {
-            grId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
-            if (grId != 0) {
+            grBookId = bookCursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+            if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                grBook = getBookById(grId);
+                grBook = getBookById(grBookId, false);
             }
-        } catch (@NonNull final BookNotFoundException | AuthorizationException | IOException e) {
-            grId = 0;
+        } catch (@NonNull final BookNotFoundException | CredentialsException | IOException e) {
+            grBookId = 0;
         }
 
-        boolean isNew = grId == 0;
+        boolean isNew = grBookId == 0;
 
-        if (grId == 0 && !isbn.isEmpty()) {
-
+        if (grBookId == 0 && !isbn.isEmpty()) {
             if (!ISBN.isValid(isbn)) {
-                return ExportDisposition.notFound;
+                return ExportResult.notFound;
             }
 
             try {
                 // Get the book details using ISBN
-                grBook = getBookByIsbn(isbn);
-                if (grBook.containsKey(ShowBookFieldNames.BOOK_ID)) {
-                    grId = grBook.getLong(ShowBookFieldNames.BOOK_ID);
+                grBook = getBookByIsbn(isbn, false);
+                if (grBook.containsKey(ShowBookFieldName.BOOK_ID)) {
+                    grBookId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.BOOK_ID);
                 }
 
                 // If we got an ID, save it against the book
-                if (grId != 0) {
-                    db.setGoodreadsBookId(bookId, grId);
+                if (grBookId != 0) {
+                    db.setGoodreadsBookId(bookId, grBookId);
                 }
             } catch (@NonNull final BookNotFoundException e) {
-                return ExportDisposition.notFound;
+                return ExportResult.notFound;
             } catch (@NonNull final IOException e) {
-                return ExportDisposition.networkError;
+                return ExportResult.networkError;
             }
         }
 
-        // If we found a goodreads book, update it
-        if (grId == 0) {
-            return ExportDisposition.noIsbn;
-        } else {
 
+        if (grBookId == 0) {
+            return ExportResult.noIsbn;
+        } else {
+            // We found a Goodreads book, update it
             long reviewId = 0;
 
             // Get the review ID if we have the book details. For new books, it will not be present.
-            if (!isNew && grBook.containsKey(ShowBookFieldNames.REVIEW_ID)) {
-                reviewId = grBook.getLong(ShowBookFieldNames.REVIEW_ID);
+            if (!isNew && grBook.containsKey(ShowBookFieldName.REVIEW_ID)) {
+                reviewId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.REVIEW_ID);
             }
 
-            // Lists of shelf names and our best guess at the goodreads canonical name
+            // Lists of shelf names and our best guess at the Goodreads canonical name
             List<String> shelves = new ArrayList<>();
             List<String> canonicalShelves = new ArrayList<>();
 
@@ -850,21 +609,20 @@ public class GoodreadsManager
                 final String canonicalShelfName = canonicalizeBookshelfName(bookshelfName);
                 canonicalShelves.add(canonicalShelfName);
 
-                // Count how many of these shelves are exclusive in goodreads.
+                // Count how many of these shelves are exclusive in Goodreads.
                 if (grShelfList.isExclusive(canonicalShelfName)) {
                     exclusiveCount++;
                 }
             }
 
-            // If no exclusive shelves are specified, then add pseudo-shelf to match goodreads
+            // TEST: If no exclusive shelves are specified, then add pseudo-shelf to match Goodreads
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
                 if (bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
-                    //TEST: use a resource ? or is this a Goodreads string ?
-                    pseudoShelf = "Read";
+                    pseudoShelf = SHELF_READ;
                 } else {
-                    pseudoShelf = "To Read";
+                    pseudoShelf = SHELF_TO_READ;
                 }
                 if (!shelves.contains(pseudoShelf)) {
                     shelves.add(pseudoShelf);
@@ -874,33 +632,33 @@ public class GoodreadsManager
 
             // Get the names of the shelves the book is currently on at Goodreads
             List<String> grShelves = null;
-            if (!isNew && grBook.containsKey(ShowBookFieldNames.SHELVES)) {
-                grShelves = grBook.getStringArrayList(ShowBookFieldNames.SHELVES);
+            if (!isNew && grBook.containsKey(ShowBookFieldName.SHELVES)) {
+                grShelves = grBook.getStringArrayList(ShowBookFieldName.SHELVES);
             }
             // not in info, or failed to get
             if (grShelves == null) {
                 grShelves = new ArrayList<>();
             }
 
-            // Remove from any shelves from goodreads that are not in our local list
+            // Remove from any shelves from Goodreads that are not in our local list
             for (String grShelf : grShelves) {
                 if (!canonicalShelves.contains(grShelf)) {
                     try {
                         // Goodreads does not seem to like removing books from the special shelves.
                         if (!(grShelfList.isExclusive(grShelf))) {
-                            removeBookFromShelf(grShelf, grId);
+                            removeBookFromShelf(grBookId, grShelf);
                         }
                     } catch (@NonNull final BookNotFoundException e) {
                         // Ignore for now; probably means book not on shelf anyway
-                    } catch (@NonNull final AuthorizationException | IOException e) {
-                        return ExportDisposition.error;
+                    } catch (@NonNull final CredentialsException | IOException e) {
+                        return ExportResult.error;
                     }
                 }
             }
 
-            // Add shelves to goodreads if they are not currently there
+            // Add shelves to Goodreads if they are not currently there
             for (String shelf : shelves) {
-                // Get the name the shelf will have at goodreads
+                // Get the name the shelf will have at Goodreads
                 final String canonicalShelfName = canonicalizeBookshelfName(shelf);
                 // Can only sent canonical shelf names if the book is on 0 or 1 of them.
                 boolean okToSend = exclusiveCount < 2
@@ -908,11 +666,11 @@ public class GoodreadsManager
 
                 if (okToSend && !grShelves.contains(canonicalShelfName)) {
                     try {
-                        reviewId = addBookToShelf(shelf, grId);
+                        reviewId = addBookToShelf(grBookId, shelf);
                     } catch (@NonNull final BookNotFoundException
                             | IOException
-                            | AuthorizationException e) {
-                        return ExportDisposition.error;
+                            | CredentialsException e) {
+                        return ExportResult.error;
                     }
                 }
             }
@@ -927,28 +685,28 @@ public class GoodreadsManager
              */
             if (reviewId == 0) {
                 try {
-                    reviewId = addBookToShelf("Default", grId);
-                } catch (@NonNull final BookNotFoundException | IOException | AuthorizationException e) {
-                    return ExportDisposition.error;
+                    reviewId = addBookToShelf(grBookId, SHELF_DEFAULT);
+                } catch (@NonNull final BookNotFoundException | IOException | CredentialsException e) {
+                    return ExportResult.error;
                 }
             }
+
             // Now update the remaining review details.
             try {
                 // Do not sync Notes<->Review. We will add a 'Review' field later.
-                //updateReview(reviewId, books.isRead(), books.getReadEnd(),
-                //                  books.getNotes(), ((int)books.getRating()) );
-                // -> 'notes' has been disabled from the SQL.
+                // ('notes' has been disabled from the SQL)
                 updateReview(reviewId,
-                             bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0,
+                             bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
+                             bookCursorRow.getString(DBDefinitions.KEY_READ_START),
                              bookCursorRow.getString(DBDefinitions.KEY_READ_END),
-                             null,
-                             (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING));
+                             (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
+                             null);
 
             } catch (@NonNull final BookNotFoundException e) {
-                return ExportDisposition.error;
+                return ExportResult.error;
             }
 
-            return ExportDisposition.sent;
+            return ExportResult.sent;
         }
     }
 
@@ -966,20 +724,20 @@ public class GoodreadsManager
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         final /* not supported */ boolean fetchThumbnail)
-            throws IOException, AuthorizationException {
-
+                         final boolean fetchThumbnail)
+            throws CredentialsException,
+                   IOException {
         try {
             // getBookByIsbn will check on isbn being valid.
             if (isbn != null && !isbn.isEmpty()) {
-                return getBookByIsbn(isbn);
+                return getBookByIsbn(isbn, fetchThumbnail);
 
             } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-                List<GoodreadsWork> result = new SearchBooksApiHandler(this)
+                List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
                         .search(author + ' ' + title);
 
-                if (!result.isEmpty()) {
-                    return getBookById(result.get(0).bookId);
+                if (!goodreadsWorks.isEmpty()) {
+                    return getBookById(goodreadsWorks.get(0).bookId, fetchThumbnail);
                 } else {
                     return new Bundle();
                 }
@@ -1015,20 +773,21 @@ public class GoodreadsManager
      *
      * @return Bundle of GoodreadsWork objects
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
-    private Bundle getBookById(final long bookId)
-            throws AuthorizationException,
+    private Bundle getBookById(final long bookId,
+                               final boolean fetchThumbnail)
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         if (bookId != 0) {
             ShowBookByIdApiHandler api = new ShowBookByIdApiHandler(this);
             // Run the search
-            return api.get(bookId, true);
+            return api.get(bookId, fetchThumbnail);
         } else {
             throw new IllegalArgumentException("No bookId");
         }
@@ -1039,46 +798,41 @@ public class GoodreadsManager
      *
      * @return Bundle of GoodreadsWork objects
      *
-     * @throws ISBN.IsbnInvalidException if the isbn passed in was not valid.
-     * @throws AuthorizationException    with GoodReads
-     * @throws BookNotFoundException     GoodReads does not have the book?
-     * @throws IOException               on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
-    private Bundle getBookByIsbn(@Nullable final String isbn)
-            throws AuthorizationException,
+    private Bundle getBookByIsbn(@Nullable final String isbn,
+                                 final boolean fetchThumbnail)
+            throws CredentialsException,
                    BookNotFoundException,
-                   IOException,
-                   ISBN.IsbnInvalidException {
+                   IOException {
 
         if (ISBN.isValid(isbn)) {
             ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
             // Run the search
-            return api.get(isbn, true);
+            return api.get(isbn, fetchThumbnail);
         } else {
-            throw new ISBN.IsbnInvalidException(isbn);
+            throw new BookNotFoundException(isbn);
         }
     }
 
+    /**
+     * Check developer key, credentials and website being up. Does NOT check credentials.
+     *
+     * @return {@code true} if we can use this site for searching.
+     */
     @Override
     @WorkerThread
     public boolean isAvailable() {
-        return !noKey() && NetworkUtils.isAlive(getBaseURL());
+        return hasKey() && hasCredentials() && NetworkUtils.isAlive(getBaseURL());
     }
 
     @StringRes
     @Override
     public int getNameResId() {
         return R.string.goodreads;
-    }
-
-    @AnyThread
-    public boolean noKey() {
-        boolean noKey = DEV_KEY.isEmpty() || DEV_SECRET.isEmpty();
-        if (noKey) {
-            Logger.warn(this, "noKey", "Goodreads dev key not available");
-        }
-        return noKey;
     }
 
     /**
@@ -1095,33 +849,26 @@ public class GoodreadsManager
      * If they have been previously checked and were valid, just use that result.
      * <p>
      * Network access if credentials need to be checked.
-     *
-     * @author Philip Warner
+     * <p>
+     * It is assumed that {@link #isAvailable()} has already been called.
+     * Developer reminder: do NOT throw an exception from here.
      */
     @WorkerThread
     public boolean hasValidCredentials() {
         // If credentials have already been accepted, don't re-check.
-        return sHasValidCredentials || validateCredentials();
-    }
+        if (sHasValidCredentials) {
+            return true;
+        }
 
-    /**
-     * Check if the current credentials (from prefs) are valid, and cache the result.
-     * <p>
-     * Network access.
-     *
-     * @author Philip Warner
-     */
-    @WorkerThread
-    private boolean validateCredentials() {
-        // Get the stored token values from prefs, and setup the consumer
-        sAccessToken = App.getPrefs().getString(ACCESS_TOKEN, "");
-        sAccessSecret = App.getPrefs().getString(ACCESS_SECRET, "");
+        // If we don't have credentials at all, just leave
+        if (!hasCredentials()) {
+            return false;
+        }
 
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
 
         try {
             AuthUserApiHandler authUserApi = new AuthUserApiHandler(this);
-
             if (authUserApi.getAuthUser() == 0) {
                 return false;
             }
@@ -1143,14 +890,18 @@ public class GoodreadsManager
     }
 
     /**
-     * Request authorization for this application, from the current user,
+     * Request authorization for this application, for the current user,
      * by going to the OAuth web page.
+     *
+     * @throws OAuthNotAuthorizedException with GoodReads
+     * @throws IOException                 on other failures
      *
      * @author Philip Warner
      */
+    @WorkerThread
     public void requestAuthorization()
-            throws IOException,
-                   AuthorizationException {
+            throws OAuthNotAuthorizedException,
+                   IOException {
 
         String authUrl;
 
@@ -1165,21 +916,19 @@ public class GoodreadsManager
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
-
-        } catch (@NonNull final OAuthNotAuthorizedException e) {
-            throw new AuthorizationException(R.string.goodreads, e);
         }
 
         //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.warn(this, "requestAuthorization", "replacing with: " + authUrl);
             }
         }
 
-        // Save the token; this object may well be destroyed before the web page has returned.
+        // Temporarily save the token; this GoodreadsManager object may be destroyed
+        // before the web page returns.
         App.getPrefs().edit()
            .putString(REQUEST_TOKEN, mConsumer.getToken())
            .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
@@ -1193,25 +942,26 @@ public class GoodreadsManager
      * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws IOException            on other failures
+     * @throws OAuthNotAuthorizedException with GoodReads
+     * @throws IOException                 on other failures
      */
     @WorkerThread
-    public void handleAuthentication()
-            throws AuthorizationException,
+    public void handleAuthenticationAfterAuthorization()
+            throws OAuthNotAuthorizedException,
                    IOException {
 
-        // Get the saved request tokens.
-        String tokenString = App.getPrefs().getString(REQUEST_TOKEN, null);
-        String secretString = App.getPrefs().getString(REQUEST_SECRET, null);
+        // Get the temporarily saved request tokens.
+        String requestToken = App.getPrefs().getString(REQUEST_TOKEN, null);
+        String requestSecret = App.getPrefs().getString(REQUEST_SECRET, null);
 
-        if (tokenString == null || tokenString.isEmpty()
-                || secretString == null || secretString.isEmpty()) {
+        // sanity check; the tokens are stored in #requestAuthorization
+        if (requestToken == null || requestToken.isEmpty()
+                || requestSecret == null || requestSecret.isEmpty()) {
             throw new IllegalStateException("No request token found in preferences");
         }
 
         // Update the consumer.
-        mConsumer.setTokenWithSecret(tokenString, secretString);
+        mConsumer.setTokenWithSecret(requestToken, requestSecret);
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         waitUntilRequestAllowed();
@@ -1219,8 +969,6 @@ public class GoodreadsManager
         // Get the access token
         try {
             mProvider.retrieveAccessToken(mConsumer, null);
-        } catch (@NonNull final OAuthNotAuthorizedException e) {
-            throw new AuthorizationException(R.string.goodreads, e);
 
         } catch (@NonNull final OAuthMessageSignerException
                 | OAuthExpectationFailedException
@@ -1228,56 +976,24 @@ public class GoodreadsManager
             throw new IOException(e);
         }
 
-        // Cache and save the token
+        // Cache and save the tokens
         sAccessToken = mConsumer.getToken();
         sAccessSecret = mConsumer.getTokenSecret();
 
         App.getPrefs().edit()
            .putString(ACCESS_TOKEN, sAccessToken)
            .putString(ACCESS_SECRET, sAccessSecret)
+           .remove(REQUEST_TOKEN)
+           .remove(REQUEST_SECRET)
            .apply();
     }
 
     /**
-     * Enum to handle possible results of sending a book to goodreads.
+     * Enum to handle possible results of sending a book to Goodreads.
      */
-    public enum ExportDisposition {
+    public enum ExportResult {
         error, sent, noIsbn, notFound, networkError
     }
 
-    private static class GoodreadsBookshelf {
-
-        @NonNull
-        private final Bundle mBundle;
-
-        GoodreadsBookshelf(@NonNull final Bundle bundle) {
-            mBundle = bundle;
-        }
-
-        @NonNull
-        String getName() {
-            //noinspection ConstantConditions
-            return mBundle.getString(GrBookshelfFields.NAME);
-        }
-
-        boolean isExclusive() {
-            return mBundle.getBoolean(GrBookshelfFields.EXCLUSIVE);
-        }
-    }
-
-    private static class GoodreadsBookshelves {
-
-        @NonNull
-        private final Map<String, GoodreadsBookshelf> mList;
-
-        GoodreadsBookshelves(@NonNull final Map<String, GoodreadsBookshelf> list) {
-            mList = list;
-        }
-
-        boolean isExclusive(@Nullable final String name) {
-            GoodreadsBookshelf shelf = mList.get(name);
-            return shelf != null && shelf.isExclusive();
-        }
-    }
 }
 

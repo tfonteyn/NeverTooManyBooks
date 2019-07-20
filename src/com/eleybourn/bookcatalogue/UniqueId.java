@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
-import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
@@ -102,6 +101,9 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
     /** title search text. */
     public static final String BKEY_SEARCH_TITLE = "searchTitle";
+    /** isbn search text. */
+    public static final String BKEY_SEARCH_ISBN = "searchIsbn";
+
     /**
      * Search site flags as in {@link com.eleybourn.bookcatalogue.searches.SearchSites}.
      * <p>

@@ -39,8 +39,8 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  *
  * @author Philip Warner
  */
-class GrSendOneBookTask
-        extends GrSendBooksTaskBase {
+class SendOneBookLegacyTask
+        extends SendBooksLegacyTaskBase {
 
     private static final long serialVersionUID = 8585857100291691934L;
 
@@ -48,18 +48,18 @@ class GrSendOneBookTask
     private final long mBookId;
 
     /**
-     * Constructor. Save book ID.
+     * Constructor.
      *
      * @param bookId Book to send
      */
-    GrSendOneBookTask(@NonNull final String description,
-                      final long bookId) {
+    SendOneBookLegacyTask(@NonNull final String description,
+                          final long bookId) {
         super(description);
         mBookId = bookId;
     }
 
     /**
-     * Perform the main task.
+     * Perform the main task. Called from within {@link #run}
      *
      * @param context   Current context
      * @param grManager the Goodreads Manager

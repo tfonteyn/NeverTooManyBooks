@@ -42,12 +42,13 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  *
  * @author Philip Warner
  */
-class GrSendAllBooksTask
-        extends GrSendBooksTaskBase {
+class SendBooksLegacyTask
+        extends SendBooksLegacyTaskBase {
 
     private static final long serialVersionUID = -1933000305276643875L;
+
     /**
-     * Flag indicating if it should only send UPDATED books to Goodreads;
+     * Flag indicating if we should only send UPDATED books to Goodreads;
      * {@code false} == all books.
      */
     private final boolean mUpdatesOnly;
@@ -62,14 +63,15 @@ class GrSendAllBooksTask
     /**
      * Constructor.
      */
-    GrSendAllBooksTask(@NonNull final String description,
-                       final boolean updatesOnly) {
+    SendBooksLegacyTask(@NonNull final String description,
+                        final boolean updatesOnly) {
         super(description);
         mUpdatesOnly = updatesOnly;
     }
 
     /**
-     * Do the main of the task. Called from within {@link #run}
+     * Perform the main task. Called from within {@link #run}
+     *
      * Deal with restarts by using mLastId as starting point.
      *
      * @param context   Current context
@@ -87,7 +89,6 @@ class GrSendAllBooksTask
             mTotalBooks = bookCursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (bookCursor.moveToNext()) {
-                // Try to export one book
                 if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
                     // quit on error
                     return false;
@@ -112,18 +113,15 @@ class GrSendAllBooksTask
             }
         }
 
-        // Notify the user: '15 books processed:
-        // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
+        // Notify the user with a system Notification.
         App.showNotification(context, R.string.gr_title_send_book,
                              context.getString(R.string.gr_send_all_books_results,
-                                               mCount, mSent, mNoIsbn,
-                                               mNotFound));
-
+                                               mCount, mSent, mNoIsbn, mNotFound));
         return true;
     }
 
     /**
-     * Make a more informative description.
+     * Provide a more informative description.
      *
      * @param context Current context, for accessing resources.
      */

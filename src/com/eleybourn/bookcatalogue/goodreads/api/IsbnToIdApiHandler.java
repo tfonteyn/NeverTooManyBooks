@@ -24,12 +24,17 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 
 /**
- * API call to get a Goodreads ID from an ISBN.
- * <p>
+ * book.isbn_to_id   —   Get Goodreads book IDs given ISBNs.
+ *
+ * <a href="https://www.goodreads.com/api/index#book.isbn_to_id">
+ *     https://www.goodreads.com/api/index#book.isbn_to_id</a>
+ *
  * <b>Note:</b> THIS API DOES NOT RETURN XML. The text output is the ID.
  *
  * @author Philip Warner
@@ -44,32 +49,35 @@ public class IsbnToIdApiHandler
      * Constructor.
      *
      * @param grManager the Goodreads Manager
+     *
+     * @throws CredentialsException with GoodReads
      */
-    public IsbnToIdApiHandler(@NonNull final GoodreadsManager grManager) {
+    public IsbnToIdApiHandler(@NonNull final GoodreadsManager grManager)
+            throws CredentialsException {
         super(grManager);
+        if (!grManager.hasValidCredentials()) {
+            throw new CredentialsException(R.string.goodreads);
+        }
     }
 
     /**
-     * Get the Goodreads book ID given an ISBN. Response contains the ID as is.
-     * URL: https://www.goodreads.com/book/isbn_to_id/   (sample url)
-     * HTTP method: GET
-     * Parameters:
-     * isbn: The ISBN of the book to lookup.
-     * key: Developer key (required).
+     * Get the Goodreads book ID given an ISBN.
      *
      * @param isbn with some luck, the ISBN for the requested book
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book?
+     * @return Goodreads book ID
+     *
+     * @throws CredentialsException with GoodReads
+     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException            on other failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws AuthorizationException,
+            throws CredentialsException,
                    BookNotFoundException,
                    IOException {
 
         String url = String.format(URL, isbn, mManager.getDevKey());
-        String s = mManager.executeRaw(url, true);
-        return Long.parseLong(s);
+        String id = executeRaw(url, true);
+        return Long.parseLong(id);
     }
 }

@@ -1,0 +1,387 @@
+/*
+ * @copyright 2012 Philip Warner
+ * @license GNU General Public License
+ *
+ * This file is part of Book Catalogue.
+ *
+ * Book Catalogue is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Book Catalogue is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.eleybourn.bookcatalogue.goodreads;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.database.DAO;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
+import com.eleybourn.bookcatalogue.goodreads.tasks.FetchWorksTask;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
+import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
+
+/**
+ *
+ * TODO: the actual search/display are now implemented. But this activity is still disabled,
+ * as {@link #onWorkSelected} needs implementing which relies on access,
+ * or... maybe find some workaround?
+ *
+ * Activity to handle searching Goodreads for books that did not automatically convert.
+ * These are typically books without an ISBN.
+ * <p>
+ * The search criteria is setup to contain the book author, title and ISBN.
+ * The user can edit these, search Goodreads, and then review the results.
+ * <p>
+ * IMPORTANT: always use {@link #open} to start this activity. Unless it's called
+ * from a place where we know for certain that we have Goodreads authorization tokens.
+ */
+public class GoodreadsSearchActivity
+        extends BaseActivity {
+
+    private final List<GoodreadsWork> mWorks = new ArrayList<>();
+
+    private TextView mIsbnView;
+    private TextView mAuthorView;
+    private TextView mTitleView;
+    /** Group to set visibility on author/title/isbn fields. */
+    private Group mDetailsGroup;
+
+    private TextView mSearchTextView;
+    /** The View for the resulting list of 'works'. */
+    private RecyclerView mListView;
+    private GrSearchViewModel mModel;
+    private WorksAdapter mWorksAdapter;
+
+    /**
+     * Convenience method to start this activity, or redirect to the register activity if
+     * this application was not registered yet.
+     *
+     * @param context Current context
+     */
+    public static void open(@NonNull final Context context,
+                            final long bookId) {
+        if (!GoodreadsManager.hasCredentials()) {
+            context.startActivity(new Intent(context, GoodreadsRegisterActivity.class));
+        }
+
+        Intent data = new Intent(context, GoodreadsSearchActivity.class)
+                .putExtra(DBDefinitions.KEY_PK_ID, bookId);
+        context.startActivity(data);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_goodreads_search;
+    }
+
+    @Override
+    @CallSuper
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setTitle(R.string.searching_goodreads);
+
+        mModel = ViewModelProviders.of(this).get(GrSearchViewModel.class);
+        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+        mModel.init(args);
+        mModel.getWorks().observe(this, this::onSearchResult);
+        mModel.getBookNoLongerExists().observe(this, this::onBookNoLongerExists);
+
+        mSearchTextView = findViewById(R.id.search_text);
+        mIsbnView = findViewById(R.id.isbn);
+        mAuthorView = findViewById(R.id.author);
+        mTitleView = findViewById(R.id.title);
+        mDetailsGroup = findViewById(R.id.original_details);
+
+        if (savedInstanceState == null) {
+            // If we have a book, fill in criteria AND try a search
+            if (mModel.getBookId() > 0) {
+                updateViews();
+                doSearch();
+            }
+        } else {
+            updateViews();
+        }
+
+        mListView = findViewById(android.R.id.list);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mListView.setLayoutManager(linearLayoutManager);
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
+        mWorksAdapter = new WorksAdapter(this, mWorks);
+        mListView.setAdapter(mWorksAdapter);
+
+        findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
+    }
+
+    private void onBookNoLongerExists(final Boolean flag) {
+        if (flag) {
+            UserMessage.show(mSearchTextView, R.string.warning_book_no_longer_exists);
+        }
+    }
+
+    private void updateViews() {
+        if (mModel.getBookId() > 0) {
+            mAuthorView.setText(mModel.getAuthorText());
+            mTitleView.setText(mModel.getTitleText());
+            mIsbnView.setText(mModel.getIsbnText());
+            mDetailsGroup.setVisibility(View.VISIBLE);
+        } else {
+            mDetailsGroup.setVisibility(View.GONE);
+        }
+
+        mSearchTextView.setText(mModel.getSearchText());
+    }
+
+    @Override
+    protected void onPause() {
+        mModel.setSearchText(mSearchTextView.getText().toString().trim());
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(DBDefinitions.KEY_PK_ID, mModel.getBookId());
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mModel.getSearchText());
+    }
+
+    /**
+     * Start the search.
+     */
+    private void doSearch() {
+        mModel.search(mSearchTextView.getText().toString().trim());
+    }
+
+    private void onSearchResult(final List<GoodreadsWork> goodreadsWorks) {
+        mWorks.clear();
+        if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
+            mWorks.addAll(goodreadsWorks);
+        } else {
+            UserMessage.show(mListView, R.string.warning_no_matching_book_found);
+        }
+        mWorksAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Handle user clicking on a book.
+     * This should show editions and allow the user to select a specific edition.
+     * ENHANCE: Waiting on approval for API access.
+     */
+    private void onWorkSelected(@NonNull final GoodreadsWork work) {
+        // TODO: Implement edition lookup - requires access to work.editions API from GR
+        String msg = "Not implemented: Implement edition lookup - requires access to work.editions API from GR";
+        UserMessage.show(mListView, msg);
+    }
+
+    public static class GrSearchViewModel
+            extends ViewModel {
+
+        /** Database access. */
+        private DAO mDb;
+
+        /** Data from the 'incoming' book. */
+        private long mBookId;
+        private String mIsbnText;
+        private String mAuthorText;
+        private String mTitleText;
+        private String mSearchText;
+
+        private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
+        private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
+
+        private final TaskListener<Void, List<GoodreadsWork>> mTaskListener =
+                (taskId, success, goodreadsWorks, e) -> mWorks.setValue(goodreadsWorks);
+
+        public MutableLiveData<List<GoodreadsWork>> getWorks() {
+            return mWorks;
+        }
+
+        public MutableLiveData<Boolean> getBookNoLongerExists() {
+            return mBookNoLongerExists;
+        }
+
+        @Override
+        protected void onCleared() {
+            if (mDb != null) {
+                mDb.close();
+            }
+        }
+
+        /**
+         * Pseudo constructor.
+         *
+         * @param args Bundle with arguments
+         */
+        public void init(@Nullable final Bundle args) {
+            if (mDb == null) {
+                mDb = new DAO();
+            }
+
+            if (args == null) {
+                return;
+            }
+
+            mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
+            if (mBookId > 0) {
+                try (BookCursor cursor = mDb.fetchBookById(mBookId)) {
+                    if (cursor.moveToFirst()) {
+                        MappedCursorRow row = cursor.getCursorRow();
+                        mAuthorText = row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                        mTitleText = row.getString(DBDefinitions.KEY_TITLE);
+                        mIsbnText = row.getString(DBDefinitions.KEY_ISBN);
+                    } else {
+                        mBookNoLongerExists.setValue(true);
+                    }
+                }
+                mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
+            }
+
+            mSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT, mSearchText);
+        }
+
+        public long getBookId() {
+            return mBookId;
+        }
+
+        @Nullable
+        String getIsbnText() {
+            return mIsbnText;
+        }
+
+        @Nullable
+        String getAuthorText() {
+            return mAuthorText;
+        }
+
+        @Nullable
+        String getTitleText() {
+            return mTitleText;
+        }
+
+        @Nullable
+        String getSearchText() {
+            return mSearchText;
+        }
+
+        void setSearchText(@Nullable final String searchText) {
+            mSearchText = searchText;
+        }
+
+        public void search(@NonNull final String searchText) {
+            mSearchText = searchText;
+            if (!mSearchText.isEmpty()) {
+                new FetchWorksTask(mSearchText, mTaskListener).execute();
+            }
+        }
+    }
+
+    /**
+     * Holder pattern for search results.
+     *
+     * @author Philip Warner
+     */
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
+
+        @NonNull
+        final ImageView coverView;
+        @NonNull
+        final TextView titleView;
+        @NonNull
+        final TextView authorView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            coverView = itemView.findViewById(R.id.coverImage);
+            authorView = itemView.findViewById(R.id.author);
+            titleView = itemView.findViewById(R.id.title);
+        }
+    }
+
+    /**
+     * Adapter that uses holder pattern to display Goodreads books and
+     * allows for background image retrieval.
+     *
+     * @author Philip Warner
+     */
+    private class WorksAdapter
+            extends RecyclerViewAdapterBase<GoodreadsWork, Holder> {
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param items   the list
+         */
+        WorksAdapter(@NonNull final Context context,
+                     @NonNull final List<GoodreadsWork> items) {
+            super(context, items, null);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+
+            View view = getLayoutInflater()
+                    .inflate(R.layout.row_goodreads_work_item, parent, false);
+            return new Holder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+            super.onBindViewHolder(holder, position);
+
+            GoodreadsWork item = getItem(position);
+
+            holder.itemView.setOnClickListener(v -> onWorkSelected(item));
+
+            // get the cover (or start a background task to get it)
+            item.fillImageView(holder.coverView);
+
+            // Update the views based on the work
+            holder.authorView.setText(item.authorName);
+            holder.titleView.setText(item.title);
+        }
+    }
+}

@@ -32,7 +32,8 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
- * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
+ * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">
+ *     http://en.wikipedia.org/wiki/International_Standard_Book_Number</a>
  * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
@@ -47,7 +48,7 @@ public class ISBN {
     private static final String UNABLE_TO_CONVERT_ERROR = "Unable to convert invalid ISBN";
 
     /**
-     * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside
+     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
      * <p>
      * The extended barcode combined with the UPC vendor prefix can be used to
      * reconstruct the ISBN.
@@ -58,7 +59,8 @@ public class ISBN {
      * The back cover has an extended UPC code "0 70999 00225 5 30054".
      * <p>
      * "070999" in the first part of the UPC means that the ISBN starts with "0-345"
-     * see https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map
+     * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">
+     *     https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map</a>
      * making it a Ballantine book
      * That "00225" indicates the price
      * That gets us:
@@ -522,25 +524,5 @@ public class ISBN {
             }
         }
         return true;
-    }
-
-    /**
-     * Thrown after an ISBN was checked for validity where it *must* be valid.
-     * e.g. f it wasn't, then we have a bug.
-     */
-    public static class IsbnInvalidException
-            extends RuntimeException {
-
-        private static final long serialVersionUID = 2652418388349622089L;
-
-        public IsbnInvalidException(@Nullable final String message) {
-            super(message);
-        }
-
-        public IsbnInvalidException(@Nullable final String message,
-                                    @Nullable final Exception inner) {
-            super(message, inner);
-
-        }
     }
 }
