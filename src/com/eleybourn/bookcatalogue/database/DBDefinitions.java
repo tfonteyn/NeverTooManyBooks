@@ -357,6 +357,11 @@ public final class DBDefinitions {
 
     public static final String KEY_BOOK_UUID = "book_uuid";
     public static final String KEY_ISBN = "isbn";
+    /**
+     *  We don't store the ASIN (yet) but will use it as an alternative if during storage
+     * there is no ISBN. ENHANCE: use/store the ASIN
+      */
+    public static final String KEY_ASIN = "asin";
 
     public static final String KEY_PUBLISHER = "publisher";
     public static final String KEY_DATE_PUBLISHED = "date_published";
@@ -501,12 +506,19 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final DomainDefinition DOM_LOANEE;
+    /**
+     * {@link #TBL_BOOK_LOANEE}.
+     * Virtual: returns 0 for 'available' or 1 for 'lend out'
+     */
+    public static final DomainDefinition DOM_LOANEE_AS_BOOLEAN;
 
     /** Virtual. The type of a TOC entry. See {@link TocEntry#TYPE_TOC} */
     static final DomainDefinition DOM_TOC_TYPE;
 
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_LOANEE = "loaned_to";
+    public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
+
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOC_TYPE = "type";
 
@@ -515,6 +527,8 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT);
         DOM_LOANEE =
                 new DomainDefinition(KEY_LOANEE, ColumnInfo.TYPE_TEXT, true);
+        DOM_LOANEE_AS_BOOLEAN =
+                new DomainDefinition(KEY_LOANEE_AS_BOOLEAN, ColumnInfo.TYPE_INTEGER, true);
         DOM_TOC_TYPE =
                 new DomainDefinition(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT);
     }
@@ -561,8 +575,6 @@ public final class DBDefinitions {
     }
 
     /** sorting and grouping in {@link BooklistGroup}. */
-    public static final DomainDefinition DOM_LOANED_TO_SORT;
-    /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_AUTHOR_SORT;
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_SERIES_SORT;
@@ -604,8 +616,6 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_DATE_PUBLISHED_YEAR;
 
     static {
-        DOM_LOANED_TO_SORT =
-                new DomainDefinition("loaned_to_sort", ColumnInfo.TYPE_INTEGER, true);
         DOM_AUTHOR_SORT =
                 new DomainDefinition("author_sort", ColumnInfo.TYPE_TEXT, true);
         DOM_SERIES_SORT =
@@ -614,6 +624,7 @@ public final class DBDefinitions {
                 new DomainDefinition("read_status", ColumnInfo.TYPE_TEXT, true);
         DOM_TITLE_LETTER =
                 new DomainDefinition("title_letter", ColumnInfo.TYPE_TEXT);
+
         DOM_DATE_ADDED_DAY =
                 new DomainDefinition("added_day", ColumnInfo.TYPE_INTEGER);
         DOM_DATE_ADDED_MONTH =
@@ -626,6 +637,7 @@ public final class DBDefinitions {
                 new DomainDefinition("upd_month", ColumnInfo.TYPE_INTEGER);
         DOM_DATE_LAST_UPDATE_YEAR =
                 new DomainDefinition("upd_year", ColumnInfo.TYPE_INTEGER);
+
         DOM_DATE_READ_DAY =
                 new DomainDefinition("read_day", ColumnInfo.TYPE_INTEGER);
         DOM_DATE_READ_MONTH =

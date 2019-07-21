@@ -119,7 +119,7 @@ public class OpenLibraryManager
     @Override
     @WorkerThread
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSizes size) {
+                              @Nullable final ImageSize size) {
 
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -484,6 +484,10 @@ public class OpenLibraryManager
                 if (a != null && a.length() > 0) {
                     bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
                 }
+            }
+            a = o.optJSONArray("amazon");
+            if (a != null && a.length() > 0) {
+                bookData.putString(DBDefinitions.KEY_ASIN, a.getString(0));
             }
             a = o.optJSONArray("openlibrary");
             if (a != null && a.length() > 0) {

@@ -9,10 +9,10 @@
     <ImageButton
         android:id="@id/ROW_DELETE_BTN"
         style="@style/RowButton.Delete"
+        android:contentDescription="@string/menu_delete"
         app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/menu_delete"
         />
 
     <LinearLayout
@@ -41,10 +41,10 @@
     <ImageView
         android:id="@id/ROW_GRABBER_ICON"
         style="@style/RowButton.DragHandle"
+        android:contentDescription="@string/btn_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/btn_drag_handle"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -384,54 +384,33 @@ import com.eleybourn.bookcatalogue.entities.Series;
  *                <url>http://www.librarything.com/profile/lorax</url>
  *              </person>
  *              <factList>
- * <fact>Susan Calvin</fact>
- * <fact>Cutie (QT1)</fact>
- * <fact>Gregory Powell</fact>
- * <fact>Mike Donovan</fact>
- * <fact>Robbie (RB-series)</fact>
- * <fact>Mr. Weston</fact>
- * <fact>Gloria Weston</fact>
- * <fact>Mrs. Weston</fact>
- * <fact>SPD-13 (Speedy)</fact>
- * <fact>Speedy (SPD-13)</fact>
- * <fact>QT1 (Cutie)</fact>
- * <fact>The Master</fact>
- * <fact>Prophet of the Master</fact>
- * <fact>Ren� Descartes</fact>
- * <fact>DV-5 (Dave)</fact><fact>Dave (DV-5)</fact>
- * <fact>HRB-34 (Herbie)</fact>
- * <fact>Herbie (HRB-34)</fact>
- * <fact>Gerald Black</fact>
- * <fact>NS-2 (Nestor)</fact>
- * <fact>Nestor (NS-2)</fact>
- * <fact>Peter Bogert</fact>
- * <fact>The Brain (computer)</fact>
- * <fact>Stephen Byerley</fact>
- * <fact>Francis Quinn</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="2" name="placesmentioned" displayName="Important places">
- * <versionList>
- * <version id="2503588" archived="0" lang="eng">
- * <date timestamp="1274377336">Thu, 20 May 2010 13:42:16 -0400</date>
- * <person id="1797">
- * <name>lorax</name>
- * <url>http://www.librarything.com/profile/lorax</url>
- * </person>
- * <factList>
- * <fact>Mercury</fact>
- * <fact>New York, New York, USA</fact>
- * <fact>Roosevelt Building</fact>
- * <fact>U.S. Robots and Mechanical Men factory</fact>
- * <fact>Hyper Base</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * </fieldList>
- * </commonknowledge>
+ *                <fact>Susan Calvin</fact>
+ *                <fact>Cutie (QT1)</fact>
+ *                ...
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="2" name="placesmentioned" displayName="Important places">
+ *          <versionList>
+ *            <version id="2503588" archived="0" lang="eng">
+ *              <date timestamp="1274377336">Thu, 20 May 2010 13:42:16 -0400</date>
+ *              <person id="1797">
+ *                <name>lorax</name>
+ *                <url>http://www.librarything.com/profile/lorax</url>
+ *              </person>
+ *              <factList>
+ *                <fact>Mercury</fact>
+ *                <fact>New York, New York, USA</fact>
+ *                <fact>Roosevelt Building</fact>
+ *                <fact>U.S. Robots and Mechanical Men factory</fact>
+ *                <fact>Hyper Base</fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *      </fieldList>
+ *    </commonknowledge>
  * </item>
  * <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
  * </ltml>

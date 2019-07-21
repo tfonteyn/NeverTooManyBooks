@@ -131,17 +131,6 @@ class ImportLegacyTask
     }
 
     /**
-     * @param imageName to check
-     *
-     * @return {@code true} if the name does NOT contain the string 'nocover'
-     */
-    private static boolean hasCover(@Nullable final String imageName) {
-        return imageName != null
-                && !imageName.toLowerCase(LocaleUtils.getSystemLocale())
-                             .contains(GoodreadsTasks.NO_COVER);
-    }
-
-    /**
      * Check that no other sync-related jobs are queued, and that Goodreads is
      * authorized for this app.
      * <p>
@@ -607,10 +596,10 @@ class ImportLegacyTask
             String size = "";
             String largeImage = review.getString(ReviewField.LARGE_IMAGE);
             String smallImage = review.getString(ReviewField.SMALL_IMAGE);
-            if (hasCover(largeImage)) {
+            if (GoodreadsTasks.hasCover(largeImage)) {
                 size = ReviewField.LARGE_IMAGE;
                 thumbnail = largeImage;
-            } else if (hasCover(smallImage)) {
+            } else if (GoodreadsTasks.hasCover(smallImage)) {
                 size = ListReviewsApiHandler.ReviewField.SMALL_IMAGE;
                 thumbnail = smallImage;
             } else {

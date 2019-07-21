@@ -10,9 +10,9 @@
     <ImageView
         android:id="@+id/coverImage"
         style="@style/CoverImage"
+        android:contentDescription="@string/lbl_cover"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/lbl_cover"
         tools:src="@drawable/ic_image"
         />
 

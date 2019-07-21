@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 /**
  * Edit the language field.
  * <p>
- * Will hardly ever be needed now that we have ISO3 code.
+ * Will hardly ever be needed now that we use ISO code.
  * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
  * be needed.
  */

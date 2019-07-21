@@ -25,12 +25,7 @@
 
         <TextView
             android:id="@+id/loaned_to"
-            style="@style/TextDetail"
-            android:layout_width="0dp"
-            android:background="?android:attr/colorForeground"
-            android:paddingStart="@dimen/indent2"
-            android:paddingEnd="@dimen/indent2"
-            android:textAppearance="?android:attr/textAppearanceLargeInverse"
+            style="@style/TextDetail.OnLoanBar"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,10 +36,10 @@
 
         <CheckBox
             android:id="@+id/read"
-            style="@style/Flag"
+            style="@style/Flag.Read"
+            android:contentDescription="@string/lbl_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            android:contentDescription="@string/lbl_read"
             tools:checked="true"
             />
 
@@ -63,9 +58,9 @@
             android:id="@+id/coverImage"
             style="@style/CoverImage"
             android:layout_margin="@dimen/border1"
+            android:contentDescription="@string/lbl_cover"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            android:contentDescription="@string/lbl_cover"
             tools:layout_height="172dp"
             tools:layout_width="114dp"
             tools:src="@drawable/ic_image"
@@ -186,13 +181,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border1"
             android:buttonTint="@android:color/transparent"
+            android:contentDescription="@string/lbl_table_of_content"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
             app:layout_constraintTop_toBottomOf="@id/series"
-            android:contentDescription="@string/lbl_table_of_content"
-            tools:visibility="visible"
             tools:checked="true"
+            tools:visibility="visible"
             />
 
         <!-- Don't set padding on the toc. The toc height is calculated as needed.
@@ -338,8 +333,8 @@
             android:id="@+id/notes"
             style="@style/TextDetail"
             android:layout_width="0dp"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
             tools:text="The best book of all times."
@@ -484,7 +479,6 @@
             />
 
         <!-- Description -->
-
         <TextView
             android:id="@+id/lbl_description"
             style="@style/SectionHeader"
@@ -493,16 +487,14 @@
             app:layout_constraintTop_toBottomOf="@id/location"
             />
 
-        <!-- reminder: textIsSelectable etc won't work here, as it's done in code -->
+        <!-- reminder: setTextIsSelectable/setFocusable is forced from code -->
         <TextView
             android:id="@+id/description"
+            style="@style/TextDetail"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
-            tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />
 

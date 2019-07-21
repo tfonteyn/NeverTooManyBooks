@@ -159,7 +159,7 @@ public class LibraryThingAdminActivity
 
             try {
                 LibraryThingManager ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage("0451451783", SearchEngine.ImageSizes.SMALL);
+                File tmpFile = ltm.getCoverImage("0451451783", SearchEngine.ImageSize.SMALL);
                 if (tmpFile != null) {
                     tmpFile.deleteOnExit();
                     long length = tmpFile.length();

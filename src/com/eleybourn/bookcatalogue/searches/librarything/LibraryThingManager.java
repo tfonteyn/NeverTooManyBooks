@@ -338,7 +338,7 @@ public class LibraryThingManager
     @WorkerThread
     @Override
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSizes size) {
+                              @Nullable final ImageSize size) {
 
         // sanity check
         if (noKey()) {
@@ -433,11 +433,11 @@ public class LibraryThingManager
         }
 
         if (fetchThumbnail) {
-            File file = getCoverImage(isbn, SearchEngine.ImageSizes.LARGE);
+            File file = getCoverImage(isbn, ImageSize.LARGE);
             if (file == null) {
-                file = getCoverImage(isbn, SearchEngine.ImageSizes.MEDIUM);
+                file = getCoverImage(isbn, ImageSize.MEDIUM);
                 if (file == null) {
-                    file = getCoverImage(isbn, SearchEngine.ImageSizes.SMALL);
+                    file = getCoverImage(isbn, ImageSize.SMALL);
                 }
             }
             if (file != null) {

@@ -13,24 +13,24 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Common utilities.
  * <p>
  * Note that currently there is a bit of a round-about way of starting and handling results.
- * The caller starts the task, with the caller being the listener.
- * The task finishes and sends results to the listener.
- * The listener redirects to {@link GoodreadsTasks#handleResult}
- * <p>
+ * <ol>
+ * <li>The caller starts the task, with the caller being the listener.</li>
+ * <li>The task finishes and sends results back to the listener.</li>
+ * <li>The listener redirects to {@link GoodreadsTasks#handleResult}</li>
+ * </ol>
  * Why? well... because this is 'clean' although obviously not efficient.
  * BUT... as the plan is to move to WorkManager instead of task-queue, this at least makes it
  * invisible/transparent to the caller.
  */
 public final class GoodreadsTasks {
 
-    /** can be part of an image 'name' from Goodreads indicating there is no cover image. */
-    public static final String NO_COVER = "nocover";
     /** Task 'Results' code. A fake StringRes. */
     static final int GR_RESULT_CODE_AUTHORIZED = 0;
     /** Task 'Results' code. A fake StringRes. */
@@ -108,4 +108,19 @@ public final class GoodreadsTasks {
         }
     }
 
+    /**
+     * Check the url for certain keywords that would indicate a cover is, or is not, present.
+     *
+     * @param url to check
+     *
+     * @return {@code true} if the url indicates there is an actual image.
+     */
+    public static boolean hasCover(@Nullable final String url) {
+        if (url == null) {
+            return false;
+        }
+        String name = url.toLowerCase(LocaleUtils.getSystemLocale());
+        // these string can be part of an image 'name' indicating there is no cover image.
+        return !name.contains("/nophoto/") && !name.contains("nocover");
+    }
 }

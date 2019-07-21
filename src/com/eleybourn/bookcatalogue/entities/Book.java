@@ -536,7 +536,7 @@ public class Book
     /**
      * Use the book's language setting to determine the Locale.
      *
-     * @param updateLanguage {@code true} to update the language field with the iso3 code
+     * @param updateLanguage {@code true} to update the language field with the ISO code
      *                       if needed. {@code false} to leave it unchanged.
      *
      * @return the locale, or the users preferred locale if no language was set.
@@ -551,7 +551,7 @@ public class Book
             if (len != 2 && len != 3) {
                 lang = LocaleUtils.getISO3Language(lang);
             }
-            // we now have an iso3 code, or an invalid language.
+            // we now have an ISO code, or an invalid language.
             bookLocale = new Locale(lang);
             if (!LocaleUtils.isValid(bookLocale)) {
                 bookLocale = LocaleUtils.getPreferredLocal();

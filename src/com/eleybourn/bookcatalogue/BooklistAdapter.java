@@ -328,7 +328,8 @@ public class BooklistAdapter
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
             case RowKind.DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(itemView, columnIndex, R.string.hint_field_not_set_with_brackets);
+                return new MonthHolder(itemView, columnIndex,
+                                       R.string.hint_field_not_set_with_brackets);
 
             // some special formatting holders
             case RowKind.RATING:
@@ -615,6 +616,8 @@ public class BooklistAdapter
         final TextView seriesNumLongView;
         /** The "I've read it" checkbox. */
         final CompoundButton readView;
+        /** The "on loan" checkbox. */
+        final CompoundButton onLoanView;
         /** Database access. */
         @NonNull
         private final DAO mDb;
@@ -699,6 +702,11 @@ public class BooklistAdapter
             readView.setVisibility(App.isUsed(DBDefinitions.KEY_READ) ? View.VISIBLE
                                                                       : View.GONE);
 
+            // visibility is independent from actual data, so set here.
+            onLoanView = itemView.findViewById(R.id.on_loan);
+            onLoanView.setVisibility(App.isUsed(DBDefinitions.KEY_LOANEE) ? View.VISIBLE
+                                                                          : View.GONE);
+
             int extraFields = style.getExtraFieldsStatus();
 
             // visibility is independent from actual data, so set here.
@@ -737,7 +745,7 @@ public class BooklistAdapter
 
             isbnView = itemView.findViewById(R.id.isbn);
             isbnView.setVisibility((extraFields & BooklistStyle.EXTRAS_ISBN) != 0
-                                        ? View.VISIBLE : View.GONE);
+                                   ? View.VISIBLE : View.GONE);
 
             formatView = itemView.findViewById(R.id.format);
             formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
@@ -752,15 +760,17 @@ public class BooklistAdapter
             int extraFields = style.getExtraFieldsStatus();
             int imageMaxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
 
-            // Title
             titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
 
-            // Read
             if (App.isUsed(DBDefinitions.KEY_READ)) {
                 readView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
             }
 
-            // Series number
+            if (App.isUsed(DBDefinitions.KEY_LOANEE)
+                    && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
+                onLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
+            }
+
             if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE) && rowData.hasSeriesNumber()) {
 
                 String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);

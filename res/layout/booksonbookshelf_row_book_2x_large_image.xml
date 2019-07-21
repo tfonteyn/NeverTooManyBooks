@@ -31,7 +31,7 @@
 
     <CheckBox
         android:id="@+id/read"
-        style="@style/Flag"
+        style="@style/Flag.Read"
         android:contentDescription="@string/lbl_read"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"

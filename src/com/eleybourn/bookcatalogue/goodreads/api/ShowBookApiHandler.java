@@ -35,10 +35,11 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Format;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
@@ -50,6 +51,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  * <li>book.show  —   Get the reviews for a book given a Goodreads book id.</li>
  * <li>book.show_by_isbn   —   Get the reviews for a book given an ISBN.</li>
  * </ul>
+ * The latter also accepts (with an identical URL) an ASIN.
  * <p>
  * This is an abstract class designed to be used by other classes that implement specific
  * search methods. It does the heavy lifting of parsing the results etc.
@@ -136,6 +138,9 @@ public abstract class ShowBookApiHandler
     /** Local storage for shelf names. */
     @Nullable
     private ArrayList<String> mShelves;
+    /** Local storage for genre aka highest rated popular shelf name. */
+    @Nullable
+    private String mGenre;
 
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
@@ -150,6 +155,36 @@ public abstract class ShowBookApiHandler
             mShelves.add(name);
         }
     };
+
+    /**
+     * Popular shelves are Goodreads "genres". They come in descending order.
+     *
+     * <pre>
+     *   {@code
+     *     <popular_shelves>
+     *       <shelf name="to-read" count="43843"/>
+     *       <shelf name="currently-reading" count="4209"/>
+     *       <shelf name="young-adult" count="2469"/>
+     *       <shelf name="fiction" count="1996"/>
+     *       ...
+     *   }
+     * </pre>
+     *
+     * We skip the virtual shelves.
+     */
+    private final XmlHandler mHandlePopularShelf = context -> {
+        if (mGenre == null) {
+            String name = context.getAttributes().getValue(XML_NAME);
+            if (name != null
+                    && !GoodreadsShelf.VIRTUAL_TO_READ.equals(name)
+                    && !GoodreadsShelf.VIRTUAL_CURRENTLY_READING.equals(name)
+                    && !GoodreadsShelf.VIRTUAL_READ.equals(name)
+            ) {
+                mGenre = name;
+            }
+        }
+    };
+
     /** Current author being processed. */
     @Nullable
     private String mCurrAuthorName;
@@ -212,17 +247,6 @@ public abstract class ShowBookApiHandler
     }
 
     /**
-     * @param imageName to check
-     *
-     * @return {@code true} if the name DOES contain the string 'nocover'
-     */
-    private static boolean hasNoCover(@Nullable final String imageName) {
-        return imageName != null
-                && imageName.toLowerCase(LocaleUtils.getSystemLocale())
-                            .contains(GoodreadsTasks.NO_COVER);
-    }
-
-    /**
      * Perform a search and handle the results.
      *
      * @param url            url to get
@@ -230,9 +254,9 @@ public abstract class ShowBookApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
     Bundle getBookData(@NonNull final String url,
@@ -341,6 +365,10 @@ public abstract class ShowBookApiHandler
                                 mBookData.getString(ShowBookFieldName.ORIG_TITLE));
         }
 
+        if (mGenre != null) {
+            mBookData.putString(DBDefinitions.KEY_GENRE, mGenre);
+        }
+
         if (mAuthors != null && !mAuthors.isEmpty()) {
             mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
         }
@@ -365,11 +393,12 @@ public abstract class ShowBookApiHandler
 
         // first check what the "best" image is that we have.
         String bestImage = null;
-        if (mBookData.containsKey(ShowBookFieldName.IMAGE)) {
-            bestImage = mBookData.getString(ShowBookFieldName.IMAGE);
-            if (hasNoCover(bestImage) && mBookData.containsKey(ShowBookFieldName.SMALL_IMAGE)) {
-                bestImage = mBookData.getString(ShowBookFieldName.SMALL_IMAGE);
-                if (hasNoCover(bestImage)) {
+        if (mBookData.containsKey(ShowBookFieldName.IMAGE_URL)) {
+            bestImage = mBookData.getString(ShowBookFieldName.IMAGE_URL);
+            if (!GoodreadsTasks.hasCover(bestImage)
+                    && mBookData.containsKey(ShowBookFieldName.SMALL_IMAGE_URL)) {
+                bestImage = mBookData.getString(ShowBookFieldName.SMALL_IMAGE_URL);
+                if (!GoodreadsTasks.hasCover(bestImage)) {
                     bestImage = null;
                 }
             }
@@ -378,7 +407,8 @@ public abstract class ShowBookApiHandler
         // and if we do have an image, save it.
         if (bestImage != null) {
             String name = mBookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
-            String fileSpec = ImageUtils.saveImage(bestImage, name, GoodreadsManager.FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(bestImage, name,
+                                                   GoodreadsManager.FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> list =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -607,10 +637,13 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN_13)
                  .setEndAction(mHandleText, ShowBookFieldName.ISBN13);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ASIN)
+                 .setEndAction(mHandleText, DBDefinitions.KEY_ASIN);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IMAGE_URL)
-                 .setEndAction(mHandleText, ShowBookFieldName.IMAGE);
+                 .setEndAction(mHandleText, ShowBookFieldName.IMAGE_URL);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SMALL_IMAGE_URL)
-                 .setEndAction(mHandleText, ShowBookFieldName.SMALL_IMAGE);
+                 .setEndAction(mHandleText, ShowBookFieldName.SMALL_IMAGE_URL);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_YEAR)
                  .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_YEAR);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_MONTH)
@@ -660,6 +693,10 @@ public abstract class ShowBookApiHandler
                               XML_AUTHOR, XML_NAME)
                  .setEndAction(mHandleAuthorName);
 
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_POPULAR_SHELVES,
+                              XML_SHELF)
+                 .setEndAction(mHandlePopularShelf);
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
                               XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldName.REVIEW_ID);
@@ -694,9 +731,10 @@ public abstract class ShowBookApiHandler
         public static final String REVIEW_ID = "__review_id";
 
         static final String ISBN13 = "__isbn13";
+        static final String ASIN = "__asin";
 
-        static final String IMAGE = "__image";
-        static final String SMALL_IMAGE = "__smallImage";
+        static final String IMAGE_URL = "__image";
+        static final String SMALL_IMAGE_URL = "__smallImage";
 
         static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";
         static final String ORIG_PUBLICATION_MONTH = "__orig_pub_month";

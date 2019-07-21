@@ -218,7 +218,7 @@ public class BookBaseFragmentModel
      * <p>
      * Returns a unique list of all languages in the database.
      *
-     * @return The list of ISO3 codes
+     * @return The list of ISO 639-2 codes
      */
     @NonNull
     public List<String> getLanguagesCodes() {

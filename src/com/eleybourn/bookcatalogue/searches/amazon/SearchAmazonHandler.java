@@ -211,7 +211,6 @@ class SearchAmazonHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
 
-    private static final String AMAZON_ASIN = "__ASIN";
     /**
      * XML tags we look for.
      * They are mixed-case, hence we use .equalsIgnoreCase and not a switch
@@ -507,8 +506,7 @@ class SearchAmazonHandler
                 }
 
             } else if (localName.equalsIgnoreCase(XML_ASIN)) {
-                addIfNotPresent(mBookData, AMAZON_ASIN,
-                                mBuilder.toString());
+                addIfNotPresent(mBookData, DBDefinitions.KEY_ASIN, mBuilder.toString());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
@@ -535,7 +533,7 @@ class SearchAmazonHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
-            String name = mBookData.getString(AMAZON_ASIN, "");
+            String name = mBookData.getString(DBDefinitions.KEY_ASIN, "");
             String fileSpec = ImageUtils.saveImage(mThumbnailUrl, name, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList =

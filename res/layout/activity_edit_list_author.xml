@@ -52,8 +52,9 @@
         android:id="@+id/list_divider"
         style="@style/SectionDivider"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
-        app:layout_constraintStart_toStartOf="parent"/>
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@android:id/list"

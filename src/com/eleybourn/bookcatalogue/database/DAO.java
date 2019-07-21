@@ -3137,7 +3137,7 @@ public class DAO
     /**
      * Returns a unique list of all languages in the database.
      *
-     * @return The list; normally all ISO3 codes
+     * @return The list; normally all ISO codes
      */
     @NonNull
     public ArrayList<String> getLanguageCodes() {

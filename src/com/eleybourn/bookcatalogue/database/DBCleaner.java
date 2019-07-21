@@ -102,7 +102,7 @@ public class DBCleaner {
     /* ****************************************************************************************** */
 
     /**
-     * Do a mass update of any languages not yet converted to ISO3 codes.
+     * Do a mass update of any languages not yet converted to ISO codes.
      */
     public void updateLanguages() {
         List<String> names = mDb.getLanguageCodes();

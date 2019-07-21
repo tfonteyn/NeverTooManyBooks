@@ -34,11 +34,11 @@
         <ImageButton
             android:id="@+id/btn_format"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_format"
             app:layout_constraintBottom_toBottomOf="@id/format"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/format"
             app:layout_constraintTop_toTopOf="@id/format"
-            android:contentDescription="@string/lbl_format"
             />
 
         <TextView
@@ -61,11 +61,11 @@
         <ImageButton
             android:id="@+id/btn_language"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_language"
             app:layout_constraintBottom_toBottomOf="@id/language"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/language"
             app:layout_constraintTop_toTopOf="@id/language"
-            android:contentDescription="@string/lbl_language"
             />
 
         <TextView
@@ -88,11 +88,11 @@
         <ImageButton
             android:id="@+id/btn_publisher"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_publisher"
             app:layout_constraintBottom_toBottomOf="@id/publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/publisher"
             app:layout_constraintTop_toTopOf="@id/publisher"
-            android:contentDescription="@string/lbl_publisher"
             />
 
         <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
@@ -202,11 +202,11 @@
         <ImageButton
             android:id="@+id/btn_price_listed_currency"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_price_listed"
             app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"
             app:layout_constraintTop_toTopOf="@id/price_listed_currency"
-            android:contentDescription="@string/lbl_price_listed"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

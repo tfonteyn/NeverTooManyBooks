@@ -8,10 +8,10 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/TextDetail.Small.BookTitle"
+        style="@style/TextDetail.BookTitle"
         android:layout_width="0dp"
-        android:textIsSelectable="false"
         android:drawableStart="@drawable/ic_book"
+        android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toStartOf="parent"

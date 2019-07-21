@@ -350,9 +350,9 @@ public final class DateUtils {
                                       @IntRange(from = 1, to = 12) final int month,
                                       final boolean shortName) {
 
-        String iso3 = locale.getISO3Language();
-        String[] longNames = MONTH_LONG_NAMES.get(iso3);
-        String[] shortNames = MONTH_SHORT_NAMES.get(iso3);
+        String iso = locale.getISO3Language();
+        String[] longNames = MONTH_LONG_NAMES.get(iso);
+        String[] shortNames = MONTH_SHORT_NAMES.get(iso);
 
         if (longNames == null) {
             // Build the cache for this locale.
@@ -367,8 +367,8 @@ public final class DateUtils {
                 longNames[m] = longNameFormatter.format(calendar.getTime());
                 shortNames[m] = shortNameFormatter.format(calendar.getTime());
             }
-            MONTH_LONG_NAMES.put(iso3, longNames);
-            MONTH_SHORT_NAMES.put(iso3, shortNames);
+            MONTH_LONG_NAMES.put(iso, longNames);
+            MONTH_SHORT_NAMES.put(iso, shortNames);
         }
 
         if (shortName) {

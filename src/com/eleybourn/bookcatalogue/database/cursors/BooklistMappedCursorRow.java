@@ -79,6 +79,8 @@ public class BooklistMappedCursorRow
               DBDefinitions.KEY_SERIES_IS_COMPLETE,
               DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
 
+              DBDefinitions.KEY_LOANEE_AS_BOOLEAN,
+
               DBDefinitions.KEY_BL_ABSOLUTE_POSITION,
               DBDefinitions.KEY_BL_NODE_ROW_KIND,
               DBDefinitions.KEY_BL_NODE_LEVEL);
@@ -158,6 +160,8 @@ public class BooklistMappedCursorRow
         }
 
         //FIXME: from BoB, click book. Move sideways book to book (10.. 13x) then Back to BoB
+
+        // ==> https://github.com/eleybourn/Book-Catalogue/issues/504
 
         //    android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
         //        at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)

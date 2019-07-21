@@ -17,11 +17,11 @@
         <ImageView
             android:id="@+id/coverImage"
             style="@style/CoverImage"
+            android:contentDescription="@string/lbl_cover"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/lbl_cover"
             tools:layout_height="115dp"
             tools:layout_width="76dp"
             tools:src="@drawable/ic_image"
@@ -133,11 +133,11 @@
         <ImageButton
             android:id="@+id/btn_genre"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_genre"
             app:layout_constraintBottom_toBottomOf="@id/genre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/genre"
             app:layout_constraintTop_toTopOf="@id/genre"
-            android:contentDescription="@string/lbl_genre"
             />
 
         <View
@@ -152,8 +152,8 @@
             android:id="@+id/lbl_description"
             style="@style/FieldLabel"
             android:layout_width="wrap_content"
-            android:text="@string/lbl_description"
             android:labelFor="@id/description"
+            android:text="@string/lbl_description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes_divider"
             />

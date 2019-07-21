@@ -8,6 +8,12 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShelvesListApiHandler;
 
 public class GoodreadsShelf {
 
+    /** Virtual shelf names used in XML request/responses. */
+    public static final String VIRTUAL_CURRENTLY_READING = "currently-reading";
+    public static final String VIRTUAL_READ = "read";
+    public static final String VIRTUAL_TO_READ = "to-read";
+
+    /** Bundle with shelf related entries. */
     @NonNull
     private final Bundle mBundle;
 

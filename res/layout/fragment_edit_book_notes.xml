@@ -118,11 +118,11 @@
         <ImageButton
             android:id="@+id/btn_location"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_location"
             app:layout_constraintBottom_toBottomOf="@id/location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/location"
             app:layout_constraintTop_toTopOf="@id/location"
-            android:contentDescription="@string/lbl_location"
             />
 
         <TextView
@@ -172,11 +172,11 @@
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
             style="@style/DropDownMenu"
+            android:contentDescription="@string/lbl_price_paid"
             app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
             app:layout_constraintTop_toTopOf="@id/price_paid_currency"
-            android:contentDescription="@string/lbl_price_paid"
             />
 
         <TextView

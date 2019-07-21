@@ -101,7 +101,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHEL
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANED_TO_SORT;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANEE_AS_BOOLEAN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_SORT;
@@ -183,23 +183,24 @@ public class BooklistBuilder
 
     /**
      * SQL column: return 1 if the book is available, 0 if not.
+     * {@link DBDefinitions#DOM_LOANEE_AS_BOOLEAN}
      */
-    private static final String X_BOOK_IS_AVAILABLE_AS_BOOLEAN = "CASE"
+    private static final String X_LOANEE_AS_BOOLEAN = "CASE"
             + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-            + " THEN 1 ELSE 0"
+            + "  THEN 1 ELSE 0"
             + " END";
 
     /**
      * SQL column: return "" if the book is available, "loanee name" if not.
      */
-    private static final String X_BOOK_IS_AVAILABLE_AS_TEXT = "CASE"
+    private static final String X_BOOK_LOANEE_OR_EMPTY = "CASE"
             + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-            + "  THEN '' ELSE '" + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
+            + "  THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
             + " END";
 
     private static final String X_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
             + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
-            + " THEN 1 ELSE 0"
+            + "  THEN 1 ELSE 0"
             + " END";
 
     /** Counter for BooklistBuilder ID's. */
@@ -2005,8 +2006,8 @@ public class BooklistBuilder
                 join = new Joiner(TBL_BOOKS);
             }
 
-            // If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
-            if (buildInfoHolder.hasGroupLOANED) {
+            if (buildInfoHolder.hasGroupLOANED || App.isUsed(DBDefinitions.KEY_LOANEE)) {
+                // so get the loanee name, or a {@code null} for available books.
                 join.leftOuterJoin(TBL_BOOK_LOANEE);
             }
 
@@ -2448,12 +2449,12 @@ public class BooklistBuilder
                 case BooklistGroup.RowKind.LOANED:
                     // Saved for later to indicate group was present
                     buildInfoHolder.hasGroupLOANED = true;
-                    addDomain(DOM_LOANED_TO_SORT,
-                              X_BOOK_IS_AVAILABLE_AS_BOOLEAN,
+                    addDomain(DOM_LOANEE_AS_BOOLEAN,
+                              X_LOANEE_AS_BOOLEAN,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     addDomain(DOM_LOANEE,
-                              X_BOOK_IS_AVAILABLE_AS_TEXT,
+                              X_BOOK_LOANEE_OR_EMPTY,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     break;
 

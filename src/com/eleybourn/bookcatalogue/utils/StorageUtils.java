@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.ProtocolException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -534,8 +535,15 @@ public final class StorageUtils {
             // All OK, so rename to real output file
             renameFile(temp, out);
             return true;
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-            Logger.error(StorageUtils.class, e);
+
+        } catch (@NonNull final ProtocolException e) {
+            // typically happens when the server hangs up: unexpected end of stream
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
+                Logger.debug(StorageUtils.class, "saveInputStreamToFile",
+                             e.getLocalizedMessage());
+            }
+        } catch (@NonNull final IOException e) {
+                Logger.error(StorageUtils.class, e);
         } finally {
             deleteFile(temp);
         }

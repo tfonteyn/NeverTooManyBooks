@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
@@ -98,17 +99,17 @@ public class ReviewUpdateApiHandler
 
         // hardcoded shelf names, see API docs in class header.
         if (finishedReading) {
-            parameters.put("shelf", "read");
+            parameters.put("shelf", GoodreadsShelf.VIRTUAL_READ);
             parameters.put("finished", "true");
             if (readEnd != null && !readEnd.isEmpty()) {
                 parameters.put("review[read_at]", readEnd);
             }
         } else {
             if (readStart != null && !readStart.isEmpty()) {
-                parameters.put("shelf", "currently-reading");
+                parameters.put("shelf", GoodreadsShelf.VIRTUAL_CURRENTLY_READING);
                 parameters.put("review[read_at]", readStart);
             } else {
-                parameters.put("shelf", "to-read");
+                parameters.put("shelf", GoodreadsShelf.VIRTUAL_TO_READ);
             }
         }
 

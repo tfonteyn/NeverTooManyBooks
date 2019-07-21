@@ -22,12 +22,20 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 
+/**
+ * Languages:
+ * <ul>
+ * <li>ISO 639-1: two-letter codes, one per language</li>
+ * <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
+ * </ul>
+ * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
+ */
 public final class LocaleUtils {
 
-    /** The SharedPreferences name where we'll maintain our language to ISO3 mappings. */
+    /** The SharedPreferences name where we'll maintain our language to ISO mappings. */
     private static final String LANGUAGE_MAP = "language2iso3";
     /**
-     * A Map to translate currency symbols to their official ISO3 code.
+     * A Map to translate currency symbols to their official ISO code.
      * <p>
      * ENHANCE: surely this can be done more intelligently ?
      */
@@ -151,7 +159,7 @@ public final class LocaleUtils {
     }
 
     /**
-     * Test if the passed Locale is actually a 'real' Locale by checking ISO3 codes.
+     * Test if the passed Locale is actually a 'real' Locale by checking ISO codes.
      */
     public static boolean isValid(@Nullable final Locale locale) {
         if (locale == null) {
@@ -159,7 +167,7 @@ public final class LocaleUtils {
         }
         try {
             // MissingResourceException
-            // NullPointerException can be thrown from within, when the ISO3Language fails.
+            // NullPointerException can be thrown from within, when ISO3Language() fails.
             return locale.getISO3Language() != null && locale.getISO3Country() != null;
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
@@ -239,14 +247,14 @@ public final class LocaleUtils {
     }
 
     /**
-     * Try to convert a DisplayName to an ISO3 code.
+     * Try to convert a DisplayName to an ISO code.
      * At installation (or upgrade to v200) we generated the users System Locale + Locale.ENGLISH
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
      *
-     * @return the ISO3 code, or if conversion failed, the input string
+     * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
     public static String getISO3Language(@NonNull final String displayName) {
@@ -258,11 +266,11 @@ public final class LocaleUtils {
     }
 
     /**
-     * Try to convert a "language-country" to an ISO3 code.
+     * Try to convert a "language-country" code to an ISO code.
      *
      * @param source a standard ISO string like "en" or "en-GB" or "en-GB*"
      *
-     * @return the ISO3 code, or if conversion failed, the input string
+     * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
     public static String getISO3LanguageFromISO2(@NonNull final String source) {
@@ -280,25 +288,25 @@ public final class LocaleUtils {
     }
 
     /**
-     * Convert the passed string with a (hopefully valid) currency unit, into the ISO3 code
+     * Convert the passed string with a (hopefully valid) currency unit, into the ISO code
      * for that currency.
      *
      * @param currency to convert
      *
-     * @return ISO3 code.
+     * @return ISO code.
      */
     @Nullable
-    public static String currencyToISO(@NonNull final String currency) {
+    private static String currencyToISO(@NonNull final String currency) {
         return CURRENCY_MAP.get(currency.trim().toLowerCase(getSystemLocale()));
     }
 
     /**
-     * Translate the Language ISO3 code to the display name.
+     * Translate the Language ISO code to the display name.
      *
-     * @param iso the iso3 code
+     * @param iso the ISO code
      *
      * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO3 code
+     * or the input string itself if it was an invalid ISO code
      */
     @NonNull
     public static String getDisplayName(@NonNull final Context context,
@@ -311,13 +319,13 @@ public final class LocaleUtils {
     }
 
     /**
-     * Translate the Language ISO3 code to the display name.
+     * Translate the Language ISO code to the display name.
      *
      * @param locale to use for the output language
-     * @param iso    the iso3 code
+     * @param iso    the ISO code
      *
      * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO3 code
+     * or the input string itself if it was an invalid ISO code
      */
     @NonNull
     public static String getDisplayName(@NonNull final Locale locale,
@@ -361,14 +369,14 @@ public final class LocaleUtils {
     }
 
     /**
-     * Map an ISO 639-3 language code to an ISO 639-1 language code.
+     * Map an ISO 639-2 (3-char) language code to an ISO 639-1 (2-char) language code.
      * <p>
      * There is one entry here for each language supported.
      * NEWKIND: if a new resource language is added, enable the mapping here.
      *
-     * @param iso3LanguageCode ISO 639-3 language code
+     * @param iso3LanguageCode ISO 639-2 (3-char) language code
      *
-     * @return ISO 639-1 language code
+     * @return ISO 639-1 (2-char) language code
      */
     private static String mapLanguageCode(@NonNull final String iso3LanguageCode) {
 
@@ -612,7 +620,7 @@ public final class LocaleUtils {
      * We don't convert this, but return that value as-is.
      * It's used on the ISFDB web site.
      * <a href="https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal">
-     *     https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
+     * https://en.wikipedia.org/wiki/Pound_sterling#Pre-decimal</a>
      *
      * @param priceWithCurrency price, e.g. "Bf459", "$9.99", ...
      * @param keyPrice          bundle key for the value

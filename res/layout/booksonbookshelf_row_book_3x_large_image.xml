@@ -13,8 +13,8 @@
         android:layout_width="0dp"
         android:contentDescription="@string/lbl_cover"
         android:scaleType="centerInside"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_height="360dp"
         tools:layout_width="240dp"
@@ -55,11 +55,11 @@
 
     <CheckBox
         android:id="@+id/read"
-        style="@style/Flag"
+        style="@style/Flag.Read"
         android:contentDescription="@string/lbl_read"
+        app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"
-        app:layout_constraintBaseline_toBaselineOf="@id/title"
         tools:checked="true"
         />
 

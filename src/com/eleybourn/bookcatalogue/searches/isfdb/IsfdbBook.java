@@ -353,7 +353,6 @@ public class IsfdbBook
             throws SocketTimeoutException {
 
         Bundle bookData = new Bundle();
-        List<String> externalIdUrls = new ArrayList<>();
 
         Element contentBox = mDoc.select("div.contentbox").first();
         Element ul = contentBox.select("ul").first();
@@ -504,16 +503,8 @@ public class IsfdbBook
 //                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmp);
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
-                    // get the <ul>
-                    tmpElement = li.child(1);
-                    for (Element extIdLi : tmpElement.children()) {
-                        Element extIdLink = extIdLi.select("a").first();
-                        externalIdUrls.add(extIdLink.attr("href"));
-                    }
-                    if (externalIdUrls.size() > 0) {
-                        handleExternalIdUrls(externalIdUrls, bookData);
-                        externalIdUrls.clear();
-                    }
+                    // send the <ul> children
+                    handleExternalIdUrls(li.child(1).children(), bookData);
 
 //                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
                     // add these to the authors as other sites do ?
@@ -537,6 +528,7 @@ public class IsfdbBook
 //        if (recordIDDiv != null) {
 //        }
 
+        //URGENT: it would make much more sense to get the notes from the URL_TITLE_CGI page.
         Elements notesDiv = contentBox.select("div.notes");
         if (notesDiv != null) {
             tmpString = notesDiv.html();
@@ -598,12 +590,60 @@ public class IsfdbBook
         return bookData;
     }
 
+    /**
+     * All lines are normally:
+     * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
+     * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
+     *
+     * Except for Amazon:
+     *
+     * <li> <abbr class="template" title="Amazon Standard Identification Number">ASIN</abbr>:  B003ODIWEG
+     * (<a href="https://www.amazon.com.au/dp/B003ODIWEG" target="_blank">AU</a>
+     * <a href="https://www.amazon.com.br/dp/B003ODIWEG" target="_blank">BR</a>
+     * <a href="https://www.amazon.ca/dp/B003ODIWEG" target="_blank">CA</a>
+     * <a href="https://www.amazon.cn/dp/B003ODIWEG" target="_blank">CN</a>
+     * <a href="https://www.amazon.de/dp/B003ODIWEG" target="_blank">DE</a>
+     * <a href="https://www.amazon.es/dp/B003ODIWEG" target="_blank">ES</a>
+     * <a href="https://www.amazon.fr/dp/B003ODIWEG" target="_blank">FR</a>
+     * <a href="https://www.amazon.in/dp/B003ODIWEG" target="_blank">IN</a>
+     * <a href="https://www.amazon.it/dp/B003ODIWEG" target="_blank">IT</a>
+     * <a href="https://www.amazon.co.jp/dp/B003ODIWEG" target="_blank">JP</a>
+     * <a href="https://www.amazon.com.mx/dp/B003ODIWEG" target="_blank">MX</a>
+     * <a href="https://www.amazon.nl/dp/B003ODIWEG" target="_blank">NL</a>
+     * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21" target="_blank">UK</a>
+     * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
+     *
+     *
+     * @param elements  LI elements
+     * @param bookData  bundle to store the findings.
+     */
+    private void handleExternalIdUrls(@NonNull final Elements elements,
+                                      @NonNull final Bundle bookData) {
+        List<String> externalIdUrls = new ArrayList<>();
+        for (Element extIdLi : elements) {
+            Element extIdLink = extIdLi.select("a").first();
+            externalIdUrls.add(extIdLink.attr("href"));
+        }
+        if (externalIdUrls.size() > 0) {
+            handleExternalIdUrls(externalIdUrls, bookData);
+        }
+    }
+
+    /**
+     *
+     * @param urlList   clean url strings to external sites.
+     * @param bookData  bundle to store the findings.
+     */
     private void handleExternalIdUrls(@NonNull final List<String> urlList,
                                       @NonNull final Bundle bookData) {
         for (String url : urlList) {
             if (url.contains("www.worldcat.org")) {
                 // http://www.worldcat.org/oclc/60560136
                 bookData.putLong(DBDefinitions.KEY_WORLDCAT_ID, stripNumber(url, '/'));
+            } else if (url.contains("amazon")) {
+                // this is an Amazon ASIN link.
+                bookData.putString(DBDefinitions.KEY_ASIN, stripString(url, '/'));
+
 
 //            } else if (url.contains("lccn.loc.gov")) {
                 // Library of Congress (USA)
@@ -628,8 +668,7 @@ public class IsfdbBook
                 // Spanish
                 // https://tercerafundacion.net/biblioteca/ver/libro/2329
 
-//            } else if (url.contains("amazon")) {
-                // not interested, this is an Amazon ASIN link. We already have the ISBN.
+
             }
         }
     }

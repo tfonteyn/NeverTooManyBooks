@@ -26,7 +26,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +76,7 @@ public class CoverBrowserFragment
     /** {@code ArrayList<String>} with edition isbn's. */
     private static final String BKEY_EDITION_LIST = TAG + ":editions";
     private static final String BKEY_SWITCHER_FILE = TAG + ":coverImage";
+
     /** Populated by {@link #initGallery(ArrayList)} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
@@ -90,9 +90,9 @@ public class CoverBrowserFragment
     /** Prior to showing a preview, the switcher can show text updates. */
     private TextView mStatusTextView;
     private CoverBrowserViewModel mModel;
-    /** Populated by {@link #setSwitcherImage(String)} AND savedInstanceState. */
+    /** Populated by {@link #setSwitcherImage} AND savedInstanceState. */
     @Nullable
-    private String mSwitcherImageFileSpec;
+    private CoverBrowserViewModel.FileInfo mSwitcherImage;
 
     /**
      * WARNING: LibraryThing is in fact the only site searched for alternative editions!
@@ -134,13 +134,15 @@ public class CoverBrowserFragment
                 mAlternativeEditions.clear();
                 mAlternativeEditions.addAll(editions);
             }
-            mSwitcherImageFileSpec = savedInstanceState.getString(BKEY_SWITCHER_FILE);
+            mSwitcherImage = savedInstanceState.getParcelable(BKEY_SWITCHER_FILE);
         }
 
         mModel = ViewModelProviders.of(this).get(CoverBrowserViewModel.class);
         mModel.init(requireArguments());
+
         mModel.getEditions().observe(this, this::initGallery);
-        mModel.getSwitcherImageFileSpec().observe(this, this::setSwitcherImage);
+        mModel.getGalleryImage().observe(this, this::setGalleryImage);
+        mModel.getSwitcherImage().observe(this, this::setSwitcherImage);
     }
 
     @NonNull
@@ -210,8 +212,8 @@ public class CoverBrowserFragment
 
         } else {
             initGallery(mAlternativeEditions);
-            if (mSwitcherImageFileSpec != null) {
-                setSwitcherImage(mSwitcherImageFileSpec);
+            if (mSwitcherImage != null) {
+                setSwitcherImage(mSwitcherImage);
             }
         }
 
@@ -262,21 +264,18 @@ public class CoverBrowserFragment
      * <p>
      * TODO: pass the data via a MutableLiveData object and use a local FIFO queue.
      *
-     * @param task     the task that finished
      * @param fileInfo the file we got, if any
      */
-    public void updateGallery(@NonNull final AsyncTask task,
-                              @NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
-        mModel.removeTask(task);
+    private void setGalleryImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
         Objects.requireNonNull(mGalleryAdapter);
 
         int index = mAlternativeEditions.indexOf(fileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "updateGallery", fileInfo);
+            Logger.debug(this, "setGalleryImage", fileInfo);
         }
 
-        if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
+        if (fileInfo.hasFileSpec()) {
             // Load the temp file and apply to the gallery view
             File imageFile = new File(fileInfo.fileSpec);
             if (imageFile.exists()) {
@@ -304,18 +303,19 @@ public class CoverBrowserFragment
     /**
      * handle result from the {@link CoverBrowserViewModel} GetSwitcherImageTask.
      *
-     * @param switcherImageFileSpec the file we got.
+     * @param fileInfo the file we got.
      */
-    private void setSwitcherImage(@Nullable final String switcherImageFileSpec) {
-        mSwitcherImageFileSpec = switcherImageFileSpec;
+    private void setSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
+        mSwitcherImage = fileInfo;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Logger.debug(this, "setSwitcherImage", "fileSpec=" + switcherImageFileSpec);
+            Logger.debug(this, "setSwitcherImage", "fileInfo=" + fileInfo);
         }
 
-        if (switcherImageFileSpec != null && !switcherImageFileSpec.isEmpty()) {
+        if (fileInfo.hasFileSpec()) {
             // Load the temp file and apply to he switcher
-            File file = new File(switcherImageFileSpec);
+            File file = new File(fileInfo.fileSpec);
+            // arbitrary '100' bytes.
             if (file.exists() && file.length() > 100) {
 
                 // store the path. It will be send back to the caller.
@@ -346,8 +346,8 @@ public class CoverBrowserFragment
         if (!mAlternativeEditions.isEmpty()) {
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }
-        if (mSwitcherImageFileSpec != null) {
-            outState.putString(BKEY_SWITCHER_FILE, mSwitcherImageFileSpec);
+        if (mSwitcherImage != null) {
+            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImage);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
@@ -407,35 +407,38 @@ public class CoverBrowserFragment
 
             // Get the image file; try the sizes in order as specified here.
             holder.fileInfo = mModel.getFileManager().getFile(isbn,
-                                                              SearchEngine.ImageSizes.SMALL,
-                                                              SearchEngine.ImageSizes.MEDIUM,
-                                                              SearchEngine.ImageSizes.LARGE);
+                                                              SearchEngine.ImageSize.SMALL,
+                                                              SearchEngine.ImageSize.MEDIUM,
+                                                              SearchEngine.ImageSize.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
                              "fileInfo=" + holder.fileInfo);
             }
-            if (holder.fileInfo.fileSpec != null) {
-                File imageFile = new File(holder.fileInfo.fileSpec);
-                // See if file is present.
-                if (imageFile.exists()) {
-                    ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
 
-                } else {
-                    // Not present; use a placeholder.
-                    holder.imageView.setImageResource(R.drawable.ic_image);
-                    // and queue a request for it.
-                    if (!mDismissing) {
-                        try {
-                            mModel.fetchGalleryImages(CoverBrowserFragment.this, isbn);
+            File imageFile = null;
+            if (holder.fileInfo.hasFileSpec()) {
+                imageFile = new File(holder.fileInfo.fileSpec);
+            }
 
-                        } catch (@NonNull final RejectedExecutionException e) {
-                            // some books have a LOT of editions... Dr. Asimov
-                            if (BuildConfig.DEBUG /* always */) {
-                                Logger.debug(this, "onBindViewHolder",
-                                             "isbn=" + isbn,
-                                             "Exception msg=" + e.getLocalizedMessage());
-                            }
+            // See if file is present.
+            if (imageFile != null && imageFile.exists()) {
+                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true);
+
+            } else {
+                // Not present; use a placeholder.
+                holder.imageView.setImageResource(R.drawable.ic_image);
+                // and queue a request for it.
+                if (!mDismissing) {
+                    try {
+                        mModel.fetchGalleryImage(isbn);
+
+                    } catch (@NonNull final RejectedExecutionException e) {
+                        // some books have a LOT of editions... Dr. Asimov
+                        if (BuildConfig.DEBUG /* always */) {
+                            Logger.debug(this, "onBindViewHolder",
+                                         "isbn=" + isbn,
+                                         "Exception msg=" + e.getLocalizedMessage());
                         }
                     }
                 }
@@ -443,12 +446,24 @@ public class CoverBrowserFragment
 
             // image from gallery clicked -> load it into the larger preview (imageSwitcher).
             holder.imageView.setOnClickListener(v -> {
-                // set & show the placeholder.
-                mImageSwitcherView.setImageResource(R.drawable.ic_image);
-                mImageSwitcherView.setVisibility(View.VISIBLE);
-                mStatusTextView.setText(R.string.progress_msg_loading);
-                // start a task to fetch the image
-                mModel.fetchSwitcherImage(holder.fileInfo);
+                // check if we actually have a preview in the gallery
+                if (holder.fileInfo.hasFileSpec()) {
+                    if (holder.fileInfo.size.equals(SearchEngine.ImageSize.LARGE)) {
+                        // no need to search, just load it.
+                        ImageUtils.setImageView(holder.imageView,
+                                                new File(holder.fileInfo.fileSpec),
+                                                mWidth, mHeight, true);
+                    } else {
+                        // see if we can get a larger image.
+
+                        // set & show the placeholder.
+                        mImageSwitcherView.setImageResource(R.drawable.ic_image);
+                        mImageSwitcherView.setVisibility(View.VISIBLE);
+                        mStatusTextView.setText(R.string.progress_msg_loading);
+                        // start a task to fetch the image
+                        mModel.fetchSwitcherImage(holder.fileInfo);
+                    }
+                }
             });
         }
 

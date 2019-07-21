@@ -76,6 +76,17 @@ public class MappedCursorRow {
     }
 
     /**
+     * Check if we have the given column available.
+     *
+     * @param columnName to check
+     *
+     * @return {@code true} if this column is present.
+     */
+    public boolean contains(@NonNull final String columnName) {
+        return mMapper.contains(columnName);
+    }
+
+    /**
      * @param columnName to get
      *
      * @return a string from underlying mapper

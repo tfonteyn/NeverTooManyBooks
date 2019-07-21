@@ -161,11 +161,11 @@
     <ImageButton
         android:id="@+id/isbn_del"
         style="@style/IsbnSearchKey.Del"
+        android:contentDescription="@string/menu_delete"
         app:layout_constraintBottom_toTopOf="@id/barrierBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/isbn_0"
         app:layout_constraintTop_toBottomOf="@id/isbn_9"
-        android:contentDescription="@string/menu_delete"
         />
 
     <androidx.constraintlayout.widget.Barrier

@@ -96,21 +96,25 @@ abstract class ApiHandler {
     static final String XML_TITLE_WITHOUT_SERIES = "title_without_series";
     static final String XML_ORIGINAL_TITLE = "original_title";
 
-    /** <language_code>en-GB</language_code> */
+    /**
+     * <language_code>en-GB</language_code>
+     * <language_code>eng</language_code>
+     */
     static final String XML_LANGUAGE = "language_code";
 
     static final String XML_BOOK = "book";
     static final String XML_BEST_BOOK = "best_book";
-    /** <isbn13><![CDATA[9780340198278]]></isbn13> */
     static final String XML_ISBN_13 = "isbn13";
-    /** <isbn><![CDATA[0340198273]]></isbn> */
     static final String XML_ISBN = "isbn";
-    /**
-     * <num_pages><![CDATA[206]]></num_pages>
-     * <num_pages>448</num_pages>
-     */
+    static final String XML_ASIN = "asin";
+
     static final String XML_NUM_PAGES = "num_pages";
-    /** <format><![CDATA[Mass Market Paperback]]></format> */
+    /**
+     * <format><![CDATA[Mass Market Paperback]]></format>
+     * <format><![CDATA[ Hardcover ]]></format>
+     * <format><![CDATA[ Paperback ]]></format>
+     * <format><![CDATA[ Audio CD ]]></format>
+      */
     static final String XML_FORMAT = "format";
     /** <is_ebook>false</is_ebook> */
     static final String XML_IS_EBOOK = "is_ebook";
@@ -123,6 +127,7 @@ abstract class ApiHandler {
     static final String XML_SHELVES = "shelves";
     static final String XML_SHELF = "shelf";
     static final String XML_USER_SHELF = "user_shelf";
+    static final String XML_POPULAR_SHELVES = "popular_shelves";
 
     /** <publisher>Coronet</publisher> */
     static final String XML_PUBLISHER = "publisher";

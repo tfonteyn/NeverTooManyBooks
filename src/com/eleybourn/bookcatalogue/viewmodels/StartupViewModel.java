@@ -294,7 +294,7 @@ public class StartupViewModel
             try {
                 DBCleaner cleaner = new DBCleaner(mDb);
 
-                // do a mass update of any languages not yet converted to ISO3 codes
+                // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.updateLanguages();
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves();

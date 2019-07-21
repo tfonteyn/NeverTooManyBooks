@@ -27,15 +27,17 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
  * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
  *
  * <a href="https://www.goodreads.com/api/index#book.show_by_isbn">
- *     https://www.goodreads.com/api/index#book.show_by_isbn</a>
+ * https://www.goodreads.com/api/index#book.show_by_isbn</a>
+ * <p>
+ * This also accepts an ASIN as the isbn.
  *
  * @author Philip Warner
  */
@@ -60,14 +62,14 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param isbn           to search for
+     * @param isbn           ISBN or ASIN to search for
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
     public Bundle get(@NonNull final String isbn,

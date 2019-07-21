@@ -24,8 +24,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill,LabelFor"
-            tools:visibility="visible"
             tools:text="my_library-2019-03-08.bcbk"
+            tools:visibility="visible"
             />
 
         <ImageButton

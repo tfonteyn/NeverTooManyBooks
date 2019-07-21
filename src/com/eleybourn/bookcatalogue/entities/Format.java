@@ -26,7 +26,7 @@ public final class Format {
 
     // use all lowercase keys!
     static {
-        // ISFDB abbreviations
+        // ISFDB
         // mass market paperback
         MAPPER.put("mmpb", R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
@@ -38,8 +38,12 @@ public final class Format {
         MAPPER.put("audio cd", R.string.book_format_audiobook);
         MAPPER.put("unknown", R.string.unknown);
 
-        // Some others
+        // Goodreads, not already listed above.
         MAPPER.put("mass market paperback", R.string.book_format_paperback);
+        MAPPER.put("hardcover", R.string.book_format_hardcover);
+        MAPPER.put("paperback", R.string.book_format_paperback);
+
+
     }
 
     private Format() {

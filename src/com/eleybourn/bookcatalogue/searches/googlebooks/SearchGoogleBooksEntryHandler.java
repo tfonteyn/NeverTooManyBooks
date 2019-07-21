@@ -351,9 +351,9 @@ class SearchGoogleBooksEntryHandler
 
             case XML_LANGUAGE:
                 // the language field can be empty, so check before storing it
-                String iso3code = mBuilder.toString();
-                if (!iso3code.isEmpty()) {
-                    addIfNotPresent(DBDefinitions.KEY_LANGUAGE, iso3code);
+                String iso = mBuilder.toString();
+                if (!iso.isEmpty()) {
+                    addIfNotPresent(DBDefinitions.KEY_LANGUAGE, iso);
                 }
                 break;
 

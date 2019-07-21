@@ -12,23 +12,32 @@
         android:id="@+id/coverImage"
         style="@style/CoverImage"
         android:layout_width="0dp"
+        android:contentDescription="@string/lbl_cover"
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/lbl_cover"
-        tools:src="@drawable/ic_image"
         tools:layout_height="90dp"
         tools:layout_width="60dp"
+        tools:src="@drawable/ic_image"
         />
 
     <CheckBox
         android:id="@+id/read"
-        style="@style/Flag"
+        style="@style/Flag.Read"
+        android:contentDescription="@string/lbl_read"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
-        android:contentDescription="@string/lbl_read"
+        />
+
+    <CheckBox
+        android:id="@+id/on_loan"
+        style="@style/Flag.OnLoan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/read"
+        tools:checked="true"
         />
 
     <TextView

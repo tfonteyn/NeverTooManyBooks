@@ -628,8 +628,7 @@ public class BookFragment
 
             // Make sure we have considerably more X-velocity than Y-velocity;
             // otherwise it might be a scroll.
-            //TEST: 2019-07-20: original was "2" but 1.5 seems to be easier/enough
-            if (Math.abs(velocityX / velocityY) > 1.5) {
+            if (Math.abs(velocityX / velocityY) > 2) {
                 boolean moved;
                 // Work out which way to move, and do it.
                 if (velocityX > 0) {

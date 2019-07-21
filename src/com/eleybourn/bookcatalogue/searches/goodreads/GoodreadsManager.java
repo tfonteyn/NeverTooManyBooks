@@ -96,12 +96,7 @@ public class GoodreadsManager
     public static final String BASE_URL = WEBSITE;
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
-    /** Goodreads virtual shelf name. */
-    private static final String SHELF_READ = "Read";
-    /** Goodreads virtual shelf name. */
-    private static final String SHELF_TO_READ = "To Read";
-    /** Goodreads virtual shelf name. */
-    private static final String SHELF_DEFAULT = "Default";
+
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "GoodReads.";
     /** last time we synced with Goodreads. */
@@ -124,6 +119,9 @@ public class GoodreadsManager
     /** to control access to sLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
+    /** error string. */
+    private static final String INVALID_CREDENTIALS =
+            "Goodreads credentials need to be validated before accessing user data";
     /** Set to {@code true} when the credentials have been successfully verified. */
     public static boolean sHasValidCredentials;
     /** Cached when credentials have been verified. */
@@ -142,12 +140,10 @@ public class GoodreadsManager
      */
     @NonNull
     private static Long sLastRequestTime = 0L;
-
     /** OAuth helpers. */
     private final CommonsHttpOAuthConsumer mConsumer;
     /** OAuth helpers. */
     private final OAuthProvider mProvider;
-
     /** Cache this common handler. */
     @Nullable
     private IsbnToIdApiHandler mIsbnToIdApiHandler;
@@ -157,14 +153,9 @@ public class GoodreadsManager
     /** Cache this common handler. */
     @Nullable
     private ReviewUpdateApiHandler mReviewUpdateApiHandler;
-
     /** Cached list of shelves. */
     @Nullable
     private GoodreadsShelves mShelvesList;
-
-    /** error string. */
-    private static final String INVALID_CREDENTIALS =
-            "Goodreads credentials need to be validated before accessing user data";
 
     /**
      * Constructor.
@@ -175,7 +166,7 @@ public class GoodreadsManager
      * BASE_URL + "/oauth/authorize"
      * <p>
      * 2019-06-05: <a href="https://www.goodreads.com/api/documentation">
-     *     https://www.goodreads.com/api/documentation</a>
+     * https://www.goodreads.com/api/documentation</a>
      * <p>
      * /oauth/authorize?mobile=1
      */
@@ -620,9 +611,9 @@ public class GoodreadsManager
             if (exclusiveCount == 0) {
                 String pseudoShelf;
                 if (bookCursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
-                    pseudoShelf = SHELF_READ;
+                    pseudoShelf = "Read";
                 } else {
-                    pseudoShelf = SHELF_TO_READ;
+                    pseudoShelf = "To Read";
                 }
                 if (!shelves.contains(pseudoShelf)) {
                     shelves.add(pseudoShelf);
@@ -685,7 +676,7 @@ public class GoodreadsManager
              */
             if (reviewId == 0) {
                 try {
-                    reviewId = addBookToShelf(grBookId, SHELF_DEFAULT);
+                    reviewId = addBookToShelf(grBookId, "Default");
                 } catch (@NonNull final BookNotFoundException | IOException | CredentialsException e) {
                     return ExportResult.error;
                 }
@@ -761,7 +752,7 @@ public class GoodreadsManager
     @Override
     @WorkerThread
     public File getCoverImage(@NonNull final String isbn,
-                              @Nullable final ImageSizes size) {
+                              @Nullable final ImageSize size) {
         if (!hasValidCredentials()) {
             return null;
         }
@@ -895,7 +886,6 @@ public class GoodreadsManager
      *
      * @throws OAuthNotAuthorizedException with GoodReads
      * @throws IOException                 on other failures
-     *
      * @author Philip Warner
      */
     @WorkerThread

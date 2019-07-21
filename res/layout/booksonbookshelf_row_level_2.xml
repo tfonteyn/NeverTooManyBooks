@@ -23,13 +23,13 @@
         android:id="@+id/bullet"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:src="@drawable/ic_lens"
         android:backgroundTint="?android:attr/colorForeground"
         android:scaleX="0.4"
         android:scaleY="0.4"
+        android:src="@drawable/ic_lens"
+        app:layout_constraintBottom_toBottomOf="@id/name"
         app:layout_constraintEnd_toStartOf="@id/name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/name"
         tools:ignore="ContentDescription"
         />
 
