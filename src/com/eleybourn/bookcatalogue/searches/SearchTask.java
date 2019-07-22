@@ -253,11 +253,20 @@ public class SearchTask
     /**
      * Show a 'known' error after task finish.
      */
-    private void setFinalError(@StringRes final int error,
-                               @NonNull final Object... args) {
+    private void setFinalError(@StringRes final int error) {
         Context context = getContext();
         mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
-                                          context.getString(error, args));
+                                          context.getString(error));
+    }
+
+    /**
+     * Show a 'known' error after task finish.
+     */
+    private void setFinalError(@SuppressWarnings("SameParameterValue") @StringRes final int error,
+                               @StringRes final int arg) {
+        Context context = getContext();
+        mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
+                                          context.getString(error, context.getString(arg)));
     }
 
     /**
