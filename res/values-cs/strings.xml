@@ -629,5 +629,6 @@
     <string name="warning_missing_author">Chybí autor.</string>
     <string name="warning_isfdb_only">(podporuje pouze webová stránka ISFDB)</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
+    <string name="error_failed_x">Nepodařilo se: %1$d</string>
 
 </resources>

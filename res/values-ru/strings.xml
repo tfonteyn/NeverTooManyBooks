@@ -643,6 +643,7 @@
     <string name="warning_missing_author">Автор отсутствует.</string>
     <string name="warning_isfdb_only">(поддерживается только веб-сайтом ISFDB)</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
+    <string name="error_failed_x">Не удалось: %1$d</string>
 
 
 </resources>

@@ -910,5 +910,6 @@
     <string name="warning_missing_author">Der Autor fehlt.</string>
     <string name="warning_isfdb_only">(wird nur von der ISFDB-Website unterstützt)</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
+    <string name="error_failed_x">Fehlgeschlagen: %1$d</string>
 
 </resources>

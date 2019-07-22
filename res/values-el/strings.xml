@@ -618,5 +618,6 @@
     <string name="warning_missing_author">Ο συγγραφέας λείπει.</string>
     <string name="warning_isfdb_only">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
+    <string name="error_failed_x">Αποτυχία: %1$d</string>
 
 </resources>

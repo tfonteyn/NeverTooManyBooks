@@ -659,4 +659,5 @@
     <string name="warning_missing_author">L\'autore è mancante.</string>
     <string name="warning_isfdb_only">(supportato solo dal sito Web ISFDB)</string>
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
+    <string name="error_failed_x">Non riuscito: %1$d</string>
 </resources>

@@ -534,5 +534,6 @@
     <string name="warning_missing_author">Brakuje autora.</string>
     <string name="warning_isfdb_only">(obsługiwane tylko przez stronę internetową ISFDB)</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
+    <string name="error_failed_x">Nie powiodło się: %1$d</string>
 
 </resources>
