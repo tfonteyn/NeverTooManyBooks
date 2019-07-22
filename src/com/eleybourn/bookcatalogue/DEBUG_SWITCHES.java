@@ -22,6 +22,8 @@ import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbBook;
  */
 public final class DEBUG_SWITCHES {
 
+    public static final boolean USER_MESSAGE_STACK_TRACE = false;
+
     /* ****************************************************************************************** */
 
     /** Enable strict mode reporting on network,disc,... usage. */
@@ -196,7 +198,7 @@ public final class DEBUG_SWITCHES {
     /**
      * Dump (just) the URL used in {@link com.eleybourn.bookcatalogue.tasks.TerminatorConnection}.
      */
-    public static final boolean DUMP_HTTP_URL = true;
+    public static final boolean DUMP_HTTP_URL = false;
 
     /**
      * Dump entire HTTP response to System.out.

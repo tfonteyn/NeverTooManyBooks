@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -40,6 +43,10 @@ public final class UserMessage {
             View view = activity.getWindow().getDecorView();
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
+            Logger.debugWithStackTrace(UserMessage.class,"show1", activity.getString(message));
+        }
     }
 
     public static void show(@NonNull final Activity activity,
@@ -50,6 +57,10 @@ public final class UserMessage {
             View view = activity.getWindow().getDecorView();
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
+            Logger.debugWithStackTrace(UserMessage.class,"show2", message);
+        }
     }
 
     public static void show(@NonNull final View view,
@@ -59,6 +70,10 @@ public final class UserMessage {
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
+            Logger.debugWithStackTrace(UserMessage.class,"show3", view.getContext().getString(message));
+        }
     }
 
     public static void show(@NonNull final View view,
@@ -67,6 +82,10 @@ public final class UserMessage {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
+            Logger.debugWithStackTrace(UserMessage.class,"show4", message);
         }
     }
 }
