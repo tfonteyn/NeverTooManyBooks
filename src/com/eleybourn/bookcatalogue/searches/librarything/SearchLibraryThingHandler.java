@@ -442,49 +442,10 @@ import com.eleybourn.bookcatalogue.entities.Series;
 class SearchLibraryThingHandler
         extends DefaultHandler {
 
-    /**
-     * LibraryThing extra field "placesmentioned".
-     * {@code
-     * <fact>Mercury</fact>
-     * <fact>New York, New York, USA</fact>
-     * <fact>Roosevelt Building</fact>
-     * }
-     */
-    private static final String LT_PLACES = "__places";
-    /**
-     * LibraryThing extra field "characternames".
-     * {@code
-     * <fact>Susan Calvin</fact>
-     * <fact>Cutie (QT1)</fact>
-     * <fact>Gregory Powell</fact>
-     * }
-     */
-    private static final String LT_CHARACTERS = "__characters";
-    /**
-     * LibraryThing extra field "originalpublicationdate".
-     * <p>
-     * The format of these entries is probably not a standard. TODO: get more examples first.
-     * {@code
-     * A short story collection:
-     * <fact>1950 (Collection)</fact>
-     * <fact>1944 (Catch that Rabbit)</fact>
-     * <fact>1945 (Escape!)</fact>
-     * <fact>1946 (Evidence)</fact>
-     * <fact>1950 (The Evitable Conflict)</fact>
-     * <p>
-     * An omnibus of multiple book:
-     * <fact>1978 (omnibus)</fact>
-     * <p>
-     * <p>
-     * }
-     */
-    private static final String LT_ORIG_PUB_DATE = "__originalpublicationdate";
-
     /** some common XML attributes. */
     private static final String XML_ATTR_ID = "id";
     private static final String XML_ATTR_TYPE = "type";
     private static final String XML_ATTR_NAME = "name";
-
     /** XML tags we look for. */
     //private static final String XML_RESPONSE = "response";
     private static final String XML_AUTHOR = "author";
@@ -500,16 +461,27 @@ class SearchLibraryThingHandler
     private static final String XML_FIELD_21_CANONICAL_TITLE = "canonicaltitle";
     private static final String XML_FIELD_41_ORIG_TITLE = "originaltitle";
     private static final String XML_FIELD_42_ALT_TITLES = "alternativetitles";
-
     private static final String XML_FIELD_23_SERIES = "series";
     private static final String XML_FIELD_40_PUB_SERIES = "publisherseries";
-
     private static final String XML_FIELD_02_PLACES = "placesmentioned";
     private static final String XML_FIELD_03_CHARACTERS = "characternames";
     private static final String XML_FIELD_14_DESCRIPTION = "description";
     private static final String XML_FIELD_16_ORIG_PUB_DATE = "originalpublicationdate";
     private static final String XML_FIELD_58_ORIG_LANG = "originallanguage";
+
+    /**
+     * Extracting the year from field "originalpublicationdate".
+     * {@code
+     * A short story collection:
+     * <fact>1950 (Collection)</fact>
+     * <fact>1944 (Catch that Rabbit)</fact>
+     * <p>
+     * An omnibus of multiple book:
+     * <fact>1978 (omnibus)</fact>
+     * }
+     */
     private static final Pattern YEAR_PATTERN = Pattern.compile("([1|2]\\d\\d\\d)");
+
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -654,7 +626,6 @@ class SearchLibraryThingHandler
             addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
-            // Process the XML_FACT according to the active XML_FIELD type.
             switch (mFieldType) {
 
                 case Title:

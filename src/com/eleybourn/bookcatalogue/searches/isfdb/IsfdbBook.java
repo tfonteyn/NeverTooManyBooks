@@ -39,23 +39,12 @@ public class IsfdbBook
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
+
     /** Param 1: ISFDB native book id. */
     private static final String BOOK_URL = IsfdbManager.CGI_BIN
             + IsfdbManager.URL_PL_CGI + "?%1$s";
-    /**
-     * ISFDB extra fields in the results for potential future usage.
-     * ENHANCE: pass and store these ISFDB ID's
-     */
-//    private static final String ISFDB_BKEY_AUTHOR_ID = "__ISFDB_AUTHORS_ID";
-//    private static final String ISFDB_BKEY_SERIES_ID = "__ISFDB_SERIES_ID";
-//    private static final String ISFDB_BKEY_PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
-//    private static final String ISFDB_BKEY_EDITORS_ID = "__ISFDB_EDITORS_ID";
-//    private static final String ISFDB_BKEY_BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
 
-    private static final String ISFDB_BKEY_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
-    private static final String ISFDB_BKEY_ISBN_2 = "__ISFDB_ISBN2";
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
-
     /**
      * Either the Web page itself, and/or the JSoup parser has used both decimal and hex
      * representation for the "•" character. Capturing all 3 possibilities here.
@@ -63,9 +52,7 @@ public class IsfdbBook
     private static final String DOT = "(&#x2022;|&#8226;|•)";
     /** Character used by the site as string divider/splitter. */
     private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
-
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
-
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
 
@@ -138,14 +125,14 @@ public class IsfdbBook
     @Nullable
     private String mFirstPublication;
 
-    //ENHANCE: pass and store these ISFDB ID's?
-//    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
-//    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
-
     @Nullable
     public List<Editions.Edition> getEditions() {
         return mEditions;
     }
+
+    //ENHANCE: pass and store these ISFDB ID's?
+//    private final ArrayList<Long> ISFDB_AUTHOR_ID_LIST = new ArrayList<>();
+//    private final ArrayList<Long> ISFDB_SERIES_ID_LIST = new ArrayList<>();
 
     /**
      * @param isfdbId        ISFDB native book id
@@ -360,7 +347,6 @@ public class IsfdbBook
         Elements lis = ul.children();
 
         String tmpString;
-        Element tmpElement;
 
         for (Element li : lis) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
@@ -408,7 +394,7 @@ public class IsfdbBook
                         for (Element a : as) {
                             mAuthors.add(Author.fromString(a.text()));
                             //ENHANCE: pass and store these ISFDB ID's
-//                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
+//                            ISFDB_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
                         }
                     }
                 } else if ("Date:".equalsIgnoreCase(fieldName)) {
@@ -431,12 +417,12 @@ public class IsfdbBook
                     bookData.putString(DBDefinitions.KEY_ISBN, digits(tmpString));
 
                     tmpString = li.childNode(2).childNode(0).toString().trim();
-                    bookData.putString(ISFDB_BKEY_ISBN_2, digits(tmpString));
+                    bookData.putString(BookField.ISBN_2, digits(tmpString));
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     //tmp = li.childNode(3).attr("href");
                     //ENHANCE: pass and store these ISFDB ID's
-                    //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
+                    //bookData.putString(BookField.PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmpString = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(DBDefinitions.KEY_PUBLISHER, tmpString);
@@ -475,7 +461,7 @@ public class IsfdbBook
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
                     tmpString = li.childNode(2).toString().trim();
-                    bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmpString);
+                    bookData.putString(BookField.BOOK_TYPE, tmpString);
                     Integer type = TYPE_MAP.get(tmpString);
                     if (type != null) {
                         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
@@ -483,24 +469,15 @@ public class IsfdbBook
 
 //                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
 //                    //TODO: if there are multiple art/artists... will this barf ?
-//                    tmp = li.childNode(2).attr("href");
-//                    bookData.putString(ISFDB_BKEY_BOOK_COVER_ART_URL, tmp);
-//
 //                    tmp = li.childNode(2).childNode(0).toString().trim();
-//                    bookData.putString(ISFDB_BKEY_BOOK_COVER_ART_TXT, tmp);
+//                    bookData.putString(BookField.BOOK_COVER_ART_TXT, tmp);
 //
 //                    // Cover artist
 //                    Node node_a = li.childNode(4);
-//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST_ID,
+//                    StringList.addOrAppend(bookData, BookField.BOOK_COVER_ARTIST_ID,
 //                                           String.valueOf(stripNumber(node_a.attr("href"))));
-//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST,
+//                    StringList.addOrAppend(bookData, BookField.BOOK_COVER_ARTIST,
 //                                           node_a.childNode(0).toString().trim());
-
-
-//                // notes now done separately, see further down.
-//                } else if ("Notes:".equalsIgnoreCase(fieldName)) {
-//                    tmp = li.childNode(1).childNode(1).toString().trim();
-//                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmp);
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
                     // send the <ul> children
@@ -511,9 +488,9 @@ public class IsfdbBook
 //                    Elements as = li.select("a");
 //                    if (as != null) {
 //                        for (Element a : as) {
-//                            StringList.addOrAppend(bookData, ISFDB_BKEY_BKEY_EDITORS_ID,
+//                            StringList.addOrAppend(bookData, BookField.BKEY_EDITORS_ID,
 //                                                   String.valueOf(stripNumber(a.attr("href"))));
-//                            StringList.addOrAppend(bookData, ISFDB_BKEY_EDITORS, a.text());
+//                            StringList.addOrAppend(bookData, BookField.EDITORS, a.text());
 //                        }
 //                    }
                 }
@@ -554,8 +531,8 @@ public class IsfdbBook
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
 
         //ENHANCE: pass and store these ISFDB ID's
-//        bookData.putParcelableArrayList(ISFDB_BKEY_AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
-//        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
+//        bookData.putParcelableArrayList(BookField.AUTHOR_ID, ISFDB_BKEY_AUTHOR_ID_LIST);
+//        bookData.putParcelableArrayList(BookField.SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
 
         // set Anthology type
         if (!toc.isEmpty()) {
@@ -594,7 +571,7 @@ public class IsfdbBook
      * All lines are normally:
      * <li> <abbr class="template" title="Online Computer Library Center">OCLC/WorldCat</abbr>:
      * <a href="http://www.worldcat.org/oclc/963112443" target="_blank">963112443</a>
-     *
+     * <p>
      * Except for Amazon:
      *
      * <li> <abbr class="template" title="Amazon Standard Identification Number">ASIN</abbr>:  B003ODIWEG
@@ -613,9 +590,8 @@ public class IsfdbBook
      * <a href="https://www.amazon.co.uk/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-21" target="_blank">UK</a>
      * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
      *
-     *
-     * @param elements  LI elements
-     * @param bookData  bundle to store the findings.
+     * @param elements LI elements
+     * @param bookData bundle to store the findings.
      */
     private void handleExternalIdUrls(@NonNull final Elements elements,
                                       @NonNull final Bundle bookData) {
@@ -630,9 +606,8 @@ public class IsfdbBook
     }
 
     /**
-     *
-     * @param urlList   clean url strings to external sites.
-     * @param bookData  bundle to store the findings.
+     * @param urlList  clean url strings to external sites.
+     * @param bookData bundle to store the findings.
      */
     private void handleExternalIdUrls(@NonNull final List<String> urlList,
                                       @NonNull final Bundle bookData) {
@@ -894,5 +869,21 @@ public class IsfdbBook
         }
 
         return results;
+    }
+
+    /**
+     * ISFDB specific field names we add to the bundle based on parsed XML data.
+     */
+    private static class BookField {
+
+//        private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
+//        private static final String SERIES_ID = "__ISFDB_SERIES_ID";
+//        private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
+//        private static final String EDITORS_ID = "__ISFDB_EDITORS_ID";
+//        private static final String BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
+//        private static final String BOOK_COVER_ART_TXT = "__BOOK_COVER_ART_TXT";
+
+        private static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
+        private static final String ISBN_2 = "__ISFDB_ISBN2";
     }
 }
