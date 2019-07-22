@@ -222,6 +222,7 @@ public final class DBDefinitions {
     /** "FamilyName, GivenName". */
     public static final DomainDefinition DOM_AUTHOR_FORMATTED;
     /** "GivenName FamilyName". */
+    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
@@ -286,8 +287,6 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_UUID;
-    /** {@link #TBL_BOOKS}. */
     @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}. */
@@ -296,15 +295,67 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
     @SuppressWarnings("WeakerAccess")
-    public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
-    /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
-    public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
-    /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED;
     /** {@link #TBL_BOOKS}. */
     @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_LISTED_CURRENCY;
+    /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
+    public static final DomainDefinition DOM_BOOK_PAGES;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_FORMAT;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_LANGUAGE;
+    /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
+    public static final DomainDefinition DOM_BOOK_DESCRIPTION;
+
+    public static final String KEY_ISBN = "isbn";
+    public static final String KEY_PUBLISHER = "publisher";
+    public static final String KEY_DATE_PUBLISHED = "date_published";
+    public static final String KEY_PRICE_LISTED = "list_price";
+    public static final String KEY_PRICE_LISTED_CURRENCY = "list_price_currency";
+    public static final String KEY_PAGES = "pages";
+    public static final String KEY_FORMAT = "format";
+    public static final String KEY_LANGUAGE = "language";
+    public static final String KEY_DESCRIPTION = "description";
+
+    static {
+        DOM_BOOK_ISBN =
+                new DomainDefinition(KEY_ISBN, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PUBLISHER =
+                new DomainDefinition(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_DATE_PUBLISHED =
+                new DomainDefinition(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PRICE_LISTED =
+                new DomainDefinition(KEY_PRICE_LISTED, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PRICE_LISTED_CURRENCY =
+                new DomainDefinition(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_PAGES =
+                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_FORMAT =
+                new DomainDefinition(KEY_FORMAT, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_LANGUAGE =
+                new DomainDefinition(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+        DOM_BOOK_DESCRIPTION =
+                new DomainDefinition(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT, true)
+                        .setDefaultEmptyString();
+    }
+
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_UUID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_EDITION_BITMASK;
+    /** {@link #TBL_BOOKS}. See {@link TocEntry.Authors}. */
+    public static final DomainDefinition DOM_BOOK_TOC_BITMASK;
     /** {@link #TBL_BOOKS}. */
     @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_PRICE_PAID;
@@ -313,17 +364,13 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_PRICE_PAID_CURRENCY;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_DATE_ACQUIRED;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_FORMAT;
+    /** {@link #TBL_BOOKS} added to the collection. */
+    public static final DomainDefinition DOM_BOOK_DATE_ADDED;
+
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_GENRE;
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_LANGUAGE;
-    /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LOCATION;
-    /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
-    public static final DomainDefinition DOM_BOOK_PAGES;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_READ;
     /** {@link #TBL_BOOKS}. */
@@ -337,47 +384,16 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
     @SuppressWarnings("WeakerAccess")
-    public static final DomainDefinition DOM_BOOK_DESCRIPTION;
-    /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_NOTES;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_ISFDB_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_OPEN_LIBRARY_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID;
-    /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
-    /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
-    public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-    /** {@link #TBL_BOOKS} added to the collection. */
-    public static final DomainDefinition DOM_BOOK_DATE_ADDED;
 
     public static final String KEY_BOOK_UUID = "book_uuid";
-    public static final String KEY_ISBN = "isbn";
-    /**
-     *  We don't store the ASIN (yet) but will use it as an alternative if during storage
-     * there is no ISBN. ENHANCE: use/store the ASIN
-      */
-    public static final String KEY_ASIN = "asin";
 
-    public static final String KEY_PUBLISHER = "publisher";
-    public static final String KEY_DATE_PUBLISHED = "date_published";
     public static final String KEY_EDITION_BITMASK = "edition_bm";
     public static final String KEY_TOC_BITMASK = "anthology";
-    public static final String KEY_PRICE_LISTED = "list_price";
-    public static final String KEY_PRICE_LISTED_CURRENCY = "list_price_currency";
     public static final String KEY_PRICE_PAID = "price_paid";
     public static final String KEY_PRICE_PAID_CURRENCY = "price_paid_currency";
-
-    public static final String KEY_DESCRIPTION = "description";
-    public static final String KEY_FORMAT = "format";
     public static final String KEY_GENRE = "genre";
-    public static final String KEY_LANGUAGE = "language";
     public static final String KEY_LOCATION = "location";
-    public static final String KEY_PAGES = "pages";
 
     public static final String KEY_READ = "read";
     public static final String KEY_READ_START = "read_start";
@@ -385,48 +401,21 @@ public final class DBDefinitions {
     public static final String KEY_SIGNED = "signed";
     public static final String KEY_RATING = "rating";
     public static final String KEY_NOTES = "notes";
-
-    public static final String KEY_ISFDB_ID = "isfdb_book_id";
-    public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
-    public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
-    /** Book ID, not 'work' ID. */
-    public static final String KEY_GOODREADS_BOOK_ID = "goodreads_book_id";
-
-    // ENHANCE: the search engines already uses these where applicable, but not stored yet.
-    // Long
-    public static final String KEY_WORLDCAT_ID = "worldcat_oclc_book_id";
-    public static final String KEY_LCCN_ID = "lccn_book_id";
-
-
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_DATE_ADDED = "date_added";
-    public static final String KEY_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
 
     static {
         DOM_BOOK_UUID =
                 new DomainDefinition(KEY_BOOK_UUID, ColumnInfo.TYPE_TEXT, true)
                         .setDefault("(lower(hex(randomblob(16))))");
-        DOM_BOOK_ISBN =
-                new DomainDefinition(KEY_ISBN, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PUBLISHER =
-                new DomainDefinition(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_DATE_PUBLISHED =
-                new DomainDefinition(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE, true)
-                        .setDefaultEmptyString();
+
         DOM_BOOK_EDITION_BITMASK =
                 new DomainDefinition(KEY_EDITION_BITMASK, ColumnInfo.TYPE_INTEGER, true)
                         .setDefault(0);
         DOM_BOOK_TOC_BITMASK =
                 new DomainDefinition(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER, true)
                         .setDefault(TocEntry.Authors.SINGLE_AUTHOR_SINGLE_WORK);
-        DOM_BOOK_PRICE_LISTED =
-                new DomainDefinition(KEY_PRICE_LISTED, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PRICE_LISTED_CURRENCY =
-                new DomainDefinition(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
+
         DOM_BOOK_PRICE_PAID =
                 new DomainDefinition(KEY_PRICE_PAID, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
@@ -436,20 +425,15 @@ public final class DBDefinitions {
         DOM_BOOK_DATE_ACQUIRED =
                 new DomainDefinition(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
-        DOM_BOOK_FORMAT =
-                new DomainDefinition(KEY_FORMAT, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
+        DOM_BOOK_DATE_ADDED =
+                new DomainDefinition(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME, true)
+                        .setDefault("current_timestamp");
+
         DOM_BOOK_GENRE =
                 new DomainDefinition(KEY_GENRE, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
-        DOM_BOOK_LANGUAGE =
-                new DomainDefinition(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
         DOM_BOOK_LOCATION =
                 new DomainDefinition(KEY_LOCATION, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
-        DOM_BOOK_PAGES =
-                new DomainDefinition(KEY_PAGES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
         DOM_BOOK_READ =
                 new DomainDefinition(KEY_READ, ColumnInfo.TYPE_BOOLEAN, true)
@@ -466,29 +450,56 @@ public final class DBDefinitions {
         DOM_BOOK_RATING =
                 new DomainDefinition(KEY_RATING, ColumnInfo.TYPE_REAL, true)
                         .setDefault(0);
-        DOM_BOOK_DESCRIPTION =
-                new DomainDefinition(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT, true)
-                        .setDefaultEmptyString();
         DOM_BOOK_NOTES =
                 new DomainDefinition(KEY_NOTES, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
+    }
 
-        DOM_BOOK_OPEN_LIBRARY_ID =
-                new DomainDefinition(KEY_OPEN_LIBRARY_ID, ColumnInfo.TYPE_TEXT);
+    /**
+     *  We don't store the ASIN (yet) but plumbing has started. ENHANCE: use/store the ASIN
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final DomainDefinition DOM_ASIN;
 
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_ISFDB_ID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_OPEN_LIBRARY_ID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID;
+    /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_GOODREADS_ID;
+    /** {@link #TBL_BOOKS}. */
+    @SuppressWarnings("WeakerAccess")
+    public static final DomainDefinition DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+
+    public static final String KEY_ASIN = "asin";
+    public static final String KEY_ISFDB_ID = "isfdb_book_id";
+    public static final String KEY_OPEN_LIBRARY_ID = "ol_book_id";
+    public static final String KEY_LIBRARY_THING_ID = "lt_book_id";
+    /** Book ID, not 'work' ID. */
+    public static final String KEY_GOODREADS_BOOK_ID = "goodreads_book_id";
+    public static final String KEY_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
+
+    // ENHANCE: the search engines already uses these where possible, but not stored yet.
+    // Long
+    public static final String KEY_WORLDCAT_ID = "worldcat_oclc_book_id";
+    public static final String KEY_LCCN_ID = "lccn_book_id";
+
+    static {
+        DOM_ASIN =
+                new DomainDefinition(KEY_ASIN, ColumnInfo.TYPE_TEXT);
         DOM_BOOK_ISFDB_ID =
                 new DomainDefinition(KEY_ISFDB_ID, ColumnInfo.TYPE_INTEGER);
+        DOM_BOOK_OPEN_LIBRARY_ID =
+                new DomainDefinition(KEY_OPEN_LIBRARY_ID, ColumnInfo.TYPE_TEXT);
         DOM_BOOK_LIBRARY_THING_ID =
                 new DomainDefinition(KEY_LIBRARY_THING_ID, ColumnInfo.TYPE_INTEGER);
         DOM_BOOK_GOODREADS_ID =
                 new DomainDefinition(KEY_GOODREADS_BOOK_ID, ColumnInfo.TYPE_INTEGER);
-
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
                 new DomainDefinition(KEY_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
                         .setDefault("'0000-00-00'");
-        DOM_BOOK_DATE_ADDED =
-                new DomainDefinition(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME, true)
-                        .setDefault("current_timestamp");
     }
 
     /** {@link #TBL_BOOKSHELF). */

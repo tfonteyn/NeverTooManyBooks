@@ -192,9 +192,9 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * NEVER close this database!
+     * NEVER close this database.
      *
-     * @return the dao
+     * @return the DAO
      */
     public DAO getDb() {
         return mDb;
@@ -484,7 +484,7 @@ public class BooksOnBookshelfModel
 
     public boolean isAvailable(final long bookId) {
         String loanee = mDb.getLoaneeByBookId(bookId);
-        return  (loanee == null) || loanee.isEmpty();
+        return (loanee == null) || loanee.isEmpty();
     }
 
     /**

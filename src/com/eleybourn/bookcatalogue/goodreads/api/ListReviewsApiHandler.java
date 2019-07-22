@@ -359,18 +359,18 @@ public class ListReviewsApiHandler
                 //      <review>
                 .s(XML_REVIEW).asArrayItem()
                 //          <id>276860380</id>
-                .longBody(XML_ID, ReviewField.GR_REVIEW_ID)
+                .longBody(XML_ID, ReviewField.REVIEW_ID)
                 //          <book>
                 .s(XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XML_ID, ReviewField.DBA_GR_BOOK_ID)
+                .longBody(XML_ID, DBDefinitions.KEY_GOODREADS_BOOK_ID)
                 //              <isbn>0583120911</isbn>
-                .stringBody(XML_ISBN, ReviewField.DBA_ISBN)
+                .stringBody(XML_ISBN, DBDefinitions.KEY_ISBN)
                 //              <isbn13>9780583120913</isbn13>
                 .stringBody(XML_ISBN_13, ReviewField.ISBN13)
                 //              ...
                 //              <title><![CDATA[The Dying Earth]]></title>
-                .stringBody(XML_TITLE, ReviewField.DBA_TITLE)
+                .stringBody(XML_TITLE, DBDefinitions.KEY_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
                 .stringBody(XML_IMAGE_URL, ReviewField.LARGE_IMAGE)
@@ -379,26 +379,26 @@ public class ListReviewsApiHandler
                 .stringBody(XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
                 //              ...
                 //              <num_pages>159</num_pages>
-                .longBody(XML_NUM_PAGES, ReviewField.DBA_PAGES)
+                .longBody(XML_NUM_PAGES, DBDefinitions.KEY_PAGES)
                 //              <format></format>
-                .stringBody(XML_FORMAT, ReviewField.DBA_FORMAT)
+                .stringBody(XML_FORMAT, DBDefinitions.KEY_FORMAT)
                 //              <publisher></publisher>
-                .stringBody(XML_PUBLISHER, ReviewField.DBA_PUBLISHER)
+                .stringBody(XML_PUBLISHER, DBDefinitions.KEY_PUBLISHER)
                 //              <publication_day>20</publication_day>
-                .longBody(XML_PUBLICATION_DAY, ReviewField.PUB_DAY)
+                .longBody(XML_PUBLICATION_DAY, ReviewField.PUBLICATION_DAY)
                 //              <publication_year>1972</publication_year>
-                .longBody(XML_PUBLICATION_YEAR, ReviewField.PUB_YEAR)
+                .longBody(XML_PUBLICATION_YEAR, ReviewField.PUBLICATION_YEAR)
                 //              <publication_month>4</publication_month>
-                .longBody(XML_PUBLICATION_MONTH, ReviewField.PUB_MONTH)
+                .longBody(XML_PUBLICATION_MONTH, ReviewField.PUBLICATION_MONTH)
                 //              <description><![CDATA[]]></description>
-                .stringBody(XML_DESCRIPTION, ReviewField.DBA_DESCRIPTION)
+                .stringBody(XML_DESCRIPTION, DBDefinitions.KEY_DESCRIPTION)
                 //              ...
                 //              <authors>
                 .s(XML_AUTHORS).asArray(ReviewField.AUTHORS)
                 //                  <author>
                 .s(XML_AUTHOR).asArrayItem()
                 //                      <id>5376</id>
-                .longBody(XML_ID, ReviewField.DBA_AUTHOR_ID)
+                .longBody(XML_ID, DBDefinitions.KEY_FK_AUTHOR)
                 //                      <name><![CDATA[Jack Vance]]></name>
                 .stringBody(XML_NAME, ReviewField.AUTHOR_NAME_GF)
                 //                      ...
@@ -408,7 +408,7 @@ public class ListReviewsApiHandler
                 //          </book>
                 .popTo(XML_REVIEW)
                 //          <rating>0</rating>
-                .doubleBody(XML_RATING, ReviewField.DBA_RATING)
+                .doubleBody(XML_RATING, DBDefinitions.KEY_RATING)
                 //          ...
                 //          <shelves>
                 .s(XML_SHELVES).asArray(ReviewField.SHELVES)
@@ -420,9 +420,9 @@ public class ListReviewsApiHandler
                 //          </shelves>
                 //          ...
                 //          <started_at></started_at>
-                .stringBody(XML_STARTED_AT, ReviewField.DBA_READ_START)
+                .stringBody(XML_STARTED_AT, DBDefinitions.KEY_READ_START)
                 //          <read_at></read_at>
-                .stringBody(XML_READ_AT, ReviewField.DBA_READ_END)
+                .stringBody(XML_READ_AT, DBDefinitions.KEY_READ_END)
                 //          <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 .s(XML_DATE_ADDED)
                 .stringBody(ReviewField.ADDED).setListener(mAddedListener).pop()
@@ -431,7 +431,7 @@ public class ListReviewsApiHandler
                 .stringBody(ReviewField.UPDATED).setListener(mUpdatedListener).pop()
                 //          ...
                 //          <body><![CDATA[]]></body>
-                .stringBody(XML_BODY, ReviewField.DBA_NOTES).pop()
+                .stringBody(XML_BODY, DBDefinitions.KEY_NOTES).pop()
                 //          ...
                 //          <owned>0</owned>
                 //      </review>
@@ -458,47 +458,33 @@ public class ListReviewsApiHandler
     }
 
     /**
-     * Field names we add to the bundle based on parsed XML data.
-     * <p>
-     * We duplicate the DAO names (and give them a DBA_ prefix) so that
-     * (a) it is clear which fields are provided by this call, and
-     * (b) it is clear which fields directly relate to DAO fields.
-     *
-     * @author Philip Warner
+     * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
     public static final class ReviewField {
 
         public static final String TOTAL = "__total";
         public static final String ISBN13 = "__isbn13";
+
         public static final String SMALL_IMAGE = "__smallImage";
         public static final String LARGE_IMAGE = "__largeImage";
-        public static final String PUB_DAY = "__pubDay";
-        public static final String PUB_YEAR = "__pubYear";
-        public static final String PUB_MONTH = "__pubMonth";
+
+        public static final String PUBLICATION_DAY = "__pubDay";
+        public static final String PUBLICATION_YEAR = "__pubYear";
+        public static final String PUBLICATION_MONTH = "__pubMonth";
+
         public static final String ADDED = "__added";
         public static final String UPDATED = "__updated";
         public static final String REVIEWS = "__reviews";
         public static final String AUTHORS = "__authors";
-        public static final String SHELF = "__shelf";
-        public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
 
-        public static final String DBA_GR_BOOK_ID = DBDefinitions.KEY_GOODREADS_BOOK_ID;
-        public static final String DBA_TITLE = DBDefinitions.KEY_TITLE;
-        public static final String DBA_PUBLISHER = DBDefinitions.KEY_PUBLISHER;
-        public static final String DBA_DESCRIPTION = DBDefinitions.KEY_DESCRIPTION;
-        public static final String DBA_FORMAT = DBDefinitions.KEY_FORMAT;
-        public static final String DBA_PAGES = DBDefinitions.KEY_PAGES;
-        public static final String DBA_RATING = DBDefinitions.KEY_RATING;
-        public static final String DBA_READ_START = DBDefinitions.KEY_READ_START;
-        public static final String DBA_READ_END = DBDefinitions.KEY_READ_END;
+        public static final String SHELF = "__shelf";
+        public static final String SHELVES = "__shelves";
+
+        static final String REVIEW_ID = "__review_id";
 
         static final String START = "__start";
         static final String END = "__end";
-        static final String GR_REVIEW_ID = "__gr_review_id";
-        static final String DBA_ISBN = DBDefinitions.KEY_ISBN;
-        static final String DBA_AUTHOR_ID = DBDefinitions.KEY_FK_AUTHOR;
-        static final String DBA_NOTES = DBDefinitions.KEY_NOTES;
 
         private ReviewField() {
         }

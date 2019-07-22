@@ -138,10 +138,10 @@ public class App
      * NEWKIND: APP THEME.
      * <ol>
      * <li>add it to themes.xml</li>
-     * <li>add it to R.array.pv_ui_theme, the string-array order must match the APP_THEMES order</li>
+     * <li>add it to R.array.pv_ui_theme, the array order must match the APP_THEMES order</li>
      * <li>make sure the integer list in R.array.pv_ui_theme matches the number of themes</li>
-     * <li>The default theme integer must be set in res/xml/preferences.xml on the App.Theme element.</li>
-     * <li>The default theme name must be set in the manifest application tag.</li>
+     * <li>The default integer must be set in res/xml/preferences.xml on the App.Theme element.</li>
+     * <li>The default name must be set in the manifest application tag.</li>
      * </ol>
      * The preferences choice will be build according to the string-array list/order.
      * <p>

@@ -72,11 +72,11 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_BOOK_COU
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_ROW_KIND;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_SELECTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_REAL_ROW_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ROOT_KEY;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_SELECTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_SERIES_NUM_FLOAT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
@@ -86,21 +86,21 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_P
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANEE_AS_BOOLEAN;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
@@ -612,7 +612,7 @@ public class BooklistBuilder
 
             final long t4_buildSqlComponents = System.nanoTime();
 
-            baseBuild.buildJoinTables(buildInfoHolder, (mFilterOnBookshelfId > 0));
+            baseBuild.buildJoinTables(buildInfoHolder, mFilterOnBookshelfId > 0);
 
             final long t5_build_join = System.nanoTime();
 
@@ -696,7 +696,7 @@ public class BooklistBuilder
                 mRebuildStmts.add(ixStmt1);
                 ixStmt1.execute();
 
-                final long t11_nav_table_index_IX1_created = System.nanoTime();
+                final long t11_nav_table_IX1_created = System.nanoTime();
 
                 // Essential for main query! If not present, will make getCount() take
                 // ages because main query is a cross without index.
@@ -708,7 +708,7 @@ public class BooklistBuilder
                 mRebuildStmts.add(ixStmt2);
                 ixStmt2.execute();
 
-                final long t12_nav_table_index_IX2_created = System.nanoTime();
+                final long t12_nav_table_IX2_created = System.nanoTime();
                 mSyncedDb.analyze(mNavTable);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
@@ -723,11 +723,10 @@ public class BooklistBuilder
                                  "\nT08: " + (t8_BaseBuild_executed - t7_sortColumns_processed),
                                  "\nT09: " + (t9_table_optimized - t8_BaseBuild_executed),
                                  "\nT10: " + (t10_nav_table_build - t9_table_optimized),
-                                 "\nT11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build),
-                                 "\nT12: " + (t12_nav_table_index_IX2_created
-                                         - t11_nav_table_index_IX1_created),
-                                 "\nT13: " + (System.nanoTime()
-                                         - t12_nav_table_index_IX2_created),
+                                 "\nT11: " + (t11_nav_table_IX1_created - t10_nav_table_build),
+                                 "\nT12: " + (t12_nav_table_IX2_created
+                                         - t11_nav_table_IX1_created),
+                                 "\nT13: " + (System.nanoTime() - t12_nav_table_IX2_created),
                                  "\n============================",
                                  "\nTotal time: " + (System.nanoTime() - t0) + "nano");
                 }
@@ -1442,7 +1441,7 @@ public class BooklistBuilder
         // Check the absolute position is visible
         final long rowId = absolutePosition + 1;
         stmt.bindLong(1, rowId);
-        boolean isVisible = (1 == stmt.simpleQueryForLongOrZero());
+        boolean isVisible = stmt.simpleQueryForLongOrZero() == 1;
 
         stmt = mStatements.get(STMT_GET_POSITION);
         if (stmt == null) {
@@ -1875,10 +1874,10 @@ public class BooklistBuilder
     @Override
     @NonNull
     public String toString() {
-        return "BooklistBuilder{" +
-                "mBooklistBuilderId=" + mBooklistBuilderId +
-                ", mCloseWasCalled=" + mCloseWasCalled +
-                '}';
+        return "BooklistBuilder{"
+                + "mBooklistBuilderId=" + mBooklistBuilderId
+                + ", mCloseWasCalled=" + mCloseWasCalled
+                + '}';
     }
 
     public String debugInfoForTables() {
@@ -2016,7 +2015,7 @@ public class BooklistBuilder
             join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
 
             // If there is no author group, or the user only wants primary author, get primary only
-            if (buildInfoHolder.authorGroup == null || !buildInfoHolder.authorGroup.showAllAuthors()) {
+            if (buildInfoHolder.authorGroup == null || !buildInfoHolder.authorGroup.showAll()) {
                 join.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "==1");
             }
 
@@ -2028,7 +2027,7 @@ public class BooklistBuilder
 
             // If there was no series group, or user requests primary series only,
             // then just get primary series.
-            if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAllSeries()) {
+            if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAll()) {
                 join.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "==1");
             }
 
@@ -2756,7 +2755,8 @@ public class BooklistBuilder
             // Build the expression for the root key.
             StringBuilder keyColumns = new StringBuilder('\'' + rootKey.getPrefix());
             for (DomainDefinition domain : rootKey.getDomains()) {
-                keyColumns.append("/' || COALESCE(").append(mExpressions.get(domain)).append(",'')");
+                keyColumns.append("/' || COALESCE(").append(mExpressions.get(domain)).append(
+                        ",'')");
             }
 
             return new BaseBuildSqlComponents(destColumns + "," + DOM_BL_ROOT_KEY,

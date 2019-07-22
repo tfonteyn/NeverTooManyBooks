@@ -181,7 +181,7 @@ public class CoverBrowserFragment
         // When the switcher image is clicked, send the fileSpec back to the caller and terminate.
         mImageSwitcherView.setOnClickListener(v -> {
             // When the image was loaded, the filename was stored in the tag.
-            String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_ITEM);
+            String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_FILE_SPEC);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(CoverBrowserFragment.this, "mImageSwitcherView.onClick",
                              "fileSpec=" + fileSpec);
@@ -319,7 +319,7 @@ public class CoverBrowserFragment
             if (file.exists() && file.length() > 100) {
 
                 // store the path. It will be send back to the caller.
-                mImageSwitcherView.setTag(R.id.TAG_ITEM, file.getAbsolutePath());
+                mImageSwitcherView.setTag(R.id.TAG_FILE_SPEC, file.getAbsolutePath());
 
                 Bitmap bm = ImageUtils.createScaledBitmap(file, ImageUtils.SCALE_X_LARGE);
 

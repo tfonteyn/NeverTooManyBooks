@@ -131,7 +131,7 @@ public final class MenuHandler {
     }
 
 
-    static SubMenu addViewBookSubMenu(@NonNull final Menu menu) {
+    static void addViewBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           R.id.SUBMENU_VIEW_BOOK_AT_SITE,
                                           ORDER_VIEW_BOOK_AT_SITE,
@@ -150,7 +150,6 @@ public final class MenuHandler {
                     R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
                     R.string.open_library);
 
-        return subMenu;
     }
 
     static void prepareViewBookSubMenu(@NonNull final Menu menu,

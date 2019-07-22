@@ -307,9 +307,7 @@ public class BooklistStyle
         initPrefs();
     }
 
-    /**
-     * Standard Parcelable constructor.
-     */
+    /** {@link Parcelable}. */
     protected BooklistStyle(@NonNull final Parcel in) {
         this(in, false, null);
     }
@@ -1140,7 +1138,7 @@ public class BooklistStyle
     }
 
     /**
-     * fronts an ArrayList<BooklistGroup> with backend storage of the 'kind' in a preference.
+     * Fronts an {@code ArrayList<BooklistGroup>} with backend storage in a preference.
      */
     private static class PStyleGroups
             extends PIntList {
@@ -1232,7 +1230,7 @@ public class BooklistStyle
          */
         @NonNull
         String add(@NonNull final SharedPreferences.Editor ed,
-                   @Nullable String list,
+                   @Nullable final String list,
                    @NonNull final BooklistGroup group) {
             mGroups.add(group);
             return super.add(ed, list, group.getKind());

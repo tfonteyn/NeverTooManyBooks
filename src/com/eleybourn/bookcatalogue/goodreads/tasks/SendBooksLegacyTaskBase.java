@@ -26,7 +26,6 @@ import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsSearchActivity;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;

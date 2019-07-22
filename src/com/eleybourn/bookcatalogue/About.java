@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 public class About
         extends BaseActivity {
 
+    /** Manifest string. */
     private static final String BETA_BUILD = "beta.build";
 
     @Override

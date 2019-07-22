@@ -33,7 +33,6 @@ public class ImportTask
     private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
     @NonNull
     private final String mTaskDescription;
-    private final int mTaskId = R.id.TASK_ID_GR_IMPORT;
 
     private final boolean mIsSync;
 
@@ -81,7 +80,8 @@ public class ImportTask
     @UiThread
     protected void onPostExecute(@Nullable final Integer result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_IMPORT, mException == null,
+                                               result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

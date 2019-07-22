@@ -70,9 +70,11 @@ import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
  * <p>
  * Each row(level) needs to have a layout like:
  * <pre>
- *      <layout id="@id/ROW_INFO">
- *      <TextView id="@id/name" />
- *      ...
+ *     {@code
+ *          <layout id="@id/ROW_INFO">
+ *          <TextView id="@id/name" />
+ *          ...
+ *      }
  * </pre>
  * <p>
  * ROW_INFO is important, as it's that one that gets shown/hidden when needed.

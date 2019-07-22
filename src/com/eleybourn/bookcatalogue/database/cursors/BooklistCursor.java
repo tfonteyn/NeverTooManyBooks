@@ -66,7 +66,9 @@ public class BooklistCursor
     }
 
     /**
-     * @return the builder used to make this cursor.
+     * Get the builder used to make this cursor.
+     *
+     * @return BooklistBuilder
      */
     @Override
     @NonNull
@@ -75,7 +77,9 @@ public class BooklistCursor
     }
 
     /**
-     * @return a RowView for this cursor. Constructs one if necessary.
+     * Get a MappedCursorRow for this cursor. Constructs one if necessary.
+     *
+     * @return BooklistMappedCursorRow
      */
     @Override
     @NonNull

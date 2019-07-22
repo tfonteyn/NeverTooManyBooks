@@ -97,6 +97,8 @@ abstract class ApiHandler {
     static final String XML_ORIGINAL_TITLE = "original_title";
 
     /**
+     * We've seen two formats.
+     *
      * <language_code>en-GB</language_code>
      * <language_code>eng</language_code>
      */
@@ -110,6 +112,8 @@ abstract class ApiHandler {
 
     static final String XML_NUM_PAGES = "num_pages";
     /**
+     * Not a complete list.
+     *
      * <format><![CDATA[Mass Market Paperback]]></format>
      * <format><![CDATA[ Hardcover ]]></format>
      * <format><![CDATA[ Paperback ]]></format>
@@ -129,23 +133,15 @@ abstract class ApiHandler {
     static final String XML_USER_SHELF = "user_shelf";
     static final String XML_POPULAR_SHELVES = "popular_shelves";
 
-    /** <publisher>Coronet</publisher> */
     static final String XML_PUBLISHER = "publisher";
-    /** <country_code><![CDATA[GB]]></country_code> */
     static final String XML_COUNTRY_CODE = "country_code";
 
-    /** <publication_year>1977</publication_year> */
     static final String XML_PUBLICATION_YEAR = "publication_year";
-    /** <publication_month>10</publication_month> */
     static final String XML_PUBLICATION_MONTH = "publication_month";
-    /** <publication_day></publication_day> */
     static final String XML_PUBLICATION_DAY = "publication_day";
 
-    /** <original_publication_year>1977</original_publication_year> */
     static final String XML_ORIGINAL_PUBLICATION_YEAR = "original_publication_year";
-    /** <original_publication_month>10</original_publication_month> */
     static final String XML_ORIGINAL_PUBLICATION_MONTH = "original_publication_month";
-    /** <original_publication_day></original_publication_day> */
     static final String XML_ORIGINAL_PUBLICATION_DAY = "original_publication_day";
 
     static final String XML_DATE_ADDED = "date_added";

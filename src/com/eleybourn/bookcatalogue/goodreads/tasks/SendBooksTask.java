@@ -33,12 +33,11 @@ public class SendBooksTask
     private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
     @NonNull
     private final String mTaskDescription;
-    private final int mTaskId = R.id.TASK_ID_GR_SEND_BOOKS;
 
     private final boolean mUpdatesOnly;
 
     @Nullable
-    Exception mException;
+    private Exception mException;
 
     public SendBooksTask(final boolean updatesOnly,
                          @NonNull final TaskListener<Object, Integer> taskListener) {
@@ -81,7 +80,8 @@ public class SendBooksTask
     @UiThread
     protected void onPostExecute(@Nullable final Integer result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_SEND_BOOKS, mException == null,
+                                               result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

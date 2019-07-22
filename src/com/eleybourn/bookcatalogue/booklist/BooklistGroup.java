@@ -119,9 +119,7 @@ public class BooklistGroup
         initPrefs();
     }
 
-    /**
-     * Constructor.
-     */
+    /** {@link Parcelable}. */
     protected BooklistGroup(@NonNull final Parcel in) {
         kind = in.readInt();
         //noinspection ConstantConditions
@@ -317,9 +315,7 @@ public class BooklistGroup
             super(RowKind.SERIES, uuid, isUserDefinedStyle);
         }
 
-        /**
-         * Constructor.
-         */
+        /** {@link Parcelable}. */
         BooklistSeriesGroup(@NonNull final Parcel in) {
             super(in);
             initPrefs();
@@ -343,7 +339,7 @@ public class BooklistGroup
                                       mIsUserDefinedStyle);
         }
 
-        boolean showAllSeries() {
+        boolean showAll() {
             return mAllSeries.isTrue();
         }
 
@@ -445,9 +441,7 @@ public class BooklistGroup
             super(RowKind.AUTHOR, uuid, isUserDefinedStyle);
         }
 
-        /**
-         * Constructor.
-         */
+        /** {@link Parcelable}. */
         BooklistAuthorGroup(@NonNull final Parcel in) {
             super(in);
             mAllAuthors.set(in);
@@ -474,7 +468,7 @@ public class BooklistGroup
                                            mIsUserDefinedStyle);
         }
 
-        boolean showAllAuthors() {
+        boolean showAll() {
             return mAllAuthors.isTrue();
         }
 

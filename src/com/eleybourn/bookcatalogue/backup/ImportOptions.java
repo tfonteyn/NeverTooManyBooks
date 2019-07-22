@@ -69,6 +69,7 @@ public class ImportOptions
         this.file = file;
     }
 
+    /** {@link Parcelable}. */
     protected ImportOptions(@NonNull final Parcel in) {
         what = in.readInt();
         if (in.readInt() != 0) {

@@ -77,7 +77,6 @@ import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -224,28 +223,6 @@ public class GoodreadsManager
             } catch (@NonNull final InterruptedException ignored) {
             }
         }
-    }
-
-    /**
-     * Create canonical representation based on the best guess as to the Goodreads rules.
-     *
-     * @param name to bless
-     *
-     * @return blessed name
-     */
-    public static String canonicalizeBookshelfName(@NonNull final String name) {
-
-        StringBuilder canonical = new StringBuilder();
-        String lcName = name.toLowerCase(LocaleUtils.getPreferredLocal());
-        for (int i = 0; i < lcName.length(); i++) {
-            char c = lcName.charAt(i);
-            if (Character.isLetterOrDigit(c)) {
-                canonical.append(c);
-            } else {
-                canonical.append('-');
-            }
-        }
-        return canonical.toString();
     }
 
     /**
@@ -560,8 +537,8 @@ public class GoodreadsManager
             try {
                 // Get the book details using ISBN
                 grBook = getBookByIsbn(isbn, false);
-                if (grBook.containsKey(ShowBookFieldName.BOOK_ID)) {
-                    grBookId = grBook.getLong(ShowBookApiHandler.ShowBookFieldName.BOOK_ID);
+                if (grBook.containsKey(DBDefinitions.KEY_GOODREADS_BOOK_ID)) {
+                    grBookId = grBook.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 }
 
                 // If we got an ID, save it against the book
@@ -597,7 +574,7 @@ public class GoodreadsManager
                 final String bookshelfName = bookshelf.getName();
                 shelves.add(bookshelfName);
 
-                final String canonicalShelfName = canonicalizeBookshelfName(bookshelfName);
+                final String canonicalShelfName = GoodreadsShelf.canonicalizeName(bookshelfName);
                 canonicalShelves.add(canonicalShelfName);
 
                 // Count how many of these shelves are exclusive in Goodreads.
@@ -617,7 +594,7 @@ public class GoodreadsManager
                 }
                 if (!shelves.contains(pseudoShelf)) {
                     shelves.add(pseudoShelf);
-                    canonicalShelves.add(canonicalizeBookshelfName(pseudoShelf));
+                    canonicalShelves.add(GoodreadsShelf.canonicalizeName(pseudoShelf));
                 }
             }
 
@@ -650,7 +627,7 @@ public class GoodreadsManager
             // Add shelves to Goodreads if they are not currently there
             for (String shelf : shelves) {
                 // Get the name the shelf will have at Goodreads
-                final String canonicalShelfName = canonicalizeBookshelfName(shelf);
+                final String canonicalShelfName = GoodreadsShelf.canonicalizeName(shelf);
                 // Can only sent canonical shelf names if the book is on 0 or 1 of them.
                 boolean okToSend = exclusiveCount < 2
                         || !grShelfList.isExclusive(canonicalShelfName);

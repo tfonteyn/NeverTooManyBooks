@@ -1221,8 +1221,35 @@ public class DAO
         // Handle all price related fields.
         preprocessPrices(book, bookLocale);
 
-        // Remove NULL fields that have default values defined in the database
-        // or should never be NULL.
+
+        // Remove blank external ID's
+        for (DomainDefinition domain : new DomainDefinition[]{
+                DBDefinitions.DOM_ASIN,
+                DBDefinitions.DOM_BOOK_ISFDB_ID,
+                DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
+                DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
+                DBDefinitions.DOM_BOOK_GOODREADS_ID,
+                }) {
+            if (book.containsKey(domain.name)) {
+                switch (domain.getType()) {
+                    case ColumnInfo.TYPE_INTEGER:
+                        long v = book.getLong(domain.name);
+                        if (v < 1) {
+                            book.remove(domain.name);
+                        }
+                        break;
+
+                    case ColumnInfo.TYPE_TEXT:
+                        Object o = book.get(domain.name);
+                        if (o == null || o.toString().isEmpty()) {
+                            book.remove(domain.name);
+                        }
+                        break;
+                }
+            }
+        }
+
+        // Remove {@code null} fields that should never be {@code null}.
         for (String name : new String[]{
                 //ENHANCE: can we automate this list ? maybe by looping over the table def. ?
                 // Basically we want "NOT NULL" fields which have STRING default.
@@ -1256,12 +1283,7 @@ public class DAO
             }
         }
 
-        // what about the external ID's ?
-
-
-        // Remove null/blank fields that should never be null/blank.
-        // "NOT NULL" fields + fields with a NON-String default
-        // list correct/complete on 2019-03-27.
+        // Remove {@code null}/blank fields that should never be {@code null}/blank.
         for (String name : new String[]{
                 // auto-generated in the database
                 DBDefinitions.KEY_BOOK_UUID,

@@ -221,6 +221,7 @@ public class CoverBrowserViewModel
             this.isbn = isbn;
         }
 
+        /** {@link Parcelable}. */
         private FileInfo(@NonNull final Parcel in) {
             //noinspection ConstantConditions
             isbn = in.readString();

@@ -17,18 +17,17 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 public class FetchWorksTask
         extends AsyncTask<Void, Void, List<GoodreadsWork>> {
 
     @NonNull
     private final WeakReference<TaskListener<Void, List<GoodreadsWork>>> mTaskListener;
-    private final int mTaskId = R.id.TASK_ID_GR_GET_WORKS;
+    private final String mSearchText;
     @Nullable
     private Exception mException;
-    private final String mSearchText;
 
     public FetchWorksTask(@NonNull final String searchText,
                           @NonNull final TaskListener<Void, List<GoodreadsWork>> taskListener) {
@@ -60,7 +59,8 @@ public class FetchWorksTask
     @Override
     protected void onPostExecute(@Nullable final List<GoodreadsWork> result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_GET_WORKS, mException == null,
+                                               result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

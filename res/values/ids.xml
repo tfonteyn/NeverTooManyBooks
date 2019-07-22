@@ -16,8 +16,6 @@
     <item name="TAG_GR_BOOK_EVENT_HOLDER" type="id" />
     <!-- Goodreads - {@link GoodreadsWork} -->
     <item name="TAG_GR_WORK" type="id" />
-    <!-- Goodreads - for storing a 'holder' with the view itself. -->
-    <item name="TAG_GR_VIEW_HOLDER" type="id" />
 
 
     <!-- tags a Cover Image View with the task responsible to fetch the image -->
@@ -28,7 +26,10 @@
 
     <!-- store the uuid of a cover into a tag on the view. -->
     <item name="TAG_UUID" type="id" />
+    <!-- store the fileSpec of a cover into a tag on the view. -->
+    <item name="TAG_FILE_SPEC" type="id" />
 
+    <!-- Passing the position on from the BooklistAdapter to the click-listeners. -->
     <item name="TAG_POSITION" type="id" />
 
     <!-- Updating fields from the internet.  -->

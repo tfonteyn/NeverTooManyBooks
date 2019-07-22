@@ -52,14 +52,14 @@ public class BackupFileDetails
 
     /**
      * Constructor.
+     *
+     * @param file to use
      */
     BackupFileDetails(@NonNull final File file) {
         mFile = file;
     }
 
-    /**
-     * Constructor, using a Parcel as source.
-     */
+    /** {@link Parcelable}. */
     private BackupFileDetails(@NonNull final Parcel in) {
         mFile = new File(in.readString());
         // flag to indicate the Parcel has the info bundle

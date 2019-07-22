@@ -34,9 +34,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 /**
- * Cursor implementation for book-related queries providing a {@link MappedCursorRow}
- *
- * @author Philip Warner
+ * Cursor implementation for book-related queries providing a {@link MappedCursorRow}.
  */
 public class BookCursor
         extends TrackedCursor

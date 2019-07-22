@@ -51,7 +51,6 @@ public class FileListerTask
     @NonNull
     private final File mRootDir;
 
-    private final int mTaskId = R.id.TASK_ID_FILE_LISTER;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -116,7 +115,7 @@ public class FileListerTask
     @UiThread
     protected void onPostExecute(@NonNull final ArrayList<FileDetails> result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_FILE_LISTER, mException == null, result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

@@ -618,7 +618,7 @@ public abstract class ShowBookApiHandler
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ID)
-                 .setEndAction(mHandleLong, ShowBookFieldName.BOOK_ID);
+                 .setEndAction(mHandleLong, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_TITLE)
                  .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
@@ -695,7 +695,7 @@ public abstract class ShowBookApiHandler
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_POPULAR_SHELVES,
                               XML_SHELF)
-                 .setEndAction(mHandlePopularShelf);
+                 .setStartAction(mHandlePopularShelf);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
                               XML_ID)
@@ -720,21 +720,18 @@ public abstract class ShowBookApiHandler
     }
 
     /**
-     * Field names we add to the bundle based on parsed XML data.
-     *
-     * @author Philip Warner
+     * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
     public static final class ShowBookFieldName {
 
         public static final String SHELVES = "__shelves";
-        public static final String BOOK_ID = "__book_id";
         public static final String REVIEW_ID = "__review_id";
 
         static final String ISBN13 = "__isbn13";
-        static final String ASIN = "__asin";
 
         static final String IMAGE_URL = "__image";
         static final String SMALL_IMAGE_URL = "__smallImage";
+        static final String BOOK_URL = "__url";
 
         static final String ORIG_PUBLICATION_YEAR = "__orig_pub_year";
         static final String ORIG_PUBLICATION_MONTH = "__orig_pub_month";
@@ -743,13 +740,12 @@ public abstract class ShowBookApiHandler
         static final String PUBLICATION_YEAR = "__pub_year";
         static final String PUBLICATION_MONTH = "__pub_month";
         static final String PUBLICATION_DAY = "__pub_day";
+        static final String COUNTRY_CODE = "__country_code";
 
         static final String IS_EBOOK = "__is_ebook";
         static final String WORK_ID = "__work_id";
         static final String ORIG_TITLE = "__orig_title";
         static final String RATING = "__rating";
-        static final String BOOK_URL = "__url";
-        static final String COUNTRY_CODE = "__country_code";
 
         private ShowBookFieldName() {
         }

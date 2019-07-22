@@ -198,7 +198,7 @@ public class ShelvesListApiHandler
 
 
     /**
-     * Field names we add to the bundle based on parsed XML data.
+     * Goodreads specific field names we add to the bundle based on parsed XML data.
      */
     public static final class ShelvesField {
 

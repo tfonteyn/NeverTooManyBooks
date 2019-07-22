@@ -104,6 +104,7 @@ public class BackupInfo
         mBundle = bundle;
     }
 
+    /** {@link Parcelable}. */
     protected BackupInfo(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mBundle = in.readBundle(getClass().getClassLoader());

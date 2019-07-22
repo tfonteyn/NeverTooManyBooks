@@ -7,6 +7,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.util.Objects;
 
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
@@ -40,10 +41,6 @@ abstract class AbstractBase {
     /** The parsed downloaded web page. */
     Document mDoc;
 
-    /** the actual URL for the page we got (after redirects etc). */
-    @Nullable
-    String mPageUrl;
-
     private boolean afterEofTryAgain = true;
     private boolean afterBrokenRedirectTryAgain = true;
 
@@ -62,9 +59,10 @@ abstract class AbstractBase {
      * on failure to load.
      */
     @Nullable
-    String loadPage(@NonNull String url,
+    String loadPage(@NonNull final String url,
                     final boolean redirect)
             throws SocketTimeoutException {
+
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                 Logger.debug(this, "loadPage", "url=" + url);
@@ -88,13 +86,19 @@ abstract class AbstractBase {
 
                 // the original url will change after a redirect.
                 // We need the actual url for further processing.
-                mPageUrl = con.getURL().toString();
+                String pageUrl = con.getURL().toString();
                 mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   IsfdbManager.CHARSET_DECODE_PAGE, mPageUrl);
+                                   IsfdbManager.CHARSET_DECODE_PAGE, pageUrl);
+
+                // sanity check
+                if (!Objects.equals(pageUrl, mDoc.location())) {
+                    Logger.warn(this, "loadPage",
+                                "pageUrl=" + pageUrl,
+                                "location=" + mDoc.location());
+                }
 
             } catch (@NonNull final HttpStatusException e) {
                 Logger.error(this, e);
-                mPageUrl = null;
                 return null;
 
             } catch (@NonNull final EOFException e) {
@@ -104,10 +108,8 @@ abstract class AbstractBase {
                 if (afterEofTryAgain) {
                     afterEofTryAgain = false;
                     mDoc = null;
-                    mPageUrl = null;
                     return loadPage(url, redirect);
                 } else {
-                    mPageUrl = null;
                     return null;
                 }
 
@@ -116,7 +118,6 @@ abstract class AbstractBase {
 
             } catch (@NonNull final IOException e) {
                 Logger.error(this, e, url);
-                mPageUrl = null;
                 return null;
 
             }
@@ -124,7 +125,8 @@ abstract class AbstractBase {
             afterBrokenRedirectTryAgain = true;
             afterEofTryAgain = true;
         }
-        return mPageUrl;
+
+        return mDoc.location();
     }
 
     /**
@@ -287,7 +289,7 @@ abstract class AbstractBase {
     }
 
     String stripString(@NonNull final String url,
-                     final char last) {
+                       final char last) {
         int index = url.lastIndexOf(last) + 1;
         if (index == 0) {
             return "";

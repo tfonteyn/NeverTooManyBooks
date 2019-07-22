@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 public class BookDetailsActivity
         extends BaseActivity {
 
-    private List<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
+    private final List<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -64,7 +64,6 @@ public class BookDetailsActivity
               .commit();
         }
     }
-    ;
 
     public void registerOnTouchListener(@NonNull final View.OnTouchListener listener) {
         mOnTouchListeners.add(listener);

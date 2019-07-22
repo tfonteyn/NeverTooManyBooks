@@ -53,13 +53,14 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewField;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -287,11 +288,11 @@ class ImportLegacyTask
     private void processReview(@NonNull final DAO db,
                                @NonNull final Bundle review) {
 
-        long grId = review.getLong(ReviewField.DBA_GR_BOOK_ID);
+        long grBookId = review.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
-        BookCursor cursor = db.fetchBooksByGoodreadsBookId(grId);
+        BookCursor cursor = db.fetchBooksByGoodreadsBookId(grBookId);
         try {
             boolean found = cursor.moveToFirst();
             if (!found) {
@@ -348,7 +349,7 @@ class ImportLegacyTask
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (Bookshelf bookshelf : bookshelves) {
                 mBookshelfLookup.put(
-                        GoodreadsManager.canonicalizeBookshelfName(bookshelf.getName()),
+                        GoodreadsShelf.canonicalizeName(bookshelf.getName()),
                         bookshelf.getName());
             }
         }
@@ -430,32 +431,26 @@ class ImportLegacyTask
         // Do not sync Notes<->Review. We will add a 'Review' field later.
         //addStringIfNonBlank(review, ReviewField.DBA_NOTES, book, ReviewField.DBA_NOTES);
 
-        addStringIfNonBlank(review, ListReviewsApiHandler.ReviewField.DBA_TITLE,
-                            bookData, DBDefinitions.KEY_TITLE);
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_TITLE);
 
-        addStringIfNonBlank(review, ReviewField.DBA_DESCRIPTION,
-                            bookData, DBDefinitions.KEY_DESCRIPTION);
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_DESCRIPTION);
 
-        addStringIfNonBlank(review, ReviewField.DBA_FORMAT,
-                            bookData, DBDefinitions.KEY_FORMAT);
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_FORMAT);
 
-        addStringIfNonBlank(review, ReviewField.DBA_PUBLISHER,
-                            bookData, DBDefinitions.KEY_PUBLISHER);
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PUBLISHER);
 
-        addLongIfPresent(review, ReviewField.DBA_GR_BOOK_ID,
-                         bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
+        addLongIfPresent(review, bookData, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
         // v200: Now storing as a string
-        addStringIfNonBlank(review, ReviewField.DBA_PAGES,
-                            bookData, DBDefinitions.KEY_PAGES);
+        addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PAGES);
 
-        addDateIfValid(review, ReviewField.DBA_READ_START,
+        addDateIfValid(review, DBDefinitions.KEY_READ_START,
                        bookData, DBDefinitions.KEY_READ_START);
 
-        String readEnd = addDateIfValid(review, ReviewField.DBA_READ_END,
+        String readEnd = addDateIfValid(review, DBDefinitions.KEY_READ_END,
                                         bookData, DBDefinitions.KEY_READ_END);
 
-        Double rating = addDoubleIfPresent(review, ReviewField.DBA_RATING,
+        Double rating = addDoubleIfPresent(review, DBDefinitions.KEY_RATING,
                                            bookData, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
@@ -487,9 +482,9 @@ class ImportLegacyTask
          * Build the publication date based on the components
          */
         String pubDate = GoodreadsManager.buildDate(review,
-                                                    ReviewField.PUB_YEAR,
-                                                    ReviewField.PUB_MONTH,
-                                                    ReviewField.PUB_DAY,
+                                                    ReviewField.PUBLICATION_YEAR,
+                                                    ReviewField.PUBLICATION_MONTH,
+                                                    ReviewField.PUBLICATION_DAY,
                                                     null);
         if (pubDate != null && !pubDate.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
@@ -661,7 +656,7 @@ class ImportLegacyTask
     }
 
     /**
-     * Add the value to the list if the value is actually 'real'.
+     * Add the value to the list if the value is non-blank.
      *
      * @param list  to add to
      * @param value to add
@@ -680,6 +675,21 @@ class ImportLegacyTask
      * Copy a non-blank string to the book bundle.
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
+                                     @NonNull final Bundle bookData,
+                                     @NonNull final String key) {
+
+        if (source.containsKey(key)) {
+            String val = source.getString(key);
+            if (val != null && !val.isEmpty()) {
+                bookData.putString(key, val);
+            }
+        }
+    }
+
+    /**
+     * Copy a non-blank string to the book bundle.
+     */
+    private void addStringIfNonBlank(@NonNull final Bundle source,
                                      @NonNull final String sourceKey,
                                      @NonNull final Bundle bookData,
                                      @NonNull final String destKey) {
@@ -689,6 +699,19 @@ class ImportLegacyTask
             if (val != null && !val.isEmpty()) {
                 bookData.putString(destKey, val);
             }
+        }
+    }
+
+    /**
+     * Copy a Long value to the book bundle.
+     */
+    private void addLongIfPresent(@NonNull final Bundle source,
+                                  @NonNull final Bundle bookData,
+                                  @NonNull final String key) {
+
+        if (source.containsKey(key)) {
+            long val = source.getLong(key);
+            bookData.putLong(key, val);
         }
     }
 

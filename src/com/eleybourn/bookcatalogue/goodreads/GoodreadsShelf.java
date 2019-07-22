@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.goodreads.api.ShelvesListApiHandler;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 public class GoodreadsShelf {
 
@@ -19,6 +20,28 @@ public class GoodreadsShelf {
 
     public GoodreadsShelf(@NonNull final Bundle bundle) {
         mBundle = bundle;
+    }
+
+    /**
+     * Create canonical representation based on the best guess as to the Goodreads rules.
+     *
+     * @param name to bless
+     *
+     * @return blessed name
+     */
+    public static String canonicalizeName(@NonNull final String name) {
+
+        StringBuilder canonical = new StringBuilder();
+        String lcName = name.toLowerCase(LocaleUtils.getPreferredLocal());
+        for (int i = 0; i < lcName.length(); i++) {
+            char c = lcName.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                canonical.append(c);
+            } else {
+                canonical.append('-');
+            }
+        }
+        return canonical.toString();
     }
 
     @NonNull

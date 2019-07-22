@@ -181,7 +181,7 @@ public class BooklistMappedCursorRow
 
             return formatRowGroup(context, level, text);
 
-        } catch (CursorIndexOutOfBoundsException e) {
+        } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             Logger.warnWithStackTrace(this,
                                       "columnIndex=" + columnIndex,
                                       "level=" + level,

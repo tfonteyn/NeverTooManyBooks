@@ -53,13 +53,17 @@ public interface BackupContainer {
             throws IOException;
 
     /**
-     * @return the version of the underlying archiver used to write / required to read archives
+     * Get the version of the underlying archiver used to write / required to read archives.
+     *
+     * @return the version
      */
     @SuppressWarnings("SameReturnValue")
     int getVersion();
 
     /**
-     * @return the *minimum* version of the archive that the current reader can still handle.
+     * Get the *minimum* version of the archive that the current reader can still handle.
+     *
+     * @return the *minimum* version
      */
     @SuppressWarnings("SameReturnValue")
     int canReadVersion();

@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -86,8 +85,7 @@ public class Editions
      */
     @NonNull
     private ArrayList<Edition> parseDoc() {
-//        String pageUrl = mDoc.location();
-        String pageUrl = Objects.requireNonNull(mPageUrl);
+        String pageUrl = mDoc.location();
 
         if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.

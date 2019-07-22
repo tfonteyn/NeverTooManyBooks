@@ -46,6 +46,7 @@ public interface BackupReader
      * @param listener Listener to receive progress information.
      *
      * @throws IOException on failure
+     * @throws ImportException on failure
      */
     void restore(@NonNull ImportOptions settings,
                  @NonNull ProgressListener listener)

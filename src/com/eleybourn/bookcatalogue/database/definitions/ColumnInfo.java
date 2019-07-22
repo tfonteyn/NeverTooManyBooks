@@ -14,6 +14,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  */
 public class ColumnInfo {
 
+
     /**
      * 'actual' types in the database.
      *

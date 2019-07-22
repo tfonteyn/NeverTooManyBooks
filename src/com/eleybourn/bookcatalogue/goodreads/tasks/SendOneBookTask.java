@@ -33,7 +33,6 @@ public class SendOneBookTask
 
     @NonNull
     private final String mTaskDescription;
-    private final int mTaskId = R.id.TASK_ID_GR_SEND_ONE_BOOK;
     private final long mBookId;
     @Nullable
     private
@@ -80,7 +79,8 @@ public class SendOneBookTask
     @UiThread
     protected void onPostExecute(@NonNull final Integer result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_SEND_ONE_BOOK, mException == null,
+                                               result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

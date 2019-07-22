@@ -22,12 +22,9 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
  * Before we can access Goodreads, we must authorize our application to do so.
- *
  */
 public class RequestAuthTask
         extends AsyncTask<Void, Object, Integer> {
-
-    private final int mTaskId = R.id.TASK_ID_GR_REQUEST_AUTH;
 
     private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
 
@@ -87,7 +84,8 @@ public class RequestAuthTask
     @UiThread
     protected void onPostExecute(@Nullable final Integer result) {
         if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
+            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_REQUEST_AUTH, mException == null,
+                                               result, mException);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",

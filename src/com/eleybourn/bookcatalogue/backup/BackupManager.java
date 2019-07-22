@@ -43,6 +43,7 @@ public final class BackupManager {
     /** see {@link #isArchive(File)}. */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
 
+    /** Constructor. */
     private BackupManager() {
     }
 

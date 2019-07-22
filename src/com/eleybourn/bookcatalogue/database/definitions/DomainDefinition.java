@@ -109,6 +109,7 @@ public class DomainDefinition
         }
     }
 
+    /** {@link Parcelable}. */
     private DomainDefinition(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         name = in.readString();
@@ -212,6 +213,16 @@ public class DomainDefinition
      */
     public boolean isText() {
         return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
+    }
+
+    /**
+     * Get the type of this domain.
+     *
+     * @return one of ColumnInfo#TYPE*
+     */
+    @NonNull
+    public String getType() {
+        return mType;
     }
 
     public boolean isPrePreparedOrderBy() {

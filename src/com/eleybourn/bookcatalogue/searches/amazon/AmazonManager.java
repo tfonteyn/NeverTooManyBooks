@@ -65,6 +65,7 @@ public final class AmazonManager
     private static final Throttler THROTTLER = new Throttler();
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
     private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
+    public static final String UTF_8 = "UTF-8";
 
     /**
      * Constructor.
@@ -93,7 +94,7 @@ public final class AmazonManager
         String extra = "";
         if (!cAuthor.isEmpty()) {
             try {
-                extra += "&field-author=" + URLEncoder.encode(cAuthor, "UTF-8");
+                extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(AmazonManager.class, e, "Unable to add author to URL");
             }
@@ -101,7 +102,7 @@ public final class AmazonManager
 
         if (!cSeries.isEmpty()) {
             try {
-                extra += "&field-keywords=" + URLEncoder.encode(cSeries, "UTF-8");
+                extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(AmazonManager.class, e, "Unable to add series to URL");
             }
@@ -171,8 +172,8 @@ public final class AmazonManager
             query = "isbn=" + isbn;
 
         } else if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            query = "author=" + URLEncoder.encode(author, "UTF-8")
-                    + "&title=" + URLEncoder.encode(title, "UTF-8");
+            query = "author=" + URLEncoder.encode(author, UTF_8)
+                    + "&title=" + URLEncoder.encode(title, UTF_8);
 
         } else {
             return new Bundle();
