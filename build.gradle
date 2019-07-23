@@ -121,19 +121,19 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.3'
     //TODO: apache http is removed from API: 23
     // pull apache http explicitly. Signpost would get an older version otherwise.
-    implementation 'org.apache.httpcomponents:httpcore:4.4.11'
-    implementation 'org.apache.httpcomponents:httpmime:4.5.9'
+//    implementation 'org.apache.httpcomponents:httpcore:4.4.11'
+//    implementation 'org.apache.httpcomponents:httpmime:4.5.9'
     // but SignPost requires/favours apache http client.
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
-    implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
+//    implementation 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
     //
     implementation 'org.apache.commons:commons-compress:1.18'
     implementation 'commons-codec:commons-codec:1.12'
 }
 
-configurations {
-    all {
-        exclude module: 'commons-logging'
-    }
-}
+//configurations {
+//    all {
+//        exclude module: 'commons-logging'
+//    }
+//}
 

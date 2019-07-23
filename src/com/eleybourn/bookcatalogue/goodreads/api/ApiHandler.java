@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
  * @author Philip Warner
  */
 abstract class ApiHandler
-        extends ApiHandlerApache {
+        extends ApiHandlerNative {
 
     /**
      * Constructor.

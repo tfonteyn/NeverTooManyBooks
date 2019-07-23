@@ -54,6 +54,7 @@ import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
+import com.eleybourn.bookcatalogue.utils.Throttler;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -65,7 +66,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <br>
  * <p>
  * REST api: <a href="http://www.librarything.com/services/rest/documentation/1.1/">
- *     http://www.librarything.com/services/rest/documentation/1.1/</a>
+ * http://www.librarything.com/services/rest/documentation/1.1/</a>
  * <p>
  * Details via ISBN:
  * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork
@@ -117,6 +118,9 @@ public class LibraryThingManager
     /** to control access to sLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
+    /** Can only send requests at a throttled speed. */
+    @NonNull
+    private static final Throttler THROTTLER = new Throttler();
     /**
      * Stores the last time an API request was made to avoid breaking API rules.
      * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK)
@@ -153,27 +157,30 @@ public class LibraryThingManager
      * another two seconds etc.
      */
     private static void waitUntilRequestAllowed() {
-        long now = System.currentTimeMillis();
-        long wait;
-        synchronized (LAST_REQUEST_TIME_LOCK) {
-            wait = 1_000 - (now - sLastRequestTime);
-            //
-            // sLastRequestTime must be updated while synchronized. As soon as this
-            // block is left, another block may perform another update.
-            //
-            if (wait < 0) {
-                wait = 0;
-            }
-            sLastRequestTime = now + wait;
-        }
+        //TEST: run more tests checking the logs. Must be certain this is ok.
+        THROTTLER.waitUntilRequestAllowed();
 
-        if (wait > 0) {
-            try {
-                Log.d("LT", "wait=" + wait);
-                Thread.sleep(wait);
-            } catch (@NonNull final InterruptedException ignored) {
-            }
-        }
+//        long now = System.currentTimeMillis();
+//        long wait;
+//        synchronized (LAST_REQUEST_TIME_LOCK) {
+//            wait = 1_000 - (now - sLastRequestTime);
+//            //
+//            // sLastRequestTime must be updated while synchronized. As soon as this
+//            // block is left, another block may perform another update.
+//            //
+//            if (wait < 0) {
+//                wait = 0;
+//            }
+//            sLastRequestTime = now + wait;
+//        }
+//
+//        if (wait > 0) {
+//            try {
+//                Log.d("LT", "wait=" + wait);
+//                Thread.sleep(wait);
+//            } catch (@NonNull final InterruptedException ignored) {
+//            }
+//        }
     }
 
 

@@ -37,10 +37,6 @@ TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter
 
 FIXME: rewrite the GoogleBooks xml handlers by merging them.
 
-TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
-Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
-https://github.com/mttkay/signpost
-
 Issues checked: 813 down to 677 (inc)
 
 New fields:

@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -44,8 +43,6 @@ import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
@@ -80,6 +77,7 @@ import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
+import com.eleybourn.bookcatalogue.utils.Throttler;
 
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
@@ -123,6 +121,9 @@ public class GoodreadsManager
     /** error string. */
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
+    /** Can only send requests at a throttled speed. */
+    @NonNull
+    private static final Throttler THROTTLER = new Throttler();
     /** Set to {@code true} when the credentials have been successfully verified. */
     public static boolean sHasValidCredentials;
     /** Cached when credentials have been verified. */
@@ -166,18 +167,18 @@ public class GoodreadsManager
      */
     public GoodreadsManager() {
         // Apache Commons HTTP
-        mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
-        mProvider = new CommonsHttpOAuthProvider(
-                BASE_URL + "/oauth/request_token",
-                BASE_URL + "/oauth/access_token",
-                BASE_URL + "/oauth/authorize?mobile=1");
-
-        // Native
-//        mConsumer = new DefaultOAuthConsumer(DEV_KEY, DEV_SECRET);
-//        mProvider = new DefaultOAuthProvider(
+//        mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
+//        mProvider = new CommonsHttpOAuthProvider(
 //                BASE_URL + "/oauth/request_token",
 //                BASE_URL + "/oauth/access_token",
 //                BASE_URL + "/oauth/authorize?mobile=1");
+
+        // Native
+        mConsumer = new DefaultOAuthConsumer(DEV_KEY, DEV_SECRET);
+        mProvider = new DefaultOAuthProvider(
+                BASE_URL + "/oauth/request_token",
+                BASE_URL + "/oauth/access_token",
+                BASE_URL + "/oauth/authorize?mobile=1");
 
         // get the credentials
         hasCredentials();
@@ -206,26 +207,28 @@ public class GoodreadsManager
      * another two seconds etc.
      */
     public static void waitUntilRequestAllowed() {
+        //TEST: run more tests checking the logs. Must be certain this is ok.
+        THROTTLER.waitUntilRequestAllowed();
 
-        long now = System.currentTimeMillis();
-        long wait;
-        synchronized (LAST_REQUEST_TIME_LOCK) {
-            wait = 1_000 - (now - sLastRequestTime);
-
-            // sLastRequestTime must be updated while synchronized. As soon as this
-            // block is left, another block may perform another update.
-            if (wait < 0) {
-                wait = 0;
-            }
-            sLastRequestTime = now + wait;
-        }
-        if (wait > 0) {
-            try {
-                Log.d("GR", "wait=" + wait);
-                Thread.sleep(wait);
-            } catch (@NonNull final InterruptedException ignored) {
-            }
-        }
+//        long now = System.currentTimeMillis();
+//        long wait;
+//        synchronized (LAST_REQUEST_TIME_LOCK) {
+//            wait = 1_000 - (now - sLastRequestTime);
+//
+//            // sLastRequestTime must be updated while synchronized. As soon as this
+//            // block is left, another block may perform another update.
+//            if (wait < 0) {
+//                wait = 0;
+//            }
+//            sLastRequestTime = now + wait;
+//        }
+//        if (wait > 0) {
+//            try {
+//                Log.d("GR", "wait=" + wait);
+//                Thread.sleep(wait);
+//            } catch (@NonNull final InterruptedException ignored) {
+//            }
+//        }
     }
 
     /**
