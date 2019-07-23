@@ -118,7 +118,7 @@ public class ShelvesListApiHandler
         String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());
 
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, handler, true);
+        executeGet(url, true, handler);
 
         return mFilters.getData();
     }
@@ -177,21 +177,21 @@ public class ShelvesListApiHandler
 
         mFilters
                 //<GoodreadsResponse>
-                .s(XML_GOODREADS_RESPONSE)
+                .s(XmlTags.XML_GOODREADS_RESPONSE)
                 // ...
                 // <shelves start='1' end='29' total='29'>
-                .s(XML_SHELVES).asArray(ShelvesField.SHELVES)
-                .longAttr(XML_START, ShelvesField.START)
-                .longAttr(XML_END, ShelvesField.END)
-                .longAttr(XML_TOTAL, ShelvesField.TOTAL)
+                .s(XmlTags.XML_SHELVES).asArray(ShelvesField.SHELVES)
+                .longAttr(XmlTags.XML_START, ShelvesField.START)
+                .longAttr(XmlTags.XML_END, ShelvesField.END)
+                .longAttr(XmlTags.XML_TOTAL, ShelvesField.TOTAL)
                 //  <user_shelf>
-                .s(XML_USER_SHELF).asArrayItem()
+                .s(XmlTags.XML_USER_SHELF).asArrayItem()
                 //      <exclusive_flag type='boolean'>false</exclusive_flag>
-                .booleanBody(XML_EXCLUSIVE_FLAG, ShelvesField.EXCLUSIVE)
+                .booleanBody(XmlTags.XML_EXCLUSIVE_FLAG, ShelvesField.EXCLUSIVE)
                 //      <id type='integer'>26567684</id>
-                .longBody(XML_ID, ShelvesField.ID)
+                .longBody(XmlTags.XML_ID, ShelvesField.ID)
                 //      <name>read</name>
-                .stringBody(XML_NAME, ShelvesField.NAME)
+                .stringBody(XmlTags.XML_NAME, ShelvesField.NAME)
                 .pop()
                 .done();
     }

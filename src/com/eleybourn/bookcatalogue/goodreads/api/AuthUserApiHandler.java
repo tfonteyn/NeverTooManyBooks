@@ -72,7 +72,7 @@ public class AuthUserApiHandler
         try {
             // Get a handler and run query.
             XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-            executePost(URL, null, handler, true);
+            executePost(URL, null, true, handler);
             // Return user found.
             return mUserId;
 
@@ -106,11 +106,11 @@ public class AuthUserApiHandler
      * </pre>
      */
     private void buildFilters() {
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER)
                  .setStartAction(context -> mUserId
-                         = Long.parseLong(context.getAttributes().getValue("", XML_ID)));
+                         = Long.parseLong(context.getAttributes().getValue("", XmlTags.XML_ID)));
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER, XML_NAME)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER, XmlTags.XML_NAME)
                  .setEndAction(context -> mUsername
                          = context.getBody());
     }

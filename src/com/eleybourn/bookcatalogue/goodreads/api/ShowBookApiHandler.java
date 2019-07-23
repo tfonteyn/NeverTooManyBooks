@@ -150,7 +150,7 @@ public abstract class ShowBookApiHandler
      * Add a shelf to the array.
      */
     private final XmlHandler mHandleShelf = context -> {
-        String name = context.getAttributes().getValue(XML_NAME);
+        String name = context.getAttributes().getValue(XmlTags.XML_NAME);
         if (name != null) {
             mShelves.add(name);
         }
@@ -174,7 +174,7 @@ public abstract class ShowBookApiHandler
      */
     private final XmlHandler mHandlePopularShelf = context -> {
         if (mGenre == null) {
-            String name = context.getAttributes().getValue(XML_NAME);
+            String name = context.getAttributes().getValue(XmlTags.XML_NAME);
             if (name != null
                     && !GoodreadsShelf.VIRTUAL_TO_READ.equals(name)
                     && !GoodreadsShelf.VIRTUAL_CURRENTLY_READING.equals(name)
@@ -272,7 +272,7 @@ public abstract class ShowBookApiHandler
 
         // Get a handler and run the query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, handler, true);
+        executeGet(url, true, handler);
 
         // When we get here, the data has been collected but needs processing into standard form.
 
@@ -404,10 +404,10 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        // and if we do have an image, save it.
+        // and if we do have an image, save it using the Goodreads book ID as base name.
         if (bestImage != null) {
-            String name = mBookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
-            String fileSpec = ImageUtils.saveImage(bestImage, name,
+            long grBookId = mBookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+            String fileSpec = ImageUtils.saveImage(bestImage, String.valueOf(grBookId),
                                                    GoodreadsManager.FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> list =
@@ -617,105 +617,105 @@ public abstract class ShowBookApiHandler
      * </pre>
      */
     private void buildFilters() {
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_ID)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_GOODREADS_BOOK_ID);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_TITLE)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_TITLE)
                  .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS,
-                              XML_AUTHOR)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_AUTHORS,
+                              XmlTags.XML_AUTHOR)
                  .setStartAction(mHandleAuthorStart)
                  .setEndAction(mHandleAuthorEnd);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS,
-                              XML_SERIES_WORK)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_SERIES_WORKS,
+                              XmlTags.XML_SERIES_WORK)
                  .setStartAction(mHandleSeriesStart)
                  .setEndAction(mHandleSeriesEnd);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_ISBN)
                  .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN_13)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_ISBN_13)
                  .setEndAction(mHandleText, ShowBookFieldName.ISBN13);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ASIN)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_ASIN)
                  .setEndAction(mHandleText, DBDefinitions.KEY_ASIN);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IMAGE_URL)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_IMAGE_URL)
                  .setEndAction(mHandleText, ShowBookFieldName.IMAGE_URL);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SMALL_IMAGE_URL)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_SMALL_IMAGE_URL)
                  .setEndAction(mHandleText, ShowBookFieldName.SMALL_IMAGE_URL);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_YEAR)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_PUBLICATION_YEAR)
                  .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_MONTH)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_PUBLICATION_MONTH)
                  .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_DAY)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_PUBLICATION_DAY)
                  .setEndAction(mHandleLong, ShowBookFieldName.PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLISHER)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_PUBLISHER)
                  .setEndAction(mHandleText, DBDefinitions.KEY_PUBLISHER);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_COUNTRY_CODE)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_COUNTRY_CODE)
                  .setEndAction(mHandleText, ShowBookFieldName.COUNTRY_CODE);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_LANGUAGE)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_LANGUAGE)
                  .setEndAction(mHandleText, DBDefinitions.KEY_LANGUAGE);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IS_EBOOK)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_IS_EBOOK)
                  .setEndAction(mHandleBoolean, ShowBookFieldName.IS_EBOOK);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_DESCRIPTION)
                  .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
-                              XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_WORK,
+                              XmlTags.XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldName.WORK_ID);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
-                              XML_ORIGINAL_PUBLICATION_DAY)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_WORK,
+                              XmlTags.XML_ORIGINAL_PUBLICATION_DAY)
                  .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_DAY);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
-                              XML_ORIGINAL_PUBLICATION_MONTH)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_WORK,
+                              XmlTags.XML_ORIGINAL_PUBLICATION_MONTH)
                  .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_MONTH);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
-                              XML_ORIGINAL_PUBLICATION_YEAR)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_WORK,
+                              XmlTags.XML_ORIGINAL_PUBLICATION_YEAR)
                  .setEndAction(mHandleLong, ShowBookFieldName.ORIG_PUBLICATION_YEAR);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK,
-                              XML_ORIGINAL_TITLE)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_WORK,
+                              XmlTags.XML_ORIGINAL_TITLE)
                  .setEndAction(mHandleText, ShowBookFieldName.ORIG_TITLE);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AVERAGE_RATING)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_AVERAGE_RATING)
                  .setEndAction(mHandleFloat, ShowBookFieldName.RATING);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_NUM_PAGES)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_NUM_PAGES)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_PAGES);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_FORMAT)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_FORMAT)
                  .setEndAction(mHandleText, DBDefinitions.KEY_FORMAT);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_URL)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_URL)
                  .setEndAction(mHandleText, ShowBookFieldName.BOOK_URL);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS,
-                              XML_AUTHOR, XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_AUTHORS,
+                              XmlTags.XML_AUTHOR, XmlTags.XML_ID)
                  .setEndAction(mHandleAuthorId);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AUTHORS,
-                              XML_AUTHOR, XML_NAME)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_AUTHORS,
+                              XmlTags.XML_AUTHOR, XmlTags.XML_NAME)
                  .setEndAction(mHandleAuthorName);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_POPULAR_SHELVES,
-                              XML_SHELF)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_POPULAR_SHELVES,
+                              XmlTags.XML_SHELF)
                  .setStartAction(mHandlePopularShelf);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
-                              XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_MY_REVIEW,
+                              XmlTags.XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldName.REVIEW_ID);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
-                              XML_SHELVES)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_MY_REVIEW,
+                              XmlTags.XML_SHELVES)
                  .setStartAction(mHandleShelvesStart);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_MY_REVIEW,
-                              XML_SHELVES, XML_SHELF)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_MY_REVIEW,
+                              XmlTags.XML_SHELVES, XmlTags.XML_SHELF)
                  .setStartAction(mHandleShelf);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS,
-                              XML_SERIES_WORK, XML_USER_POSITION)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_SERIES_WORKS,
+                              XmlTags.XML_SERIES_WORK, XmlTags.XML_USER_POSITION)
                  .setEndAction(mHandleSeriesPosition);
 
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS,
-                              XML_SERIES_WORK, XML_SERIES, XML_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_SERIES_WORKS,
+                              XmlTags.XML_SERIES_WORK, XmlTags.XML_SERIES, XmlTags.XML_ID)
                  .setEndAction(mHandleSeriesId);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_SERIES_WORKS,
-                              XML_SERIES_WORK, XML_SERIES, XML_TITLE)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK, XmlTags.XML_SERIES_WORKS,
+                              XmlTags.XML_SERIES_WORK, XmlTags.XML_SERIES, XmlTags.XML_TITLE)
                  .setEndAction(mHandleSeriesName);
     }
 

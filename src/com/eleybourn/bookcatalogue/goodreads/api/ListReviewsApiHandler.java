@@ -149,7 +149,7 @@ public class ListReviewsApiHandler
         final String url = String.format(URL, mManager.getDevKey(), page, perPage,
                                          mManager.getUserId());
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, handler, true);
+        executeGet(url, true, handler);
         return mFilters.getData();
     }
 
@@ -347,91 +347,91 @@ public class ListReviewsApiHandler
         mFilters = new SimpleXmlFilter(mRootFilter);
         mFilters
                 //<GoodreadsResponse>
-                .s(XML_GOODREADS_RESPONSE)
+                .s(XmlTags.XML_GOODREADS_RESPONSE)
                 //  <Request>
                 //      ...
                 //  </Request>
                 //  <reviews start="3" end="4" total="933">
-                .s(XML_REVIEWS).asArray(ReviewField.REVIEWS)
-                .longAttr(XML_START, ReviewField.START)
-                .longAttr(XML_END, ReviewField.END)
-                .longAttr(XML_TOTAL, ReviewField.TOTAL)
+                .s(XmlTags.XML_REVIEWS).asArray(ReviewField.REVIEWS)
+                .longAttr(XmlTags.XML_START, ReviewField.START)
+                .longAttr(XmlTags.XML_END, ReviewField.END)
+                .longAttr(XmlTags.XML_TOTAL, ReviewField.TOTAL)
                 //      <review>
-                .s(XML_REVIEW).asArrayItem()
+                .s(XmlTags.XML_REVIEW).asArrayItem()
                 //          <id>276860380</id>
-                .longBody(XML_ID, ReviewField.REVIEW_ID)
+                .longBody(XmlTags.XML_ID, ReviewField.REVIEW_ID)
                 //          <book>
-                .s(XML_BOOK)
+                .s(XmlTags.XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XML_ID, DBDefinitions.KEY_GOODREADS_BOOK_ID)
+                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_GOODREADS_BOOK_ID)
                 //              <isbn>0583120911</isbn>
-                .stringBody(XML_ISBN, DBDefinitions.KEY_ISBN)
+                .stringBody(XmlTags.XML_ISBN, DBDefinitions.KEY_ISBN)
                 //              <isbn13>9780583120913</isbn13>
-                .stringBody(XML_ISBN_13, ReviewField.ISBN13)
+                .stringBody(XmlTags.XML_ISBN_13, ReviewField.ISBN13)
                 //              ...
                 //              <title><![CDATA[The Dying Earth]]></title>
-                .stringBody(XML_TITLE, DBDefinitions.KEY_TITLE)
+                .stringBody(XmlTags.XML_TITLE, DBDefinitions.KEY_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
-                .stringBody(XML_IMAGE_URL, ReviewField.LARGE_IMAGE)
+                .stringBody(XmlTags.XML_IMAGE_URL, ReviewField.LARGE_IMAGE)
                 //              <small_image_url>
                 //      http://photo.goodreads.com/books/1294108593s/951750.jpg</small_image_url>
-                .stringBody(XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
+                .stringBody(XmlTags.XML_SMALL_IMAGE_URL, ReviewField.SMALL_IMAGE)
                 //              ...
                 //              <num_pages>159</num_pages>
-                .longBody(XML_NUM_PAGES, DBDefinitions.KEY_PAGES)
+                .longBody(XmlTags.XML_NUM_PAGES, DBDefinitions.KEY_PAGES)
                 //              <format></format>
-                .stringBody(XML_FORMAT, DBDefinitions.KEY_FORMAT)
+                .stringBody(XmlTags.XML_FORMAT, DBDefinitions.KEY_FORMAT)
                 //              <publisher></publisher>
-                .stringBody(XML_PUBLISHER, DBDefinitions.KEY_PUBLISHER)
+                .stringBody(XmlTags.XML_PUBLISHER, DBDefinitions.KEY_PUBLISHER)
                 //              <publication_day>20</publication_day>
-                .longBody(XML_PUBLICATION_DAY, ReviewField.PUBLICATION_DAY)
+                .longBody(XmlTags.XML_PUBLICATION_DAY, ReviewField.PUBLICATION_DAY)
                 //              <publication_year>1972</publication_year>
-                .longBody(XML_PUBLICATION_YEAR, ReviewField.PUBLICATION_YEAR)
+                .longBody(XmlTags.XML_PUBLICATION_YEAR, ReviewField.PUBLICATION_YEAR)
                 //              <publication_month>4</publication_month>
-                .longBody(XML_PUBLICATION_MONTH, ReviewField.PUBLICATION_MONTH)
+                .longBody(XmlTags.XML_PUBLICATION_MONTH, ReviewField.PUBLICATION_MONTH)
                 //              <description><![CDATA[]]></description>
-                .stringBody(XML_DESCRIPTION, DBDefinitions.KEY_DESCRIPTION)
+                .stringBody(XmlTags.XML_DESCRIPTION, DBDefinitions.KEY_DESCRIPTION)
                 //              ...
                 //              <authors>
-                .s(XML_AUTHORS).asArray(ReviewField.AUTHORS)
+                .s(XmlTags.XML_AUTHORS).asArray(ReviewField.AUTHORS)
                 //                  <author>
-                .s(XML_AUTHOR).asArrayItem()
+                .s(XmlTags.XML_AUTHOR).asArrayItem()
                 //                      <id>5376</id>
-                .longBody(XML_ID, DBDefinitions.KEY_FK_AUTHOR)
+                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_FK_AUTHOR)
                 //                      <name><![CDATA[Jack Vance]]></name>
-                .stringBody(XML_NAME, ReviewField.AUTHOR_NAME_GF)
+                .stringBody(XmlTags.XML_NAME, ReviewField.AUTHOR_NAME_GF)
                 //                      ...
                 //                  </author>
                 //              </authors>
                 //              ...
                 //          </book>
-                .popTo(XML_REVIEW)
+                .popTo(XmlTags.XML_REVIEW)
                 //          <rating>0</rating>
-                .doubleBody(XML_RATING, DBDefinitions.KEY_RATING)
+                .doubleBody(XmlTags.XML_RATING, DBDefinitions.KEY_RATING)
                 //          ...
                 //          <shelves>
-                .s(XML_SHELVES).asArray(ReviewField.SHELVES)
+                .s(XmlTags.XML_SHELVES).asArray(ReviewField.SHELVES)
                 //              <shelf name="sci-fi-fantasy" />
-                .s(XML_SHELF).asArrayItem()
-                .stringAttr(XML_NAME, ReviewField.SHELF)
-                .popTo(XML_REVIEW)
+                .s(XmlTags.XML_SHELF).asArrayItem()
+                .stringAttr(XmlTags.XML_NAME, ReviewField.SHELF)
+                .popTo(XmlTags.XML_REVIEW)
                 //              <shelf name="to-read" />
                 //          </shelves>
                 //          ...
                 //          <started_at></started_at>
-                .stringBody(XML_STARTED_AT, DBDefinitions.KEY_READ_START)
+                .stringBody(XmlTags.XML_STARTED_AT, DBDefinitions.KEY_READ_START)
                 //          <read_at></read_at>
-                .stringBody(XML_READ_AT, DBDefinitions.KEY_READ_END)
+                .stringBody(XmlTags.XML_READ_AT, DBDefinitions.KEY_READ_END)
                 //          <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
-                .s(XML_DATE_ADDED)
+                .s(XmlTags.XML_DATE_ADDED)
                 .stringBody(ReviewField.ADDED).setListener(mAddedListener).pop()
                 //          <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
-                .s(XML_DATE_UPDATED)
+                .s(XmlTags.XML_DATE_UPDATED)
                 .stringBody(ReviewField.UPDATED).setListener(mUpdatedListener).pop()
                 //          ...
                 //          <body><![CDATA[]]></body>
-                .stringBody(XML_BODY, DBDefinitions.KEY_NOTES).pop()
+                .stringBody(XmlTags.XML_BODY, DBDefinitions.KEY_NOTES).pop()
                 //          ...
                 //          <owned>0</owned>
                 //      </review>

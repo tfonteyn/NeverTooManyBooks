@@ -122,7 +122,7 @@ public class ReviewUpdateApiHandler
         }
 
         //XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executePost(url, parameters, null, true);
+        executePost(url, parameters, true, null);
     }
 
     /*

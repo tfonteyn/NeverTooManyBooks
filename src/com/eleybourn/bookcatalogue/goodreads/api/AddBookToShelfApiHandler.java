@@ -153,7 +153,7 @@ public class AddBookToShelfApiHandler
 
         // Use a parser based on the filters
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executePost(URL, parameters, handler, true);
+        executePost(URL, parameters, true, handler);
 
         return mReviewId;
     }
@@ -178,7 +178,7 @@ public class AddBookToShelfApiHandler
      */
     private void buildFilters() {
         // We only care about review-id:
-        XmlFilter.buildFilter(mRootFilter, XML_SHELF, XML_REVIEW_ID)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_SHELF, XmlTags.XML_REVIEW_ID)
                  .setEndAction(mHandleReviewId);
     }
 }

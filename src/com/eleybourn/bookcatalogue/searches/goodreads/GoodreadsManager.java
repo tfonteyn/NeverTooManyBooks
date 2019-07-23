@@ -40,9 +40,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpUriRequest;
-
+import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -58,6 +59,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.goodreads.AuthorizationException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelves;
@@ -140,7 +142,7 @@ public class GoodreadsManager
     @NonNull
     private static Long sLastRequestTime = 0L;
     /** OAuth helpers. */
-    private final CommonsHttpOAuthConsumer mConsumer;
+    private final OAuthConsumer mConsumer;
     /** OAuth helpers. */
     private final OAuthProvider mProvider;
     /** Cache this common handler. */
@@ -159,22 +161,23 @@ public class GoodreadsManager
     /**
      * Constructor.
      * <p>
-     * Original:
-     * BASE_URL + "/oauth/request_token",
-     * BASE_URL + "/oauth/access_token",
-     * BASE_URL + "/oauth/authorize"
-     * <p>
-     * 2019-06-05: <a href="https://www.goodreads.com/api/documentation">
+     * <a href="https://www.goodreads.com/api/documentation">
      * https://www.goodreads.com/api/documentation</a>
-     * <p>
-     * /oauth/authorize?mobile=1
      */
     public GoodreadsManager() {
+        // Apache Commons HTTP
         mConsumer = new CommonsHttpOAuthConsumer(DEV_KEY, DEV_SECRET);
         mProvider = new CommonsHttpOAuthProvider(
                 BASE_URL + "/oauth/request_token",
                 BASE_URL + "/oauth/access_token",
                 BASE_URL + "/oauth/authorize?mobile=1");
+
+        // Native
+//        mConsumer = new DefaultOAuthConsumer(DEV_KEY, DEV_SECRET);
+//        mProvider = new DefaultOAuthProvider(
+//                BASE_URL + "/oauth/request_token",
+//                BASE_URL + "/oauth/access_token",
+//                BASE_URL + "/oauth/authorize?mobile=1");
 
         // get the credentials
         hasCredentials();
@@ -327,7 +330,7 @@ public class GoodreadsManager
                 && sAccessSecret != null && !sAccessSecret.isEmpty();
     }
 
-    public void sign(@NonNull final HttpUriRequest request)
+    public void sign(@NonNull final Object request)
             throws IOException {
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
         try {
@@ -861,13 +864,13 @@ public class GoodreadsManager
      * Request authorization for this application, for the current user,
      * by going to the OAuth web page.
      *
-     * @throws OAuthNotAuthorizedException with GoodReads
-     * @throws IOException                 on other failures
+     * @throws AuthorizationException with GoodReads
+     * @throws IOException            on other failures
      * @author Philip Warner
      */
     @WorkerThread
     public void requestAuthorization()
-            throws OAuthNotAuthorizedException,
+            throws AuthorizationException,
                    IOException {
 
         String authUrl;
@@ -879,10 +882,14 @@ public class GoodreadsManager
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer,
                                                      GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);
+
         } catch (@NonNull final OAuthMessageSignerException
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
+
+        } catch (OAuthNotAuthorizedException e) {
+            throw new AuthorizationException(e);
         }
 
         //TEST: double check if this ever gives issues!
@@ -909,12 +916,12 @@ public class GoodreadsManager
      * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
-     * @throws OAuthNotAuthorizedException with GoodReads
-     * @throws IOException                 on other failures
+     * @throws AuthorizationException with GoodReads
+     * @throws IOException            on other failures
      */
     @WorkerThread
     public void handleAuthenticationAfterAuthorization()
-            throws OAuthNotAuthorizedException,
+            throws AuthorizationException,
                    IOException {
 
         // Get the temporarily saved request tokens.
@@ -941,6 +948,9 @@ public class GoodreadsManager
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
+
+        } catch (OAuthNotAuthorizedException e) {
+            throw new AuthorizationException(e);
         }
 
         // Cache and save the tokens
@@ -961,6 +971,5 @@ public class GoodreadsManager
     public enum ExportResult {
         error, sent, noIsbn, notFound, networkError
     }
-
 }
 

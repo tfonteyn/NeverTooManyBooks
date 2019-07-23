@@ -10,12 +10,11 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import oauth.signpost.exception.OAuthNotAuthorizedException;
-
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.goodreads.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -61,7 +60,7 @@ public class RequestAuthTask
             } catch (@NonNull final IOException e) {
                 Logger.error(this, e);
                 return R.string.gr_access_error;
-            } catch (@NonNull final OAuthNotAuthorizedException e) {
+            } catch (@NonNull final AuthorizationException e) {
                 return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_FAILED;
             }
         } else {

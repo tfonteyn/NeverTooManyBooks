@@ -8,11 +8,10 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import oauth.signpost.exception.OAuthNotAuthorizedException;
-
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
+import com.eleybourn.bookcatalogue.goodreads.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
@@ -39,7 +38,7 @@ public class AuthorizationResultCheckTask
             if (grManager.hasValidCredentials()) {
                 return true;
             }
-        } catch (@NonNull final OAuthNotAuthorizedException | IOException e) {
+        } catch (@NonNull final AuthorizationException | IOException e) {
             mException = e;
         }
         return false;

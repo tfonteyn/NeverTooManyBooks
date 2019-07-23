@@ -602,8 +602,8 @@ class ImportLegacyTask
             }
 
             if (thumbnail != null) {
-                String name = bookData.getString(DBDefinitions.KEY_GOODREADS_BOOK_ID, "");
-                String fileSpec = ImageUtils.saveImage(thumbnail, name,
+                long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
+                String fileSpec = ImageUtils.saveImage(thumbnail, String.valueOf(grBookId),
                                                        GoodreadsManager.FILENAME_SUFFIX + '_' + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
