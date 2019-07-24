@@ -153,8 +153,8 @@ public class FastScrollerOverlay
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         //API: 23
-//        return context.getResources().getColor(tv.resourceId, theme);
-        return context.getResources().getColor(tv.resourceId);
+        return context.getResources().getColor(tv.resourceId, theme);
+//        return context.getResources().getColor(tv.resourceId);
     }
 
     private static int getTextSize(@NonNull final Context context,

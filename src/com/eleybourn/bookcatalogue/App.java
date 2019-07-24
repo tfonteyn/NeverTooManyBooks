@@ -287,8 +287,8 @@ public class App
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         //API: 23
-//        return context.getResources().getColor(tv.resourceId, theme);
-        return context.getResources().getColor(tv.resourceId);
+        return context.getResources().getColor(tv.resourceId, theme);
+//        return context.getResources().getColor(tv.resourceId);
     }
 
     /**

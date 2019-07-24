@@ -39,7 +39,7 @@ android {
     //  5.0     21      89.3
     defaultConfig {
         applicationId "com.hardbacknutter.nevertomanybooks"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
     }
 
@@ -51,8 +51,6 @@ android {
                     'proguard-rules.pro'
         }
         debug {
-        }
-        devtest {
         }
     }
 

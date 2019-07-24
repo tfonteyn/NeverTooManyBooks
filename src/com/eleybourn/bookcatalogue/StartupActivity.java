@@ -24,7 +24,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.Html;
@@ -126,23 +125,9 @@ public class StartupActivity
         // get our ViewModel; we init in mStartupStage == 1.
         mModel = ViewModelProviders.of(this).get(StartupViewModel.class);
 
-        // running on Android 6+ -> request Permissions
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!initStorage()) {
-                // we asked for permissions. TBC in onRequestPermissionsResult
-                return;
-            }
-        } else {
-            // older Android, simply move forward as the permissions will have
-            // been requested at install time. The SecurityException will never be thrown
-            // but the API requires catching it.
-            try {
-                int msgId = StorageUtils.initSharedDirectories();
-                if (msgId != 0) {
-                    UserMessage.show(this, msgId);
-                }
-            } catch (@NonNull final SecurityException ignore) {
-            }
+        if (!initStorage()) {
+            // we asked for permissions. TBC in onRequestPermissionsResult
+            return;
         }
 
         startNextStage();
