@@ -25,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:ignore="SelectableText"
-        tools:text="Book Title goes here"
+        tools:text="Book Title will be here"
         />
 
     <AutoCompleteTextView
@@ -33,27 +33,19 @@
         style="@style/personalNameTextEntry"
         android:layout_marginStart="@dimen/indent1"
         android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toStartOf="@id/add"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         />
 
     <Button
-        android:id="@+id/add"
+        android:id="@+id/btn_add"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/btn_confirm_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/author"
         app:layout_constraintTop_toBottomOf="@id/title"
-        />
-
-    <View
-        android:id="@+id/list_divider"
-        style="@style/SectionDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
         />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -63,7 +55,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_divider"
+        app:layout_constraintTop_toBottomOf="@id/btn_add"
         tools:listitem="@layout/row_edit_author_list"
         />
 

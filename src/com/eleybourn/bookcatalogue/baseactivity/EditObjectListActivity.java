@@ -32,7 +32,6 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -81,7 +80,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /** The adapter for the list. */
     protected RecyclerViewAdapterBase mListAdapter;
     /** Row ID... mainly used (if list is from a book) to know if the object is new. */
-    protected long mRowId = 0;
+    protected long mRowId;
+    /** Displayed for user reference only. */
     @Nullable
     private String mBookTitle;
     /** Drag and drop support for the list view. */
@@ -116,13 +116,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(layoutManager);
-        listView.addItemDecoration(
-                new DividerItemDecoration(this, layoutManager.getOrientation()));
         listView.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = createListAdapter(mList,
-                                         (viewHolder) -> mItemTouchHelper.startDrag(viewHolder));
+        mListAdapter = createListAdapter(mList, viewHolder ->
+                mItemTouchHelper.startDrag(viewHolder));
         listView.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
@@ -137,11 +135,13 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             titleView.setText(mBookTitle);
         }
 
-        findViewById(R.id.add).setOnClickListener(this::onAdd);
+        findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
     }
 
     /**
-     * get the specific list adapter from the child class.
+     * Get the specific adapter from the child class.
+     *
+     * @return adapter
      */
     protected abstract RecyclerViewAdapterBase
     createListAdapter(@NonNull ArrayList<T> list,
@@ -152,7 +152,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      *
      * @param target The view that was clicked ('add' button).
      */
-    protected abstract void onAdd(@NonNull final View target);
+    protected abstract void onAdd(@NonNull View target);
 
     @Override
     public void onBackPressed() {
