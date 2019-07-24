@@ -154,7 +154,7 @@ public class BookFragment
         mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
 
         // ENHANCE: could probably be replaced by a ViewPager
-        // finally, enable the listener for flings
+        // enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 

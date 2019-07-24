@@ -224,12 +224,6 @@ public class FTSSearchActivity
         mTitleSearchText = mTitleView.getText().toString().trim();
         mKeywordsSearchText = mKeywordsView.getText().toString().trim();
 
-        // Save time to log how long query takes.
-        long t0;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            t0 = System.nanoTime();
-        }
-
         // Get the cursor
         String tmpMsg = null;
         try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
@@ -239,10 +233,6 @@ public class FTSSearchActivity
             if (cursor != null) {
                 int count = cursor.getCount();
                 tmpMsg = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    tmpMsg += "\n in " + (System.nanoTime() - t0) + "nano)";
-                }
                 mBookIdsFound = new ArrayList<>(cursor.getCount());
                 while (cursor.moveToNext()) {
                     mBookIdsFound.add(cursor.getLong(0));

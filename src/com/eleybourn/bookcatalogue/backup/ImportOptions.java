@@ -69,8 +69,12 @@ public class ImportOptions
         this.file = file;
     }
 
-    /** {@link Parcelable}. */
-    protected ImportOptions(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private ImportOptions(@NonNull final Parcel in) {
         what = in.readInt();
         if (in.readInt() != 0) {
             file = new File(in.readString());

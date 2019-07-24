@@ -77,13 +77,13 @@ public class AuthorWorksModel
     public void delTocEntry(@NonNull final TocEntry item) {
         Objects.requireNonNull(mTocEntries);
         switch (item.getType()) {
-            case TocEntry.TYPE_TOC:
+            case Toc:
                 if (mDb.deleteTocEntry(item.getId()) == 1) {
                     mTocEntries.remove(item);
                 }
                 break;
 
-            case TocEntry.TYPE_BOOK:
+            case Book:
                 if (mDb.deleteBook(item.getId()) == 1) {
                     mTocEntries.remove(item);
                     mAtLeastOneBookDeleted = true;

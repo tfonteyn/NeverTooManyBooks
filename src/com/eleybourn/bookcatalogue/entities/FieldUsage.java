@@ -26,7 +26,6 @@ public class FieldUsage {
     @NonNull
     public Usage usage;
 
-
     /**
      * Constructor.
      *

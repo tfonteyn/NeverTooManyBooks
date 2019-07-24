@@ -70,27 +70,29 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
+ * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
- * in backup archives (but can still read them from archives/database upgrades).
- * The database table now consists of a PK id, and a UUID column
- * The UUID serves as the name of the SharedPreference which describes the style.
- * Builtin styles are not stored in the database, and (internally) use a UUID==null
- * and negative ID's.
- * Every setting in a style is backed by a {@link PPref} which handles the storage of that setting.
- * *All* style settings are private to a style, there is no inheritance of global settings.
+ * in backup archives (but can still read them from archives/database upgrades).<br>
+ * The database table now consists of a PK id, and a UUID column.<br>
+ * The UUID serves as the name of the SharedPreference which describes the style.<br>
+ * Builtin styles are not stored in the database and (internally) use negative ID's and
+ * a hardcoded UUID.<br>
+ * Every setting in a style is backed by a {@link PPref} which handles the storage
+ * of that setting.<br>
+ * *All* style settings are private to a style, there is no inheritance of global settings.<br>
+ * <p>
  * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
+ * <p>
  * How to add a new Group:
- * <p>
- * 1. add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX
- * <p>
- * 2. if necessary add new domain to {@link DBDefinitions }
- * <p>
- * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
- * <p>
- * 4. modify {@link BooklistAdapter} ; If it is just a string field,
- * then use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.
+ * <ol>
+ * <li>add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX</li>
+ * <li>if necessary add new domain to {@link DBDefinitions }</li>
+ * <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
+ * <li>modify {@link BooklistAdapter} ; If it is just a string field,
+ * then use a {@link BooklistAdapter} .GenericStringHolder}, otherwise add a new holder.</li>
+ * </ol>
  * Need to at least modify {@link BooklistAdapter} #createHolder
  *
  * @author Philip Warner
@@ -126,7 +128,6 @@ public class BooklistStyle
     public static final int EXTRAS_AUTHOR = 1 << 4;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_ISBN = 1 << 5;
-
 
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK =
@@ -307,24 +308,28 @@ public class BooklistStyle
         initPrefs();
     }
 
-    /** {@link Parcelable}. */
-    protected BooklistStyle(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private BooklistStyle(@NonNull final Parcel in) {
         this(in, false, null);
     }
 
     /**
      * Custom Parcelable constructor which allows cloning/new.
      *
-     * @param in      Parcel to read the object from
+     * @param in      Parcel to construct the object from
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
      * @param context Current context, for accessing resources,
      *                will be {@code null} when doNew==false !
      */
-    protected BooklistStyle(@NonNull final Parcel in,
-                            final boolean isNew,
-                            @Nullable final Context context) {
+    private BooklistStyle(@NonNull final Parcel in,
+                          final boolean isNew,
+                          @Nullable final Context context) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
@@ -687,7 +692,9 @@ public class BooklistStyle
     }
 
     /**
-     * @return scaling factor to apply to text size if needed.
+     * Get the scaling factor to apply to text size if needed.
+     *
+     * @return scale
      */
     public float getScaleFactor() {
         switch (mScaleFontSize.get()) {
@@ -711,7 +718,9 @@ public class BooklistStyle
     }
 
     /**
-     * @return scaling factor to apply to images, or zero if images should not be shown.
+     * Get the scaling factor to apply to images, or zero if images should not be shown.
+     *
+     * @return scale
      */
     public int getThumbnailScaleFactor() {
         if (mExtraShowThumbnails.isFalse()) {
@@ -920,45 +929,45 @@ public class BooklistStyle
      *
      * @see Serializable
      */
-    private void readObject(@NonNull final ObjectInputStream in)
+    private void readObject(@NonNull final ObjectInputStream is)
             throws IOException, ClassNotFoundException {
         // pre-v200 we did not have a UUID, create one so the prefs file will be written.
         mUuid = createUniqueName();
         initPrefs();
 
-        in.defaultReadObject();
+        is.defaultReadObject();
 
-        Object object = in.readObject();
+        Object object = is.readObject();
         long version = 0;
         if (object instanceof Long) {
             // It's the version
             version = (Long) object;
             // Get the next object
-            object = in.readObject();
+            object = is.readObject();
         } // else it's a pre-version object, just use it
 
         SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
 
-        Boolean legacyThumbnailScale = (Boolean) in.readObject();
+        Boolean legacyThumbnailScale = (Boolean) is.readObject();
         // Boolean: null=='use-defaults', false='normal', true='large'
         if (legacyThumbnailScale == null) {
             mThumbnailScale.set(ed, ImageUtils.SCALE_SMALL);
         } else {
-            mThumbnailScale.set(ed,
-                                legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM : ImageUtils.SCALE_SMALL);
+            mThumbnailScale.set(ed, legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM
+                                                         : ImageUtils.SCALE_SMALL);
         }
 
-        mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
-        mExtraShowLocation.set(ed, (Boolean) in.readObject());
-        mExtraShowPublisher.set(ed, (Boolean) in.readObject());
-        mExtraShowAuthor.set(ed, (Boolean) in.readObject());
+        mExtraShowBookshelves.set(ed, (Boolean) is.readObject());
+        mExtraShowLocation.set(ed, (Boolean) is.readObject());
+        mExtraShowPublisher.set(ed, (Boolean) is.readObject());
+        mExtraShowAuthor.set(ed, (Boolean) is.readObject());
 
-        //	public static final int FILTER_READ = 1; => true
-        //	public static final int FILTER_UNREAD = 2; => false
-        //	public static final int FILTER_READ_AND_UNREAD = 3; => not set
-        Integer legacyExtraReadUnreadAll = (Integer) in.readObject();
+        // public static final int FILTER_READ = 1; => true
+        // public static final int FILTER_UNREAD = 2; => false
+        // public static final int FILTER_READ_AND_UNREAD = 3; => not set
+        Integer legacyExtraReadUnreadAll = (Integer) is.readObject();
         switch (legacyExtraReadUnreadAll) {
             case 1:
                 legacyExtraReadUnreadAll = BooleanFilter.P_TRUE;
@@ -973,7 +982,7 @@ public class BooklistStyle
         mFilterRead.set(ed, legacyExtraReadUnreadAll);
 
         // v1 'condensed' was a Boolean.
-        Boolean legacyCondensed = (Boolean) in.readObject();
+        Boolean legacyCondensed = (Boolean) is.readObject();
         // Boolean: null=='use-defaults', false='normal', true='condensed'
         if (legacyCondensed == null) {
             mScaleFontSize.set(ed, TEXT_SCALE_MEDIUM);
@@ -983,13 +992,13 @@ public class BooklistStyle
 
         // v2
         if (version > 1) {
-            mName = (String) in.readObject();
+            mName = (String) is.readObject();
             mDisplayName.set(ed, mName);
         }
 
         // v3 Added mShowHeaderInfo as a Boolean
         if (version == 3) {
-            Boolean isSet = (Boolean) in.readObject();
+            Boolean isSet = (Boolean) is.readObject();
             if (isSet != null) {
                 mShowHeaderInfo.set(ed, isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
             }
@@ -997,7 +1006,7 @@ public class BooklistStyle
 
         // v4 Changed mShowHeaderInfo from Boolean to Integer
         if (version > 3) {
-            Integer i = (Integer) in.readObject();
+            Integer i = (Integer) is.readObject();
             if (i != null) {
                 // incoming has extra unused bits, strip those off.
                 mShowHeaderInfo.set(ed, i & SUMMARY_SHOW_ALL);

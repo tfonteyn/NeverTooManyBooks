@@ -64,9 +64,13 @@ public class Site
     }
 
     /**
+     * {@link Parcelable} Constructor.
+     *
      * Reminder: this is IPC.. so don't load prefs!
+     *
+     * @param in Parcel to construct the object from
      */
-    Site(@NonNull final Parcel in) {
+    private Site(@NonNull final Parcel in) {
         id = in.readInt();
         mName = SearchSites.getName(id);
         mEnabled = in.readInt() != 0;

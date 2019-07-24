@@ -153,8 +153,12 @@ public class Series
         }
     }
 
-    /** {@link Parcelable}. */
-    protected Series(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private Series(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
@@ -170,6 +174,7 @@ public class Series
      *
      * @return the series
      */
+    @NonNull
     public static Series fromString(@NonNull final String fromString) {
         Matcher matcher = FROM_STRING_PATTERN.matcher(fromString);
         if (matcher.find()) {

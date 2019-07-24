@@ -219,21 +219,7 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         Locale locale = LocaleUtils.from(getContext());
         // Get all known authors and build a Set of the names
-        final ArrayList<String> authors = mBookSearchBaseModel.getDb().getAuthorNames(
-                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-
-        final Set<String> uniqueNames = new HashSet<>(authors.size());
-        for (String s : authors) {
-            uniqueNames.add(s.toUpperCase(locale));
-        }
-
-        // Add the names the user has already tried (to handle errors and mistakes)
-        for (String s : mAuthorNames) {
-            if (!uniqueNames.contains(s.toUpperCase(locale))) {
-                authors.add(s);
-            }
-        }
-
+        final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
         // Now get an adapter based on the combined names
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
                                             android.R.layout.simple_dropdown_item_1line,

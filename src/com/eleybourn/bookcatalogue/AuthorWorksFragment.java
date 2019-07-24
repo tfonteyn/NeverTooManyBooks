@@ -99,7 +99,7 @@ public class AuthorWorksFragment
     private void gotoBook(@NonNull final TocEntry item) {
         Intent intent;
         switch (item.getType()) {
-            case TocEntry.TYPE_TOC:
+            case Toc:
                 final ArrayList<Long> bookIds = mModel.getBookIds(item);
                 // story in one book, goto that book.
                 if (bookIds.size() == 1) {
@@ -118,7 +118,7 @@ public class AuthorWorksFragment
                 }
                 break;
 
-            case TocEntry.TYPE_BOOK:
+            case Book:
                 intent = new Intent(getContext(), BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
@@ -140,7 +140,7 @@ public class AuthorWorksFragment
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        if (item.getType() == TocEntry.TYPE_BOOK) {
+        if (item.getType().equals(TocEntry.Type.Book)) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
                 .setIcon(R.drawable.ic_edit);
         }
@@ -163,7 +163,7 @@ public class AuthorWorksFragment
         TocEntry item = mModel.getTocEntries().get(position);
 
         switch (item.getType()) {
-            case TocEntry.TYPE_BOOK:
+            case Book:
                 switch (menuItem.getItemId()) {
                     case R.id.MENU_DELETE:
                         //noinspection ConstantConditions
@@ -184,7 +184,7 @@ public class AuthorWorksFragment
                         return false;
                 }
 
-            case TocEntry.TYPE_TOC:
+            case Toc:
                 //noinspection SwitchStatementWithTooFewBranches
                 switch (menuItem.getItemId()) {
                     case R.id.MENU_DELETE:
@@ -254,12 +254,15 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+
+            TocEntry.Type type = TocEntry.Type.get((char)viewType);
+
             View itemView;
-            switch (viewType) {
-                case TocEntry.TYPE_TOC:
+            switch (type) {
+                case Toc:
                     itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
                     break;
-                case TocEntry.TYPE_BOOK:
+                case Book:
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
@@ -269,13 +272,14 @@ public class AuthorWorksFragment
             Holder holder = new Holder(itemView);
 
             // decorate the row depending on toc entry or actual book
-            switch (viewType) {
-                case TocEntry.TYPE_TOC:
+
+            switch (type) {
+                case Toc:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             mStoryIndicator, null, null, null);
                     break;
 
-                case TocEntry.TYPE_BOOK:
+                case Book:
                     holder.titleView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                             mBookIndicator, null, null, null);
                     break;
@@ -288,7 +292,7 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mModel.getTocEntries().get(position).getType();
+            return mModel.getTocEntries().get(position).getType().getInt();
         }
 
         @Override

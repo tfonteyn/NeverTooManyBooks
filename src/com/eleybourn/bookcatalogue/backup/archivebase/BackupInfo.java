@@ -104,8 +104,12 @@ public class BackupInfo
         mBundle = bundle;
     }
 
-    /** {@link Parcelable}. */
-    protected BackupInfo(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private BackupInfo(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mBundle = in.readBundle(getClass().getClassLoader());
     }

@@ -121,7 +121,7 @@ public class BooksOnBookshelf
                                                 getWindow().getDecorView(), this);
                 }
             };
-    private final List<String> mBookshelfNameList = new ArrayList<>();
+
     private TextView mFilterTextView;
     /** The View for the list. */
     private RecyclerView mListView;
@@ -237,9 +237,7 @@ public class BooksOnBookshelf
 
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
         mModel.init(getIntent().getExtras(), savedInstanceState);
-
-        // Restore bookshelf
-        mModel.setCurrentBookshelf(Bookshelf.getBookshelf(this, mModel.getDb(), true));
+        mModel.restoreCurrentBookshelf(this);
 
         // listen for the booklist being ready to display.
         mModel.getBuilderResult().observe(this, this::builderResultsAreReadyToDisplay);
@@ -274,7 +272,7 @@ public class BooksOnBookshelf
         // note that the list of names is empty right now, we'l populate it in onResume
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(this,
                                                       R.layout.booksonbookshelf_bookshelf_spinner,
-                                                      mBookshelfNameList);
+                                                      mModel.getBookshelfNameList());
         mBookshelfSpinnerAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
@@ -309,27 +307,7 @@ public class BooksOnBookshelf
         mListView.setAdapter(mAdapter);
     }
 
-    /**
-     * @return the position that reflects the current bookshelf.
-     */
-    private int initBookshelfNameList() {
-        mBookshelfNameList.clear();
-        mBookshelfNameList.add(getString(R.string.bookshelf_all_books));
-        // default to 'All Books'
-        int currentPos = 0;
-        // start at 1, as position 0 is 'All Books'
-        int position = 1;
 
-        for (Bookshelf bookshelf : mModel.getDb().getBookshelves()) {
-            if (bookshelf.getId() == mModel.getCurrentBookshelf().getId()) {
-                currentPos = position;
-            }
-            position++;
-            mBookshelfNameList.add(bookshelf.getName());
-        }
-
-        return currentPos;
-    }
 
     /**
      * Populate the BookShelf list in the Spinner and set the current bookshelf/style.
@@ -347,7 +325,7 @@ public class BooksOnBookshelf
         // disable the listener while we add the names.
         mBookshelfSpinner.setOnItemSelectedListener(null);
         // (re)load the list of names
-        int currentPos = initBookshelfNameList();
+        int currentPos = mModel.initBookshelfNameList(this);
         // and tell the adapter about it.
         mBookshelfSpinnerAdapter.notifyDataSetChanged();
         // Set the current bookshelf.
@@ -430,6 +408,7 @@ public class BooksOnBookshelf
      */
     private void displayList(@NonNull final BooklistPseudoCursor newListCursor,
                              @Nullable final ArrayList<BookRowInfo> targetRows) {
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "displayList",
                               "newListCursor=" + newListCursor);
@@ -439,11 +418,6 @@ public class BooksOnBookshelf
         setTitle(mModel.getCurrentStyle().getLabel(this));
 
         mProgressBar.setVisibility(View.GONE);
-
-        long t0;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            t0 = System.nanoTime();
-        }
 
         // Save the old list so we can close it later
         BooklistPseudoCursor oldList = mModel.getListCursor();
@@ -502,11 +476,7 @@ public class BooksOnBookshelf
             oldList.close();
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.debugExit(this, "displayList",
-                             (System.nanoTime() - t0) + "nano");
-
-        } else if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugExit(this, "displayList");
         }
     }
@@ -1109,9 +1079,6 @@ public class BooksOnBookshelf
                 // toggle the read status
                 bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
                 if (mModel.getDb().setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
-//                    Bundle data = new Bundle();
-//                    data.putBoolean(KEY_READ, !row.isRead());
-//                    data.putInt(UniqueId.POSITION, row.getPosition());
                     mBookChangedListener
                             .onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
                 }
@@ -1466,13 +1433,10 @@ public class BooksOnBookshelf
 
                         if ((options & ImportOptions.PREFERENCES) != 0) {
                             // the imported prefs could have a different preferred bookshelf.
-                            Bookshelf newBookshelf =
-                                    Bookshelf.getBookshelf(this, mModel.getDb(), true);
-                            if (!mModel.getCurrentBookshelf().equals(newBookshelf)) {
-                                // if it was.. switch to it.
-                                mModel.setCurrentBookshelf(newBookshelf);
+                            if (mModel.reloadCurrentBookshelf(this)) {
                                 mModel.setFullRebuild(true);
                             }
+
                         }
                     } else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
                         // BackupActivity:

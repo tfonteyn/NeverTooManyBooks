@@ -79,6 +79,8 @@ public class BooksOnBookshelfModel
     private int mLastTopRow = -1;
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
+
+    private final List<String> mBookshelfNameList = new ArrayList<>();
     /** Current displayed list cursor. */
     @Nullable
     private BooklistPseudoCursor mListCursor;
@@ -214,13 +216,30 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf;
     }
 
+    public List<String> getBookshelfNameList() {
+        return mBookshelfNameList;
+    }
+
     /**
-     * Load and set the desired Bookshelf; do NOT set it as the preferred.
-     *
-     * @param currentBookshelf to use
+     * @return the position that reflects the current bookshelf.
      */
-    public void setCurrentBookshelf(@NonNull final Bookshelf currentBookshelf) {
-        mCurrentBookshelf = currentBookshelf;
+    public int initBookshelfNameList(@NonNull final Context context) {
+        mBookshelfNameList.clear();
+        mBookshelfNameList.add(context.getString(R.string.bookshelf_all_books));
+        // default to 'All Books'
+        int currentPos = 0;
+        // start at 1, as position 0 is 'All Books'
+        int position = 1;
+
+        for (Bookshelf bookshelf : mDb.getBookshelves()) {
+            if (bookshelf.getId() == getCurrentBookshelf().getId()) {
+                currentPos = position;
+            }
+            position++;
+            mBookshelfNameList.add(bookshelf.getName());
+        }
+
+        return currentPos;
     }
 
     /**
@@ -539,6 +558,20 @@ public class BooksOnBookshelfModel
     public ArrayList<Long> getCurrentBookIdList() {
         //noinspection ConstantConditions
         return mListCursor.getBuilder().getCurrentBookIdList();
+    }
+
+    public void restoreCurrentBookshelf(@NonNull final Context context) {
+        mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, true);
+    }
+
+    public boolean reloadCurrentBookshelf(@NonNull final Context context) {
+        Bookshelf newBookshelf = Bookshelf.getBookshelf(context, mDb, true);
+        if (!newBookshelf.equals(mCurrentBookshelf)) {
+            // if it was.. switch to it.
+            mCurrentBookshelf = newBookshelf;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -892,7 +925,7 @@ public class BooksOnBookshelfModel
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.debug("doInBackground",
+                    Logger.debug(this,"doInBackground",
                                  "\n Build: " + (t1 - t0),
                                  "\n Position: " + (t2 - t1),
                                  "\n Select: " + (t3 - t2),

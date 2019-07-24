@@ -229,7 +229,7 @@ public final class StorageUtils {
     public static File getTempCoverFile(@NonNull final String name,
                                         @Nullable final String suffix) {
         return new File(getTemp() + File.separator
-                                + "tmp" + name + (suffix != null ? suffix: "")
+                                + "tmp" + name + (suffix != null ? suffix : "")
                                 + ".jpg");
     }
 
@@ -511,14 +511,14 @@ public final class StorageUtils {
     /**
      * Given a InputStream, save it to a file.
      *
-     * @param in  InputStream to read
+     * @param is  InputStream to read
      * @param out File to save
      *
      * @return {@code true} if successful
      */
-    public static boolean saveInputStreamToFile(@Nullable final InputStream in,
+    public static boolean saveInputStreamToFile(@Nullable final InputStream is,
                                                 @NonNull final File out) {
-        Objects.requireNonNull(in);
+        Objects.requireNonNull(is);
 
         File temp = null;
         try {
@@ -528,7 +528,7 @@ public final class StorageUtils {
             // Copy from input to temp file
             byte[] buffer = new byte[65536];
             int len1;
-            while ((len1 = in.read(buffer)) >= 0) {
+            while ((len1 = is.read(buffer)) >= 0) {
                 tempFos.write(buffer, 0, len1);
             }
             tempFos.close();
@@ -543,7 +543,7 @@ public final class StorageUtils {
                              e.getLocalizedMessage());
             }
         } catch (@NonNull final IOException e) {
-                Logger.error(StorageUtils.class, e);
+            Logger.error(StorageUtils.class, e);
         } finally {
             deleteFile(temp);
         }
@@ -561,8 +561,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    Logger.debug(StorageUtils.class,
-                                 "deleteFile",
+                    Logger.debug(StorageUtils.class, "deleteFile",
                                  "file=" + file.getAbsolutePath());
                 }
             } catch (@NonNull final RuntimeException e) {
@@ -733,7 +732,7 @@ public final class StorageUtils {
      * Format a number of bytes in a human readable form.
      * <p>
      * 2019-03-16: decimalize as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
-     *     https://en.wikipedia.org/wiki/File_size</a>
+     * https://en.wikipedia.org/wiki/File_size</a>
      *
      * @param context Current context, for accessing resources.
      * @param bytes   to format

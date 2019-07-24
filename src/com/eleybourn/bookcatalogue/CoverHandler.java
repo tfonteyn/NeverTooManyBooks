@@ -420,9 +420,9 @@ public class CoverHandler {
         if (selectedImageUri != null) {
             boolean imageOk = false;
             // If no 'content' scheme, then use the content resolver.
-            try (InputStream in = mContext.getContentResolver()
+            try (InputStream is = mContext.getContentResolver()
                                           .openInputStream(selectedImageUri)) {
-                imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile());
+                imageOk = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
                 Logger.error(this, e, "Unable to copy content to file");

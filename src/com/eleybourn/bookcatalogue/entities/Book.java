@@ -35,7 +35,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,9 +95,9 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-    /** mapping the edition bit to a resource string for displaying. */
+    /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
-    public static final Map<Integer, Integer> EDITIONS = new HashMap<>();
+    public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
 
     /*
      * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}.
@@ -109,6 +109,7 @@ public class Book
      * 0%10000000 = book club
      * <p>
      * NEWKIND: edition
+     * Never change the bit value!
      */
     //private static final int EDITION_NOTHING_SPECIAL = 0;
     /** first edition ever of this work/content/story. */
@@ -120,7 +121,11 @@ public class Book
     /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
 
-    /* NEWKIND: edition. */
+    /*
+     * NEWKIND: edition.
+     *
+     * This is a LinkedHashMap, so the order below is the oder they will show up on the screen.
+     */
     static {
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
         EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
@@ -169,7 +174,12 @@ public class Book
     /**
      * Perform sharing of book. Create chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
+     *
+     * @param context Current context
+     *
+     * @return the intent
      */
+    @NonNull
     public Intent getShareBookIntent(@NonNull final Context context) {
         String title = getString(DBDefinitions.KEY_TITLE);
         double rating = getDouble(DBDefinitions.KEY_RATING);
@@ -223,6 +233,7 @@ public class Book
      * <p>
      * <b>Developer:</b> keep in sync with {@link DAO} .SqlColumns#BOOK
      */
+    @NonNull
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();
 
@@ -314,7 +325,8 @@ public class Book
      * Update the 'read' status of a book in the database + sets the 'read end' to today.
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param db database
+     * @param db     database
+     * @param isRead Flag for the 'read' status
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
@@ -358,6 +370,8 @@ public class Book
      * Using the id, reload *all* other data for this book.
      *
      * @param db the database
+     *
+     * @return the book
      */
     @SuppressWarnings("UnusedReturnValue")
     public Book reload(@NonNull final DAO db) {
@@ -367,8 +381,12 @@ public class Book
     /**
      * Load the book details from the database.
      *
+     * @param db     the database
      * @param bookId of book (may be 0 for new, in which case we do nothing)
+     *
+     * @return the book
      */
+    @NonNull
     public Book reload(@NonNull final DAO db,
                        final long bookId) {
         // If ID = 0, no details in DB
@@ -400,8 +418,11 @@ public class Book
     /**
      * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
      *
+     * @param db the database
+     *
      * @return the list
      */
+    @NonNull
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DAO db) {
 
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
@@ -419,6 +440,7 @@ public class Book
      *
      * @return the list
      */
+    @NonNull
     public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
 
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
@@ -495,6 +517,8 @@ public class Book
 
     /**
      * TODO: use {@link DataAccessor}.
+     *
+     * @param context Current context
      *
      * @return a formatted string for series list.
      */
@@ -671,8 +695,12 @@ public class Book
             mLabelId = labelId;
         }
 
-        /** {@link Parcelable}. */
-        EditionCheckListItem(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private EditionCheckListItem(@NonNull final Parcel in) {
             super(in);
             mLabelId = in.readInt();
             item = in.readInt();
@@ -727,8 +755,12 @@ public class Book
             super(item, selected);
         }
 
-        /** {@link Parcelable}. */
-        BookshelfCheckListItem(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private BookshelfCheckListItem(@NonNull final Parcel in) {
             super(in);
             item = in.readParcelable(getClass().getClassLoader());
         }
@@ -741,6 +773,8 @@ public class Book
         }
 
         /**
+         * @param context Current context
+         *
          * @return the label to display
          */
         @NonNull

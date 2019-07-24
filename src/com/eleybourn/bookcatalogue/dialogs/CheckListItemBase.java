@@ -33,7 +33,11 @@ public abstract class CheckListItemBase<T>
     }
 
     /**
+     * {@link Parcelable} Constructor.
+     *
      * Subclass must handle the {@link #item}.
+     *
+     * @param in Parcel to construct the object from
      */
     protected CheckListItemBase(@NonNull final Parcel in) {
         mSelected = in.readInt() != 0;

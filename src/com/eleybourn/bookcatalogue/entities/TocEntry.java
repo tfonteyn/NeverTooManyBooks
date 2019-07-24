@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
@@ -66,8 +65,6 @@ public class TocEntry
                     return new TocEntry[size];
                 }
             };
-    public static final char TYPE_TOC = 'T';
-    public static final char TYPE_BOOK = 'B';
     /** String encoding use. */
     private static final char FIELD_SEPARATOR = '*';
     /**
@@ -85,7 +82,6 @@ public class TocEntry
     private static final Pattern DATE_PATTERN =
             Pattern.compile(
                     "\\(([1|2]\\d\\d\\d|[1|2]\\d\\d\\d-\\d\\d|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)\\)");
-
     private long mId;
     @NonNull
     private Author mAuthor;
@@ -93,9 +89,8 @@ public class TocEntry
     private String mTitle;
     @NonNull
     private String mFirstPublicationDate;
-
     /** in-memory use only. Type of entry. */
-    private char mType = TYPE_TOC;
+    private Type mType = Type.Toc;
 
     /**
      * Constructor.
@@ -133,8 +128,12 @@ public class TocEntry
         setType(type);
     }
 
-    /** {@link Parcelable}. */
-    protected TocEntry(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mAuthor = in.readParcelable(getClass().getClassLoader());
@@ -180,6 +179,7 @@ public class TocEntry
      * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
      * </ul>
      */
+    @NonNull
     public static TocEntry fromString(@NonNull final String encodedString) {
 
         List<String> list = new StringList<String>()
@@ -199,9 +199,10 @@ public class TocEntry
     }
 
     /**
-     * @return 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
+     * @return type
      */
-    public char getType() {
+    @NonNull
+    public Type getType() {
         return mType;
     }
 
@@ -209,12 +210,7 @@ public class TocEntry
      * @param type 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
      */
     private void setType(final char type) {
-        if (BuildConfig.DEBUG) {
-            if (type != TYPE_BOOK && type != TYPE_TOC) {
-                throw new IllegalTypeException("type=`" + type + '`');
-            }
-        }
-        mType = type;
+        mType = Type.get(type);
     }
 
     /**
@@ -304,7 +300,7 @@ public class TocEntry
     }
 
     /**
-     * Convenience method for {@link #TYPE_BOOK}.
+     * Convenience method.
      *
      * @return list of Authors.
      */
@@ -393,6 +389,43 @@ public class TocEntry
     @Override
     public int hashCode() {
         return Objects.hash(mId, mAuthor, mTitle);
+    }
+
+    /**
+     * Translator for the database character type value to the enum values.
+     *
+     * A TocEntry can be a real entry, or it can be a book posing as a pseudo entry.
+     */
+    public enum Type {
+        Toc, Book;
+
+        /** As used by the DAO. */
+        public static final char TYPE_TOC = 'T';
+        /** As used by the DAO. */
+        public static final char TYPE_BOOK = 'B';
+
+        /** Constructor. */
+        public static Type get(final char c) {
+            switch (c) {
+                case TYPE_TOC:
+                    return Toc;
+                case TYPE_BOOK:
+                    return Book;
+                default:
+                    throw new IllegalTypeException("c=" + c);
+            }
+        }
+
+        public int getInt() {
+            switch (this) {
+                case Toc:
+                    return TYPE_TOC;
+                case Book:
+                    return TYPE_BOOK;
+                default:
+                    throw new IllegalStateException();
+            }
+        }
     }
 
     /**

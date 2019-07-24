@@ -161,7 +161,7 @@ public final class BooklistStyles {
             BUILTIN_RATING_UUID,
             BUILTIN_BOOKSHELF_UUID,
             BUILTIN_DATE_LAST_UPDATE_UUID,
-    };
+            };
 
     private BooklistStyles() {
     }
@@ -173,6 +173,7 @@ public final class BooklistStyles {
      *
      * @return the style.
      */
+    @NonNull
     public static BooklistStyle getDefaultStyle(@NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
@@ -197,6 +198,7 @@ public final class BooklistStyles {
      *
      * @return the style, or if not found, some default.
      */
+    @NonNull
     public static BooklistStyle getStyle(@NonNull final DAO db,
                                          @NonNull final String uuid) {
         BooklistStyle style = getStyles(db, true).get(uuid);
@@ -204,6 +206,39 @@ public final class BooklistStyles {
             return getDefaultStyle(db);
         }
         return style;
+    }
+
+    /**
+     * Used in migration/import. Convert the style name to a uuid.
+     *
+     * @param context Current context, for accessing resources.
+     * @param name    of the style
+     *
+     * @return style uuid
+     */
+    @NonNull
+    public static BooklistStyle getStyle(@NonNull final Context context,
+                                         @NonNull final String name) {
+
+        // try user-defined first - users can clone a builtin style and use the identical name.
+        try (DAO db = new DAO()) {
+            for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
+                if (style.getLabel(context).equals(name)) {
+                    return style;
+                }
+            }
+        }
+
+        // check builtin.
+        for (BooklistStyle style : getBuiltinStyles().values()) {
+            if (style.getLabel(context).equals(name)) {
+                return style;
+            }
+        }
+
+
+        // not found...
+        return DEFAULT_STYLE;
     }
 
     /**
@@ -397,7 +432,7 @@ public final class BooklistStyles {
      *
      * @param db database
      *
-     * @return list of BooklistStyle
+     * @return ordered map of BooklistStyle
      */
     @NonNull
     public static Map<String, BooklistStyle> getUserStyles(@NonNull final DAO db) {
@@ -405,10 +440,12 @@ public final class BooklistStyles {
     }
 
     /**
+     * Get an ordered Map with all the styles. The preferred styles are at the front of the list.
+     *
      * @param db  the database
      * @param all if {@code true} then also return the non-preferred styles
      *
-     * @return all styles, with the preferred styles at the front of the list.
+     * @return ordered list
      */
     @NonNull
     public static Map<String, BooklistStyle> getStyles(@NonNull final DAO db,
@@ -435,9 +472,12 @@ public final class BooklistStyles {
     }
 
     /**
+     * Filter the specified styles so it contains only the preferred styles.
+     * If none were preferred, returns the incoming list.
+     *
      * @param allStyles a list of styles
      *
-     * @return list of preferred styles, or the incoming list if none were preferred.
+     * @return ordered list.
      */
     @NonNull
     private static Map<String, BooklistStyle> filterPreferredStyles(
@@ -529,35 +569,5 @@ public final class BooklistStyles {
             }
         }
         setPreferredStyleMenuOrder(list);
-    }
-
-    /**
-     * Used in migration/import. Convert the style name to a uuid.
-     *
-     * @param context Current context, for accessing resources.
-     * @param name    of the style
-     *
-     * @return style uuid
-     */
-    public static BooklistStyle getStyle(@NonNull final Context context,
-                                         @NonNull final String name) {
-
-        // check builtin first.
-        for (BooklistStyle style : getBuiltinStyles().values()) {
-            if (style.getLabel(context).equals(name)) {
-                return style;
-            }
-        }
-
-        // try user-defined
-        try (DAO db = new DAO()) {
-            for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
-                if (style.getLabel(context).equals(name)) {
-                    return style;
-                }
-            }
-        }
-        // not found...
-        return DEFAULT_STYLE;
     }
 }

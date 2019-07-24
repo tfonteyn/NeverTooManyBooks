@@ -116,8 +116,12 @@ public class Bookshelf
 //        mCachedStyle = null;
     }
 
-    /** {@link Parcelable}. */
-    protected Bookshelf(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
@@ -134,6 +138,7 @@ public class Bookshelf
      *                format: "name"
      *                format: "name * styleUUID"
      */
+    @NonNull
     public static Bookshelf fromString(@NonNull final String element) {
         List<String> list = new StringList<String>()
                 .decode(element, false, FIELD_SEPARATOR);
@@ -161,6 +166,7 @@ public class Bookshelf
      *
      * @return the bookshelf.
      */
+    @NonNull
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          @Nullable final String name,
@@ -187,7 +193,7 @@ public class Bookshelf
      *
      * @return the bookshelf.
      */
-
+    @NonNull
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          final boolean useAll) {

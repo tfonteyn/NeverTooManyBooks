@@ -89,8 +89,12 @@ public class ExportOptions
         this.file = file;
     }
 
-    /** {@link Parcelable}. */
-    protected ExportOptions(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private ExportOptions(@NonNull final Parcel in) {
         what = in.readInt();
         if (in.readInt() != 0) {
             file = new File(in.readString());

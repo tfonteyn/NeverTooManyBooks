@@ -252,8 +252,12 @@ public class StyleGroupsActivity
             this.present = present;
         }
 
-        /** {@link Parcelable}. */
-        GroupWrapper(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private GroupWrapper(@NonNull final Parcel in) {
             present = in.readInt() != 0;
             //noinspection ConstantConditions
             uuid = in.readString();

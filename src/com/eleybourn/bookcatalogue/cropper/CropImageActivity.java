@@ -314,10 +314,10 @@ public class CropImageActivity
     @Nullable
     private Bitmap getBitmap(@NonNull final String path) {
         Uri uri = Uri.fromFile(new File(path));
-        InputStream in;
+        InputStream is;
         try {
-            in = getContentResolver().openInputStream(uri);
-            return BitmapFactory.decodeStream(in);
+            is = getContentResolver().openInputStream(uri);
+            return BitmapFactory.decodeStream(is);
         } catch (@NonNull final FileNotFoundException ignored) {
             return null;
         }

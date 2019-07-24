@@ -48,6 +48,7 @@ public class DomainDefinition
     private boolean mIsPrimaryKey;
 
     private boolean mIsPrePreparedOrderBy;
+
     /**
      * Create a PRIMARY KEY column.
      *
@@ -109,7 +110,11 @@ public class DomainDefinition
         }
     }
 
-    /** {@link Parcelable}. */
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     private DomainDefinition(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         name = in.readString();

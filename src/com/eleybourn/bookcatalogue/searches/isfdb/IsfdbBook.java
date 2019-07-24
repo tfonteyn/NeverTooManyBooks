@@ -505,7 +505,7 @@ public class IsfdbBook
 //        if (recordIDDiv != null) {
 //        }
 
-        //URGENT: it would make much more sense to get the notes from the URL_TITLE_CGI page.
+        //ENHANCE: it would make much more sense to get the notes from the URL_TITLE_CGI page.
         Elements notesDiv = contentBox.select("div.notes");
         if (notesDiv != null) {
             tmpString = notesDiv.html();

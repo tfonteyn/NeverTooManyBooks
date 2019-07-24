@@ -116,8 +116,8 @@ public class TarBackupWriter
         entry.setModTime(file.lastModified());
         entry.setSize(file.length());
         mOutput.putArchiveEntry(entry);
-        final InputStream in = new FileInputStream(file);
-        streamToArchive(in);
+        final InputStream is = new FileInputStream(file);
+        streamToArchive(is);
     }
 
     /**
@@ -134,30 +134,30 @@ public class TarBackupWriter
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setSize(bytes.length);
         mOutput.putArchiveEntry(entry);
-        final InputStream in = new ByteArrayInputStream(bytes);
-        streamToArchive(in);
+        final InputStream is = new ByteArrayInputStream(bytes);
+        streamToArchive(is);
     }
 
     /**
      * Sends the contents of a stream to the current archive entry.
      *
-     * @param in Stream to be written to the archive; will be closed when done
+     * @param is Stream to be written to the archive; will be closed when done
      *
      * @throws IOException on failure
      */
-    private void streamToArchive(@NonNull final InputStream in)
+    private void streamToArchive(@NonNull final InputStream is)
             throws IOException {
         try {
             final byte[] buffer = new byte[TarBackupContainer.BUFFER_SIZE];
             while (true) {
-                int cnt = in.read(buffer);
+                int cnt = is.read(buffer);
                 if (cnt <= 0) {
                     break;
                 }
                 mOutput.write(buffer, 0, cnt);
             }
         } finally {
-            in.close();
+            is.close();
             mOutput.closeArchiveEntry();
         }
     }

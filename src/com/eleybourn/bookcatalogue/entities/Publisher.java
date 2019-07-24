@@ -63,8 +63,12 @@ public class Publisher
         mName = name.trim();
     }
 
-    /** {@link Parcelable}. */
-    protected Publisher(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private Publisher(@NonNull final Parcel in) {
         mName = in.readString();
     }
 
@@ -80,6 +84,11 @@ public class Publisher
         return 0;
     }
 
+    /**
+     * Get the name of the publisher.
+     *
+     * @return the name
+     */
     @NonNull
     public String getName() {
         return mName;

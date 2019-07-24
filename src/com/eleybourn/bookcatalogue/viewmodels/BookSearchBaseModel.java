@@ -7,6 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.BookSearchBaseFragment;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
@@ -128,7 +133,7 @@ public class BookSearchBaseModel
 
     @NonNull
     public String getPublisherSearchText() {
-         return mPublisherSearchText;
+        return mPublisherSearchText;
     }
 
     public void setPublisherSearchText(@NonNull final String publisherSearchText) {
@@ -154,5 +159,27 @@ public class BookSearchBaseModel
         return !mIsbnSearchText.isEmpty()
                 || !mAuthorSearchText.isEmpty()
                 || !mTitleSearchText.isEmpty();
+    }
+
+    @NonNull
+    public ArrayList<String> getAuthorNames(final ArrayList<String> authorNames,
+                                            final Locale locale) {
+
+        ArrayList<String> authors = mDb.getAuthorNames(
+                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+
+        final Set<String> uniqueNames = new HashSet<>(authors.size());
+        for (String s : authors) {
+            uniqueNames.add(s.toUpperCase(locale));
+        }
+
+        // Add the names the user has already tried (to handle errors and mistakes)
+        for (String s : authorNames) {
+            if (!uniqueNames.contains(s.toUpperCase(locale))) {
+                authors.add(s);
+            }
+        }
+
+        return authors;
     }
 }

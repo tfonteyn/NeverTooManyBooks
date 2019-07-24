@@ -157,7 +157,7 @@ public class EditBookFieldsFragment
         // is handled by onCheckListEditorSave)
         field = fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
         initCheckListEditor(field, R.string.lbl_bookshelves_long, () ->
-                book.getEditableBookshelvesList(mBookBaseFragmentModel.getDb()));
+                mBookBaseFragmentModel.getEditableBookshelvesList());
     }
 
     @Override

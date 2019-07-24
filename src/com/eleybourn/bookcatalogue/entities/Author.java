@@ -96,6 +96,8 @@ public class Author
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern
             .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
+
+    /** Row ID. */
     private long mId;
     /** Family name(s). */
     @NonNull
@@ -148,8 +150,12 @@ public class Author
         mIsComplete = mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
     }
 
-    /** {@link Parcelable}. */
-    protected Author(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private Author(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mFamilyName = in.readString();
@@ -172,7 +178,10 @@ public class Author
      * TODO: would be nice to redo with a rules based approach.
      *
      * @param name a String containing the name
+     *
+     * @return Author
      */
+    @NonNull
     public static Author fromString(@NonNull String name) {
         List<String> tmp = new StringList<String>().decode(name, true, FIELD_SEPARATOR);
         if (tmp.size() > 1) {

@@ -123,7 +123,6 @@ public class CoverBrowserViewModel
         }
     }
 
-
     /**
      * Start a search for alternative editions of the book (using the isbn).
      */
@@ -194,8 +193,11 @@ public class CoverBrowserViewModel
         };
         @NonNull
         public final String isbn;
+        @Nullable
         public SearchEngine.ImageSize size;
+        @Nullable
         public String fileSpec;
+        @Nullable
         public Site site;
 
         /**
@@ -221,7 +223,11 @@ public class CoverBrowserViewModel
             this.isbn = isbn;
         }
 
-        /** {@link Parcelable}. */
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
         private FileInfo(@NonNull final Parcel in) {
             //noinspection ConstantConditions
             isbn = in.readString();

@@ -198,6 +198,7 @@ public class BooklistBuilder
             + "  THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
             + " END";
 
+
     private static final String X_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
             + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
             + "  THEN 1 ELSE 0"
@@ -783,7 +784,7 @@ public class BooklistBuilder
                 + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref()
                 + " ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY)
                 + /*  */ '=' + mListTable.dot(DOM_BL_ROOT_KEY)
-                + "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND)
+                + " AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND)
                 + /*  */ '=' + mStyle.getGroupKindAt(0)
                 + " ORDER BY " + sortExpression;
 
@@ -1095,7 +1096,7 @@ public class BooklistBuilder
                                 .append(DAO.COLLATION).append('\n');
                 }
             }
-            //insertSql += ")\n	SELECT " + valuesSql
+            //insertSql += ")\n SELECT " + valuesSql
             // + " WHERE NOT EXISTS(SELECT 1 FROM " + mListTable + " l WHERE " + conditionSql + ")";
             //tgLines[i] = insertSql;
 
@@ -2425,8 +2426,8 @@ public class BooklistBuilder
                               SummaryBuilder.FLAG_GROUPED);
 
                     // We want the series number in the base data in sorted order
-                    // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as a series number.
-                    // so we convert it to a real (aka float).
+                    // Allow for the possibility of 3.1, or even "3.1|Omnibus 3-10" as
+                    // a series number. So we convert it to a real (aka float).
                     addDomain(DOM_BL_SERIES_NUM_FLOAT,
                               "CAST("
                                       + TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES) + " AS REAL)",

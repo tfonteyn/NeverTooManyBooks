@@ -523,7 +523,7 @@ public final class DBDefinitions {
      */
     public static final DomainDefinition DOM_LOANEE_AS_BOOLEAN;
 
-    /** Virtual. The type of a TOC entry. See {@link TocEntry#TYPE_TOC} */
+    /** Virtual. The type of a TOC entry. See {@link TocEntry.Type} */
     static final DomainDefinition DOM_TOC_TYPE;
 
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";

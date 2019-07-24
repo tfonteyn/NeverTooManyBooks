@@ -8,11 +8,13 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -118,6 +120,11 @@ public class BookBaseFragmentModel
     @NonNull
     public Book getBook() {
         return mBook;
+    }
+
+    @NonNull
+    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList() {
+        return mBook.getEditableBookshelvesList(mDb);
     }
 
     public void setBook(final long bookId) {

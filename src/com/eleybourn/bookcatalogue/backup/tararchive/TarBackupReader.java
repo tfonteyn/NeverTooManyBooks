@@ -71,8 +71,8 @@ public class TarBackupReader
     TarBackupReader(@NonNull final TarBackupContainer container)
             throws IOException {
         // Open the file and create the archive stream
-        FileInputStream in = new FileInputStream(container.getFile());
-        mInput = new TarArchiveInputStream(in);
+        FileInputStream is = new FileInputStream(container.getFile());
+        mInput = new TarArchiveInputStream(is);
 
         // Find and process the INFO entry.
         ReaderEntity entity = findEntity(BackupEntityType.Info);
@@ -87,9 +87,9 @@ public class TarBackupReader
 
         // close and re-open.
         mInput.close();
-        in.close();
-        in = new FileInputStream(container.getFile());
-        mInput = new TarArchiveInputStream(in);
+        is.close();
+        is = new FileInputStream(container.getFile());
+        mInput = new TarArchiveInputStream(is);
     }
 
     /**

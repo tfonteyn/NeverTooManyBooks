@@ -119,8 +119,12 @@ public class BooklistGroup
         initPrefs();
     }
 
-    /** {@link Parcelable}. */
-    protected BooklistGroup(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private BooklistGroup(@NonNull final Parcel in) {
         kind = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
@@ -266,13 +270,13 @@ public class BooklistGroup
      *
      * @see Serializable
      */
-    private void readObject(@NonNull final ObjectInputStream in)
+    private void readObject(@NonNull final ObjectInputStream is)
             throws IOException, ClassNotFoundException {
         //use a temporary empty uuid so storage is memory only for the groups.
         // we'll set the real uuid at the end of the import and convert them.
         mUuid = "";
         initPrefs();
-        in.defaultReadObject();
+        is.defaultReadObject();
     }
 
     /**
@@ -315,8 +319,12 @@ public class BooklistGroup
             super(RowKind.SERIES, uuid, isUserDefinedStyle);
         }
 
-        /** {@link Parcelable}. */
-        BooklistSeriesGroup(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private BooklistSeriesGroup(@NonNull final Parcel in) {
             super(in);
             initPrefs();
             mAllSeries.set(in);
@@ -393,10 +401,10 @@ public class BooklistGroup
          *
          * @see Serializable
          */
-        private void readObject(@NonNull final ObjectInputStream in)
+        private void readObject(@NonNull final ObjectInputStream is)
                 throws IOException, ClassNotFoundException {
-            super.readObject(in);
-            mAllSeries.set((Boolean) in.readObject());
+            super.readObject(is);
+            mAllSeries.set((Boolean) is.readObject());
         }
     }
 
@@ -441,8 +449,12 @@ public class BooklistGroup
             super(RowKind.AUTHOR, uuid, isUserDefinedStyle);
         }
 
-        /** {@link Parcelable}. */
-        BooklistAuthorGroup(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private BooklistAuthorGroup(@NonNull final Parcel in) {
             super(in);
             mAllAuthors.set(in);
             mGivenNameFirst.set(in);
@@ -537,12 +549,12 @@ public class BooklistGroup
          *
          * @see Serializable
          */
-        private void readObject(@NonNull final ObjectInputStream in)
+        private void readObject(@NonNull final ObjectInputStream is)
                 throws IOException, ClassNotFoundException {
-            super.readObject(in);
+            super.readObject(is);
 
-            mAllAuthors.set((Boolean) in.readObject());
-            mGivenNameFirst.set((Boolean) in.readObject());
+            mAllAuthors.set((Boolean) is.readObject());
+            mGivenNameFirst.set((Boolean) is.readObject());
         }
     }
 
@@ -587,7 +599,7 @@ public class BooklistGroup
 
         // NEWKIND: ROW_KIND_x
         // the highest valid index of kinds  ALWAYS update after adding a row kind...
-        public static final int ROW_KIND_MAX = 28;
+        static final int ROW_KIND_MAX = 28;
 
         private static final Map<Integer, RowKind> ALL_KINDS = new UniqueMap<>();
 
@@ -860,18 +872,28 @@ public class BooklistGroup
         @NonNull
         private final String prefix;
 
-        /** List of domains in key. */
+        /** List of domains in the key. */
         @NonNull
         private final DomainDefinition[] domains;
 
+        /**
+         * Constructor.
+         *
+         * @param prefix  Unique prefix used to represent a key in the hierarchy.
+         * @param domains List of domains in the key
+         */
         CompoundKey(@NonNull final String prefix,
                     @NonNull final DomainDefinition... domains) {
             this.prefix = prefix;
             this.domains = domains;
         }
 
-        /** {@link Parcelable}. */
-        CompoundKey(@NonNull final Parcel in) {
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private CompoundKey(@NonNull final Parcel in) {
             //noinspection ConstantConditions
             prefix = in.readString();
             //noinspection ConstantConditions

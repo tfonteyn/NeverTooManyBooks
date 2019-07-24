@@ -2492,7 +2492,7 @@ public class DAO
                                       author,
                                       mapper.getString(DOM_TITLE.name),
                                       mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
-                                      TocEntry.TYPE_BOOK));
+                                      TocEntry.Type.TYPE_BOOK));
             }
         }
         return list;
@@ -2988,7 +2988,7 @@ public class DAO
     /**
      * Get a list of all user defined styles, arranged in a lookup map.
      *
-     * @return the lookup map, with the uuid as key
+     * @return ordered map, with the uuid as key
      */
     @NonNull
     public Map<String, BooklistStyle> getUserBooklistStyles() {
@@ -4585,7 +4585,7 @@ public class DAO
          * We need DOM_TITLE_OB as it will be used to ORDER BY with {@link #WORKS_BY_AUTHOR_ID}
          */
         private static final String TOC_ENTRIES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.TYPE_TOC + "' AS " + DOM_TOC_TYPE
+                "SELECT " + "'" + TocEntry.Type.TYPE_TOC + "' AS " + DOM_TOC_TYPE
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE_OB)
@@ -4601,7 +4601,7 @@ public class DAO
          * We need DOM_TITLE_OB as it will be used to ORDER BY with {@link #WORKS_BY_AUTHOR_ID}
          */
         private static final String BOOK_TITLES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.TYPE_BOOK + "' AS " + DOM_TOC_TYPE
+                "SELECT " + "'" + TocEntry.Type.TYPE_BOOK + "' AS " + DOM_TOC_TYPE
                         + ',' + TBL_BOOKS.dotAs(DOM_PK_ID)
                         + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
                         + ',' + TBL_BOOKS.dotAs(DOM_TITLE_OB)

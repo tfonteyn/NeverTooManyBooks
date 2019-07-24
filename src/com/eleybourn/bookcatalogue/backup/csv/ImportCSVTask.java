@@ -49,9 +49,9 @@ public class ImportCSVTask
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("ImportCSVTask");
 
-        try (FileInputStream in = new FileInputStream(mSettings.file)) {
+        try (FileInputStream is = new FileInputStream(mSettings.file)) {
             //noinspection ConstantConditions
-            mImporter.doBooks(in, new LocalCoverFinder(mSettings.file.getParent()),
+            mImporter.doBooks(is, new LocalCoverFinder(mSettings.file.getParent()),
                               new ProgressListener() {
                                   @Override
                                   public void setMax(final int max) {

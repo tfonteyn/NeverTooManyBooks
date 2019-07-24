@@ -59,7 +59,11 @@ public class BackupFileDetails
         mFile = file;
     }
 
-    /** {@link Parcelable}. */
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     private BackupFileDetails(@NonNull final Parcel in) {
         mFile = new File(in.readString());
         // flag to indicate the Parcel has the info bundle

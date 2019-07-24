@@ -789,10 +789,10 @@ class ImportLegacyTask
      *
      * @see Serializable
      */
-    private void readObject(@NonNull final ObjectInputStream in)
+    private void readObject(@NonNull final ObjectInputStream is)
             throws IOException, ClassNotFoundException {
 
-        in.defaultReadObject();
+        is.defaultReadObject();
         mFirstCall = true;
     }
 }

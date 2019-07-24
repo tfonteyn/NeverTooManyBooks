@@ -306,10 +306,10 @@ abstract class ApiHandlerNative {
     private String getContent(@NonNull final HttpURLConnection request)
             throws IOException {
         StringBuilder html = new StringBuilder();
-        InputStream in = request.getInputStream();
-        if (in != null) {
+        InputStream is = request.getInputStream();
+        if (is != null) {
             while (true) {
-                int i = in.read();
+                int i = is.read();
                 if (i == -1) {
                     break;
                 }
