@@ -404,12 +404,9 @@ public class UpdateFieldsFromInternetFragment
 
         // If the user has selected thumbnails...
         final FieldUsage covers = mFieldUsages.get(UniqueId.BKEY_IMAGE);
-        //noinspection ConstantConditions
-        if (isSingleBook() || !covers.isWanted()) {
-            // its a single book only; just do it.
-            startUpdate();
 
-        } else if (covers.usage.equals(Overwrite)){
+        //noinspection ConstantConditions
+        if (covers.usage.equals(Overwrite)) {
             // check if the user really wants to overwrite ALL covers
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
@@ -429,7 +426,10 @@ public class UpdateFieldsFromInternetFragment
                     })
                     .create()
                     .show();
+            return;
         }
+
+        startUpdate();
     }
 
     private void startUpdate() {
