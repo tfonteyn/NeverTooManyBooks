@@ -1,40 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pg_ui">Περιβάλλον Χρήστη</string>
-
-    <string name="pt_ui_language">Γλώσσα</string>
-    <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
-
-    <string name="pt_ui_theme">Θέμα</string>
     <string-array name="pe_ui_theme">
         <item>Ημέρα / Νύχτα</item>
         <item>Σκούρο</item>
         <item>Φως</item>
     </string-array>
 
-    <string name="pt_ui_messages_use">Ενημερώστε με</string>
-
-    <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Αναμορφώστε τους τίτλους</string>
-    <string name="pg_reformat_titles_summary">Αποθηκεύστε το πρωτότυπο “Ο τίτλος” ή αναδιαμορφώστε σε “τίτλος, Ο”</string>
-    <string name="pt_reformat_titles_on_update">Κατά την επεξεργασία</string>
-    <string name="pt_reformat_titles_on_insert">Κατά την προσθήκη</string>
-    <string name="pg_reformat_titles_original">Ο τίτλος</string>
-    <string name="pg_reformat_titles_reformatted">τίτλος, Ο</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Λίστα βιβλίων</string>
-    <string name="pt_bob_open_book_read_only">Άνοιγμα βιβλίου μόνο για ανάγνωση</string>
-    <string name="pt_bob_list_state">Κατάσταση λίστας βιβλίων</string>
     <string-array name="pe_bob_list_state">
         <item>Εκκίνηση πάντα με ανοιχτές λίστες βιβλίων</item>
         <item>Εκκίνηση πάντα με κλειστές λίστες βιβλίων</item>
         <item>Διατήρηση κατάστασης λίστας βιβλίων</item>
     </string-array>
-    <string name="pt_bob_list_generation">Επιλογή παραγωγής λίστας βιβλίων</string>
+
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Επιβολή Ολοκληρωμένων Χαρακτηριστικών</item>
@@ -42,32 +20,12 @@
         <item>Επιβολή λειτουργίας συμβατότητας</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Γίνεται Σάρωση</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Ειδοποίηση αν ο σκαναρισμένος κωδικός ISBN δεν είναι έγκυρος</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Ειδοποίηση αν το σκαναρισμένο ISBN είναι έγκυρο</string>
-    <string name="pt_scanning_preferred_scanner">Προτιμώμενος σαρωτής</string>
     <string-array name="pe_scanning_preferred_scanner">
         <item>Σαρωτής συμβατός με το Zxing</item>
         <item translatable="false">Zxing</item>
         <item translatable="false">Pic2Shop</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Μικρογραφίες</string>
-
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
-    <string name="pt_thumbnails_external_cropper">Χρήση εξωτερικού κόπτη εικόνων (σε πειραματικό στάδιο)</string>
-
-    <string name="pt_bob_thumbnails_generating_mode">Χρησιμοποιήστε το νήμα φόντου για να προσελκύσετε μικρογραφίες</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Χρήση νήματος παρασκηνίου (πιο γρήγορο scrolling στις λίστες, οι εικόνες ίσως καθυστερρούν να εμφανιστούν)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Άμεση παραγωγή (πιο αργό scrolling στις λίστες, οι εικόνες εμφανίζονται αμέσως)</string>
-
-    <string name="pt_bob_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
-
-    <string name="pt_thumbnails_rotate_auto">Αυτόματη περιστροφή εικόνων από κάμερα</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>όχι</item>
         <item>Περιστροφή δεξιόστροφα</item>
@@ -75,71 +33,49 @@
         <item>Περιστροφή 180 μοίρες</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το ‘Λογισμικό’ για ασφαλέστερο αλλά πιο αργό ή για ‘υλισμικό’ για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
-    <string-array name="pe_thumbnails_cropper_layer_type">
+   <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>υλισμικό</item>
         <item>λογισμικού</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
-    <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pg_general">Γενικά</string>
-    <string name="pg_groupings">Ομαδοποιήσεις</string>
-
-    <string name="pg_filters">Φίλτρα Βιβλίων</string>
     <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>
         <item>Τα βιβλία διαβάζουν</item>
         <item>Βιβλία μη αναγνωσμένα</item>
     </string-array>
+
     <string-array name="pe_bob_filter_signed">
         <item>@string/bookshelf_all_books</item>
         <item>Υπογεγραμμένα βιβλία</item>
         <item>Βιβλία χωρίς υπογραφή</item>
     </string-array>
+
     <string-array name="pe_bob_filter_anthology">
         <item>@string/bookshelf_all_books</item>
         <item>Ανθολογίες</item>
         <item>Όλοι εκτός από Ανθολογίες</item>
     </string-array>
+
     <string-array name="pe_bob_filter_loaned">
         <item>@string/bookshelf_all_books</item>
         <item>Βιβλία δανείου</item>
         <item>Βιβλία διαθέσιμα</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pg_bob_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
     <string-array name="pe_bob_header">
         <item>Εμφάνιση αριθμού βιβλίων</item>
         <item>Εμφάνιση επικεφαλίδας πρώτου επιπέδου</item>
         <item>Εμφάνιση τίτλου δευτέρου επιπέδου</item>
     </string-array>
 
-    <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
     <string-array name="pe_bob_text_size">
         <item>Μικρό</item>
         <item>Μεσαίο</item>
         <item>Μεγάλο</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
-    <string name="pt_cover_scale_factor">Μικρογραφεί μέγεθος σε λίστες</string>
-    <string-array name="pe_cover_scale_factor">
+   <string-array name="pe_cover_scale_factor">
         <item>X-Μικρό</item>
         <item>Μικρό</item>
         <item>Μεσαίο</item>
@@ -147,23 +83,5 @@
         <item>X-Μεγάλο</item>
         <item>2X-Μεγάλο</item>
     </string-array>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>
-
-    <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
-    <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Κάτω από κύρια %1$s μόνο</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Κάτω από κάθε %1$s</string>
-
-    <string name="pt_bob_format_author_name">Μορφή του ονόματος συγγραφέα</string>
-    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ ‘Κωστής  Παλαμάς’</string>
-    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ ‘Παλαμάς, Κωστής ’</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Χρησιμοποιήστε τη συνιστώμενη επιλογή</string>
 
 </resources>

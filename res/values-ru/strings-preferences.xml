@@ -1,37 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pg_ui">Пользовательский интерфейс</string>
-
-    <string name="pt_ui_language">язык</string>
-    <string name="pt_ui_system_locale">Локаль системы</string>
-
-    <string name="pt_ui_theme">тема</string>
     <string-array name="pe_ui_theme">
         <item>День / Ночь</item>
         <item>темный</item>
         <item>свет</item>
     </string-array>
 
-    <string name="pt_ui_messages_use">Сообщить с</string>
-
-    <string name="pg_ui_field_visibility">Видимость полей</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Переформатировать заголовки</string>
-    <string name="pt_reformat_titles_on_insert">При добавлении</string>
-    <string name="pt_reformat_titles_on_update">При редактировании</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Списки книг</string>
-    <string name="pt_bob_open_book_read_only">Просмотр книги в режиме чтения</string>
-    <string name="pt_bob_list_state">Состояние списка книг</string>
     <string-array name="pe_bob_list_state">
         <item>Всегда открывать списки раскрытыми</item>
         <item>Всегда открывать списоки свернутыми</item>
         <item>Запоминать состояние списков</item>
     </string-array>
-    <string name="pt_bob_list_generation">Составление списка книг</string>
+
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Полная функциональность</item>
@@ -39,32 +20,12 @@
         <item>Режим совместимости</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Сканирование</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
-    <string name="pt_scanning_preferred_scanner">Предпочтительный сканер</string>
-    <string-array name="pe_scanning_preferred_scanner">
+   <string-array name="pe_scanning_preferred_scanner">
         <item>Zxing совместимый сканер</item>
         <item translatable="false">Zxing</item>
         <item translatable="false">Pic2Shop</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Миниатюры</string>
-
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
-    <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков (экспериментально)</string>
-
-    <string name="pt_bob_thumbnails_generating_mode">Используйте фоновое задание для извлечения миниатюр</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Использовать фоновый поток (списки пролистываются быстрее, картинки показываются по мере их загрузки)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Создавать немедленно (списки пролистываются медленнее, зато картинки показываются сразу)</string>
-
-    <string name="pt_bob_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
-
-    <string name="pt_thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>Нет</item>
         <item>Повернуть по часовой</item>
@@ -72,70 +33,48 @@
         <item>Повернуть на 180</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Обрезать ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
-    <string-array name="pe_thumbnails_cropper_layer_type">
+   <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>аппаратные средства</item>
         <item>Программного обеспечения</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
-    <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pg_general">Основные</string>
-    <string name="pg_groupings">Группирование</string>
-
-    <string name="pg_filters">Фильтры книг</string>
     <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>
         <item>Книги читают</item>
         <item>Книги непрочитанные</item>
     </string-array>
+
     <string-array name="pe_bob_filter_signed">
         <item>@string/bookshelf_all_books</item>
         <item>Книги подписаны</item>
         <item>Книги без подписи</item>
     </string-array>
+
     <string-array name="pe_bob_filter_anthology">
         <item>@string/bookshelf_all_books</item>
         <item>Антологии</item>
         <item>Все, кроме антологий</item>
     </string-array>
+
     <string-array name="pe_bob_filter_loaned">
         <item>@string/bookshelf_all_books</item>
         <item>Книги в долг</item>
         <item>Книги доступны</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pg_bob_extra_book_details">Дополнительная информация</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_header">Суммарная информация в заголовке</string>
-    <string-array name="pe_bob_header">
+   <string-array name="pe_bob_header">
         <item>Показывать номера книг</item>
         <item>Показать заголовок</item>
         <item>Показать заголовок 2 уровня</item>
     </string-array>
 
-    <string name="pt_bob_text_size">Размер элемента списка книг</string>
     <string-array name="pe_bob_text_size">
         <item>Маленький</item>
         <item>Средняя</item>
         <item>большой</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
-    <string name="pt_cover_scale_factor">Размер изображения в списках</string>
     <string-array name="pe_cover_scale_factor">
         <item>X-Маленький</item>
         <item>Маленький</item>
@@ -144,23 +83,5 @@
         <item>X-большой</item>
         <item>2X-большой</item>
     </string-array>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_sort_author_name">Сортировать авторов</string>
-
-    <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
-    <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Только под первым %1$s</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Под каждым %1$s</string>
-
-    <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>
-    <string name="pv_bob_format_author_name_given_first">Первое имя, например ‘Фёдор Достоевский’</string>
-    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например ‘Достоевский, Фёдор’</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Используйте рекомендуемый вариант</string>
 
 </resources>

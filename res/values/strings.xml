@@ -3,18 +3,11 @@
  resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
-
-<!--
-TODO: uniform quotes in all string:
-“OK”
-‘%s’
-“%s”
-
-‘%1$s’
-“%1$s”
-« %1$s »
-
+<!-- each language string.xml file uses localized quotes as per
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
+    See top of each file for the "quotes" comment.
 -->
+<!-- Quotes “…” - Regex to find wrong ones: („|‘|’|«|») -->
 <resources>
 
     <!-- ####################################################################################### -->
@@ -61,16 +54,16 @@ TODO: uniform quotes in all string:
     <!-- ========== ValidatorException error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="vldt_unable_to_get_value_for_x">Unable to get value for ‘%1$s’</string>
-    <string name="vldt_integer_expected_for_x">Expected an integer value for ‘%1$s’</string>
-    <string name="vldt_real_expected_for_x">Expected a real number for ‘%1$s’</string>
-    <string name="vldt_date_expected_for_x">Expected a date for ‘%1$s’</string>
+    <string name="vldt_unable_to_get_value_for_x">Unable to get value for “%1$s”</string>
+    <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
+    <string name="vldt_real_expected_for_x">Expected a real number for “%1$s”</string>
+    <string name="vldt_date_expected_for_x">Expected a date for “%1$s”</string>
     <string name="vldt_boolean_expected_for_x">
-        Expected a boolean value (0,1,t,f,true,false) for ‘%1$s’
+        Expected a boolean value (0,1,t,f,true,false) for “%1$s”
     </string>
-    <string name="vldt_non_blank_required_for_x">Non-empty value required for ‘%1$s’</string>
-    <string name="vldt_blank_required_for_x">Empty value required for ‘%1$s’</string>
-    <string name="vldt_failed_for_x">Validation failed for ‘%1$s’</string>
+    <string name="vldt_non_blank_required_for_x">Non-empty value required for “%1$s”</string>
+    <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
+    <string name="vldt_failed_for_x">Validation failed for “%1$s”</string>
     <string name="vldt_failure">Validation failure</string>
 
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
@@ -91,8 +84,8 @@ TODO: uniform quotes in all string:
         Searching for the book failed. Please check your network settings.
     </string>
     <string name="error_search_exception">Search failed while %1$s: %2$s</string>
-    <string name="error_column_is_blank">Column ‘%1$s’ is blank at row %2$d</string>
-    <string name="error_columns_are_blank">Columns ‘%1$s’ are all blank at row %2$d</string>
+    <string name="error_column_is_blank">Column “%1$s” is blank at row %2$d</string>
+    <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d</string>
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_no_internet_connection">Internet connection is not available.</string>
     <string name="error_failed_x">Failed: %1$d</string>
@@ -199,8 +192,8 @@ TODO: uniform quotes in all string:
 
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
-    <string name="warning_x_is_not_a_valid_isbn">‘%1$s’ is not a valid ISBN</string>
-    <string name="warning_x_is_not_a_valid_isbn_or_asin">‘%1$s’ is not a valid ISBN or ASIN</string>
+    <string name="warning_x_is_not_a_valid_isbn">“%1$s” is not a valid ISBN</string>
+    <string name="warning_x_is_not_a_valid_isbn_or_asin">“%1$s” is not a valid ISBN or ASIN</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
 
@@ -582,6 +575,11 @@ TODO: uniform quotes in all string:
         As a result the menu “View on…” will likewise only show what is available.
     </string>
 
+    <string name="tip_authors_works">Icons used:</string>
+    <string name="tip_authors_works_toc">Table of Content (TOC) entry, e.g. a story.</string>
+    <string name="tip_authors_works_book">Book.</string>
+    <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
     <!-- ####################################################################################### -->
@@ -758,6 +756,126 @@ TODO: uniform quotes in all string:
     <string name="btn_tell_me_more">Tell me more</string>
     <string name="btn_this_book">This Book</string>
     <string name="btn_reset">Reset</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Field labels for preference settings == -->
+    <!-- ####################################################################################### -->
+    <!-- The defaults for MultiSelect fields, i.e. select nothing -->
+    <string-array name="empty_array" />
+    <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
+    <string name="pe_use_recommended_option">Use the recommended option</string>
+
+
+    <string name="pg_ui">User Interface</string>
+    <string name="pg_ui_field_visibility">Field Visibility</string>
+    <string name="pg_reformat_titles">Reformat titles</string>
+    <string name="pg_reformat_titles_summary">Store the original “The title” or reformat to “title, The”</string>
+    <string name="pg_booklist">Book Lists</string>
+    <string name="pg_scanning">Scanning</string>
+    <string name="pg_thumbnails">Thumbnails</string>
+    <string name="pg_general">General</string>
+    <!-- Preference Category; groups (RowKinds) in booklist style -->
+    <string name="pg_groupings">Groupings</string>
+    <!-- Preference Category; filters in booklist style -->
+    <string name="pg_filters">Filters</string>
+    <!-- Preference Category; The extra fields displayed on 'book-level' in the booklist -->
+    <string name="pg_bob_extra_book_details">Extra Book Details</string>
+
+
+    <!-- ListPreference - Preferred interface Language -->
+    <string name="pt_ui_language">Language</string>
+    <!-- ListPreference - Preferred interface Locale -->
+    <string name="pt_ui_system_locale">System Locale</string>
+    <string name="pt_ui_theme">Interface Theme</string>
+    <string name="pt_ui_messages_use">Information messages</string>
+    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
+
+    <!-- example of 'original' title -->
+    <string name="pt_reformat_titles_original">The title</string>
+    <!-- example of a reformatted title -->
+    <string name="pt_reformat_titles_reformatted">title, The</string>
+    <!-- SwitchPreference -->
+    <string name="pt_reformat_titles_on_insert">When adding</string>
+    <!-- SwitchPreference -->
+    <string name="pt_reformat_titles_on_update">When editing</string>
+    <!-- MultiSelectListPreference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Summary details in header</string>
+    <!-- ListPreference - Scale text. -->
+    <string name="pt_bob_text_size">Size of book list text</string>
+    <!-- SwitchPreference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
+    <!-- ListPreference - Scale thumbnails in the list view. -->
+    <string name="pt_cover_scale_factor">Thumbnails size in lists</string>
+    <!-- SwitchPreference - Sorting Author by family (default) or given name.
+         This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Sorting of author names</string>
+    <string name="pt_bob_format_author_name">Format of author names</string>
+    <!-- SwitchPreference -->
+    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
+    <!-- SwitchPreference -->
+    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Book list state</string>
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Book List Generation Option</string>
+    <!-- SwitchPreference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
+    <!-- SwitchPreference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
+    <!-- ListPreference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
+    <!-- SwitchPreference - zooming images should upscale (or only show actual max size) -->
+    <string name="pt_thumbnails_upscale_zoom">Upscale images when zoomed</string>
+    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
+    <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Use an external image cropper</string>
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch images</string>
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Resized images are cached</string>
+    <!-- ListPreference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
+    <!-- ListPreference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Leave this setting on “Use default” unless you experience crashes while cropping images. Try “Software” for safer but slower or force “Hardware” for less safe, but faster</string>
+    <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
+    <string name="pt_allow_mobile_data">Allow mobile data usage</string>
+    <!-- SwitchPreference - search engines can collect series information from the toc.
+        This is not always desirable, and by default switched off. -->
+    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
+    <!-- SwitchPreference - some search engines can add the publisher to the search terms.
+        This is not always desirable, as they use "AND" to combine the terms.
+        So by default this is switched off. -->
+    <string name="pt_search_uses_publisher">Search uses publisher</string>
+
+
+    <!-- the prefixes that will be moved to the end of a title. -->
+    <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Under primary %1$s only</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
+
+    <!-- SwitchPreference -->
+    <string name="pv_bob_format_author_name_given_first">
+        Given name first e.g. “Phillis Wheatley”
+    </string>
+    <string name="pv_bob_format_author_name_family_first">
+        Family name first e.g. “Wheatley, Phillis”
+    </string>
+
+    <string name="pe_bob_thumbnails_generating_mode_background">
+        Use background task to load images (scrolling will be faster, images may be delayed)
+    </string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">
+        Load images immediately (scrolling will be slower)</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">
+        Resize images each time they are needed (uses less storage, scrolling will be slower)
+    </string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">
+        Cache resized images (scrolling will be faster, uses more storage)
+    </string>
+
 
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
@@ -1072,33 +1190,36 @@ TODO: uniform quotes in all string:
     <string name="export_csv_email">Would you like to send this export as an email?</string>
 
     <!-- ####################################################################################### -->
-    <!-- === plurals == -->
+    <!-- === plurals ==
+        http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+        cardinal
+        -->
     <!-- ####################################################################################### -->
 
     <!-- displayed in the header of booklist -->
     <plurals name="displaying_n_books">
         <item quantity="zero">no books</item>
-        <item quantity="one">one book</item>
+        <item quantity="one">%1$d book displayed</item>
         <item quantity="other">displaying %1$d books</item>
     </plurals>
 
     <plurals name="n_books_found">
         <item quantity="zero">no books found</item>
-        <item quantity="one">one book found</item>
+        <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
     </plurals>
 
     <!-- Short text for 'n books' -->
     <plurals name="n_books">
         <item quantity="zero">no books</item>
-        <item quantity="one">one book</item>
+        <item quantity="one">%1$d book</item>
         <item quantity="other">%1$s books</item>
     </plurals>
 
     <!-- Short text for 'n covers' -->
     <plurals name="n_covers">
         <item quantity="zero">no covers</item>
-        <item quantity="one">one cover</item>
+        <item quantity="one">%1$d cover</item>
         <item quantity="other">%1$s covers</item>
     </plurals>
 
@@ -1182,7 +1303,6 @@ TODO: uniform quotes in all string:
         Most properties can be overridden by individual styles, but the default values are
         defined here. You can change how lists are displayed at startup, and adjust a
         variety of other preferences that will be applied to all your styles when possible.
-        You can also edit the styles menu, and the styles themselves.
     </string>
 
     <!-- ####################################################################################### -->

@@ -1,7 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
-
+<!-- Quotes «…»  - Regex to find wrong ones: („|“|”|‘|’) -->
 <resources>
+
+    <string name="pg_ui">Περιβάλλον Χρήστη</string>
+    <string name="pt_ui_language">Γλώσσα</string>
+    <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
+    <string name="pt_ui_theme">Θέμα</string>
+    <string name="pt_ui_messages_use">Ενημερώστε με</string>
+    <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
+    <string name="pg_reformat_titles">Αναμορφώστε τους τίτλους</string>
+    <string name="pg_reformat_titles_summary">Αποθηκεύστε το πρωτότυπο «Ο τίτλος» ή αναδιαμορφώστε σε «τίτλος, Ο»</string>
+    <string name="pt_reformat_titles_on_update">Κατά την επεξεργασία</string>
+    <string name="pt_reformat_titles_on_insert">Κατά την προσθήκη</string>
+    <string name="pt_reformat_titles_original">Ο τίτλος</string>
+    <string name="pt_reformat_titles_reformatted">τίτλος, Ο</string>
+    <string name="pg_booklist">Λίστα βιβλίων</string>
+    <string name="pt_bob_open_book_read_only">Άνοιγμα βιβλίου μόνο για ανάγνωση</string>
+    <string name="pt_bob_list_state">Κατάσταση λίστας βιβλίων</string>
+    <string name="pt_bob_list_generation">Επιλογή παραγωγής λίστας βιβλίων</string>
+    <string name="pg_scanning">Γίνεται Σάρωση</string>
+    <string name="pt_scanning_beep_if_isbn_invalid">Ειδοποίηση αν ο σκαναρισμένος κωδικός ISBN δεν είναι έγκυρος</string>
+    <string name="pt_scanning_beep_if_isbn_valid">Ειδοποίηση αν το σκαναρισμένο ISBN είναι έγκυρο</string>
+    <string name="pt_scanning_preferred_scanner">Προτιμώμενος σαρωτής</string>
+    <string name="pg_thumbnails">Μικρογραφίες</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
+    <string name="pt_thumbnails_external_cropper">Χρήση εξωτερικού κόπτη εικόνων (σε πειραματικό στάδιο)</string>
+    <string name="pt_bob_thumbnails_generating_mode">Χρησιμοποιήστε το νήμα φόντου για να προσελκύσετε μικρογραφίες</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Χρήση νήματος παρασκηνίου (πιο γρήγορο scrolling στις λίστες, οι εικόνες ίσως καθυστερρούν να εμφανιστούν)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Άμεση παραγωγή (πιο αργό scrolling στις λίστες, οι εικόνες εμφανίζονται αμέσως)</string>
+    <string name="pt_bob_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
+    <string name="pt_thumbnails_rotate_auto">Αυτόματη περιστροφή εικόνων από κάμερα</string>
+    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας «Layer Type»</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το «Λογισμικό» για ασφαλέστερο αλλά πιο αργό ή για «υλισμικό» για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
+    <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
+    <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
+    <string name="pg_general">Γενικά</string>
+    <string name="pg_groupings">Ομαδοποιήσεις</string>
+    <string name="pg_filters">Φίλτρα Βιβλίων</string>
+    <string name="pg_bob_extra_book_details">Επιπλέον λεπτομέρειες βιβλίου</string>
+    <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
+    <string name="pt_bob_text_size">Μέγεθος αντικειμένων λίστας βιβλίων</string>
+    <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
+    <string name="pt_cover_scale_factor">Μικρογραφεί μέγεθος σε λίστες</string>
+    <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>
+    <string name="pt_bob_books_under_multiple_authors">Βιβλία με πολλούς συγγραφείς</string>
+    <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Κάτω από κύρια %1$s μόνο</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Κάτω από κάθε %1$s</string>
+    <string name="pt_bob_format_author_name">Μορφή του ονόματος συγγραφέα</string>
+    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ «Κωστής  Παλαμάς»</string>
+    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ «Παλαμάς, Κωστής»</string>
+    <string name="pe_use_recommended_option">Χρησιμοποιήστε τη συνιστώμενη επιλογή</string>
+
+
+
     <string name="title_add_book">Προσθήκη Βιβλίου</string>
     <string name="menu_add_book">Προσθήκη Βιβλίου…</string>
     <string name="title_delete_book">Διαγραφή Βιβλίου</string>
@@ -103,14 +158,14 @@
     <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="tip_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
     <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
-    <string name="vldt_unable_to_get_value_for_x">Δεν βρέθηκε τιμή για ‘%1$s’</string>
-    <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για ‘%1$s’</string>
-    <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για ‘%1$s’</string>
-    <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για ‘%1$s’</string>
-    <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για ‘%1$s’</string>
-    <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για ‘%1$s’</string>
-    <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για ‘%1$s’</string>
-    <string name="vldt_failed_for_x">Η επικύρωση απέτυχε για ‘%1$s’</string>
+    <string name="vldt_unable_to_get_value_for_x">Δεν βρέθηκε τιμή για «%1$s»</string>
+    <string name="vldt_integer_expected_for_x">Αναμένεται ακέραια τιμή για «%1$s»</string>
+    <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για «%1$s»</string>
+    <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για «%1$s»</string>
+    <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
+    <string name="vldt_non_blank_required_for_x">Απαιτείται μη κενή τιμή για «%1$s»</string>
+    <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
+    <string name="vldt_failed_for_x">Η επικύρωση απέτυχε για «%1$s»</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
@@ -148,18 +203,18 @@
     <string name="X_menu_edit_author">Επεξεργασία Συγγραφέα…</string>
     <string name="X_menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
-    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά ‘%1$s’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
+    <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="X_warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
-    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n ‘%1$s’ σε \n ‘%2$s’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή ‘%3$s’ θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n «%1$s» σε \n «%2$s»\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
-    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n ‘%1$s’ σε \n  ‘%2$s’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή ‘%3$s’ θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n «%1$s» σε \n  «%2$s»\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="list_and">και</string>
-    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο ‘%1$s’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
+    <string name="confirm_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο «%1$s» από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="info_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
@@ -185,7 +240,7 @@
     <string name="btn_reset">Επαναφορά</string>
     <string name="debug_send_info_text">Πατήστε στο παρακάτω κουμπί για να αποστείλετε αναφορά σφαλμάτων και προβλημάτων σε κάποιον προγραμματιστή μας. Θα δημιουργηθεί αντίγραφο ολόκληρης της βάσης δεδομένων σας καθώς και των αρχείων log. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του email πριν την αποστολή.</string>
     <string name="lbl_send_info">Αποστολή πληροφοριών εντοπισμού σφαλμάτων</string>
-    <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί ‘Αποστολή πληροφοριών’.</string>
+    <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «Αποστολή πληροφοριών».</string>
     <string name="lbl_cleanup_files">Εκκαθάριση αρχείων</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
@@ -245,7 +300,7 @@
     <string name="info_authorized">Έχει άδεια</string>
     <string name="info_not_authorized">Χωρίς άδεια</string>
     <string name="gr_auth_error">Η αδειοδότηση του Goodreads οδήγησε σε λάθος.</string>
-    <string name="error_if_the_problem_persists">Εαν το πρόβλημα συνεχίζεται, επικοινωνήστε με την υποστήρηξη μέσω της ‘Διαχειριστής’ στο κέντρικό μενού.</string>
+    <string name="error_if_the_problem_persists">Εαν το πρόβλημα συνεχίζεται, επικοινωνήστε με την υποστήρηξη μέσω της «Διαχειριστής» στο κέντρικό μενού.</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_please_enter_search_criteria">Παρακαλούμε εισάγετε τα κριτήρια αναζήτησης</string>
     <string name="gr_error_while_searching">Σφάλμα κατά την αναζήτηση.</string>
@@ -289,37 +344,10 @@
     <string name="tip_dialog_title">Συμβουλή</string>
     <string name="tip_reset_all">Επαναφορά συμβουλών</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_styles_editor">
-        Σε αυτή την οθόνη μπορείτε να προσαρμόσετε τη λίστα των στυλ που θα εμφανίζεται στο μενού με τα προεπιλεγμένα στυλ σας.
-        \n\nΤο πράσινο V δείχνει ότι το στυλ θα εμφανίζεται στη λίστα, ενώ το κόκκινο Χ δείχνει πως δεν θα εμφανίζεται.
-        Πατώντας στο πράσινο V θα γίνει X και το αντίστροφο.
-        \n\nΕαν κανένα στυλ δεν έχει τσεκαριστέι, τότε θα εμφανίζονται όλα.
-        \n\nΜπορείτε να αναδιατάξετε τα αντικείμενο μεταφέροντας το εικονίδιο στο δεξί άκρο κάθε σειράς.
-        \n\nΠατώντας οπουδήποτε αλλού στη σειρά θα μπορείτε να επεξεργαστείτε τις λεπτομέρειες του συγκεκριμένου στυλ (ή να το αντιγράψετε, εαν
-        είναι ενσωματωμένο στύλ).
-    </string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_style_groups">
-        Σε αυτή την οθόνη μπορείτε να τροποποιήσετε την ιεραρχία των κεφαλίδων για ένα συγκεκριμένο στυλ λίστας βιβλίων.
-        \n\nΤο πράσινο V δείχνει ότι η κεφαλίδα θα εμφανίζεται στη λίστα, ενώ το κόκκινο Χ δείχνει πως δεν θα εμφανίζεται.
-        Πατώντας στο πράσινο V θα γίνει X και το αντίστροφο.
-        \n\nΜπορείτε να αναδιατάξετε την ιεραρχία μεταφέροντας το εικονίδιο στο δεξί άκρο κάθε σειράς.
-    </string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_style_properties">
-        Σε αυτή την οθόνη μπορείτε να ορίσετε τα χαρακτηριστικά ενός συγκεκριμένου στυλ λίστας βιβλίων.
-        \n\nΜπορείτε να αλλάξετε όνομα, να επεξεργαστείτε ομαδοποιήσεις, να αλλάξετε την ιεραρχία και να ρυθμίσετε μια ποικιλία άλλων
-        επιλογών ώστε να φτιάξετε ένα στυλ που θεωρείτε χρήσιμο.
-        \n\nΑκόμα μπορείτε να χρησιμοποιήσετε ‘Φίλτρα Βιβλίων’ για να τροποποιήσετε την επιλογή των βιβλίων που θα εμφανίζονται
-        στην λίστα. πχ να εμφανίζονται μόνο μη αναγνωσμένα βιβλία.
-    </string>
-    <string name="X_tip_booklist_global_properties">
-        Σε αυτή την οθόνη μπορείτε να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των στυλ λίστας βιβλίων.
-        \n\nΟι περισσότερες ιδιότητες μπορούν να παρακαμφθούν στα ξεχωριστά στυλ, αλλά οι προεπιλεγμένες επιλογές
-        ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης της λίστας κατά την εκκίνηση και άλλες ρυθμίσεις που θα εφαρμοστούν σε όλα τα στυλ σας.
-        \n\nΕπίσης μπορείτε να επεξεργαστείτε το μενου στυλ και τα διάφορα στυλ από εδώ.
-    </string>
+    <string name="tip_booklist_styles_editor">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να προσαρμόσετε τη λίστα των στυλ που θα εμφανίζονται στο μενού προεπιλεγμένων στυλ. Ένα τσεκ που δείχνει ότι το στυλ θα εμφανιστεί στη λίστα, θα αφαιρεθεί για να το κρύψει και το αντίστροφο. Εάν δεν έχουν επιλεγεί στυλ, τότε θα εμφανίζονται όλα τα στυλ. Μπορείτε να αναδιατάξετε την ιεραρχία σύροντας το εικονίδιο στην άκρη δεξιά κάθε γραμμής πάνω ή κάτω. Εάν πατήσετε παρατεταμένα οπουδήποτε αλλού σε μια σειρά, θα μπορείτε να επεξεργαστείτε ή να κλωνοποιήσετε τις λεπτομέρειες ενός συγκεκριμένου στυλ. Αν κλωνοποιήσατε ένα στυλ και αλλάξατε γνώμη, θα πρέπει να το διαγράψετε μόνοι σας.</string>
+    <string name="tip_booklist_style_groups">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να τροποποιήσετε την ιεραρχία των επικεφαλίδων για ένα συγκεκριμένο στυλ λίστας βιβλίων. Ένα tick δείχνει ότι η επικεφαλίδα θα εμφανιστεί στη λίστα, απενεργοποιήστε την για να την κρύψετε και αντίστροφα. Μπορείτε να αναδιατάξετε την ιεραρχία σύροντας το εικονίδιο στην άκρη δεξιά κάθε γραμμής πάνω ή κάτω.</string>
+    <string name="tip_booklist_style_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα χαρακτηριστικά ενός συγκεκριμένου στυλ λίστας βιβλίων. Μπορείτε να αλλάξετε το όνομα, να επεξεργαστείτε τις ομάδες για να αλλάξετε την ιεραρχία και να προσαρμόσετε διάφορες άλλες προτιμήσεις για να δημιουργήσετε ένα στυλ που θεωρείτε χρήσιμο. Είναι επίσης δυνατή η χρήση των "Φίλτρων" για να τροποποιήσετε την επιλογή των βιβλίων που θα εμφανίζονται στη λίστα. π.χ. για να ανακτήσετε μόνο βιβλία που δεν έχετε διαβάσει ακόμη και πολλά άλλα.</string>
+    <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="lbl_preferred_styles">Προτιμώμενα στυλ</string>
     <string name="title_edit_style">Επεξεργασία στυλ</string>
     <string name="title_clone_style">Αντιγραφή στυλ</string>
@@ -327,7 +355,7 @@
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="lbl_settings">Επιλογές</string>
-    <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής ‘Διαχειριστής’ από το κεντρικό μενού.</string>
+    <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής «Διαχειριστής» από το κεντρικό μενού.</string>
     <string name="menu_duplicate">Aντιγράφω</string>
     <string name="style_builtin_compact">Συμπαγής</string>
     <string name="style_is_user_defined">Καθορισμενο-από-χρήστη</string>
@@ -381,7 +409,7 @@
     <string name="gr_explain_goodreads_no_match">
         Ο κωδικός ISBN του επιλεγμένου βιλίου δε βρέθηκε στο Goodreads. Υπάρχουν δύο πιθανές αιτίες γι\'αυτό:
         είτε τα δεδομένα για το βιβλίο είναι λάθος (παρακαλούμε ελέγξτε το ISBN του), ή το βιβλίο δεν υπάρχει στο Goodreads.
-        \n\nΑν αλλάξετε κάτι στα δεδομένα στο &APP_NAME;, πατήστε το κουμπί ‘Επανάληψη’ για να δείτε αν
+        \n\nΑν αλλάξετε κάτι στα δεδομένα στο &APP_NAME;, πατήστε το κουμπί «Επανάληψη» για να δείτε αν
         η εργασία παρασκηνίου που προκύπτει είναι επιτυχής.
         \n\nΑν τα δεδομένα είναι σωστά και το βιβλίο ακόμα δεν εμφανίζεται, πρέπει να προστεθεί ένα βιβλίο με αυτό το ISBN στο Goodreads χειροκίνητα
         μέσω της ιστοσελίδας του. Μόλις γίνει αυτό, μπορείτε να δοκιμάσετε να ξαναστείλετε το βιβλίο.
@@ -399,7 +427,7 @@
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
     <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
     <string name="X_error_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
-    <string name="tip_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας ‘Προσαρμογή’ στο τέλος της λίστας.</string>
+    <string name="tip_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας «Προσαρμογή» στο τέλος της λίστας.</string>
     <string name="warning_missing_name">Το όνομα δε μπορεί να είναι κενό</string>
     <string name="progress_msg_export_starting">Εκκίνηση εξαγωγής…</string>
     <string name="menu_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
@@ -435,7 +463,7 @@
     <string name="lbl_x_pages">%1$d σελίδες</string>
     <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
     <string name="warning_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;. Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
-    <string name="tip_view_only_book_details">Όταν πατάτε κάτι σε αυτή τη λίστα, μπορείτε πλέον να επιλέξετε την είσοδο σε μη-επεξεργάσιμη προβολη λεπτομερειών του βιβλίου. Δείτε τις “Άλλες Προτιμήσεις” για τη σχετική ρύθμιση.</string>
+    <string name="tip_view_only_book_details">Όταν πατάτε κάτι σε αυτή τη λίστα, μπορείτε πλέον να επιλέξετε την είσοδο σε μη-επεξεργάσιμη προβολη λεπτομερειών του βιβλίου. Δείτε τις «Άλλες Προτιμήσεις» για τη σχετική ρύθμιση.</string>
     <string name="tip_view_only_help">Αυτή είναι η μη-επεξεργάσιμη οθόνη λεπτομερειών. Μπορείτε να σύρετε αριστερά ή δεξιά την οθόνη, για να πάτε σε άλλα βιβλία και μπορείτε να επεξεργαστείτε το βιβλίο μέσω του μενού επιλογών χρησιμοποιώντας το κουμπί μενού ή το εικονίδιο υπερχείλισης μενού.</string>
     <string name="tab_lbl_details">Λεπτομ</string>
     <string name="gr_btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
@@ -447,7 +475,7 @@
     <string name="lbl_backup_to_archive">Αντίγραφο ασφαλείας στο Αρχείο</string>
     <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
     <string name="export_info_success_archive_details">
-        ;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο ‘%1$s’.\n
+        ;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n
         \nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση
         που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.
     </string>
@@ -484,18 +512,23 @@
     <string name="export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
 
     <plurals name="displaying_n_books">
-        <item quantity="one">εμφανίζονται ένα βιβλίο</item>
+        <item quantity="one">εμφανίζονται %1$d βιβλίο</item>
         <item quantity="other">εμφανίζονται %1$d βιβλία</item>
     </plurals>
 
+    <plurals name="n_books_found">
+        <item quantity="one">Βρέθηκε %1$d βιβλίο</item>
+        <item quantity="other">%1$d βιβλία που βρέθηκαν</item>
+    </plurals>
+
     <plurals name="n_books">
-        <item quantity="one">1 βιβλίο</item>
-        <item quantity="other">%1$s βιβλία</item>
+        <item quantity="one">%1$d βιβλίο</item>
+        <item quantity="other">%1$d βιβλία</item>
     </plurals>
 
     <plurals name="n_covers">
-        <item quantity="one">1 εξώφυλλο</item>
-        <item quantity="other">%1$s εξώφυλλα</item>
+        <item quantity="one">%1$d εξώφυλλο</item>
+        <item quantity="other">%1$d εξώφυλλα</item>
     </plurals>
 
     <plurals name="n_stars">
@@ -583,10 +616,10 @@
     <string name="gr_tq_events_recorded">(%1$d καταγραφόμενα συμβάντα)</string>
     <string name="confirm_merge_bookshelves">Το βιβλιοθήκη που μετονομάζετε ήδη υπάρχει. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="gr_tq_generic_task_info">Αναγνωριστικό εργασίας %1$d, αναρτημένο στο %2$s</string>
-    <string name="menu_set_complete">Ορίστε να “ολοκληρώσετε”</string>
-    <string name="menu_set_incomplete">Ρυθμίστε σε “ατελές”</string>
-    <string name="menu_set_read">Ορίστε ως “διαβάσετε”</string>
-    <string name="menu_set_unread">Ορίστε ως “μη αναγνωσμένο”</string>
+    <string name="menu_set_complete">Ορίστε να «ολοκληρώσετε»</string>
+    <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
+    <string name="menu_set_read">Ορίστε ως «διαβάσετε»</string>
+    <string name="menu_set_unread">Ορίστε ως «μη αναγνωσμένο»</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
     <string name="error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_configuration">Σφάλμα διαμόρφωσης. Ανοίξτε τη σελίδα Ρυθμίσεις και ελέγξτε τις προτιμήσεις του ιστότοπου αναζήτησης.</string>
@@ -594,7 +627,7 @@
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="import_export_option_xml_info">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
     <string name="import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>
-    <string name="info_share_book_im_reading">Διαβάζω “%1$s” από %2$s %3$s %4$s</string>
+    <string name="info_share_book_im_reading">Διαβάζω «%1$s» από %2$s %3$s %4$s</string>
     <string name="lbl_search_sites">Ερευνητικοί χώροι</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
     <string name="error_storage_not_accessible">Δεν είναι δυνατή η αποθήκευση</string>
@@ -610,8 +643,8 @@
     <string name="lbl_creators">Αρχικά από:</string>
     <string name="unknown_uc">ΑΓΝΩΣΤΟ</string>
     <string name="title_delete_toc_entry">Διαγράψτε τον τίτλο</string>
-    <string name="pg_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
-    <string name="confirm_delete_toc_entry">Πραγματικά διαγράψτε τον τίτλο “%1$s” από το %2$s; Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
+    <string name="pv_reformat_titles_prefixes">ο|η|το|οι|οι|τα|ένας|μια|ένα</string>
+    <string name="confirm_delete_toc_entry">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s); Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="menu_view_book_at_ellipsis">Προβολή στο…</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="warning_missing_title">Ο τίτλος λείπει.</string>
@@ -619,5 +652,9 @@
     <string name="warning_isfdb_only">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
     <string name="error_failed_x">Αποτυχία: %1$d</string>
+    <string name="tip_authors_works_multiple_books">Η είσοδος υπάρχει σε πολλά βιβλία.</string>
+    <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια:</string>
+    <string name="tip_authors_works_toc">Καταχώρηση Πίνακα περιεχομένου (TOC), π.χ. ιστορία.</string>
+    <string name="tip_authors_works_book">Βιβλίο.</string>
 
 </resources>

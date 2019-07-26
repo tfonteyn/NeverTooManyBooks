@@ -63,4 +63,31 @@
     <string name="debug_test" translatable="false">Test something</string>
     <string name="debug_bob_tables" translatable="false">BoB tables</string>
 
+    <!-- ListPreference - Preferred interface Language -->
+    <!-- each language listed here must be written in its own language/spelling ! -->
+    <string-array name="pe_ui_language">
+        <item translatable="false">@string/pt_ui_system_locale</item>
+        <item translatable="false">English</item>
+        <item translatable="false">Deutsch</item>
+        <item translatable="false">Français</item>
+        <item translatable="false">Nederlands</item>
+        <item translatable="false">Español</item>
+        <item translatable="false">Italiano</item>
+        <item translatable="false">ελληνικά</item>
+        <item translatable="false">русский</item>
+        <item translatable="false">Türk</item>
+    </string-array>
+    <string-array name="pv_ui_language">
+        <item translatable="false">system</item>
+        <item translatable="false">en</item>
+        <item translatable="false">de</item>
+        <item translatable="false">fr</item>
+        <item translatable="false">nl</item>
+        <item translatable="false">es</item>
+        <item translatable="false">it</item>
+        <item translatable="false">el</item>
+        <item translatable="false">ru</item>
+        <item translatable="false">tr</item>
+    </string-array>
+
 </resources>

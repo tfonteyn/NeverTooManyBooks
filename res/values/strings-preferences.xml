@@ -1,40 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Quotes “…” -->
 <resources>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_ui">User Interface</string>
-
-    <!-- ListPreference - Preferred interface Locale -->
-    <string name="pt_ui_language">Language</string>
-    <string name="pt_ui_system_locale">System Locale</string>
-    <!-- each language listed here must be written in its own language/spelling ! -->
-    <string-array name="pe_ui_language">
-        <item translatable="false">@string/pt_ui_system_locale</item>
-        <item translatable="false">English</item>
-        <item translatable="false">Deutsch</item>
-        <item translatable="false">Français</item>
-        <item translatable="false">Nederlands</item>
-        <item translatable="false">Español</item>
-        <item translatable="false">Italiano</item>
-        <item translatable="false">ελληνικά</item>
-        <item translatable="false">русский</item>
-        <item translatable="false">Türk</item>
-    </string-array>
-    <string-array name="pv_ui_language">
-        <item translatable="false">system</item>
-        <item translatable="false">en</item>
-        <item translatable="false">de</item>
-        <item translatable="false">fr</item>
-        <item translatable="false">nl</item>
-        <item translatable="false">es</item>
-        <item translatable="false">it</item>
-        <item translatable="false">el</item>
-        <item translatable="false">ru</item>
-        <item translatable="false">tr</item>
-    </string-array>
-
     <!-- ListPreference NEWKIND: APP THEME. -->
-    <string name="pt_ui_theme">Interface Theme</string>
     <string-array name="pe_ui_theme">
         <item>Day / Night</item>
         <item>Dark</item>
@@ -50,8 +18,7 @@
     <!-- ListPreference
      Implementation to use for
      {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#show}.
- -->
-    <string name="pt_ui_messages_use">Information messages</string>
+    -->
     <string-array name="pe_ui_messages_use">
         <item translatable="false">Toast</item>
         <item translatable="false">Snackbar</item>
@@ -61,35 +28,7 @@
         <item translatable="false">1</item>
     </string-array>
 
-
-    <string name="pg_ui_field_visibility">Field Visibility</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Reformat titles</string>
-
-    <string name="pg_reformat_titles_summary">Store the original “The title” or reformat to “title, The”</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_reformat_titles_on_insert">When adding</string>
-    <!-- SwitchPreference -->
-    <string name="pt_reformat_titles_on_update">When editing</string>
-
-    <!-- example of 'original' title -->
-    <string name="pg_reformat_titles_original">The title</string>
-    <!-- example of a reformatted title -->
-    <string name="pg_reformat_titles_reformatted">title, The</string>
-
-    <!-- the prefixes that will be moved to the end of a title. -->
-    <string name="pg_reformat_titles_prefixes">a|A|an|An|the|The</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Book Lists</string>
-
-    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
-    <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
-
     <!-- Preference - Book list state-related preferences -->
-    <string name="pt_bob_list_state">Book list state</string>
     <string-array name="pe_bob_list_state">
         <item>Preserve book list state</item>
         <item>Always start book lists expanded</item>
@@ -102,7 +41,6 @@
     </string-array>
 
     <!--  Preference to override the default method used to generate book lists as defined by API level -->
-    <string name="pt_bob_list_generation">Book List Generation Option</string>
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Force Fully Featured</item>
@@ -116,18 +54,7 @@
         <item translatable="false">3</item>
     </string-array>
 
-
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Scanning</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
-
     <!-- ListPreference - the barcode scanner to use-->
-    <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
     <string-array name="pe_scanning_preferred_scanner">
         <item>Zxing Compatible Scanner</item>
         <item translatable="false">Zxing</item>
@@ -139,30 +66,7 @@
         <item translatable="false">2</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Thumbnails</string>
-
-    <!-- SwitchPreference - zooming images should upscale (or only show actual max size) -->
-    <string name="pt_thumbnails_upscale_zoom">Upscale images when zoomed</string>
-
-    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
-
-    <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
-    <string name="pt_thumbnails_external_cropper">Use an external image cropper</string>
-
-    <!-- Preference - Thumbnails are fetched in a background task -->
-    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch images</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Use background task to load images (scrolling will be faster, images may be delayed)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Load images immediately (scrolling will be slower)</string>
-
-    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
-    <string name="pt_bob_thumbnails_cache_resized">Resized images are cached</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Resize images each time they are needed (uses less storage, scrolling will be slower)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Cache resized images (scrolling will be faster, uses more storage)</string>
-
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
-    <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>No</item>
         <item>Clockwise</item>
@@ -177,8 +81,6 @@
     </string-array>
 
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Cropping ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Leave this setting on ‘Use default’ unless you experience crashes while cropping images. Try ‘Software’ for safer but slower or force ‘Hardware’ for less safe, but faster</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Hardware</item>
@@ -190,40 +92,9 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <!-- Search sites -->
-
-    <!-- SwitchPreference - allow mobile network usage or limit to use wifi/ethernet only. -->
-    <string name="pt_allow_mobile_data">Allow mobile data usage</string>
-
-    <!-- SwitchPreference - search engines can collect series information from the toc.
-        This is not always desirable, and by default switched off.
-        -->
-    <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
-
-    <!-- SwitchPreference - some search engines can add the publisher to the search terms.
-        This is not always desirable, as they use "AND" to combine the terms.
-        So by default this is switched off.
-        -->
-    <string name="pt_search_uses_publisher">Search uses publisher</string>
-
-
-    <!-- ####################################################################################### -->
-
-
     <!-- *************************************************************************************** -->
     <!-- ========== Book list style preferences ========== -->
     <!-- *************************************************************************************** -->
-
-
-    <!-- ####################################################################################### -->
-    <string name="pg_general">General</string>
-
-    <!-- Preference Category; groups (RowKinds) in booklist style -->
-    <string name="pg_groupings">Groupings</string>
-
-    <!-- Preference Category; filters in booklist style -->
-    <string name="pg_filters">Filters</string>
 
     <!-- ListPreference - Booklist Filter -->
     <string-array name="pe_bob_filter_read">
@@ -280,13 +151,7 @@
         <item translatable="false">128</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <!-- Preference Category; The extra fields displayed on 'book-level' in the booklist -->
-    <string name="pg_bob_extra_book_details">Extra Book Details</string>
-
     <!-- MultiSelectListPreference - Determines what is show in book list header -->
-    <string name="pt_bob_header">Summary details in header</string>
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
     <string-array name="pe_bob_header">
         <item>Number of books</item>
@@ -301,7 +166,6 @@
     </string-array>
 
     <!-- ListPreference - Scale text. -->
-    <string name="pt_bob_text_size">Size of book list text</string>
     <string-array name="pe_bob_text_size">
         <item>Small</item>
         <item>Medium</item>
@@ -313,13 +177,7 @@
         <item translatable="false">3</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <!-- SwitchPreference - Show thumbnail image for each book -->
-    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
-
     <!-- ListPreference - Scale thumbnails in the list view. -->
-    <string name="pt_cover_scale_factor">Thumbnails size in lists</string>
     <string-array name="pe_cover_scale_factor">
         <item>X-Small</item>
         <item>Small</item>
@@ -338,29 +196,4 @@
         <item translatable="false">12</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <!-- SwitchPreference - Sorting Author by family (default) or given name.
-     This is independent from the display format -->
-    <string name="pt_bob_sort_author_name">Sorting of author names</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
-    <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Under primary %1$s only</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_bob_format_author_name">Format of author names</string>
-    <string name="pv_bob_format_author_name_given_first">Given name first e.g. ‘Phillis Wheatley’</string>
-    <string name="pv_bob_format_author_name_family_first">Family name first e.g. ‘Wheatley, Phillis’</string>
-
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Use the recommended option</string>
-    <!-- The defaults for MultiSelect fields, i.e. select nothing -->
-    <string-array name="empty_array" />
 </resources>

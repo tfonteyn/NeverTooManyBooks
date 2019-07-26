@@ -1,36 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pg_ui">Uživatelské rozhraní</string>
-
-    <string name="pt_ui_language">Jazyk</string>
-    <string name="pt_ui_system_locale">Národní prostředí systému</string>
-
-    <string name="pt_ui_theme">Téma</string>
     <string-array name="pe_ui_theme">
         <item>Den / Noc</item>
         <item>Temný</item>
         <item>Světlo</item>
     </string-array>
 
-    <string name="pt_ui_messages_use">Informační zprávy</string>
-
-    <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Přeformátujte tituly</string>
-    <string name="pt_reformat_titles_on_insert">Při přidávání</string>
-    <string name="pt_reformat_titles_on_update">Při úpravách</string>
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Seznamy knih</string>
-    <string name="pt_bob_open_book_read_only">Otevřete knihu v režimu jen pro čtení</string>
-    <string name="pt_bob_list_state">Stav seznamu knih</string>
     <string-array name="pe_bob_list_state">
         <item>Vždy otevřít seznam knih rozbalený</item>
         <item>Vždy otevřít seznam knih sbalený</item>
         <item>Zachovat stav seznamu knih</item>
     </string-array>
-    <string name="pt_bob_list_generation">Možnost generování seznamu knih</string>
+
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Síla plně vybavený</item>
@@ -38,32 +20,12 @@
         <item>Vynutit režim kompatibility</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Snímání</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Je-li naskenované číslo ISBN neplatné, pípněte</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Je-li naskenované číslo ISBN platné, pípněte</string>
-    <string name="pt_scanning_preferred_scanner">Upřednostňovaný skener</string>
     <string-array name="pe_scanning_preferred_scanner">
         <item>Kompatibilní skener Zxing</item>
         <item translatable="false">Zxing</item>
         <item translatable="false">Pic2Shop</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Náhledy</string>
-
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
-    <string name="pt_thumbnails_external_cropper">Použijte externí oříznutí obrázků</string>
-
-    <string name="pt_bob_thumbnails_generating_mode">Chcete-li načíst obrázky, použijte úkol na pozadí</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Načíst obrázky okamžitě (rolování bude pomalejší)</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Použít úlohu na pozadí k načtení obrázků (rolování bude rychlejší, obrázky mohou být zpožděny)</string>
-
-    <string name="pt_bob_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
-
-    <string name="pt_thumbnails_rotate_auto">Automaticky otáčí snímky pořízené fotoaparátem</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>Ne</item>
         <item>Ve směru hodinových ručiček</item>
@@ -71,70 +33,48 @@
         <item>180 °</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Oříznout ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Hardware</item>
         <item>Software</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
-    <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pg_general">Obecné</string>
-    <string name="pg_groupings">Seskupení</string>
-
-    <string name="pg_filters">Filtry knih</string>
     <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>
         <item>Knihy číst</item>
         <item>Knihy nepřečtené</item>
     </string-array>
+
     <string-array name="pe_bob_filter_signed">
         <item>@string/bookshelf_all_books</item>
         <item>Podepsané knihy</item>
         <item>Knihy nepodepsané</item>
     </string-array>
+
     <string-array name="pe_bob_filter_anthology">
         <item>@string/bookshelf_all_books</item>
         <item>Anthology</item>
         <item>Všechno kromě Anthologies</item>
     </string-array>
+
     <string-array name="pe_bob_filter_loaned">
         <item>@string/bookshelf_all_books</item>
         <item>Knihy o půjčce</item>
         <item>Dostupné knihy</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string-array name="pe_bob_header">
         <item>Počet knih</item>
         <item>Nadpis 1. úrovně</item>
         <item>Záhlaví druhé úrovně</item>
     </string-array>
 
-    <string name="pt_bob_text_size">Velikost položek na seznamu knih</string>
     <string-array name="pe_bob_text_size">
         <item>Malý</item>
         <item>Střední</item>
         <item>Velký</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
-    <string name="pt_cover_scale_factor">Velikost miniatur v seznamech</string>
     <string-array name="pe_cover_scale_factor">
         <item>X-Malý</item>
         <item>Malý</item>
@@ -143,23 +83,4 @@
         <item>X-Velký</item>
         <item>2X-Velký</item>
     </string-array>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_sort_author_name">Seřadit podle jména autora</string>
-
-    <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
-    <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Pouze pod primárním %1$s</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Pod každým %1$s</string>
-
-    <string name="pt_bob_format_author_name">Formát zobrazení jména autora</string>
-    <string name="pv_bob_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. ‘Karel Čapek’</string>
-    <string name="pv_bob_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. ‘Čapek, Karel’</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Použijte doporučenou možnost</string>
-
 </resources>

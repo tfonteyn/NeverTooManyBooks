@@ -1,7 +1,66 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
-
+<!-- Quotes „…“  - Regex to find wrong ones: (”|‘|’|«|») -->
 <resources>
+
+    <string name="pg_ui">Benutzeroberfläche</string>
+    <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
+    <string name="pg_reformat_titles">Neuformatierung der Titel</string>
+    <string name="pg_reformat_titles_summary">Speichern Sie das Original „Der Titel“ oder formatieren Sie es in „Titel, Der“.</string>
+    <string name="pg_booklist">Buchlisten</string>
+    <string name="pg_scanning">Scanne</string>
+    <string name="pg_thumbnails">Umschlagbilder</string>
+    <string name="pg_general">Allgemein</string>
+    <string name="pg_groupings">Gruppierung</string>
+    <string name="pg_filters">Buchfilter</string>
+    <string name="pg_bob_extra_book_details">Zusätzliche Buchdetails</string>
+
+
+    <string name="pt_ui_language">Bediensprache</string>
+    <string name="pt_ui_system_locale">System Locale</string>
+    <string name="pt_ui_theme">Thema</string>
+    <string name="pt_ui_messages_use">informieren mit</string>
+    <string name="pt_reformat_titles_on_insert">Beim Hinzufügen</string>
+    <string name="pt_reformat_titles_on_update">Beim Bearbeiten</string>
+    <string name="pt_reformat_titles_original">Der Titel</string>
+    <string name="pt_reformat_titles_reformatted">Titel, Der</string>
+    <string name="pt_bob_open_book_read_only">Buch im schreibgeschützten Modus öffnen</string>
+    <string name="pt_bob_list_state">Darstellung der Bücherliste</string>
+    <string name="pt_bob_list_generation">Erzeugung der Bücherliste</string>
+    <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
+    <string name="pt_scanning_beep_if_isbn_valid">Tonsignal bei gültig gescannter ISBN</string>
+    <string name="pt_scanning_preferred_scanner">Bevorzugter Scanner</string>
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
+    <string name="pt_thumbnails_external_cropper">Externe Bildbearbeitung verwenden</string>
+    <string name="pt_bob_thumbnails_generating_mode">Cover-Bilder im Hintergrund laden</string>
+    <string name="pt_bob_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
+    <string name="pt_thumbnails_rotate_auto">Bilder von der Kamera automatisch rotieren</string>
+    <string name="pt_thumbnail_cropper_layer_type">Zuschneiden „Layer Type“</string>
+    <string name="pt_thumbnail_cropper_layer_type_summary">Behalten Sie diese Einstellung bei „Standardeinstellung“ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie „Software“ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie „Hardware“ für weniger Sicherheit, aber schneller.</string>
+    <string name="pt_allow_mobile_data">Mobile Datennutzung zulassen</string>
+    <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
+    <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
+    <string name="pt_bob_text_size">Größe der Einträge in der Bücherliste</string>
+    <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
+    <string name="pt_cover_scale_factor">Bildgröße in Listen</string>
+    <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>
+    <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
+    <string name="pt_bob_books_under_multiple_series">Bücher in mehreren Serien</string>
+    <string name="pt_bob_format_author_name">Format des Autorennamens</string>
+
+
+    <string name="pe_bob_thumbnails_generating_mode_background">Im Hintergrund laden (schnellerer Bildlauf, Bilder können verzögert sein)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Sofort erzeugen (langsamerer Bildlauf, Bilder sofort angezeigt)</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
+    <string name="pe_use_recommended_option">Verwenden Sie die empfohlene Option</string>
+
+    <string name="pv_bob_books_under_multiple_each_1s">Unter jedem %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Nur unter primärem %1$s</string>
+    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. „Franz  Kafka“)</string>
+    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. „Kafka, Franz“)</string>
+
+
     <string name="title_add_book">Buch hinzufügen</string>
     <string name="menu_add_book">Buch hinzufügen…</string>
     <string name="title_delete_book">Buch löschen</string>
@@ -142,16 +201,16 @@
         Barcode manchmal auf der Rückseite des Covers zu finden ist.
     </string>
     <string name="X_about_help_tap_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
-    <string name="vldt_unable_to_get_value_for_x">Der Wert für ‘%1$s’ konnte nicht ermittelt werden</string>
-    <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für ‘%1$s’ erwartet</string>
-    <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für ‘%1$s’ erwartet</string>
-    <string name="vldt_date_expected_for_x">Es wird ein Datum für ‘%1$s’ erwartet</string>
+    <string name="vldt_unable_to_get_value_for_x">Der Wert für „%1$s“ konnte nicht ermittelt werden</string>
+    <string name="vldt_integer_expected_for_x">Es wird ein Integer-Wert für „%1$s“ erwartet</string>
+    <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
+    <string name="vldt_date_expected_for_x">Es wird ein Datum für „%1$s“ erwartet</string>
     <string name="vldt_boolean_expected_for_x">
-        Es wird ein boolescher Wert (0,1,t,f,true,false) für ‘%1$s’ erwartet
+        Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet
     </string>
-    <string name="vldt_non_blank_required_for_x">Es ist ein Wert für ‘%1$s’ erforderlich</string>
-    <string name="vldt_blank_required_for_x">‘%1$s’ muss leer sein</string>
-    <string name="vldt_failed_for_x">Die Überprüfung für ‘%1$s’ ist fehlgeschlagen</string>
+    <string name="vldt_non_blank_required_for_x">Es ist ein Wert für „%1$s“ erforderlich</string>
+    <string name="vldt_blank_required_for_x">„%1$s“ muss leer sein</string>
+    <string name="vldt_failed_for_x">Die Überprüfung für „%1$s“ ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">
         Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen
     </string>
@@ -210,7 +269,7 @@
     <string name="X_menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
     <string name="confirm_delete_series">
-        Soll die Serie ‘%1$s’ gelöscht werden?\n
+        Soll die Serie „%1$s“ gelöscht werden?\n
         \nDie Bücher werden nicht gelöscht.\n\n
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
@@ -223,20 +282,20 @@
     </string>
     <string name="X_unsaved_edits_title">Ungespeicherte Änderungen</string>
     <string name="confirm_apply_author_changed">
-        Der Autor wurde geändert von\n  ‘%1$s’ in \n  ‘%2$s’\nWie wollen Sie diese Änderung
-        übernehmen?\nHinweis: Die Auswahl ‘%3$s’ wird sofort übernommen.
+        Der Autor wurde geändert von\n„%1$s“ in\n„%2$s“\nWie wollen Sie diese Änderung
+        übernehmen?\nHinweis: Die Auswahl „%3$s“ wird sofort übernommen.
     </string>
     <string name="btn_this_book">Dieses Buch</string>
     <string name="title_scope_of_change">Umfang der Änderung</string>
     <string name="confirm_apply_series_changed">
-        Die Serie wurde geändert von\n ‘%1$s’ in \n ‘%2$s’\n
-        Wie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl ‘%3$s’ wird sofort
+        Die Serie wurde geändert von\n„%1$s“ in\n„%2$s“\n
+        Wie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl „%3$s“ wird sofort
         übernommen.
     </string>
     <string name="warning_unable_to_find_book">Das angegebene Buch wurde nicht gefunden</string>
     <string name="list_and">und</string>
     <string name="confirm_delete_book">
-        Dieser Vorgang löscht das Buch mit dem Titel ‘%1$s’ von ‘%2$s’ vollständig.
+        Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig.
         Wollen Sie das Buch löschen?
     </string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar</string>
@@ -296,7 +355,7 @@
         Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder
         wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese
         Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten,
-        ziehen Sie bitte in Betracht, den ‘Sende Informationen’ Knopf zuerst zu benutzen.
+        ziehen Sie bitte in Betracht, den „Sende Informationen“ Knopf zuerst zu benutzen.
     </string>
     <string name="lbl_cleanup_files">Dateien bereinigen</string>
     <string name="megabytes">%.2fMB</string>
@@ -322,8 +381,8 @@
     <string name="bookshelf_my_books">Meine Bücher</string>
     <string name="gr_menu_send_to_goodreads">Zu Goodreads senden</string>
     <string name="gr_auth_blurb_part1">
-        Goodreads ist eine Website, deren ausgewiesener Zweck es ist, “Menschen zu helfen,
-        um Bücher zu suchen und zu teilen, die sie gern haben”. Sie führt eine umfassende
+        Goodreads ist eine Website, deren ausgewiesener Zweck es ist, „Menschen zu helfen,
+        um Bücher zu suchen und zu teilen, die sie gern haben“. Sie führt eine umfassende
         Datenbank von Büchern und Buchbesprechungen, und wenn Sie ein registrierter Benutzer
         von Goodreads sind, kann &APP_NAME; Ihre Bücher, Bücherregale und Buchbesprechnungen
         exportieren und importieren. &APP_NAME; ist eine eigenständige App und erfordert keine
@@ -335,7 +394,7 @@
         weitergeleitet, auf der Sie sich bei Goodreads anmelden und den Zugriff autorisieren
         können. Wir werden Ihr Kennwort nie sehen, und Sie können den Zugriff auf der Website
         von Goodreads jederzeit beenden. Wegen der Unwägbarkeiten des Webs kann es sein, dass Sie
-        anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den “Zurück”-Button,
+        anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den „Zurück“-Button,
         um hierher zurückzukehren!
     </string>
     <string name="gr_auth_blurb_part3">
@@ -378,7 +437,7 @@
     <string name="info_not_authorized">Nicht autorisiert</string>
     <string name="gr_auth_error">Die Autorisierung bei Goodreads endete fehlerhaft</string>
     <string name="error_if_the_problem_persists">
-        Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü “Verwaltung”
+        Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü „Verwaltung“
     </string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="warning_please_enter_search_criteria">Bitte geben Sie die Suchkriterien ein</string>
@@ -399,7 +458,7 @@
     <string name="acra_resNotifText">Bitte klicken Sie hier für Details</string>
     <string name="acra_resDialogText">
         Anscheinend ist &APP_NAME; abgestürzt. Beschreiben Sie nach Möglichkeit alle relevanten
-        Hinweise und drücken Sie “OK”, um uns eine E-Mail zu diesem Absturz zu senden.
+        Hinweise und drücken Sie „OK“, um uns eine E-Mail zu diesem Absturz zu senden.
         Sie werden das E-Mail vor dem Versand sehen können.
     </string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
@@ -433,45 +492,10 @@
     <string name="tip_dialog_title">Hinweis</string>
     <string name="tip_reset_all">Hinweise zurücksetzen</string>
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_styles_editor">
-        Sie können hier die Liste der Stile einstellen, die in Ihrem Menü für Standard-Stile
-        angezeigt werden.\n
-        \nEin grüner Haken zeigt an, dass ein Stil in der Liste angezeigt
-        wird, und ein rotes Kreuz zeigt an, dass ein Stil nicht angezeigt wird.
-        Beim Klick wird ein grüner Haken zu einem roten Kreuz und umgekehrt.\n
-        \nWenn keine Stile gewählt werden, werden alle Stile angezeigt.\n
-        \nZiehen Sie die Symbole ganz rechts, um die Reihenfolge zu ändern.\n
-        \nMit Klicks im Rest der Zeile können Sie die Details eines bestimmten Stils
-        bearbeiten oder eingebaute Stile klonen.
-    </string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_style_groups">
-        Sie können hier die Hierarchie der Überschriften für einen bestimmten Bücherlistenstil
-        ändern.\n
-        \nEin grüner Haken zeigt an, dass die Überschrift in der Liste angezeigt wird, und
-        ein rotes Kreuz zeigt an, dass sie nicht angezeigt wird. Beim Klick wird ein grüner
-        Haken zu einem roten Kreuz und umgekehrt.\n
-        \nWenn keine Stile gewählt werden, werden alle Stile angezeigt.\n
-        \nZiehen Sie die Symbole ganz rechts, um die Reihenfolge zu ändern.
-    </string>
-    <!-- URGENT: 2018-12-26: modified text, translations need updating -->
-    <string name="tip_booklist_style_properties">
-        Sie können hier die Charakteristik eines bestimmten Bücherlistenstils bestimmen.\n
-        \nSie können den Namen ändern, die Gruppierung bearbeiten und so die Hierarchie
-        ändern und eine Vielzahl anderer Einstellungen anpassen, um einen Stil zu erstellen,
-        der für Sie passend ist.\n
-        \nEbenso ist es möglich, ‘Buchfilter’ zu verwenden, mit denen die Auswahl von
-        Bücher in der Listenanzeige verändert wird, etwa um nur ungelesenen Bücher anzuzeigen.
-    </string>
-    <string name="X_tip_booklist_global_properties">
-        Sie können hier die Standardcharakteristik aller Bücherlistenstile bestimmen.
-        Die meisten Eigenschaften können in individuellen Stilen übersteuert werden,
-        aber die Standardeinstellungen werden hier definiert.
-        Sie können die Anzeige von Listen beim Start und eine Vielzahl
-        anderer Einstellungen anpassen, die nach Möglichkeit auf alle Stile angewendet werden.
-        Ebenso können Sie hier das Stilmenü und die Stile selbst bearbeiten.
-    </string>
+    <string name="tip_booklist_styles_editor">In diesem Bildschirm können Sie die Liste der Stile anpassen, die in Ihrem Standardstile-Menü angezeigt werden. Ein Häkchen zeigt an, dass der Stil in der Liste angezeigt wird. Deaktivieren Sie dieses Kontrollkästchen, um ihn auszublenden, und umgekehrt. Wenn keine Stile angekreuzt sind, werden alle Stile angezeigt. Sie können die Hierarchie neu anordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen. Wenn Sie lange auf eine andere Stelle in einer Reihe drücken, können Sie die Details eines bestimmten Stils bearbeiten oder klonen. Wenn Sie einen Stil geklont und Ihre Meinung geändert haben, müssen Sie ihn selbst löschen.</string>
+    <string name="tip_booklist_style_groups">In diesem Bildschirm können Sie die Hierarchie der Überschriften für einen bestimmten Buchlistenstil ändern. Ein Häkchen zeigt an, dass die Überschrift in der Liste angezeigt wird. Deaktivieren Sie dieses Kontrollkästchen, um sie auszublenden, und umgekehrt. Sie können die Hierarchie neu anordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen.</string>
+    <string name="tip_booklist_style_properties">In diesem Bildschirm können Sie die Merkmale eines bestimmten Buchlistenstils festlegen. Sie können den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und verschiedene andere Einstellungen anpassen, um einen für Sie nützlichen Stil zu erstellen. Sie können auch "Filter" verwenden, um die Auswahl der Bücher zu ändern, die in der Liste angezeigt werden. z.B. um nur Bücher abzurufen, die Sie noch nicht gelesen haben und mehr.</string>
+    <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="lbl_preferred_styles">Bevorzugte Stile</string>
     <string name="title_edit_style">Bearbeite Stil</string>
     <string name="title_clone_style">Stil klonen</string>
@@ -482,7 +506,7 @@
     <string name="lbl_settings">Einstellungen</string>
     <string name="error_unexpected_error">
         Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support
-        über den  Eintrag ‘Verwaltung’ in Hauptmenü
+        über den  Eintrag „Verwaltung“ in Hauptmenü
     </string>
     <string name="menu_duplicate">Vervielfältigen</string>
     <string name="style_builtin_compact">Kompakt</string>
@@ -559,7 +583,7 @@
         Die ISBN des gewählten Buchs könnte nicht in Goodreads gefunden werden. Dafür gibt es
         zwei mögliche Ursachen: Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN
         überprüfen) oder das Buch gibt es nicht in googdreads.\n
-        \nWenn Sie die Daten in &APP_NAME; ändern, drücken sie den ‘Wiederholen’-Button und
+        \nWenn Sie die Daten in &APP_NAME; ändern, drücken sie den „Wiederholen“-Button und
         überprüfen Sie, ob die Hintergrundaufgabe erfolgreich ist.\n
         \nWenn die Daten korrekt wirken und das Buch trotzdem nicht gefunden wird, muss ein
         Buch mit dieser ISBN manuell zu Goodreads über deren Website hinzugefügt werden.
@@ -583,7 +607,7 @@
     <string name="tip_booklist_style_menu">
         Hier können Sie den Stil der Liste wählen.\n
         \nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie
-        dafür auf ‘Anpassen’ am Ende der Liste.
+        dafür auf „Anpassen“ am Ende der Liste.
     </string>
     <string name="warning_missing_name">Name darf nicht leer sein</string>
     <string name="progress_msg_export_starting">Export startet…</string>
@@ -632,24 +656,24 @@
     <string name="progress_msg_adding_book">Buch hinzufügen…</string>
     <string name="warning_bad_scanner">
         Anscheinend ist Ihre derzeitige Scanner-App nicht mit &APP_NAME; kompatible.
-        Wir empfehlen, die App “Zxing Barcode Scanner” zu installieren. Falls sie bereits
+        Wir empfehlen, die App „Zxing Barcode Scanner“ zu installieren. Falls sie bereits
         installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.
     </string>
     <string name="tip_view_only_book_details">
         Nach einem Klick auf einen Eintrag in dieser Liste können Sie zu einer schreibgeschützten
-        Ansicht der Buchdetails wechseln. Siehe “Weitere Einstellungen” für die relevante
+        Ansicht der Buchdetails wechseln. Siehe „Weitere Einstellungen“ für die relevante
         Einstellung.
     </string>
     <string name="tip_view_only_help">
         Das ist die schreibgeschützte Ansicht der Buchdetails; Sie können nach links oder
         rechts wischen, um zu anderen Büchern zu wechseln, und ein Buch über das Menü
-        “Einstellungen” mit Hilfe des Menü-Buttons oder des Menü-Symbols bearbeiten.
+        „Einstellungen“ mit Hilfe des Menü-Buttons oder des Menü-Symbols bearbeiten.
     </string>
 
-    <!-- This is the heading of the ‘Details’ tab when editing a book. It needs to be short.
+    <!-- This is the heading of the "Details" tab when editing a book. It needs to be short.
      "Book Details" is too long. -->
     <string name="tab_lbl_details">Details</string>
-    <!-- This is the heading of the ‘Loan’ tab when editing a book. It needs to be short.
+    <!-- This is the heading of the "Loan" tab when editing a book. It needs to be short.
     "Loan Book" is too long. -->
 
     <string name="gr_btn_delete_credentials">Zugangsdaten löschen</string>
@@ -662,7 +686,7 @@
     <string name="lbl_backup_to_archive">Sichern ins Archiv</string>
     <string name="lbl_import_from_archive">Import vom Archiv</string>
     <string name="export_info_success_archive_details">
-        Eine %3$s-Datei namens %2$s wurde im Verzeichnis “%1$s” erzeugt.\n
+        Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n
         \nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor
         Beschädigung, Verlust oder Diebstahl zu schützen.
     </string>
@@ -697,18 +721,18 @@
         Diese Option wird für ältere Archivversionen nicht unterstützt.
     </string>
     <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
-    <!--  Explanatory text for ‘export’ dialogue -->
+    <!--  Explanatory text for "export" dialogue -->
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_handled_missing_skipped">
         %1$d Cover bearbeitet (%2$d fehlen, %3$d übersprungen)
     </string>
 
-    <!-- Explanatory note for ‘export all’ option -->
+    <!-- Explanatory note for "export all" option -->
     <string name="export_info_backup_all">
         Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv
         exportiert.
     </string>
-    <!-- Explanatory note for ‘advanced export’ option -->
+    <!-- Explanatory note for "advanced export" option -->
     <string name="export_options_dialog_title">
         Wählen Sie, was in das Archiv exportiert wird.
     </string>
@@ -735,28 +759,28 @@
     </string>
 
     <plurals name="displaying_n_books">
-        <item quantity="one">Ein Buch angezeigt</item>
+        <item quantity="one">%1$d Buch angezeigt</item>
         <item quantity="other">%1$d Bücher werden angezeigt</item>
     </plurals>
 
     <plurals name="n_books_found">
-        <item quantity="one">Ein Buch gefunden</item>
+        <item quantity="one">%1$d Buch gefunden</item>
         <item quantity="other">%1$d Bücher gefunden</item>
     </plurals>
 
-    <!-- Short text for ‘n books’ -->
+    <!-- Short text for "n books" -->
     <plurals name="n_books">
-        <item quantity="one">Ein Buch</item>
-        <item quantity="other">%1$s Bücher</item>
+        <item quantity="one">%1$d Buch</item>
+        <item quantity="other">%1$d Bücher</item>
     </plurals>
 
-    <!-- Short text for ‘n covers’ -->
+    <!-- Short text for "n covers" -->
     <plurals name="n_covers">
-        <item quantity="one">Ein Cover</item>
-        <item quantity="other">%1$s Cover</item>
+        <item quantity="one">%1$d Cover</item>
+        <item quantity="other">%1$d Cover</item>
     </plurals>
 
-    <!-- Short text for ‘n stars’ -->
+    <!-- Short text for "n stars" -->
     <plurals name="n_stars">
         <item quantity="one">%1$s Stern</item>
         <item quantity="other">%1$s Sterne</item>
@@ -771,16 +795,16 @@
     <!-- Menu item -->
     <string name="menu_amazon_books_by_author_in_series">Bücher nach Autor/Serie</string>
 
-    <!-- Hint text displayed when user enters the book listw -->
+    <!-- Hint text displayed when user enters the book list screen -->
     <string name="tip_book_list">
         Tippen Sie auf ein Buch, um dessen Details zu sehen. Ein langer Druck auf einen
         Listeneintrag zeigt weitere Optionen.
     </string>
 
-    <!-- Heading in ‘about’ dialog -->
+    <!-- Heading in "about" dialog -->
     <string name="lbl_special_thanks">Danksagung</string>
 
-    <!-- Credits in the ‘about’ dialog -->
+    <!-- Credits in the "about" dialog -->
     <string name="about_translators">
         &APP_NAME; ist das Ergebnis der Arbeit vieler Personen und würde nicht so weit
         verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer
@@ -878,7 +902,7 @@
     <string name="gr_tq_events_recorded">(%1$d Ereignisse aufgezeichnet)</string>
     <string name="lbl_first_publication_month">Erstveröffentlichungsmonat</string>
     <string name="lbl_first_publication_year">Erstes Veröffentlichungsjahr</string>
-    <string name="info_share_book_im_reading">Ich lese “%1$s” von %2$s %3$s %4$s</string>
+    <string name="info_share_book_im_reading">Ich lese „%1$s“ von %2$s %3$s %4$s</string>
     <string name="error_database_upgrade_failed">
         Upgrade von einer älteren Version als 5.2.2 ist nicht möglich
     </string>
@@ -899,11 +923,11 @@
     <string name="title_edit_book_authors">Buchautoren bearbeiten</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="error_no_external_crop_app">Eine Anwendung zum Zuschneiden von Bildern wurde nicht gefunden</string>
-    <string name="pg_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
+    <string name="pv_reformat_titles_prefixes">die|Die|der|Der|das|Das|ein|Ein|eine|Eine|eines|Eines|einer|Einer|einem|Einem|einen|Einen</string>
     <string name="lbl_creators">Ursprünglich von:</string>
     <string name="unknown_uc">UNBEKANNT</string>
     <string name="title_delete_toc_entry">Titel löschen</string>
-    <string name="confirm_delete_toc_entry">Wirklich den Titel “%1$s” von %2$s löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
+    <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="menu_view_book_at_ellipsis">Anschauen auf…</string>
     <string name="lbl_keywords">Schlüsselwörter</string>
     <string name="warning_missing_title">Der Titel fehlt.</string>
@@ -911,5 +935,9 @@
     <string name="warning_isfdb_only">(wird nur von der ISFDB-Website unterstützt)</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
     <string name="error_failed_x">Fehlgeschlagen: %1$d</string>
+    <string name="tip_authors_works_multiple_books">Eintrag ist in mehreren Büchern vorhanden.</string>
+    <string name="tip_authors_works">Verwendete Icons:</string>
+    <string name="tip_authors_works_toc">Eintragung des Inhaltsverzeichnisses (TOC), z. Geschichte.</string>
+    <string name="tip_authors_works_book">Buch.</string>
 
 </resources>

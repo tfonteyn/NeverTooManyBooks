@@ -1,37 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pg_ui">Kullanıcı arayüzü</string>
-
-    <string name="pt_ui_language">Dil</string>
-    <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
-
-    <string name="pt_ui_theme">Tema</string>
     <string-array name="pe_ui_theme">
         <item>Gündüz / Gece</item>
         <item>Karanlık</item>
         <item>ışık</item>
     </string-array>
 
-    <string name="pt_ui_messages_use">İle bilgilendir</string>
-
-    <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Reformat başlıkları</string>
-    <string name="pt_reformat_titles_on_insert">Eklerken</string>
-    <string name="pt_reformat_titles_on_update">Düzenlerken</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Kitap listeleri</string>
-    <string name="pt_bob_open_book_read_only">Kitabı salt okunur aç</string>
-    <string name="pt_bob_list_state">Kitap dizelgesi durumu</string>
     <string-array name="pe_bob_list_state">
         <item>Kitap dizelgelerini genişletilmiş olarak başlat</item>
         <item>Kitap dizelgelerini içe kapalı olarak başlat</item>
         <item>Kitap dizelgesi durumunu koru</item>
     </string-array>
-    <string name="pt_bob_list_generation">Kitap dizelgesi oluşturma seçeneği</string>
+
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Tam takım oluşturma seçeneğini zorla</item>
@@ -39,32 +20,12 @@
         <item>Uyumluluk kipini zorla</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Tarama</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Taranan ISBN geçerli ise biple</string>
-    <string name="pt_scanning_preferred_scanner">Yeğlenen Tarayıcı</string>
-    <string-array name="pe_scanning_preferred_scanner">
+   <string-array name="pe_scanning_preferred_scanner">
         <item>Zxing Uyumlu Tarayıcı</item>
         <item translatable="false">Zxing</item>
         <item translatable="false">Pic2Shop</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Ufak resimler</string>
-
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
-    <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan (deneysel özellik)</string>
-
-    <string name="pt_bob_thumbnails_generating_mode">Küçük resimleri almak için bir arka plan görevi kullanın</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">Ardalanda iş oluştur (dizelgeler daha hızlı kayar, resimlerin görüntülenmesi gecikebilir)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Anında oluştur (dizelgeler daha yavaş kayar, resimler anında görüntülenir)</string>
-
-    <string name="pt_bob_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
-
-    <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>Hayır</item>
         <item>Saat yönünde döndür</item>
@@ -72,71 +33,49 @@
         <item>180 derece döndür</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için ‘Donanım’ için ‘Yazılım’ deneyin, ancak daha hızlı</string>
-    <string-array name="pe_thumbnails_cropper_layer_type">
+   <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Donanım</item>
         <item>Yazılım</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
-    <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pg_general">Genel</string>
-    <string name="pg_groupings">Öbeklemeler</string>
-
-    <string name="pg_filters">Kitap süzgeçleri</string>
     <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>
         <item>Kitap okumak</item>
         <item>Kitaplar okunmadı</item>
     </string-array>
+
     <string-array name="pe_bob_filter_signed">
         <item>@string/bookshelf_all_books</item>
         <item>İmzalanan kitaplar</item>
         <item>İmzasız kitaplar</item>
     </string-array>
+
     <string-array name="pe_bob_filter_anthology">
         <item>@string/bookshelf_all_books</item>
         <item>Antolojiler</item>
         <item>Antolojiler hariç hepsi</item>
     </string-array>
+
     <string-array name="pe_bob_filter_loaned">
         <item>@string/bookshelf_all_books</item>
         <item>Borç kitapları</item>
         <item>Mevcut kitaplar</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string-array name="pe_bob_header">
         <item>Kitap sayısını göster</item>
         <item>Başlığı göster</item>
         <item>2. seviye başlığı göster</item>
     </string-array>
 
-    <string name="pt_bob_text_size">Kitap dizelgesi öğeleri boyutu</string>
     <string-array name="pe_bob_text_size">
         <item>Küçük</item>
         <item>Orta</item>
         <item>Büyük</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
-    <string name="pt_cover_scale_factor">Listelerdeki görüntü boyutu</string>
-    <string-array name="pe_cover_scale_factor">
+   <string-array name="pe_cover_scale_factor">
         <item>X-Küçük</item>
         <item>Küçük</item>
         <item>Orta</item>
@@ -144,23 +83,5 @@
         <item>X-Büyük</item>
         <item>2X-Büyük</item>
     </string-array>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_sort_author_name">Yazarları sırala</string>
-
-    <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
-    <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Yalnızca birincil %1$s altında</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Her %1$s altında</string>
-
-    <string name="pt_bob_format_author_name">Yazar adları biçimi</string>
-    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin ‘Aziz Nesin’</string>
-    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin ‘Nesin, Aziz’</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Önerilen seçeneği kullanın</string>
 
 </resources>

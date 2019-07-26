@@ -1,40 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pg_ui">Interfaccia Utente</string>
-
-    <string name="pt_ui_language">Lingua</string>
-    <string name="pt_ui_system_locale">Impostazioni locali di sistema</string>
-
-    <string name="pt_ui_theme">Tema</string>
     <string-array name="pe_ui_theme">
         <item>Giornata / Notte</item>
         <item>Nero</item>
         <item>Chiaro</item>
     </string-array>
 
-    <string name="pt_ui_messages_use">Informare con</string>
-
-    <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_reformat_titles">Riformattare i titoli</string>
-    <string name="pg_reformat_titles_summary">Memorizza l\'originale “Il titolo” o riformatta in “titolo, Il”</string>
-    <string name="pt_reformat_titles_on_update">Durante la modifica</string>
-    <string name="pt_reformat_titles_on_insert">Quando si aggiunge</string>
-    <string name="pg_reformat_titles_original">Il titolo</string>
-    <string name="pg_reformat_titles_reformatted">titolo, Il</string>
-
-    <!-- ####################################################################################### -->
-    <string name="pg_booklist">Elenchi di libri</string>
-    <string name="pt_bob_open_book_read_only">Apri il libro in sola lettura</string>
-    <string name="pt_bob_list_state">Stato elenco libri</string>
-    <string-array name="pe_bob_list_state">
+   <string-array name="pe_bob_list_state">
         <item>Avvia con elelnco libri espansa</item>
         <item>Avvia con elenco libri compressa</item>
         <item>Ricorda lo stato elenco libri</item>
     </string-array>
-    <string name="pt_bob_list_generation">Opzioni di Generazione Elenco Libri</string>
+
     <string-array name="pe_bob_list_generation">
         <item>@string/pe_use_recommended_option</item>
         <item>Forza Utilizzo di Tutte le Funzionalità</item>
@@ -42,104 +20,62 @@
         <item>Forza Modalità Compatibile</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_scanning">Acquisizione</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Suona se il codice ISBN acquisito non è valido</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Suona se il codice ISBN acquisito è valido</string>
-    <string name="pt_scanning_preferred_scanner">Programma Preferito</string>
-    <string-array name="pe_scanning_preferred_scanner">
+   <string-array name="pe_scanning_preferred_scanner">
         <item>Programma Compatibile Zxing</item>
         <item translatable="false">Zxing</item>
         <item translatable="false">Pic2Shop</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-    <string name="pg_thumbnails">Miniature</string>
-
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Area di ritaglio predefinita uguale all\'intera immagine</string>
-    <string name="pt_thumbnails_external_cropper">Usa un programma esterno per il ritaglio delle immagini (sperimentale)</string>
-
-    <string name="pt_bob_thumbnails_generating_mode">Generazione miniature copertine in sottofondo</string>
-    <string name="pe_bob_thumbnails_generating_mode_background">In sottofondo (scorrimento elenchi più veloce, immagini mostrate con ritardo)</string>
-    <string name="pe_bob_thumbnails_generating_mode_immediately">Immediata (scorrimento elenchi più lento, immagini mostrate immediatamente)</string>
-
-    <string name="pt_bob_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
-    <string name="pe_bob_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
-    <string name="pe_bob_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
-
-    <string name="pt_thumbnails_rotate_auto">Ruota automaticamente le immagini acquisite dalla fotocamera</string>
-    <string-array name="pe_thumbnails_rotate_auto">
+   <string-array name="pe_thumbnails_rotate_auto">
         <item>No</item>
         <item>Ruota in senso orario</item>
         <item>Ruota in senso antiorario</item>
         <item>Ruota di 180 gradi</item>
     </string-array>
 
-    <string name="pt_thumbnail_cropper_layer_type">Ritaglia ‘Layer Type’</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Lasciare questa impostazione al valore predefinito a meno che non si verifichino arresti anomali durante il ritaglio delle immagini. Prova il software per hardware più sicuro ma più lento o forzato per meno sicuro, ma più veloce</string>
-    <string-array name="pe_thumbnails_cropper_layer_type">
+   <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
         <item>Hardware</item>
         <item>Software</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
-    <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pg_general">Generale</string>
-    <string name="pg_groupings">Raggruppamenti</string>
-
-    <string name="pg_filters">Filtra libri</string>
-    <string-array name="pe_bob_filter_read">
+   <string-array name="pe_bob_filter_read">
         <item>@string/bookshelf_all_books</item>
         <item>Libri letti</item>
         <item>Libri non letti.</item>
     </string-array>
+
     <string-array name="pe_bob_filter_signed">
         <item>@string/bookshelf_all_books</item>
         <item>Libri firmati</item>
         <item>Libri non firmati.</item>
     </string-array>
+
     <string-array name="pe_bob_filter_anthology">
         <item>@string/bookshelf_all_books</item>
         <item>Antologie</item>
         <item>Tutti tranne antologie</item>
     </string-array>
+
     <string-array name="pe_bob_filter_loaned">
         <item>@string/bookshelf_all_books</item>
         <item>Libri in prestito</item>
         <item>Libri disponibili</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pg_bob_extra_book_details">Dettagli libro aggiuntivi</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
-    <string-array name="pe_bob_header">
+   <string-array name="pe_bob_header">
         <item>Mostra numero di libri</item>
         <item>Mostra primo livello di intestazione</item>
         <item>Mostra il secondo livello di intestazione</item>
     </string-array>
 
-    <string name="pt_bob_text_size">Dimensione degli elementi dell\'elenco libri</string>
     <string-array name="pe_bob_text_size">
         <item>Piccolo</item>
         <item>Medio</item>
         <item>Grande</item>
     </string-array>
 
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_thumbnails_show">Mostra miniature</string>
-    <string name="pt_cover_scale_factor">Dimensione miniature in elenchi</string>
-    <string-array name="pe_cover_scale_factor">
+   <string-array name="pe_cover_scale_factor">
         <item>X-Small</item>
         <item>Small</item>
         <item>Medio</item>
@@ -147,23 +83,5 @@
         <item>X-Grande</item>
         <item>2X-Grande</item>
     </string-array>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pt_bob_sort_author_name">Ordina i nomi degli autori</string>
-
-    <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
-    <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
-
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Solo sotto %1$s primario</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Sotto ciascuno %1$s</string>
-
-    <string name="pt_bob_format_author_name">Formato dei nome degli autori</string>
-    <string name="pv_bob_format_author_name_given_first">Prima il nome, ad es. ‘Dante Alighieri’</string>
-    <string name="pv_bob_format_author_name_family_first">Prima il cognome, ad es. ‘Alighieri, Dante’</string>
-
-    <!-- ####################################################################################### -->
-
-    <string name="pe_use_recommended_option">Utilizzare l\'opzione consigliata</string>
 
 </resources>
