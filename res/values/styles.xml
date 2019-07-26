@@ -403,13 +403,17 @@
     </style>
 
     <style name="Flag.Read">
-        <item name="android:button">@drawable/ic_read_selector</item>
+        <item name="android:button">@drawable/ic_selector_read</item>
         <item name="android:buttonTint">?attr/checked_icon_tint</item>
     </style>
 
     <style name="Flag.OnLoan">
-        <item name="android:button">@drawable/ic_on_loan_selector</item>
+        <item name="android:button">@drawable/ic_selector_on_loan</item>
         <item name="android:buttonTint">?attr/colorError</item>
+    </style>
+
+    <style name="Flag.MultipleBooks">
+        <item name="android:button">@drawable/ic_selector_multiple_books</item>
     </style>
 
     <!-- file info fields for a File selection screen -->
