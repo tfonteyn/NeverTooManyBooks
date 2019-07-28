@@ -196,24 +196,32 @@ public class DomainDefinition
         return this;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(name);
-        dest.writeString(mType);
-        dest.writeList(mConstraints);
-        dest.writeString(mReferences);
-        dest.writeInt(mIsPrimaryKey ? 1 : 0);
-        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
+    /**
+     * Set a flag that this domain is in fact pre-prepared for sorting.
+     * i.e. the values are stripped of spaces etc.. before being stored.
+     *
+     * @param prePreparedOrderBy Flag
+     *
+     * @return this for chaining.
+     */
+    @NonNull
+    public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
+        mIsPrePreparedOrderBy = prePreparedOrderBy;
+        return this;
     }
 
     /**
+     * Check if this domain is pre-prepared for sorting.
+     *
+     * @return {@code true} if this field should be used as-is for sorting.
+     */
+    public boolean isPrePreparedOrderBy() {
+        return mIsPrePreparedOrderBy;
+    }
+
+    /**
+     * Convenience method to check if this domain is TEXT based.
+     *
      * @return {@code true} if this domain is a 'text' type.
      */
     public boolean isText() {
@@ -230,17 +238,25 @@ public class DomainDefinition
         return mType;
     }
 
-    public boolean isPrePreparedOrderBy() {
-        return mIsPrePreparedOrderBy;
-    }
-
-    public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
-        mIsPrePreparedOrderBy = prePreparedOrderBy;
-        return this;
-    }
-
     boolean isPrimaryKey() {
         return mIsPrimaryKey;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(name);
+        dest.writeString(mType);
+        dest.writeList(mConstraints);
+        dest.writeString(mReferences);
+        dest.writeInt(mIsPrimaryKey ? 1 : 0);
+        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**

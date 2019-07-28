@@ -85,9 +85,8 @@ public class BookCursor
     @NonNull
     public MappedCursorRow getCursorRow() {
         if (mCursorRow == null) {
-            mCursorRow = new MappedCursorRow(this, DBDefinitions.TBL_BOOKS,
-                                             DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST,
-                                             DBDefinitions.KEY_LOANEE);
+            mCursorRow = new MappedCursorRow(this
+            );
         }
         return mCursorRow;
     }

@@ -409,7 +409,7 @@
         \n\nEğer veri doğru olup, ancak kitap hala bulunamıyorsa bu kitabın ISBN\'si ile birlikte Goodreads\'e el ile
         ağ sayfasından eklenmesi gerekmektedir. Bu yapıldıktan sonra kitabı yeniden göndermeyi deneyebilirsiniz.
     </string>
-    <string name="read_amp_unread">Okunan &amp; Okunmayan</string>
+    <string name="lbl_read_and_unread">Okunan &amp; Okunmayan</string>
     <string name="lbl_loaned">Ödünç verilen</string>
     <string name="lbl_publication_year">Yayım yılı</string>
     <string name="lbl_publication_month">Yayım ayı</string>
@@ -670,5 +670,8 @@
     <string name="tip_authors_works_toc">İçerik Tablosu (TOC) girişi, ör. Öykü.</string>
     <string name="tip_authors_works_book">Kitap.</string>
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
+    <string name="menu_author_works_all">Hepsini Göster ↓</string>
+    <string name="menu_author_works_book">Sadece kitaplar</string>
+    <string name="menu_author_works_toc">Yalnızca içerik başlıkları</string>
 
 </resources>

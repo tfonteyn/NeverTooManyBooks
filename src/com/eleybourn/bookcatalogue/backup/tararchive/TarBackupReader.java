@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
@@ -39,7 +40,6 @@ import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity.BackupEntityT
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntityAbstract;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -160,7 +160,7 @@ public class TarBackupReader
      */
     @NonNull
     private BackupEntityType getBackupEntityType(@NonNull final TarArchiveEntry entry) {
-        String name = entry.getName().toLowerCase(LocaleUtils.getSystemLocale());
+        String name = entry.getName().toLowerCase(App.getSystemLocale());
 
         // check covers first, as we will have many
         if (name.endsWith(".jpg") || name.endsWith(".png")) {

@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
@@ -261,7 +261,7 @@ public class XmlFilter {
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        String lcPat = filter.getTagName().toLowerCase(LocaleUtils.getSystemLocale());
+        String lcPat = filter.getTagName().toLowerCase(App.getSystemLocale());
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

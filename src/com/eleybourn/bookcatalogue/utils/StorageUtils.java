@@ -71,7 +71,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  * <p>
- * TODO: user messages talk about "SD Card"
  * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
  *
@@ -355,7 +354,7 @@ public final class StorageUtils {
     @NonNull
     public static List<File> findCsvFiles() {
         FilenameFilter csvFilter = (dir, name) ->
-                name.toLowerCase(LocaleUtils.getSystemLocale()).endsWith(".csv");
+                name.toLowerCase(App.getSystemLocale()).endsWith(".csv");
         return findFiles(csvFilter);
     }
 
@@ -366,7 +365,7 @@ public final class StorageUtils {
      * @return list of csv files
      */
     @NonNull
-    public static List<File> findFiles(@NonNull final FilenameFilter filenameFilter) {
+    private static List<File> findFiles(@NonNull final FilenameFilter filenameFilter) {
         @SuppressWarnings("unused")
         StringBuilder debugInfo;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
@@ -734,7 +733,7 @@ public final class StorageUtils {
      * 2019-03-16: decimalize as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
      * https://en.wikipedia.org/wiki/File_size</a>
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      * @param bytes   to format
      *
      * @return formatted # bytes

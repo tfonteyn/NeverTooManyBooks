@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -346,7 +346,6 @@ public class TableDefinition
      *
      * @return TableDefinition (for chaining)
      */
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     private TableDefinition addDomains(@NonNull final List<DomainDefinition> domains) {
         for (DomainDefinition d : domains) {
@@ -356,28 +355,27 @@ public class TableDefinition
     }
 
     /**
-     * Add a domain to this table.
+     * Add a domain to this table. Domains already present are silently ignored.
      *
      * @param domain Domain object to add
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code true} if the domain was added, {@code false} if it was already present.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition addDomain(@NonNull final DomainDefinition domain) {
-        // Make sure it's not already in the table
+    public boolean addDomain(@NonNull final DomainDefinition domain) {
+        // Make sure it's not already in the table, silently ignore if it is.
         if (mDomainCheck.contains(domain)) {
-            return this;
+            return false;
         }
-        // Make sure one with same name is not already in table
-        if (mDomainNameCheck.containsKey(domain.name.toLowerCase(LocaleUtils.getSystemLocale()))) {
+        // Make sure one with the same name is not already in table, can't ignore that, go crash.
+        if (mDomainNameCheck.containsKey(domain.name.toLowerCase(App.getSystemLocale()))) {
             throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it
         mDomains.add(domain);
+
         mDomainCheck.add(domain);
         mDomainNameCheck.put(domain.name, domain);
-        return this;
+        return true;
     }
 
     /**

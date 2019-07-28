@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/DialogFrame"
+    >
+    <TextView
+        android:id="@+id/fixedContent"
+        style="@style/Blurb"
+        android:layout_width="wrap_content"
+        android:text="@string/tip_authors_works"
+        android:layout_marginBottom="@dimen/border2"
+        tools:ignore="SelectableText"
+        />
+
+    <TextView
+        android:drawableStart="@drawable/ic_paragraph"
+        android:drawablePadding="@dimen/border2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tip_authors_works_toc"
+        />
+    <TextView
+        android:drawableStart="@drawable/ic_book"
+        android:drawablePadding="@dimen/border2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tip_authors_works_book"
+        />
+    <TextView
+        android:drawableStart="@drawable/ic_library_books"
+        android:drawablePadding="@dimen/border2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tip_authors_works_multiple_books"
+        />
+</LinearLayout>

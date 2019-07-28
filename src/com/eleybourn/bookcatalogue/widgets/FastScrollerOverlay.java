@@ -109,7 +109,7 @@ public class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param context            Current context, for accessing resources.
+     * @param context            Current context for accessing resources.
      * @param overlayDrawableRes drawable for the overlay.
      */
     public FastScrollerOverlay(@NonNull final Context context,
@@ -121,7 +121,7 @@ public class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param context         Current context, for accessing resources.
+     * @param context         Current context for accessing resources.
      * @param overlayDrawable drawable for the overlay.
      */
     public FastScrollerOverlay(@NonNull final Context context,
@@ -147,14 +147,13 @@ public class FastScrollerOverlay
         mTextDecent = mTextPaint.descent();
     }
 
+    @ColorInt
     private static int getColor(@NonNull final Context context,
                                 @SuppressWarnings("SameParameterValue") @AttrRes final int attr) {
         Resources.Theme theme = context.getTheme();
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-        //API: 23
         return context.getResources().getColor(tv.resourceId, theme);
-//        return context.getResources().getColor(tv.resourceId);
     }
 
     private static int getTextSize(@NonNull final Context context,

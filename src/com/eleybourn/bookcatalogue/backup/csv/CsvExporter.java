@@ -125,7 +125,7 @@ public class CsvExporter
     /**
      * Constructor.
      *
-     * @param context  Current context, for accessing resources.
+     * @param context  Current context for accessing resources.
      * @param settings {@link ExportOptions#file} is not used, as we must support writing
      *                 to a stream. {@link ExportOptions#EXPORT_SINCE} and
      *                 {@link ExportOptions#dateFrom} are respected.

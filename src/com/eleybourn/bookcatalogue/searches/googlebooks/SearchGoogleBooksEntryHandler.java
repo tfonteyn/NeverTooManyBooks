@@ -33,6 +33,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -40,7 +41,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * An XML handler for the Google Books entry return.
@@ -230,7 +230,7 @@ class SearchGoogleBooksEntryHandler
         mFetchThumbnail = fetchThumbnail;
         mIsbn = isbn;
 
-        mLocale = LocaleUtils.getSystemLocale();
+        mLocale = App.getSystemLocale();
     }
 
     /**

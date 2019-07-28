@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- TODO: make these colors styleable?  -->
     <!--<color name="CropHighlightView_focusPaint">#7D323232</color>-->
     <color name="CropHighlightView_focusPaint">@color/grey_600</color>
     <color name="CropHighlightView_noFocusPaint">@color/grey_600</color>

@@ -58,7 +58,7 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 
 /**
  *
- * TODO: the actual search/display are now implemented. But this activity is still disabled,
+ * ENHANCE: the actual search/display are now implemented. But this activity is still disabled,
  * as {@link #onWorkSelected} needs implementing which relies on access,
  * or... maybe find some workaround?
  *
@@ -202,11 +202,10 @@ public class GoodreadsSearchActivity
     /**
      * Handle user clicking on a book.
      * This should show editions and allow the user to select a specific edition.
-     * ENHANCE: Waiting on approval for API access.
+     * ENHANCE: Implement edition lookup - requires access to work.editions API from GR
      */
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
-        // TODO: Implement edition lookup - requires access to work.editions API from GR
-        String msg = "Not implemented: Implement edition lookup - requires access to work.editions API from GR";
+        String msg = "Not implemented: edition lookup - requires access to work.editions API from GR";
         UserMessage.show(mListView, msg);
     }
 
@@ -233,7 +232,7 @@ public class GoodreadsSearchActivity
             return mWorks;
         }
 
-        public MutableLiveData<Boolean> getBookNoLongerExists() {
+        MutableLiveData<Boolean> getBookNoLongerExists() {
             return mBookNoLongerExists;
         }
 

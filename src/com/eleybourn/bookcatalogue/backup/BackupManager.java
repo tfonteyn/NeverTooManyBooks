@@ -25,11 +25,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Encapsulates the actual container used for backup/restore.
@@ -101,7 +101,7 @@ public final class BackupManager {
      * @return {@code true} if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
-        String name = file.getName().toLowerCase(LocaleUtils.getSystemLocale());
+        String name = file.getName().toLowerCase(App.getSystemLocale());
         // our own extension
         return name.endsWith(ARCHIVE_EXTENSION)
                 // TarBackupContainer reads (duh) .tar files.

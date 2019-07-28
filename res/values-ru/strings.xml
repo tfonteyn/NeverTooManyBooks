@@ -409,7 +409,7 @@
         \n\nЕсли Вы сделаете какие-либо изменения в &APP_NAME;, просто нажмите кнопку «Повторить» и проверьте выполнилась ли фоновая задача.
         \n\nЕсли данные о книге правильны и книга все еще не найдена, то эта книга должна быть добавлена на Goodreads вручную через сайт.
         После того, как это будет сделано, Вы можете повторить отправление книги.</string>
-    <string name="read_amp_unread">Прочитано &amp; Не прочитано</string>
+    <string name="lbl_read_and_unread">Прочитано &amp; Не прочитано</string>
     <string name="lbl_loaned">Одолжено</string>
     <string name="lbl_publication_year">Год публикации</string>
     <string name="lbl_publication_month">Месяц публикации</string>
@@ -646,5 +646,8 @@
     <string name="tip_authors_works_toc">Запись таблицы содержания (TOC), например история.</string>
     <string name="tip_authors_works_book">Книга.</string>
     <string name="confirm_delete_toc_entry">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
+    <string name="menu_author_works_all">Показать все</string>
+    <string name="menu_author_works_book">Только книги</string>
+    <string name="menu_author_works_toc">Только заголовки контента</string>
 
 </resources>

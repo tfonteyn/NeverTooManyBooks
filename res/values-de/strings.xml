@@ -589,7 +589,7 @@
         Buch mit dieser ISBN manuell zu Goodreads über deren Website hinzugefügt werden.
         Sobald das geschehen ist, können Sie versuchen, das Buch erneut zu senden.
     </string>
-    <string name="read_amp_unread">Gelesen und ungelesen</string>
+    <string name="lbl_read_and_unread">Gelesen und ungelesen</string>
     <string name="lbl_loaned">Verliehen</string>
     <string name="lbl_publication_year">Jahr der Veröffentlichung</string>
     <string name="lbl_publication_month">Monat der Veröffentlichung</string>
@@ -939,5 +939,8 @@
     <string name="tip_authors_works">Verwendete Icons:</string>
     <string name="tip_authors_works_toc">Eintragung des Inhaltsverzeichnisses (TOC), z. Geschichte.</string>
     <string name="tip_authors_works_book">Buch.</string>
+    <string name="menu_author_works_all">Zeige alles</string>
+    <string name="menu_author_works_book">Nur Bücher</string>
+    <string name="menu_author_works_toc">Nur Inhaltstitel</string>
 
 </resources>

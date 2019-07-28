@@ -10,13 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
- * Given a Cursor, and a list of domains, this class constructs a map with
- * the column indexes as used with that Cursor.
+ * Given a Cursor, this class constructs a map with the column indexes as used with that Cursor.
  * This is a caching variation of the {@link Cursor#getColumnIndex(String)} method.
  * The latter does a search for the column each time.
  * <p>
@@ -32,60 +29,24 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  */
 public class ColumnMapper {
 
-    /** the cache with the column ID's. WARNING: value will be -1 if column was not found. */
+    /** the cache with the column ID's. */
     private final Map<String, Integer> mColumnIndexes = new HashMap<>();
     /** the mapped cursor. */
     private final Cursor mCursor;
 
     /**
-     * Construct the mapper using all the *registered* domains from this table,
-     * and the given set of domains.
-     * No errors or Exception thrown at construction time.
+     * Constructor.
+     * <p>
+     * Cache all column indexes for this cursors column.
      *
      * @param cursor to read from
-     * @param table  for which to map all registered columns, can be {@code null}.
-     *
-     * @see TableDefinition#addDomain we don't always register a full set.
      */
-    public ColumnMapper(@NonNull final Cursor cursor,
-                        @Nullable final TableDefinition table)
+    public ColumnMapper(@NonNull final Cursor cursor)
             throws IllegalArgumentException {
         mCursor = cursor;
 
-        if (table != null) {
-            for (DomainDefinition domain : table.getDomains()) {
-                mColumnIndexes.put(domain.name, mCursor.getColumnIndex(domain.name));
-            }
-        }
-    }
-
-    /**
-     * Add additional domains after construction time.
-     * Useful for child classes.
-     *
-     * @param domains a list of domains
-     */
-    public void addDomains(@Nullable final DomainDefinition... domains)
-            throws IllegalArgumentException {
-        if (domains != null) {
-            for (DomainDefinition domain : domains) {
-                mColumnIndexes.put(domain.name, mCursor.getColumnIndex(domain.name));
-            }
-        }
-    }
-
-    /**
-     * Add additional domains after construction time.
-     * Useful for child classes.
-     *
-     * @param domains a list of domains
-     */
-    public void addDomains(@Nullable final String... domains)
-            throws IllegalArgumentException {
-        if (domains != null) {
-            for (String domain : domains) {
-                mColumnIndexes.put(domain, mCursor.getColumnIndex(domain));
-            }
+        for (String columnName : mCursor.getColumnNames()) {
+            mColumnIndexes.put(columnName, mCursor.getColumnIndex(columnName));
         }
     }
 
@@ -95,8 +56,7 @@ public class ColumnMapper {
      * @return {@code true} if this mapper contains the specified domain.
      */
     public boolean contains(@NonNull final String domainName) {
-        Integer index = mColumnIndexes.get(domainName);
-        return (index != null) && (index != -1);
+        return mColumnIndexes.containsKey(domainName);
     }
 
     /**

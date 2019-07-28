@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -41,7 +42,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Original 'hint' renamed to 'tip' to avoid confusion with "android:hint".
- * This is only in code. The texts shown to the user have not (and should not) changed.
+ * This is only in code. The texts shown to the user have not changed.
  * <p>
  * Class to manage the display of 'tips' within the application. Each tip dialog has
  * a 'Do not show again' option, that results in an update to the preferences which
@@ -109,6 +110,8 @@ public final class TipManager {
                 new Tip("pref_layer_type"));
         ALL.put(R.string.tip_update_fields_from_internet,
                 new Tip("update_fields_from_internet"));
+        ALL.put(R.string.tip_authors_works,
+                new Tip("authors_works", R.layout.dialog_tip_author_works));
     }
 
     private TipManager() {
@@ -167,6 +170,7 @@ public final class TipManager {
         /** Preferences key suffix specific to this tip. */
         @NonNull
         private final String mKey;
+        private final int mLayoutId;
 
         /** Indicates that this tip was displayed already in this instance of the app. */
         private boolean mHasBeenDisplayed;
@@ -178,6 +182,18 @@ public final class TipManager {
          */
         private Tip(@NonNull final String key) {
             mKey = PREF_TIP + key;
+            mLayoutId = R.layout.dialog_tip;
+        }
+
+        /**
+         * Constructor. Using the specified layout instead of a standard string.
+         *
+         * @param layoutId to use
+         */
+        private Tip(@NonNull final String key,
+                    @LayoutRes int layoutId) {
+            mKey = PREF_TIP + key;
+            mLayoutId = layoutId;
         }
 
         /**
@@ -201,15 +217,17 @@ public final class TipManager {
                      @Nullable final Runnable postRun) {
 
             // Build the tip dialog
-            final View root = inflater.inflate(R.layout.dialog_tip, null);
+            final View root = inflater.inflate(mLayoutId, null);
 
-            // Setup the message
+            // Setup the message; this is optional
             final TextView messageView = root.findViewById(R.id.content);
-            String tipText = inflater.getContext().getString(stringId, args);
-            // allow links
-            messageView.setText(Utils.linkifyHtml(tipText));
-            // clicking a link, start a browser (or whatever)
-            messageView.setMovementMethod(LinkMovementMethod.getInstance());
+            if (messageView != null) {
+                String tipText = inflater.getContext().getString(stringId, args);
+                // allow links
+                messageView.setText(Utils.linkifyHtml(tipText));
+                // clicking a link, start a browser (or whatever)
+                messageView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
 
             final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                     .setView(root)

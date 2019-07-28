@@ -24,9 +24,14 @@ public class AuthorWorksModel
     private boolean mAtLeastOneBookDeleted;
 
     @Nullable
-    private Author author;
+    private Author mAuthor;
     @Nullable
     private ArrayList<TocEntry> mTocEntries;
+
+    /** Initially we get toc entries and books. */
+    private boolean mWithTocEntries = true;
+    /** Initially we get toc entries and books. */
+    private boolean mWithBooks = true;
 
     @Override
     protected void onCleared() {
@@ -46,11 +51,12 @@ public class AuthorWorksModel
         if (mDb == null) {
             mDb = new DAO();
         }
-        if (author == null || authorId != author.getId()) {
-            author = mDb.getAuthor(authorId);
-            if (author != null) {
-                boolean withBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, true);
-                mTocEntries = mDb.getTocEntryByAuthor(author, withBooks);
+        if (mAuthor == null || authorId != mAuthor.getId()) {
+            mAuthor = mDb.getAuthor(authorId);
+            if (mAuthor != null) {
+                mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOCS, mWithTocEntries);
+                mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
+                mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
             } else {
                 throw new IllegalArgumentException("author was NULL for id=" + authorId);
             }
@@ -59,8 +65,16 @@ public class AuthorWorksModel
 
     @NonNull
     public Author getAuthor() {
-        Objects.requireNonNull(author);
-        return author;
+        Objects.requireNonNull(mAuthor);
+        return mAuthor;
+    }
+
+    public void loadTocEntries(final boolean withTocEntries,
+                               final boolean withBooks) {
+        mWithTocEntries = withTocEntries;
+        mWithBooks = withBooks;
+        //noinspection ConstantConditions
+        mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
     }
 
     @NonNull

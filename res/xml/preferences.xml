@@ -170,21 +170,21 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pg_reformat_titles"
-        android:summary="@string/pg_reformat_titles_summary">
+        android:summary="@string/pg_reformat_titles_summary"
+        android:title="@string/pg_reformat_titles">
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_add"
             android:key="title.reformat.insert"
-            android:summaryOff="@string/pg_reformat_titles_original"
-            android:summaryOn="@string/pg_reformat_titles_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_original"
+            android:summaryOn="@string/pt_reformat_titles_reformatted"
             android:title="@string/pt_reformat_titles_on_insert" />
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
             android:key="title.reformat.update"
-            android:summaryOff="@string/pg_reformat_titles_original"
-            android:summaryOn="@string/pg_reformat_titles_reformatted"
+            android:summaryOff="@string/pt_reformat_titles_original"
+            android:summaryOn="@string/pt_reformat_titles_reformatted"
             android:title="@string/pt_reformat_titles_on_update" />
     </PreferenceCategory>
 
@@ -346,8 +346,8 @@
             <intent android:action="search.website.order.EDIT" />
         </PreferenceScreen>
 
-        <!-- key hardcoded to ISFDB as no other site has Publisher support for now
-            ENHANCE: pop up a dialog with checkboxes for all sites.
+        <!-- Key hardcoded to ISFDB as no other site has Publisher support for now
+             If/when we need this for more sites, pop up a dialog with a checkbox for each site.
         -->
         <SwitchPreference
             android:defaultValue="false"
@@ -358,7 +358,9 @@
             android:title="@string/pt_search_uses_publisher" />
 
 
-        <!-- key hardcoded to ISFDB as no other site has TOC support for now -->
+        <!-- Key hardcoded to ISFDB as no other site has TOC support for now
+             If/when we need this for more sites, pop up a dialog with a checkbox for each site.
+        -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_cloud_download"
@@ -367,6 +369,9 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_collect_series_info_from_toc" />
 
+        <!-- The user can/should set their local amazon website.
+             Other sites can be made editable likewise if needed.
+         -->
         <EditTextPreference
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_link"

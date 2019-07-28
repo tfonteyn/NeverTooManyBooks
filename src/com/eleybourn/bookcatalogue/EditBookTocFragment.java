@@ -86,7 +86,6 @@ import com.eleybourn.bookcatalogue.widgets.ddsupport.StartDragListener;
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
  * <b>Note:</b> we also pass in 'this' as the task listener... no orientation changes ...
- * URGENT: needs ViewModel for the tasks!
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {

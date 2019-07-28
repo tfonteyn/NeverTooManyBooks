@@ -6,11 +6,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.viewmodels.AuthorWorksModel;
@@ -41,19 +45,20 @@ public class AuthorWorksFragment
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Also show the authors book. Defaults to {@code true}. */
+    public static final String BKEY_WITH_TOCS = TAG + ":withTocEntries";
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
     private AuthorWorksModel mModel;
     private TocAdapter mAdapter;
 
-//    @Override
-//    @CallSuper
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        // make sure {@link #onCreateOptionsMenu} is called
-//        setHasOptionsMenu(true);
-//    }
+    @Override
+    @CallSuper
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // make sure {@link #onCreateOptionsMenu} is called
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -91,6 +96,106 @@ public class AuthorWorksFragment
 
         mAdapter = new TocAdapter(getContext(), mModel);
         listView.setAdapter(mAdapter);
+
+        TipManager.display(getLayoutInflater(),
+                           R.string.tip_authors_works, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_ALL, 0,
+                 R.string.menu_author_works_all).setChecked(true);
+
+        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_TOC, 0,
+                 R.string.menu_author_works_toc);
+        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_BOOKS, 0,
+                 R.string.menu_author_works_book);
+
+        menu.setGroupCheckable(R.id.MENU_AUTHOR_WORKS, true, true);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.MENU_AUTHOR_WORKS_ALL:
+                item.setChecked(true);
+                mModel.loadTocEntries(true, true);
+                mAdapter.notifyDataSetChanged();
+                return true;
+
+            case R.id.MENU_AUTHOR_WORKS_TOC:
+                item.setChecked(true);
+                mModel.loadTocEntries(true, false);
+                mAdapter.notifyDataSetChanged();
+                return true;
+
+            case R.id.MENU_AUTHOR_WORKS_BOOKS:
+                item.setChecked(true);
+                mModel.loadTocEntries(false, true);
+                mAdapter.notifyDataSetChanged();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void onCreateContextMenu(final int position) {
+        TocEntry item = mModel.getTocEntries().get(position);
+
+        //noinspection ConstantConditions
+        Menu menu = MenuPicker.createMenu(getContext());
+        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
+            .setIcon(R.drawable.ic_delete);
+
+        String menuTitle = item.getTitle();
+        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
+                                                            this::onContextItemSelected);
+        picker.show();
+    }
+
+    /**
+     * <ul>Delete.
+     * <li>TocEntry.TYPE_BOOK: confirmation from user is requested.</li>
+     * <li>TocEntry.TYPE_TOC: deletion is immediate.</li>
+     * </ul>
+     *
+     * @return {@code true} if handled
+     */
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final Integer position) {
+        TocEntry item = mModel.getTocEntries().get(position);
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (menuItem.getItemId()) {
+            case R.id.MENU_DELETE:
+                switch (item.getType()) {
+                    case Book:
+                        //noinspection ConstantConditions
+                        StandardDialogs.deleteBookAlert(getContext(), item.getTitle(),
+                                                        item.getAuthors(), () -> {
+                                    mModel.delTocEntry(item);
+                                    mAdapter.notifyItemRemoved(position);
+                                });
+                        return true;
+
+                    case Toc:
+                        //noinspection ConstantConditions
+                        StandardDialogs.deleteTocEntryAlert(getContext(), item, () -> {
+                            mModel.delTocEntry(item);
+                            mAdapter.notifyItemRemoved(position);
+                        });
+                        return true;
+                }
+                break;
+        }
+
+        return false;
     }
 
     /**
@@ -132,78 +237,6 @@ public class AuthorWorksFragment
         getActivity().finish();
     }
 
-    private void onCreateContextMenu(final int position) {
-        TocEntry item = mModel.getTocEntries().get(position);
-
-        //noinspection ConstantConditions
-        Menu menu = MenuPicker.createMenu(getContext());
-        menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
-
-        if (item.getType().equals(TocEntry.Type.Book)) {
-            menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
-        }
-        String menuTitle = item.getTitle();
-        final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
-                                                            this::onContextItemSelected);
-        picker.show();
-    }
-
-    /**
-     * <ul>Delete.
-     * <li>TocEntry.TYPE_BOOK: confirmation from user is requested.</li>
-     * <li>TocEntry.TYPE_TOC: deletion is immediate.</li>
-     * </ul>
-     *
-     * @return {@code true} if handled
-     */
-    private boolean onContextItemSelected(final MenuItem menuItem,
-                                          final Integer position) {
-        TocEntry item = mModel.getTocEntries().get(position);
-
-        switch (item.getType()) {
-            case Book:
-                switch (menuItem.getItemId()) {
-                    case R.id.MENU_DELETE:
-                        //noinspection ConstantConditions
-                        StandardDialogs.deleteBookAlert(getContext(), item.getTitle(),
-                                                        item.getAuthors(), () -> {
-                                    mModel.delTocEntry(item);
-                                    mAdapter.notifyItemRemoved(position);
-                                });
-                        return true;
-
-                    case R.id.MENU_EDIT:
-                        Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
-                        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
-                        return true;
-
-                    default:
-                        return false;
-                }
-
-            case Toc:
-                //noinspection SwitchStatementWithTooFewBranches
-                switch (menuItem.getItemId()) {
-                    case R.id.MENU_DELETE:
-                        //noinspection ConstantConditions
-                        StandardDialogs.deleteTocEntryAlert(getContext(), item, () -> {
-                            mModel.delTocEntry(item);
-                            mAdapter.notifyItemRemoved(position);
-                        });
-                        return true;
-
-                    default:
-                        return false;
-                }
-
-            default:
-                throw new IllegalArgumentException("type=" + item.getType());
-        }
-    }
-
     /**
      * Holder pattern for each row.
      */
@@ -217,6 +250,9 @@ public class AuthorWorksFragment
         @Nullable
         final TextView firstPublicationView;
 
+        @Nullable
+        final CompoundButton multipleBooksView;
+
         Holder(@NonNull final View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.title);
@@ -224,6 +260,8 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
+            // optional
+            multipleBooksView = itemView.findViewById(R.id.cbx_multiple_books);
         }
     }
 
@@ -235,19 +273,25 @@ public class AuthorWorksFragment
         private final Drawable mBookIndicator;
         /** Icon to show for not a book. e.g. a short story... */
         private final Drawable mStoryIndicator;
-
+        /** Caching the inflater. */
         private final LayoutInflater mInflater;
 
         private final AuthorWorksModel mModel;
 
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param model   the ViewModel for this fragment.
+         */
         TocAdapter(@NonNull final Context context,
                    @NonNull final AuthorWorksModel model) {
 
             mModel = model;
+            mInflater = LayoutInflater.from(context);
 
             mBookIndicator = context.getDrawable(R.drawable.ic_book);
             mStoryIndicator = context.getDrawable(R.drawable.ic_paragraph);
-            mInflater = LayoutInflater.from(context);
         }
 
         @NonNull
@@ -255,7 +299,7 @@ public class AuthorWorksFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            TocEntry.Type type = TocEntry.Type.get((char)viewType);
+            TocEntry.Type type = TocEntry.Type.get((char) viewType);
 
             View itemView;
             switch (type) {
@@ -302,6 +346,7 @@ public class AuthorWorksFragment
             TocEntry tocEntry = mModel.getTocEntries().get(position);
 
             holder.titleView.setText(tocEntry.getTitle());
+
             // optional
             if (holder.authorView != null) {
                 holder.authorView.setText(tocEntry.getAuthor().getLabel());
@@ -318,7 +363,12 @@ public class AuthorWorksFragment
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }
             }
-
+            // optional
+            if (holder.multipleBooksView != null) {
+                boolean isSet = tocEntry.getBookCount() > 1;
+                holder.multipleBooksView.setChecked(isSet);
+                holder.multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+            }
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(tocEntry));
 
@@ -345,5 +395,4 @@ public class AuthorWorksFragment
                                       .getTitle().substring(0, 1).toUpperCase()};
         }
     }
-
 }

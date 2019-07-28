@@ -45,11 +45,6 @@ public final class LocaleUtils {
      * Split on first digit, but leave it in the second part.
      */
     private static final Pattern SPLIT_PRICE_CURRENCY_AMOUNT_PATTERN = Pattern.compile("(?=\\d)");
-    /**
-     * The locale used at startup; so that we can revert to system locale if we want to.
-     * TODO: move this to App, where it's actually (re)set.
-     */
-    private static Locale sSystemInitialLocale;
 
     private LocaleUtils() {
     }
@@ -62,10 +57,7 @@ public final class LocaleUtils {
      * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
      */
     @UiThread
-    public static void init(@NonNull final Locale systemLocale) {
-
-        // preserve startup==system Locale
-        sSystemInitialLocale = systemLocale;
+    public static void init() {
 
         if (CURRENCY_MAP.isEmpty()) {
             // key in map should always be lowercase
@@ -182,16 +174,6 @@ public final class LocaleUtils {
     }
 
     /**
-     * Return the *REAL* Locale; i.e. the device itself.
-     * This is important for using the ac
-     *
-     * @return the actual System Locale.
-     */
-    public static Locale getSystemLocale() {
-        return sSystemInitialLocale;
-    }
-
-    /**
      * @return the user-preferred Locale as stored in the preferences.
      */
     @NonNull
@@ -200,7 +182,7 @@ public final class LocaleUtils {
         // the string "system" is also hardcoded in the preference string-array and
         // in the default setting in the preference screen.
         if (lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
-            return sSystemInitialLocale;
+            return App.getSystemLocale();
         } else {
             return from(lang);
         }
@@ -297,7 +279,7 @@ public final class LocaleUtils {
      */
     @Nullable
     private static String currencyToISO(@NonNull final String currency) {
-        return CURRENCY_MAP.get(currency.trim().toLowerCase(getSystemLocale()));
+        return CURRENCY_MAP.get(currency.trim().toLowerCase(App.getSystemLocale()));
     }
 
     /**
@@ -561,7 +543,7 @@ public final class LocaleUtils {
      */
     public static void createLanguageMappingCache() {
         // the system default
-        createLanguageMappingCache(sSystemInitialLocale);
+        createLanguageMappingCache(App.getSystemLocale());
         // the one the user has configured our app into using
         createLanguageMappingCache(Locale.getDefault());
         // and English for compatibility with lots of websites.
@@ -594,20 +576,21 @@ public final class LocaleUtils {
 
     public static String toDebugString(@NonNull final Context context) {
         Locale cur = from(context);
-        return "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
-                + "\nsSystemInitialLocale(cur)       : " + sSystemInitialLocale.getDisplayName(cur)
-                + "\nconfiguration.locale            : "
-                + context.getResources().getConfiguration().locale.getDisplayName()
-                + "\nconfiguration.locale(cur)       : "
-                + context.getResources().getConfiguration().locale.getDisplayName(cur)
+        Locale configLocale = context.getResources().getConfiguration().locale;
 
-                + "\nLocale.getDefault()             : " + Locale.getDefault().getDisplayName()
-                + "\nLocale.getDefault(cur)          : " + Locale.getDefault().getDisplayName(cur)
-                + "\ngetPreferredLocal()             : " + getPreferredLocal().getDisplayName()
-                + "\ngetPreferredLocal(cur)          : " + getPreferredLocal().getDisplayName(cur)
+        return ""
+                + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
+                + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(cur)
+                + "\nconfiguration.locale       : " + configLocale.getDisplayName()
+                + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(cur)
 
-                + "\nApp.isInNeedOfRecreating()      : " + App.isInNeedOfRecreating()
-                + "\nApp.isRecreating()              : " + App.isRecreating();
+                + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
+                + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(cur)
+                + "\ngetPreferredLocal()        : " + getPreferredLocal().getDisplayName()
+                + "\ngetPreferredLocal(cur)     : " + getPreferredLocal().getDisplayName(cur)
+
+                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
+                + "\nApp.isRecreating()         : " + App.isRecreating();
     }
 
     /**

@@ -23,7 +23,7 @@ public interface Entity {
     /**
      * Optional.
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      *
      * @return the label to use.
      */

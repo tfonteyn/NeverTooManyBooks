@@ -34,11 +34,12 @@
         />
 
     <!-- Medium text
-        Note that the 'drawableEnd' is done from code. Only here as 'tools'.
+         Note that the 'drawableEnd' drawable itself is done from code.
     -->
     <TextView
         android:id="@+id/name"
         style="@style/BooklistBook.Section"
+        android:drawableTint="?attr/completed_icon_tint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bullet"
         app:layout_constraintTop_toTopOf="parent"

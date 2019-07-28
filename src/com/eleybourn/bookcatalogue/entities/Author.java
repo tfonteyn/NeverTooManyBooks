@@ -360,8 +360,7 @@ public class Author
     /**
      * Stopgap.... makes the code elsewhere clean.
      * <p>
-     * ENHANCE: The locale of the Author
-     * should be based on the main language the author writes in.
+     * ENHANCE: The locale of the Author should be based on the main language the author writes in.
      * Not implemented for now. So we cheat.
      *
      * @return the locale of the Author

@@ -251,7 +251,7 @@ public abstract class BookBaseFragment
                         mBookBaseFragmentModel.setBook(bookIds.get(0));
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                            Logger.debug(this,"BookBaseFragment.onActivityResult",
+                            Logger.debug(this, "BookBaseFragment.onActivityResult",
                                          "wasCancelled= " + data.getBooleanExtra(
                                                  UniqueId.BKEY_CANCELED, false));
                         }

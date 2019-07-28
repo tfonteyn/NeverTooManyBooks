@@ -123,7 +123,7 @@ class SendBooksLegacyTask
     /**
      * Provide a more informative description.
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      */
     @NonNull
     @Override

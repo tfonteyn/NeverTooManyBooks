@@ -147,8 +147,6 @@ public class StartupViewModel
             // Clear the flag
             startupTasksShouldBeStarted = false;
 
-            // ENHANCE: add checks for new Events/crashes
-
             // If no tasks were queued, then move on to next stage. Otherwise, the completed
             // tasks will cause the next stage to start.
             synchronized (mAllTasks) {

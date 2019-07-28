@@ -63,7 +63,6 @@ class TaskQueueDBHelper
     static final String TBL_EVENT = "event";
     /** File name for database */
     private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
-    /** RELEASE: Update on new release */
     private static final int DATABASE_VERSION = 2;
 
     // Collection of all table definitions

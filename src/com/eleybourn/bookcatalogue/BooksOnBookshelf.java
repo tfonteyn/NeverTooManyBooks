@@ -298,15 +298,11 @@ public class BooksOnBookshelf
 //        // set the list, this will trigger the adapter to refresh.
 //        mAdapter.setCursor(mModel.getListCursor());
 
-        mAdapter = new BooklistAdapter(getLayoutInflater(),
-                                       mModel.getCurrentStyle(),
-                                       mModel.getDb(),
-                                       cursor);
+        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(), mModel.getDb(), cursor);
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
         mListView.setAdapter(mAdapter);
     }
-
 
 
     /**
@@ -608,7 +604,7 @@ public class BooksOnBookshelf
      * comment this method out. The system will use {@link SearchSuggestionProvider}
      * as configured in res/xml/searchable.xml
      * <p>
-     * URGENT: https://developer.android.com/guide/topics/search/search-dialog
+     * FIXME: https://developer.android.com/guide/topics/search/search-dialog
      * the way this is implemented is a bit of a shoehorn... to be revisited.
      */
     @Override

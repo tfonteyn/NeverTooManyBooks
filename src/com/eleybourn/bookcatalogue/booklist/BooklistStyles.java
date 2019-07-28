@@ -211,7 +211,7 @@ public final class BooklistStyles {
     /**
      * Used in migration/import. Convert the style name to a uuid.
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      * @param name    of the style
      *
      * @return style uuid

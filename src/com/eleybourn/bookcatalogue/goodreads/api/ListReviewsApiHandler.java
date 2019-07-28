@@ -29,13 +29,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.BuilderContext;
@@ -56,7 +56,7 @@ public class ListReviewsApiHandler
     /** Date format used for parsing 'last_update_date'. */
     private static final SimpleDateFormat UPDATE_DATE_FMT
             = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy",
-                                   LocaleUtils.getSystemLocale());
+                                   App.getSystemLocale());
 
     /**
      * Parameters.

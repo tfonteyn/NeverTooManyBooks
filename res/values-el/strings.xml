@@ -414,7 +414,7 @@
         \n\nΑν τα δεδομένα είναι σωστά και το βιβλίο ακόμα δεν εμφανίζεται, πρέπει να προστεθεί ένα βιβλίο με αυτό το ISBN στο Goodreads χειροκίνητα
         μέσω της ιστοσελίδας του. Μόλις γίνει αυτό, μπορείτε να δοκιμάσετε να ξαναστείλετε το βιβλίο.
     </string>
-    <string name="read_amp_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
+    <string name="lbl_read_and_unread">Αναγνωσμένο &amp; Μη Αναγνωσμένο</string>
     <string name="lbl_loaned">Δανεισμένο</string>
     <string name="lbl_publication_year">Έτος Εκδοσης</string>
     <string name="lbl_publication_month">Μήνας Έκδοσης</string>
@@ -656,5 +656,8 @@
     <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια:</string>
     <string name="tip_authors_works_toc">Καταχώρηση Πίνακα περιεχομένου (TOC), π.χ. ιστορία.</string>
     <string name="tip_authors_works_book">Βιβλίο.</string>
+    <string name="menu_author_works_all">Προβολή όλων</string>
+    <string name="menu_author_works_book">Μόνο βιβλία</string>
+    <string name="menu_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
 
 </resources>

@@ -1189,7 +1189,7 @@ public class Fields {
         private final String mNo;
 
         /**
-         * @param context Current context, for accessing resources.
+         * @param context Current context for accessing resources.
          */
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mYes = context.getString(R.string.yes);

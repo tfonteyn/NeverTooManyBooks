@@ -33,7 +33,7 @@ public class ExportCSVTask
     /**
      * Constructor.
      *
-     * @param context        Current context, for accessing resources.
+     * @param context        Current context for accessing resources.
      * @param settings       the export settings
      * @param progressDialog ProgressDialogFragment
      */

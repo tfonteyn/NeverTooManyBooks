@@ -489,7 +489,7 @@ public class XmlExporter
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
-            ColumnMapper mapper = new ColumnMapper(cursor, DBDefinitions.TBL_AUTHORS);
+            ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_AUTHOR)
                    .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
@@ -527,7 +527,7 @@ public class XmlExporter
            .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
-            ColumnMapper mapper = new ColumnMapper(cursor, DBDefinitions.TBL_SERIES);
+            ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_SERIES)
                    .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))

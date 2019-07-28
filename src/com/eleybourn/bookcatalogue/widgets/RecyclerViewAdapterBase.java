@@ -99,7 +99,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     }
 
     /**
-     * It’s very important to call notifyItemRemoved() so the Adapter is aware of the changes.
+     * It's very important to call notifyItemRemoved() so the Adapter is aware of the changes.
      *
      * @param position The position of the item removed.
      */
@@ -110,8 +110,8 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends RecyclerViewView
     }
 
     /**
-     * It’s very important to call notifyItemMoved() so the Adapter is aware of the changes.
-     * It’s also important to note that we’re changing the position of the item every time the
+     * It's very important to call notifyItemMoved() so the Adapter is aware of the changes.
+     * It's also important to note that we're changing the position of the item every time the
      * view is shifted to a new index, and not at the end of a “drop” event.
      *
      * @param fromPosition The start position of the moved item.

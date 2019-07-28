@@ -681,6 +681,14 @@
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
 
+    <!-- options menu on the "view all works of an author" screen. -->
+    <!-- show both TOC entries and Books -->
+    <string name="menu_author_works_all">Show all</string>
+    <!-- show only Books -->
+    <string name="menu_author_works_book">Books only</string>
+    <!-- show only TOC entries -->
+    <string name="menu_author_works_toc">Toc only</string>
+
     <!-- a short + a longer description for Administration -->
     <string name="menu_administration">Admin</string>
     <string name="menu_administration_long">Administration Functions</string>
@@ -1024,6 +1032,7 @@
     <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_search_for_books">Search for Books</string>
+    <string name="lbl_read_and_unread">Read &amp; Unread</string>
 
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
@@ -1311,8 +1320,8 @@
 
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
-
     <string name="and_others">et. al.</string>
-    <string name="read_amp_unread">Read &amp; Unread</string>
+
+
 
 </resources>

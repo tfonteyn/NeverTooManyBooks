@@ -75,8 +75,8 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  * @author Philip Warner
  */
 @AcraMailSender(
-        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
-        mailTo = "test@local.net")
+        mailTo = "test@local.net",
+        reportFileName = "NeverToManyBooks-acra-report.txt")
 @AcraToast(
         //optional, displayed as soon as the crash occurs,
         // before collecting data which can take a few seconds
@@ -179,6 +179,8 @@ public class App
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     private static int sCurrentTheme = -1;
+    /** The locale used at startup; so that we can revert to system locale if we want to. */
+    private static Locale sSystemInitialLocale;
 
     /** create a singleton. */
     @SuppressWarnings("unused")
@@ -265,6 +267,7 @@ public class App
      *
      * @return resource id
      */
+    @SuppressWarnings("unused")
     @IdRes
     public static int getAttr(@NonNull final Context context,
                               @AttrRes final int attr) {
@@ -286,9 +289,7 @@ public class App
         Resources.Theme theme = context.getTheme();
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-        //API: 23
         return context.getResources().getColor(tv.resourceId, theme);
-//        return context.getResources().getColor(tv.resourceId);
     }
 
     /**
@@ -490,13 +491,9 @@ public class App
                 Logger.debug(App.class, "debugDayNightMode",
                              "sCurrentTheme=THEME_LIGHT");
                 break;
-            case 3:
-                Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_LIGHT2");
-                break;
             default:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=eh?");
+                             "sCurrentTheme=eh? " + sCurrentTheme);
                 break;
         }
 
@@ -558,6 +555,15 @@ public class App
     }
 
     /**
+     * Return the device Locale.
+     *
+     * @return the actual System Locale.
+     */
+    public static Locale getSystemLocale() {
+        return sSystemInitialLocale;
+    }
+
+    /**
      * Initialize ACRA for a given Application.
      * <p>
      * <br>{@inheritDoc}
@@ -612,7 +618,9 @@ public class App
 
     private void setSystemLocale() {
         try {
-            LocaleUtils.init(Locale.getDefault());
+            // preserve startup==system Locale
+            sSystemInitialLocale = Locale.getDefault();
+            LocaleUtils.init();
             LocaleUtils.applyPreferred(getBaseContext());
         } catch (@NonNull final RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.

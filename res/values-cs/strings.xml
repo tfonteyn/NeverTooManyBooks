@@ -477,7 +477,7 @@
     <string name="tip_reset_done">Rady byly obnoveny</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
 
-    <string name="read_amp_unread">Přečteno amp; Nepřečteno</string>
+    <string name="lbl_read_and_unread">Přečteno amp; Nepřečteno</string>
     <string name="lbl_loaned">Půjčeno</string>
     <string name="lbl_publication_year">Rok vydání</string>
     <string name="lbl_publication_month">Měsíc vydání</string>
@@ -603,7 +603,7 @@
     <string name="warning_x_is_not_a_valid_isbn_or_asin">„%1$s“ není platné číslo ISBN nebo ASIN</string>
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
-    <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s NeverToManyBooks. Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
+    <string name="warning_bad_scanner">Vypadá to, že stávající aplikace čtečky čárových kódů není kompatibilní s &APP_NAME;. Doporučujeme nainstalovat aplikaci pro skenování čárových kódů Zxing a pokud je již nainstalována, doporučujeme odinstalovat a znovu nainstalovat.</string>
     <string name="warning_cover_copy_failed">Nelze kopírovat obraz</string>
     <string name="progress_msg_process_preferences">Předvolby…</string>
     <string name="progress_msg_process_cover">Přebal…</string>
@@ -688,5 +688,8 @@
     <string name="tip_authors_works">Použité ikony:</string>
     <string name="tip_authors_works_toc">Záznam obsahu (TOC), např. příběh.</string>
     <string name="tip_authors_works_book">Kniha.</string>
+    <string name="menu_author_works_all">Ukázat vše</string>
+    <string name="menu_author_works_book">Pouze knihy</string>
+    <string name="menu_author_works_toc">Pouze tituly obsahu</string>
 
 </resources>

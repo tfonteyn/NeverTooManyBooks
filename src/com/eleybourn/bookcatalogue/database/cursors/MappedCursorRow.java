@@ -5,8 +5,6 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-
 /**
  * Convenience class to pre-map the columns of a given table.
  */
@@ -23,15 +21,10 @@ public class MappedCursorRow {
      * Constructor.
      *
      * @param cursor  the underlying cursor to use.
-     * @param table   the base table to map.
-     * @param columns a list of column names (e.g. from other tables)
      */
-    MappedCursorRow(@NonNull final Cursor cursor,
-                    @Nullable final TableDefinition table,
-                    @Nullable final String... columns) {
+    MappedCursorRow(@NonNull final Cursor cursor) {
         mCursor = cursor;
-        mMapper = new ColumnMapper(cursor, table);
-        mMapper.addDomains(columns);
+        mMapper = new ColumnMapper(cursor);
     }
 
     /**

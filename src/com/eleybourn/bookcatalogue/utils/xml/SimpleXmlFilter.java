@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 
 /**
@@ -147,7 +147,7 @@ public class SimpleXmlFilter {
             return false;
         }
 
-        switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
+        switch (s.trim().toLowerCase(App.getSystemLocale())) {
             case "true":
             case "t":
                 return true;

@@ -69,21 +69,9 @@ public class BooklistMappedCursorRow
      */
     public BooklistMappedCursorRow(@NonNull final Cursor cursor,
                                    @NonNull final BooklistStyle style) {
-        super(cursor, DBDefinitions.TBL_BOOKS,
-              DBDefinitions.KEY_FK_BOOK,
+        super(cursor
 
-              DBDefinitions.KEY_FK_AUTHOR,
-              DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-
-              DBDefinitions.KEY_FK_SERIES,
-              DBDefinitions.KEY_SERIES_IS_COMPLETE,
-              DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
-
-              DBDefinitions.KEY_LOANEE_AS_BOOLEAN,
-
-              DBDefinitions.KEY_BL_ABSOLUTE_POSITION,
-              DBDefinitions.KEY_BL_NODE_ROW_KIND,
-              DBDefinitions.KEY_BL_NODE_LEVEL);
+        );
 
         mStyle = style;
     }

@@ -856,7 +856,7 @@
         dan moet een boek met dat ISBN handmatig worden toegevoegd aan Goodreads via hun
         website. Nadat dat is gedaan kunt u proberen het boek opnieuw te zenden.
     </string>
-    <string name="read_amp_unread">Gelezen &amp; Ongelezen</string>
+    <string name="lbl_read_and_unread">Gelezen &amp; Ongelezen</string>
 
     <string name="X_file_size">Grootte</string>
     <string name="X_updated">Bijgewerkt</string>
@@ -990,5 +990,8 @@
     <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
 
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
+    <string name="menu_author_works_all">Toon alles</string>
+    <string name="menu_author_works_book">Alleen boeken</string>
+    <string name="menu_author_works_toc">Alleen inhouds titels</string>
 
 </resources>

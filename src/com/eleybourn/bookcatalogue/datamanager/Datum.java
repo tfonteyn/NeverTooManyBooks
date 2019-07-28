@@ -27,9 +27,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Class to manage storage/retrieval of a piece of data from a bundle.
@@ -169,7 +169,7 @@ public class Datum {
                 throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
             }
         } else {
-            switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
+            switch (s.trim().toLowerCase(App.getSystemLocale())) {
                 case "1":
                 case "y":
                 case "yes":

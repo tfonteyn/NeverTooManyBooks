@@ -35,8 +35,7 @@ public class SendOneBookTask
     private final String mTaskDescription;
     private final long mBookId;
     @Nullable
-    private
-    Exception mException;
+    private Exception mException;
 
     public SendOneBookTask(@NonNull final Context context,
                            final long bookId,

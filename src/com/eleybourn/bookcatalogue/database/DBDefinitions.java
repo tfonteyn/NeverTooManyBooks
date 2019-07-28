@@ -212,11 +212,11 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_AUTHORS}. */
-    public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME;
-    public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME_OB;
+    static final DomainDefinition DOM_AUTHOR_FAMILY_NAME;
+    static final DomainDefinition DOM_AUTHOR_FAMILY_NAME_OB;
     /** {@link #TBL_AUTHORS}. */
-    public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES;
-    public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES_OB;
+    static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES;
+    static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_IS_COMPLETE;
     /** "FamilyName, GivenName". */
@@ -287,7 +287,6 @@ public final class DBDefinitions {
     }
 
     /** {@link #TBL_BOOKS}. */
-    @SuppressWarnings("WeakerAccess")
     public static final DomainDefinition DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PUBLISHER;
@@ -504,12 +503,17 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKSHELF). */
     public static final DomainDefinition DOM_BOOKSHELF;
+    /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ",', ')". */
+    public static final DomainDefinition DOM_BOOKSHELF_CSV;
 
     public static final String KEY_BOOKSHELF = "bookshelf";
+    public static final String KEY_BOOKSHELF_CSV = "bookshelves_csv";
 
     static {
         DOM_BOOKSHELF =
                 new DomainDefinition(KEY_BOOKSHELF, ColumnInfo.TYPE_TEXT, true);
+        DOM_BOOKSHELF_CSV =
+                new DomainDefinition(KEY_BOOKSHELF_CSV, ColumnInfo.TYPE_TEXT, true);
     }
 
     /** {@link #TBL_BOOK_SERIES}. */

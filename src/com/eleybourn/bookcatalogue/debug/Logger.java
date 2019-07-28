@@ -36,9 +36,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -57,7 +57,7 @@ public final class Logger {
     private static final String INFO = "INFO";
 
     private static final DateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleUtils.getSystemLocale());
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
 
 
     private Logger() {

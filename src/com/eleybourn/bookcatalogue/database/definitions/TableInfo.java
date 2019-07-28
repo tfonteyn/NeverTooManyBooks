@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Details of a database table.
@@ -57,7 +57,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        String lcName = name.toLowerCase(LocaleUtils.getSystemLocale());
+        String lcName = name.toLowerCase(App.getSystemLocale());
         if (!mColumns.containsKey(lcName)) {
             return null;
         }
@@ -80,7 +80,7 @@ public class TableInfo {
         try (Cursor colCsr = db.rawQuery(ColumnInfo.getSql(tableName), null)) {
             while (colCsr.moveToNext()) {
                 ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(LocaleUtils.getSystemLocale()), col);
+                allColumns.put(col.name.toLowerCase(App.getSystemLocale()), col);
             }
         }
         if (allColumns.isEmpty()) {

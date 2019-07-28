@@ -26,10 +26,8 @@ import com.google.android.material.tabs.TabLayout;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
- * SAVE: always save all tabs displayed.
+ * SAVE: always saves all tabs displayed.
  * RESET: only resets the currently displayed tab.
- * <p>
- * TODO: decide if we want to use the explicit 'save' and 'use' button, or just onBackPressed.
  */
 public class SearchAdminActivity
         extends BaseActivity {

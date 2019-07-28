@@ -26,9 +26,8 @@ final class XmlTags {
 
     /**
      * root element, used to recognise 'our' files during import.
-     * FIXME: XML_ROOT not used in all places yet due to backward compat
      */
-    static final String XML_ROOT = "bc";
+    static final String XML_ROOT = "NeverToManyBooks";
 
     static final String ATTR_VERSION = "version";
 

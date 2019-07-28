@@ -9,11 +9,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.FormattedMessageException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -119,7 +119,7 @@ public final class GoodreadsTasks {
         if (url == null) {
             return false;
         }
-        String name = url.toLowerCase(LocaleUtils.getSystemLocale());
+        String name = url.toLowerCase(App.getSystemLocale());
         // these string can be part of an image 'name' indicating there is no cover image.
         return !name.contains("/nophoto/") && !name.contains("nocover");
     }

@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +64,7 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 import com.eleybourn.bookcatalogue.widgets.FastScrollerOverlay;
 
 /**
@@ -106,21 +108,21 @@ public class BooklistAdapter
     /**
      * Constructor.
      *
-     * @param style The style is used by (some) individual rows.
-     * @param db    the database
+     * @param context Current context
+     * @param style   The style is used by (some) individual rows.
+     * @param db      the database
      */
-    public BooklistAdapter(@NonNull final LayoutInflater layoutInflater,
+    public BooklistAdapter(@NonNull final Context context,
                            @NonNull final BooklistStyle style,
                            @NonNull final DAO db,
                            @Nullable final Cursor cursor) {
 
-        mInflater = layoutInflater;
+        mInflater = LayoutInflater.from(context);
         mDb = db;
         mCursor = cursor;
         mStyle = style;
 
-        mLevelIndent = layoutInflater.getContext().getResources()
-                                     .getDimensionPixelSize(R.dimen.booklist_level_indent);
+        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
     }
 
     /**
@@ -151,7 +153,6 @@ public class BooklistAdapter
     }
 
     public int getItemViewType(final int position) {
-        //
         // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
         // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
         // This code attempts to gather more details of how this error occurs.
@@ -161,10 +162,10 @@ public class BooklistAdapter
         if (mCursor == null) {
             return 0;
         } else if (mCursor.isClosed()) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Attempt to get type of item on closed cursor (" + mCursor + ")");
         } else if (position >= mCursor.getCount()) {
-            throw new RuntimeException(
+            throw new IllegalStateException(
                     "Attempt to get type of item beyond end of cursor (" + mCursor + ")");
         } else {
             mCursor.moveToPosition(position);
@@ -302,7 +303,7 @@ public class BooklistAdapter
             return new BookHolder(itemView, mDb, mStyle);
         }
 
-        // Except for CheckableStringHolder (which uses an additional fixed column),
+        // Except for CheckableStringHolder which uses an additional fixed column,
         // all other rows are based on a single column
         String columnName = RowKind.get(viewType).getDisplayDomain().name;
         int columnIndex = row.getColumnIndex(columnName);
@@ -414,7 +415,7 @@ public class BooklistAdapter
     }
 
     /**
-     * URGENT: this really needs performance testing. Can we not simply add the columns to the real cursor?
+     * URGENT: this really needs performance testing.
      * <p>
      * Background task to get 'extra' details for a book row.
      * Doing this in a background task keeps the booklist cursor simple and small.
@@ -444,24 +445,17 @@ public class BooklistAdapter
 
         private final int mExtraFields;
 
-        /** Resulting location data. */
-        private String mLocation;
-        /** Resulting publisher data. */
-        private String mPublisher;
-        /** Resulting ISBN. */
-        private String mIsbn;
-        /** Resulting Format data. */
-        private String mFormat;
-        /** Resulting author data. */
-        private String mAuthor;
-        /** Resulting shelves data. */
-        private String mShelves;
+        /** Resulting data. */
+        private final Bundle mResults = new Bundle();
 
         /**
          * Constructor.
          *
+         * @param context      Current context
+         * @param db           the database
          * @param bookId       Book to fetch
          * @param taskListener View holder for the book, used as callback for task results.
+         * @param extraFields  bit mask with the fields that should be fetched.
          */
         @UiThread
         GetBookExtrasTask(@NonNull final Context context,
@@ -490,48 +484,62 @@ public class BooklistAdapter
                     return false;
                 }
 
-                ColumnMapper mapper = new ColumnMapper(cursor, null);
-                mapper.addDomains(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                  DBDefinitions.KEY_LOCATION,
-                                  DBDefinitions.KEY_FORMAT,
-                                  DBDefinitions.KEY_PUBLISHER,
-                                  DBDefinitions.KEY_ISBN,
-                                  DBDefinitions.KEY_DATE_PUBLISHED,
-                                  DBDefinitions.KEY_BOOKSHELF);
+                ColumnMapper mapper = new ColumnMapper(cursor);
 
+                String tmp;
                 if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                    mAuthor = mapper.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                    tmp = mapper.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                    if (!tmp.isEmpty()) {
+                        mResults.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, tmp);
+                    }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    mLocation = mapper.getString(DBDefinitions.KEY_LOCATION);
+                    tmp = mapper.getString(DBDefinitions.KEY_LOCATION);
+                    if (!tmp.isEmpty()) {
+                        mResults.putString(DBDefinitions.KEY_LOCATION, tmp);
+                    }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mFormat = mapper.getString(DBDefinitions.KEY_FORMAT);
+                    tmp = mapper.getString(DBDefinitions.KEY_FORMAT);
+                    if (!tmp.isEmpty()) {
+                        mResults.putString(DBDefinitions.KEY_FORMAT, tmp);
+                    }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    mShelves = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
+                    tmp = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
+                    if (!tmp.isEmpty()) {
+                        // note the destination is KEY_BOOKSHELF_CSV
+                        mResults.putString(DBDefinitions.KEY_BOOKSHELF_CSV, tmp);
+                    }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
-                    mIsbn = mapper.getString(DBDefinitions.KEY_ISBN);
+                    tmp = mapper.getString(DBDefinitions.KEY_ISBN);
+                    if (!tmp.isEmpty()) {
+                        mResults.putString(DBDefinitions.KEY_ISBN, tmp);
+                    }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mPublisher = mapper.getString(DBDefinitions.KEY_PUBLISHER);
-                    String tmpPubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+                    tmp = mapper.getString(DBDefinitions.KEY_PUBLISHER);
+                    String pubDate = mapper.getString(DBDefinitions.KEY_DATE_PUBLISHED);
                     // over optimisation ?
-                    if (tmpPubDate.length() == 4) {
+                    if (pubDate.length() == 4) {
                         // 4 digits is just the year.
-                        mPublisher = String.format(mA_bracket_b_bracket, mPublisher, tmpPubDate);
-                    } else if (tmpPubDate.length() > 4) {
+                        tmp = String.format(mA_bracket_b_bracket, tmp, pubDate);
+                    } else if (pubDate.length() > 4) {
                         // parse/format the date
-                        mPublisher = String.format(mA_bracket_b_bracket, mPublisher,
-                                                   DateUtils.toPrettyDate(mLocale, tmpPubDate));
+                        tmp = String.format(mA_bracket_b_bracket, tmp,
+                                            DateUtils.toPrettyDate(mLocale, pubDate));
+                    }
+                    if (!tmp.isEmpty()) {
+                        mResults.putString(DBDefinitions.KEY_PUBLISHER, tmp);
                     }
                 }
+
             } catch (@NonNull final NumberFormatException e) {
                 Logger.error(this, e);
                 return false;
@@ -547,8 +555,7 @@ public class BooklistAdapter
             }
             // Fields not used will be null.
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetBookExtrasTaskFinished(mAuthor, mPublisher, mIsbn,
-                                                                mFormat, mShelves, mLocation);
+                mTaskListener.get().onGetBookExtrasTaskFinished(mResults);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onPostExecute",
@@ -560,15 +567,12 @@ public class BooklistAdapter
         interface GetBookExtrasTaskFinishedListener {
 
             /**
-             * Results from fetching the extras. Fields not used/fetched will be {@code null}.
-             * Theoretically they could also be {@code null} when fetched (but shouldn't).
+             * Results from fetching the extras.
+             * Theoretically individual fields could be {@code null} (but shouldn't).
+             *
+             * @param results a bundle with the result field.
              */
-            void onGetBookExtrasTaskFinished(@Nullable String author,
-                                             @Nullable String publisher,
-                                             @Nullable String isbn,
-                                             @Nullable String format,
-                                             @Nullable String shelves,
-                                             @Nullable String location);
+            void onGetBookExtrasTaskFinished(@NonNull Bundle results);
         }
     }
 
@@ -581,10 +585,21 @@ public class BooklistAdapter
         /** Absolute position of this row. */
         int absolutePosition;
 
+        /**
+         * Constructor.
+         *
+         * @param itemView the view specific for this holder
+         */
         RowViewHolder(@NonNull final View itemView) {
             super(itemView);
         }
 
+        /**
+         * Bind the data to the views in the holder.
+         *
+         * @param rowData the data to bind
+         * @param style   to use
+         */
         @CallSuper
         void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                               @NonNull final BooklistStyle style) {
@@ -598,91 +613,74 @@ public class BooklistAdapter
     public static class BookHolder
             extends RowViewHolder {
 
-        /** Pointer to the view that stores the related book field. */
+        /** View that stores the related book field. */
         final TextView titleView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView authorView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView bookshelvesView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView locationView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView publisherView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView isbnView;
-        /** Pointer to the view that stores the related book field. */
-        final TextView formatView;
-        /** Pointer to the view that stores the series number when it is a short piece of text. */
-        final TextView seriesNumView;
-        /** Pointer to the view that stores the series number when it is a long piece of text. */
-        final TextView seriesNumLongView;
+
         /** The "I've read it" checkbox. */
         final CompoundButton readView;
         /** The "on loan" checkbox. */
         final CompoundButton onLoanView;
+
+        /** View that stores the related book field. */
+        final ImageView coverView;
+
+        /** View that stores the series number when it is a short piece of text. */
+        final TextView seriesNumView;
+        /** View that stores the series number when it is a long piece of text. */
+        final TextView seriesNumLongView;
+
+        /** View that stores the related book field. */
+        final TextView authorView;
+        /** View that stores the related book field. */
+        final TextView publisherView;
+        /** View that stores the related book field. */
+        final TextView isbnView;
+        /** View that stores the related book field. */
+        final TextView formatView;
+
+        /** View that stores the related book field. */
+        final TextView locationView;
+        /** View that stores the related book field. */
+        final TextView bookshelvesView;
+
         /** Database access. */
         @NonNull
         private final DAO mDb;
+
         /** Bookshelves label resource string. */
         @NonNull
         private final String mShelvesLabel;
         /** Location label resource string. */
         @NonNull
         private final String mLocationLabel;
+
         /** Format string. */
         @NonNull
         private final String mName_colon_value;
+
         private final GetBookExtrasTask.GetBookExtrasTaskFinishedListener mTaskListener =
                 new GetBookExtrasTask.GetBookExtrasTaskFinishedListener() {
                     @Override
-                    public void onGetBookExtrasTaskFinished(@Nullable final String author,
-                                                            @Nullable final String publisher,
-                                                            @Nullable final String isbn,
-                                                            @Nullable final String format,
-                                                            @Nullable final String shelves,
-                                                            @Nullable final String location) {
-                        showOrHide(authorView, author);
-                        showOrHide(publisherView, publisher);
-                        showOrHide(isbnView, isbn);
-                        showOrHide(formatView, format);
-                        showOrHide(bookshelvesView, mShelvesLabel, shelves);
-                        showOrHide(locationView, mLocationLabel, location);
-                    }
+                    public void onGetBookExtrasTaskFinished(@NonNull final Bundle results) {
+                        showOrHide(authorView,
+                                   results.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                        showOrHide(publisherView, results.getString(DBDefinitions.KEY_PUBLISHER));
+                        showOrHide(isbnView, results.getString(DBDefinitions.KEY_ISBN));
+                        showOrHide(formatView, results.getString(DBDefinitions.KEY_FORMAT));
 
-                    /**
-                     * Conditionally display 'text'.
-                     */
-                    private void showOrHide(@NonNull final TextView view,
-                                            @Nullable final String text) {
-                        if (text != null && !text.isEmpty()) {
-                            view.setText(text);
-                            view.setVisibility(View.VISIBLE);
-                        } else {
-                            view.setVisibility(View.GONE);
-                        }
-                    }
-
-                    /**
-                     * Conditionally display 'label: text'.
-                     */
-                    private void showOrHide(@NonNull final TextView view,
-                                            @NonNull final String label,
-                                            @Nullable final String text) {
-                        if (text != null && !text.isEmpty()) {
-                            view.setText(String.format(mName_colon_value, label, text));
-                            view.setVisibility(View.VISIBLE);
-                        } else {
-                            view.setVisibility(View.GONE);
-                        }
+                        showOrHide(locationView, mLocationLabel,
+                                   results.getString(DBDefinitions.KEY_LOCATION));
+                        showOrHide(bookshelvesView, mShelvesLabel,
+                                   results.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
                     }
                 };
-        /** Pointer to the view that stores the related book field. */
-        private final ImageView coverView;
 
         /**
          * Constructor.
          *
-         * @param db the database.
+         * @param itemView the view specific for this holder
+         * @param db       the database.
+         * @param style    to use
          */
         BookHolder(@NonNull final View itemView,
                    @NonNull final DAO db,
@@ -709,12 +707,9 @@ public class BooklistAdapter
             onLoanView.setVisibility(App.isUsed(DBDefinitions.KEY_LOANEE) ? View.VISIBLE
                                                                           : View.GONE);
 
-            int extraFields = style.getExtraFieldsStatus();
-
             // visibility is independent from actual data, so set here.
             coverView = itemView.findViewById(R.id.coverImage);
-            if (App.isUsed(UniqueId.BKEY_IMAGE)
-                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
+            if (style.isUsed(UniqueId.BKEY_IMAGE)) {
                 coverView.setVisibility(View.VISIBLE);
             } else {
                 coverView.setVisibility(View.GONE);
@@ -724,42 +719,27 @@ public class BooklistAdapter
             seriesNumView = itemView.findViewById(R.id.series_num);
             seriesNumLongView = itemView.findViewById(R.id.series_num_long);
 
-            // visibility depends on actual data, but we need to set initial visibility
-            // as actual visibility is postponed to a background task.
-            //
-            // iow: they are (and stay) hidden when not in use;
-            // and we'll hide the used ones if empty.
-            bookshelvesView = itemView.findViewById(R.id.shelves);
-            bookshelvesView.setVisibility((extraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0
-                                          ? View.VISIBLE : View.GONE);
-
             authorView = itemView.findViewById(R.id.author);
-            authorView.setVisibility((extraFields & BooklistStyle.EXTRAS_AUTHOR) != 0
-                                     ? View.VISIBLE : View.GONE);
-
-            locationView = itemView.findViewById(R.id.location);
-            locationView.setVisibility((extraFields & BooklistStyle.EXTRAS_LOCATION) != 0
-                                       ? View.VISIBLE : View.GONE);
-
             publisherView = itemView.findViewById(R.id.publisher);
-            publisherView.setVisibility((extraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0
-                                        ? View.VISIBLE : View.GONE);
-
             isbnView = itemView.findViewById(R.id.isbn);
-            isbnView.setVisibility((extraFields & BooklistStyle.EXTRAS_ISBN) != 0
-                                   ? View.VISIBLE : View.GONE);
-
             formatView = itemView.findViewById(R.id.format);
-            formatView.setVisibility((extraFields & BooklistStyle.EXTRAS_FORMAT) != 0
-                                     ? View.VISIBLE : View.GONE);
+            locationView = itemView.findViewById(R.id.location);
+            bookshelvesView = itemView.findViewById(R.id.shelves);
 
+            // initially all
+            authorView.setVisibility(View.GONE);
+            publisherView.setVisibility(View.GONE);
+            isbnView.setVisibility(View.GONE);
+            formatView.setVisibility(View.GONE);
+            locationView.setVisibility(View.GONE);
+            bookshelvesView.setVisibility(View.GONE);
         }
 
+        @Override
         public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            int extraFields = style.getExtraFieldsStatus();
             int imageMaxSize = ImageUtils.getMaxImageSize(style.getThumbnailScaleFactor());
 
             titleView.setText(rowData.getString(DBDefinitions.KEY_TITLE));
@@ -771,6 +751,22 @@ public class BooklistAdapter
             if (App.isUsed(DBDefinitions.KEY_LOANEE)
                     && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
                 onLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
+            }
+
+            if (style.isUsed(UniqueId.BKEY_IMAGE)) {
+                // store the uuid for use in the onClick
+                coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
+
+                ImageUtils.setImageView(coverView, rowData.getString(DBDefinitions.KEY_BOOK_UUID),
+                                        imageMaxSize, imageMaxSize);
+
+                //Allow zooming by clicking on the image
+                coverView.setOnClickListener(v -> {
+                    FragmentActivity activity = (FragmentActivity) v.getContext();
+                    String uuid = (String) v.getTag(R.id.TAG_UUID);
+                    ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
+                                                   StorageUtils.getCoverFile(uuid));
+                });
             }
 
             if (App.isUsed(DBDefinitions.KEY_SERIES_TITLE) && rowData.hasSeriesNumber()) {
@@ -796,37 +792,73 @@ public class BooklistAdapter
                 seriesNumLongView.setVisibility(View.GONE);
             }
 
-            if (App.isUsed(UniqueId.BKEY_IMAGE)
-                    && (extraFields & BooklistStyle.EXTRAS_THUMBNAIL) != 0) {
-                // store the uuid for use in the onClick
-                coverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
+            if (BooksOnBookshelfModel.TMP_USE_BOB_EXTRAS_TASK) {
+                int extraFields = style.getExtraFieldsStatus();
+                // If there are extras to get, start a background task.
+                if ((extraFields & BooklistStyle.EXTRAS_BY_TASK) != 0) {
+                    // Fill in the extras field as blank initially.
+                    authorView.setText("");
+                    bookshelvesView.setText("");
 
-                ImageUtils.setImageView(coverView, rowData.getString(DBDefinitions.KEY_BOOK_UUID),
-                                        imageMaxSize, imageMaxSize);
+                    publisherView.setText("");
+                    isbnView.setText("");
+                    formatView.setText("");
+                    locationView.setText("");
 
-                //Allow zooming by clicking on the image
-                coverView.setOnClickListener(v -> {
-                    FragmentActivity activity = (FragmentActivity) v.getContext();
-                    String uuid = (String) v.getTag(R.id.TAG_UUID);
-                    ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
-                                                   StorageUtils.getCoverFile(uuid));
-                });
+                    // Queue the task.
+                    new GetBookExtrasTask(itemView.getContext(), mDb,
+                                          rowData.getLong(DBDefinitions.KEY_FK_BOOK),
+                                          mTaskListener, extraFields)
+                            .execute();
+                }
+            } else {
+                showOrHide(style, rowData, DBDefinitions.KEY_AUTHOR_FORMATTED, authorView);
+                showOrHide(style, rowData, DBDefinitions.KEY_BOOKSHELF_CSV, bookshelvesView);
+
+                showOrHide(style, rowData, DBDefinitions.KEY_PUBLISHER, publisherView);
+                showOrHide(style, rowData, DBDefinitions.KEY_ISBN, isbnView);
+                showOrHide(style, rowData, DBDefinitions.KEY_FORMAT, formatView);
+                showOrHide(style, rowData, DBDefinitions.KEY_LOCATION, locationView);
             }
+        }
 
-            // If there are extras to get, start a background task.
-            if ((extraFields & BooklistStyle.EXTRAS_BY_TASK) != 0) {
-                // Fill in the extras field as blank initially.
-                bookshelvesView.setText("");
-                locationView.setText("");
-                publisherView.setText("");
-                isbnView.setText("");
-                formatView.setText("");
-                authorView.setText("");
-                // Queue the task.
-                new GetBookExtrasTask(itemView.getContext(), mDb,
-                                      rowData.getLong(DBDefinitions.KEY_FK_BOOK),
-                                      mTaskListener, extraFields)
-                        .execute();
+        /**
+         * Conditionally display 'text'.
+         */
+        private void showOrHide(@NonNull final TextView view,
+                                @Nullable final String text) {
+            if (text != null && !text.isEmpty()) {
+                view.setText(text);
+                view.setVisibility(View.VISIBLE);
+            } else {
+                view.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * Conditionally display 'label: text'.
+         */
+        private void showOrHide(@NonNull final TextView view,
+                                @NonNull final String label,
+                                @Nullable final String text) {
+            if (text != null && !text.isEmpty()) {
+                view.setText(String.format(mName_colon_value, label, text));
+                view.setVisibility(View.VISIBLE);
+            } else {
+                view.setVisibility(View.GONE);
+            }
+        }
+
+        void showOrHide(@NonNull final BooklistStyle style,
+                        @NonNull final BooklistMappedCursorRow rowData,
+                        @NonNull final String key,
+                        @NonNull final TextView view) {
+            if (style.isUsed(key)) {
+                if (rowData.contains(key)) {
+                    showOrHide(view, rowData.getString(key));
+                } else {
+                    view.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -861,6 +893,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
@@ -877,6 +910,7 @@ public class BooklistAdapter
             mVisibilityControlView = mRowDetailsView.findViewById(R.id.group);
         }
 
+        @Override
         public void onBindViewHolder(@NonNull final BooklistMappedCursorRow rowData,
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
@@ -949,6 +983,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
@@ -988,6 +1023,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
@@ -1019,6 +1055,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
@@ -1051,6 +1088,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView    the view specific for this holder
          * @param columnIndex index in SQL result set
          * @param noDataId    String ID to use when data is blank
          */
@@ -1094,6 +1132,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param itemView       the view specific for this holder
          * @param columnIndex    index in SQL result set
          * @param isLockedSource Column name to use for the boolean 'lock' status
          * @param noDataId       String ID to use when data is blank
@@ -1111,21 +1150,13 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            if (isVisible()) {
-                Drawable lock = null;
-                if (rowData.getBoolean(mIsLockedSourceCol)) {
-                    Context context = mTextView.getContext();
-                    lock = context.getDrawable(R.drawable.ic_lock);
-                    //noinspection ConstantConditions
-                    lock.setTint(App.getAttr(context, R.attr.completed_icon_tint));
-                }
-                mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        null, null, lock, null);
-
-            } else {
-                mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        null, null, null, null);
+            Drawable lock = null;
+            if (isVisible() && rowData.getBoolean(mIsLockedSourceCol)) {
+                lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
             }
+
+            mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    null, null, lock, null);
         }
     }
 }

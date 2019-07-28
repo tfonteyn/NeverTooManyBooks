@@ -44,7 +44,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchEngine;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -117,9 +116,9 @@ public class LibraryThingAdminActivity
         SharedPreferences prefs = App.getPrefs();
         SharedPreferences.Editor ed = prefs.edit();
         for (String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(LocaleUtils.getSystemLocale())
+            if (key.toLowerCase(App.getSystemLocale())
                    .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase(
-                           LocaleUtils.getSystemLocale()))) {
+                           App.getSystemLocale()))) {
                 ed.remove(key);
             }
         }
@@ -140,7 +139,7 @@ public class LibraryThingAdminActivity
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
-        protected Exception mException;
+        private Exception mException;
 
         /**
          * Constructor.

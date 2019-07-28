@@ -49,6 +49,7 @@ import java.util.UUID;
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooklistAdapter;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.filters.BitmaskFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.Filter;
@@ -324,7 +325,7 @@ public class BooklistStyle
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
-     * @param context Current context, for accessing resources,
+     * @param context Current context for accessing resources,
      *                will be {@code null} when doNew==false !
      */
     private BooklistStyle(@NonNull final Parcel in,
@@ -531,6 +532,8 @@ public class BooklistStyle
     }
 
     /**
+     * @param context Current context
+     *
      * @return the system name or user-defined name based on kind of style this object defines.
      */
     @NonNull
@@ -868,7 +871,7 @@ public class BooklistStyle
      */
     @NonNull
     public BooklistGroup getGroupAt(final int index) {
-        return mStyleGroups.getGroupAt(index);
+        return mStyleGroups.getGroups().get(index);
     }
 
     /**
@@ -1037,7 +1040,7 @@ public class BooklistStyle
      * <p>
      * TODO: have a think... don't use Parceling, but simply copy the prefs + db entry.
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
@@ -1146,6 +1149,52 @@ public class BooklistStyle
                 + '}';
     }
 
+    public boolean isUsed(@NonNull final String key) {
+        switch (key) {
+            case UniqueId.BKEY_IMAGE:
+                return App.isUsed(key) && mExtraShowThumbnails.isTrue();
+
+            case DBDefinitions.KEY_AUTHOR_FORMATTED:
+                return App.isUsed(key) && mExtraShowAuthor.isTrue();
+
+            case DBDefinitions.KEY_BOOKSHELF:
+                return App.isUsed(key) && mExtraShowBookshelves.isTrue();
+
+            case DBDefinitions.KEY_FORMAT:
+                return App.isUsed(key) && mExtraShowFormat.isTrue();
+
+            case DBDefinitions.KEY_ISBN:
+                return App.isUsed(key) && mExtraShowIsbn.isTrue();
+
+            case DBDefinitions.KEY_LOCATION:
+                return App.isUsed(key) && mExtraShowLocation.isTrue();
+
+            case DBDefinitions.KEY_PUBLISHER:
+                return App.isUsed(key) && mExtraShowPublisher.isTrue();
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Wrapper that gets the showAuthorGivenNameFirst flag from the Author group if we have it,
+     * or from the global defaults.
+     *
+     * @return {@code true} if we want "given-names last-name" formatted authors.
+     */
+    public boolean showAuthorGivenNameFirst() {
+        if (hasGroupKind(BooklistGroup.RowKind.AUTHOR)) {
+            BooklistGroup.BooklistAuthorGroup authorGroup = (BooklistGroup.BooklistAuthorGroup)
+                    (mStyleGroups.getGroupForKind(BooklistGroup.RowKind.AUTHOR));
+            if (authorGroup != null) {
+                return authorGroup.showAuthorGivenNameFirst();
+            }
+        }
+        // return the global default.
+        return BooklistGroup.BooklistAuthorGroup.globalShowGivenNameFirst();
+    }
+
     /**
      * Fronts an {@code ArrayList<BooklistGroup>} with backend storage in a preference.
      */
@@ -1168,24 +1217,19 @@ public class BooklistStyle
             }
         }
 
-        /**
-         * Walk the list of Groups, and store their kind in SharedPreference.
-         */
-        private void writeGroupIds() {
-            List<Integer> list = new ArrayList<>();
-            for (BooklistGroup group : mGroups) {
-                list.add(group.getKind());
-            }
-            set(list);
-        }
-
         @NonNull
         List<BooklistGroup> getGroups() {
             return mGroups;
         }
 
-        BooklistGroup getGroupAt(final int index) {
-            return mGroups.get(index);
+        @Nullable
+        BooklistGroup getGroupForKind(final int kind) {
+            for (BooklistGroup group : mGroups) {
+                if (group.getKind() == kind) {
+                    return group;
+                }
+            }
+            return null;
         }
 
         @NonNull
@@ -1198,11 +1242,6 @@ public class BooklistStyle
             return (int) get().toArray()[index];
         }
 
-        public void clear() {
-            mGroups.clear();
-            super.clear();
-        }
-
         int size() {
             return get().size();
         }
@@ -1212,11 +1251,6 @@ public class BooklistStyle
             clear();
             in.readList(mGroups, getClass().getClassLoader());
             writeGroupIds();
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest) {
-            dest.writeList(mGroups);
         }
 
         /**
@@ -1270,6 +1304,28 @@ public class BooklistStyle
         @Override
         public void remove(@NonNull final Integer element) {
             throw new IllegalStateException("use remove(BooklistGroup) instead");
+        }
+
+        @Override
+        public void clear() {
+            mGroups.clear();
+            super.clear();
+        }
+
+        /**
+         * Walk the list of Groups, and store their kind in SharedPreference.
+         */
+        private void writeGroupIds() {
+            List<Integer> list = new ArrayList<>();
+            for (BooklistGroup group : mGroups) {
+                list.add(group.getKind());
+            }
+            set(list);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest) {
+            dest.writeList(mGroups);
         }
 
         @Override

@@ -436,7 +436,7 @@ public class BooklistGroup
         private static final long serialVersionUID = -1984868877792780113L;
         /** Support for 'Show All Authors of Book' property. */
         private transient PBoolean mAllAuthors;
-        /** Support for 'Show Given Name First' property. */
+        /** Support for 'Show Given Name First' property. Default: false. */
         private transient PBoolean mGivenNameFirst;
 
         /**
@@ -458,6 +458,15 @@ public class BooklistGroup
             super(in);
             mAllAuthors.set(in);
             mGivenNameFirst.set(in);
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @return {@code true} if we want "given-names last-name" formatted authors.
+         */
+        static boolean globalShowGivenNameFirst() {
+            return App.getPrefs().getBoolean(Prefs.pk_bob_format_author_name, false);
         }
 
         @Override
@@ -484,7 +493,11 @@ public class BooklistGroup
             return mAllAuthors.isTrue();
         }
 
-        boolean showGivenNameFirst() {
+        /**
+         *
+         * @return {@code true} if we want "given-names last-name" formatted authors.
+         */
+        boolean showAuthorGivenNameFirst() {
             return mGivenNameFirst.isTrue();
         }
 
@@ -629,7 +642,7 @@ public class BooklistGroup
                                   DBDefinitions.DOM_BOOK_PUBLISHER);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
-            rowKind = new RowKind(READ_STATUS, R.string.read_amp_unread, "r",
+            rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r",
                                   DBDefinitions.DOM_READ_STATUS);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 

@@ -13,8 +13,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 /**
  * System wide book format representation.
  * <p>
- * ENHANCE: make a separate table for the format.
- * <p>
  * {@link DBDefinitions#DOM_BOOK_FORMAT}
  * <p>
  * Good description:  http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format
@@ -40,9 +38,8 @@ public final class Format {
 
         // Goodreads, not already listed above.
         MAPPER.put("mass market paperback", R.string.book_format_paperback);
-        MAPPER.put("hardcover", R.string.book_format_hardcover);
         MAPPER.put("paperback", R.string.book_format_paperback);
-
+        MAPPER.put("hardcover", R.string.book_format_hardcover);
 
     }
 

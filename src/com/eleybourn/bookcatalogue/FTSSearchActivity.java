@@ -219,17 +219,15 @@ public class FTSSearchActivity
      * updates to the main thread.
      */
     private void doSearch() {
-        // Get search criteria
         mAuthorSearchText = mAuthorView.getText().toString().trim();
         mTitleSearchText = mTitleView.getText().toString().trim();
         mKeywordsSearchText = mKeywordsView.getText().toString().trim();
 
-        // Get the cursor
         String tmpMsg = null;
         try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
                                            mTitleSearchText,
                                            mKeywordsSearchText)) {
-            // Null return means searchFts thought parameters were effectively blank
+            // Null return means searchFts thought the parameters were effectively blank.
             if (cursor != null) {
                 int count = cursor.getCount();
                 tmpMsg = getResources().getQuantityString(R.plurals.n_books_found, count, count);
@@ -237,7 +235,6 @@ public class FTSSearchActivity
                 while (cursor.moveToNext()) {
                     mBookIdsFound.add(cursor.getLong(0));
                 }
-
             }
         } catch (@NonNull final RuntimeException e) {
             Logger.error(this, e);

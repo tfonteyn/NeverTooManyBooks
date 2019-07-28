@@ -24,7 +24,7 @@ public interface CheckListItem<T>
     void setChecked(boolean selected);
 
     /**
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      *
      * @return the label to use in a {@link CheckListDialogFragment}.
      */

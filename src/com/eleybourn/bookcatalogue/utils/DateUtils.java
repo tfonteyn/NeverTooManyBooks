@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -81,24 +82,24 @@ public final class DateUtils {
 
     /** Simple match for a 4 digit year. */
     private static final SimpleDateFormat YEAR =
-            new SimpleDateFormat("yyyy", LocaleUtils.getSystemLocale());
+            new SimpleDateFormat("yyyy", App.getSystemLocale());
 
 
     static {
         // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
         LOCAL_SQL_DATE =
-                new SimpleDateFormat("yyyy-MM-dd", LocaleUtils.getSystemLocale());
+                new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
 
         // Used for formatting *non-user* dates for SQL. e.g. publication dates...
         TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
         UTC_SQL_DATE_HH_MM_SS =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleUtils.getSystemLocale());
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
         UTC_SQL_DATE_HH_MM_SS.setTimeZone(TZ_UTC);
         UTC_SQL_DATE_HH_MM =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm", LocaleUtils.getSystemLocale());
+                new SimpleDateFormat("yyyy-MM-dd HH:mm", App.getSystemLocale());
         UTC_SQL_DATE_HH_MM.setTimeZone(TZ_UTC);
         UTC_SQL_DATE =
-                new SimpleDateFormat("yyyy-MM-dd", LocaleUtils.getSystemLocale());
+                new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
         UTC_SQL_DATE.setTimeZone(TZ_UTC);
     }
 
@@ -127,7 +128,7 @@ public final class DateUtils {
         // add english if the user's System Locale is not English.
         // This is done because internet sites we search are english.
         final boolean addEnglish = !Objects.equals(Locale.ENGLISH.getISO3Language(),
-                                                   LocaleUtils.getSystemLocale().getISO3Language());
+                                                   App.getSystemLocale().getISO3Language());
         //FIXME: these are created at startup, so do not support switching Locale on the fly.
         // the month is (localized) text, or english
         addParseDateFormat("dd-MMM-yyyy HH:mm:ss", addEnglish);
@@ -164,7 +165,7 @@ public final class DateUtils {
      */
     private static void addParseDateFormat(@NonNull final String format,
                                            final boolean addEnglish) {
-        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, LocaleUtils.getSystemLocale()));
+        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, App.getSystemLocale()));
         if (addEnglish) {
             PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, Locale.ENGLISH));
         }
@@ -231,7 +232,7 @@ public final class DateUtils {
         // try System Locale.
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-                                                       LocaleUtils.getSystemLocale());
+                                                       App.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
         } catch (@NonNull final ParseException ignore) {
@@ -305,7 +306,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String localSqlDateForToday() {
-        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
+        Calendar calendar = Calendar.getInstance(App.getSystemLocale());
         return LOCAL_SQL_DATE.format(calendar.getTime());
     }
 
@@ -325,7 +326,7 @@ public final class DateUtils {
     @NonNull
     public static String utcSqlDateTimeForToday() {
         return UTC_SQL_DATE_HH_MM_SS.format(
-                Calendar.getInstance(LocaleUtils.getSystemLocale()).getTime());
+                Calendar.getInstance(App.getSystemLocale()).getTime());
     }
 
     /**

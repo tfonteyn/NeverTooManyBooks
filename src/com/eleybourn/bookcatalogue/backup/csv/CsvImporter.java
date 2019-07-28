@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -56,7 +57,6 @@ import com.eleybourn.bookcatalogue.entities.ItemWithIdFixup;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 /**
@@ -142,7 +142,7 @@ public class CsvImporter
         final String[] csvColumnNames = returnRow(importedList.get(0), true);
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
-            csvColumnNames[i] = csvColumnNames[i].toLowerCase(LocaleUtils.getSystemLocale());
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase(App.getSystemLocale());
             // add a place holder to the book.
             book.putString(csvColumnNames[i], "");
         }

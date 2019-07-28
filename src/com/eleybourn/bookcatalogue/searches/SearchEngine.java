@@ -48,7 +48,7 @@ public interface SearchEngine {
         }
 
         try {
-            // ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
+            // ENHANCE: its seems most (all?) implementations can return multiple book data bundles quite easily.
             Bundle bookData = site.search(isbn, "", "", "", true);
 
             ArrayList<String> imageList =
@@ -80,7 +80,7 @@ public interface SearchEngine {
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return bundle with book data. Can be empty, but never {@code null}.
-     * ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
+     * ENHANCE: its seems most (all?) implementations can return multiple book data bundles quite easily.
      *
      * @throws CredentialsException with GoodReads
      * @throws IOException            on other failures

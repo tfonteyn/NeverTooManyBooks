@@ -29,7 +29,7 @@ public class ImportCSVTask
     /**
      * Constructor.
      *
-     * @param context        Current context, for accessing resources.
+     * @param context        Current context for accessing resources.
      * @param settings       the import settings
      * @param progressDialog ProgressDialogFragment
      */

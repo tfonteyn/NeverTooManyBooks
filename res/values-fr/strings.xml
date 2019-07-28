@@ -493,7 +493,7 @@
         alors nécessaire d\'ajouter manuellement un livre portant cet ISBN à Goodreads sur leur
         site Web. Une fois que c\'est fait, vous pouvez essayer de renvoyer le livre.
     </string>
-    <string name="read_amp_unread">Lu &amp; non lu</string>
+    <string name="lbl_read_and_unread">Lu &amp; non lu</string>
     <string name="lbl_loaned">Prêté</string>
     <string name="lbl_publication_year">Année de publication</string>
     <string name="lbl_publication_month">Mois de publication</string>
@@ -770,5 +770,8 @@
     <string name="tip_authors_works">Icônes utilisées:</string>
     <string name="tip_authors_works_toc">Entrée de la table des matières, par exemple récit.</string>
     <string name="tip_authors_works_book">Livre.</string>
+    <string name="menu_author_works_all">Montre tout</string>
+    <string name="menu_author_works_book">Livres seulement</string>
+    <string name="menu_author_works_toc">Titres de contenu uniquement</string>
 
 </resources>

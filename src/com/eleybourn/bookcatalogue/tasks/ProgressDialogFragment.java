@@ -212,8 +212,8 @@ public class ProgressDialogFragment<Progress, Result>
             if (listener != null) {
                 listener.onTaskFinished(taskId, success, result, e);
             } else {
-                // keep this as a throw, as not having the listener here would be bug
-                throw new RuntimeException("WeakReference to listener was dead");
+                // keep this as a throw, as not having the listener here would be a bug
+                throw new IllegalStateException("WeakReference to listener was dead");
             }
         } else {
             throw new IllegalStateException("no TaskListener set.");
@@ -239,8 +239,8 @@ public class ProgressDialogFragment<Progress, Result>
             if (listener != null) {
                 listener.onTaskCancelled(tmpTaskId);
             } else {
-                // keep this as a throw, as not having the listener here would be bug
-                throw new RuntimeException("WeakReference to listener was dead");
+                // keep this as a throw, as not having the listener here would be a bug
+                throw new IllegalStateException("WeakReference to listener was dead");
             }
         } else {
             throw new IllegalStateException("no UserCancelledListener set.");

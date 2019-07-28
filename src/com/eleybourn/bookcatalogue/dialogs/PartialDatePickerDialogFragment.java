@@ -1,22 +1,3 @@
-/*
- * @copyright 2013 Philip Warner
- * @license GNU General Public License
- *
- * This file is part of Book Catalogue.
- *
- * Book Catalogue is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Book Catalogue is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
- */
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
@@ -24,17 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.NumberPicker;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -42,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
@@ -53,12 +28,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
- *
- * @author pjw
+ * <p>
+ * Seems reasonable to disable relevant spinners if one is invalid, but it's actually
+ * not very friendly when entering data for new books so we don't.
+ * So for instance, if a day/month/year are set, and the user select "--" (unset) the month,
+ * we leave the day setting unchanged.
+ * A final validity check is done when trying to accept the date.
  */
 public class PartialDatePickerDialogFragment
         extends DialogFragment {
@@ -70,27 +50,35 @@ public class PartialDatePickerDialogFragment
     private static final String BKEY_DATE = TAG + ":date";
     /** or the date split into components, which can partial. */
     private static final String BKEY_YEAR = TAG + ":year";
+    /** range: 1..12. */
     private static final String BKEY_MONTH = TAG + ":month";
     private static final String BKEY_DAY = TAG + ":day";
 
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
 
+    /** All month names (abbreviated). */
+    private final String[] mMonthNames = new String[13];
+
+    /** Used for reading month names + calculating number of days in a month. */
+    private Calendar mCalendarForCalculations;
+    /** Cache the current year. */
+    private int mCurrentYear;
+
     /** identifier of the field this dialog is bound to. */
     @IdRes
     private int mDestinationFieldId;
-
     /**
      * Currently displayed; {@code null} if empty/invalid.
      * The value is automatically updated by the dialog after every change.
      */
     @Nullable
     private Integer mYear;
+    /** IMPORTANT: 1..12. (the jdk internals expect 0..11). */
     @Nullable
     private Integer mMonth;
     @Nullable
     private Integer mDay;
-
     private WeakReference<PartialDatePickerResultsListener> mListener;
 
     /**
@@ -131,6 +119,19 @@ public class PartialDatePickerDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Get a calendar for locale-related info (defaults to current date)
+        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getPreferredLocal());
+        mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
+        // Set the day to 1 to avoid wrapping.
+        mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
+        // First entry is 'unknown'
+        mMonthNames[0] = UNKNOWN_MONTH;
+        // Add all month names (abbreviated)
+        for (int i = 1; i <= 12; i++) {
+            mCalendarForCalculations.set(Calendar.MONTH, i - 1);
+            mMonthNames[i] = String.format("%tb", mCalendarForCalculations);
+        }
+
         Bundle args = requireArguments();
         mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
@@ -151,7 +152,7 @@ public class PartialDatePickerDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
-        PartialDatePickerDialog dialog = new PartialDatePickerDialog(getContext());
+        AlertDialog dialog = new PartialDatePickerDialog(getContext());
 
         //noinspection ConstantConditions
         @StringRes
@@ -199,6 +200,9 @@ public class PartialDatePickerDialogFragment
         }
     }
 
+    /**
+     * Send an 'unset' date back to the listener.
+     */
     private void clearAndSend() {
 
         dismiss();
@@ -215,15 +219,21 @@ public class PartialDatePickerDialogFragment
     /**
      * Private helper, NOT a public accessor.
      * <p>
-     * Now allowing partial dates:
-     * yyyy-mm-dd time
-     * yyyy-mm-dd
-     * yyyy-mm
-     * yyyy
+     * Allows partial dates:
+     * <ul>
+     * <li>yyyy-mm-dd time</li>
+     * <li>yyyy-mm-dd</li>
+     * <li>yyyy-mm</li>
+     * <li>yyyy</li>
+     * </ul>
      *
-     * @param dateString SQL formatted (partial) date, may be {@code null}
+     * @param dateString SQL formatted (partial) date
      */
     private void setDate(@NonNull final String dateString) {
+        if (dateString.isEmpty()) {
+            return;
+        }
+
         Integer yyyy = null;
         Integer mm = null;
         Integer dd = null;
@@ -238,15 +248,12 @@ public class PartialDatePickerDialogFragment
                 dd = Integer.parseInt(date[2]);
             }
         } catch (@NonNull final NumberFormatException ignore) {
+            // ignore. Any values we did get, are used.
         }
 
         mYear = yyyy;
         mMonth = mm;
         mDay = dd;
-        PartialDatePickerDialog dialog = (PartialDatePickerDialog) getDialog();
-        if (dialog != null) {
-            dialog.updateDisplay();
-        }
     }
 
     @Override
@@ -285,27 +292,41 @@ public class PartialDatePickerDialogFragment
     }
 
     /**
-     * The custom dialog.
+     * Custom dialog.
      */
     class PartialDatePickerDialog
             extends AlertDialog {
 
-        /** Local ref to year text view. */
-        private final EditText mYearView;
-        /** Local ref to month spinner. */
-        private final Spinner mMonthSpinner;
-        /** Local ref to day spinner. */
-        private final Spinner mDaySpinner;
+        private NumberPicker mYearPicker;
+        private NumberPicker mMonthPicker;
+        private NumberPicker mDayPicker;
 
-        /** Local ref to day spinner adapter. */
-        private final ArrayAdapter<String> mDayAdapter;
+        private NumberPicker.OnValueChangeListener mOnValueChangeListener =
+                new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(final NumberPicker picker,
+                                              final int oldVal,
+                                              final int newVal) {
+                        switch (picker.getId()) {
+                            case R.id.PICKER_YEAR:
+                                mYear = newVal;
+                                // Small optimization: assume only February needs this
+                                if (mMonth != null && mMonth == 2) {
+                                    setDaysOfMonth();
+                                }
+                                break;
+                            case R.id.PICKER_MONTH:
+                                mMonth = newVal;
+                                setDaysOfMonth();
+                                break;
+                            case R.id.PICKER_DAY:
+                                mDay = newVal;
+                                break;
 
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         */
-        @SuppressLint("SetTextI18n")
+                        }
+                    }
+                };
+
         PartialDatePickerDialog(@NonNull final Context context) {
             super(context);
 
@@ -320,315 +341,65 @@ public class PartialDatePickerDialogFragment
             // Set the view
             setView(root);
 
-            // Get UI components for later use
-            mYearView = root.findViewById(R.id.year);
-            mMonthSpinner = root.findViewById(R.id.month);
-            mDaySpinner = root.findViewById(R.id.day);
+            mYearPicker = root.findViewById(R.id.year);
+            mYearPicker.setId(R.id.PICKER_YEAR);
+            mYearPicker.setMinValue(0);
+            // we're optimistic...
+            mYearPicker.setMaxValue(2100);
+            mYearPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-            // Create month spinner adapter
-            ArrayAdapter<String> monthAdapter =
-                    new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
-            monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mMonthSpinner.setAdapter(monthAdapter);
+            mMonthPicker = root.findViewById(R.id.month);
+            mMonthPicker.setId(R.id.PICKER_MONTH);
+            mMonthPicker.setMinValue(0);
+            // 12 months + the 'not set'
+            mMonthPicker.setMaxValue(12);
+            mMonthPicker.setDisplayedValues(mMonthNames);
+            mMonthPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-            // Create day spinner adapter
-            mDayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
-            mDayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mDaySpinner.setAdapter(mDayAdapter);
-
-            // First entry is 'unknown'
-            monthAdapter.add(UNKNOWN_MONTH);
-            mDayAdapter.add(UNKNOWN_DAY);
-
+            mDayPicker = root.findViewById(R.id.day);
+            mDayPicker.setId(R.id.PICKER_DAY);
+            mDayPicker.setMinValue(0);
             // Make sure that the spinner can initially take any 'day' value. Otherwise,
             // when a dialog is reconstructed after rotation, the 'day' field will not be
             // restored by Android.
-            regenDaysOfMonth(31);
+            mDayPicker.setMaxValue(31);
+            mDayPicker.setFormatter(value -> value == 0 ? UNKNOWN_DAY : String.valueOf(value));
+            mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-            // Get a calendar for locale-related info
-            Calendar cal = Calendar.getInstance();
-            // Set the day to 1... so avoid wrap on short months (default to current date)
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-            // Add all month names (abbreviated)
-            for (int i = 0; i < 12; i++) {
-                cal.set(Calendar.MONTH, i);
-                monthAdapter.add(String.format("%tb", cal));
-            }
-
-            // Handle selections from the MONTH spinner
-            mMonthSpinner.setOnItemSelectedListener(
-                    new AdapterView.OnItemSelectedListener() {
-
-                        @Override
-                        public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                                   @NonNull final View view,
-                                                   final int position,
-                                                   final long id) {
-                            handleMonth(mMonthSpinner.getSelectedItemPosition());
-                        }
-
-                        @Override
-                        public void onNothingSelected(@NonNull final AdapterView<?> parent) {
-                            handleMonth(null);
-                        }
-                    }
-            );
-
-            // Handle selections from the DAY spinner
-            mDaySpinner.setOnItemSelectedListener(
-                    new AdapterView.OnItemSelectedListener() {
-
-                        @Override
-                        public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                                   @NonNull final View view,
-                                                   final int position,
-                                                   final long id) {
-                            handleDay(mDaySpinner.getSelectedItemPosition());
-                        }
-
-                        @Override
-                        public void onNothingSelected(@NonNull final AdapterView<?> parent) {
-                            handleDay(null);
-                        }
-                    }
-            );
-
-            // Handle all changes to the YEAR text
-            mYearView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(@NonNull final CharSequence s,
-                                              final int start,
-                                              final int count,
-                                              final int after) {
-                }
-
-                @Override
-                public void onTextChanged(@NonNull final CharSequence s,
-                                          final int start,
-                                          final int before,
-                                          final int count) {
-                }
-
-                @Override
-                public void afterTextChanged(@NonNull final Editable s) {
-                    handleYear();
-                }
-            });
-
-            // Handle YEAR +
-            root.findViewById(R.id.plusYear).setOnClickListener(
-                    v -> {
-                        String text;
-                        if (mYear != null) {
-                            text = (++mYear).toString();
-                        } else {
-                            text = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-                        }
-                        mYearView.setText(text);
-                    }
-            );
-
-            // Handle YEAR -
-            root.findViewById(R.id.minusYear).setOnClickListener(
-                    v -> {
-                        String text;
-                        if (mYear != null) {
-                            // We can't support negative years yet because of sorting
-                            // issues and the fact that the Calendar object bugs out
-                            // with them. To fix the calendar object interface we
-                            // would need to translate -ve years to Epoch settings
-                            // throughout the app. For now, not many people have books
-                            // written before 0AD, so it's a low priority.
-                            if (mYear > 0) {
-                                text = (--mYear).toString();
-                                mYearView.setText(text);
-                            }
-                        } else {
-                            text = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-                            mYearView.setText(text);
-                        }
-                    }
-            );
-
-            // Handle MONTH +
-            root.findViewById(R.id.plusMonth).setOnClickListener(
-                    v -> {
-                        int pos = (mMonthSpinner.getSelectedItemPosition() + 1)
-                                % mMonthSpinner.getCount();
-                        mMonthSpinner.setSelection(pos);
-                    }
-            );
-
-            // Handle MONTH -
-            root.findViewById(R.id.minusMonth).setOnClickListener(
-                    v -> {
-                        int pos = (mMonthSpinner.getSelectedItemPosition() - 1
-                                + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
-                        mMonthSpinner.setSelection(pos);
-                    }
-            );
-
-            // Handle DAY +
-            root.findViewById(R.id.plusDay).setOnClickListener(
-                    v -> {
-                        int pos = (mDaySpinner.getSelectedItemPosition() + 1)
-                                % mDaySpinner.getCount();
-                        mDaySpinner.setSelection(pos);
-                    }
-            );
-
-            // Handle DAY -
-            root.findViewById(R.id.minusDay).setOnClickListener(
-                    v -> {
-                        int pos = (mDaySpinner.getSelectedItemPosition() - 1
-                                + mDaySpinner.getCount()) % mDaySpinner.getCount();
-                        mDaySpinner.setSelection(pos);
-                    }
-            );
-
-            // Set the initial date
-            updateDisplay();
+            // initial date
+            mYearPicker.setValue(mYear != null ? mYear : mCurrentYear);
+            mMonthPicker.setValue(mMonth != null ? mMonth : 0);
+            mDayPicker.setValue(mDay != null ? mDay : 0);
         }
 
         /**
-         * Set the date to display.
+         * Depending on year/month selected, set the correct number of days.
          */
-        void updateDisplay() {
-            String yearVal;
-            if (mYear != null) {
-                yearVal = mYear.toString();
-            } else {
-                yearVal = "";
-            }
-            mYearView.setText(yearVal);
-            Editable e = mYearView.getEditableText();
-            Selection.setSelection(e, e.length(), e.length());
-            if (yearVal.isEmpty()) {
-                mYearView.requestFocus();
-                //noinspection ConstantConditions
-                getWindow().setSoftInputMode(
-                        WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-                                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-            }
-
-            if (mMonth == null || mMonth == 0) {
-                mMonthSpinner.setSelection(0);
-            } else {
-                mMonthSpinner.setSelection(mMonth);
-            }
-
-            if (mDay == null || mDay == 0) {
-                mDaySpinner.setSelection(0);
-            } else {
-                mDaySpinner.setSelection(mDay);
-            }
-        }
-
-        /**
-         * Handle changes to the YEAR field.
-         */
-        private void handleYear() {
-            // Try to convert to integer
-            String val = mYearView.getText().toString().trim();
-            try {
-                mYear = Integer.parseInt(val);
-            } catch (@NonNull final NumberFormatException e) {
-                mYear = null;
-            }
-
-            // Seems reasonable to disable other spinners if year invalid, but it's actually
-            // not very friendly when entering data for new books.
-            regenDaysOfMonth(null);
-            //if (mYear == null) {
-            //  mMonthSpinner.setEnabled(false);
-            //  mDaySpinner.setEnabled(false);
-            //} else {
-            //  // Enable other spinners as appropriate
-            //  mMonthSpinner.setEnabled(true);
-            //  mDaySpinner.setEnabled(mMonthSpinner.getSelectedItemPosition() > 0);
-            //  regenDaysOfMonth(null);
-            //}
-
-        }
-
-        /**
-         * Handle changes to the MONTH field.
-         */
-        private void handleMonth(@Nullable final Integer pos) {
-            // See if we got a valid month
-            boolean isMonth = (pos != null) && (pos > 0);
-
-            // Seems reasonable to disable other spinners if year invalid, but it actually
-            // not very friendly when entering data for new books.
-            if (!isMonth) {
-                // If not, disable DAY spinner; we leave current value intact in
-                // case a valid month is set later
-                //mDaySpinner.setEnabled(false);
-                mMonth = null;
-            } else {
-                // Set the month and make sure DAY spinner is valid
-                mMonth = pos;
-                //mDaySpinner.setEnabled(true);
-                //regenDaysOfMonth(null);
-            }
-            regenDaysOfMonth(null);
-        }
-
-        /**
-         * Handle changes to the DAY spinner.
-         */
-        private void handleDay(@Nullable final Integer pos) {
-            boolean isSelected = pos != null && pos > 0;
-            mDay = isSelected ? pos : null;
-        }
-
-        /**
-         * Depending on year/month selected, generate the DAYS spinner values.
-         */
-        private void regenDaysOfMonth(@Nullable Integer totalDays) {
+        private void setDaysOfMonth() {
             // Save the current day in case the regen alters it
             Integer daySave = mDay;
-            //ArrayAdapter<String> days = (ArrayAdapter<String>)mDaySpinner.getAdapter();
 
-            // Make sure we have the 'no-day' value in the dialog
-            if (mDayAdapter.getCount() == 0) {
-                mDayAdapter.add("--");
-            }
-
-            // Determine the total days if not passed to us
-            if (totalDays == null || totalDays == 0) {
-                if (mYear != null && mMonth != null && mMonth > 0) {
-                    // Get a calendar for the year/month
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.YEAR, mYear);
-                    cal.set(Calendar.MONTH, mMonth - 1);
-                    // Add appropriate days
-                    totalDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-                } else {
-                    totalDays = 31;
-                }
-            }
-
-            // Update the list
-            // Don't forget we have a '--' in the adapter
-            if (mDayAdapter.getCount() <= totalDays) {
-                for (int i = mDayAdapter.getCount(); i <= totalDays; i++) {
-                    mDayAdapter.add(String.valueOf(i));
-                }
+            // Determine the total days if we have a valid month/year
+            int totalDays;
+            if (mYear != null && mMonth != null && mMonth > 0) {
+                mCalendarForCalculations.set(Calendar.YEAR, mYear);
+                mCalendarForCalculations.set(Calendar.MONTH, mMonth - 1);
+                totalDays = mCalendarForCalculations.getActualMaximum(Calendar.DAY_OF_MONTH);
             } else {
-                for (int i = mDayAdapter.getCount() - 1; i > totalDays; i--) {
-                    mDayAdapter.remove(String.valueOf(i));
-                }
+                // allow the user to start inputting with day first.
+                totalDays = 31;
             }
+
+            mDayPicker.setMaxValue(totalDays);
 
             // Ensure selected day is valid
             if (daySave == null || daySave == 0) {
-                mDaySpinner.setSelection(0);
+                mDayPicker.setValue(0);
             } else {
                 if (daySave > totalDays) {
                     daySave = totalDays;
                 }
-                mDaySpinner.setSelection(daySave);
+                mDayPicker.setValue(daySave);
             }
         }
 
@@ -649,7 +420,7 @@ public class PartialDatePickerDialogFragment
                 return;
             }
 
-            // Default order is {year, month, date} so if that's the order then do nothing.
+            // Default order is {year, month, day} so if that's the order then do nothing.
             if ((order[0] == 'y') && (order[1] == 'M')) {
                 return;
             }
@@ -657,12 +428,13 @@ public class PartialDatePickerDialogFragment
             // Remove the 3 pickers from their parent and then add them back in the required order.
             ViewGroup parent = root.findViewById(R.id.dateSelector);
             // Get the three views
-            View y = root.findViewById(R.id.yearSelector);
-            View m = root.findViewById(R.id.monthSelector);
-            View d = root.findViewById(R.id.daySelector);
+            ConstraintLayout y = parent.findViewById(R.id.yearSelector);
+            ConstraintLayout m = parent.findViewById(R.id.monthSelector);
+            ConstraintLayout d = parent.findViewById(R.id.daySelector);
             // Remove them
             parent.removeAllViews();
             // Re-add in the correct order.
+            //FIXME: once the CL 2.0 ConstraintSet is better known, see if that is faster.
             for (char c : order) {
                 switch (c) {
                     case 'd':
@@ -677,5 +449,6 @@ public class PartialDatePickerDialogFragment
                 }
             }
         }
+
     }
 }

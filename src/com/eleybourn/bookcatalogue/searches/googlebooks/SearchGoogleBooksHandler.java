@@ -301,7 +301,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Jack Vance</dc:creator>
  *      <dc:date>2011-12-19</dc:date>
- *      <dc:description>If they were to fight the people must regain control of their own lives. Only then could Gastel recruit an elite corps of the liberated - the Brave Free Men - to fling against the Rogushkoi and fight to the death.</dc:description>
+ *      <dc:description>If they were to fight the people must regain control blah blah...</dc:description>
  *      <dc:format>87 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>sWuaFofonmIC</dc:identifier>
@@ -344,7 +344,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Jack Vance</dc:creator>
  *      <dc:date>2011-12-19</dc:date>
- *      <dc:description>For wild rumours come out of the hidden land of Caraz-and once again the musician must don the cloak of action, setting out on a dangerous quest for knowledge that will take him farther than he ever wanted to go: to the grim reaches of a ...</dc:description>
+ *      <dc:description>For wild rumours come out of the hidden land blah blah...</dc:description>
  *      <dc:format>86 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>O_Ik7L1VSMsC</dc:identifier>
@@ -387,7 +387,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Jack Vance</dc:creator>
  *      <dc:date>2011-12-19</dc:date>
- *      <dc:description>The Magnificent Showboats follows the farcical adventures of Apollon Zamp, owner of the showboat Miraldra&amp;#39;s Enchantment, and his troupe of acrobats, magicians and actors.</dc:description>
+ *      <dc:description>The Magnificent Showboats follows the farcical blah blah... </dc:description>
  *      <dc:format>102 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>3Dm6V9QOPkoC</dc:identifier>
@@ -428,7 +428,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>John Russell Fearn</dc:creator>
  *      <dc:date>2016-11-12</dc:date>
- *      <dc:description>Here is an interplanetary story that will fill you with enthusiasm. She whipped the man she loved ... then rescued him from death. This is the Golden Amazon in all of her original pulp adventures with the original illustrations.</dc:description>
+ *      <dc:description>Here is an interplanetary story that will .. blah blah...</dc:description>
  *      <dc:format>180 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>6RySDQAAQBAJ</dc:identifier>
@@ -583,7 +583,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <gbs:viewability value='http://schemas.google.com/books/2008#view_partial'/>
  *      <dc:creator>Harlan Ellison</dc:creator>
  *      <dc:date>2014-04-01</dc:date>
- *      <dc:description>This groundbreaking collection brings together some of Harlan Ellison’s most innovative and intriguing stories, frightening and funny visions of human nature that can only come from the peerless Grand Master of Science Fiction. “One of ...</dc:description>
+ *      <dc:description>This groundbreaking collection brings .. bla bla ...</dc:description>
  *      <dc:format>300 pages</dc:format>
  *      <dc:format>book</dc:format>
  *      <dc:identifier>BccqAwAAQBAJ</dc:identifier>

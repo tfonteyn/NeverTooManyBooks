@@ -432,7 +432,7 @@
         \nSi los datos son correctos y el libro sigue sin aparecer, entonces debe añadir un libro con ese ISBN de forma manual en
         el sitio web de Goodreads. Una vez haya hecho eso, puede volver a intentar enviar el libro.
     </string>
-    <string name="read_amp_unread">Leído &amp; No leído</string>
+    <string name="lbl_read_and_unread">Leído &amp; No leído</string>
     <string name="lbl_loaned">Prestado</string>
     <string name="lbl_publication_year">Año de publicación</string>
     <string name="lbl_publication_month">Mes de publicación</string>
@@ -715,5 +715,8 @@
     <string name="tip_authors_works">Iconos utilizados:</string>
     <string name="tip_authors_works_toc">Entrada de la tabla de contenido (TOC), por ejemplo, historia.</string>
     <string name="tip_authors_works_book">Libro.</string>
+    <string name="menu_author_works_all">Mostrar todo</string>
+    <string name="menu_author_works_book">Solo libros</string>
+    <string name="menu_author_works_toc">Solo títulos de contenido</string>
 
 </resources>

@@ -181,7 +181,7 @@ public class BooklistPseudoCursor
                         // TODO: (4.1+): Remove Sanity check for com.eleybourn.bookcatalogue.debug;
                         // should just 'break' from loop after setting oldPos
                         if (oldPos >= 0) {
-                            throw new RuntimeException("Cursor appears twice in MRU list");
+                            throw new IllegalStateException("Cursor appears twice in MRU list");
                         }
                         oldPos = i;
                     }

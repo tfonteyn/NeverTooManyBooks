@@ -414,7 +414,7 @@
         \n\nSe i dati sembrano corretti e ugualmente il libro non viene trovato, occorre allora inserire manualmente in Goodreads un libro con quel codice ISBN
         sul loro sito web. Una volta fatto, si può riprovare ad inviare il libro.
     </string>
-    <string name="read_amp_unread">Letto &amp; Non letto</string>
+    <string name="lbl_read_and_unread">Letto &amp; Non letto</string>
     <string name="lbl_loaned">Prestato</string>
     <string name="lbl_publication_year">Anno di Pubblicazione</string>
     <string name="lbl_publication_month">Mese di Pubblicazione</string>
@@ -684,5 +684,8 @@
     <string name="tip_authors_works">Icone utilizzate:</string>
     <string name="tip_authors_works_toc">Voce della tabella dei contenuti (TOC), ad es. storia.</string>
     <string name="tip_authors_works_book">Libro.</string>
+    <string name="menu_author_works_all">Mostra tutto</string>
+    <string name="menu_author_works_book">Solo libri</string>
+    <string name="menu_author_works_toc">Solo titoli di contenuti</string>
 
 </resources>

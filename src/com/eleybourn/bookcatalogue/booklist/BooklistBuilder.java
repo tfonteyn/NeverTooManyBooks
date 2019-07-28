@@ -59,12 +59,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.settings.Prefs;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.viewmodels.BooksOnBookshelfModel;
 
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES_OB;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_SORT;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ABSOLUTE_POSITION;
@@ -137,73 +134,6 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
 
-    /**
-     * SQL column: SORT author names in 'lastgiven' form.
-     * Uses the OB field.
-     * Not used for display.
-     */
-    private static final String X_AUTHOR_SORT_LAST_FIRST = "CASE"
-            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB) + " || "
-            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB)
-            + " END";
-    /**
-     * SQL column: SORT author names in 'givenlast' form.
-     * Uses the OB field.
-     * Not used for display.
-     */
-    private static final String X_AUTHOR_SORT_FIRST_LAST = "CASE"
-            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + " || "
-            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-            + " END";
-
-    /**
-     * SQL column: formatted author names in 'Last, Given' form.
-     * Used for display.
-     */
-    private static final String X_AUTHOR_FORMATTED_LAST_FIRST = "CASE"
-            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
-            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ', ' || "
-            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-            + " END";
-    /**
-     * SQL column: formatted author names in 'Given Last' form.
-     * Used for display.
-     */
-    private static final String X_AUTHOR_FORMATTED_FIRST_LAST = "CASE"
-            + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
-            + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-            + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "|| ' ' || "
-            + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-            + " END";
-
-    /**
-     * SQL column: return 1 if the book is available, 0 if not.
-     * {@link DBDefinitions#DOM_LOANEE_AS_BOOLEAN}
-     */
-    private static final String X_LOANEE_AS_BOOLEAN = "CASE"
-            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-            + "  THEN 1 ELSE 0"
-            + " END";
-
-    /**
-     * SQL column: return "" if the book is available, "loanee name" if not.
-     */
-    private static final String X_BOOK_LOANEE_OR_EMPTY = "CASE"
-            + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-            + "  THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
-            + " END";
-
-
-    private static final String X_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
-            + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
-            + "  THEN 1 ELSE 0"
-            + " END";
-
     /** Counter for BooklistBuilder ID's. */
     @NonNull
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
@@ -260,6 +190,9 @@ public class BooklistBuilder
     /** Collection of 'extra' domains requested by caller. */
     @NonNull
     private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
+    @NonNull
+    private final Map<String, TableDefinition> mExtraJoins = new HashMap<>();
+
     /** Style to use in building the list. */
     @NonNull
     private final BooklistStyle mStyle;
@@ -311,7 +244,7 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      * @param style   Book list style to use
      */
     public BooklistBuilder(@NonNull final Context context,
@@ -393,20 +326,29 @@ public class BooklistBuilder
     public BooklistBuilder requireDomain(@NonNull final DomainDefinition domain,
                                          @Nullable final String sourceExpression,
                                          final boolean isSorted) {
-
-        // Check if it already exists
         if (!mExtraDomains.containsKey(domain.name)) {
-            // Save the details
             int flags = 0;
             if (isSorted) {
                 flags |= SummaryBuilder.FLAG_SORTED;
             }
             mExtraDomains.put(domain.name, new ExtraDomainDetails(domain, sourceExpression, flags));
-            return this;
 
         } else {
-            throw new IllegalStateException("Domain already added: `" + domain.name + '`');
+            Logger.warnWithStackTrace(this, "requireDomain",
+                        "Domain already added: `" + domain.name + '`');
+
+//            throw new IllegalStateException("Domain already added: `" + domain.name + '`');
         }
+
+        return this;
+    }
+
+    public BooklistBuilder requireJoin(@NonNull final TableDefinition tableDefinition) {
+        if (!mExtraJoins.containsKey(tableDefinition.getName())) {
+            mExtraJoins.put(tableDefinition.getName(), tableDefinition);
+        }
+
+        return this;
     }
 
     /**
@@ -552,7 +494,7 @@ public class BooklistBuilder
 
             final long t1_basic_setup_done = System.nanoTime();
 
-            final BuildInfoHolder buildInfoHolder = new BuildInfoHolder();
+            final BuildInfoHolder buildInfoHolder = new BuildInfoHolder(mExtraJoins);
             // process each group/RowKind
             for (BooklistGroup group : mStyle.getGroups()) {
                 summary.addGroup(group, sortDescendingMask, buildInfoHolder);
@@ -568,7 +510,7 @@ public class BooklistBuilder
             // Now we know if we have a Bookshelf group, add the Filter on it if we want one.
             if (mFilterOnBookshelfId > 0) {
                 mFilters.add(() -> {
-                    if (buildInfoHolder.hasGroupBOOKSHELF) {
+                    if (buildInfoHolder.isJoinBookshelves()) {
                         return "EXISTS(SELECT NULL FROM "
                                 + TBL_BOOK_BOOKSHELF.ref() + ' '
                                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
@@ -603,8 +545,6 @@ public class BooklistBuilder
 
             final long t3 = System.nanoTime();
 
-            ////////////////////////////////////////////////////////////////////////////////////////
-
             /*
              * Build the initial insert statement components:
              */
@@ -613,7 +553,7 @@ public class BooklistBuilder
 
             final long t4_buildSqlComponents = System.nanoTime();
 
-            baseBuild.buildJoinTables(buildInfoHolder, mFilterOnBookshelfId > 0);
+             baseBuild.buildJoinTables(buildInfoHolder, mFilterOnBookshelfId > 0);
 
             final long t5_build_join = System.nanoTime();
 
@@ -660,8 +600,14 @@ public class BooklistBuilder
 
                     // Build the lowest level summary using our initial insert statement
                     // The triggers will do the rest.
-                    SynchronizedStatement baseStmt = mStatements.add(STMT_BASE_BUILD,
-                                                                     baseBuild.getSql(tgt));
+                    String sql = baseBuild.getSql(tgt);
+
+                    //experimental, so debug it
+                    if (!BooksOnBookshelfModel.TMP_USE_BOB_EXTRAS_TASK) {
+                        Logger.debug(this, "", "sql=" + sql);
+                    }
+
+                    SynchronizedStatement baseStmt = mStatements.add(STMT_BASE_BUILD, sql);
                     mRebuildStmts.add(baseStmt);
                     baseStmt.executeInsert();
 
@@ -770,13 +716,13 @@ public class BooklistBuilder
                 + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                 + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
                 + ',' + '\n'
-                + " CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
+                + "CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
                 + " THEN 1"
                 + " WHEN " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL"
                 + " THEN 0 ELSE 1"
                 + " END"
                 + ',' + '\n'
-                + " CASE WHEN " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL"
+                + "CASE WHEN " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_ROOT_KEY) + " IS NULL"
                 + " THEN 0 ELSE 1"
                 + " END"
                 + '\n'
@@ -804,7 +750,7 @@ public class BooklistBuilder
                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
                         + ',' + '\n'
-                        + " CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
+                        + "CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
                         + " THEN 1 ELSE 0"
                         + " END"
                         + ",0"
@@ -1990,6 +1936,20 @@ public class BooklistBuilder
 
         /**
          * Build the 'join' statement based on the groups and extra criteria.
+         * <p>
+         * Always joined are:
+         * <ul>
+         * <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
+         * <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
+         * </ul>
+         * Optionally joined with:
+         * <ul>
+         * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
+         * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
+         * </ul>
+         *
+         * @param buildInfoHolder   info about the joins to be made.
+         * @param filterOnBookshelf whether we are filtering on a particular Bookshelf
          */
         void buildJoinTables(@NonNull final BuildInfoHolder buildInfoHolder,
                              final boolean filterOnBookshelf) {
@@ -1998,7 +1958,7 @@ public class BooklistBuilder
 
             // If there is a bookshelf specified, start the join there.
             // Otherwise, start with the BOOKS table.
-            if (buildInfoHolder.hasGroupBOOKSHELF || filterOnBookshelf) {
+            if (buildInfoHolder.isJoinBookshelves() || filterOnBookshelf) {
                 join = new Joiner(TBL_BOOKSHELF)
                         .join(TBL_BOOK_BOOKSHELF)
                         .join(TBL_BOOKS);
@@ -2006,7 +1966,7 @@ public class BooklistBuilder
                 join = new Joiner(TBL_BOOKS);
             }
 
-            if (buildInfoHolder.hasGroupLOANED || App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            if (buildInfoHolder.isJoinLoaned() || App.isUsed(DBDefinitions.KEY_LOANEE)) {
                 // so get the loanee name, or a {@code null} for available books.
                 join.leftOuterJoin(TBL_BOOK_LOANEE);
             }
@@ -2020,19 +1980,19 @@ public class BooklistBuilder
                 join.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "==1");
             }
 
-            // Join with authors to make the names available
+            // Join with Authors to make the names available
             join.join(TBL_AUTHORS);
 
             // Current table will be authors, so name parent explicitly to join books->book_series.
             join.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
 
-            // If there was no series group, or user requests primary series only,
-            // then just get primary series.
+            // If there was no Series group, or user requests primary Series only,
+            // then just get primary Series.
             if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAll()) {
                 join.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "==1");
             }
 
-            // Join with series to get name
+            // Join with Series to get name
             join.leftOuterJoin(TBL_SERIES);
 
             mSourceTables = join.getSql();
@@ -2088,7 +2048,7 @@ public class BooklistBuilder
                 indexCols.append(sdi.domain.name);
                 if (sdi.domain.isText()) {
                     indexCols.append(DAO.COLLATION);
-
+                    // The order of this if/elseif/else is important, don't merge branch 1 and 3!
                     if (sdi.domain.isPrePreparedOrderBy()) {
                         // always use a pre-prepared order-by column as-is
                         sortCols.append(sdi.domain.name);
@@ -2222,9 +2182,30 @@ public class BooklistBuilder
         BooklistGroup.BooklistSeriesGroup seriesGroup;
 
         /** Will be set to {@code true} if a LOANED group exists in style. */
-        boolean hasGroupLOANED;
+        private boolean mJoinLoaned;
         /** Will be set to {@code true} if a BOOKSHELF group exists in style. */
-        boolean hasGroupBOOKSHELF;
+        private boolean mJoinBookshelves;
+
+        BuildInfoHolder(@NonNull final Map<String, TableDefinition> extraJoins) {
+            mJoinBookshelves = extraJoins.containsKey(TBL_BOOKSHELF.getName());
+            mJoinLoaned = extraJoins.containsKey(TBL_BOOK_LOANEE.getName());
+        }
+
+        void setJoinBookshelves() {
+            mJoinBookshelves = true;
+        }
+
+        boolean isJoinBookshelves() {
+            return mJoinBookshelves;
+        }
+
+        void setJoinLoaned() {
+            mJoinLoaned = true;
+        }
+
+        boolean isJoinLoaned() {
+            return mJoinLoaned;
+        }
     }
 
     /**
@@ -2323,13 +2304,26 @@ public class BooklistBuilder
             // but is unimportant for code correctness.
 
             // Add to table
-            mListTable.addDomain(domain);
+            boolean added = mListTable.addDomain(domain);
+            if (!added) {
+                // The domain was already present, do a sanity check!
+                String expression = mExpressions.get(domain);
+                if (Objects.equals(sourceExpression, expression)) {
+                    // same expression, we do NOT want to add it. This is fine.
+                    if (BuildConfig.DEBUG) {
+                        Logger.warnWithStackTrace(this,
+                                                  "duplicate domain/expression",
+                                                  "domain.name=" + domain.name);
+                    }
+                    return;
+                }
+            }
 
             // If the sourceExpression is {@code null},
-            // then the domain is just for the lowest level of the hierarchy.
+            // then the domain is just meant for the lowest level of the hierarchy.
             if (sourceExpression != null) {
                 mDomains.add(domain);
-                mExpressions.put(domain, sourceExpression);
+                mExpressions.put(domain, sourceExpression.trim());
             }
 
             // Based on the flags, add the domain to other lists.
@@ -2371,15 +2365,15 @@ public class BooklistBuilder
                     // The expression uses the OB column.
                     addDomain(DOM_AUTHOR_SORT,
                               mStyle.sortAuthorByGiven()
-                              ? X_AUTHOR_SORT_FIRST_LAST
-                              : X_AUTHOR_SORT_LAST_FIRST,
+                              ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
+                              : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     // Add the 'formatted' field of the requested type for displaying.
                     addDomain(DOM_AUTHOR_FORMATTED,
-                              buildInfoHolder.authorGroup.showGivenNameFirst()
-                              ? X_AUTHOR_FORMATTED_FIRST_LAST
-                              : X_AUTHOR_FORMATTED_LAST_FIRST,
+                              buildInfoHolder.authorGroup.showAuthorGivenNameFirst()
+                              ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                              : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
                               SummaryBuilder.FLAG_GROUPED);
 
                     // We also want the ID
@@ -2442,24 +2436,24 @@ public class BooklistBuilder
                     // We want a counter of how many books use the series as a primary series,
                     // so we can skip some series
                     addDomain(DOM_BL_PRIMARY_SERIES_COUNT,
-                              X_PRIMARY_SERIES_COUNT_AS_BOOLEAN,
+                              DAO.SqlColumns.EXP_PRIMARY_SERIES_COUNT_AS_BOOLEAN,
                               SummaryBuilder.FLAG_NONE);
                     break;
 
                 case BooklistGroup.RowKind.LOANED:
                     // Saved for later to indicate group was present
-                    buildInfoHolder.hasGroupLOANED = true;
+                    buildInfoHolder.setJoinLoaned();
                     addDomain(DOM_LOANEE_AS_BOOLEAN,
-                              X_LOANEE_AS_BOOLEAN,
+                              DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     addDomain(DOM_LOANEE,
-                              X_BOOK_LOANEE_OR_EMPTY,
+                              DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                     break;
 
                 case BooklistGroup.RowKind.BOOKSHELF:
-                    buildInfoHolder.hasGroupBOOKSHELF = true;
+                    buildInfoHolder.setJoinBookshelves();
                     addDomain(booklistGroup.getDisplayDomain(),
                               TBL_BOOKSHELF.dot(DOM_BOOKSHELF),
                               SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);

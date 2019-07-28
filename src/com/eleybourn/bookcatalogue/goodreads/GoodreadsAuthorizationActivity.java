@@ -79,7 +79,6 @@ public class GoodreadsAuthorizationActivity
         // Get the payload and make sure it is what we expect
         Uri uri = getIntent().getData();
 
-        //if (uri != null) && uri.toString().startsWith("BookCatalogue")) {
         if (uri != null) {
             // Goodreads does not set the verifier...but we may as well check for it.
             // The verifier was added in API version 1.0A, and Goodreads seems to

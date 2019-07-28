@@ -16,7 +16,7 @@ public interface Filter<T> {
     String getExpression();
 
     /**
-     * @param context Current context, for accessing resources.
+     * @param context Current context for accessing resources.
      *
      * @return a human readable label/name for this filter, or {@code null} if none.
      */

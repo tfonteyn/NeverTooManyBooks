@@ -6,11 +6,11 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dateSelector"
     style="@style/DialogFrame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="horizontal"
     >
 
@@ -24,43 +24,17 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
             android:id="@+id/lbl_year"
             style="@style/FieldLabel"
             android:text="@string/lbl_year"
-            app:layout_constraintStart_toStartOf="@id/plusYear"
+            app:layout_constraintStart_toStartOf="@id/year"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <Button
-            android:id="@+id/plusYear"
-            style="@style/PartialDatePickerButtons"
-            android:text="+"
+        <NumberPicker
+            android:id="@+id/year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_year"
-            tools:ignore="HardcodedText"
-            />
-
-        <EditText
-            android:id="@+id/year"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ems="4"
-            android:hint="@string/lbl_year"
-            android:inputType="number"
-            app:layout_constraintBottom_toTopOf="@id/minusYear"
-            app:layout_constraintEnd_toEndOf="@id/plusYear"
-            app:layout_constraintTop_toBottomOf="@id/plusYear"
-            app:layout_constraintVertical_weight="1"
-            tools:ignore="Autofill"
-            tools:text="1984"
-            />
-
-        <Button
-            android:id="@+id/minusYear"
-            style="@style/PartialDatePickerButtons"
-            android:text="-"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,39 +48,17 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
             android:id="@+id/lbl_month"
             style="@style/FieldLabel"
             android:text="@string/lbl_month"
-            app:layout_constraintStart_toStartOf="@id/plusMonth"
+            app:layout_constraintStart_toStartOf="@id/month"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <Button
-            android:id="@+id/plusMonth"
-            style="@style/PartialDatePickerButtons"
-            android:text="+"
+        <NumberPicker
+            android:id="@+id/month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_month"
-            tools:ignore="HardcodedText"
-            />
-
-        <Spinner
-            android:id="@+id/month"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:dropDownWidth="80dp"
-            app:layout_constraintBottom_toTopOf="@id/minusMonth"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/plusMonth"
-            app:layout_constraintVertical_weight="1"
-            />
-
-        <Button
-            android:id="@+id/minusMonth"
-            style="@style/PartialDatePickerButtons"
-            android:text="-"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,40 +72,17 @@ The order of the 3 columns will be changed dynamically depending on the Locale.
             android:id="@+id/lbl_day"
             style="@style/FieldLabel"
             android:text="@string/lbl_day"
-            app:layout_constraintStart_toStartOf="@id/plusDay"
+            app:layout_constraintStart_toStartOf="@id/day"
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <Button
-            android:id="@+id/plusDay"
-            style="@style/PartialDatePickerButtons"
-            android:text="+"
+        <NumberPicker
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_day"
-            tools:ignore="HardcodedText"
-            />
-
-        <Spinner
-            android:id="@+id/day"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:dropDownWidth="80dp"
-            app:layout_constraintBottom_toTopOf="@id/minusDay"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/plusDay"
-            app:layout_constraintVertical_weight="1"
-            />
-
-        <Button
-            android:id="@+id/minusDay"
-            style="@style/PartialDatePickerButtons"
-            android:text="-"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
-

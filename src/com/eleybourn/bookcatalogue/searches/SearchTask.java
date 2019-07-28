@@ -186,7 +186,7 @@ public class SearchTask
         try {
             // SEARCH!
             // manager checks the arguments
-            //ENHANCE/FIXME: its seems most (all?) implementations can return multiple book data bundles quite easily.
+            //ENHANCE: its seems most (all?) implementations can return multiple book data bundles quite easily.
             mBookData = mSearchEngine.search(mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
             if (!mBookData.isEmpty()) {
                 // Look for series name in the book title and clean KEY_TITLE

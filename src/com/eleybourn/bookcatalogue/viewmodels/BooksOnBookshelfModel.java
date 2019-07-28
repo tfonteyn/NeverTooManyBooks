@@ -53,6 +53,11 @@ public class BooksOnBookshelfModel
     public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
     public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
+    /** URGENT: experimental... {@link #initBookList}. */
+    public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
+
+    /** Database access. */
+    private DAO mDb;
 
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
@@ -61,26 +66,24 @@ public class BooksOnBookshelfModel
      * See {@link SearchCriteria} for more info.
      */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
-    /** Database access. */
-    private DAO mDb;
+    /** Cache for all bookshelf names / spinner list. */
+    private final List<String> mBookshelfNameList = new ArrayList<>();
+
     /**
-     * Flag (potentially) set in {@link BooksOnBookshelf}#onActivityResult}.
-     * Indicates if list rebuild is needed.
+     * Flag (potentially) set in {@link BooksOnBookshelf#onActivityResult}.
+     * Indicates if list rebuild is needed in {@link BooksOnBookshelf#onResume}.
+     * {@code null} means no rebuild at all, otherwise full or partial rebuild.
      */
     @Nullable
     private Boolean mDoFullRebuildAfterOnActivityResult;
-
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
-
     /** Stores the book id for the current list position, e.g. while a book is viewed/edited. */
     private long mCurrentPositionedBookId;
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTopRow = -1;
     /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
-
-    private final List<String> mBookshelfNameList = new ArrayList<>();
     /** Current displayed list cursor. */
     @Nullable
     private BooklistPseudoCursor mListCursor;
@@ -216,32 +219,6 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf;
     }
 
-    public List<String> getBookshelfNameList() {
-        return mBookshelfNameList;
-    }
-
-    /**
-     * @return the position that reflects the current bookshelf.
-     */
-    public int initBookshelfNameList(@NonNull final Context context) {
-        mBookshelfNameList.clear();
-        mBookshelfNameList.add(context.getString(R.string.bookshelf_all_books));
-        // default to 'All Books'
-        int currentPos = 0;
-        // start at 1, as position 0 is 'All Books'
-        int position = 1;
-
-        for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            if (bookshelf.getId() == getCurrentBookshelf().getId()) {
-                currentPos = position;
-            }
-            position++;
-            mBookshelfNameList.add(bookshelf.getName());
-        }
-
-        return currentPos;
-    }
-
     /**
      * Load and set the desired Bookshelf; do NOT set it as the preferred.
      *
@@ -262,6 +239,34 @@ public class BooksOnBookshelfModel
 
         mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
         mCurrentBookshelf.setAsPreferred();
+    }
+
+    public List<String> getBookshelfNameList() {
+        return mBookshelfNameList;
+    }
+
+    /**
+     * @param context Current context.
+     *
+     * @return the position that reflects the current bookshelf.
+     */
+    public int initBookshelfNameList(@NonNull final Context context) {
+        mBookshelfNameList.clear();
+        mBookshelfNameList.add(context.getString(R.string.bookshelf_all_books));
+        // default to 'All Books'
+        int currentPos = 0;
+        // start at 1, as position 0 is 'All Books'
+        int position = 1;
+
+        for (Bookshelf bookshelf : mDb.getBookshelves()) {
+            if (bookshelf.getId() == getCurrentBookshelf().getId()) {
+                currentPos = position;
+            }
+            position++;
+            mBookshelfNameList.add(bookshelf.getName());
+        }
+
+        return currentPos;
     }
 
     @NonNull
@@ -372,7 +377,7 @@ public class BooksOnBookshelfModel
     /**
      * Queue a rebuild of the underlying cursor and data.
      *
-     * @param context       Current context, for accessing resources.
+     * @param context       Current context for accessing resources.
      * @param isFullRebuild Indicates whole table structure needs rebuild,
      *                      versus just do a reselect of underlying data
      */
@@ -380,68 +385,105 @@ public class BooksOnBookshelfModel
                              final boolean isFullRebuild) {
         Objects.requireNonNull(mCurrentBookshelf);
 
-        BooklistBuilder bookListBuilder;
+        BooklistBuilder blb;
 
         if (mListCursor != null && !isFullRebuild) {
             // use the current builder to re-query the underlying data
-            bookListBuilder = mListCursor.getBuilder();
+            blb = mListCursor.getBuilder();
 
         } else {
+            BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
+
             // get a new builder and add the required extra domains
-            bookListBuilder = new BooklistBuilder(context, mCurrentBookshelf.getStyle(mDb));
+            blb = new BooklistBuilder(context, style);
 
             // Title for displaying
-            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
-                                          false);
+            blb.requireDomain(DBDefinitions.DOM_TITLE,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
+                              false);
 
             // Title for sorting
-            bookListBuilder.requireDomain(DBDefinitions.DOM_TITLE_OB,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
-                                          true);
+            blb.requireDomain(DBDefinitions.DOM_TITLE_OB,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
+                              true);
 
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_READ,
-                                          DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
-                                          false);
+            blb.requireDomain(DBDefinitions.DOM_BOOK_READ,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
+                              false);
 
             // external site ID's
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(
-                                                  DBDefinitions.DOM_BOOK_ISFDB_ID),
-                                          false);
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(
-                                                  DBDefinitions.DOM_BOOK_GOODREADS_ID),
-                                          false);
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(
-                                                  DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
-                                          false);
-            bookListBuilder.requireDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
-                                          DBDefinitions.TBL_BOOKS.dot(
-                                                  DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
-                                          false);
+            blb.requireDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+                              false);
+            blb.requireDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+                              false);
+            blb.requireDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+                              false);
+            blb.requireDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+                              false);
+
+            if (!TMP_USE_BOB_EXTRAS_TASK) {
+                //ENHANCE:  see DAO#fetchBookExtrasById ... this needs work.
+//                if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
+//                    bookListBuilder.requireDomain(
+//                            DBDefinitions.DOM_BOOKSHELF_CSV,
+//                            "GROUP_CONCAT(" + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF) + ",', ')",
+//                            false);
+//                    bookListBuilder.requireJoin(DBDefinitions.TBL_BOOKSHELF);
+//                }
+
+                if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+                    blb.requireDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
+                                      style.showAuthorGivenNameFirst()
+                                      ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                                      : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                                      false);
+                }
+                if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
+                    blb.requireDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
+                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                                      false);
+                }
+                if (style.isUsed(DBDefinitions.KEY_ISBN)) {
+                    blb.requireDomain(DBDefinitions.DOM_BOOK_ISBN,
+                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
+                                      false);
+                }
+                if (style.isUsed(DBDefinitions.KEY_FORMAT)) {
+                    blb.requireDomain(DBDefinitions.DOM_BOOK_FORMAT,
+                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
+                                      false);
+                }
+                if (style.isUsed(DBDefinitions.KEY_LOCATION)) {
+                    blb.requireDomain(DBDefinitions.DOM_BOOK_LOCATION,
+                                      DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
+                                      false);
+                }
+            }
 
             // if we have a list of ID's, ignore other criteria.
             if (mSearchCriteria.hasIdList()) {
-                bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
+                blb.setFilterOnBookIdList(mSearchCriteria.bookList);
 
             } else {
                 // always limit to the current bookshelf.
-                bookListBuilder.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+                blb.setFilterOnBookshelfId(mCurrentBookshelf.getId());
 
                 // Criteria supported by FTS
-                bookListBuilder.setFilter(mSearchCriteria.ftsAuthor,
-                                          mSearchCriteria.ftsTitle,
-                                          mSearchCriteria.ftsKeywords);
+                blb.setFilter(mSearchCriteria.ftsAuthor,
+                              mSearchCriteria.ftsTitle,
+                              mSearchCriteria.ftsKeywords);
 
                 // non-FTS
-                bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
-                bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
+                blb.setFilterOnSeriesName(mSearchCriteria.series);
+                blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
             }
         }
 
-        new GetBookListTask(bookListBuilder, isFullRebuild,
+        new GetBookListTask(blb, isFullRebuild,
                             mListCursor, mCurrentPositionedBookId, mRebuildState,
                             mOnGetBookListTaskListener)
                 .execute();
@@ -754,7 +796,7 @@ public class BooksOnBookshelfModel
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
-        Exception mException;
+        private Exception mException;
         /** Resulting Cursor. */
         private BooklistPseudoCursor tempListCursor;
 
@@ -925,7 +967,7 @@ public class BooksOnBookshelfModel
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.debug(this,"doInBackground",
+                    Logger.debug(this, "doInBackground",
                                  "\n Build: " + (t1 - t0),
                                  "\n Position: " + (t2 - t1),
                                  "\n Select: " + (t3 - t2),

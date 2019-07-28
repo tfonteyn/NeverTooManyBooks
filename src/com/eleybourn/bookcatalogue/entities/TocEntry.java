@@ -90,7 +90,9 @@ public class TocEntry
     @NonNull
     private String mFirstPublicationDate;
     /** in-memory use only. Type of entry. */
-    private Type mType = Type.Toc;
+    private Type mType;
+    /** in-memory use only. Number of books this TocEntry appears in. */
+    private int mBookCount;
 
     /**
      * Constructor.
@@ -105,27 +107,32 @@ public class TocEntry
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
+        mType = Type.Toc;
+        mBookCount = 1;
     }
 
     /**
-     * Full constructor.
+     * Constructor used during a JOIN of a Toc and its book(s).
      *
      * @param id              row id
      * @param author          Author of title
      * @param title           Title
      * @param publicationDate year of first publication
-     * @param type            TYPE_TOC or TYPE_BOOK
+     * @param type            {@link Type#TYPE_TOC} or {@link Type#TYPE_BOOK}
+     * @param bookCount       number of books this TocEntry appears in
      */
     public TocEntry(final long id,
                     @NonNull final Author author,
                     @NonNull final String title,
                     @NonNull final String publicationDate,
-                    final char type) {
+                    final char type,
+                    final int bookCount) {
         mId = id;
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
-        setType(type);
+        mType = Type.get(type);
+        mBookCount = bookCount;
     }
 
     /**
@@ -141,6 +148,9 @@ public class TocEntry
         mTitle = in.readString();
         //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();
+
+        mType = Type.get((char)in.readInt());
+        mBookCount = in.readInt();
     }
 
     /**
@@ -206,11 +216,8 @@ public class TocEntry
         return mType;
     }
 
-    /**
-     * @param type 'B' == book title; or 'T' == Generic TOC entry(e.g. short story, intro, etc..)
-     */
-    private void setType(final char type) {
-        mType = Type.get(type);
+    public int getBookCount() {
+        return mBookCount;
     }
 
     /**
@@ -222,6 +229,8 @@ public class TocEntry
         mAuthor = source.mAuthor;
         mTitle = source.mTitle;
         mFirstPublicationDate = source.mFirstPublicationDate;
+        mType = source.mType;
+        mBookCount = source.mBookCount;
     }
 
     @Override
@@ -231,6 +240,8 @@ public class TocEntry
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
+        dest.writeInt(mType.getInt());
+        dest.writeInt(mBookCount);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -247,6 +258,8 @@ public class TocEntry
                 + ", mAuthor=" + mAuthor
                 + ", mTitle=`" + mTitle + '`'
                 + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
+                + ", mType=`" + mType + '`'
+                + ", mBookCount=`" + mBookCount + '`'
                 + '}';
     }
 
@@ -393,7 +406,7 @@ public class TocEntry
 
     /**
      * Translator for the database character type value to the enum values.
-     *
+     * <p>
      * A TocEntry can be a real entry, or it can be a book posing as a pseudo entry.
      */
     public enum Type {

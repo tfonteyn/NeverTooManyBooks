@@ -70,7 +70,6 @@ public class RecyclerViewViewHolderBase
 
     @Override
     public void onItemClear() {
-        //ENHANCE: maybe style this.
         itemView.setBackgroundColor(Color.TRANSPARENT);
     }
 }

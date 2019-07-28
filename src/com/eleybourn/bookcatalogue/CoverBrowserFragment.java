@@ -448,6 +448,7 @@ public class CoverBrowserFragment
             holder.imageView.setOnClickListener(v -> {
                 // check if we actually have a preview in the gallery
                 if (holder.fileInfo.hasFileSpec()) {
+                    //noinspection ConstantConditions
                     if (holder.fileInfo.size.equals(SearchEngine.ImageSize.LARGE)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,

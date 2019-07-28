@@ -411,7 +411,7 @@
     <string name="style_builtin_genre">Gatunek literacki</string>
     <string name="style_builtin_loaned">Pożyczanie</string>
     <string name="style_builtin_publication_date">Data publikacji</string>
-    <string name="read_amp_unread">Odczyt / nieprzeczytane</string>
+    <string name="lbl_read_and_unread">Odczyt / nieprzeczytane</string>
     <string name="lbl_publication_month">Miesiąc publikacji</string>
     <string name="lbl_publication_year">Rok publikacji</string>
     <string name="lbl_read">Czytać</string>
@@ -625,6 +625,9 @@
     <string name="tip_authors_works">Użyte ikony:</string>
     <string name="tip_authors_works_toc">Wpis tabeli treści (TOC), np. fabuła.</string>
     <string name="tip_authors_works_book">Książka.</string>
+    <string name="menu_author_works_all">Pokaż wszystko</string>
+    <string name="menu_author_works_book">Tylko książki</string>
+    <string name="menu_author_works_toc">Tylko tytuły treści</string>
 
 
 </resources>

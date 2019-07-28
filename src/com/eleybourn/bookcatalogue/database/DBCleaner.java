@@ -96,10 +96,7 @@ public class DBCleaner {
 
         //TODO: books table: search out invalid uuid's, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
-        //TODO: covers.db, filename column -> delete rows where the uuid is invalid
     }
-
-    /* ****************************************************************************************** */
 
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
