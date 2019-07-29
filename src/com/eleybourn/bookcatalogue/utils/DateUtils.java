@@ -364,6 +364,8 @@ public final class DateUtils {
             longNames = new String[12];
             shortNames = new String[12];
             for (int m = 0; m < 12; m++) {
+                // prevent wrapping
+                calendar.set(Calendar.DATE, 1);
                 calendar.set(Calendar.MONTH, m);
                 longNames[m] = longNameFormatter.format(calendar.getTime());
                 shortNames[m] = shortNameFormatter.format(calendar.getTime());
@@ -391,7 +393,7 @@ public final class DateUtils {
     public static String buildPartialDate(@Nullable final Integer year,
                                           @Nullable final Integer month,
                                           @Nullable final Integer day) {
-        if (year == null) {
+        if (year == null || year == 0) {
             return "";
         } else {
             String value = String.format("%04d", year);
