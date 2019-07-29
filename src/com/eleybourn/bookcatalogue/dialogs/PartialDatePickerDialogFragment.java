@@ -122,6 +122,7 @@ public class PartialDatePickerDialogFragment
         // Get a calendar for locale-related info (defaults to current date)
         mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getPreferredLocal());
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
+
         // Set the day to 1 to avoid wrapping.
         mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
         // First entry is 'unknown'
@@ -137,11 +138,16 @@ public class PartialDatePickerDialogFragment
 
         args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         if (args.containsKey(BKEY_DATE)) {
-            setDate(args.getString(BKEY_DATE, ""));
+            setDate(args.getString(BKEY_DATE));
         } else {
             mYear = args.getInt(BKEY_YEAR);
             mMonth = args.getInt(BKEY_MONTH);
             mDay = args.getInt(BKEY_DAY);
+        }
+
+        // can't have a null year. The user can/should use the "clear" button if needed.
+        if (mYear == null) {
+            mYear = mCurrentYear;
         }
     }
 
@@ -153,61 +159,57 @@ public class PartialDatePickerDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
         AlertDialog dialog = new PartialDatePickerDialog(getContext());
-
         //noinspection ConstantConditions
         @StringRes
         int titleId = getArguments().getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         if (titleId != 0) {
             dialog.setTitle(titleId);
         }
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.clear),
-                         (d, which) -> clearAndSend());
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         (d, which) -> dismiss());
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
-                         (d, which) -> checkAndSend());
         return dialog;
     }
 
     /**
-     * Ensure the date is 'hierarchically valid';
-     * require year, if month is non-null,
-     * require month, if day non-null
-     * <p>
-     * If it is, send it to the listener.
+     * Set the dialog OnClickListener. This allows us to validate the fields without
+     * having the dialog close on us after the user clicks a button.
      */
-    private void checkAndSend() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            dialog.getButton(Dialog.BUTTON_NEGATIVE).setOnClickListener(v -> dismiss());
+            dialog.getButton(Dialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                mYear = null;
+                mMonth = null;
+                mDay = null;
+                send();
+            });
+            dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
+                    //noinspection ConstantConditions
+                    UserMessage.show(getDialog().getWindow().getDecorView(),
+                                     R.string.warning_if_day_set_month_and_year_must_be);
 
-        if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_if_day_set_month_and_year_must_be);
+                } else if (mMonth != null && mMonth > 0 && mYear == null) {
+                    //noinspection ConstantConditions
+                    UserMessage.show(getDialog().getWindow().getDecorView(),
+                                     R.string.warning_if_month_set_year_must_be);
 
-        } else if (mMonth != null && mMonth > 0 && mYear == null) {
-            //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_if_month_set_year_must_be);
-
-        } else {
-            dismiss();
-            if (mListener.get() != null) {
-                mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPartialDatePickerSave",
-                                 "WeakReference to listener was dead");
+                } else {
+                    send();
                 }
-            }
+            });
         }
     }
 
     /**
-     * Send an 'unset' date back to the listener.
+     * Send the date back to the listener.
      */
-    private void clearAndSend() {
-
+    private void send() {
         dismiss();
+
         if (mListener.get() != null) {
-            mListener.get().onPartialDatePickerSave(mDestinationFieldId, null, null, null);
+            mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPartialDatePickerSave",
@@ -227,10 +229,13 @@ public class PartialDatePickerDialogFragment
      * <li>yyyy</li>
      * </ul>
      *
-     * @param dateString SQL formatted (partial) date
+     * @param dateString SQL formatted (partial) date, can be {@code null}.
      */
-    private void setDate(@NonNull final String dateString) {
-        if (dateString.isEmpty()) {
+    private void setDate(@Nullable final String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            mYear = mCurrentYear;
+            mMonth = null;
+            mDay = null;
             return;
         }
 
@@ -292,7 +297,7 @@ public class PartialDatePickerDialogFragment
     }
 
     /**
-     * Custom dialog.
+     * Custom dialog. Button OnClickListener's must be set in the fragment onResume method.
      */
     class PartialDatePickerDialog
             extends AlertDialog {
@@ -301,6 +306,7 @@ public class PartialDatePickerDialogFragment
         private NumberPicker mMonthPicker;
         private NumberPicker mDayPicker;
 
+        /** Called after any change made to the pickers. */
         private NumberPicker.OnValueChangeListener mOnValueChangeListener =
                 new NumberPicker.OnValueChangeListener() {
                     @Override
@@ -310,7 +316,7 @@ public class PartialDatePickerDialogFragment
                         switch (picker.getId()) {
                             case R.id.PICKER_YEAR:
                                 mYear = newVal;
-                                // Small optimization: assume only February needs this
+                                // Small optimization: only February needs this
                                 if (mMonth != null && mMonth == 2) {
                                     setDaysOfMonth();
                                 }
@@ -322,11 +328,15 @@ public class PartialDatePickerDialogFragment
                             case R.id.PICKER_DAY:
                                 mDay = newVal;
                                 break;
-
                         }
                     }
                 };
 
+        /**
+         * Constructor,
+         *
+         * @param context Current context
+         */
         PartialDatePickerDialog(@NonNull final Context context) {
             super(context);
 
@@ -370,6 +380,15 @@ public class PartialDatePickerDialogFragment
             mYearPicker.setValue(mYear != null ? mYear : mCurrentYear);
             mMonthPicker.setValue(mMonth != null ? mMonth : 0);
             mDayPicker.setValue(mDay != null ? mDay : 0);
+            setDaysOfMonth();
+
+            // no listeners. They must be set in the onResume of the fragment.
+            setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
+                      (DialogInterface.OnClickListener) null);
+            setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.clear),
+                      (DialogInterface.OnClickListener) null);
+            setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
+                      (DialogInterface.OnClickListener) null);
         }
 
         /**
