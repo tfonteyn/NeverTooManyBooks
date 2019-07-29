@@ -35,9 +35,10 @@ public class StylePickerDialogFragment
     public static final String TAG = "StylePickerDialogFragment";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";
-
+    private final ArrayList<BooklistStyle> mBooklistStyles = new ArrayList<>();
     private boolean mShowAllStyles;
-    private ArrayList<BooklistStyle> mBooklistStyles;
+    private RadioGroupRecyclerAdapter<BooklistStyle> mAdapter;
+
     private BooklistStyle mCurrentStyle;
 
     private WeakReference<StyleChangedListener> mListener;
@@ -77,9 +78,7 @@ public class StylePickerDialogFragment
         mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
 
-        try (DAO db = new DAO()) {
-            mBooklistStyles = new ArrayList<>(BooklistStyles.getStyles(db, mShowAllStyles).values());
-        }
+        loadStyles();
     }
 
     @NonNull
@@ -92,38 +91,67 @@ public class StylePickerDialogFragment
         listView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
-//        listView.addItemDecoration(
-//                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-
         //noinspection ConstantConditions
-        RadioGroupRecyclerAdapter<BooklistStyle> adapter =
-                new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles, mCurrentStyle,
-                                                this::onStyleSelected);
-
-        listView.setAdapter(adapter);
-
-        @StringRes
-        int moreOrLess = mShowAllStyles ? R.string.menu_show_fewer_ellipsis
-                                        : R.string.menu_show_more_ellipsis;
+        mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles, mCurrentStyle,
+                                                   this::onStyleSelected);
+        listView.setAdapter(mAdapter);
 
         return new AlertDialog.Builder(getContext())
                 .setTitle(R.string.title_select_style)
                 .setView(root)
-                .setNeutralButton(R.string.menu_customize_ellipsis, (d, which) -> {
+                .setNeutralButton(R.string.menu_customize_ellipsis, (d, w) -> {
                     Intent intent = new Intent(getContext(), PreferredStylesActivity.class);
                     // use the activity so we get the results there.
-                    getActivity().startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                    getActivity().startActivityForResult(intent,
+                                                         UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                    dismiss();
+
                 })
-                .setPositiveButton(moreOrLess, (d, which) -> {
-                    // simply reloading the list would make more sense, but preventing
-                    // the dialog from closing is headache inducing. This is easier.
-                    //noinspection ConstantConditions
-                    StylePickerDialogFragment.newInstance(getFragmentManager(),
-                                                          mCurrentStyle, !mShowAllStyles);
-                })
+                // see onResume for setting the listener.
+                .setPositiveButton(posBtnTxtId(), null)
                 .create();
     }
 
+    @StringRes
+    private int posBtnTxtId() {
+        return mShowAllStyles ? R.string.menu_show_fewer_ellipsis
+                              : R.string.menu_show_more_ellipsis;
+    }
+    /**
+     * Fetch the styles from the database.
+     */
+    private void loadStyles() {
+        try (DAO db = new DAO()) {
+            mBooklistStyles.clear();
+            mBooklistStyles.addAll(BooklistStyles.getStyles(db, mShowAllStyles).values());
+        }
+    }
+
+    /**
+     * Set the dialog OnClickListener. This allows reloading the list without
+     * having the dialog close on us after the user clicks a button.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            dialog.getButton(Dialog.BUTTON_POSITIVE)
+                  .setOnClickListener(v -> {
+                      mShowAllStyles = !mShowAllStyles;
+                      ((AlertDialog) getDialog()).getButton(Dialog.BUTTON_POSITIVE)
+                                                 .setText(posBtnTxtId());
+                      loadStyles();
+                      mAdapter.notifyDataSetChanged();
+                  });
+        }
+    }
+
+    /**
+     * Called when the user clicked a style. Send the result back to the listener.
+     *
+     * @param style the desired style
+     */
     private void onStyleSelected(@NonNull final BooklistStyle style) {
         if (mListener.get() != null) {
             mListener.get().onStyleChanged(style);
