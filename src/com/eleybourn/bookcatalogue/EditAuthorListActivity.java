@@ -35,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -79,7 +80,8 @@ public class EditAuthorListActivity
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
                                                   android.R.layout.simple_dropdown_item_1line,
-                                                  mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                                  mDb.getAuthorNames(
+                                                          DBDefinitions.KEY_AUTHOR_FORMATTED));
 
         mAutoCompleteTextView = findViewById(R.id.author);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -177,8 +179,6 @@ public class EditAuthorListActivity
          */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
-                             d.dismiss();
-
                              author.copyFrom(newAuthorData);
                              ItemWithIdFixup.pruneList(mDb, mList);
                              mListAdapter.notifyDataSetChanged();
@@ -208,11 +208,8 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            d.dismiss();
-
-            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData,
-                                                              LocaleUtils.getPreferredLocal());
-
+            Locale locale = LocaleUtils.getPreferredLocal();
+            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData, locale);
             author.copyFrom(newAuthorData);
             ItemWithIdFixup.pruneList(mDb, mList);
             mListAdapter.notifyDataSetChanged();

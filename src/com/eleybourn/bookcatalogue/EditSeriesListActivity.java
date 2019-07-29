@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +39,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -176,36 +176,28 @@ public class EditSeriesListActivity
         // in more than one place. Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
 
-        final AlertDialog dialog = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_series_changed,
                                       series.getSortName(), newSeries.getSortName(),
                                       allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                         (d, which) -> {
-                             d.dismiss();
-
-                             series.copyFrom(newSeries);
-                             Series.pruneSeriesList(mList);
-                             ItemWithIdFixup.pruneList(mDb, mList);
-                             mListAdapter.notifyDataSetChanged();
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            d.dismiss();
-
-            mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries,
-                                                              LocaleUtils.getPreferredLocal());
-            series.copyFrom(newSeries);
-            Series.pruneSeriesList(mList);
-            ItemWithIdFixup.pruneList(mDb, mList);
-            mListAdapter.notifyDataSetChanged();
-        });
-
-        dialog.show();
+                .setNegativeButton(allBooks, (d, which) -> {
+                    Locale locale = LocaleUtils.getPreferredLocal();
+                    mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries, locale);
+                    series.copyFrom(newSeries);
+                    Series.pruneSeriesList(mList);
+                    ItemWithIdFixup.pruneList(mDb, mList);
+                    mListAdapter.notifyDataSetChanged();
+                })
+                .setPositiveButton(R.string.btn_this_book, (d, which) -> {
+                    series.copyFrom(newSeries);
+                    Series.pruneSeriesList(mList);
+                    ItemWithIdFixup.pruneList(mDb, mList);
+                    mListAdapter.notifyDataSetChanged();
+                })
+                .create()
+                .show();
     }
 
     /**
