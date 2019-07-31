@@ -92,8 +92,9 @@ abstract class ApiHandlerNative {
     /**
      * Sign a request and GET it; then pass it off to a parser.
      *
-     * @param url               to POST
-     * @param requiresSignature Flag to optionally sigh the request
+     * @param url               to GET
+     * @param parameterMap      (optional) parameters to add to the url
+     * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException  with GoodReads
@@ -101,19 +102,36 @@ abstract class ApiHandlerNative {
      * @throws IOException           on other failures
      */
     void executeGet(@NonNull final String url,
+                    @SuppressWarnings({"SameParameterValue", "unused"})
+                    @Nullable final Map<String, String> parameterMap,
                     @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
             Logger.debug(this, "executeGet", "url=" + url);
         }
 
-        HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        String fullUrl = url;
+        if (parameterMap != null) {
+            Uri.Builder builder = new Uri.Builder();
+            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                builder.appendQueryParameter(entry.getKey(), entry.getValue());
+            }
+            String query = builder.build().getEncodedQuery();
+            if (query != null) {
+                // add or append query string.
+                fullUrl += (url.indexOf('?') < 0 ? '?' : '&') + query;
+            }
+        }
 
-        execute(request, requiresSignature, requestHandler);
+        HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
+
+        if (requiresSignature) {
+            mManager.signGetRequest(request);
+        }
+
+        execute(request, requestHandler);
     }
 
     /**
@@ -121,7 +139,7 @@ abstract class ApiHandlerNative {
      *
      * @param url               to POST
      * @param parameterMap      (optional) parameters to add to the POST
-     * @param requiresSignature Flag to optionally sigh the request
+     * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException  with GoodReads
@@ -132,25 +150,47 @@ abstract class ApiHandlerNative {
                      @Nullable final Map<String, String> parameterMap,
                      final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
-            Logger.debug(this, "executeGet", "url=" + url);
+            Logger.debug(this, "executePost", "url=" + url);
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
         request.setRequestMethod("POST");
-        request.setDoInput(true);
         request.setDoOutput(true);
 
+        if (requiresSignature) {
+            mManager.signPostRequest(request, parameterMap);
+        }
+
+        // Now the actual POST payload
         if (parameterMap != null) {
+            // encode using JDK
             Uri.Builder builder = new Uri.Builder();
             for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
             String query = builder.build().getEncodedQuery();
+
+//            // encode using signpost. Leaving this code as a reference for now.
+//            StringBuilder sb = new StringBuilder();
+//            boolean first = true;
+//            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+//                if (!first) {
+//                    sb.append("&");
+//                }
+//                first = false;
+//                // note we need to encode both key and value.
+//                sb.append(OAuth.percentEncode(entry.getKey()));
+//                sb.append("=");
+//                sb.append(OAuth.percentEncode(entry.getValue()));
+//            }
+//            String oauth_query = sb.toString();
+//
+//            Logger.debug(this,"SIGN","natv_query=" + query);
+//            Logger.debug(this,"SIGN","query_oath=" + oauth_query);
+//            Logger.debug(this,"SIGN","oauth_query.equals(natv_query)= " + oauth_query.equals(query));
 
             try (OutputStream os = request.getOutputStream();
                  BufferedWriter writer = new BufferedWriter(
@@ -160,53 +200,55 @@ abstract class ApiHandlerNative {
             }
         }
 
-        execute(request, requiresSignature, requestHandler);
+        execute(request, requestHandler);
     }
 
     /**
-     * Sign a request and submit it; then pass it off to a parser.
+     * Submit a request; then pass it off to a parser.
      *
-     * @param request           to execute
-     * @param requiresSignature Flag to optionally sigh the request
-     * @param requestHandler    (optional) handler for the parser
+     * @param request        to execute
+     * @param requestHandler (optional) handler for the parser
      *
      * @throws CredentialsException  with GoodReads
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException           on other failures
      */
     private void execute(@NonNull final HttpURLConnection request,
-                         final boolean requiresSignature,
                          @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
-
-        if (requiresSignature) {
-            mManager.sign(request);
-        }
+            throws CredentialsException, BookNotFoundException, IOException {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsManager.waitUntilRequestAllowed();
+        GoodreadsManager.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);
         request.connect();
 
         int code = request.getResponseCode();
+        if (BuildConfig.DEBUG) {
+            Logger.debug(this, "execute",
+                         "\nrequest: " + request.getURL(),
+                         "\nresponse: " + code + ' ' + request.getResponseMessage());
+        }
+
         switch (code) {
             case HttpURLConnection.HTTP_OK:
             case HttpURLConnection.HTTP_CREATED:
                 parseResponse(request, requestHandler);
+                request.disconnect();
                 break;
 
             case HttpURLConnection.HTTP_UNAUTHORIZED:
+                request.disconnect();
                 GoodreadsManager.sHasValidCredentials = false;
                 throw new CredentialsException(R.string.goodreads);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
+                request.disconnect();
                 throw new BookNotFoundException();
 
             default:
+                request.disconnect();
                 throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
                                               + request.getResponseCode()
                                               + '/' + request.getResponseMessage());
@@ -242,7 +284,7 @@ abstract class ApiHandlerNative {
      * Sign a request and submit it. Return the raw text output.
      *
      * @param url               to GET
-     * @param requiresSignature Flag to optionally sigh the request
+     * @param requiresSignature Flag to optionally sign the request
      *
      * @return the raw text output.
      *
@@ -251,43 +293,51 @@ abstract class ApiHandlerNative {
      * @throws IOException           on other failures
      */
     @NonNull
-    String executeRaw(@NonNull final String url,
-                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+    String executeRawGet(@NonNull final String url,
+                         @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
+            throws CredentialsException, BookNotFoundException, IOException {
 
         if (BuildConfig.DEBUG && (DEBUG_SWITCHES.NETWORK || DEBUG_SWITCHES.DUMP_HTTP_URL)) {
-            Logger.debug(this, "executeRaw", "url=" + url);
+            Logger.debug(this, "executeRawGet", "url=" + url);
         }
 
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
 
         if (requiresSignature) {
-            mManager.sign(request);
+            mManager.signGetRequest(request);
         }
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsManager.waitUntilRequestAllowed();
+        GoodreadsManager.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);
         request.connect();
 
         int code = request.getResponseCode();
+        if (BuildConfig.DEBUG) {
+            Logger.debug(this, "execute",
+                         "\nrequest: " + request.getURL(),
+                         "\nresponse: " + code + ' ' + request.getResponseMessage());
+        }
         switch (code) {
             case HttpURLConnection.HTTP_OK:
             case HttpURLConnection.HTTP_CREATED:
-                return getContent(request);
+                String content = getContent(request);
+                request.disconnect();
+                return content;
 
             case HttpURLConnection.HTTP_UNAUTHORIZED:
+                request.disconnect();
                 GoodreadsManager.sHasValidCredentials = false;
                 throw new CredentialsException(R.string.goodreads);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
+                request.disconnect();
                 throw new BookNotFoundException();
 
             default:
+                request.disconnect();
                 throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
                                               + request.getResponseCode()
                                               + '/' + request.getResponseMessage());

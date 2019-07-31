@@ -74,9 +74,7 @@ public class ShowBookByIsbnApiHandler
     @NonNull
     public Bundle get(@NonNull final String isbn,
                       final boolean fetchThumbnail)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         if (!ISBN.isValid(isbn)) {
             throw new BookNotFoundException(isbn);

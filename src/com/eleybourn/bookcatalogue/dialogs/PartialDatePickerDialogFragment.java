@@ -302,12 +302,12 @@ public class PartialDatePickerDialogFragment
     class PartialDatePickerDialog
             extends AlertDialog {
 
-        private NumberPicker mYearPicker;
-        private NumberPicker mMonthPicker;
-        private NumberPicker mDayPicker;
+        private final NumberPicker mYearPicker;
+        private final NumberPicker mMonthPicker;
+        private final NumberPicker mDayPicker;
 
         /** Called after any change made to the pickers. */
-        private NumberPicker.OnValueChangeListener mOnValueChangeListener =
+        private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
                 new NumberPicker.OnValueChangeListener() {
                     @Override
                     public void onValueChange(final NumberPicker picker,

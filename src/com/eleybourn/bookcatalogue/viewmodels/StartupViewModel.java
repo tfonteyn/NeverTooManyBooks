@@ -250,6 +250,7 @@ public class StartupViewModel
                 LocaleUtils.createLanguageMappingCache();
 
             } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
                 mException = e;
             }
             return null;
@@ -300,6 +301,7 @@ public class StartupViewModel
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);
             } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
                 mException = e;
             }
             return null;
@@ -350,6 +352,7 @@ public class StartupViewModel
                    .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
                    .apply();
             } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
                 mException = e;
             }
             return null;
@@ -401,6 +404,7 @@ public class StartupViewModel
                 }
 
             } catch (@NonNull final RuntimeException e) {
+                Logger.error(this, e);
                 mException = e;
             }
             return null;

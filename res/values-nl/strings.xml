@@ -282,7 +282,7 @@
     <string name="menu_cover_rotate_ccw">Links draaien</string>
     <string name="menu_booklist_styles">Boekenlijst Stijlen…</string>
     <string name="menu_show_more_ellipsis">Toon meer…</string>
-    <string name="menu_show_fewer_ellipsis">Toon minder…</string>
+    <string name="menu_show_less_ellipsis">Toon minder…</string>
     <string name="menu_customize_ellipsis">Aanpassen…</string>
     <string name="menu_share_this">Delen</string>
     <string name="menu_cover_add_from_gallery">Van Galerij…</string>
@@ -350,8 +350,8 @@
     <string name="btn_options">Opties</string>
     <string name="btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="btn_confirm_new">Nieuw</string>
-    <string name="btn_set_authors">Invullen auteurs…</string>
-    <string name="btn_set_series">Invullen Serie…</string>
+    <string name="X_btn_set_authors">Invullen auteurs…</string>
+    <string name="X_btn_set_series">Invullen Serie…</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="btn_more_info">Meer Info.</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
@@ -466,23 +466,18 @@
     <string name="warning_backup_request">
         Wilt u  een back-up van uw database op uw SD kaart maken?
     </string>
-    <string name="X_warning_cover_field_not_set">Omslagafbeelding niet ingesteld</string>
     <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
     <string name="X_warning_required_author">Auteurveld is leeg</string>
     <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
-    <string name="X_warning_required_series">Serieveld is leeg</string>
 
     <string name="warning_immediate_global_changes">
         Let op: Veranderingen worden direct en globaal toegepast!
     </string>
 
-    <string name="warning_missing_title_author">De titel en/of de auteur ontbreekt.</string>
-    <string name="warning_required_author_long">Er moet tenminste één auteur worden vermeld</string>
-    <string name="warning_required_title">Het titelveld mag niet leeg zijn</string>
-    <string name="X_warning_no_isbn_no_editions">
-        Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN
-    </string>
+    <string name="X_warning_missing_title_author">De titel en/of de auteur ontbreekt.</string>
+    <string name="X_warning_required_author_long">Er moet tenminste één auteur worden vermeld</string>
+    <string name="X_warning_required_title">Het titelveld mag niet leeg zijn</string>
     <string name="warning_unsaved_edits">
         Je hebt niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.
     </string>
@@ -497,8 +492,8 @@
         Er moet op z\'n minst een veld ingevuld zijn
     </string>
     <string name="warning_x_already_exists">%1$s bestaat al</string>
-    <string name="warning_missing_title">De titel ontbreekt.</string>
-    <string name="warning_missing_author">De auteur ontbreekt.</string>
+    <string name="X_warning_missing_title">De titel ontbreekt.</string>
+    <string name="X_warning_missing_author">De auteur ontbreekt.</string>
     <string name="warning_isfdb_only">(alleen ondersteund door de ISFDB-website)</string>
     <string name="warning_action_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is geen geldig ISBN of ASIN</string>
@@ -521,9 +516,7 @@
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
-    <string name="warning_please_enter_search_criteria">Vul de zoekcriteria in</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
-
 
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="error_search_failed">
@@ -558,16 +551,13 @@
         Er is een onverwachte fout opgetreden.
         Zend ons aub de details via de „Admin” optie in het hoofdmenu.
     </string>
-    <string name="error_authorization_failed">%1$s autorisatie mislukt</string>
+    <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_if_the_problem_persists">
         Als het probleem aanhoud, maak dan contact met ondersteuning via de „Over deze App” optie.
     </string>
     <string name="error_no_internet_connection">Geen Internet verbinding beschikbaar.</string>
 
-
-
     <string name="vldt_failure">Validatiefout.</string>
-    <string name="vldt_unable_to_get_value_for_x">Kan de waarde voor „%1$s” niet krijgen</string>
     <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor „%1$s”</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
@@ -607,10 +597,6 @@
         weet u zeker dat u nog een exemplaar wilt toevoegen?
     </string>
 
-    <string name="searching_amazon">Zoeken bij Amazon</string>
-    <string name="searching_google_books">Zoeken bij Google Books</string>
-    <string name="searching_library_thing">Zoeken bij LibraryThing</string>
-    <string name="searching_open_library">Zoeken by OpenLibrary</string>
     <string name="X_select_bookshelves">Selecteer Boekenplanken</string>
 
     <string name="hint_field_not_set">Niet Ingevuld</string>
@@ -746,8 +732,6 @@
 
     <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
 
-
-    <string name="gr_error_while_searching">Fout tijdens het zoeken.</string>
     <string name="gr_send_all_books_results">
         %1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN
         maar niet gevonden in Goodreads
@@ -792,14 +776,7 @@
     <string name="style_is_builtin">Ingebouwd</string>
 
 
-
-
-    <string name="searching_goodreads">Goodreads doorzoeken</string>
-
-
-
     <string name="edit">Bewerken</string>
-
 
     <string name="gr_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_tq_requested_task_is_already_queued">
@@ -864,11 +841,6 @@
     <string name="import_warning_select_csv_file">
         Meer dan een bestand gevonden. Selecteer aub het gewenste bestand om te importeren:
     </string>
-    <string name="X_error_starting_import_arg">
-        Er is een probleem bij het starten van de import van: %1$s</string>
-
-
-
 
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
 
@@ -953,11 +925,7 @@
 
     <string name="pv_reformat_titles_prefixes">de|De|een|Een|het|Het</string>
 
-
-    <string name="searching_isfdb">Zoeken bij ISFDB</string>
-
     <string name="tab_lbl_content">Inhoud</string>
-
 
     <string name="book_format_hardcover">Hardcover</string>
     <string name="book_format_paperback">Pocket</string>
@@ -979,7 +947,6 @@
     <string name="done">Klaar</string>
     <string name="clear">Wissen</string>
     <string name="none">Geen</string>
-    <string name="unknown_uc">ONBEKEND</string>
 
     <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>
     <string name="import_export_option_xml_info">XML is enkel export, geen import.</string>

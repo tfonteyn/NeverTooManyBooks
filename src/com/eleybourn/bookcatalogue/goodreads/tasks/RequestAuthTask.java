@@ -59,8 +59,10 @@ public class RequestAuthTask
                 grManager.requestAuthorization();
             } catch (@NonNull final IOException e) {
                 Logger.error(this, e);
+                mException = e;
                 return R.string.gr_access_error;
             } catch (@NonNull final AuthorizationException e) {
+                mException = e;
                 return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_FAILED;
             }
         } else {

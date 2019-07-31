@@ -13,7 +13,7 @@ import com.eleybourn.bookcatalogue.database.DAO;
  * In addition to the {@link BookBaseFragmentModel}, this model holds the flattened book list
  * for sweeping left/right.
  */
-public class BookFragmentModel
+public class FlattenedBooklistModel
         extends ViewModel {
 
     /** Database access. */
@@ -37,8 +37,8 @@ public class BookFragmentModel
     /**
      * Pseudo constructor.
      *
-     * @param args      Bundle with arguments
-     * @param bookId    The book this model will represent.
+     * @param args   Bundle with arguments
+     * @param bookId The book this model will represent.
      */
     public void init(@Nullable final Bundle args,
                      final long bookId) {

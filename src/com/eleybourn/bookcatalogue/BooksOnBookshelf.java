@@ -40,7 +40,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
@@ -82,13 +81,10 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
-import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
 import com.eleybourn.bookcatalogue.settings.Prefs;
-import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -109,20 +105,9 @@ public class BooksOnBookshelf
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
-    /** Listener for GoodreadsTasks. */
-    private final TaskListener<Object, Integer> mOnGoodreadsTaskListener =
-            new TaskListener<Object, Integer>() {
-                @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @StringRes final Integer result,
-                                           @Nullable final Exception e) {
-                    GoodreadsTasks.handleResult(taskId, success, result, e,
-                                                getWindow().getDecorView(), this);
-                }
-            };
 
     private TextView mFilterTextView;
+
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -236,6 +221,8 @@ public class BooksOnBookshelf
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
+        mModel.getUserMessage().observe(this, this::showUserMessage);
+        mModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
         mModel.init(getIntent().getExtras(), savedInstanceState);
         mModel.restoreCurrentBookshelf(this);
 
@@ -283,6 +270,35 @@ public class BooksOnBookshelf
 
         // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
+    }
+
+    /**
+     * Called if an interaction with Goodreads failed due to authorization issues.
+     * Prompts the user to register.
+     *
+     * @param needs {@code true} if registration is needed
+     */
+    private void needsGoodreads(@Nullable final Boolean needs) {
+        if (needs != null && needs) {
+            StandardDialogs.registerAtGoodreads(this,
+                                                mModel.getGoodreadsTaskListener());
+        }
+    }
+
+    /**
+     * Allows the ViewModel to send us a message to display to the user.
+     * <p>
+     * If the type is {@code Integer} we assume it's a {@code StringRes}
+     * else we do a toString() it.
+     *
+     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
+     */
+    private void showUserMessage(@Nullable final Object message) {
+        if (message instanceof Integer) {
+            UserMessage.show(mListView, (int) message);
+        } else if (message != null) {
+            UserMessage.show(mListView, message.toString());
+        }
     }
 
     /**
@@ -1153,10 +1169,7 @@ public class BooksOnBookshelf
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
-                //TEST sendOneBook
-                new SendOneBookTask(this, row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                    mOnGoodreadsTaskListener)
-                        .execute();
+                mModel.sendToGoodReads(row.getLong(DBDefinitions.KEY_FK_BOOK));
                 return true;
 
             /* ********************************************************************************** */

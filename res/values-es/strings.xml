@@ -151,9 +151,6 @@
     <string name="menu_cover_add_from_gallery">Desde la galería…</string>
     <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
     <string name="title_backup">Copia</string>
-    <string name="searching_amazon">Buscando en Amazon</string>
-    <string name="searching_google_books">Buscando en Google Books</string>
-    <string name="searching_library_thing">Buscando en LibraryThing</string>
     <string name="X_select_bookshelves">Seleccionar biblioteca</string>
     <string name="lbl_format">Formato</string>
     <string name="lbl_description">Descripción</string>
@@ -162,7 +159,6 @@
     <string name="X_menu_search_books">Buscar libro</string>
     <string name="tip_book_search_by_text">Añadir libros con ISBN es mucho más preciso que hacerlo por autor y título. Recuerde que en ocasiones el código de barras o el ISBN se encuentran en la parte interior de la portada.\n\n</string>
     <string name="X_about_help_tap_here">Pulse aquí para acceder a la ayuda online</string>
-    <string name="vldt_unable_to_get_value_for_x">Falta «%1$s»</string>
     <string name="vldt_integer_expected_for_x">«%1$s» debe ser un entero</string>
     <string name="vldt_real_expected_for_x">«%1$s» debe ser un número real</string>
     <string name="vldt_date_expected_for_x">«%1$s» debe ser una fecha</string>
@@ -182,17 +178,15 @@
     <string name="X_info_no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
     <string name="X_info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
 
-    <string name="X_warning_cover_field_not_set">No hay imagen de portada</string>
     <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
     <string name="X_title_cover_detail">Portada</string>
     <string name="title_select_image">Seleccionar imagen</string>
-    <string name="btn_set_authors">Definir autores…</string>
+    <string name="X_btn_set_authors">Definir autores…</string>
     <string name="and_others">et. al.</string>
-    <string name="btn_set_series">Definir serie…</string>
+    <string name="X_btn_set_series">Definir serie…</string>
     <string name="warning_author_already_in_list">Ese autor ya está en la lista</string>
     <string name="X_warning_required_author">El campo Autor está en blanco</string>
     <string name="warning_series_already_in_list">Esa serie ya está en la lista</string>
-    <string name="X_warning_required_series">El campo Serie está en blanco</string>
     <string name="progress_msg_skip_title">Excluir - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d libros encontrados</string>
     <string name="progress_end_cancelled_info">Cancelado - %1$s</string>
@@ -202,15 +196,14 @@
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
     <string name="menu_cover_replace">Cambiar…</string>
     <string name="menu_cover_search_alt_editions">De otras ediciones…</string>
-    <string name="warning_required_author_long">Se debe especificar al menos un autor</string>
-    <string name="warning_required_title">El título no puede estar en blanco</string>
+    <string name="X_warning_required_author_long">Se debe especificar al menos un autor</string>
+    <string name="X_warning_required_title">El título no puede estar en blanco</string>
     <string name="X_menu_delete_series">Eliminar serie…</string>
     <string name="X_menu_edit_author">Modificar autor…</string>
     <string name="X_menu_edit_series">Modificar serie…</string>
     <string name="title_delete_series">Eliminar serie</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
     <string name="X_title_select_cover">Seleccionar portada</string>
-    <string name="X_warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
     <string name="warning_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
     <string name="X_unsaved_edits_title">Cambios sin guardar</string>
     <string name="confirm_apply_author_changed">Ha cambiado el autor de :\n  «%1$s» a \n  «%2$s»\n¿Cómo quiere aplicar este cambio?\nNota: La opción «%3$s» se aplicará de manera inmediata.</string>
@@ -302,15 +295,13 @@
     <string name="warning_no_isbn_stored_for_book">No se ha guardado ISBN para el libro</string>
     <string name="title_select_an_action">Seleccione una opción</string>
     <string name="gr_auth_check">Comprobación de autorización en Goodreads</string>
-    <string name="error_authorization_failed">Fallo de autorización en %1$s</string>
+    <string name="error_site_authentication_failed">%1$s autenticación fallida</string>
     <string name="gr_auth_successful">Autorización satisfactoria en Goodreads</string>
     <string name="info_authorized">Autorizado</string>
     <string name="info_not_authorized">No Autorizado</string>
     <string name="gr_auth_error">Error de autorización en Goodreads.</string>
     <string name="error_if_the_problem_persists">Si el problema persiste, contacte con soporte utilizando la opción de «Admin» del menú principal.</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
-    <string name="warning_please_enter_search_criteria">Por favor, introduzca un criterio de búsqueda</string>
-    <string name="gr_error_while_searching">Error buscando.</string>
     <string name="gr_send_all_books_results">%1$d libros procesados: %2$d enviados correctamente, %3$d sin ISBN y %4$d con ISBN pero no encontrados en Goodreads</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="gr_send_book_to_goodreads">Enviar libro %1$d a Goodreads</string>
@@ -344,10 +335,9 @@
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_starting_up">Arrancando…</string>
-    <string name="searching_goodreads">Buscando en Goodreads</string>
     <string name="menu_booklist_styles">Estilos del listado de libros…</string>
     <string name="menu_show_more_ellipsis">Mostrar más…</string>
-    <string name="menu_show_fewer_ellipsis">Mostrar menos…</string>
+    <string name="menu_show_less_ellipsis">Mostrar menos…</string>
     <string name="menu_customize_ellipsis">Configurar…</string>
     <string name="tip_dialog_title">Sugerencia</string>
     <string name="tip_reset_all">Resetear sugerencias</string>
@@ -446,7 +436,6 @@
     <string name="import_warning_select_csv_file">
         Se ha encontrado más de un archivo; por favor, seleccione el archivo que desea importar:
     </string>
-    <string name="X_error_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
     <string name="tip_booklist_style_menu">
         Esta opción le permite seleccionar el estilo de los listados.\n
         \nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando «Configurar» al final de la lista.
@@ -659,8 +648,6 @@
     <string name="error_google_play_missing">Google Play / Market no está instalado</string>
     <string name="lbl_styles">Estilos</string>
     <string name="lbl_style">Estilo</string>
-    <string name="searching_isfdb">Buscando en ISFDB</string>
-    <string name="searching_open_library">Buscando en OpenLibrary</string>
     <string name="book_format_hardcover">Rústica cosida</string>
     <string name="book_format_paperback">Rústica fresada</string>
     <string name="book_format_trade_paperback">Rústica PUR</string>
@@ -685,7 +672,7 @@
     <string name="menu_clear_search_filters">Borrar filtros</string>
     <string name="menu_author_details">Todas las obras de este autor.</string>
     <string name="progress_msg_please_wait">Por favor espera…</string>
-    <string name="warning_missing_title_author">Falta el título y / o el autor.</string>
+    <string name="X_warning_missing_title_author">Falta el título y / o el autor.</string>
     <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
     <string name="none">Ninguno</string>
     <string name="menu_hide_keyboard">Ocultar teclado</string>
@@ -700,14 +687,13 @@
     <string name="progress_msg_searching_site">Buscando en %1$s</string>
     <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
     <string name="lbl_creators">Originalmente por:</string>
-    <string name="unknown_uc">DESCONOCIDO</string>
     <string name="title_delete_toc_entry">Borrar el titulo</string>
     <string name="confirm_delete_toc_entry">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="pv_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
     <string name="menu_view_book_at_ellipsis">Ver en…</string>
     <string name="lbl_keywords">Palabras clave</string>
-    <string name="warning_missing_title">Falta el título.</string>
-    <string name="warning_missing_author">Falta el autor.</string>
+    <string name="X_warning_missing_title">Falta el título.</string>
+    <string name="X_warning_missing_author">Falta el autor.</string>
     <string name="warning_isfdb_only">(Solo soportado por el sitio web de la ISFDB.)</string>
     <string name="pt_search_uses_publisher">Búsqueda utiliza editor</string>
     <string name="error_failed_x">Falló: %1$d</string>

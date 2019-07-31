@@ -29,8 +29,8 @@ import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
@@ -39,7 +39,7 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
  * owned_books.create   —   Add to books owned.
  *
  * <a href="https://www.goodreads.com/api/index#owned_books.create">
- *     https://www.goodreads.com/api/index#owned_books.create</a>
+ * https://www.goodreads.com/api/index#owned_books.create</a>
  */
 @SuppressWarnings("unused")
 public class OwnedBookCreateApiHandler
@@ -71,15 +71,13 @@ public class OwnedBookCreateApiHandler
      *
      * @return the Goodreads book ID
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     public long create(@NonNull final String isbn,
                        @Nullable final String dateAcquired)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         if (ISBN.isValid(isbn)) {
             IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
@@ -109,15 +107,13 @@ public class OwnedBookCreateApiHandler
      * @param grBookId     Goodreads book id
      * @param dateAcquired (optional)
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));
@@ -125,7 +121,7 @@ public class OwnedBookCreateApiHandler
             parameters.put("owned_book[original_purchase_date]", dateAcquired);
         }
 
-        //XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        //DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(URL, parameters, true, null);
     }
 

@@ -26,14 +26,14 @@ import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 /**
  * book.isbn_to_id   —   Get Goodreads book IDs given ISBNs.
  *
  * <a href="https://www.goodreads.com/api/index#book.isbn_to_id">
- *     https://www.goodreads.com/api/index#book.isbn_to_id</a>
+ * https://www.goodreads.com/api/index#book.isbn_to_id</a>
  *
  * <b>Note:</b> THIS API DOES NOT RETURN XML. The text output is the ID.
  *
@@ -67,17 +67,15 @@ public class IsbnToIdApiHandler
      *
      * @return Goodreads book ID
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         String url = String.format(URL, isbn, mManager.getDevKey());
-        String id = executeRaw(url, true);
+        String id = executeRawGet(url, true);
         return Long.parseLong(id);
     }
 }

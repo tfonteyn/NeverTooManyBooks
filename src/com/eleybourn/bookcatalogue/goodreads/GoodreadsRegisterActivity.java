@@ -27,10 +27,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -46,16 +49,28 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class GoodreadsRegisterActivity
         extends BaseActivity {
 
+    private View mAuthButton;
+
     private final TaskListener<Object, Integer> mTaskListener =
             new TaskListener<Object, Integer>() {
+
                 @Override
                 public void onTaskFinished(final int taskId,
                                            final boolean success,
-                                           final Integer result,
+                                           @StringRes final Integer result,
                                            @Nullable final Exception e) {
-                    GoodreadsTasks.handleResult(taskId, success, result, e,
-                                                getWindow().getDecorView(),
-                                                mTaskListener);
+                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
+                    if (msg != null) {
+                        showUserMessage(msg);
+                    } else {
+                        needsGoodreads();
+                    }
+                }
+
+                @Override
+                public void onTaskProgress(final int taskId,
+                                           @NonNull final Object[] values) {
+                    showUserMessage(values[0]);
                 }
             };
 
@@ -78,9 +93,9 @@ public class GoodreadsRegisterActivity
                 new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE))));
 
         // Auth button
-        View authButton = findViewById(R.id.authorize);
-        authButton.setOnClickListener(v -> {
-            UserMessage.show(authButton, R.string.progress_msg_connecting);
+        mAuthButton = findViewById(R.id.authorize);
+        mAuthButton.setOnClickListener(v -> {
+            UserMessage.show(mAuthButton, R.string.progress_msg_connecting);
             new RequestAuthTask(mTaskListener).execute();
         });
 
@@ -94,6 +109,30 @@ public class GoodreadsRegisterActivity
         } else {
             blurb.setVisibility(View.GONE);
             blurbButton.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Called if an interaction with Goodreads failed due to authorization issues.
+     * Prompts the user to register.
+     */
+    private void needsGoodreads() {
+        StandardDialogs.registerAtGoodreads(this, mTaskListener);
+    }
+
+    /**
+     * Allows the ViewModel to send us a message to display to the user.
+     * <p>
+     * If the type is {@code Integer} we assume it's a {@code StringRes}
+     * else we do a toString() it.
+     *
+     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
+     */
+    private void showUserMessage(@Nullable final Object message) {
+        if (message instanceof Integer) {
+            UserMessage.show(mAuthButton, (int) message);
+        } else if (message != null) {
+            UserMessage.show(mAuthButton, message.toString());
         }
     }
 }

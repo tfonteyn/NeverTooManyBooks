@@ -29,12 +29,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
@@ -46,7 +48,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  * "reviews.list"   —   Get the books on a members shelf.
  *
  * <a href="https://www.goodreads.com/api/index#reviews.list">
- *     https://www.goodreads.com/api/index#reviews.list</a>
+ * https://www.goodreads.com/api/index#reviews.list</a>
  *
  * @author Philip Warner
  */
@@ -60,7 +62,7 @@ public class ListReviewsApiHandler
 
     /**
      * Parameters.
-     *
+     * <p>
      * 1: key
      * 2: page
      * 3: reviews per page
@@ -135,27 +137,25 @@ public class ListReviewsApiHandler
     }
 
     /**
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         final String url = String.format(URL, mManager.getDevKey(), page, perPage,
                                          mManager.getUserId());
-        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, true, handler);
+        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        executeGet(url, null,true, handler);
         return mFilters.getData();
     }
 
     /**
      * Setup filters to process the XML parts we care about.
-     *
+     * <p>
      * It queries based on the passed parameters and returns a single Bundle containing all results.
      * The Bundle itself will contain other bundles: typically an array of 'Review' bundles,
      * each of which will contains arrays of 'author' bundles.

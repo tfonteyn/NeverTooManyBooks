@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
@@ -40,6 +41,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.Csv;
 
@@ -61,6 +64,13 @@ public class BooksOnBookshelfModel
 
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
+
+    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
+    private TaskListener<Object, Integer> mOnGoodreadsTaskListener;
+
+    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
+
     /**
      * Holder for all search criteria.
      * See {@link SearchCriteria} for more info.
@@ -614,6 +624,47 @@ public class BooksOnBookshelfModel
             return true;
         }
         return false;
+    }
+
+    public MutableLiveData<Object> getUserMessage() {
+        return mUserMessage;
+    }
+
+    public MutableLiveData<Boolean> getNeedsGoodreads() {
+        return mNeedsGoodreads;
+    }
+
+    public TaskListener<Object, Integer> getGoodreadsTaskListener() {
+        if (mOnGoodreadsTaskListener == null) {
+            mOnGoodreadsTaskListener = new TaskListener<Object, Integer>() {
+
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           @StringRes final Integer result,
+                                           @Nullable final Exception e) {
+                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
+                    if (msg != null) {
+                        mUserMessage.setValue(msg);
+                    } else {
+                        // Need authorization
+                        mNeedsGoodreads.setValue(true);
+                    }
+                }
+
+                @Override
+                public void onTaskProgress(final int taskId,
+                                           @NonNull final Object[] values) {
+                    mUserMessage.setValue(values[0]);
+                }
+            };
+        }
+        return mOnGoodreadsTaskListener;
+    }
+
+    public void sendToGoodReads(final long id) {
+        new SendOneBookTask(id, getGoodreadsTaskListener())
+                .execute();
     }
 
     /**

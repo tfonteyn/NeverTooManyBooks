@@ -3604,7 +3604,8 @@ public class DAO
     @NonNull
     public BookCursor fetchBooksForExportToGoodreads(final long startId,
                                                      final boolean updatesOnly) {
-        String sql = SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + DOM_PK_ID + ">?";
+        String sql = SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND
+                + " WHERE " + DOM_PK_ID + ">?";
 
         if (updatesOnly) {
             sql += " AND " + DOM_DATE_LAST_UPDATED + '>' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -4387,6 +4388,7 @@ public class DAO
                         + ',' + DOM_BOOK_ISBN
                         + ',' + DOM_BOOK_GOODREADS_ID
                         + ',' + DOM_BOOK_READ
+                        + ',' + DOM_BOOK_READ_START
                         + ',' + DOM_BOOK_READ_END
                         + ',' + DOM_BOOK_RATING
                         //+ ',' + DOM_BOOK_NOTES
@@ -4957,36 +4959,38 @@ public class DAO
          * Update a single Book's Goodreads id. Do not update the last-update-date!
          */
         static final String GOODREADS_BOOK_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GOODREADS_ID + "=?"
+                "UPDATE " + TBL_BOOKS + " SET "
+                        + DOM_BOOK_GOODREADS_ID + "=?"
                         + " WHERE " + DOM_PK_ID + "=?";
 
         static final String AUTHOR_ON_TOC_ENTRIES =
-                "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_FK_AUTHOR + "=?"
+                "UPDATE " + TBL_TOC_ENTRIES + " SET "
+                        + DOM_FK_AUTHOR + "=?"
                         + " WHERE " + DOM_FK_AUTHOR + "=?";
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + DOM_BOOK_FORMAT + "=?,"
+                        + ',' + DOM_BOOK_FORMAT + "=?,"
                         + " WHERE " + DOM_BOOK_FORMAT + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + DOM_BOOK_GENRE + "=?,"
+                        + ',' + DOM_BOOK_GENRE + "=?,"
                         + " WHERE " + DOM_BOOK_GENRE + "=?";
 
         static final String LANGUAGE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + DOM_BOOK_LANGUAGE + "=?,"
+                        + ',' + DOM_BOOK_LANGUAGE + "=?,"
                         + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
 
         static final String LOCATION =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + DOM_BOOK_LOCATION + "=?,"
+                        + ',' + DOM_BOOK_LOCATION + "=?,"
                         + " WHERE " + DOM_BOOK_LOCATION + "=?";
 
         static final String PUBLISHER =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + DOM_BOOK_PUBLISHER + "=?,"
+                        + ',' + DOM_BOOK_PUBLISHER + "=?,"
                         + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
     }
 

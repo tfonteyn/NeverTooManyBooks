@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,8 +32,8 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -63,35 +62,6 @@ abstract class SendBooksLegacyTaskBase
      */
     SendBooksLegacyTaskBase(@NonNull final String description) {
         super(description);
-    }
-
-    /**
-     * Check that no other sync-related jobs are queued, and that Goodreads is
-     * authorized for this app.
-     * <p>
-     * This does network access and should not be called in the UI thread.
-     *
-     * @return StringRes id of message for user,
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
-     */
-    @WorkerThread
-    @StringRes
-    static int checkWeCanExport() {
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
-            return R.string.gr_tq_requested_task_is_already_queued;
-        }
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
-            return R.string.gr_tq_import_task_is_already_queued;
-        }
-
-        // Make sure GR is authorized for this app
-        GoodreadsManager grManager = new GoodreadsManager();
-        if (grManager.hasValidCredentials()) {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
-        } else {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
-        }
     }
 
     /**
@@ -147,7 +117,17 @@ abstract class SendBooksLegacyTaskBase
         Exception exportException = null;
         try {
             result = grManager.sendOneBook(db, bookCursorRow);
-        } catch (@NonNull final BookNotFoundException | CredentialsException | IOException e) {
+
+        } catch (@NonNull final CredentialsException e) {
+            result = GoodreadsManager.ExportResult.credentialsError;
+            exportException = e;
+        } catch (@NonNull final BookNotFoundException e) {
+            result = GoodreadsManager.ExportResult.notFound;
+            exportException = e;
+        } catch (@NonNull final IOException e) {
+            result = GoodreadsManager.ExportResult.ioError;
+            exportException = e;
+        } catch (@NonNull final RuntimeException e) {
             result = GoodreadsManager.ExportResult.error;
             exportException = e;
         }
@@ -171,16 +151,21 @@ abstract class SendBooksLegacyTaskBase
                 mNotFound++;
                 break;
 
-            case error:
-                setException(exportException);
-                queueManager.updateTask(this);
-                return false;
-
-            case networkError:
+            case ioError:
                 // Only wait 5 minutes on network errors.
                 if (getRetryDelay() > FIVE_MINUTES) {
                     setRetryDelay(FIVE_MINUTES);
                 }
+                queueManager.updateTask(this);
+                return false;
+
+            case credentialsError:
+                setException(exportException);
+                queueManager.updateTask(this);
+                return false;
+
+            case error:
+                setException(exportException);
                 queueManager.updateTask(this);
                 return false;
         }
@@ -351,7 +336,8 @@ abstract class SendBooksLegacyTaskBase
             // ENHANCE: Reinstate Goodreads search when Goodreads work.editions API is available
 //            // SEARCH GOODREADS
 //            items.add(new ContextDialogItem(
-//                    context.getString(R.string.searching_goodreads), () -> {
+//                    context.getString(R.string.progress_msg_searching_site,
+//                                      context.getString(R.string.goodreads)), () -> {
 //                BookEventHolder holder = (BookEventHolder)
 //                        view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
 //                Intent intent = new Intent(context, GoodreadsSearchActivity.class)

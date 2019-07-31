@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -30,6 +31,9 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
+import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 
 public final class StandardDialogs {
 
@@ -134,6 +138,23 @@ public final class StandardDialogs {
                     d.dismiss();
                     onDoDelete.run();
                 })
+                .create()
+                .show();
+    }
+
+    public static void registerAtGoodreads(@NonNull final Context context,
+                                           @NonNull final TaskListener<Object, Integer> listener) {
+        new AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_security)
+                .setTitle(R.string.gr_title_auth_access)
+                .setMessage(R.string.gr_action_cannot_be_completed)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
+                    Intent intent = new Intent(context, GoodreadsRegisterActivity.class);
+                    context.startActivity(intent);
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) ->
+                        new RequestAuthTask(listener).execute())
                 .create()
                 .show();
     }

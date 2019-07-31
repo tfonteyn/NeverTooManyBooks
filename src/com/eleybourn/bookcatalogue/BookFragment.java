@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.viewmodels.BookFragmentModel;
+import com.eleybourn.bookcatalogue.viewmodels.FlattenedBooklistModel;
 
 /**
  * Class for representing read-only book details.
@@ -64,7 +64,6 @@ public class BookFragment
     public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
 
     private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
-
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -76,7 +75,6 @@ public class BookFragment
             }
         }
     };
-
     private View mTocLabelView;
     private CompoundButton mTocButton;
     private LinearLayout mTocView;
@@ -93,7 +91,7 @@ public class BookFragment
     private GestureDetector mGestureDetector;
 
     /** Contains the flattened book list for next/previous paging. */
-    private BookFragmentModel mBookFragmentModel;
+    private FlattenedBooklistModel mFlattenedBooklistModel;
 
     private AppCompatActivity mActivity;
 
@@ -149,9 +147,9 @@ public class BookFragment
         // parent takes care of initialising the Fields.
         super.onActivityCreated(savedInstanceState);
 
-        mBookFragmentModel = ViewModelProviders.of(this).get(BookFragmentModel.class);
+        mFlattenedBooklistModel = ViewModelProviders.of(this).get(FlattenedBooklistModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mBookFragmentModel.init(args, mBookBaseFragmentModel.getBook().getId());
+        mFlattenedBooklistModel.init(args, mBookBaseFragmentModel.getBook().getId());
 
         // ENHANCE: could probably be replaced by a ViewPager
         // enable the listener for flings
@@ -481,6 +479,10 @@ public class BookFragment
         menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
+        menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
+                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
+            .setIcon(R.drawable.ic_goodreads2);
+
         MenuHandler.addViewBookSubMenu(menu);
         MenuHandler.addAmazonSearchSubMenu(menu);
 
@@ -568,6 +570,10 @@ public class BookFragment
                 startActivity(shareIntent);
                 return true;
 
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS:
+                mBookBaseFragmentModel.sendToGoodReads();
+                return true;
+
             default:
                 //noinspection ConstantConditions
                 if (MenuHandler.handleViewBookSubMenu(getContext(), item, book)) {
@@ -621,7 +627,7 @@ public class BookFragment
                                final float velocityX,
                                final float velocityY) {
 
-            FlattenedBooklist fbl = mBookFragmentModel.getFlattenedBooklist();
+            FlattenedBooklist fbl = mFlattenedBooklistModel.getFlattenedBooklist();
             if (fbl == null) {
                 return false;
             }

@@ -195,7 +195,7 @@ public class SearchTask
 
         } catch (@NonNull final CredentialsException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());
-            setFinalError(e);
+            setFinalError(R.string.error_authentication_failed);
 
         } catch (@NonNull final SocketTimeoutException e) {
             Logger.warn(this, "runTask", e.getLocalizedMessage());

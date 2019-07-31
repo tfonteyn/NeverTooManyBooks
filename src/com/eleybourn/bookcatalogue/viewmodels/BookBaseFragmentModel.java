@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
@@ -17,6 +19,9 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -35,7 +40,6 @@ public class BookBaseFragmentModel
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
     /** The Book this model represents. */
-
     private Book mBook;
 
     /**
@@ -56,6 +60,12 @@ public class BookBaseFragmentModel
     private List<String> mPublishers;
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
+
+    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
+    private TaskListener<Object, Integer> mOnGoodreadsTaskListener;
+
+    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
 
     @Override
     protected void onCleared() {
@@ -122,13 +132,13 @@ public class BookBaseFragmentModel
         return mBook;
     }
 
+    public void setBook(final long bookId) {
+        mBook = new Book(bookId, mDb);
+    }
+
     @NonNull
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList() {
         return mBook.getEditableBookshelvesList(mDb);
-    }
-
-    public void setBook(final long bookId) {
-        mBook = new Book(bookId, mDb);
     }
 
     public void reload() {
@@ -298,5 +308,46 @@ public class BookBaseFragmentModel
             mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
+    }
+
+    public MutableLiveData<Object> getUserMessage() {
+        return mUserMessage;
+    }
+
+    public MutableLiveData<Boolean> getNeedsGoodreads() {
+        return mNeedsGoodreads;
+    }
+
+    public TaskListener<Object, Integer> getGoodreadsTaskListener() {
+        if (mOnGoodreadsTaskListener == null) {
+            mOnGoodreadsTaskListener = new TaskListener<Object, Integer>() {
+
+                @Override
+                public void onTaskFinished(final int taskId,
+                                           final boolean success,
+                                           @StringRes final Integer result,
+                                           @Nullable final Exception e) {
+                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
+                    if (msg != null) {
+                        mUserMessage.setValue(msg);
+                    } else {
+                        // Need authorization
+                        mNeedsGoodreads.setValue(true);
+                    }
+                }
+
+                @Override
+                public void onTaskProgress(final int taskId,
+                                           @NonNull final Object[] values) {
+                    mUserMessage.setValue(values[0]);
+                }
+            };
+        }
+        return mOnGoodreadsTaskListener;
+    }
+
+    public void sendToGoodReads() {
+        new SendOneBookTask(mBook.getId(), getGoodreadsTaskListener())
+                .execute();
     }
 }

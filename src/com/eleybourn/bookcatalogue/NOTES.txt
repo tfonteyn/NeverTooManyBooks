@@ -76,6 +76,7 @@ FIXME: https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
 
 
 Implemented:
+https://github.com/eleybourn/Book-Catalogue/issues/820 - 820..833: all screen orientation change issues
 https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (language,publisher)
 https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
 https://github.com/eleybourn/Book-Catalogue/issues/770 - Set as read from long press

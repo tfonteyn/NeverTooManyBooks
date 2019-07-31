@@ -672,8 +672,8 @@ public final class ImageUtils {
                 }
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-                mException = e;
                 Logger.error(this, e);
+                mException = e;
             }
             return null;
         }

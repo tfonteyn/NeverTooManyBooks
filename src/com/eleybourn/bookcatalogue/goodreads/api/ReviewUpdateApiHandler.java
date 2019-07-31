@@ -31,21 +31,21 @@ import java.util.Map;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 /**
  * review.edit   —   Edit a review.
  *
  * <a href="https://www.goodreads.com/api/index#review.edit">
- *     https://www.goodreads.com/api/index#review.edit</a>
+ * https://www.goodreads.com/api/index#review.edit</a>
  */
 public class ReviewUpdateApiHandler
         extends ApiHandler {
 
     /**
      * Parameters.
-     *
+     * <p>
      * 1: review id
      */
     private static final String URL = GoodreadsManager.BASE_URL + "/review/%1$s.xml";
@@ -79,28 +79,27 @@ public class ReviewUpdateApiHandler
      * @param rating          Rating 0-5 with 0 == No rating
      * @param review          (optional) Text for the review
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     public void update(final long reviewId,
                        final boolean finishedReading,
                        @Nullable final String readStart,
                        @Nullable final String readEnd,
-                       @IntRange(from = 0, to = 5)
-                       final int rating,
+                       @IntRange(from = 0, to = 5) final int rating,
                        @Nullable final String review)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         String url = String.format(URL, reviewId);
         Map<String, String> parameters = new HashMap<>();
 
+        parameters.put("id", String.valueOf(reviewId));
+
         // hardcoded shelf names, see API docs in class header.
         if (finishedReading) {
-            parameters.put("shelf", GoodreadsShelf.VIRTUAL_READ);
             parameters.put("finished", "true");
+            parameters.put("shelf", GoodreadsShelf.VIRTUAL_READ);
             if (readEnd != null && !readEnd.isEmpty()) {
                 parameters.put("review[read_at]", readEnd);
             }
@@ -121,7 +120,7 @@ public class ReviewUpdateApiHandler
             parameters.put("review[review]", review);
         }
 
-        //XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+        //DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executePost(url, parameters, true, null);
     }
 
@@ -164,8 +163,5 @@ public class ReviewUpdateApiHandler
      * </pre>
      */
 //    private void buildFilters() {
-//        // We only care about book-id:
-//        XmlFilter.buildFilter(mRootFilter, XML_REVIEW, "book-id")
-//                 .setEndAction(mHandleBookId);
 //    }
 }

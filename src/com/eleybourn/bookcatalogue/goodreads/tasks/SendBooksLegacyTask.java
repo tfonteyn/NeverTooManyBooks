@@ -24,6 +24,8 @@ import android.content.Context;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
@@ -70,9 +72,40 @@ class SendBooksLegacyTask
     }
 
     /**
+     * Check that no other sync-related jobs are queued, and that Goodreads is
+     * authorized for this app.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @param grManager the Goodreads Manager
+     *
+     * @return StringRes id of message for user,
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
+     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
+     */
+    @WorkerThread
+    @StringRes
+    static int checkWeCanExport(@NonNull final GoodreadsManager grManager) {
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
+            return R.string.gr_tq_requested_task_is_already_queued;
+        }
+        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
+            return R.string.gr_tq_import_task_is_already_queued;
+        }
+
+        // Make sure GR is authorized for this app
+        if (grManager.hasValidCredentials()) {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
+        } else {
+            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
+        }
+    }
+
+    /**
      * Perform the main task. Called from within {@link #run}
      *
      * Deal with restarts by using mLastId as starting point.
+     * (Remember: the task gets serialized to the taskqueue database.)
      *
      * @param context   Current context
      * @param grManager the Goodreads Manager

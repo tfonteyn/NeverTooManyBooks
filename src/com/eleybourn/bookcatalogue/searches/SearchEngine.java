@@ -61,7 +61,7 @@ public interface SearchEngine {
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
             }
-        } catch (@NonNull final IOException | CredentialsException e) {
+        } catch (@NonNull final CredentialsException | IOException e) {
             Logger.error(SearchSites.class, e);
         }
 
@@ -92,7 +92,7 @@ public interface SearchEngine {
                   @Nullable String title,
                   final String publisher,
                   boolean fetchThumbnail)
-            throws IOException, CredentialsException;
+            throws CredentialsException, IOException;
 
     /**
      * Get a cover image.

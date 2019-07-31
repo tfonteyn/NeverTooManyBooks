@@ -114,18 +114,9 @@ public class LibraryThingManager
     private static final String BASE_URL_COVERS
             = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
-    /** to control access to sLastRequestTime, we synchronize on this final Object. */
-    @NonNull
-    private static final Object LAST_REQUEST_TIME_LOCK = new Object();
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
-    /**
-     * Stores the last time an API request was made to avoid breaking API rules.
-     * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK)
-     */
-    @NonNull
-    private static Long sLastRequestTime = 0L;
 
     /**
      * Constructor.
@@ -143,45 +134,6 @@ public class LibraryThingManager
         String url = getBaseURL() + "/work/" + bookId;
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
-
-    /**
-     * Use sLastRequestTime to determine how long until the next request is allowed;
-     * and update sLastRequestTime this needs to be synchronized across threads.
-     * <p>
-     * Note that as a result of this approach sLastRequestTime may in fact be
-     * in the future; callers to this routine effectively allocate time slots.
-     * <p>
-     * This method will sleep() until it can make a request; if 10 threads call this
-     * simultaneously, one will return immediately, one will return 1 second later,
-     * another two seconds etc.
-     */
-    private static void waitUntilRequestAllowed() {
-        //TEST: run more tests checking the logs. Must be certain this is ok.
-        THROTTLER.waitUntilRequestAllowed();
-
-//        long now = System.currentTimeMillis();
-//        long wait;
-//        synchronized (LAST_REQUEST_TIME_LOCK) {
-//            wait = 1_000 - (now - sLastRequestTime);
-//            //
-//            // sLastRequestTime must be updated while synchronized. As soon as this
-//            // block is left, another block may perform another update.
-//            //
-//            if (wait < 0) {
-//                wait = 0;
-//            }
-//            sLastRequestTime = now + wait;
-//        }
-//
-//        if (wait > 0) {
-//            try {
-//                Log.d("LT", "wait=" + wait);
-//                Thread.sleep(wait);
-//            } catch (@NonNull final InterruptedException ignored) {
-//            }
-//        }
-    }
-
 
     /**
      * Check if we have a key; if not alert the user.
@@ -288,7 +240,7 @@ public class LibraryThingManager
         SearchLibraryThingEditionHandler handler = new SearchLibraryThingEditionHandler(editions);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        waitUntilRequestAllowed();
+        THROTTLER.waitUntilRequestAllowed();
 
         // Get it
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {
@@ -377,7 +329,7 @@ public class LibraryThingManager
         }
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        waitUntilRequestAllowed();
+        THROTTLER.waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
         String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
@@ -424,7 +376,7 @@ public class LibraryThingManager
         SearchLibraryThingHandler handler = new SearchLibraryThingHandler(bookData);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
-        waitUntilRequestAllowed();
+        THROTTLER.waitUntilRequestAllowed();
 
         // Get it
         try (TerminatorConnection con = TerminatorConnection.openConnection(url)) {

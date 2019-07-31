@@ -115,7 +115,7 @@ public class GoodreadsSearchActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.searching_goodreads);
+        setTitle(getString(R.string.progress_msg_searching_site, getString(R.string.goodreads)));
 
         mModel = ViewModelProviders.of(this).get(GrSearchViewModel.class);
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();

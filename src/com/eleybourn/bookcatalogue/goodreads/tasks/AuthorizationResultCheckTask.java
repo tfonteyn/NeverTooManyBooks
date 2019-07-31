@@ -62,7 +62,7 @@ public class AuthorizationResultCheckTask
                         + context.getString(R.string.error_if_the_problem_persists);
 
             } else {
-                msg = context.getString(R.string.error_authorization_failed,
+                msg = context.getString(R.string.error_site_authentication_failed,
                                         context.getString(R.string.goodreads));
             }
             App.showNotification(context, R.string.info_not_authorized, msg);

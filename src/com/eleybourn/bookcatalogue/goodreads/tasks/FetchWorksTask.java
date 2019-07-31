@@ -45,11 +45,9 @@ public class FetchWorksTask
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(grManager);
             return searcher.search(mSearchText);
 
-        } catch (@NonNull final BookNotFoundException
-                | CredentialsException
-                | IOException
+        } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
                 | RuntimeException e) {
-            Logger.error(this, e, "Failed when searching Goodreads");
+            Logger.error(this, e);
             mException = e;
         }
 

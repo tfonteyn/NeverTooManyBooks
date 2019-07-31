@@ -27,6 +27,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -212,14 +213,34 @@ public class XmlImporter
         // we need an uber-root to hang our tree on.
         XmlFilter rootFilter = new XmlFilter("");
 
-        // used to read in Set data
-        final Set<String> currentStringSet = new HashSet<>();
-
         // Allow reading pre-v200 archive data.
-        createPreV200Filter(rootFilter, accessor);
+        buildLegacyFilters(rootFilter, accessor);
+        // Current version filters
+        buildFilters(rootFilter, accessor);
 
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        DefaultHandler handler = new XmlResponseParser(rootFilter);
+
+        try {
+            SAXParser parser = factory.newSAXParser();
+            InputSource is = new InputSource();
+            is.setCharacterStream(in);
+            parser.parse(is, handler);
+            // wrap parser exceptions in an IOException
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.debugWithStackTrace(this, e);
+            }
+            throw new IOException(e);
+        }
+    }
+
+    private void buildFilters(@NonNull final XmlFilter rootFilter,
+                              @NonNull final EntityReader<String> accessor) {
         String listRootElement = accessor.getListRoot();
         String rootElement = accessor.getElementRoot();
+        // used to read in Set data
+        final Set<String> currentStringSet = new HashSet<>();
 
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
@@ -428,24 +449,6 @@ public class XmlImporter
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
                               XmlTags.XML_LIST, XmlTags.XML_INT)
                  .setStartAction(startElementInCollection);
-
-
-        // Let the parsing quest begin.
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        XmlResponseParser handler = new XmlResponseParser(rootFilter);
-
-        try {
-            SAXParser parser = factory.newSAXParser();
-            InputSource is = new InputSource();
-            is.setCharacterStream(in);
-            parser.parse(is, handler);
-            // wrap parser exceptions in an IOException
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.debugWithStackTrace(this, e);
-            }
-            throw new IOException(e);
-        }
     }
 
     /**
@@ -454,8 +457,8 @@ public class XmlImporter
      * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
      * indicating int,string,...
      */
-    private void createPreV200Filter(@NonNull final XmlFilter rootFilter,
-                                     @NonNull final EntityReader<String> accessor) {
+    private void buildLegacyFilters(@NonNull final XmlFilter rootFilter,
+                                    @NonNull final EntityReader<String> accessor) {
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
                  .setStartAction(context -> {
@@ -463,14 +466,14 @@ public class XmlImporter
                      mTag = new TagInfo(context);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "createPreV200Filter",
+                         Logger.debug(this, "buildLegacyFilters",
                                       "StartAction",
                                       "localName=`" + context.getLocalName() + '`', mTag);
                      }
                  })
                  .setEndAction(context -> {
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "createPreV200Filter",
+                         Logger.debug(this, "buildLegacyFilters",
                                       "EndAction",
                                       "localName=`" + context.getLocalName() + '`', mTag);
                      }

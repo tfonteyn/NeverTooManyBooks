@@ -54,7 +54,6 @@
     <!-- ========== ValidatorException error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="vldt_unable_to_get_value_for_x">Unable to get value for “%1$s”</string>
     <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
     <string name="vldt_real_expected_for_x">Expected a real number for “%1$s”</string>
     <string name="vldt_date_expected_for_x">Expected a date for “%1$s”</string>
@@ -65,7 +64,6 @@
     <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
     <string name="vldt_failed_for_x">Validation failed for “%1$s”</string>
     <string name="vldt_failure">Validation failure</string>
-
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
 
     <!-- ####################################################################################### -->
@@ -110,10 +108,14 @@
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
     <string name="error_search_configuration">Configuration error. Please open the Settings page and check your Search Site preferences.</string>
-    <!-- 'Site' authorization failed -->
-    <string name="error_authorization_failed">%1$s authorization failed</string>
+
     <!-- Users of versions older than 5.2.2 need to upgrade to 5.2.2 first -->
     <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 5.2.2</string>
+
+    <!-- Generic authentication failed -->
+    <string name="error_authentication_failed">Authentication failed</string>
+    <!-- 'Site' authentication failed -->
+    <string name="error_site_authentication_failed">%1$s authentication failed</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -169,36 +171,23 @@
         NOTE: All saved changes apply instantly and globally.
     </string>
 
-    <string name="warning_select_min_1_field">Select at least one field to update</string>
-    <string name="warning_action_requires_isbn">This action requires a valid ISBN</string>
-
-    <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
-
-    <string name="warning_please_enter_search_criteria">Please enter search criteria</string>
-    <string name="warning_required_at_least_one">At least one field must not be blank</string>
-    <string name="warning_required_title">Title must be specified</string>
-    <string name="warning_required_author_long">At least one author must be specified</string>
-
-    <string name="warning_missing_title_author">The title and/or author is missing.</string>
-    <string name="warning_missing_title">The title is missing.</string>
-    <string name="warning_missing_author">The author is missing.</string>
-    <string name="warning_missing_name">Name can not be blank</string>
-
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s already exists</string>
 
+    <string name="warning_select_min_1_field">Select at least one field to update</string>
+    <string name="warning_action_requires_isbn">This action requires a valid ISBN</string>
+    <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
+    <string name="warning_required_at_least_one">At least one field must not be blank</string>
+    <string name="warning_missing_name">Name can not be blank</string>
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
-
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_isbn">“%1$s” is not a valid ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">“%1$s” is not a valid ISBN or ASIN</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
-
     <string name="warning_unable_to_find_book">Unable to find the specified book</string>
-
     <string name="warning_no_editions">No additional edition information available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         If day is specified, then both month and year must also be specified.
@@ -335,13 +324,6 @@
     <string name="progress_end_num_books_searched">%1$d Books Searched</string>
     <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
 
-    <string name="searching_amazon">Searching Amazon</string>
-    <string name="searching_google_books">Searching Google Books</string>
-    <string name="searching_library_thing">Searching LibraryThing</string>
-    <string name="searching_goodreads">Searching Goodreads</string>
-    <string name="searching_isfdb">Searching ISFDB</string>
-    <string name="searching_open_library">Searching OpenLibrary</string>
-
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
     <!-- ####################################################################################### -->
@@ -424,7 +406,6 @@
         web site. Once you have authorized this application, please retry.\n
         \nDo you want to authorize it now?
     </string>
-    <string name="gr_error_while_searching">Error while searching.</string>
     <string name="gr_sync_with_goodreads">Synchronize with Goodreads</string>
     <string name="gr_title_send_book">Send books to Goodreads</string>
     <string name="gr_btn_send_all">Send all</string>
@@ -589,7 +570,6 @@
     <string name="help">Help</string>
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
-    <string name="unknown_uc">UNKNOWN</string>
     <string name="done">Done</string>
     <string name="none">None</string>
     <string name="clear">Clear</string>
@@ -672,7 +652,7 @@
     <string name="menu_clear_search_filters">Clear Filters</string>
 
     <string name="menu_show_more_ellipsis">Show more…</string>
-    <string name="menu_show_fewer_ellipsis">Show fewer…</string>
+    <string name="menu_show_less_ellipsis">Show less…</string>
     <string name="menu_customize_ellipsis">Customize…</string>
 
     <string name="menu_view_book_at_ellipsis">View on…</string>
@@ -742,10 +722,6 @@
     <string name="btn_confirm_merge">Merge</string>
     <!-- 'use' the preferences/settings, but do not save them. -->
     <string name="btn_confirm_use">Use</string>
-
-    <!-- Big buttons on the Edit Book screen -->
-    <string name="btn_set_authors">Set Authors…</string>
-    <string name="btn_set_series">Set Series…</string>
     <!-- when warned you have unsaved edits -->
     <string name="btn_continue_editing">Continue Editing</string>
     <!-- exit the edit activity despite unsaved edits -->
@@ -1243,18 +1219,18 @@
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
-    <string name="X_error_starting_import_arg">There was a problem starting the import: %1$s</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
-    <string name="X_warning_cover_field_not_set">Cover is not set</string>
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
-    <string name="X_warning_required_series">Series field is blank</string>
     <string name="X_warning_required_author">Author field is blank</string>
     <!-- some field was blank while it should not be -->
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
-    <string name="X_warning_no_isbn_no_editions">
-        Can not get editions for a book without a valid ISBN
-    </string>
+    <string name="X_warning_required_title">Title must be specified</string>
+    <string name="X_warning_required_author_long">At least one author must be specified</string>
+
+    <string name="X_warning_missing_title_author">The title and/or author is missing.</string>
+    <string name="X_warning_missing_author">The author is missing.</string>
+    <string name="X_warning_missing_title">The title is missing.</string>
 
     <string name="X_info_no_bookshelves_yet">
         You have not created any bookshelves yet.
@@ -1286,6 +1262,8 @@
     <string name="X_title_cover_detail">Cover Detail</string>
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
+    <string name="X_btn_set_authors">Set Authors…</string>
+    <string name="X_btn_set_series">Set Series…</string>
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
     <string name="X_lbl_loan_book_available">Available</string>

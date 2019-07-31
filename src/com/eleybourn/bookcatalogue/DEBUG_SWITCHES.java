@@ -22,6 +22,11 @@ import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbBook;
  */
 public final class DEBUG_SWITCHES {
 
+    // special case, uncomment this to enable OAUTH debug messages
+//    static {
+//            System.setProperty("debug","true");
+//    }
+
     public static final boolean USER_MESSAGE_STACK_TRACE = false;
 
     /* ****************************************************************************************** */

@@ -114,7 +114,7 @@ public class StylePickerDialogFragment
 
     @StringRes
     private int posBtnTxtId() {
-        return mShowAllStyles ? R.string.menu_show_fewer_ellipsis
+        return mShowAllStyles ? R.string.menu_show_less_ellipsis
                               : R.string.menu_show_more_ellipsis;
     }
     /**

@@ -25,6 +25,8 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
@@ -70,13 +72,12 @@ public class AuthUserApiHandler
     public long getAuthUser() {
         mUserId = 0;
         try {
-            // Get a handler and run query.
-            XmlResponseParser handler = new XmlResponseParser(mRootFilter);
+            DefaultHandler handler = new XmlResponseParser(mRootFilter);
             executePost(URL, null, true, handler);
             // Return user found.
             return mUserId;
 
-        } catch (@NonNull final BookNotFoundException | CredentialsException | IOException
+        } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
                 | RuntimeException e) {
             return 0;
         }

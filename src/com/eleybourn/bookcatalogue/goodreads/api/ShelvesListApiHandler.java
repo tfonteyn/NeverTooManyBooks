@@ -29,11 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.CredentialsException;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
@@ -41,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  * shelves.list   —   Get a user's shelves.
  *
  * <a href="https://www.goodreads.com/api/index#shelves.list">
- *     https://www.goodreads.com/api/index#shelves.list</a>
+ * https://www.goodreads.com/api/index#shelves.list</a>
  *
  * @author Philip Warner
  */
@@ -71,9 +73,7 @@ public class ShelvesListApiHandler
     }
 
     public Map<String, GoodreadsShelf> getAll()
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -105,20 +105,18 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws BookNotFoundException  GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException            on other failures
+     * @throws CredentialsException  with GoodReads
+     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
+     * @throws IOException           on other failures
      */
     @NonNull
     public Bundle get(final int page)
-            throws CredentialsException,
-                   BookNotFoundException,
-                   IOException {
+            throws CredentialsException, BookNotFoundException, IOException {
 
         String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());
 
-        XmlResponseParser handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, true, handler);
+        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        executeGet(url, null,true, handler);
 
         return mFilters.getData();
     }

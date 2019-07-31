@@ -235,13 +235,8 @@ public class UpdateFieldsFromInternetTask
                 String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
                 String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
                 String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
-
-                // TEST: 2019-07-12: changed to 'given first' to make ISFDB author search work.
-//                String author = mOriginalBookData.getString(
-//                      DBDefinitions.KEY_AUTHOR_FORMATTED, "");
                 String author = mOriginalBookData.getString(
                         DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
-
 
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);

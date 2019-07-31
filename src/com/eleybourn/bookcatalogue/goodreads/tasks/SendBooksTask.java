@@ -16,6 +16,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
@@ -57,7 +58,8 @@ public class SendBooksTask
             if (!NetworkUtils.isNetworkAvailable()) {
                 return R.string.error_no_internet_connection;
             }
-            int msg = SendBooksLegacyTaskBase.checkWeCanExport();
+            GoodreadsManager grManager = new GoodreadsManager();
+            int msg = SendBooksLegacyTask.checkWeCanExport(grManager);
             if (msg == GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED) {
                 if (isCancelled()) {
                     return R.string.progress_end_cancelled;

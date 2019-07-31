@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.tasks;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -19,7 +20,6 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
  * Wrapping a HttpURLConnection and BufferedInputStream with timeout close() support.
- *
  * <p>
  * There is a problem with failed timeouts:
  * http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
@@ -28,6 +28,10 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <p>
  * This is the replacement for the old Terminator class. Uses a simple Thread/Runnable for closing
  * connections instead of the full-blown queue based system with 'SimpleTask'.
+ * <p>
+ * Note that the Goodreads API classes and image download used the Apache Commons Http classes
+ * instead. Apache is now removed, and they use the standard HttpURLConnection directly.
+ * TODO: either make all places use this class, or perhaps remove this class?
  */
 @WorkerThread
 public final class TerminatorConnection
@@ -44,7 +48,6 @@ public final class TerminatorConnection
     /** milliseconds to wait between retries. */
     private static final int RETRY_AFTER_MS = 500;
 
-
     @NonNull
     private final HttpURLConnection mCon;
     private final int mKillDelayInMillis;
@@ -53,6 +56,8 @@ public final class TerminatorConnection
     @Nullable
     private Thread closingThread;
     private boolean isOpen;
+    /** DEBUG: Indicates close() has been called. */
+    private boolean mCloseWasCalled;
 
     /**
      * Constructor.
@@ -163,6 +168,7 @@ public final class TerminatorConnection
      * Will send an interrupt to the 'terminator' thread.
      */
     public void close() {
+        mCloseWasCalled = true;
         if (inputStream != null) {
             try {
                 inputStream.close();
@@ -175,6 +181,17 @@ public final class TerminatorConnection
             // dismiss the unneeded closing thread.
             closingThread.interrupt();
         }
+    }
+
+    @Override
+    @CallSuper
+    protected void finalize()
+            throws Throwable {
+        if (!mCloseWasCalled) {
+            Logger.warn(this, "finalize", "mCloseWasCalled=false; calling close() now");
+            close();
+        }
+        super.finalize();
     }
 
     /**

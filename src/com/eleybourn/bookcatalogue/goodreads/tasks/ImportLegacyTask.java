@@ -222,9 +222,7 @@ class ImportLegacyTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (@NonNull final BookNotFoundException
-                    | CredentialsException
-                    | IOException e) {
+            } catch (@NonNull final CredentialsException | BookNotFoundException | IOException e) {
                 setException(e);
                 return false;
             }

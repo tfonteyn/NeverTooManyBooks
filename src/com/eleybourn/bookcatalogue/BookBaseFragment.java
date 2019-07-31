@@ -50,7 +50,9 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
 /**
@@ -124,9 +126,44 @@ public abstract class BookBaseFragment
                                                    .get(BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookBaseFragmentModel.init(args);
+        mBookBaseFragmentModel.getUserMessage().observe(this, this::showUserMessage);
+        mBookBaseFragmentModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
 
         mFields = new Fields(this);
         initFields();
+    }
+
+    /**
+     * Called if an interaction with Goodreads failed due to authorization issues.
+     * Prompts the user to register.
+     *
+     * @param needs {@code true} if registration is needed
+     */
+    private void needsGoodreads(@Nullable final Boolean needs) {
+        if (needs != null && needs) {
+            //noinspection ConstantConditions
+            StandardDialogs.registerAtGoodreads(getContext(),
+                                                mBookBaseFragmentModel.getGoodreadsTaskListener());
+        }
+    }
+
+    /**
+     * Allows the ViewModel to send us a message to display to the user.
+     * <p>
+     * If the type is {@code Integer} we assume it's a {@code StringRes}
+     * else we do a toString() it.
+     *
+     * @param message to display, either a {@code Integer (StringRes)} or a {@code String}
+     */
+    private void showUserMessage(@Nullable final Object message) {
+        View view = getView();
+        if (view != null) {
+            if (message instanceof Integer) {
+                UserMessage.show(view, (int) message);
+            } else if (message != null) {
+                UserMessage.show(view, message.toString());
+            }
+        }
     }
 
     /** Convenience method. */
