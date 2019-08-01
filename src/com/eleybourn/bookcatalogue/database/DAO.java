@@ -935,7 +935,7 @@ public class DAO
     }
 
     /**
-     * Get ALL Authors; mainly for the purpose of backups.
+     * Get all Authors; mainly for the purpose of backups.
      *
      * @return Cursor over all Authors
      */
@@ -2735,7 +2735,7 @@ public class DAO
      * A complete export of all tables (flattened) in the database.
      *
      * @param sinceDate to select all books added/modified since that date.
-     *                  Set to {@code null} for *ALL* books.
+     *                  Set to {@code null} for *all* books.
      *
      * @return BookCursor over all books, authors, etc
      */
@@ -3405,7 +3405,7 @@ public class DAO
     }
 
     /**
-     * Get ALL series; mainly for the purpose of backups.
+     * Get all series; mainly for the purpose of backups.
      *
      * @return Cursor over all series
      */
@@ -4959,38 +4959,36 @@ public class DAO
          * Update a single Book's Goodreads id. Do not update the last-update-date!
          */
         static final String GOODREADS_BOOK_ID =
-                "UPDATE " + TBL_BOOKS + " SET "
-                        + DOM_BOOK_GOODREADS_ID + "=?"
+                "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GOODREADS_ID + "=?"
                         + " WHERE " + DOM_PK_ID + "=?";
 
         static final String AUTHOR_ON_TOC_ENTRIES =
-                "UPDATE " + TBL_TOC_ENTRIES + " SET "
-                        + DOM_FK_AUTHOR + "=?"
+                "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_FK_AUTHOR + "=?"
                         + " WHERE " + DOM_FK_AUTHOR + "=?";
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_FORMAT + "=?,"
+                        + ',' + DOM_BOOK_FORMAT + "=?"
                         + " WHERE " + DOM_BOOK_FORMAT + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_GENRE + "=?,"
+                        + ',' + DOM_BOOK_GENRE + "=?"
                         + " WHERE " + DOM_BOOK_GENRE + "=?";
 
         static final String LANGUAGE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_LANGUAGE + "=?,"
+                        + ',' + DOM_BOOK_LANGUAGE + "=?"
                         + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
 
         static final String LOCATION =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_LOCATION + "=?,"
+                        + ',' + DOM_BOOK_LOCATION + "=?"
                         + " WHERE " + DOM_BOOK_LOCATION + "=?";
 
         static final String PUBLISHER =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_PUBLISHER + "=?,"
+                        + ',' + DOM_BOOK_PUBLISHER + "=?"
                         + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
     }
 
@@ -5142,14 +5140,14 @@ public class DAO
         // The parameter order MUST match the order expected in INSERT.
         static final String UPDATE =
                 "UPDATE " + TBL_BOOKS_FTS + " SET "
-                        + DOM_FTS_AUTHOR_NAME + "=?,"
-                        + DOM_TITLE + "=?,"
-                        + DOM_BOOK_DESCRIPTION + "=?,"
-                        + DOM_BOOK_NOTES + "=?,"
-                        + DOM_BOOK_PUBLISHER + "=?,"
-                        + DOM_BOOK_GENRE + "=?,"
-                        + DOM_BOOK_LOCATION + "=?,"
-                        + DOM_BOOK_ISBN + "=?"
+                        + DOM_FTS_AUTHOR_NAME + "=?"
+                        + ',' + DOM_TITLE + "=?"
+                        + ',' + DOM_BOOK_DESCRIPTION + "=?"
+                        + ',' + DOM_BOOK_NOTES + "=?"
+                        + ',' + DOM_BOOK_PUBLISHER + "=?"
+                        + ',' + DOM_BOOK_GENRE + "=?"
+                        + ',' + DOM_BOOK_LOCATION + "=?"
+                        + ',' + DOM_BOOK_ISBN + "=?"
                         + " WHERE " + DOM_PK_DOCID + "=?";
     }
 }
