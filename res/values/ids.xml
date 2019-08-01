@@ -38,7 +38,7 @@
     <!-- END predefined View tags -->
 
 
-    <!-- BEGIN predefined AsyncTask ids needed for TaskWithProgress child classes. -->
+    <!-- BEGIN predefined AsyncTask ids needed for TaskBase child classes. -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
     <item name="TASK_ID_FILE_LISTER" type="id" />

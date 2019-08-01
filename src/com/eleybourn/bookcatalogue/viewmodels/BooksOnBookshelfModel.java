@@ -2,14 +2,12 @@ package com.eleybourn.bookcatalogue.viewmodels;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
@@ -17,7 +15,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +39,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
-import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.Csv;
 
@@ -58,19 +55,10 @@ public class BooksOnBookshelfModel
     public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
     /** URGENT: experimental... {@link #initBookList}. */
     public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
-
-    /** Database access. */
-    private DAO mDb;
-
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
-
-    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Object, Integer> mOnGoodreadsTaskListener;
-
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
-
     /**
      * Holder for all search criteria.
      * See {@link SearchCriteria} for more info.
@@ -78,7 +66,10 @@ public class BooksOnBookshelfModel
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelf names / spinner list. */
     private final List<String> mBookshelfNameList = new ArrayList<>();
-
+    /** Database access. */
+    private DAO mDb;
+    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
+    private TaskListener<Integer> mOnGoodreadsTaskListener;
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf#onActivityResult}.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf#onResume}.
@@ -101,51 +92,49 @@ public class BooksOnBookshelfModel
     private int mTotalBooks;
     /** Total number of unique books in current list. */
     private int mUniqueBooks;
+
     /**
      * Listener for {@link GetBookListTask} results.
      */
-    private final TaskListener<Object, BuilderHolder> mOnGetBookListTaskListener =
-            new TaskListener<Object, BuilderHolder>() {
-
+    private final TaskListener<BuilderHolder> mOnGetBookListTaskListener =
+            new TaskListener<BuilderHolder>() {
                 @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @NonNull final BuilderHolder result,
-                                           @Nullable final Exception e) {
+                public void onTaskFinished(@NonNull final TaskFinishedMessage<BuilderHolder> message) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                        Logger.debugEnter(this, "onGetBookListTaskFinished",
-                                          "success=" + success,
-                                          "result=" + result,
-                                          "exception=" + e);
+                        Logger.debugEnter(this, "onTaskFinished", message);
                     }
+
                     // Save a flag to say list was loaded at least once successfully (or not)
-                    mListHasBeenLoaded = success;
+                    mListHasBeenLoaded = message.success;
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
-                        mCurrentPositionedBookId = result.currentPositionedBookId;
-                        mRebuildState = result.rebuildState;
+                        mCurrentPositionedBookId = message.result.currentPositionedBookId;
+                        mRebuildState = message.result.rebuildState;
 
                         // always copy these results
-                        mTotalBooks = result.resultTotalBooks;
-                        mUniqueBooks = result.resultUniqueBooks;
+                        mTotalBooks = message.result.resultTotalBooks;
+                        mUniqueBooks = message.result.resultUniqueBooks;
 
                         // do not copy the result.resultListCursor, as it might be null
                         // in which case we will use the old value in mListCursor
                     }
 
                     // always call back, even if there is no new list.
-                    mBuilderResult.setValue(result);
+                    mBuilderResult.setValue(message.result);
                 }
             };
+
     /** Saved position of top row. */
     private int mTopRow;
+
     /**
      * Saved position of last top row offset from view top.
      * <p>
      * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
     private int mTopRowOffset;
+
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mCurrentBookshelf;
@@ -634,16 +623,26 @@ public class BooksOnBookshelfModel
         return mNeedsGoodreads;
     }
 
-    public TaskListener<Object, Integer> getGoodreadsTaskListener() {
+    public TaskListener<Integer> getGoodreadsTaskListener() {
         if (mOnGoodreadsTaskListener == null) {
-            mOnGoodreadsTaskListener = new TaskListener<Object, Integer>() {
+            mOnGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @StringRes final Integer result,
-                                           @Nullable final Exception e) {
-                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
+                public void onTaskCancelled(@Nullable final Integer taskId,
+                                            @Nullable final Integer result) {
+                    mUserMessage.setValue(R.string.progress_end_cancelled);
+                }
+
+                @Override
+                public void onTaskProgress(@NonNull final TaskProgressMessage message) {
+                    if (message.values != null && message.values.length > 0) {
+                        mUserMessage.setValue(message.values[0]);
+                    }
+                }
+
+                @Override
+                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+                    String msg = GoodreadsTasks.handleResult(message);
                     if (msg != null) {
                         mUserMessage.setValue(msg);
                     } else {
@@ -651,20 +650,9 @@ public class BooksOnBookshelfModel
                         mNeedsGoodreads.setValue(true);
                     }
                 }
-
-                @Override
-                public void onTaskProgress(final int taskId,
-                                           @NonNull final Object[] values) {
-                    mUserMessage.setValue(values[0]);
-                }
             };
         }
         return mOnGoodreadsTaskListener;
-    }
-
-    public void sendToGoodReads(final long id) {
-        new SendOneBookTask(id, getGoodreadsTaskListener())
-                .execute();
     }
 
     /**
@@ -825,7 +813,7 @@ public class BooksOnBookshelfModel
      * @author Philip Warner
      */
     private static class GetBookListTask
-            extends AsyncTask<Void, Void, BuilderHolder> {
+            extends TaskBase<BuilderHolder> {
 
         /**
          * Indicates whole table structure needs rebuild,
@@ -838,16 +826,8 @@ public class BooksOnBookshelfModel
         /** Holds the input/output and output-only fields to be returned to the activity. */
         @NonNull
         private final BuilderHolder mHolder;
-        private final int mTaskId = R.id.TASK_ID_GET_BOOKLIST;
         @Nullable
         private final BooklistPseudoCursor mCurrentListCursor;
-        private final WeakReference<TaskListener<Object, BuilderHolder>> mTaskListener;
-        /**
-         * {@link #doInBackground} should catch exceptions, and set this field.
-         * {@link #onPostExecute} can then check it.
-         */
-        @Nullable
-        private Exception mException;
         /** Resulting Cursor. */
         private BooklistPseudoCursor tempListCursor;
 
@@ -866,12 +846,10 @@ public class BooksOnBookshelfModel
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
                         final boolean isFullRebuild,
                         @Nullable final BooklistPseudoCursor currentListCursor,
-
                         final long currentPositionedBookId,
                         final int rebuildState,
-                        final TaskListener<Object, BuilderHolder> taskListener) {
-
-            mTaskListener = new WeakReference<>(taskListener);
+                        final TaskListener<BuilderHolder> taskListener) {
+            super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
 
             mBooklistBuilder = bookListBuilder;
             mIsFullRebuild = isFullRebuild;
@@ -909,7 +887,7 @@ public class BooksOnBookshelfModel
                 if (!visibleRows.isEmpty()) {
                     rows = visibleRows;
                 } else {
-                    // Make them ALL visible
+                    // Make them all visible
                     for (BooklistBuilder.BookRowInfo rowInfo : rows) {
                         if (!rowInfo.visible) {
                             mBooklistBuilder.ensureAbsolutePositionVisible(
@@ -1046,22 +1024,8 @@ public class BooksOnBookshelfModel
 
         @Override
         protected void onCancelled(@Nullable final BuilderHolder result) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onCancelled",
-                             "result=" + result,
-                             "mTaskListener.get()=" + mTaskListener.get());
-            }
-
             cleanup();
-
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onTaskCancelled(mTaskId);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onCancelled",
-                                 "WeakReference to listener was dead");
-                }
-            }
+            super.onCancelled(result);
         }
 
         @AnyThread
@@ -1078,31 +1042,6 @@ public class BooksOnBookshelfModel
                 tempListCursor.close();
             }
             tempListCursor = null;
-        }
-
-        /**
-         * If the task was cancelled (by the user cancelling the progress dialog) then
-         * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-         *
-         * @param result of the task
-         */
-        @Override
-        @UiThread
-        protected void onPostExecute(@NonNull final BuilderHolder result) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Logger.debug(this, "onPostExecute",
-                             "result=" + result);
-            }
-
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
-
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 "WeakReference to listener was dead");
-                }
-            }
         }
     }
 

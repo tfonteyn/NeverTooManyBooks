@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -16,13 +15,14 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener.TaskProgressMessage;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class BackupTask
-        extends TaskWithProgress<Object, ExportOptions> {
+        extends TaskBase<ExportOptions> {
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
@@ -34,14 +34,13 @@ public class BackupTask
     /**
      * Constructor.
      *
-     * @param progressDialog ProgressDialogFragment
-     * @param settings       the export settings
+     * @param settings     the export settings
+     * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public BackupTask(@NonNull final ProgressDialogFragment<Object, ExportOptions> progressDialog,
-                      @NonNull final ExportOptions /* in/out */ settings) {
-        super(R.id.TASK_ID_WRITE_TO_ARCHIVE, progressDialog);
-
+    public BackupTask(@NonNull final ExportOptions /* in/out */ settings,
+                      @NonNull final TaskListener<ExportOptions> taskListener) {
+        super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
         mSettings = settings;
         // sanity checks
         if ((mSettings.file == null) || ((mSettings.what & ExportOptions.MASK) == 0)) {
@@ -60,8 +59,9 @@ public class BackupTask
 
     @UiThread
     @Override
-    protected void onCancelled(final ExportOptions result) {
+    protected void onCancelled(@Nullable final ExportOptions result) {
         cleanup();
+        super.onCancelled(result);
     }
 
     @AnyThread
@@ -80,31 +80,34 @@ public class BackupTask
             writer.backup(mSettings, new ProgressListener() {
 
                 private int mAbsPosition;
+                private int mMaxPosition;
 
                 @Override
-                public void setMax(final int max) {
-                    mProgressDialog.setMax(max);
+                public void setMax(final int maxPosition) {
+                    mMaxPosition = maxPosition;
+                }
+
+                @Override
+                public void incMax(final int delta) {
+                    mMaxPosition += delta;
                 }
 
                 @Override
                 public void onProgressStep(final int delta,
-                                           @Nullable final String message) {
+                                           @Nullable final Object message) {
                     mAbsPosition += delta;
-                    publishProgress(mAbsPosition, message);
+                    Object[] values = {message};
+                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                                            mAbsPosition, values));
                 }
 
                 @Override
                 public void onProgress(final int absPosition,
-                                       @Nullable final String message) {
+                                       @Nullable final Object message) {
                     mAbsPosition = absPosition;
-                    publishProgress(mAbsPosition, message);
-                }
-
-                @Override
-                public void onProgress(final int absPosition,
-                                       @StringRes final int messageId) {
-                    mAbsPosition = absPosition;
-                    publishProgress(mAbsPosition, messageId);
+                    Object[] values = {message};
+                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                                            mAbsPosition, values));
                 }
 
                 @Override
@@ -124,7 +127,7 @@ public class BackupTask
 
             SharedPreferences.Editor ed = App.getPrefs().edit();
             // if the backup was a full one (not a 'since') remember that.
-            if ((mSettings.what & ExportOptions.ALL) != 0) {
+            if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
             }
             ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());

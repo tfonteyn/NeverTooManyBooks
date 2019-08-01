@@ -54,7 +54,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <li>response format: jscmd=detail:<br>
  * The docs state: "It is advised to use jscmd=data instead of this as that is more stable format."
  * The response seems to (mostly?) contain the same info as from 'data' but with additional fields.
- * Some fields have a different schema: "identifiers" with "data" has sub object with ALL
+ * Some fields have a different schema: "identifiers" with "data" has sub object with all
  * identifiers (including isbn). But "identifiers" with "detail" has no isbn's.
  * Instead isbn's are on the same level as "identifiers" itself.</li>
  * </ul>

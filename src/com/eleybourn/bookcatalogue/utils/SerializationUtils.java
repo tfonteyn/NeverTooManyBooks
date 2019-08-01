@@ -65,13 +65,17 @@ public final class SerializationUtils {
     /**
      * Deserialize the passed byte array.
      *
+     * @param obj object to deserialize
+     *
+     * @return object
+     *
      * @throws DeserializationException on failure
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(@NonNull final byte[] o)
+    public static <T> T deserializeObject(@NonNull final byte[] obj)
             throws DeserializationException {
-        try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(o))) {
+        try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(obj))) {
             return (T) is.readObject();
         } catch (@NonNull final ClassCastException | ClassNotFoundException | IOException e) {
             throw new DeserializationException(e);
@@ -80,12 +84,16 @@ public final class SerializationUtils {
 
     /**
      * Serialize then de-serialize to create a deep clone.
+     *
+     * @param obj to clone
+     *
+     * @return the clone
      */
     @SuppressWarnings("unused")
     @NonNull
-    public static <T extends Serializable> T cloneObject(@NonNull final T o)
+    public static <T extends Serializable> T cloneObject(@NonNull final T obj)
             throws DeserializationException {
-        return deserializeObject(serializeObject(o));
+        return deserializeObject(serializeObject(obj));
     }
 
     /**

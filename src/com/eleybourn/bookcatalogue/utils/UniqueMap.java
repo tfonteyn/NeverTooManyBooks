@@ -21,8 +21,6 @@ public class UniqueMap<K, V>
     /**
      * @param key   Key for new value
      * @param value Data for new value
-     *
-     * @throws IllegalArgumentException when an insert is attempted for a duplicate value.
      */
     @Override
     @NonNull

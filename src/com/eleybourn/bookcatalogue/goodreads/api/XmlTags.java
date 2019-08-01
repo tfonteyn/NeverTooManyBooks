@@ -87,6 +87,6 @@ public final class XmlTags {
      * <format><![CDATA[ Audio CD ]]></format>
      */
     static final String XML_FORMAT = "format";
-    /** <is_ebook>false</is_ebook> */
+    /** <is_ebook>false</is_ebook>. */
     static final String XML_IS_EBOOK = "is_ebook";
 }

@@ -24,8 +24,8 @@ import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.CheckListDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.picker.FieldPicker;
 import com.eleybourn.bookcatalogue.dialogs.PartialDatePickerDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.picker.FieldPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -58,7 +58,8 @@ public abstract class EditBookBaseFragment<T>
 
         } else if (fieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getField(fieldId).setValue(String.valueOf(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+            getField(fieldId)
+                    .setValue(String.valueOf(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
         }
     };
 

@@ -412,12 +412,13 @@ public class IsfdbBook
                     }
 
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
-                    // always use the first one, as that will be the one used at publication
+                    // we use them in the order found here.
+                    //   <li><b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
                     tmpString = li.childNode(1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_ISBN, digits(tmpString));
+                    bookData.putString(DBDefinitions.KEY_ISBN, digits(tmpString, true));
 
                     tmpString = li.childNode(2).childNode(0).toString().trim();
-                    bookData.putString(BookField.ISBN_2, digits(tmpString));
+                    bookData.putString(BookField.ISBN_2, digits(tmpString, true));
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     //tmp = li.childNode(3).attr("href");
@@ -547,7 +548,7 @@ public class IsfdbBook
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            String d = digits(toc.get(0).getFirstPublication());
+            String d = digits(toc.get(0).getFirstPublication(), false);
             if (d != null && !d.isEmpty()) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
             }
@@ -555,7 +556,7 @@ public class IsfdbBook
             // we gamble and take what we found in the TOC
             if (mFirstPublication != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                   digits(mFirstPublication));
+                                   digits(mFirstPublication, false));
             } // else take the book pub date ... but that might be wrong....
         }
 
@@ -649,17 +650,23 @@ public class IsfdbBook
     }
 
     /**
-     * Filter a string of all non-digits. Used to clean isbn strings.
+     * Filter a string of all non-digits. Used to clean isbn strings, years... etc.
+     *
+     * @param s      string to parse
+     * @param isIsbn When set will also allow 'X' and 'x'
+     *
+     * @return stripped string
      */
     @Nullable
-    private String digits(@Nullable final String s) {
+    private String digits(@Nullable final String s,
+                          final boolean isIsbn) {
         if (s == null) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (Character.isDigit(c)) {
+            if (Character.isDigit(c) || (isIsbn && (c == 'X') || (c == 'x'))) {
                 sb.append(c);
             }
         }

@@ -29,11 +29,9 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
 import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -51,28 +49,25 @@ public class GoodreadsRegisterActivity
 
     private View mAuthButton;
 
-    private final TaskListener<Object, Integer> mTaskListener =
-            new TaskListener<Object, Integer>() {
+    private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
+        @Override
+        public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+            String msg = GoodreadsTasks.handleResult(message);
+            if (msg != null) {
+                showUserMessage(msg);
+            } else {
+                RequestAuthTask.needsRegistration(GoodreadsRegisterActivity.this,
+                                                  mTaskListener);
+            }
+        }
 
-                @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @StringRes final Integer result,
-                                           @Nullable final Exception e) {
-                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
-                    if (msg != null) {
-                        showUserMessage(msg);
-                    } else {
-                        needsGoodreads();
-                    }
-                }
-
-                @Override
-                public void onTaskProgress(final int taskId,
-                                           @NonNull final Object[] values) {
-                    showUserMessage(values[0]);
-                }
-            };
+        @Override
+        public void onTaskProgress(@NonNull final TaskProgressMessage message) {
+            if (message.values != null && message.values.length > 0) {
+                showUserMessage(message.values[0]);
+            }
+        }
+    };
 
     @Override
     protected int getLayoutId() {
@@ -110,14 +105,6 @@ public class GoodreadsRegisterActivity
             blurb.setVisibility(View.GONE);
             blurbButton.setVisibility(View.GONE);
         }
-    }
-
-    /**
-     * Called if an interaction with Goodreads failed due to authorization issues.
-     * Prompts the user to register.
-     */
-    private void needsGoodreads() {
-        StandardDialogs.registerAtGoodreads(this, mTaskListener);
     }
 
     /**

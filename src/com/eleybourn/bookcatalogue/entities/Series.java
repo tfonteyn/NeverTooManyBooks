@@ -257,7 +257,7 @@ public class Series
      *
      * @param list to check
      */
-    public static void pruneSeriesList(List<Series> list) {
+    public static void pruneSeriesList(@NonNull final List<Series> list) {
         List<Series> toDelete = new ArrayList<>();
         Map<String, Series> index = new HashMap<>();
 
@@ -274,7 +274,8 @@ public class Series
             } else {
                 // See if we can purge either one.
                 if (emptyNum) {
-                    // Always delete Series with empty numbers if an equally or more specific one exists
+                    // Always delete Series with empty numbers if an equally
+                    // or more specific one exists
                     toDelete.add(series);
                 } else {
                     // See if the previous one also has a number

@@ -84,7 +84,8 @@ public abstract class BackupWriterAbstract
 
         Resources resources = LocaleUtils.getLocalizedResources();
         mProgress_msg_covers = resources.getString(R.string.progress_msg_covers_handled_missing);
-        mProgress_msg_covers_skip = resources.getString(R.string.progress_msg_covers_handled_missing_skipped);
+        mProgress_msg_covers_skip = resources.getString(
+                R.string.progress_msg_covers_handled_missing_skipped);
     }
 
     /**
@@ -113,7 +114,17 @@ public abstract class BackupWriterAbstract
         infoValues.hasStyles = (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0;
         infoValues.hasPrefs = (mSettings.what & ExportOptions.PREFERENCES) != 0;
 
+        boolean includeCovers = (mSettings.what & ExportOptions.COVERS) != 0;
         try {
+            // If we are doing covers, get the exact number by counting them
+            if (!mProgressListener.isCancelled() && includeCovers) {
+                // just count the covers, no exporting as yet
+                if ((mSettings.what & ExportOptions.COVERS) != 0) {
+                    // we don't write here, only pretend, so we can count the covers.
+                    infoValues.coverCount = doCovers(true);
+                }
+            }
+
             // If we are doing books, generate the CSV file, and set the number
             if ((mSettings.what & ExportOptions.BOOK_CSV) != 0) {
                 // Get a temp file and set for delete
@@ -122,16 +133,8 @@ public abstract class BackupWriterAbstract
 
                 Exporter mExporter = new CsvExporter(App.getAppContext(), mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
-                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener);
-                }
-            }
-
-            // If we are doing covers, get the exact number by counting them
-            if (!mProgressListener.isCancelled() && (mSettings.what & ExportOptions.COVERS) != 0) {
-                // just count the covers, no exporting as yet
-                if ((mSettings.what & ExportOptions.COVERS) != 0) {
-                    // we don't write here, only pretend, so we can count the covers.
-                    infoValues.coverCount = doCovers(true);
+                    //FIXME: we know the # of covers... should pass it.
+                    infoValues.bookCount = mExporter.doBooks(output, mProgressListener, includeCovers);
                 }
             }
 
@@ -199,6 +202,10 @@ public abstract class BackupWriterAbstract
         putInfo(data.toByteArray());
     }
 
+    /**
+     *
+     * @throws IOException on failure
+     */
     private void doXmlTables()
             throws IOException {
         // Get a temp file and set for delete
@@ -209,6 +216,7 @@ public abstract class BackupWriterAbstract
             XmlExporter exporter = new XmlExporter(mSettings);
             exporter.doAll(output, mProgressListener);
             putXmlData(tempXmlBackupFile);
+
         } finally {
             StorageUtils.deleteFile(tempXmlBackupFile);
         }

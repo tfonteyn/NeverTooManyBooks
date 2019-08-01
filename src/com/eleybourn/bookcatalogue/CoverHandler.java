@@ -37,9 +37,9 @@ import com.eleybourn.bookcatalogue.database.CoversDAO;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.TipManager;
+import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
-import com.eleybourn.bookcatalogue.dialogs.ZoomedImageDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
@@ -424,7 +424,7 @@ public class CoverHandler {
                                           .openInputStream(selectedImageUri)) {
                 imageOk = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(this, e, "Unable to copy content to file");
             }
 
@@ -486,7 +486,7 @@ public class CoverHandler {
                 try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
                     rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock")  @NonNull final IOException e) {
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                     Logger.error(this, e);
                     return;
                 }

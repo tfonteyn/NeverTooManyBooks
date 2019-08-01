@@ -61,6 +61,7 @@ public class CredentialsException
     @NonNull
     @Override
     public String getFormattedMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_site_authentication_failed, context.getString(mSite));
+        return context.getString(R.string.error_site_authentication_failed,
+                                 context.getString(mSite));
     }
 }

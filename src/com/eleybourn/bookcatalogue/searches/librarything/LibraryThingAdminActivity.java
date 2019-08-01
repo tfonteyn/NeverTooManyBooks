@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.EditText;
 
@@ -34,15 +33,13 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchEngine;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -59,14 +56,10 @@ public class LibraryThingAdminActivity
 
     private EditText mDevKeyView;
 
-    private final TaskListener<Object, Integer> mListener = new TaskListener<Object, Integer>() {
+    private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
-        public void onTaskFinished(final int taskId,
-                                   final boolean success,
-                                   final Integer result,
-                                   @Nullable final Exception e) {
-
-            UserMessage.show(mDevKeyView, result);
+        public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+            UserMessage.show(mDevKeyView, message.result);
         }
     };
 
@@ -129,25 +122,16 @@ public class LibraryThingAdminActivity
      * Request a known valid ISBN from LT to see if the user key is valid.
      */
     private static class ValidateKey
-            extends AsyncTask<Void, Object, Integer> {
-
-        private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
-
-        private final int mTaskId;
-        /**
-         * {@link #doInBackground} should catch exceptions, and set this field.
-         * {@link #onPostExecute} can then check it.
-         */
-        @Nullable
-        private Exception mException;
+            extends TaskBase<Integer> {
 
         /**
          * Constructor.
+         *
+         * @param taskListener for sending progress and finish messages to.
          */
         @UiThread
-        private ValidateKey(@NonNull final TaskListener<Object, Integer> taskListener) {
-            mTaskId = R.id.TASK_ID_LT_VALIDATE_KEY;
-            mTaskListener = new WeakReference<>(taskListener);
+        private ValidateKey(@NonNull final TaskListener<Integer> taskListener) {
+            super(R.id.TASK_ID_LT_VALIDATE_KEY,taskListener);
         }
 
         @Override
@@ -176,23 +160,11 @@ public class LibraryThingAdminActivity
                     return R.string.progress_end_cancelled;
                 }
                 return R.string.warning_cover_not_found;
+
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
                 return R.string.error_unexpected_error;
-            }
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@NonNull final Integer result) {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onTaskFinished(mTaskId, mException == null, result, mException);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Logger.debug(this, "onPostExecute",
-                                 "WeakReference to listener was dead");
-                }
             }
         }
     }

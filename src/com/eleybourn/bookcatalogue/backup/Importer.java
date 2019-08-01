@@ -47,8 +47,8 @@ public interface Importer
      */
     @NonNull
     Results doBooks(@NonNull InputStream importStream,
-                @Nullable CoverFinder coverFinder,
-                @NonNull ProgressListener listener)
+                    @Nullable CoverFinder coverFinder,
+                    @NonNull ProgressListener listener)
             throws IOException, ImportException;
 
     /**
@@ -68,6 +68,7 @@ public interface Importer
     }
 
     class Results {
+
         public int booksProcessed;
         public int booksCreated;
         public int booksUpdated;

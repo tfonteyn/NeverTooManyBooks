@@ -163,8 +163,9 @@ public final class SearchSites {
      * <p>
      * As it's used as a prefs key, it should never be changed.
      * <p>
-     * <b>Note:</b> the name is also required in the actual {@link SearchEngine} as a {@code StringRes}
-     * but the method here can not use that one without instantiating which we don't want here.
+     * <b>Note:</b> the name is also required in the actual {@link SearchEngine}
+     * as a {@code StringRes} but the method here can not use that one without
+     * instantiating which we don't want here.
      *
      * @param id for the site
      *
@@ -191,7 +192,9 @@ public final class SearchSites {
     }
 
     /**
-     * @return a new SearchEngine class instance for the given id.
+     * Get a new SearchEngine class instance for the given id.
+     *
+     * @return instance
      */
     static SearchEngine getSearchEngine(final int id) {
 

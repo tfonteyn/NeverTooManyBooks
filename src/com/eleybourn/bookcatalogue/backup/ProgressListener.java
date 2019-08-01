@@ -1,25 +1,37 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 /**
- * Listener interface to get progress messages. Replaces all (5!) old backup related listeners.
+ * Listener interface to get progress messages from the backup routines back to the caller.
+ * Replaces all (5!) old backup related listeners.
  */
 public interface ProgressListener {
 
     /**
-     * @param max value (can be estimated) for the progress counter
+     * Set the max value (can be estimated) for the progress counter.
+     *
+     * @param maxPosition value
      */
-    void setMax(int max);
+    void setMax(int maxPosition);
+
+    /**
+     * Increment the max value by 'delta'.
+     *
+     * @param delta value
+     */
+    void incMax(int delta);
 
     /**
      * Advance progress by 'delta'.
-     *
+     * <p>
      * Optional to implement.
+     *
+     * @param delta   increment/decrement value for the progress counter
+     * @param message to display, either a String or a StringRes
      */
     default void onProgressStep(int delta,
-                        @Nullable String message) {
+                                @Nullable Object message) {
         throw new UnsupportedOperationException();
     }
 
@@ -27,19 +39,10 @@ public interface ProgressListener {
      * Report progress in absolute position.
      *
      * @param absPosition absolute position for the progress counter
-     * @param messageId   to display
+     * @param message     to display, either a String or a StringRes
      */
     void onProgress(int absPosition,
-                    @StringRes int messageId);
-
-    /**
-     * Report progress in absolute position.
-     *
-     * @param absPosition absolute position for the progress counter
-     * @param message     to display
-     */
-    void onProgress(int absPosition,
-                    @Nullable String message);
+                    @Nullable Object message);
 
     /**
      * @return {@code true} if operation is cancelled.

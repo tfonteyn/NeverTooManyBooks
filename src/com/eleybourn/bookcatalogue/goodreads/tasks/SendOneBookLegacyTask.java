@@ -50,7 +50,8 @@ class SendOneBookLegacyTask
     /**
      * Constructor.
      *
-     * @param bookId Book to send
+     * @param description for the task
+     * @param bookId      Book to send
      */
     SendOneBookLegacyTask(@NonNull final String description,
                           final long bookId) {
@@ -61,8 +62,9 @@ class SendOneBookLegacyTask
     /**
      * Perform the main task. Called from within {@link #run}
      *
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
+     * @param queueManager QueueManager
+     * @param context      Current context
+     * @param grManager    the Goodreads Manager
      *
      * @return {@code true} for success
      */

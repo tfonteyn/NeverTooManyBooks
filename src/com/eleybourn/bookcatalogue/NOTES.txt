@@ -56,7 +56,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature reques
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
 ==> see notes in com.eleybourn.bookcatalogue.searches.openlibrary/OpenLibraryManager.java
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - Worldcat support
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - WorldCat support
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723

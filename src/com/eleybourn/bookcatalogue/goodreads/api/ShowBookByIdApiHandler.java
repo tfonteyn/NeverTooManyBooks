@@ -41,6 +41,7 @@ import com.eleybourn.bookcatalogue.utils.CredentialsException;
 public class ShowBookByIdApiHandler
         extends ShowBookApiHandler {
 
+    /** Page url. */
     private static final String URL = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
 
     /**

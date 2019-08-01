@@ -32,6 +32,13 @@ import com.eleybourn.bookcatalogue.database.DAO;
 public class EditFormatDialog
         extends EditStringBaseDialog {
 
+    /**
+     * Constructor.
+     *
+     * @param context  Current context
+     * @param db       the database
+     * @param listener a BookChangedListener
+     */
     public EditFormatDialog(@NonNull final Context context,
                             @NonNull final DAO db,
                             @NonNull final BookChangedListener listener) {

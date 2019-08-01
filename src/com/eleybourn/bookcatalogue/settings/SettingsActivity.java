@@ -32,11 +32,14 @@ public class SettingsActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.lbl_settings);
 
-        Bundle extras = getIntent().getExtras();
+        String tag;
 
-        String tag = extras != null ? extras.getString(UniqueId.BKEY_FRAGMENT_TAG,
-                                                       GlobalSettingsFragment.TAG)
-                                    : GlobalSettingsFragment.TAG;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
+        } else {
+            tag = GlobalSettingsFragment.TAG;
+        }
 
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {

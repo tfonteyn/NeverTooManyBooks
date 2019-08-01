@@ -77,7 +77,7 @@ public class PreferredStylesActivity
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
+    /** The ViewModel. */
     private PreferredStylesViewModel mModel;
 
     @Override

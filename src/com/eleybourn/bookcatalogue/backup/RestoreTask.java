@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.backup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -11,25 +10,28 @@ import java.io.IOException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener.TaskProgressMessage;
 
 public class RestoreTask
-        extends TaskWithProgress<Object, ImportOptions> {
+        extends TaskBase<ImportOptions> {
 
     @NonNull
     private final ImportOptions mSettings;
 
     /**
-     * @param progressDialog ProgressDialogFragment
-     * @param settings       the import settings
+     * Constructor.
+     *
+     * @param settings     the import settings
+     * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RestoreTask(@NonNull final ProgressDialogFragment<Object, ImportOptions> progressDialog,
-                       @NonNull final ImportOptions /* in/out */ settings) {
-        super(R.id.TASK_ID_READ_FROM_ARCHIVE, progressDialog);
-
+    public RestoreTask(@NonNull final ImportOptions /* in/out */ settings,
+                       @NonNull final TaskListener<ImportOptions> taskListener) {
+        super(R.id.TASK_ID_READ_FROM_ARCHIVE, taskListener);
         mSettings = settings;
+
         if (((mSettings.what & ImportOptions.MASK) == 0) || (mSettings.file == null)) {
             throw new IllegalArgumentException("Options must be specified");
         }
@@ -47,31 +49,34 @@ public class RestoreTask
             reader.restore(mSettings, new ProgressListener() {
 
                 private int mAbsPosition;
+                private int mMaxPosition;
 
                 @Override
-                public void setMax(final int max) {
-                    mProgressDialog.setMax(max);
+                public void setMax(final int maxPosition) {
+                    mMaxPosition = maxPosition;
+                }
+
+                @Override
+                public void incMax(final int delta) {
+                    mMaxPosition += delta;
                 }
 
                 @Override
                 public void onProgressStep(final int delta,
-                                           @Nullable final String message) {
+                                           @Nullable final Object message) {
                     mAbsPosition += delta;
-                    publishProgress(mAbsPosition, message);
+                    Object[] values = {message};
+                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                                            mAbsPosition, values));
                 }
 
                 @Override
                 public void onProgress(final int absPosition,
-                                       @Nullable final String message) {
+                                       @Nullable final Object message) {
                     mAbsPosition = absPosition;
-                    publishProgress(mAbsPosition, message);
-                }
-
-                @Override
-                public void onProgress(final int absPosition,
-                                       @StringRes final int messageId) {
-                    mAbsPosition = absPosition;
-                    publishProgress(mAbsPosition, messageId);
+                    Object[] values = {message};
+                    publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                                            mAbsPosition, values));
                 }
 
                 @Override

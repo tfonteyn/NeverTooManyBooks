@@ -57,6 +57,8 @@ abstract class AbstractBase {
      *
      * @return the actual URL for the page we got (after redirects etc), or {@code null}
      * on failure to load.
+     *
+     * @throws SocketTimeoutException if the connection times out
      */
     @Nullable
     String loadPage(@NonNull final String url,
@@ -146,6 +148,8 @@ abstract class AbstractBase {
      * @param redirect {@code true} to follow redirects. This should normally be the default.
      *
      * @return {@code true} when fetched and parsed ok.
+     *
+     * @throws SocketTimeoutException if the connection times out
      */
     boolean loadPageWithBrokenRedirectSupport(@NonNull final String url,
                                               final boolean redirect)
@@ -166,7 +170,7 @@ abstract class AbstractBase {
 
             try {
                 /*
-                 * @throws java.net.MalformedURLException if the request URL is not a HTTP
+                 * @throws MalformedURLException if the request URL is not a HTTP
                  * or HTTPS URL, or is otherwise malformed
                  *
                  * @throws HttpStatusException(IOException) if the response is not OK and
@@ -175,7 +179,7 @@ abstract class AbstractBase {
                  * @throws UnsupportedMimeTypeException if the response mime type is not
                  * supported and those errors are not ignored
                  *
-                 * @throws java.net.SocketTimeoutException if the connection times out
+                 * @throws SocketTimeoutException if the connection times out
                  *
                  * @throws IOException on failure
                  */

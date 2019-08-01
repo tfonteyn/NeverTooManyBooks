@@ -75,6 +75,8 @@ public abstract class BaseActivityWithTasks
     @Nullable
     private TaskManager mTaskManager;
 
+//    private ProgressDialogFragment mProgressDialog;
+
     /** A cheaper progress dialog. */
     private View mProgressOverlayView;
 
@@ -89,6 +91,7 @@ public abstract class BaseActivityWithTasks
     /** Message for Progress. */
     @NonNull
     private String mProgressMessage = "";
+
     private final TaskManagerListener mTaskManagerListener = new TaskManagerListener() {
 
         /**

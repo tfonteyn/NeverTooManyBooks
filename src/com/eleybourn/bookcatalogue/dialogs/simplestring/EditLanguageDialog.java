@@ -42,6 +42,13 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 public class EditLanguageDialog
         extends EditStringBaseDialog {
 
+    /**
+     * Constructor.
+     *
+     * @param context  Current context
+     * @param db       the database
+     * @param listener a BookChangedListener
+     */
     public EditLanguageDialog(@NonNull final Context context,
                               @NonNull final DAO db,
                               @NonNull final BookChangedListener listener) {

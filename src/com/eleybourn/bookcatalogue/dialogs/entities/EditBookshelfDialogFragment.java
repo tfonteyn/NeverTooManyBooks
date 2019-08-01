@@ -70,7 +70,11 @@ public class EditBookshelfDialogFragment
     private WeakReference<BookshelfChangedListener> mListener;
 
     /**
+     * Constructor.
      *
+     * @param bookshelf to edit.
+     *
+     * @return the instance
      */
     public static EditBookshelfDialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();

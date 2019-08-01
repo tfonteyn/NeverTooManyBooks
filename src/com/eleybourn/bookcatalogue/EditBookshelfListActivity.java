@@ -47,9 +47,9 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.dialogs.entities.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.picker.MenuPicker;
 import com.eleybourn.bookcatalogue.dialogs.picker.ValuePicker;
-import com.eleybourn.bookcatalogue.dialogs.entities.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 

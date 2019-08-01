@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -17,28 +16,30 @@ import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
+import com.eleybourn.bookcatalogue.tasks.TaskListener;
+import com.eleybourn.bookcatalogue.tasks.TaskListener.TaskProgressMessage;
 
 public class ImportCSVTask
-        extends TaskWithProgress<Object, Integer> {
+        extends TaskBase<Integer> {
 
+    @NonNull
     private final ImportOptions mSettings;
+    @NonNull
     private final Importer mImporter;
 
     /**
      * Constructor.
      *
-     * @param context        Current context for accessing resources.
-     * @param settings       the import settings
-     * @param progressDialog ProgressDialogFragment
+     * @param context      Current context for accessing resources.
+     * @param settings     the import settings
+     * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     public ImportCSVTask(@NonNull final Context context,
                          @NonNull final ImportOptions settings,
-                         @NonNull final ProgressDialogFragment<Object, Integer> progressDialog) {
-        super(R.id.TASK_ID_CSV_IMPORT, progressDialog);
-
+                         @NonNull final TaskListener<Integer> taskListener) {
+        super(R.id.TASK_ID_CSV_IMPORT, taskListener);
         mSettings = settings;
         mImporter = new CsvImporter(context.getResources(), settings);
     }
@@ -53,21 +54,25 @@ public class ImportCSVTask
             //noinspection ConstantConditions
             mImporter.doBooks(is, new LocalCoverFinder(mSettings.file.getParent()),
                               new ProgressListener() {
+
+                                  private int mMaxPosition;
+
                                   @Override
-                                  public void setMax(final int max) {
-                                      mProgressDialog.setMax(max);
+                                  public void setMax(final int maxPosition) {
+                                      mMaxPosition = maxPosition;
+                                  }
+
+                                  @Override
+                                  public void incMax(final int delta) {
+                                      mMaxPosition += delta;
                                   }
 
                                   @Override
                                   public void onProgress(final int absPosition,
-                                                         @Nullable final String message) {
-                                      publishProgress(absPosition, message);
-                                  }
-
-                                  @Override
-                                  public void onProgress(final int absPosition,
-                                                         @StringRes final int messageId) {
-                                      publishProgress(absPosition, messageId);
+                                                         @Nullable final Object message) {
+                                      Object[] values = {message};
+                                      publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
+                                                                              absPosition, values));
                                   }
 
                                   @Override

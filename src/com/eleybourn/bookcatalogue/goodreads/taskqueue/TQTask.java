@@ -48,7 +48,7 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
  *
  * @author Philip Warner
  */
-public abstract class BaseTask
+public abstract class TQTask
         extends Task
         implements Serializable {
 
@@ -60,7 +60,7 @@ public abstract class BaseTask
      *
      * @param description for the task
      */
-    protected BaseTask(@NonNull final String description) {
+    protected TQTask(@NonNull final String description) {
         super(description);
     }
 

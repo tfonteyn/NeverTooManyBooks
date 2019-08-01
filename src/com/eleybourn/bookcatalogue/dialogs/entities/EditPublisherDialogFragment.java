@@ -66,6 +66,10 @@ public class EditPublisherDialogFragment
 
     /**
      * Constructor.
+     *
+     * @param publisher to edit.
+     *
+     * @return the instance
      */
     public static EditPublisherDialogFragment newInstance(@NonNull final Publisher publisher) {
 

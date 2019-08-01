@@ -363,7 +363,7 @@ public class XmlExporter
     }
 
     /**
-     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ProgressListener)}.
+     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ProgressListener, boolean)}.
      * Not in direct use yet.
      * <p>
      * <br>{@inheritDoc}
@@ -371,7 +371,8 @@ public class XmlExporter
     @Override
     @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final ProgressListener listener)
+                       @NonNull final ProgressListener listener,
+                       final boolean includeCoverCount)
             throws IOException {
 
         int pos;
@@ -387,14 +388,20 @@ public class XmlExporter
         return pos;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
+    /**
+     * Write all supported item types to the output stream as XML.
+     *
+     * @param outputStream Stream for writing data
+     * @param listener     Progress and cancellation interface
+     *
+     * @throws IOException on failure
+     */
     @WorkerThread
-    public int doAll(@NonNull final OutputStream outputStream,
+    public void doAll(@NonNull final OutputStream outputStream,
                      @NonNull final ProgressListener listener)
             throws IOException {
 
-        int pos = 0;
-        listener.setMax(5);
+        int delta = 0;
 
         try (BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
@@ -404,40 +411,39 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(pos++, R.string.lbl_bookshelves);
-                pos += doBookshelves(out, listener);
+                listener.onProgressStep(delta++, R.string.lbl_bookshelves);
+                 doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(pos++, R.string.lbl_author);
-                pos += doAuthors(out, listener);
+                listener.onProgress(delta++, R.string.lbl_author);
+                doAuthors(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(pos++, R.string.lbl_series);
-                pos += doSeries(out, listener);
-            }
+                listener.onProgress(delta++, R.string.lbl_series);
+                doSeries(out, listener);
+           }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(pos++, R.string.lbl_book);
-                pos += doBooks(out, listener);
+                listener.onProgress(delta++, R.string.lbl_book);
+                doBooks(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
-                listener.onProgress(pos++, R.string.lbl_styles);
-                pos += doStyles(out, listener);
+                listener.onProgress(delta++, R.string.lbl_styles);
+                doStyles(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
-                listener.onProgress(pos++, R.string.lbl_settings);
-                pos += doPreferences(out, listener);
+                listener.onProgress(delta++, R.string.lbl_settings);
+                doPreferences(out, listener);
             }
 
             out.append("</" + XmlTags.XML_ROOT + ">\n");
         }
-        return pos;
     }
 
     /**
@@ -450,6 +456,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     private int doBookshelves(@NonNull final BufferedWriter out,
                               @NonNull final ProgressListener listener)
             throws IOException {
@@ -480,6 +487,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     private int doAuthors(@NonNull final BufferedWriter out,
                           @NonNull final ProgressListener listener)
             throws IOException {
@@ -518,6 +526,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     private int doSeries(@NonNull final BufferedWriter out,
                          @NonNull final ProgressListener listener)
             throws IOException {
@@ -736,6 +745,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int doStyles(@NonNull final BufferedWriter out,
                         @NonNull final ProgressListener listener)
             throws IOException {
@@ -757,6 +767,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int doPreferences(@NonNull final BufferedWriter out,
                              @NonNull final ProgressListener listener)
             throws IOException {

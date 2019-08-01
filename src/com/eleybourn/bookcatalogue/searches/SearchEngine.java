@@ -70,10 +70,10 @@ public interface SearchEngine {
 
     /**
      * Start a search using the passed criteria.
-     *
+     * <p>
      * Checking the arguments should really be done inside the implementation,
      * as they generally will depend on what the object can do with them.
-     *
+     * <p>
      * The implementation will/should give preference to using the ISBN if present,
      * and only fall back to using author/title if needed.
      *
@@ -83,14 +83,14 @@ public interface SearchEngine {
      * ENHANCE: its seems most (all?) implementations can return multiple book data bundles quite easily.
      *
      * @throws CredentialsException with GoodReads
-     * @throws IOException            on other failures
+     * @throws IOException          on other failures
      */
     @WorkerThread
     @NonNull
     Bundle search(@Nullable String isbn,
                   @Nullable String author,
                   @Nullable String title,
-                  final String publisher,
+                  @Nullable String publisher,
                   boolean fetchThumbnail)
             throws CredentialsException, IOException;
 
@@ -160,9 +160,6 @@ public interface SearchEngine {
      * These are open to interpretation (or not used) by individual {@link SearchEngine}.
      */
     enum ImageSize {
-        SMALL,
-        MEDIUM,
-        LARGE
+        SMALL, MEDIUM, LARGE
     }
-
 }

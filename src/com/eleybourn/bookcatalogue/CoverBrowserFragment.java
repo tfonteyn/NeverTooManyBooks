@@ -89,6 +89,7 @@ public class CoverBrowserFragment
 
     /** Prior to showing a preview, the switcher can show text updates. */
     private TextView mStatusTextView;
+    /** The ViewModel. */
     private CoverBrowserViewModel mModel;
     /** Populated by {@link #setSwitcherImage} AND savedInstanceState. */
     @Nullable

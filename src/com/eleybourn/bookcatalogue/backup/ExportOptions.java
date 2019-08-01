@@ -26,13 +26,14 @@ public class ExportOptions
     //public static final int IMPORT_7 = 1 << 7;
     public static final int DATABASE = 1 << 8;
 
-    /** Options value to indicate ALL things should be exported. */
-    public static final int ALL =
-            PREFERENCES
-                    | BOOK_LIST_STYLES
-                    | COVERS
-                    | BOOK_CSV
-                    | XML_TABLES;
+    /**
+     * Options value to indicate all things should be exported.
+     * Note that XML_TABLES is NOT included as it's considered special interest.
+     */
+    public static final int ALL = BOOK_CSV
+            | PREFERENCES
+            | BOOK_LIST_STYLES
+            | COVERS;
 
     /**
      * Options to indicate new books or books with more recent update_date
@@ -52,7 +53,7 @@ public class ExportOptions
     /**
      * all defined flags.
      */
-    public static final int MASK = ALL | EXPORT_SINCE;
+    public static final int MASK = ALL | EXPORT_SINCE | XML_TABLES;
     public static final Creator<ExportOptions> CREATOR = new Creator<ExportOptions>() {
         @Override
         public ExportOptions createFromParcel(@NonNull final Parcel source) {

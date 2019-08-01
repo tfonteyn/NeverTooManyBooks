@@ -18,7 +18,7 @@
     >
 
     <!--
-     ALL 5 above fastScroll drawable attributes must be specified,
+     All 5 above fastScroll drawable attributes must be specified,
      even when not using horizontal here
 
     If there are a lot of items, the thumb will get quite small. Known issue:

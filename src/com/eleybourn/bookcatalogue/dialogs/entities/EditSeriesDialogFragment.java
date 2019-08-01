@@ -71,6 +71,10 @@ public class EditSeriesDialogFragment
 
     /**
      * Constructor.
+     *
+     * @param series to edit.
+     *
+     * @return the instance
      */
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
@@ -141,7 +145,8 @@ public class EditSeriesDialogFragment
                     Bundle data = new Bundle();
                     data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
                     if (mBookChangedListener.get() != null) {
-                        mBookChangedListener.get().onBookChanged(0, BookChangedListener.SERIES, data);
+                        mBookChangedListener.get().onBookChanged(0,
+                                                                 BookChangedListener.SERIES, data);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",

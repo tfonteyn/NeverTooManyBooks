@@ -129,10 +129,7 @@ public class TaskManager {
         }
 
     };
-    /**
-     * Indicates tasks are being cancelled. This is reset when a new task is added.
-     */
-    private boolean mCancelling;
+
     /** Controller instance (strong reference) for this object. */
     @SuppressWarnings("FieldCanBeLocal")
     private final TaskManagerController mController = new TaskManagerController() {
@@ -147,6 +144,12 @@ public class TaskManager {
             return TaskManager.this;
         }
     };
+
+    /**
+     * Indicates tasks are being cancelled. This is reset when a new task is added.
+     */
+    private boolean mCancelling;
+
     /**
      * Indicates the TaskManager is terminating; will close after last task exits.
      */
@@ -156,12 +159,11 @@ public class TaskManager {
      * Constructor.
      */
     public TaskManager(@NonNull final Context context) {
-
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this,"Constructor", "context=" + context);
+        }
         mContext = context;
-
-
         mMessageSenderId = MESSAGE_SWITCH.createSender(mController);
-
     }
 
     /**
@@ -353,6 +355,10 @@ public class TaskManager {
      * Normally called when {@link BaseActivityWithTasks} itself is finishing.
      */
     public void cancelAllTasksAndStopListening() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this,"cancelAllTasksAndStopListening");
+
+        }
         // stop listening, used as sanity check in addTask.
         mIsClosing = true;
         cancelAllTasks();
@@ -362,6 +368,10 @@ public class TaskManager {
      * Cancel all tasks, but stay active and accept new tasks.
      */
     public void cancelAllTasks() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this,"cancelAllTasks");
+
+        }
         synchronized (mTaskInfoList) {
             mCancelling = true;
             for (TaskInfo taskInfo : mTaskInfoList) {
@@ -374,6 +384,14 @@ public class TaskManager {
         return mCancelling;
     }
 
+    @Override
+    protected void finalize()
+            throws Throwable {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this,"finalize");
+        }
+        super.finalize();
+    }
 
     @Override
     @NonNull

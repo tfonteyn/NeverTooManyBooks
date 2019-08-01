@@ -26,6 +26,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -42,28 +43,30 @@ public abstract class BRBaseActivity
     private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
     File mRootDir;
     RecyclerView mListView;
-    private FileDetailsAdapter mAdapter;
-    private TextView mCurrentFolderView;
-    private final TaskListener<Object, ArrayList<FileDetails>> mListener =
-            new TaskListener<Object, ArrayList<FileDetails>>() {
 
+    protected ProgressDialogFragment mProgressDialog;
+
+    private FileDetailsAdapter mAdapter;
+
+    private TextView mCurrentFolderView;
+
+    private final TaskListener<ArrayList<FileDetails>> mFileListerTaskListener =
+            new TaskListener<ArrayList<FileDetails>>() {
                 @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @NonNull final ArrayList<FileDetails> result,
-                                           @Nullable final Exception e) {
+                public void onTaskFinished(@NonNull final TaskFinishedMessage<ArrayList<FileDetails>> message) {
                     //noinspection SwitchStatementWithTooFewBranches
-                    switch (taskId) {
+                    switch (message.taskId) {
                         case R.id.TASK_ID_FILE_LISTER:
-                            onGotFileList(result);
+                            onGotFileList(message.result);
                             break;
 
                         default:
-                            Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
+                            Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
                             break;
                     }
                 }
             };
+
     /** User clicks on the 'up' button. */
     private final View.OnClickListener onPathUpClickListener = view -> {
         String parent = mRootDir.getParent();
@@ -142,10 +145,8 @@ public abstract class BRBaseActivity
      */
     private void onPathChanged(@NonNull final File rootDir) {
         if (rootDir.isDirectory()) {
-            // on my late 2016 phone, the message stays up long after the dir is read...
-            //UserMessage.show(mListView, R.string.progress_msg_reading_directory);
             mRootDir = rootDir;
-            new FileListerTask(mRootDir, mListener).execute();
+            new FileListerTask(mRootDir, mFileListerTaskListener).execute();
         }
     }
 
@@ -179,6 +180,19 @@ public abstract class BRBaseActivity
         super.onSaveInstanceState(outState);
         outState.putString(BKEY_ROOT_PATH, mRootDir.getAbsolutePath());
         outState.putParcelableArrayList(BKEY_FILE_LIST, mFileDetails);
+    }
+
+    protected void onTaskProgressMessage(final TaskListener.TaskProgressMessage message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.onProgress(message);
+        }
+    }
+
+    protected void onTaskCancelledMessage(final Integer taskId) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+        UserMessage.show(this, R.string.progress_end_cancelled);
     }
 
     /**

@@ -3,8 +3,8 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.backup.ExportOptions;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
+import com.eleybourn.bookcatalogue.settings.StyleSettingsFragment;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**

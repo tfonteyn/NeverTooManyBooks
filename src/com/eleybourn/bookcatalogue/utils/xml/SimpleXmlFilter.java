@@ -155,7 +155,7 @@ public class SimpleXmlFilter {
             case "f":
                 return false;
             default:
-                return (Long.parseLong(s) != 0);
+                return Long.parseLong(s) != 0;
         }
     }
 
@@ -172,7 +172,7 @@ public class SimpleXmlFilter {
     }
 
     /**
-     * Start tag
+     * Start tag.
      *
      * @param tag that starts
      *
@@ -233,7 +233,8 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter popTo(@SuppressWarnings("SameParameterValue") @NonNull final String tag) {
+    public SimpleXmlFilter popTo(@SuppressWarnings("SameParameterValue")
+                                 @NonNull final String tag) {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
             if (last == 0) {
@@ -282,7 +283,7 @@ public class SimpleXmlFilter {
     }
 
     private void setCollector(@NonNull final String tag,
-                              @NonNull XmlHandler handler,
+                              @NonNull final XmlHandler handler,
                               @NonNull final String fieldName) {
         s(tag);
         setCollector(handler, fieldName);
@@ -375,27 +376,27 @@ public class SimpleXmlFilter {
             implements DataStoreProvider {
 
         @NonNull
-        final DataStoreProvider parent;
+        private final DataStoreProvider parent;
         @Nullable
         private final XmlFilter mFilter;
         String collectField;
         @Nullable
-        List<AttrFilter> attrs = null;
+        List<AttrFilter> attrs;
         @Nullable
-        XmlListener listener = null;
+        XmlListener listener;
         @Nullable
-        XmlHandler finishHandler = null;
+        XmlHandler finishHandler;
 
         @Nullable
-        private Bundle mLocalBundle = null;
+        private Bundle mLocalBundle;
         @Nullable
-        private ArrayList<Bundle> mArrayItems = null;
+        private ArrayList<Bundle> mArrayItems;
 
-        private boolean mIsArray = false;
+        private boolean mIsArray;
         @Nullable
-        private String mArrayName = null;
+        private String mArrayName;
 
-        private boolean mIsArrayItem = false;
+        private boolean mIsArrayItem;
 
         /**
          * Constructor.
@@ -506,8 +507,8 @@ public class SimpleXmlFilter {
             this.key = key;
         }
 
-        protected abstract void put(@NonNull final BuilderContext context,
-                                    @NonNull final String value);
+        protected abstract void put(@NonNull BuilderContext context,
+                                    @NonNull String value);
     }
 
     private static class StringAttrFilter

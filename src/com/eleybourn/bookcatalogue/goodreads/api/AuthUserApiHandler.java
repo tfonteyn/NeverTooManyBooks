@@ -111,7 +111,8 @@ public class AuthUserApiHandler
                  .setStartAction(context -> mUserId
                          = Long.parseLong(context.getAttributes().getValue("", XmlTags.XML_ID)));
 
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER, XmlTags.XML_NAME)
+        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XML_USER,
+                              XmlTags.XML_NAME)
                  .setEndAction(context -> mUsername
                          = context.getBody());
     }

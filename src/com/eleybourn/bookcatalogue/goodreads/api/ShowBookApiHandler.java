@@ -269,7 +269,7 @@ public abstract class ShowBookApiHandler
         Resources resources = LocaleUtils.getLocalizedResources();
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, null,true, handler);
+        executeGet(url, null, true, handler);
 
         // When we get here, the data has been collected but needs processing into standard form.
 
@@ -477,7 +477,9 @@ public abstract class ShowBookApiHandler
      *          <id>18</id>
      *          <name>Gary Paulsen</name>
      *          <image_url>http://photo.goodreads.com/authors/1309159225p5/18.jpg</image_url>
-     *          <small_image_url>http://photo.goodreads.com/authors/1309159225p2/18.jpg</small_image_url>
+     *          <small_image_url>
+     *              http://photo.goodreads.com/authors/1309159225p2/18.jpg
+     *          </small_image_url>
      *          <link>http://www.goodreads.com/author/show/18.Gary_Paulsen</link>
      *          <average_rating>3.64</average_rating>
      *          <ratings_count>92755</ratings_count>

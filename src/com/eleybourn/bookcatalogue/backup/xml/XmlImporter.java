@@ -846,7 +846,7 @@ public class XmlImporter
 
         private BooklistStyle mStyle;
 
-        /** a collection of *ALL* Preferences (including from *all* groups). */
+        /** a collection of all Preferences (including from *all* groups). */
         private Map<String, PPref> mStylePrefs;
 
         /**

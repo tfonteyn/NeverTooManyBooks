@@ -215,12 +215,13 @@ class SearchGoogleBooksEntryHandler
 
     private final Locale mLocale;
 
-    private boolean mInSuggestedRetailPriceTag = false;
-    private boolean mInRetailPriceTag = false;
+    private boolean mInSuggestedRetailPriceTag;
+    private boolean mInRetailPriceTag;
 
     /**
      * Constructor.
-     *  @param bookData       Bundle to save results in
+     *
+     * @param bookData       Bundle to save results in
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
@@ -276,7 +277,7 @@ class SearchGoogleBooksEntryHandler
                     .equals(attributes.getValue("", "rel"))) {
 
                 String thumbnail = attributes.getValue("", "href");
-                String name = mBookData.getString(DBDefinitions.KEY_ISBN,"");
+                String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
                 if (name.isEmpty()) {
                     // just use something...
                     name = mIsbn != null ? mIsbn : String.valueOf(System.currentTimeMillis());

@@ -304,8 +304,8 @@ public final class QueueManager {
      * @return {@code false} to requeue, {@code true} for success
      */
     boolean runTask(@NonNull final Task task) {
-        if (task instanceof BaseTask) {
-            return ((BaseTask) task).run(this, App.getAppContext());
+        if (task instanceof TQTask) {
+            return ((TQTask) task).run(this, App.getAppContext());
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");

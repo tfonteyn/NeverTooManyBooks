@@ -130,7 +130,7 @@ public class UpdateFieldsFromInternetFragment
 
     /** syntax sugar. */
     private boolean isSingleBook() {
-        return (mBookIds != null && mBookIds.size() == 1);
+        return mBookIds != null && mBookIds.size() == 1;
     }
 
     @Override
@@ -407,7 +407,7 @@ public class UpdateFieldsFromInternetFragment
 
         //noinspection ConstantConditions
         if (covers.usage.equals(Overwrite)) {
-            // check if the user really wants to overwrite ALL covers
+            // check if the user really wants to overwrite all covers
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)

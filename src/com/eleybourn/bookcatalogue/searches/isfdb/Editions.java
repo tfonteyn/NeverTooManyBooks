@@ -79,7 +79,7 @@ public class Editions
     }
 
     /**
-     * Do the parsing of the Document
+     * Do the parsing of the Document.
      *
      * @return list of editions found, can be empty, but never {@code null}
      */

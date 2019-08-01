@@ -1,21 +1,21 @@
 package com.eleybourn.bookcatalogue.goodreads.tasks;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.AuthorizationException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
@@ -23,19 +23,39 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * Before we can access Goodreads, we must authorize our application to do so.
  */
 public class RequestAuthTask
-        extends AsyncTask<Void, Object, Integer> {
-
-    private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
-
-    @Nullable
-    private Exception mException;
+        extends TaskBase<Integer> {
 
     /**
      * Constructor.
+     *
+     * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RequestAuthTask(@NonNull final TaskListener<Object, Integer> taskListener) {
-        mTaskListener = new WeakReference<>(taskListener);
+    public RequestAuthTask(@NonNull final TaskListener<Integer> taskListener) {
+        super(R.id.TASK_ID_GR_REQUEST_AUTH, taskListener);
+    }
+
+    /**
+     * Prompt the user to register.
+     *
+     * @param context      Current context
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public static void needsRegistration(@NonNull final Context context,
+                                         @NonNull final TaskListener<Integer> taskListener) {
+        new AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_security)
+                .setTitle(R.string.gr_title_auth_access)
+                .setMessage(R.string.gr_action_cannot_be_completed)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_tell_me_more, (d, which) -> {
+                    Intent intent = new Intent(context, GoodreadsRegisterActivity.class);
+                    context.startActivity(intent);
+                })
+                .setPositiveButton(android.R.string.ok, (d, which) ->
+                        new RequestAuthTask(taskListener).execute())
+                .create()
+                .show();
     }
 
     @Override
@@ -69,29 +89,8 @@ public class RequestAuthTask
             return R.string.gr_auth_access_already_auth;
         }
         if (isCancelled()) {
-            // return value not used as onPostExecute is not called
             return R.string.progress_end_cancelled;
         }
         return R.string.info_authorized;
-    }
-
-    /**
-     * If the task was cancelled (by the user cancelling the progress dialog) then
-     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-     *
-     * @param result of the task
-     */
-    @Override
-    @UiThread
-    protected void onPostExecute(@Nullable final Integer result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_REQUEST_AUTH, mException == null,
-                                               result, mException);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             "WeakReference to listener was dead");
-            }
-        }
     }
 }

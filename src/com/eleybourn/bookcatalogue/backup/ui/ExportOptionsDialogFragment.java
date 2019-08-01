@@ -95,9 +95,6 @@ public class ExportOptionsDialogFragment
         Dialog dialog = getDialog();
         // what to export. All checked == ExportOptions.ALL
         //noinspection ConstantConditions
-        if (((Checkable) dialog.findViewById(R.id.cbx_xml_tables)).isChecked()) {
-            mOptions.what |= ExportOptions.XML_TABLES;
-        }
         if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
             mOptions.what |= ExportOptions.BOOK_CSV;
         }
@@ -106,6 +103,10 @@ public class ExportOptionsDialogFragment
         }
         if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
             mOptions.what |= ExportOptions.PREFERENCES | ExportOptions.BOOK_LIST_STYLES;
+        }
+        // This one is not a part of ExportOptions.ALL, the user must explicitly want it.
+        if (((Checkable) dialog.findViewById(R.id.cbx_xml_tables)).isChecked()) {
+            mOptions.what |= ExportOptions.XML_TABLES;
         }
 
         Checkable radioSinceLastBackup = dialog.findViewById(R.id.radioSinceLastBackup);

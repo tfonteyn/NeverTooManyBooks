@@ -88,6 +88,8 @@ public class BackupInfo
     private static final String INFO_HAS_BOOKLIST_STYLES = "HasBooklistStyles";
 
     /**
+     * Stores the database version.
+     *
      * @since v200
      */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";

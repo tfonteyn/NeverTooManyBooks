@@ -191,7 +191,7 @@ public final class TipManager {
          * @param layoutId to use
          */
         private Tip(@NonNull final String key,
-                    @LayoutRes int layoutId) {
+                    @LayoutRes final int layoutId) {
             mKey = PREF_TIP + key;
             mLayoutId = layoutId;
         }

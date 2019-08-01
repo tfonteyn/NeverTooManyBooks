@@ -163,7 +163,7 @@
         <!-- Useful, but cannot use 'align' of parameters etc when enabled -->
         <!--<module name="Indentation" />-->
         <!--<module name="OuterTypeFilename"/>-->
-        <module name="TodoComment" />
+        <!--<module name="TodoComment" />-->
         <module name="TrailingComment" />
 
         <module name="UpperEll" />

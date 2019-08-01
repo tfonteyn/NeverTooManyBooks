@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -13,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DAO;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -20,7 +20,6 @@ import com.eleybourn.bookcatalogue.dialogs.CheckListItem;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.tasks.GoodreadsTasks;
-import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -34,14 +33,14 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class BookBaseFragmentModel
         extends ViewModel {
 
+    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
     /** Database access. */
     private DAO mDb;
-
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
     /** The Book this model represents. */
     private Book mBook;
-
     /**
      * Field drop down lists.
      * Lists in database so far, we cache them for performance but only load
@@ -60,12 +59,8 @@ public class BookBaseFragmentModel
     private List<String> mPublishers;
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
-
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Object, Integer> mOnGoodreadsTaskListener;
-
-    private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
+    private TaskListener<Integer> mOnGoodreadsTaskListener;
 
     @Override
     protected void onCleared() {
@@ -318,16 +313,26 @@ public class BookBaseFragmentModel
         return mNeedsGoodreads;
     }
 
-    public TaskListener<Object, Integer> getGoodreadsTaskListener() {
+    public TaskListener<Integer> getGoodreadsTaskListener() {
         if (mOnGoodreadsTaskListener == null) {
-            mOnGoodreadsTaskListener = new TaskListener<Object, Integer>() {
+            mOnGoodreadsTaskListener = new TaskListener<Integer>() {
 
                 @Override
-                public void onTaskFinished(final int taskId,
-                                           final boolean success,
-                                           @StringRes final Integer result,
-                                           @Nullable final Exception e) {
-                    String msg = GoodreadsTasks.handleResult(taskId, success, result, e);
+                public void onTaskCancelled(@Nullable final Integer taskId,
+                                            @Nullable final Integer result) {
+                    mUserMessage.setValue(R.string.progress_end_cancelled);
+                }
+
+                @Override
+                public void onTaskProgress(@NonNull final TaskProgressMessage message) {
+                    if (message.values != null && message.values.length > 0) {
+                        mUserMessage.setValue(message.values[0]);
+                    }
+                }
+
+                @Override
+                public void onTaskFinished(@NonNull final TaskFinishedMessage<Integer> message) {
+                    String msg = GoodreadsTasks.handleResult(message);
                     if (msg != null) {
                         mUserMessage.setValue(msg);
                     } else {
@@ -335,19 +340,8 @@ public class BookBaseFragmentModel
                         mNeedsGoodreads.setValue(true);
                     }
                 }
-
-                @Override
-                public void onTaskProgress(final int taskId,
-                                           @NonNull final Object[] values) {
-                    mUserMessage.setValue(values[0]);
-                }
             };
         }
         return mOnGoodreadsTaskListener;
-    }
-
-    public void sendToGoodReads() {
-        new SendOneBookTask(mBook.getId(), getGoodreadsTaskListener())
-                .execute();
     }
 }

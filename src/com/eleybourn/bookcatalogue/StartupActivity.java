@@ -85,7 +85,7 @@ public class StartupActivity
     private int mStartupStage;
 
     private TextView mProgressMessageView;
-
+    /** The ViewModel. */
     private StartupViewModel mModel;
 
     /**
@@ -169,8 +169,8 @@ public class StartupActivity
     private void startTasks() {
         if (mModel.isStartupTasksShouldBeStarted()) {
             // listen for progress messages
-            mModel.getTaskProgressMessage().observe(this, message ->
-                    mProgressMessageView.setText(message));
+            mModel.getTaskProgressMessage().observe(this, resId ->
+                    mProgressMessageView.setText(getString(resId)));
 
             // when tasks are done, move on to next startup-stage
             mModel.getTaskFinished().observe(this, finished -> {

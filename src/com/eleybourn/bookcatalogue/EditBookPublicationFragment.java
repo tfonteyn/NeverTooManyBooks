@@ -96,7 +96,7 @@ public class EditBookPublicationFragment
                         mBookBaseFragmentModel.getFormats());
 
         field = fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-                       .setFormatter(new Fields.LanguageFormatter());
+                      .setFormatter(new Fields.LanguageFormatter());
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
                         mBookBaseFragmentModel.getLanguagesCodes());
 
@@ -105,11 +105,11 @@ public class EditBookPublicationFragment
                         mBookBaseFragmentModel.getPublishers());
 
         field = fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-                       .setFormatter(dateFormatter);
+                      .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_date_published, false);
 
         field = fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-                       .setFormatter(dateFormatter);
+                      .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
         fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);

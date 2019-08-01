@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.database.cursors.MappedCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.TipManager;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.TQTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
@@ -43,7 +43,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * This means that it can not contain any references to UI components or similar objects.
  */
 abstract class SendBooksLegacyTaskBase
-        extends BaseTask {
+        extends TQTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
     /** wait time before declaring network failure. */

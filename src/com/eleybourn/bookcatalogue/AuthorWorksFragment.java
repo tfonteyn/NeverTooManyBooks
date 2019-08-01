@@ -48,6 +48,7 @@ public class AuthorWorksFragment
     public static final String BKEY_WITH_TOCS = TAG + ":withTocEntries";
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
+    /** The ViewModel. */
     private AuthorWorksModel mModel;
     private TocAdapter mAdapter;
 
@@ -200,6 +201,8 @@ public class AuthorWorksFragment
 
     /**
      * User tapped on an entry; get the book(s) for that entry and display.
+     *
+     * @param item the TocEntry or Book
      */
     private void gotoBook(@NonNull final TocEntry item) {
         Intent intent;
@@ -275,7 +278,7 @@ public class AuthorWorksFragment
         private final Drawable mStoryIndicator;
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
-
+        /** The ViewModel. */
         private final AuthorWorksModel mModel;
 
         /**

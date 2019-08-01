@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
 public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
+    /** Page url. */
     private static final String URL = GoodreadsManager.BASE_URL
             + "/book/isbn?format=xml&isbn=%1$s&key=%2$s";
 

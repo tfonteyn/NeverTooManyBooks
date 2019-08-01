@@ -1,22 +1,16 @@
 package com.eleybourn.bookcatalogue.goodreads.tasks;
 
-import android.os.AsyncTask;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.lang.ref.WeakReference;
-
-import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.TQTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
@@ -24,28 +18,30 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * Start a background task that export books to Goodreads.
  * It can either send 'all' or 'updated-only' books.
  * <p>
- * The AsyncTask runs a network and authorization check first.
- * If successful, an actual GoodReadsTasks {@link BaseTask} is kicked of to do the actual work.
+ * We runs a network and authorization check first.
+ * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the actual work.
  */
 public class SendBooksTask
-        extends AsyncTask<Void, Object, Integer> {
+        extends TaskBase<Integer> {
 
-    @NonNull
-    private final WeakReference<TaskListener<Object, Integer>> mTaskListener;
     @NonNull
     private final String mTaskDescription;
 
     private final boolean mUpdatesOnly;
 
-    @Nullable
-    private Exception mException;
-
-    public SendBooksTask(final boolean updatesOnly,
-                         @NonNull final TaskListener<Object, Integer> taskListener) {
-
-        mTaskListener = new WeakReference<>(taskListener);
+    /**
+     * Constructor.
+     *
+     * @param context      Current context for accessing resources.
+     * @param updatesOnly  {@code true} for updated books only, or {@code false} all books.
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public SendBooksTask(@NonNull final Context context,
+                         final boolean updatesOnly,
+                         @NonNull final TaskListener<Integer> taskListener) {
+        super(R.id.TASK_ID_GR_SEND_BOOKS, taskListener);
         mUpdatesOnly = updatesOnly;
-        mTaskDescription = App.getAppContext().getString(R.string.gr_title_send_book);
+        mTaskDescription = context.getString(R.string.gr_title_send_book);
     }
 
     @Override
@@ -75,20 +71,6 @@ public class SendBooksTask
             Logger.error(this, e);
             mException = e;
             return R.string.error_unexpected_error;
-        }
-    }
-
-    @Override
-    @UiThread
-    protected void onPostExecute(@Nullable final Integer result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_SEND_BOOKS, mException == null,
-                                               result, mException);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             "WeakReference to listener was dead");
-            }
         }
     }
 }

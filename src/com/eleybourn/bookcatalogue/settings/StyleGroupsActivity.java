@@ -183,7 +183,7 @@ public class StyleGroupsActivity
     private void saveStyleSettings() {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
-        // Loop through ALL groups
+        // Loop through all groups
         for (StyleGroupsActivity.GroupWrapper wrapper : mList) {
             // Remove its kind from style
             mStyle.removeGroup(wrapper.group.getKind());

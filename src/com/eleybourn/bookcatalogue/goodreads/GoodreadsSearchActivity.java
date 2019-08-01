@@ -57,11 +57,10 @@ import com.eleybourn.bookcatalogue.widgets.RecyclerViewAdapterBase;
 import com.eleybourn.bookcatalogue.widgets.RecyclerViewViewHolderBase;
 
 /**
- *
  * ENHANCE: the actual search/display are now implemented. But this activity is still disabled,
  * as {@link #onWorkSelected} needs implementing which relies on access,
  * or... maybe find some workaround?
- *
+ * <p>
  * Activity to handle searching Goodreads for books that did not automatically convert.
  * These are typically books without an ISBN.
  * <p>
@@ -85,6 +84,7 @@ public class GoodreadsSearchActivity
     private TextView mSearchTextView;
     /** The View for the resulting list of 'works'. */
     private RecyclerView mListView;
+    /** The ViewModel. */
     private GrSearchViewModel mModel;
     private WorksAdapter mWorksAdapter;
 
@@ -93,6 +93,7 @@ public class GoodreadsSearchActivity
      * this application was not registered yet.
      *
      * @param context Current context
+     * @param bookId  the book to search for
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
@@ -186,6 +187,7 @@ public class GoodreadsSearchActivity
      * Start the search.
      */
     private void doSearch() {
+        UserMessage.show(mListView, R.string.progress_msg_connecting);
         mModel.search(mSearchTextView.getText().toString().trim());
     }
 
@@ -212,21 +214,19 @@ public class GoodreadsSearchActivity
     public static class GrSearchViewModel
             extends ViewModel {
 
+        private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
+        private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
+        private final TaskListener<List<GoodreadsWork>> mTaskListener =
+                message -> mWorks.setValue(message.result);
+
         /** Database access. */
         private DAO mDb;
-
         /** Data from the 'incoming' book. */
         private long mBookId;
         private String mIsbnText;
         private String mAuthorText;
         private String mTitleText;
         private String mSearchText;
-
-        private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
-        private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
-
-        private final TaskListener<Void, List<GoodreadsWork>> mTaskListener =
-                (taskId, success, goodreadsWorks, e) -> mWorks.setValue(goodreadsWorks);
 
         public MutableLiveData<List<GoodreadsWork>> getWorks() {
             return mWorks;

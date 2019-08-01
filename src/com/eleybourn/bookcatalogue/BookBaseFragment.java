@@ -50,8 +50,8 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.viewmodels.BookBaseFragmentModel;
 
@@ -142,8 +142,8 @@ public abstract class BookBaseFragment
     private void needsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             //noinspection ConstantConditions
-            StandardDialogs.registerAtGoodreads(getContext(),
-                                                mBookBaseFragmentModel.getGoodreadsTaskListener());
+            RequestAuthTask.needsRegistration(getContext(),
+                                              mBookBaseFragmentModel.getGoodreadsTaskListener());
         }
     }
 

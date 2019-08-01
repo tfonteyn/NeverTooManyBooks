@@ -47,7 +47,7 @@ public class IsfdbGetBookTask
     /**
      * Constructor. Initiate a single book lookup by id.
      *
-     * @param isfdbId     Single ISFDB native ID's
+     * @param isfdbId      Single ISFDB native ID's
      * @param taskListener where to send the results to
      */
     @UiThread
@@ -72,6 +72,10 @@ public class IsfdbGetBookTask
 
             } else if (mIsfdbId != 0) {
                 return new IsfdbBook().fetch(mIsfdbId, false, resources);
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Logger.debugWithStackTrace(this, "doInBackground", "how did we get here?");
+                }
             }
 
         } catch (@NonNull final SocketTimeoutException e) {

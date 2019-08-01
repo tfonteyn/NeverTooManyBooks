@@ -54,7 +54,8 @@ public class AuthorWorksModel
         if (mAuthor == null || authorId != mAuthor.getId()) {
             mAuthor = mDb.getAuthor(authorId);
             if (mAuthor != null) {
-                mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOCS, mWithTocEntries);
+                mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOCS,
+                                                  mWithTocEntries);
                 mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
                 mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
             } else {

@@ -149,12 +149,14 @@ public class TocEntry
         //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();
 
-        mType = Type.get((char)in.readInt());
+        mType = Type.get((char) in.readInt());
         mBookCount = in.readInt();
     }
 
     /**
      * Helper to check if all titles in a list have the same author.
+     *
+     * @param list of entries
      *
      * @return {@code true} if there is more then 1 author in the TOC
      */

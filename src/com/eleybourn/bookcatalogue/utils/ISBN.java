@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -33,7 +34,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">
- *     http://en.wikipedia.org/wiki/International_Standard_Book_Number</a>
+ * http://en.wikipedia.org/wiki/International_Standard_Book_Number</a>
  * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
@@ -60,7 +61,7 @@ public class ISBN {
      * <p>
      * "070999" in the first part of the UPC means that the ISBN starts with "0-345"
      * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">
-     *     https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map</a>
+     * https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map</a>
      * making it a Ballantine book
      * That "00225" indicates the price
      * That gets us:
@@ -189,7 +190,15 @@ public class ISBN {
 
     /**
      * Check if two ISBN codes are matching.
-     * The two can be any combination of 10/13 digits, or the old UPC code.
+     * In order we check:
+     * <ol>
+     * <li>Either or both == null ? no match</li>
+     * <li>Same length and equalsIgnoreCase ? MATCH</li>
+     * <li>Either one invalid ? no match</li>
+     * <li>ISBN/UPC as objects equal ? MATCH</li>
+     * </ol>
+     *
+     * TODO: SIMPLIFY ISBN matches...
      *
      * @return {@code true} if the 2 codes match.
      */
@@ -202,17 +211,22 @@ public class ISBN {
             return false;
         }
         if (isbn1.length() == isbn2.length()) {
+            // this covers comparing 2 UPC codes, of in fact any code whatsoever.
             return isbn1.equalsIgnoreCase(isbn2);
         }
 
         // Full check needed ...if either one is invalid, we consider them different
-        final ISBN info1 = new ISBN(isbn1);
-        if (!info1.isValid()) {
+        ISBN o1 = new ISBN(isbn1);
+        if (!o1.isValid()) {
             return false;
         }
 
-        ISBN info2 = new ISBN(isbn2);
-        return info2.isValid() && info1.equals(info2);
+        ISBN o2 = new ISBN(isbn2);
+        if (!o2.isValid()) {
+            return false;
+        }
+
+        return o1.equals(o2);
     }
 
     /**
@@ -461,9 +475,9 @@ public class ISBN {
      *
      * @return list of digits or empty on failure
      *
-     * @throws NumberFormatException on failure to analyse the string
+     * @throws NumberFormatException           on failure to analyse the string
      * @throws StringIndexOutOfBoundsException theoretically we should not get this, as we *should*
-     * not pass a string which is to short. But...
+     *                                         not pass a string which is to short. But...
      */
     @NonNull
     private List<Integer> upcToDigits(@NonNull final String upc)
@@ -486,24 +500,72 @@ public class ISBN {
         return tmp;
     }
 
+
+//    public boolean equals(@NonNull final ISBN cmp) {
+//
+//        // If either is invalid, require they match exactly
+//        if (!isValid() || !cmp.isValid()) {
+//            return mDigits.size() == cmp.mDigits.size()
+//                    && digitsMatch(mDigits.size(), 0, cmp, 0);
+//        }
+//
+//        // same length ? simple check
+//        if (mDigits.size() == cmp.mDigits.size()) {
+//            return digitsMatch(mDigits.size(), 0, cmp, 0);
+//        }
+//
+//        // Both are valid ISBN codes and we know the lengths are either 10 or 13
+//        // when we get here. So ... compare the significant digits.
+//        if (mDigits.size() == 10) {
+//            return digitsMatch(9, 0, cmp, 3);
+//        } else {
+//            return digitsMatch(9, 3, cmp, 0);
+//        }
+//    }
+
     /**
-     * do a digit by digit compare, even on invalid data.
+     * Two ISBN objects are equal if they match these checks (in this order).
+     * <ol>
+     *     <li>objects being '==' ? MATCH</li>
+     *     <li>Either or both == null ? no match</li>
+     *     <li>Incoming object is not an ISBN ? no match</li>
+     *     <li>Either or both invalid, compare their digits for exact match</li>
+     *     <li>Same length, compare their digits for exact match</li>
+     *     <li>compare the 9 significant isbn digits for equality.</li>
+     * </ol>
+     *
+     * <b>Note:</b> hash codes are done over the {@link #mDigits} objects.
+     *
+     * TODO: SIMPLIFY ISBN equals...
      */
-    public boolean equals(@NonNull final ISBN cmp) {
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ISBN cmp = (ISBN) o;
 
         // If either is invalid, require they match exactly
         if (!isValid() || !cmp.isValid()) {
-            return mDigits.size() == cmp.mDigits.size()
-                    && digitsMatch(mDigits.size(), 0, cmp, 0);
+            return Objects.equals(mDigits, cmp.mDigits);
+//            return mDigits.size() == cmp.mDigits.size()
+//                    && digitsMatch(mDigits.size(), 0, cmp, 0);
         }
 
-        // same length ? simple check
+        // same length ? they should match exactly
         if (mDigits.size() == cmp.mDigits.size()) {
-            return digitsMatch(mDigits.size(), 0, cmp, 0);
+            return Objects.equals(mDigits, cmp.mDigits);
+//            return digitsMatch(mDigits.size(), 0, cmp, 0);
         }
 
         // Both are valid ISBN codes and we know the lengths are either 10 or 13
-        // when we get here. So ... compare the significant digits.
+        // when we get here. So ... compare the significant digits:
+        // ISBN13: skip the first 3 character, and don't use the checksum.
+        // ISBN10: don't use the checksum.
+        // len is always 9, but allow future extensions (non-isbn?)
         if (mDigits.size() == 10) {
             return digitsMatch(9, 0, cmp, 3);
         } else {
@@ -511,10 +573,15 @@ public class ISBN {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(mDigits);
+    }
+
     /**
-     * simple check if all digits are the same.
+     * Check if all digits are the same.
      */
-    private boolean digitsMatch(final int lenToCheck,
+    private boolean digitsMatch(@SuppressWarnings("SameParameterValue") final int lenToCheck,
                                 int posFrom1,
                                 @NonNull final ISBN dig2,
                                 int posFrom2) {

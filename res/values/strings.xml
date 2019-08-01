@@ -289,14 +289,19 @@
     <string name="progress_msg_export_starting">Export starting…</string>
 
     <string name="progress_msg_loading">Loading…</string>
+
     <string name="progress_msg_starting_search">Starting Search…</string>
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_searching_site">Searching %1$s</string>
+
     <string name="progress_msg_adding_book">Adding book…</string>
     <string name="progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting to web site…</string>
+    <!-- Progress dialog message displayed when uploading data to a web site. -->
+    <string name="progress_msg_sending">Sending, please wait…</string>
+
     <string name="progress_msg_saving_image">Saving image…</string>
     <string name="progress_msg_process_cover">Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
@@ -306,9 +311,10 @@
     <string name="progress_msg_finding_editions">Finding Editions…</string>
 
     <string name="progress_msg_skip_title">Skipping “%1$s”</string>
+
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$d created, %2$d updated</string>
-
+    <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_covers_handled">%1$d covers processed</string>
     <!-- Displayed in progress dialog when exporting covers -->
     <string name="progress_msg_covers_handled_missing">%1$d covers processed (%2$d missing)</string>
@@ -318,11 +324,11 @@
     </string>
 
     <!-- progress final message -->
-    <string name="progress_end_import_complete">Import Complete</string>
-    <string name="progress_end_backup_success">Backup Success</string>
+    <string name="progress_end_import_complete">Import complete</string>
+    <string name="progress_end_backup_success">Backup success</string>
     <string name="progress_end_cancelled">Cancelled</string>
-    <string name="progress_end_num_books_searched">%1$d Books Searched</string>
     <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
+    <string name="progress_end_num_books_searched">%1$d Books searched</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
@@ -1299,7 +1305,6 @@
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
     <string name="rebuild_fts">Rebuild FTS (Experimental!)</string>
     <string name="and_others">et. al.</string>
-
 
 
 </resources>

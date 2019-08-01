@@ -55,6 +55,9 @@ public class EditTocEntryDialogFragment
     /**
      * Constructor.
      *
+     * @param tocEntry           to edit.
+     * @param hasMultipleAuthors Flag that will enable/disable the author edit field
+     *
      * @return the instance
      */
     public static EditTocEntryDialogFragment newInstance(@NonNull final TocEntry tocEntry,

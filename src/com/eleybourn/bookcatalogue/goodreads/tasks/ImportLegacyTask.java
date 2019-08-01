@@ -56,8 +56,8 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsShelf;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewField;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.BaseTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.TQTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
@@ -77,7 +77,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * @author Philip Warner
  */
 class ImportLegacyTask
-        extends BaseTask {
+        extends TQTask {
 
     private static final long serialVersionUID = -3535324410982827612L;
     /**
@@ -109,6 +109,9 @@ class ImportLegacyTask
 
     /**
      * Constructor.
+     *
+     * @param description for the task
+     * @param isSync      Flag indicating this job is a sync job
      */
     ImportLegacyTask(@NonNull final String description,
                      final boolean isSync) {
@@ -306,7 +309,7 @@ class ImportLegacyTask
             }
 
             if (found) {
-                // If found, update ALL related books
+                // If found, update all related books
                 MappedCursorRow cursorRow = cursor.getCursorRow();
                 do {
                     // Check for abort

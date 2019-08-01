@@ -62,7 +62,7 @@ public class BookSearchBaseModel
 
             mSearchCoordinatorId = args.getLong(BookSearchBaseFragment.BKEY_SEARCH_COORDINATOR_ID);
 
-            // optional, use ALL if not there
+            // optional, use all if not defined
             mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.SEARCH_ALL);
 
             mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");

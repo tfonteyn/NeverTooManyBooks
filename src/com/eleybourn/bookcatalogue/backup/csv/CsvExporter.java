@@ -163,7 +163,8 @@ public class CsvExporter
     @Override
     @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final ProgressListener listener)
+                       @NonNull final ProgressListener listener,
+                       final boolean includeCoverCount)
             throws IOException {
 
         // Display startup message
@@ -179,13 +180,18 @@ public class CsvExporter
                      new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
             final MappedCursorRow cursorRow = bookCursor.getCursorRow();
-            int totalBooks = bookCursor.getCount();
+            int progressMaxCount = bookCursor.getCount();
 
             if (listener.isCancelled()) {
                 return 0;
             }
 
-            listener.setMax(totalBooks);
+            // assume each book will have a cover.
+            if (includeCoverCount) {
+                progressMaxCount *= 2;
+            }
+            listener.setMax(progressMaxCount);
+
             out.write(EXPORT_FIELD_HEADERS);
 
             while (bookCursor.moveToNext() && !listener.isCancelled()) {

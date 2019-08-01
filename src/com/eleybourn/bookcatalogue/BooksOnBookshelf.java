@@ -81,6 +81,8 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.goodreads.tasks.RequestAuthTask;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.IsfdbManager;
@@ -280,8 +282,8 @@ public class BooksOnBookshelf
      */
     private void needsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
-            StandardDialogs.registerAtGoodreads(this,
-                                                mModel.getGoodreadsTaskListener());
+            RequestAuthTask.needsRegistration(this,
+                                              mModel.getGoodreadsTaskListener());
         }
     }
 
@@ -307,6 +309,7 @@ public class BooksOnBookshelf
      */
     private void initAdapter(@Nullable final Cursor cursor) {
 
+        //This turned out not to work, or at least not reliably.
         // make sure any old views with potentially incorrect layout are removed
 //        mListView.getRecycledViewPool().clear();
 //        // (re)set the adapter with the current style
@@ -1169,7 +1172,10 @@ public class BooksOnBookshelf
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
-                mModel.sendToGoodReads(row.getLong(DBDefinitions.KEY_FK_BOOK));
+                UserMessage.show(this, R.string.progress_msg_connecting);
+                new SendOneBookTask(row.getLong(DBDefinitions.KEY_FK_BOOK),
+                                    mModel.getGoodreadsTaskListener())
+                        .execute();
                 return true;
 
             /* ********************************************************************************** */

@@ -889,7 +889,7 @@ public class BooklistStyle
     }
 
     /**
-     * @return ALL Filters (active and non-active)
+     * @return Filters (active and non-active)
      */
     @NonNull
     public Collection<Filter> getFilters() {

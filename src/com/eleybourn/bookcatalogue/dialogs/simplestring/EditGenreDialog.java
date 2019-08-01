@@ -32,6 +32,13 @@ import com.eleybourn.bookcatalogue.database.DAO;
 public class EditGenreDialog
         extends EditStringBaseDialog {
 
+    /**
+     * Constructor.
+     *
+     * @param context  Current context
+     * @param db       the database
+     * @param listener a BookChangedListener
+     */
     public EditGenreDialog(@NonNull final Context context,
                            @NonNull final DAO db,
                            @NonNull final BookChangedListener listener) {

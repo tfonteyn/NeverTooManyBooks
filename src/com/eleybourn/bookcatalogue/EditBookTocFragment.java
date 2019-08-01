@@ -375,10 +375,18 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                if (ISBN.isValid(mIsbn)) {
+                if (mBookBaseFragmentModel.getBook().containsKey(DBDefinitions.KEY_ISFDB_ID)) {
+                    long isfdbId = mBookBaseFragmentModel.getBook()
+                                                         .getLong(DBDefinitions.KEY_ISFDB_ID);
+                    //noinspection ConstantConditions
+                    UserMessage.show(getView(), R.string.progress_msg_connecting);
+                    new IsfdbGetBookTask(isfdbId, mIsfdbResultsListener).execute();
+
+                } else if (ISBN.isValid(mIsbn)) {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
                     new IsfdbGetEditionsTask(mIsbn, mIsfdbResultsListener).execute();
+
                 } else {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.warning_action_requires_isbn);

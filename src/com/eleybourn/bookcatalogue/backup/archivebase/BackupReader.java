@@ -26,8 +26,8 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.backup.ImportException;
-import com.eleybourn.bookcatalogue.backup.ProgressListener;
 import com.eleybourn.bookcatalogue.backup.ImportOptions;
+import com.eleybourn.bookcatalogue.backup.ProgressListener;
 
 /**
  * Public interface for any backup archive reader.
@@ -43,9 +43,10 @@ public interface BackupReader
      * <p>
      * See BackupReaderAbstract for a default implementation.
      *
+     * @param settings the import settings
      * @param listener Listener to receive progress information.
      *
-     * @throws IOException on failure
+     * @throws IOException     on failure
      * @throws ImportException on failure
      */
     void restore(@NonNull ImportOptions settings,
@@ -75,7 +76,9 @@ public interface BackupReader
             throws IOException;
 
     /**
-     * @return the INFO object read from the backup
+     * Get the INFO object read from the backup.
+     *
+     * @return info
      */
     @NonNull
     BackupInfo getInfo();

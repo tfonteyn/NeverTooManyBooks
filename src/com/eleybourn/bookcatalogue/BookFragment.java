@@ -44,8 +44,10 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.goodreads.tasks.SendOneBookTask;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.viewmodels.FlattenedBooklistModel;
 
 /**
@@ -571,7 +573,10 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
-                mBookBaseFragmentModel.sendToGoodReads();
+                //noinspection ConstantConditions
+                UserMessage.show(getView(), R.string.progress_msg_connecting);
+                new SendOneBookTask(book.getId(), mBookBaseFragmentModel.getGoodreadsTaskListener())
+                        .execute();
                 return true;
 
             default:

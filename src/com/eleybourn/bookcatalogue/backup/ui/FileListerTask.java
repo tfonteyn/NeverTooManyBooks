@@ -1,41 +1,30 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ui.BRBaseActivity.FileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 
 /**
  * Object to provide a FileListerFragmentTask specific to archive mFileDetails.
- *
- * @author pjw
  */
 public class FileListerTask
-        extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
-
-    /** Used by the {@link ProgressDialogFragment} for this task. */
-    public static final String TAG = "FileListerTask";
+        extends TaskBase<ArrayList<FileDetails>> {
 
     /**
      * Perform case-insensitive sorting using system locale (i.e. mFileDetails are system objects).
@@ -46,28 +35,19 @@ public class FileListerTask
                                        .toLowerCase(App.getSystemLocale()));
 
     @NonNull
-    private final WeakReference<TaskListener<Object, ArrayList<FileDetails>>> mTaskListener;
-
-    @NonNull
     private final File mRootDir;
-
-    /**
-     * {@link #doInBackground} should catch exceptions, and set this field.
-     * {@link #onPostExecute} can then check it.
-     */
-    @Nullable
-    private Exception mException;
 
     /**
      * Constructor.
      *
-     * @param rootDir folder to list
+     * @param rootDir      folder to list
+     * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
     FileListerTask(@NonNull final File rootDir,
-                   @NonNull final TaskListener<Object, ArrayList<FileDetails>> taskListener) {
+                   @NonNull final TaskListener<ArrayList<FileDetails>> taskListener) {
+        super(R.id.TASK_ID_FILE_LISTER, taskListener);
         mRootDir = rootDir;
-        mTaskListener = new WeakReference<>(taskListener);
     }
 
     @Override
@@ -103,24 +83,5 @@ public class FileListerTask
 
         Collections.sort(fileDetails, FILE_DETAILS_COMPARATOR);
         return fileDetails;
-    }
-
-    /**
-     * If the task was cancelled (by the user cancelling the progress dialog) then
-     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-     *
-     * @param result of the task
-     */
-    @Override
-    @UiThread
-    protected void onPostExecute(@NonNull final ArrayList<FileDetails> result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(R.id.TASK_ID_FILE_LISTER, mException == null, result, mException);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             "WeakReference to listener was dead");
-            }
-        }
     }
 }

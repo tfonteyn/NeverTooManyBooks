@@ -116,7 +116,7 @@ public class ShelvesListApiHandler
         String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
-        executeGet(url, null,true, handler);
+        executeGet(url, null, true, handler);
 
         return mFilters.getData();
     }

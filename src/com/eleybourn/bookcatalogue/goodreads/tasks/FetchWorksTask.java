@@ -1,38 +1,36 @@
 package com.eleybourn.bookcatalogue.goodreads.tasks;
 
-import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.tasks.TaskBase;
 import com.eleybourn.bookcatalogue.tasks.TaskListener;
 import com.eleybourn.bookcatalogue.utils.BookNotFoundException;
 import com.eleybourn.bookcatalogue.utils.CredentialsException;
 
 public class FetchWorksTask
-        extends AsyncTask<Void, Void, List<GoodreadsWork>> {
+        extends TaskBase<List<GoodreadsWork>> {
 
-    @NonNull
-    private final WeakReference<TaskListener<Void, List<GoodreadsWork>>> mTaskListener;
     private final String mSearchText;
-    @Nullable
-    private Exception mException;
 
+    /**
+     * Constructor.
+     *
+     * @param searchText   keywords to search for
+     * @param taskListener for sending progress and finish messages to.
+     */
     public FetchWorksTask(@NonNull final String searchText,
-                          @NonNull final TaskListener<Void, List<GoodreadsWork>> taskListener) {
+                          @NonNull final TaskListener<List<GoodreadsWork>> taskListener) {
+        super(R.id.TASK_ID_GR_GET_WORKS, taskListener);
         mSearchText = searchText;
-        mTaskListener = new WeakReference<>(taskListener);
     }
 
     @Override
@@ -50,20 +48,6 @@ public class FetchWorksTask
             Logger.error(this, e);
             mException = e;
         }
-
         return null;
-    }
-
-    @Override
-    protected void onPostExecute(@Nullable final List<GoodreadsWork> result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onTaskFinished(R.id.TASK_ID_GR_GET_WORKS, mException == null,
-                                               result, mException);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Logger.debug(this, "onPostExecute",
-                             "WeakReference to listener was dead");
-            }
-        }
     }
 }
