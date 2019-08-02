@@ -1,39 +1,13 @@
-# Android Studio 3.4
 *.iml
 .gradle
+/local.properties
 /.idea/caches
-/.idea/checkstyleidea-libs/
-/.idea/dictionaries/
 /.idea/libraries
-/.idea/assetWizardSettings.xml
 /.idea/modules.xml
-/.idea/navEditor.xml
 /.idea/workspace.xml
-
-.externalNativeBuild
-
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
 /build
 /captures
-/gradle
-
-/gradlew
-/gradlew.bat
-/javadoc.xml
-/local.properties
-
-# MacOS
-.DS_Store
-
-# Eclipse specific
-/bin
-/gen
-/wrapper
-/.classpath
-/.project
-/.settings
-/project.properties
-
-
-
-
-
+.externalNativeBuild

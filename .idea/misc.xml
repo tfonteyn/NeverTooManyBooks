@@ -5,10 +5,6 @@
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
-  <component name="EntryPointsManager">
-    <pattern value="com.eleybourn.bookcatalogue.database.definitions.TableDefinition" method="ref" />
-    <pattern value="com.eleybourn.bookcatalogue.entities.Book" method="Book" />
-  </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
       <profile-state>

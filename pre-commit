@@ -20,9 +20,9 @@ function checkTempTableUsage {
   fi
 }
 
-checkTempTableUsage "src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java"
-checkTempTableUsage "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java"
-checkTempTableUsage "src/com/eleybourn/bookcatalogue/database/DBDefinitions.java"
+checkTempTableUsage "src/hardbacknutter.nevertomanybooks/booklist/BooklistBuilder.java"
+checkTempTableUsage "src/hardbacknutter.nevertomanybooks/booklist/FlattenedBooklist.java"
+checkTempTableUsage "hardbacknutter.nevertomanybooks/database/DBDefinitions.java"
 
 MF=AndroidManifest.xml
 echo "Cleaning $MF"
