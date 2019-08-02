@@ -59,6 +59,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class BackupActivity
         extends BRBaseActivity {
 
+    private static final String TAG = "BackupActivity";
+
     private EditText mFilenameView;
     /** The ViewModel. */
     private ExportOptionsTaskModel mModel;
@@ -76,8 +78,7 @@ public class BackupActivity
 
         FragmentManager fm = getSupportFragmentManager();
 
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTask(mModel.getTask());
         }
@@ -253,12 +254,11 @@ public class BackupActivity
         }
 
         FragmentManager fm = getSupportFragmentManager();
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment.newInstance(
                     R.string.progress_msg_backing_up, false, 0);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            mProgressDialog.show(fm, TAG);
 
             BackupTask task = new BackupTask(options, mModel.getTaskListener());
             mModel.setTask(task);

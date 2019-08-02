@@ -21,15 +21,12 @@ import com.eleybourn.bookcatalogue.UniqueId;
 
 /**
  * Progress support for an {@link TaskBase}. There can only be ONE task at a time.
+ * Needs a reference to the task, so if the user cancels the dialog, we can cancel the task.
  */
 public class ProgressDialogFragment
         extends DialogFragment {
 
-    /**
-     * Fragment manager tag used if no custom tag is needed; e.g. when this dialog is shared
-     * among multiple tasks.
-     */
-    public static final String TAG = "ProgressDialogFragment";
+    private static final String TAG = "ProgressDialogFragment";
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
     private static final String BKEY_MAX = TAG + ":max";
@@ -49,7 +46,7 @@ public class ProgressDialogFragment
 
     /** flag indicating the max value was updated. No need to add to onSaveInstanceState. */
     private boolean mUpdateMax;
-    /** intermediate storage, as we'll only update this when progress is updated. */
+    /** intermediate storage, as we'll only update the dialog from {@link #onProgress}. */
     private int mMax;
     /** intermediate storage, needed for onSaveInstanceState. */
     private int mCurrent;

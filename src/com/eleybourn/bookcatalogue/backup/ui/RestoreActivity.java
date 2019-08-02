@@ -49,6 +49,8 @@ import com.eleybourn.bookcatalogue.viewmodels.ImportOptionsTaskModel;
 public class RestoreActivity
         extends BRBaseActivity {
 
+    private static final String TAG = "RestoreActivity";
+
     /** The ViewModel. */
     private ImportOptionsTaskModel mModel;
 
@@ -64,8 +66,7 @@ public class RestoreActivity
         mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
 
         FragmentManager fm = getSupportFragmentManager();
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTask(mModel.getTask());
         }
@@ -195,12 +196,11 @@ public class RestoreActivity
         }
 
         FragmentManager fm = getSupportFragmentManager();
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment.newInstance(
                     R.string.progress_msg_importing, false, 0);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            mProgressDialog.show(fm, TAG);
 
             RestoreTask task = new RestoreTask(options, mModel.getTaskListener());
             mModel.setTask(task);

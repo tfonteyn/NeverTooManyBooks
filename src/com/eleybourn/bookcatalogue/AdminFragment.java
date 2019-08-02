@@ -89,8 +89,7 @@ public class AdminFragment
         mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
             mProgressDialog.setTask(mModel.getTask());
         }
@@ -276,13 +275,11 @@ public class AdminFragment
         settings.what = ExportOptions.BOOK_CSV;
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment.newInstance(
                     R.string.progress_msg_backing_up, false, 0);
-            mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-
+            mProgressDialog.show(fm, TAG);
             //noinspection ConstantConditions
             ExportCSVTask task = new ExportCSVTask(getContext(), settings,
                                                    mModel.getTaskListener());
@@ -344,12 +341,11 @@ public class AdminFragment
                     }
 
                     FragmentManager fm = getChildFragmentManager();
-                    mProgressDialog = (ProgressDialogFragment)
-                            fm.findFragmentByTag(ProgressDialogFragment.TAG);
+                    mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
                     if (mProgressDialog == null) {
                         mProgressDialog = ProgressDialogFragment.newInstance(
                                 R.string.progress_msg_importing, false, 0);
-                        mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+                        mProgressDialog.show(fm, TAG);
 
                         ImportCSVTask task = new ImportCSVTask(getContext(), settings,
                                                                mModel.getTaskListener());
