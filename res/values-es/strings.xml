@@ -704,5 +704,7 @@
     <string name="menu_author_works_all">Mostrar todo</string>
     <string name="menu_author_works_book">Solo libros</string>
     <string name="menu_author_works_toc">Solo títulos de contenido</string>
+    <string name="progress_msg_sending">Enviando, por favor espere…</string>
+    <string name="error_authentication_failed">Autenticación fallida</string>
 
 </resources>

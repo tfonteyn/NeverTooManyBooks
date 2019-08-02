@@ -925,5 +925,7 @@
     <string name="menu_author_works_all">Zeige alles</string>
     <string name="menu_author_works_book">Nur Bücher</string>
     <string name="menu_author_works_toc">Nur Inhaltstitel</string>
+    <string name="progress_msg_sending">Senden, bitte warten…</string>
+    <string name="error_authentication_failed">Authentifizierung fehlgeschlagen</string>
 
 </resources>

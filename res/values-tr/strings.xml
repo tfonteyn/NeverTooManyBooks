@@ -659,5 +659,7 @@
     <string name="menu_author_works_all">Hepsini Göster ↓</string>
     <string name="menu_author_works_book">Sadece kitaplar</string>
     <string name="menu_author_works_toc">Yalnızca içerik başlıkları</string>
+    <string name="progress_msg_sending">Gönderiliyor, lütfen bekleyin…</string>
+    <string name="error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
 
 </resources>

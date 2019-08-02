@@ -645,5 +645,7 @@
     <string name="menu_author_works_all">Προβολή όλων</string>
     <string name="menu_author_works_book">Μόνο βιβλία</string>
     <string name="menu_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
+    <string name="progress_msg_sending">Αποστολή, παρακαλώ περιμένετε…</string>
+    <string name="error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
 
 </resources>

@@ -614,6 +614,8 @@
     <string name="menu_author_works_all">Pokaż wszystko</string>
     <string name="menu_author_works_book">Tylko książki</string>
     <string name="menu_author_works_toc">Tylko tytuły treści</string>
+    <string name="progress_msg_sending">Wysyłanie, proszę czekać…</string>
+    <string name="error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
 
 
 </resources>

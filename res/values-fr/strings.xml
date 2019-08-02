@@ -759,5 +759,7 @@
     <string name="menu_author_works_all">Montre tout</string>
     <string name="menu_author_works_book">Livres seulement</string>
     <string name="menu_author_works_toc">Titres de contenu uniquement</string>
+    <string name="progress_msg_sending">Envoi en cours, veuillez patienter…</string>
+    <string name="error_authentication_failed">Authentification échouée</string>
 
 </resources>
