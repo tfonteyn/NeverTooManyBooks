@@ -51,6 +51,10 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public final class Logger {
 
+    /** Widely used DEBUG error message. */
+    public static final String WEAK_REFERENCE_TO_LISTENER_WAS_DEAD =
+            "WeakReference to listener was dead";
+
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";

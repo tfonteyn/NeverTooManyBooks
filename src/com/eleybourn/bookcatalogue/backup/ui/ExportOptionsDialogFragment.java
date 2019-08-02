@@ -77,7 +77,7 @@ public class ExportOptionsDialogFragment
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onOptionsSet",
-                                         "WeakReference to listener was dead");
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                         }
                     }
                 })

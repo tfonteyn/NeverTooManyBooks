@@ -63,7 +63,7 @@ public abstract class TaskBase<Result>
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onCancelled",
-                             "WeakReference to listener was dead");
+                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
             }
         }
     }
@@ -76,7 +76,7 @@ public abstract class TaskBase<Result>
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onProgressUpdate",
-                             "WeakReference to listener was dead");
+                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
             }
         }
     }
@@ -91,7 +91,7 @@ public abstract class TaskBase<Result>
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Logger.debug(this, "onPostExecute",
-                             "WeakReference to listener was dead");
+                             Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
             }
         }
     }

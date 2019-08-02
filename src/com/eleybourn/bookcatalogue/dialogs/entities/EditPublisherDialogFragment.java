@@ -136,7 +136,7 @@ public class EditPublisherDialogFragment
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookChanged",
-                                         "WeakReference to listener was dead");
+                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                         }
                     }
                 })

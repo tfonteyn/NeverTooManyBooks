@@ -570,7 +570,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCommitToc",
-                                 "WeakReference to listener was dead");
+                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }
@@ -582,7 +582,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onGetNext",
-                                 "WeakReference to listener was dead");
+                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }
