@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.hardbacknutter.nevertomanybooks.App;
-
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
  * <p>
@@ -42,7 +40,6 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         super(key, uuid, isPersistent, defaultValue);
     }
 
-
     @Override
     public void set(@Nullable final T value) {
         if (!mIsPersistent) {
@@ -50,7 +47,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         } else if (value == null) {
             remove();
         } else {
-            App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
@@ -75,7 +72,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         if (value == null) {
             remove();
         } else {
-            App.getPrefs(mUuid).edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
@@ -98,8 +95,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             //noinspection ConstantConditions
             mNonPersistedValue.add(element);
         } else {
-            SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
-            add(ed, App.getPrefs(mUuid).getString(getKey(), null), element);
+            SharedPreferences.Editor ed = getPrefs().edit();
+            add(ed, getPrefs().getString(getKey(), null), element);
             ed.apply();
         }
     }
@@ -137,7 +134,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             //noinspection ConstantConditions
             mNonPersistedValue.remove(element);
         } else {
-            String list = App.getPrefs(mUuid).getString(getKey(), null);
+            String list = getPrefs().getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
                 List<String> newList = new ArrayList<>();
                 for (String e : list.split(DELIM)) {
@@ -148,7 +145,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                 if (newList.isEmpty()) {
                     remove();
                 } else {
-                    App.getPrefs(mUuid).edit()
+                    getPrefs().edit()
                        .putString(getKey(), TextUtils.join(DELIM, newList))
                        .apply();
                 }

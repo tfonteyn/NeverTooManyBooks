@@ -6,11 +6,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
-import java.util.List;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
@@ -19,11 +16,14 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Represents a Bookshelf.
  */
 public class Bookshelf
-        implements Parcelable, ItemWithIdFixup, Entity {
+        implements Parcelable, ItemWithFixableId, Entity {
 
     /**
      * how to concat bookshelf names. This should be using '|' as {@link StringList}
@@ -61,7 +61,7 @@ public class Bookshelf
     private String mName;
     /**
      * the style uuid. Should never be exposed as it's not validated on its own.
-     * Always call {@link #getStyle(DAO)}}
+     * Always call {@link #getStyle}}
      */
     @NonNull
     private String mStyleUuid;
@@ -178,13 +178,14 @@ public class Bookshelf
             } else if (useAll) {
                 // Caller wants "AllBooks" (instead of the default Bookshelf)
                 return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                     BooklistStyles.getDefaultStyle(db));
+                        BooklistStyles.getDefaultStyle(context, db));
             }
         }
 
         return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
-                             BooklistStyles.getDefaultStyle(db));
+                BooklistStyles.getDefaultStyle(context, db));
     }
+
     /**
      * Get the preferred bookshelf with fallback to Default/AllBooks as needed.
      *
@@ -197,15 +198,17 @@ public class Bookshelf
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          final boolean useAll) {
-        String name = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
+        String name = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(PREF_BOOKSHELF_CURRENT, null);
         return getBookshelf(context, db, name, useAll);
     }
 
     /**
      * Set this bookshelf as the current/preferred.
      */
-    public void setAsPreferred() {
-        App.getPrefs().edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
+    public void setAsPreferred(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
     @Override
@@ -233,12 +236,14 @@ public class Bookshelf
      * @param db    the database used to update the bookshelf
      * @param style to set
      */
-    public void setStyle(@NonNull final DAO db,
+    public void setStyle(@NonNull final Context context,
+                         @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
-        style.setDefault();
+        style.setDefault(context);
 
         mStyleUuid = style.getUuid();
-        db.updateOrInsertBookshelf(this);
+        long styleId = getStyle(context, db).getId();
+        db.updateOrInsertBookshelf(this, styleId);
         mCachedStyle = style;
     }
 
@@ -250,11 +255,12 @@ public class Bookshelf
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public BooklistStyle getStyle(@NonNull final DAO db) {
+    public BooklistStyle getStyle(@NonNull final Context context,
+                                  @NonNull final DAO db) {
 
         if (mCachedStyle == null || !mStyleUuid.equals(mCachedStyle.getUuid())) {
             // refresh
-            mCachedStyle = BooklistStyles.getStyle(db, mStyleUuid);
+            mCachedStyle = BooklistStyles.getStyle(context, db, mStyleUuid);
             // the previous uuid might have been overruled.
             mStyleUuid = mCachedStyle.getUuid();
         }
@@ -267,10 +273,12 @@ public class Bookshelf
      *
      * @param db the database
      */
-    public void validateStyle(@NonNull final DAO db) {
+    public void validateStyle(@NonNull final Context context,
+                              @NonNull final DAO db) {
         String uuid = mStyleUuid;
-        if (!uuid.equals(getStyle(db).getUuid())) {
-            db.updateBookshelf(this);
+        if (!uuid.equals(getStyle(context, db).getUuid())) {
+            long styleId = getStyle(context, db).getId();
+            db.updateBookshelf(this, styleId);
         }
     }
 
@@ -323,7 +331,7 @@ public class Bookshelf
     }
 
     @Override
-    public long fixupId(@NonNull final DAO db) {
+    public long fixId(@NonNull final DAO db) {
         mId = db.getBookshelfId(this);
         return mId;
     }

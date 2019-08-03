@@ -93,7 +93,7 @@ public class EditSeriesDialogFragment
         mSeries = requireArguments().getParcelable(DBDefinitions.KEY_SERIES_TITLE);
         Objects.requireNonNull(mSeries);
         if (savedInstanceState == null) {
-            mName = mSeries.getName();
+            mName = mSeries.getTitle();
             mIsComplete = mSeries.isComplete();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES_TITLE);
@@ -133,14 +133,15 @@ public class EditSeriesDialogFragment
                     mIsComplete = mIsCompleteView.isChecked();
                     dismiss();
 
-                    if (mSeries.getName().equals(mName)
+                    if (mSeries.getTitle().equals(mName)
                             && mSeries.isComplete() == mIsComplete) {
                         return;
                     }
-                    mSeries.setName(mName);
+                    mSeries.setTitle(mName);
                     mSeries.setComplete(mIsComplete);
 
-                    mDb.updateOrInsertSeries(mSeries, LocaleUtils.getPreferredLocal());
+                    mDb.updateOrInsertSeries(getContext(),
+                            mSeries, LocaleUtils.getPreferredLocale(getContext()));
 
                     Bundle data = new Bundle();
                     data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());

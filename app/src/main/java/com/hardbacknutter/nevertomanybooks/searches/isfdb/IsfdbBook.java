@@ -1,26 +1,14 @@
 package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -33,6 +21,20 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IsfdbBook
         extends AbstractBase {
@@ -86,15 +88,15 @@ public class IsfdbBook
 
         // multiple works, multiple authors
         TYPE_MAP.put("anth",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
         TYPE_MAP.put("ANTHOLOGY",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
         TYPE_MAP.put("omni",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
         TYPE_MAP.put("OMNIBUS",
-                     TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
+                TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS);
 
         TYPE_MAP.put("MAGAZINE", TocEntry.Authors.MULTIPLE_WORKS);
 
@@ -125,45 +127,57 @@ public class IsfdbBook
     @Nullable
     private String mFirstPublication;
 
-    @Nullable
-    public List<Editions.Edition> getEditions() {
-        return mEditions;
+    IsfdbBook() {
+        super();
     }
 
     //ENHANCE: pass and store these ISFDB ID's?
 //    private final ArrayList<Long> ISFDB_AUTHOR_ID_LIST = new ArrayList<>();
 //    private final ArrayList<Long> ISFDB_SERIES_ID_LIST = new ArrayList<>();
 
+
+    @VisibleForTesting
+    IsfdbBook(@Nullable final Document doc) {
+        super(doc);
+    }
+
+    @Nullable
+    public List<Editions.Edition> getEditions() {
+        return mEditions;
+    }
+
     /**
      * @param isfdbId        ISFDB native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param resources      for locale strings
+     * @param context        for locale strings
      *
      * @return Bundle with book data
      *
      * @throws SocketTimeoutException on timeout
      */
+    @NonNull
     public Bundle fetch(final long isfdbId,
                         final boolean fetchThumbnail,
-                        @NonNull final Resources resources)
+                        @NonNull final Context context)
             throws SocketTimeoutException {
 
         return fetch(IsfdbManager.getBaseURL() + String.format(BOOK_URL, isfdbId),
-                     fetchThumbnail, resources);
+                fetchThumbnail, context);
     }
 
     /**
      * @param path           A fully qualified ISFDB search url
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param resources      for locale strings
+     * @param context        for locale strings
      *
      * @return Bundle with book data
      *
      * @throws SocketTimeoutException on timeout
      */
+    @NonNull
     public Bundle fetch(@NonNull final String path,
                         final boolean fetchThumbnail,
-                        @NonNull final Resources resources)
+                        @NonNull final Context context)
             throws SocketTimeoutException {
 
         mPath = path;
@@ -172,13 +186,14 @@ public class IsfdbBook
             return new Bundle();
         }
 
-        return parseDoc(fetchThumbnail, resources);
+        Bundle bookData = new Bundle();
+        return parseDoc(bookData, fetchThumbnail, context);
     }
 
     /**
      * @param editions       List of ISFDB Editions with native book id
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param resources      for locale strings
+     * @param context        for locale strings
      *
      * @return Bundle with book data
      *
@@ -187,7 +202,7 @@ public class IsfdbBook
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
                         final boolean fetchThumbnail,
-                        @NonNull final Resources resources)
+                        @NonNull final Context context)
             throws SocketTimeoutException {
 
         mEditions = editions;
@@ -205,7 +220,8 @@ public class IsfdbBook
             }
         }
 
-        return parseDoc(fetchThumbnail, resources);
+        Bundle bookData = new Bundle();
+        return parseDoc(bookData, fetchThumbnail, context);
     }
 
     /**
@@ -329,17 +345,18 @@ public class IsfdbBook
      * }
      * </pre>
      *
+     * @param bookData       a new Bundle()  (must be passed in so we mock it in test)
      * @param fetchThumbnail whether to get thumbnails as well
-     * @param resources      for locale strings
+     * @param context        Current context for accessing resources.
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
     @NonNull
-    private Bundle parseDoc(final boolean fetchThumbnail,
-                            @NonNull final Resources resources)
+    @VisibleForTesting
+    Bundle parseDoc(@NonNull final Bundle bookData,
+                    final boolean fetchThumbnail,
+                    @NonNull final Context context)
             throws SocketTimeoutException {
-
-        Bundle bookData = new Bundle();
 
         Element contentBox = mDoc.select("div.contentbox").first();
         Element ul = contentBox.select("ul").first();
@@ -380,13 +397,6 @@ public class IsfdbBook
                     mTitle = li.childNode(1).toString().trim();
                     bookData.putString(DBDefinitions.KEY_TITLE, mTitle);
 
-                    // publication record.
-                    tmpString = li.childNode(2).childNode(1).toString().trim();
-                    try {
-                        long record = Long.parseLong(tmpString);
-                        bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
-                    } catch (@NonNull final NumberFormatException ignore) {
-                    }
                 } else if ("Author:".equalsIgnoreCase(fieldName)
                         || "Authors:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
@@ -407,8 +417,11 @@ public class IsfdbBook
                     // and we're paranoid...
                     Date d = DateUtils.parseDate(tmpString);
                     if (d != null) {
+                        // Note that partial dates, e.g. "1987", "1978-03"
+                        // will get 'completed' to "1987-01-01", "1978-03-01"
+                        // This should be acceptable IMHO.
                         bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           DateUtils.utcSqlDate(d));
+                                DateUtils.utcSqlDate(d));
                     }
 
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
@@ -445,9 +458,9 @@ public class IsfdbBook
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
                     LocaleUtils.splitPrice(tmpString,
-                                           DBDefinitions.KEY_PRICE_LISTED,
-                                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                           bookData);
+                            DBDefinitions.KEY_PRICE_LISTED,
+                            DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                            bookData);
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmpString = li.childNode(2).toString().trim();
@@ -457,7 +470,7 @@ public class IsfdbBook
                     // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. bla bla.</span></div>
                     // need to lift "tp".
                     tmpString = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(resources, tmpString));
+                    bookData.putString(DBDefinitions.KEY_FORMAT, Format.map(context, tmpString));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
@@ -502,9 +515,25 @@ public class IsfdbBook
             }
         }
 
-//        Elements recordIDDiv = contentBox.select("span.recordID");
-//        if (recordIDDiv != null) {
+        // publication record.
+//        tmpString = li.childNode(2).childNode(1).toString().trim();
+//        try {
+//            long record = Long.parseLong(tmpString);
+//            bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
+//        } catch (@NonNull final NumberFormatException ignore) {
 //        }
+        Elements recordIDDiv = contentBox.select("span.recordID");
+        if (recordIDDiv != null) {
+            tmpString = recordIDDiv.first().childNode(1).toString().trim();
+            tmpString = digits(tmpString,false);
+            if (tmpString != null && !tmpString.isEmpty()) {
+                try {
+                    long record = Long.parseLong(tmpString);
+                    bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
+                } catch (@NonNull final NumberFormatException ignore) {
+                }
+            }
+        }
 
         //ENHANCE: it would make much more sense to get the notes from the URL_TITLE_CGI page.
         Elements notesDiv = contentBox.select("div.notes");
@@ -512,7 +541,7 @@ public class IsfdbBook
             tmpString = notesDiv.html();
             // it should always have this at the start, but paranoia...
             if (tmpString.startsWith("<b>Notes:</b>")) {
-                tmpString = tmpString.substring(13);
+                tmpString = tmpString.substring(13).trim();
             }
             bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmpString);
         }
@@ -523,8 +552,11 @@ public class IsfdbBook
         // Default to a localised 'English" as ISFDB is after all (I presume) 95% english
         bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
+        boolean addSeriesFromToc = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+
         // the table of content
-        ArrayList<TocEntry> toc = getTocList(bookData);
+        ArrayList<TocEntry> toc = getTocList(bookData, addSeriesFromToc);
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
         // store accumulated ArrayList's, do this *after* we got the TOC
@@ -556,7 +588,7 @@ public class IsfdbBook
             // we gamble and take what we found in the TOC
             if (mFirstPublication != null) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                   digits(mFirstPublication, false));
+                        digits(mFirstPublication, false));
             } // else take the book pub date ... but that might be wrong....
         }
 
@@ -666,7 +698,8 @@ public class IsfdbBook
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (Character.isDigit(c) || (isIsbn && (c == 'X') || (c == 'x'))) {
+            //FIXME: this actually allows an X anywhere instead of just at the end.
+            if (Character.isDigit(c) || (isIsbn && Character.toUpperCase(c) == 'X')) {
                 sb.append(c);
             }
         }
@@ -739,7 +772,8 @@ public class IsfdbBook
      * @throws SocketTimeoutException on timeout
      */
     @NonNull
-    private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData)
+    private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData,
+                                           final boolean addSeriesFromToc)
             throws SocketTimeoutException {
 
         final ArrayList<TocEntry> results = new ArrayList<>();
@@ -747,9 +781,6 @@ public class IsfdbBook
         if (loadPage(mPath, true) == null) {
             return results;
         }
-
-        boolean addSeriesFromToc = App.getPrefs()
-                                      .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
 
         // <div class="ContentBox"> but there are two, so get last one
         Element contentBox = mDoc.select("div.contentbox").last();
@@ -851,15 +882,15 @@ public class IsfdbBook
             if (author == null) {
                 author = mAuthors.get(0);
                 Logger.warn(this, "getTocList",
-                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
-                            "ISFDB search for content found no author for li=" + li);
+                        "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
+                        "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
                 Logger.warn(this, "getTocList",
-                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
-                            "ISFDB search for content found no title for li=" + li);
+                        "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
+                        "ISFDB search for content found no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"
@@ -881,7 +912,7 @@ public class IsfdbBook
     /**
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
-    private static class BookField {
+    static class BookField {
 
 //        private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
 //        private static final String SERIES_ID = "__ISFDB_SERIES_ID";
@@ -890,7 +921,7 @@ public class IsfdbBook
 //        private static final String BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
 //        private static final String BOOK_COVER_ART_TXT = "__BOOK_COVER_ART_TXT";
 
-        private static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
-        private static final String ISBN_2 = "__ISFDB_ISBN2";
+        static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
+        static final String ISBN_2 = "__ISFDB_ISBN2";
     }
 }

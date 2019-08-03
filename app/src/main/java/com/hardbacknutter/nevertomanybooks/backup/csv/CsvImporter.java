@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.csv;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDoneException;
 import android.text.TextUtils;
@@ -27,15 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -53,11 +45,21 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertomanybooks.entities.ItemWithIdFixup;
+import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -95,20 +97,22 @@ public class CsvImporter
     /**
      * Constructor.
      *
-     * @param resources Current resources.
-     * @param settings  {@link ImportOptions#file} is not used, as we must support
-     *                  reading from a stream.
-     *                  {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
-     *                  Other flags are ignored, as this class only
-     *                  handles {@link ImportOptions#BOOK_CSV} anyhow.
+     * @param context  Current resources.
+     * @param settings {@link ImportOptions#file} is not used, as we must support
+     *                 reading from a stream.
+     *                 {@link ImportOptions#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                 Other flags are ignored, as this class only
+     *                 handles {@link ImportOptions#BOOK_CSV} anyhow.
      */
     @UiThread
-    public CsvImporter(@NonNull final Resources resources,
+    public CsvImporter(@NonNull final Context context,
                        @NonNull final ImportOptions settings) {
-
+        //FIXME: the context we get is not always a 'userContext' so try to get correct resources
+        Resources resources = LocaleUtils.getLocalizedResources(context,
+                LocaleUtils.getPreferredLocale(context));
         mUnknownString = resources.getString(R.string.unknown);
-        mProgress_msg_n_created_m_updated = resources.getString(
-                R.string.progress_msg_n_created_m_updated);
+        mProgress_msg_n_created_m_updated =
+                resources.getString(R.string.progress_msg_n_created_m_updated);
 
         mDb = new DAO();
         mSettings = settings;
@@ -118,9 +122,12 @@ public class CsvImporter
     @WorkerThread
     @NonNull
     public Results doBooks(@NonNull final InputStream importStream,
-                       @Nullable final CoverFinder coverFinder,
-                       @NonNull final ProgressListener listener)
+                           @Nullable final CoverFinder coverFinder,
+                           @NonNull final ProgressListener listener)
             throws IOException, ImportException {
+
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
 
         final List<String> importedList = new ArrayList<>();
 
@@ -163,28 +170,27 @@ public class CsvImporter
 
         // need either UUID or ID
         requireColumnOrThrow(book,
-                             // preferred, the original "book_uuid"
-                             DBDefinitions.KEY_BOOK_UUID,
-                             // as a courtesy, we also allow the plain "uuid"
-                             DBDefinitions.KEY_UUID,
-                             // but an ID is also ok.
-                             DBDefinitions.KEY_PK_ID);
+                // preferred, the original "book_uuid"
+                DBDefinitions.KEY_BOOK_UUID,
+                // as a courtesy, we also allow the plain "uuid"
+                DBDefinitions.KEY_UUID,
+                // but an ID is also ok.
+                DBDefinitions.KEY_PK_ID);
 
         // need some type of author name.
         // ENHANCE: We should accept UPDATED books where the incoming row does not have a author.
         requireColumnOrThrow(book,
-                             // aka author_details: preferred one as used in latest versions
-                             CsvExporter.CSV_COLUMN_AUTHORS,
-                             // alternative column names we handle.
-                             DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
-                             DBDefinitions.KEY_AUTHOR_FORMATTED,
-                             OLD_STYLE_AUTHOR_NAME
+                // aka author_details: preferred one as used in latest versions
+                CsvExporter.CSV_COLUMN_AUTHORS,
+                // alternative column names we handle.
+                DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                DBDefinitions.KEY_AUTHOR_FORMATTED,
+                OLD_STYLE_AUTHOR_NAME
         );
 
         // need a title.
         // ENHANCE: We should accept UPDATED books where the incoming row does not have a title.
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
-
 
         final boolean updateOnlyIfNewer;
         if ((mSettings.what & ImportOptions.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
@@ -237,14 +243,15 @@ public class CsvImporter
 
                 // Lookup ID's etc, but do not write to db! Storing the book data does all that
 
+
                 // check any of the pre-tested Author variations columns.
-                handleAuthors(mDb, book);
+                handleAuthors(userContext, mDb, book);
                 // check the dedicated Series column, or check if the title contains a series part.
-                handleSeries(mDb, book);
+                handleSeries(userContext, mDb, book);
 
                 // optional
                 if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
-                    handleAnthology(mDb, book);
+                    handleAnthology(userContext, mDb, book);
                 }
 
                 // v5 has columns
@@ -270,7 +277,7 @@ public class CsvImporter
                             coverFinder.copyOrRenameCoverFile(bids.uuid);
                         } else {
                             coverFinder.copyOrRenameCoverFile(bookIdFromFile,
-                                                              mDb.getBookUuid(bids.bookId));
+                                    mDb.getBookUuid(bids.bookId));
                         }
                     }
                 } catch (@NonNull final IOException e) {
@@ -284,7 +291,7 @@ public class CsvImporter
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     String msg = String.format(mProgress_msg_n_created_m_updated,
-                                               mResults.booksCreated, mResults.booksUpdated);
+                            mResults.booksCreated, mResults.booksUpdated);
                     listener.onProgress(row, title + "\n(" + msg + ')');
                     lastUpdate = now;
                 }
@@ -302,9 +309,9 @@ public class CsvImporter
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             // minus 1 for the headers.
             Logger.debugExit(this, "doBooks",
-                             "Csv Import successful: rows processed: " + (row - 1),
-                             "created:" + mResults.booksCreated,
-                             "updated: " + mResults.booksUpdated);
+                    "Csv Import successful: rows processed: " + (row - 1),
+                    "created:" + mResults.booksCreated,
+                    "updated: " + mResults.booksUpdated);
         }
 
         mResults.booksProcessed = row;
@@ -329,12 +336,15 @@ public class CsvImporter
                             @NonNull final BookIds bids,
                             final boolean updateOnlyIfNewer) {
 
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+
         final boolean hasUuid = !bids.uuid.isEmpty();
 
         // Always import empty ID's...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !bids.hasNumericId) {
-            return mDb.insertBook(book);
+            return mDb.insertBook(userContext, book);
         }
 
         // we have a UUID or ID. We'll check if we already have the book.
@@ -360,8 +370,8 @@ public class CsvImporter
 
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                int rowsAffected = mDb.updateBook(bids.bookId, book,
-                                                  DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                int rowsAffected = mDb.updateBook(userContext, bids.bookId, book,
+                        DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                 if (rowsAffected == 1) {
                     mResults.booksUpdated++;
                 } else {
@@ -369,7 +379,7 @@ public class CsvImporter
                 }
             }
         } else {
-            bids.bookId = mDb.insertBook(bids.bookId, book);
+            bids.bookId = mDb.insertBook(userContext, bids.bookId, book);
             if (bids.bookId != -1) {
                 mResults.booksCreated++;
             } else {
@@ -398,8 +408,7 @@ public class CsvImporter
     private void handleBookshelves(@NonNull final Book book) {
         String encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
-                                              .decode(encodedList, false, Bookshelf.MULTI_SHELF_SEPARATOR
-                                              );
+                .decode(encodedList, false, Bookshelf.MULTI_SHELF_SEPARATOR);
         book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(DBDefinitions.KEY_BOOKSHELF);
@@ -413,15 +422,16 @@ public class CsvImporter
      * Ignore the actual value of the DBDefinitions.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
-    private void handleAnthology(@NonNull final DAO db,
+    private void handleAnthology(@NonNull final Context userContext,
+                                 @NonNull final DAO db,
                                  @NonNull final Book book) {
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         if (!encodedList.isEmpty()) {
             ArrayList<TocEntry> list = StringList.getTocCoder().decode(encodedList, false);
             if (!list.isEmpty()) {
-                // fixup the ID's
-                ItemWithIdFixup.pruneList(db, list);
+                // fix the ID's
+                ItemWithFixableId.pruneList(userContext, db, list);
                 book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
@@ -435,7 +445,8 @@ public class CsvImporter
      * <p>
      * Get the list of series from whatever source is available.
      */
-    private void handleSeries(@NonNull final DAO db,
+    private void handleSeries(@NonNull final Context userContext,
+                              @NonNull final DAO db,
                               @NonNull final Book book) {
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
@@ -454,7 +465,7 @@ public class CsvImporter
         // Handle the series
         final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
-        ItemWithIdFixup.pruneList(db, list);
+        ItemWithFixableId.pruneList(userContext, db, list);
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
@@ -464,7 +475,8 @@ public class CsvImporter
      * <p>
      * Get the list of authors from whatever source is available.
      */
-    private void handleAuthors(@NonNull final DAO db,
+    private void handleAuthors(@NonNull final Context userContext,
+                               @NonNull final DAO db,
                                @NonNull final Book book) {
         // preferred & used in latest versions
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
@@ -499,7 +511,7 @@ public class CsvImporter
 
         // Now build the array for authors
         final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
-        ItemWithIdFixup.pruneList(db, list);
+        ItemWithFixableId.pruneList(userContext, db, list);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
@@ -643,7 +655,7 @@ public class CsvImporter
         }
 
         throw new ImportException(R.string.import_error_csv_file_must_contain_any_column,
-                                  TextUtils.join(",", names));
+                TextUtils.join(",", names));
     }
 
     private void requireNonBlankOrThrow(@NonNull final Book book,
@@ -669,7 +681,7 @@ public class CsvImporter
         }
 
         throw new ImportException(R.string.error_columns_are_blank,
-                                  TextUtils.join(",", names), row);
+                TextUtils.join(",", names), row);
     }
 
     /**

@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.tararchive;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -103,16 +105,16 @@ public class TarBackupContainer
 
     @Override
     @NonNull
-    public BackupReader newReader()
+    public BackupReader newReader(@NonNull final Context context)
             throws IOException {
-        return new TarBackupReader(this);
+        return new TarBackupReader(context,this);
     }
 
     @Override
     @NonNull
-    public BackupWriter newWriter()
+    public BackupWriter newWriter(@NonNull final Context context)
             throws IOException {
-        return new TarBackupWriter(this);
+        return new TarBackupWriter(context,this);
     }
 
     /**
@@ -129,9 +131,9 @@ public class TarBackupContainer
     }
 
     @Override
-    public boolean isValid() {
+    public boolean isValid(@NonNull final Context context) {
         // The reader will do basic validation.
-        try (BackupReader reader = newReader()) {
+        try (BackupReader reader = newReader(context)) {
             BackupInfo backupInfo = reader.getInfo();
             // the info block will/can do more checks.
             return backupInfo.isValid();

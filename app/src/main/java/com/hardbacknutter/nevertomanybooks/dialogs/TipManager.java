@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertomanybooks.dialogs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +32,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.Utils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Original 'hint' renamed to 'tip' to avoid confusion with "android:hint".
@@ -118,9 +119,9 @@ public final class TipManager {
     }
 
     /** Reset all tips to that they will be displayed again. */
-    public static void reset() {
+    public static void reset(@NonNull final Context context) {
         for (Tip h : ALL.values()) {
-            h.reset();
+            h.reset(context);
         }
     }
 
@@ -147,7 +148,7 @@ public final class TipManager {
                                       "stringId=" + stringId);
             return;
         }
-        if (!tip.shouldBeShown()) {
+        if (!tip.shouldBeShown(inflater.getContext())) {
             if (postRun != null) {
                 postRun.run();
             }
@@ -199,8 +200,9 @@ public final class TipManager {
         /**
          * Check if this tip should be shown.
          */
-        private boolean shouldBeShown() {
-            return !mHasBeenDisplayed && App.getPrefs().getBoolean(mKey, true);
+        private boolean shouldBeShown(@NonNull final Context context) {
+            return !mHasBeenDisplayed
+                    && PreferenceManager.getDefaultSharedPreferences(context).getBoolean(mKey, true);
         }
 
         /**
@@ -216,25 +218,28 @@ public final class TipManager {
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
 
+            Context context = inflater.getContext();
+
             // Build the tip dialog
             final View root = inflater.inflate(mLayoutId, null);
 
             // Setup the message; this is optional
             final TextView messageView = root.findViewById(R.id.content);
             if (messageView != null) {
-                String tipText = inflater.getContext().getString(stringId, args);
+                String tipText = context.getString(stringId, args);
                 // allow links
                 messageView.setText(Utils.linkifyHtml(tipText));
                 // clicking a link, start a browser (or whatever)
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
-            final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
+
+            final AlertDialog dialog = new AlertDialog.Builder(context)
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
                     .setNegativeButton(R.string.btn_disable_message, (d, which) -> {
                         d.dismiss();
-                        setShowAgain(false);
+                        setShowAgain(context,false);
                         if (postRun != null) {
                             postRun.run();
                         }
@@ -256,12 +261,14 @@ public final class TipManager {
          *
          * @param show Flag indicating future visibility
          */
-        private void setShowAgain(final boolean show) {
-            App.getPrefs().edit().putBoolean(mKey, show).apply();
+        private void setShowAgain(@NonNull final Context context,
+                                  final boolean show) {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit().putBoolean(mKey, show).apply();
         }
 
-        void reset() {
-            setShowAgain(true);
+        void reset(@NonNull final Context context) {
+            setShowAgain(context,true);
             mHasBeenDisplayed = false;
         }
     }

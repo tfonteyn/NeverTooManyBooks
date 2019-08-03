@@ -413,7 +413,6 @@ public class SearchCoordinator {
 
     }
 
-
     /**
      * DEBUG only.
      * <p>

@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertomanybooks.searches;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -450,7 +452,9 @@ public class UpdateFieldsFromInternetTask
                 }
             }
 
-            mDb.updateBook(mCurrentBookId, new Book(newBookData), 0);
+            //TODO: should be using a user context.
+            Context userContext = App.getAppContext();
+            mDb.updateBook(userContext, mCurrentBookId, new Book(newBookData), 0);
         }
     }
 

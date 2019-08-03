@@ -43,15 +43,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertomanybooks.backup.ImportOptions;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistBuilder;
@@ -93,6 +89,10 @@ import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertomanybooks.widgets.cfs.CFSRecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -139,7 +139,7 @@ public class BooksOnBookshelf
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                         Logger.debug(this, "mOnBookshelfSelectionChanged",
-                                     "previous=" + previous, "selected=" + selected);
+                                "previous=" + previous, "selected=" + selected);
                     }
 
                     if (selected != null && !selected.equalsIgnoreCase(previous)) {
@@ -198,8 +198,8 @@ public class BooksOnBookshelf
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
                     // store the new data
                     mModel.onStyleChanged(style,
-                                          mLinearLayoutManager.findFirstVisibleItemPosition(),
-                                          mListView);
+                            mLinearLayoutManager.findFirstVisibleItemPosition(),
+                            mListView);
                     // and do a rebuild
                     initBookList(true);
                 }
@@ -225,7 +225,7 @@ public class BooksOnBookshelf
         mModel = ViewModelProviders.of(this).get(BooksOnBookshelfModel.class);
         mModel.getUserMessage().observe(this, this::showUserMessage);
         mModel.getNeedsGoodreads().observe(this, this::needsGoodreads);
-        mModel.init(getIntent().getExtras(), savedInstanceState);
+        mModel.init(this, getIntent().getExtras(), savedInstanceState);
         mModel.restoreCurrentBookshelf(this);
 
         // listen for the booklist being ready to display.
@@ -260,8 +260,8 @@ public class BooksOnBookshelf
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
         // note that the list of names is empty right now, we'l populate it in onResume
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(this,
-                                                      R.layout.booksonbookshelf_bookshelf_spinner,
-                                                      mModel.getBookshelfNameList());
+                R.layout.booksonbookshelf_bookshelf_spinner,
+                mModel.getBookshelfNameList());
         mBookshelfSpinnerAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
@@ -283,7 +283,7 @@ public class BooksOnBookshelf
     private void needsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             RequestAuthTask.needsRegistration(this,
-                                              mModel.getGoodreadsTaskListener());
+                    mModel.getGoodreadsTaskListener());
         }
     }
 
@@ -317,7 +317,7 @@ public class BooksOnBookshelf
 //        // set the list, this will trigger the adapter to refresh.
 //        mAdapter.setCursor(mModel.getListCursor());
 
-        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(), mModel.getDb(), cursor);
+        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this), mModel.getDb(), cursor);
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
         mListView.setAdapter(mAdapter);
@@ -352,7 +352,7 @@ public class BooksOnBookshelf
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debug(this, "populateBookShelfSpinner",
-                         "previous=" + previous, "selected=" + selected);
+                    "previous=" + previous, "selected=" + selected);
         }
 
         // Flag up if the selection was different.
@@ -370,7 +370,7 @@ public class BooksOnBookshelf
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             // with stack trace, so we know who called us.
             Logger.debugWithStackTrace(this, "initBookList",
-                                       "isFullRebuild=" + isFullRebuild);
+                    "isFullRebuild=" + isFullRebuild);
         }
 
         // go create
@@ -391,7 +391,7 @@ public class BooksOnBookshelf
             .BuilderHolder holder) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "builderResultsAreReadyToDisplay",
-                              "holder=" + holder);
+                    "holder=" + holder);
         }
 
         // *always* ...
@@ -426,11 +426,11 @@ public class BooksOnBookshelf
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Logger.debugEnter(this, "displayList",
-                              "newListCursor=" + newListCursor);
+                    "newListCursor=" + newListCursor);
         }
 
         // Update the activity title using the current style name.
-        setTitle(mModel.getCurrentStyle().getLabel(this));
+        setTitle(mModel.getCurrentStyle(this).getLabel(this));
 
         mProgressBar.setVisibility(View.GONE);
 
@@ -452,7 +452,7 @@ public class BooksOnBookshelf
             mLinearLayoutManager.scrollToPosition(mModel.getTopRow());
         } else {
             mLinearLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(),
-                                                            mModel.getTopRowOffset());
+                    mModel.getTopRowOffset());
         }
 
         // If a target position array is set, then queue a runnable to set the position
@@ -506,8 +506,8 @@ public class BooksOnBookshelf
         if (isFinishing() || isDestroyed()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit(this, "onResume",
-                                 "isFinishing=" + isFinishing(),
-                                 "isDestroyed=" + isDestroyed());
+                        "isFinishing=" + isFinishing(),
+                        "isDestroyed=" + isDestroyed());
             }
             return;
         }
@@ -516,7 +516,7 @@ public class BooksOnBookshelf
         if (App.isRecreating()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.debugExit("onResume", "isRecreating",
-                                 LocaleUtils.toDebugString(this));
+                        LocaleUtils.toDebugString(this));
             }
             return;
         }
@@ -642,35 +642,35 @@ public class BooksOnBookshelf
         MenuHandler.addCreateBookSubMenu(menu);
 
         menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
-            .setIcon(R.drawable.ic_sort_by_alpha)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                .setIcon(R.drawable.ic_sort_by_alpha)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
-            .setIcon(R.drawable.ic_unfold_more);
+                .setIcon(R.drawable.ic_unfold_more);
 
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
-            .setIcon(R.drawable.ic_unfold_less);
+                .setIcon(R.drawable.ic_unfold_less);
 
         // This will use the currently displayed book list (the book ID's)
         menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET, 0, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
+                .setIcon(R.drawable.ic_cloud_download);
 
         menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_search_filters)
-            .setIcon(R.drawable.ic_undo);
+                .setIcon(R.drawable.ic_undo);
 
         if (BuildConfig.DEBUG /* always */) {
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
-                                              0, R.string.debug);
+                    0, R.string.debug);
 
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_RUN_TEST, 0, R.string.debug_test);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_settings);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_BOB_TABLES, 0,
-                        R.string.debug_bob_tables);
+                    R.string.debug_bob_tables);
 
             subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0,
-                        R.string.lbl_copy_database);
+                    R.string.lbl_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -682,7 +682,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_SORT:
                 TipManager.display(getLayoutInflater(), R.string.tip_booklist_style_menu,
-                                   this::showStylePicker);
+                        this::showStylePicker);
                 return true;
 
             case R.id.MENU_EXPAND:
@@ -703,10 +703,10 @@ public class BooksOnBookshelf
                 // We pass the book ID's for the currently displayed list.
                 ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
                 Intent intentUpdateFields = new Intent(this,
-                                                       UpdateFieldsFromInternetActivity.class)
+                        UpdateFieldsFromInternetActivity.class)
                         .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                 startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                        UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
@@ -719,22 +719,22 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_PREFS:
-                            Prefs.dumpPreferences(null);
+                            Prefs.dumpPreferences(this, null);
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_STYLE:
                             Logger.debug(this, "onOptionsItemSelected",
-                                         mModel.getCurrentStyle());
+                                    mModel.getCurrentStyle(this));
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
                             Logger.debug(this, "onOptionsItemSelected",
-                                         Tracker.getEventsInfo());
+                                    Tracker.getEventsInfo());
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_BOB_TABLES:
                             Logger.debug(this, "onOptionsItemSelected",
-                                         mModel.debugBuilderTables());
+                                    mModel.debugBuilderTables());
                             return true;
 
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
@@ -751,7 +751,7 @@ public class BooksOnBookshelf
 
     private void showStylePicker() {
         StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                                              mModel.getCurrentStyle(), false);
+                mModel.getCurrentStyle(this), false);
     }
 
     /**
@@ -805,8 +805,8 @@ public class BooksOnBookshelf
             // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
                 long bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
-                boolean openInReadOnly = App.getPrefs()
-                                            .getBoolean(Prefs.pk_bob_open_book_read_only, true);
+                boolean openInReadOnly = PreferenceManager.getDefaultSharedPreferences(view.getContext())
+                        .getBoolean(Prefs.pk_bob_open_book_read_only, true);
 
                 if (openInReadOnly) {
                     String listTableName = listCursor.getBuilder().createFlattenedBooklist();
@@ -887,45 +887,45 @@ public class BooksOnBookshelf
             case BooklistGroup.RowKind.BOOK:
                 if (row.getInt(DBDefinitions.KEY_READ) != 0) {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread)
-                        .setIcon(R.drawable.ic_check_box_outline_blank);
+                            .setIcon(R.drawable.ic_check_box_outline_blank);
                 } else {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read)
-                        .setIcon(R.drawable.ic_check_box);
+                            .setIcon(R.drawable.ic_check_box);
                 }
 
                 menu.add(Menu.NONE, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
-                    .setIcon(R.drawable.ic_delete);
+                        .setIcon(R.drawable.ic_delete);
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_edit);
 
                 if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
                     if (mModel.isAvailable(row.getLong(DBDefinitions.KEY_FK_BOOK))) {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_ADD,
-                                 MenuHandler.ORDER_LENDING,
-                                 R.string.menu_loan_lend_book)
-                            .setIcon(R.drawable.ic_people);
+                                MenuHandler.ORDER_LENDING,
+                                R.string.menu_loan_lend_book)
+                                .setIcon(R.drawable.ic_people);
                     } else {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                                 MenuHandler.ORDER_LENDING,
-                                 R.string.menu_loan_return_book)
-                            .setIcon(R.drawable.ic_people);
+                                MenuHandler.ORDER_LENDING,
+                                R.string.menu_loan_return_book)
+                                .setIcon(R.drawable.ic_people);
                     }
                 }
 
                 menu.add(Menu.NONE, R.id.MENU_SHARE,
-                         MenuHandler.ORDER_SHARE,
-                         R.string.menu_share_this)
-                    .setIcon(R.drawable.ic_share);
+                        MenuHandler.ORDER_SHARE,
+                        R.string.menu_share_this)
+                        .setIcon(R.drawable.ic_share);
 
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
-                         MenuHandler.ORDER_SEND_TO_GOODREADS,
-                         R.string.gr_menu_send_to_goodreads)
-                    .setIcon(R.drawable.ic_goodreads2);
+                        MenuHandler.ORDER_SEND_TO_GOODREADS,
+                        R.string.gr_menu_send_to_goodreads)
+                        .setIcon(R.drawable.ic_goodreads2);
 
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS,
-                         R.string.lbl_update_fields_long)
-                    .setIcon(R.drawable.ic_cloud_download);
+                        MenuHandler.ORDER_UPDATE_FIELDS,
+                        R.string.lbl_update_fields_long)
+                        .setIcon(R.drawable.ic_cloud_download);
 
                 boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_ISFDB_ID);
                 boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
@@ -935,107 +935,107 @@ public class BooksOnBookshelf
 
                 if (hasIsfdbId || hasGoodreadsId || hasLibraryThingId || hasOpenLibraryId) {
                     SubMenu subMenu = menu.addSubMenu(Menu.NONE,
-                                                      R.id.SUBMENU_VIEW_BOOK_AT_SITE,
-                                                      MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
-                                                      R.string.menu_view_book_at_ellipsis)
-                                          .setIcon(R.drawable.ic_link);
+                            R.id.SUBMENU_VIEW_BOOK_AT_SITE,
+                            MenuHandler.ORDER_VIEW_BOOK_AT_SITE,
+                            R.string.menu_view_book_at_ellipsis)
+                            .setIcon(R.drawable.ic_link);
                     if (hasIsfdbId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_ISFDB, 0,
-                                    R.string.isfdb)
-                               .setIcon(R.drawable.ic_link);
+                                R.string.isfdb)
+                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasGoodreadsId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_GOODREADS, 0,
-                                    R.string.goodreads)
-                               .setIcon(R.drawable.ic_link);
+                                R.string.goodreads)
+                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasLibraryThingId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING, 0,
-                                    R.string.library_thing)
-                               .setIcon(R.drawable.ic_link);
+                                R.string.library_thing)
+                                .setIcon(R.drawable.ic_link);
                     }
                     if (hasOpenLibraryId) {
                         subMenu.add(Menu.NONE, R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY, 0,
-                                    R.string.open_library)
-                               .setIcon(R.drawable.ic_link);
+                                R.string.open_library)
+                                .setIcon(R.drawable.ic_link);
                     }
                 }
                 break;
 
             case BooklistGroup.RowKind.AUTHOR:
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_WORKS, 0, R.string.menu_author_details)
-                    .setIcon(R.drawable.ic_details);
+                        .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit)
-                    .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_edit);
                 if (row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
                     menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0,
-                             R.string.menu_set_incomplete)
-                        .setIcon(R.drawable.ic_check_box);
+                            R.string.menu_set_incomplete)
+                            .setIcon(R.drawable.ic_check_box);
                 } else {
                     menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0,
-                             R.string.menu_set_complete)
-                        .setIcon(R.drawable.ic_check_box_outline_blank);
+                            R.string.menu_set_complete)
+                            .setIcon(R.drawable.ic_check_box_outline_blank);
                 }
                 menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                         MenuHandler.ORDER_UPDATE_FIELDS,
-                         R.string.lbl_update_fields_long)
-                    .setIcon(R.drawable.ic_cloud_download);
+                        MenuHandler.ORDER_UPDATE_FIELDS,
+                        R.string.lbl_update_fields_long)
+                        .setIcon(R.drawable.ic_cloud_download);
                 break;
 
             case BooklistGroup.RowKind.SERIES:
                 if (row.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
                     menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete)
-                        .setIcon(R.drawable.ic_delete);
+                            .setIcon(R.drawable.ic_delete);
                     menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                     if (row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
                         menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
-                                 R.string.menu_set_incomplete)
-                            .setIcon(R.drawable.ic_check_box);
+                                R.string.menu_set_incomplete)
+                                .setIcon(R.drawable.ic_check_box);
                     } else {
                         menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
-                                 R.string.menu_set_complete)
-                            .setIcon(R.drawable.ic_check_box_outline_blank);
+                                R.string.menu_set_complete)
+                                .setIcon(R.drawable.ic_check_box_outline_blank);
                     }
                     menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                             MenuHandler.ORDER_UPDATE_FIELDS,
-                             R.string.lbl_update_fields_long)
-                        .setIcon(R.drawable.ic_cloud_download);
+                            MenuHandler.ORDER_UPDATE_FIELDS,
+                            R.string.lbl_update_fields_long)
+                            .setIcon(R.drawable.ic_cloud_download);
                 }
                 break;
 
             case BooklistGroup.RowKind.PUBLISHER:
                 if (!row.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case BooklistGroup.RowKind.LANGUAGE:
                 if (!row.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case BooklistGroup.RowKind.LOCATION:
                 if (!row.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case BooklistGroup.RowKind.GENRE:
                 if (!row.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case BooklistGroup.RowKind.FORMAT:
                 if (!row.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, 0, R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                            .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
@@ -1057,7 +1057,7 @@ public class BooksOnBookshelf
             SubMenu subMenu = MenuHandler.addAmazonSearchSubMenu(menu);
             subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
             subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                                    hasAuthor && hasSeries);
+                    hasAuthor && hasSeries);
             subMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
         }
 
@@ -1132,17 +1132,17 @@ public class BooksOnBookshelf
 
                     default:
                         Logger.warnWithStackTrace(this, "onContextItemSelected",
-                                                  "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
-                                                  "RowKind=" + row.getInt(
-                                                          DBDefinitions.KEY_BL_NODE_ROW_KIND));
+                                "MENU_BOOK_UPDATE_FROM_INTERNET not supported",
+                                "RowKind=" + row.getInt(
+                                        DBDefinitions.KEY_BL_NODE_ROW_KIND));
                         return true;
                 }
 
                 Intent intentUpdateFields = new Intent(this,
-                                                       UpdateFieldsFromInternetActivity.class)
+                        UpdateFieldsFromInternetActivity.class)
                         .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
                 startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                        UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
 
@@ -1151,16 +1151,16 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_LOAN_ADD:
                 if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
                     LendBookDialogFragment.newInstance(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                       row.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                       row.getString(DBDefinitions.KEY_TITLE))
-                                          .show(fm, LendBookDialogFragment.TAG);
+                            row.getLong(DBDefinitions.KEY_FK_AUTHOR),
+                            row.getString(DBDefinitions.KEY_TITLE))
+                            .show(fm, LendBookDialogFragment.TAG);
                 }
                 return true;
 
             case R.id.MENU_BOOK_LOAN_DELETE:
                 mModel.getDb().deleteLoan(row.getLong(DBDefinitions.KEY_FK_BOOK));
                 mBookChangedListener.onBookChanged(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                                   BookChangedListener.BOOK_LOANEE, null);
+                        BookChangedListener.BOOK_LOANEE, null);
                 return true;
 
             /* ********************************************************************************** */
@@ -1168,13 +1168,13 @@ public class BooksOnBookshelf
             case R.id.MENU_SHARE:
                 Book book = new Book(row.getLong(DBDefinitions.KEY_FK_BOOK), mModel.getDb());
                 startActivity(Intent.createChooser(book.getShareBookIntent(this),
-                                                   getString(R.string.menu_share_this)));
+                        getString(R.string.menu_share_this)));
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
                 UserMessage.show(this, R.string.progress_msg_connecting);
                 new SendOneBookTask(row.getLong(DBDefinitions.KEY_FK_BOOK),
-                                    mModel.getGoodreadsTaskListener())
+                        mModel.getGoodreadsTaskListener())
                         .execute();
                 return true;
 
@@ -1185,15 +1185,15 @@ public class BooksOnBookshelf
                     //noinspection ConstantConditions
                     EditSeriesDialogFragment.newInstance(
                             mModel.getDb().getSeries(row.getLong(DBDefinitions.KEY_FK_SERIES)))
-                                            .show(fm, EditSeriesDialogFragment.TAG);
+                            .show(fm, EditSeriesDialogFragment.TAG);
                 }
                 return true;
 
             case R.id.MENU_SERIES_COMPLETE:
                 // toggle the complete status
                 if (mModel.getDb().setSeriesComplete(row.getLong(DBDefinitions.KEY_FK_SERIES),
-                                                     !row.getBoolean(
-                                                             DBDefinitions.KEY_SERIES_IS_COMPLETE))) {
+                        !row.getBoolean(
+                                DBDefinitions.KEY_SERIES_IS_COMPLETE))) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
                 }
                 return true;
@@ -1205,7 +1205,7 @@ public class BooksOnBookshelf
                             this, series, () -> {
                                 mModel.getDb().deleteSeries(series.getId());
                                 mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES,
-                                                                   null);
+                                        null);
                             });
                 }
                 return true;
@@ -1216,7 +1216,7 @@ public class BooksOnBookshelf
             case R.id.MENU_AUTHOR_WORKS: {
                 Intent intent = new Intent(this, AuthorWorksActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID,
-                                  row.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                row.getLong(DBDefinitions.KEY_FK_AUTHOR));
                 startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
                 return true;
             }
@@ -1226,15 +1226,15 @@ public class BooksOnBookshelf
                     //noinspection ConstantConditions
                     EditAuthorDialogFragment.newInstance(
                             mModel.getDb().getAuthor(row.getLong(DBDefinitions.KEY_FK_AUTHOR)))
-                                            .show(fm, EditAuthorDialogFragment.TAG);
+                            .show(fm, EditAuthorDialogFragment.TAG);
                 }
                 return true;
 
             case R.id.MENU_AUTHOR_COMPLETE:
                 // toggle the complete status
                 if (mModel.getDb().setAuthorComplete(row.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                     !row.getBoolean(
-                                                             DBDefinitions.KEY_AUTHOR_IS_COMPLETE))) {
+                        !row.getBoolean(
+                                DBDefinitions.KEY_AUTHOR_IS_COMPLETE))) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.AUTHOR, null);
                 }
                 return true;
@@ -1245,7 +1245,7 @@ public class BooksOnBookshelf
                 if (fm.findFragmentByTag(EditPublisherDialogFragment.TAG) == null) {
                     EditPublisherDialogFragment.newInstance(new Publisher(
                             row.getString(DBDefinitions.KEY_PUBLISHER)))
-                                               .show(fm, EditPublisherDialogFragment.TAG);
+                            .show(fm, EditPublisherDialogFragment.TAG);
                 }
                 return true;
 
@@ -1298,7 +1298,7 @@ public class BooksOnBookshelf
                 SubMenu amazonSubMenu = menuItem.getSubMenu();
                 amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                                              hasAuthor && hasSeries);
+                        hasAuthor && hasSeries);
                 amazonSubMenu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
                 // let the normal call flow go on, it will display the submenu
                 return false;
@@ -1313,8 +1313,8 @@ public class BooksOnBookshelf
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
                 AmazonManager.openWebsite(this,
-                                          mModel.getAuthorFromRow(row),
-                                          mModel.getSeriesFromRow(row));
+                        mModel.getAuthorFromRow(row),
+                        mModel.getSeriesFromRow(row));
                 return true;
 
             default:
@@ -1432,7 +1432,7 @@ public class BooksOnBookshelf
                     Objects.requireNonNull(data);
                     // the last edited/inserted shelf
                     long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
-                                                         Bookshelf.DEFAULT_ID);
+                            Bookshelf.DEFAULT_ID);
                     mModel.setCurrentBookshelf(bookshelfId);
                     mModel.setFullRebuild(true);
                 }
@@ -1444,7 +1444,7 @@ public class BooksOnBookshelf
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
                         // RestoreActivity:
                         int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
-                                                       ImportOptions.NOTHING);
+                                ImportOptions.NOTHING);
 
                         if ((options & ImportOptions.PREFERENCES) != 0) {
                             // the imported prefs could have a different preferred bookshelf.
@@ -1453,11 +1453,12 @@ public class BooksOnBookshelf
                             }
 
                         }
-                    } else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
-                        // BackupActivity:
-                        int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT,
-                                                       ExportOptions.NOTHING);
                     }
+                    //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
+                    // BackupActivity:
+//                        int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT,
+//                                ExportOptions.NOTHING);
+                    //}
 
 //                    if ((data != null) && data.hasExtra(UniqueId.ZZZZ)) {
 //                        // AdminActivity has results of it's own,, but no action needed for them.
@@ -1482,8 +1483,8 @@ public class BooksOnBookshelf
                         BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                         if (style != null) {
                             // save the new bookshelf/style combination
-                            mModel.getCurrentBookshelf().setAsPreferred();
-                            mModel.setCurrentStyle(style);
+                            mModel.getCurrentBookshelf().setAsPreferred(this);
+                            mModel.setCurrentStyle(this, style);
                         }
                         mModel.setFullRebuild(true);
                         break;
@@ -1518,7 +1519,7 @@ public class BooksOnBookshelf
         int centre = (last + first) / 2;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
             Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                         " New List: (" + first + ", " + last + ")<-" + centre);
+                    " New List: (" + first + ", " + last + ")<-" + centre);
         }
         // Get the first 'target' and make it 'best candidate'
         BookRowInfo best = targetRows.get(0);
@@ -1535,13 +1536,13 @@ public class BooksOnBookshelf
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
             Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                         " Best listPosition @" + best.listPosition);
+                    " Best listPosition @" + best.listPosition);
         }
         // Try to put at top if not already visible, or only partially visible
         if (first >= best.listPosition || last <= best.listPosition) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
                 Logger.debug(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                             " Adjusting position");
+                        " Adjusting position");
             }
             // setSelectionFromTop does not seem to always do what is expected.
             // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -1575,9 +1576,9 @@ public class BooksOnBookshelf
      */
     private void initHints() {
         TipManager.display(getLayoutInflater(),
-                           R.string.tip_view_only_book_details, null);
+                R.string.tip_view_only_book_details, null);
         TipManager.display(getLayoutInflater(),
-                           R.string.tip_book_list, null);
+                R.string.tip_book_list, null);
     }
 
     /**
@@ -1615,17 +1616,17 @@ public class BooksOnBookshelf
      * Display the number of books in the current list.
      */
     private void setBookCountField() {
-        int showHeaderFlags = mModel.getCurrentStyle().getShowHeaderInfo();
+        int showHeaderFlags = mModel.getCurrentStyle(this).getShowHeaderInfo();
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             int totalBooks = mModel.getTotalBooks();
             int uniqueBooks = mModel.getUniqueBooks();
             String stringArgs;
             if (uniqueBooks != totalBooks) {
                 stringArgs = getString(R.string.info_displaying_n_books_in_m_entries,
-                                       uniqueBooks, totalBooks);
+                        uniqueBooks, totalBooks);
             } else {
                 stringArgs = getResources().getQuantityString(R.plurals.displaying_n_books,
-                                                              uniqueBooks, uniqueBooks);
+                        uniqueBooks, uniqueBooks);
             }
             mBookCountView.setText(getString(R.string.brackets, stringArgs));
             mBookCountView.setVisibility(View.VISIBLE);
@@ -1641,7 +1642,7 @@ public class BooksOnBookshelf
      */
     private boolean setHeaderTextVisibility() {
 
-        BooklistStyle style = mModel.getCurrentStyle();
+        BooklistStyle style = mModel.getCurrentStyle(this);
         // for level, set the visibility of the views.
         for (int level = 1; level <= 2; level++) {
             int index = level - 1;

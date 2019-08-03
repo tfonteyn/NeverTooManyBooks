@@ -9,24 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -51,6 +33,23 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
+
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * WARNING: EXPERIMENTAL
@@ -250,7 +249,7 @@ public class XmlExporter
 
         } else if (value instanceof Serializable) {
             return tagWithBody(XmlTags.XML_SERIALIZABLE, name,
-                               Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
+                    Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
             //noinspection ConstantConditions
@@ -380,8 +379,8 @@ public class XmlExporter
         try (BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
             out.append('<' + XmlTags.XML_ROOT)
-               .append(version(XML_EXPORTER_VERSION))
-               .append(">\n");
+                    .append(version(XML_EXPORTER_VERSION))
+                    .append(">\n");
             pos = doBooks(out, listener);
             out.append("</" + XmlTags.XML_ROOT + ">\n");
         }
@@ -398,7 +397,7 @@ public class XmlExporter
      */
     @WorkerThread
     public void doAll(@NonNull final OutputStream outputStream,
-                     @NonNull final ProgressListener listener)
+                      @NonNull final ProgressListener listener)
             throws IOException {
 
         int delta = 0;
@@ -407,12 +406,12 @@ public class XmlExporter
                 new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
             out.append('<' + XmlTags.XML_ROOT)
-               .append(version(XML_EXPORTER_VERSION))
-               .append(">\n");
+                    .append(version(XML_EXPORTER_VERSION))
+                    .append(">\n");
 
             if (!listener.isCancelled()) {
                 listener.onProgressStep(delta++, R.string.lbl_bookshelves);
-                 doBookshelves(out, listener);
+                doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
@@ -423,7 +422,7 @@ public class XmlExporter
             if (!listener.isCancelled()) {
                 listener.onProgress(delta++, R.string.lbl_series);
                 doSeries(out, listener);
-           }
+            }
 
             if (!listener.isCancelled()) {
                 listener.onProgress(delta++, R.string.lbl_book);
@@ -463,14 +462,14 @@ public class XmlExporter
         int count = 0;
         List<Bookshelf> list = mDb.getBookshelves();
         out.append('<' + XmlTags.XML_BOOKSHELF_LIST)
-           .append(version(XML_EXPORTER_BOOKSHELVES_VERSION))
-           .append(">\n");
+                .append(version(XML_EXPORTER_BOOKSHELVES_VERSION))
+                .append(">\n");
 
         for (Bookshelf bookshelf : list) {
             out.append('<' + XmlTags.XML_BOOKSHELF)
-               .append(id(bookshelf.getId()))
-               .append(attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()))
-               .append("/>\n");
+                    .append(id(bookshelf.getId()))
+                    .append(attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()))
+                    .append("/>\n");
             count++;
         }
         out.append("</" + XmlTags.XML_BOOKSHELF_LIST + ">\n");
@@ -493,22 +492,22 @@ public class XmlExporter
             throws IOException {
         int count = 0;
         out.append('<' + XmlTags.XML_AUTHOR_LIST)
-           .append(version(XML_EXPORTER_AUTHORS_VERSION))
-           .append(">\n");
+                .append(version(XML_EXPORTER_AUTHORS_VERSION))
+                .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_AUTHOR)
-                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
+                        .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
 
-                   .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                        .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
                                 mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)))
-                   .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
+                        .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
                                 mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
-                   .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                        .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                 mapper.getInt(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
-                   .append("/>\n");
+                        .append("/>\n");
                 count++;
             }
         }
@@ -532,19 +531,19 @@ public class XmlExporter
             throws IOException {
         int count = 0;
         out.append('<' + XmlTags.XML_SERIES_LIST)
-           .append(version(XML_EXPORTER_SERIES_VERSION))
-           .append(">\n");
+                .append(version(XML_EXPORTER_SERIES_VERSION))
+                .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 out.append('<' + XmlTags.XML_SERIES)
-                   .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
-                   .append(attr(DBDefinitions.KEY_SERIES_TITLE,
+                        .append(id(mapper.getLong(DBDefinitions.KEY_PK_ID)))
+                        .append(attr(DBDefinitions.KEY_SERIES_TITLE,
                                 mapper.getString(DBDefinitions.KEY_SERIES_TITLE)))
-                   .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                        .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
                                 mapper.getInt(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
-                   .append("/>\n");
+                        .append("/>\n");
             }
         }
         out.append("</" + XmlTags.XML_SERIES_LIST + ">\n");
@@ -568,103 +567,103 @@ public class XmlExporter
             throws IOException {
         int count = 0;
         out.append('<' + XmlTags.XML_BOOK_LIST)
-           .append(version(XML_EXPORTER_BOOKS_VERSION))
-           .append(">\n");
+                .append(version(XML_EXPORTER_BOOKS_VERSION))
+                .append(">\n");
 
         try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom)) {
             MappedCursorRow cursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
                 // basic ID
                 out.append('<' + XmlTags.XML_BOOK)
-                   .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
-                   .append(attr(DBDefinitions.KEY_TITLE,
+                        .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
+                        .append(attr(DBDefinitions.KEY_TITLE,
                                 cursorRow.getString(DBDefinitions.KEY_TITLE)))
-                   .append(attr(DBDefinitions.KEY_ISBN,
+                        .append(attr(DBDefinitions.KEY_ISBN,
                                 cursorRow.getString(DBDefinitions.KEY_ISBN)))
-                   .append("\n")
+                        .append("\n")
 
-                   // publishing information
-                   .append(attr(DBDefinitions.KEY_PUBLISHER,
+                        // publishing information
+                        .append(attr(DBDefinitions.KEY_PUBLISHER,
                                 cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
-                   .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
+                        .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
-                   .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                        .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                   .append("\n")
-                   .append(attr(DBDefinitions.KEY_FORMAT,
+                        .append("\n")
+                        .append(attr(DBDefinitions.KEY_FORMAT,
                                 cursorRow.getString(DBDefinitions.KEY_FORMAT)))
-                   .append(attr(DBDefinitions.KEY_PAGES,
+                        .append(attr(DBDefinitions.KEY_PAGES,
                                 cursorRow.getString(DBDefinitions.KEY_PAGES)))
-                   .append(attr(DBDefinitions.KEY_GENRE,
+                        .append(attr(DBDefinitions.KEY_GENRE,
                                 cursorRow.getString(DBDefinitions.KEY_GENRE)))
-                   .append(attr(DBDefinitions.KEY_LANGUAGE,
+                        .append(attr(DBDefinitions.KEY_LANGUAGE,
                                 cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
-                   .append(attr(DBDefinitions.KEY_TOC_BITMASK,
+                        .append(attr(DBDefinitions.KEY_TOC_BITMASK,
                                 cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
-                   .append("\n")
+                        .append("\n")
 
-                   // reading facts
-                   .append(attr(DBDefinitions.KEY_READ,
+                        // reading facts
+                        .append(attr(DBDefinitions.KEY_READ,
                                 cursorRow.getInt(DBDefinitions.KEY_READ)))
-                   .append(attr(DBDefinitions.KEY_READ_START,
+                        .append(attr(DBDefinitions.KEY_READ_START,
                                 cursorRow.getString(DBDefinitions.KEY_READ_START)))
-                   .append(attr(DBDefinitions.KEY_READ_END,
+                        .append(attr(DBDefinitions.KEY_READ_END,
                                 cursorRow.getString(DBDefinitions.KEY_READ_END)))
-                   .append("\n")
+                        .append("\n")
 
-                   // price information
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED,
+                        // price information
+                        .append(attr(DBDefinitions.KEY_PRICE_LISTED,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED)))
-                   .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                        .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                   .append(attr(DBDefinitions.KEY_PRICE_PAID,
+                        .append(attr(DBDefinitions.KEY_PRICE_PAID,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_PAID)))
-                   .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                        .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
                                 cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
-                   .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
+                        .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
-                   .append("\n")
+                        .append("\n")
 
 
-                   .append(attr(DBDefinitions.KEY_LOCATION,
+                        .append(attr(DBDefinitions.KEY_LOCATION,
                                 cursorRow.getString(DBDefinitions.KEY_LOCATION)))
-                   .append(attr(DBDefinitions.KEY_RATING,
+                        .append(attr(DBDefinitions.KEY_RATING,
                                 cursorRow.getDouble(DBDefinitions.KEY_RATING)))
-                   .append(attr(DBDefinitions.KEY_SIGNED,
+                        .append(attr(DBDefinitions.KEY_SIGNED,
                                 cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
-                   .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
+                        .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
                                 cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
-                   .append("\n")
+                        .append("\n")
 
-                   // external ID's
-                   .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
+                        // external ID's
+                        .append(attr(DBDefinitions.KEY_LIBRARY_THING_ID,
                                 cursorRow.getLong(DBDefinitions.KEY_LIBRARY_THING_ID)))
-                   .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
+                        .append(attr(DBDefinitions.KEY_OPEN_LIBRARY_ID,
                                 cursorRow.getString(DBDefinitions.KEY_OPEN_LIBRARY_ID)))
-                   .append(attr(DBDefinitions.KEY_ISFDB_ID,
+                        .append(attr(DBDefinitions.KEY_ISFDB_ID,
                                 cursorRow.getLong(DBDefinitions.KEY_ISFDB_ID)))
-                   .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
+                        .append(attr(DBDefinitions.KEY_GOODREADS_BOOK_ID,
                                 cursorRow.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID)))
-                   .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
+                        .append(attr(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE,
                                 cursorRow.getString(DBDefinitions.KEY_GOODREADS_LAST_SYNC_DATE)))
-                   .append("\n")
+                        .append("\n")
 
-                   .append(attr(DBDefinitions.KEY_DATE_ADDED,
+                        .append(attr(DBDefinitions.KEY_DATE_ADDED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
-                   .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
+                        .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
                                 cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
-                   .append(attr(DBDefinitions.KEY_BOOK_UUID,
+                        .append(attr(DBDefinitions.KEY_BOOK_UUID,
                                 cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
-                   .append("\n")
+                        .append("\n")
 
-                   .append(attr(DBDefinitions.KEY_LOANEE,
+                        .append(attr(DBDefinitions.KEY_LOANEE,
                                 cursorRow.getString(DBDefinitions.KEY_LOANEE)))
-                   .append(">\n");
+                        .append(">\n");
 
                 out.append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
-                                        cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)));
+                        cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)));
                 out.append(tagWithCData(DBDefinitions.KEY_NOTES, null,
-                                        cursorRow.getString(DBDefinitions.KEY_NOTES)));
+                        cursorRow.getString(DBDefinitions.KEY_NOTES)));
 
                 out.append("</" + XmlTags.XML_BOOK + ">\n");
                 count++;
@@ -693,14 +692,14 @@ public class XmlExporter
         }
 
         out.append('<' + XmlTags.XML_STYLE_LIST)
-           .append(version(XML_EXPORTER_STYLES_VERSION))
-           .append(">\n");
+                .append(version(XML_EXPORTER_STYLES_VERSION))
+                .append(">\n");
 
         for (BooklistStyle style : styles) {
             out.append('<' + XmlTags.XML_STYLE)
-               .append(id(style.getId()))
-               .append(name(style.getUuid()))
-               .append(">\n");
+                    .append(id(style.getId()))
+                    .append(name(style.getUuid()))
+                    .append(">\n");
 
             // 'Flat' Preferences for this style.
             for (PPref p : style.getPreferences(false).values()) {
@@ -711,8 +710,8 @@ public class XmlExporter
             out.append('<' + XmlTags.XML_GROUP_LIST + '>');
             for (BooklistGroup group : style.getGroups()) {
                 out.append('<' + XmlTags.XML_GROUP)
-                   .append(id(group.getKind()))
-                   .append(">\n");
+                        .append(id(group.getKind()))
+                        .append(">\n");
                 for (PPref p : group.getPreferences().values()) {
                     out.append(typedTag(p.getKey(), p.get()));
                 }
@@ -772,7 +771,7 @@ public class XmlExporter
                              @NonNull final ProgressListener listener)
             throws IOException {
         // remove the acra settings
-        Map<String, ?> all = App.getPrefs().getAll();
+        Map<String, ?> all = mSettings.getPrefs().getAll();
         Iterator<String> it = all.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -811,8 +810,8 @@ public class XmlExporter
 
         String listRoot = accessor.getListRoot();
         out.append('<').append(listRoot)
-           .append(size(accessor.size()))
-           .append(">\n");
+                .append(size(accessor.size()))
+                .append(">\n");
 
         // loop through all elements
         do {
@@ -827,7 +826,7 @@ public class XmlExporter
                 out.append(name(nameAttr));
             }
             out.append(version(accessor.getVersionAttribute()))
-               .append(" >\n");
+                    .append(" >\n");
 
             // loop through all keys of the element
             for (String name : keys) {

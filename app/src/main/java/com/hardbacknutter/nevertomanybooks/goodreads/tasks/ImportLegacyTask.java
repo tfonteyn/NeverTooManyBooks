@@ -29,17 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
@@ -51,7 +41,7 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertomanybooks.entities.ItemWithIdFixup;
+import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.api.ListReviewsApiHandler;
@@ -66,6 +56,17 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
@@ -180,7 +181,7 @@ class ImportLegacyTask
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
                         new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
-                                                true),
+                                true),
                         QueueManager.Q_MAIN);
             }
             return ok;
@@ -355,9 +356,9 @@ class ImportLegacyTask
             }
         }
 
-        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocal());
+        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
         return mBookshelfLookup.containsKey(lcGrShelfName) ? mBookshelfLookup.get(lcGrShelfName)
-                                                           : grShelfName;
+                : grShelfName;
     }
 
     /**
@@ -393,8 +394,10 @@ class ImportLegacyTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
-        db.updateBook(bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
-                      DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        db.updateBook(userContext, bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
+                DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
@@ -404,7 +407,9 @@ class ImportLegacyTask
                             @NonNull final Bundle review) {
 
         Book book = new Book(buildBundle(db, null, review));
-        long id = db.insertBook(book);
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        long id = db.insertBook(userContext, book);
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
                 String uuid = db.getBookUuid(id);
@@ -446,13 +451,13 @@ class ImportLegacyTask
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PAGES);
 
         addDateIfValid(review, DBDefinitions.KEY_READ_START,
-                       bookData, DBDefinitions.KEY_READ_START);
+                bookData, DBDefinitions.KEY_READ_START);
 
         String readEnd = addDateIfValid(review, DBDefinitions.KEY_READ_END,
-                                        bookData, DBDefinitions.KEY_READ_END);
+                bookData, DBDefinitions.KEY_READ_END);
 
         Double rating = addDoubleIfPresent(review, DBDefinitions.KEY_RATING,
-                                           bookData, DBDefinitions.KEY_RATING);
+                bookData, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
@@ -483,10 +488,10 @@ class ImportLegacyTask
          * Build the publication date based on the components
          */
         String pubDate = GoodreadsManager.buildDate(review,
-                                                    ReviewField.PUBLICATION_YEAR,
-                                                    ReviewField.PUBLICATION_MONTH,
-                                                    ReviewField.PUBLICATION_DAY,
-                                                    null);
+                ReviewField.PUBLICATION_YEAR,
+                ReviewField.PUBLICATION_MONTH,
+                ReviewField.PUBLICATION_DAY,
+                null);
         if (pubDate != null && !pubDate.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
@@ -522,7 +527,7 @@ class ImportLegacyTask
         if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String bookTitle = bookData.getString(DBDefinitions.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-            if (details != null && !details.getName().isEmpty()) {
+            if (details != null && !details.getTitle().isEmpty()) {
                 ArrayList<Series> allSeries;
                 if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
@@ -531,11 +536,11 @@ class ImportLegacyTask
                             bookCursorRow.getLong(DBDefinitions.KEY_PK_ID));
                 }
 
-                Series newSeries = new Series(details.getName());
+                Series newSeries = new Series(details.getTitle());
                 newSeries.setNumber(details.getPosition());
                 allSeries.add(newSeries);
                 bookData.putString(DBDefinitions.KEY_TITLE,
-                                   bookTitle.substring(0, details.startChar - 1));
+                        bookTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, allSeries);
@@ -568,12 +573,14 @@ class ImportLegacyTask
                         ListReviewsApiHandler.ReviewField.SHELF));
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(App.getAppContext(), db)));
                 }
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithIdFixup.pruneList(db, bsList);
+            //TODO: should be using a user context.
+            Context userContext = App.getAppContext();
+            ItemWithFixableId.pruneList(userContext, db, bsList);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
@@ -585,7 +592,7 @@ class ImportLegacyTask
         if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ReviewField.ADDED,
-                                bookData, DBDefinitions.KEY_DATE_ADDED);
+                    bookData, DBDefinitions.KEY_DATE_ADDED);
 
             // fetch thumbnail
             String thumbnail;
@@ -605,7 +612,7 @@ class ImportLegacyTask
             if (thumbnail != null) {
                 long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 String fileSpec = ImageUtils.saveImage(thumbnail, String.valueOf(grBookId),
-                                                       GoodreadsManager.FILENAME_SUFFIX + '_' + size);
+                        GoodreadsManager.FILENAME_SUFFIX + '_' + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);

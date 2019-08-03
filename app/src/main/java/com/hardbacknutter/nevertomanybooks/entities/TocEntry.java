@@ -19,11 +19,19 @@
  */
 package com.hardbacknutter.nevertomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.database.DAO;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,12 +39,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -50,7 +52,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StringList;
  * @author pjw
  */
 public class TocEntry
-        implements Parcelable, ItemWithIdFixup {
+        implements Parcelable, ItemWithFixableId, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR =
@@ -297,6 +299,7 @@ public class TocEntry
     }
 
     @NonNull
+    @Override
     public String getTitle() {
         return mTitle;
     }
@@ -345,21 +348,32 @@ public class TocEntry
      *
      * @return the locale of the TocEntry
      */
-    private Locale getLocale() {
-        return LocaleUtils.getPreferredLocal();
+    @NonNull
+    @Override
+    public Locale getLocale() {
+        return LocaleUtils.getPreferredLocale(App.getAppContext());
     }
 
     @Override
-    public long fixupId(@NonNull final DAO db) {
-        return fixupId(db, getLocale());
+    public long fixId(@NonNull final DAO db) {
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        return fixId(userContext, db, getLocale());
     }
 
     @Override
-    public long fixupId(@NonNull final DAO db,
-                        @NonNull final Locale locale) {
+    public long fixId(@NonNull final Context userContext,
+                      @NonNull final DAO db) {
+        return fixId(userContext, db, getLocale());
+    }
+
+    @Override
+    public long fixId(@NonNull final Context userContext,
+                      @NonNull final DAO db,
+                      @NonNull final Locale tocLocale) {
         // let the Author use its own Locale.
-        mAuthor.fixupId(db);
-        mId = db.getTocEntryId(this, locale);
+        mAuthor.fixId(userContext, db);
+        mId = db.getTocEntryId(userContext, this, tocLocale);
         return mId;
     }
 

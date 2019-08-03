@@ -2,23 +2,24 @@ package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.util.Objects;
-
-import org.jsoup.Connection;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import androidx.annotation.VisibleForTesting;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.EditBookTocFragment;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
+
+import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.util.Objects;
 
 abstract class AbstractBase {
 
@@ -43,6 +44,14 @@ abstract class AbstractBase {
 
     private boolean afterEofTryAgain = true;
     private boolean afterBrokenRedirectTryAgain = true;
+
+    AbstractBase() {
+    }
+
+    @VisibleForTesting
+    AbstractBase(final Document doc) {
+        mDoc = doc;
+    }
 
     /**
      * Fetch the URL and parse it into {@link #mDoc}.
@@ -90,13 +99,13 @@ abstract class AbstractBase {
                 // We need the actual url for further processing.
                 String pageUrl = con.getURL().toString();
                 mDoc = Jsoup.parse(terminatorConnection.inputStream,
-                                   IsfdbManager.CHARSET_DECODE_PAGE, pageUrl);
+                        IsfdbManager.CHARSET_DECODE_PAGE, pageUrl);
 
                 // sanity check
                 if (!Objects.equals(pageUrl, mDoc.location())) {
                     Logger.warn(this, "loadPage",
-                                "pageUrl=" + pageUrl,
-                                "location=" + mDoc.location());
+                            "pageUrl=" + pageUrl,
+                            "location=" + mDoc.location());
                 }
 
             } catch (@NonNull final HttpStatusException e) {
@@ -159,14 +168,14 @@ abstract class AbstractBase {
                 Logger.debug(this, "loadPage_old", "url=" + url);
             }
             Connection con = Jsoup.connect(url)
-                                  // added due to https://github.com/square/okhttp/issues/1517
-                                  // it's a server issue, this is a workaround.
-                                  .header("Connection", "close")
-                                  // connect and read-timeout. Default is 30.
-                                  .timeout(60_000)
-                                  // maximum bytes to read before connection is closed, default 1mb
-                                  .maxBodySize(2_000_000)
-                                  .followRedirects(redirect);
+                    // added due to https://github.com/square/okhttp/issues/1517
+                    // it's a server issue, this is a workaround.
+                    .header("Connection", "close")
+                    // connect and read-timeout. Default is 30.
+                    .timeout(60_000)
+                    // maximum bytes to read before connection is closed, default 1mb
+                    .maxBodySize(2_000_000)
+                    .followRedirects(redirect);
 
             try {
                 /*
@@ -195,7 +204,7 @@ abstract class AbstractBase {
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                         Logger.debug(this, "loadPage_old", "303",
-                                     "Location=" + location);
+                                "Location=" + location);
                     }
 
                     // 2019-04-20: it seems the website was updated/fixed.
@@ -264,7 +273,6 @@ abstract class AbstractBase {
         }
         return true;
     }
-
 
     @NonNull
     String cleanUpName(@NonNull final String s) {

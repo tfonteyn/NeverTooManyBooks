@@ -22,13 +22,13 @@ package com.hardbacknutter.nevertomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Provides a number of static methods to manipulate string lists.
@@ -249,19 +249,19 @@ public class StringList<E> {
     }
 
     /**
-     * Decode a string list separated by 'delim' and
+     * Decode a string list separated by 'delimiter' and
      * encoded by {@link #escapeListItem}.
      *
      * @param stringList String representing the list
      * @param allowBlank Flag to allow adding empty (non-null) strings
-     * @param delim      delimiter to use
+     * @param delimiter  delimiter to use
      *
      * @return Array of strings resulting from list
      */
     @NonNull
     public ArrayList<E> decode(@Nullable final String stringList,
                                final boolean allowBlank,
-                               final char delim) {
+                               final char delimiter) {
         StringBuilder sb = new StringBuilder();
         ArrayList<E> list = new ArrayList<>();
         if (stringList == null) {
@@ -303,7 +303,7 @@ public class StringList<E> {
                         break;
 
                     default:
-                        if (c == delim) {
+                        if (c == delimiter) {
                             String source = sb.toString().trim();
                             if (allowBlank || !source.isEmpty()) {
                                 list.add(mFactory.decode(source));
@@ -338,18 +338,18 @@ public class StringList<E> {
     }
 
     /**
-     * This is used to build text lists separated by 'delim'.
+     * This is used to build text lists separated by 'delimiter'.
      *
-     * @param delim delimiter to use.
-     * @param list  to convert
+     * @param delimiter delimiter to use.
+     * @param list      to convert
      *
      * @return Converted string
      */
     @NonNull
-    public String encode(final char delim,
+    public String encode(final char delimiter,
                          @NonNull final Collection<E> list) {
 
-        return Csv.join(String.valueOf(delim), list, mFactory::encode);
+        return Csv.join(String.valueOf(delimiter), list, mFactory::encode);
     }
 
     public interface Factory<E> {

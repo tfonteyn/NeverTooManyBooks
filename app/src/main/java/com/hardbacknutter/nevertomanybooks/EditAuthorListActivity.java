@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.entities.EditAuthorBaseDialogFragment;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
-import com.hardbacknutter.nevertomanybooks.entities.ItemWithIdFixup;
+import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
@@ -97,7 +97,7 @@ public class EditAuthorListActivity
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixupId(mDb);
+        newAuthor.fixId(this, mDb);
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
@@ -144,7 +144,7 @@ public class EditAuthorListActivity
              * TODO: simplify / don't orphan?
              */
             author.copyFrom(newAuthorData);
-            ItemWithIdFixup.pruneList(mDb, mList);
+            ItemWithFixableId.pruneList(this, mDb, mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -180,7 +180,7 @@ public class EditAuthorListActivity
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          (d, which) -> {
                              author.copyFrom(newAuthorData);
-                             ItemWithIdFixup.pruneList(mDb, mList);
+                             ItemWithFixableId.pruneList(this, mDb, mList);
                              mListAdapter.notifyDataSetChanged();
                          });
 
@@ -208,10 +208,10 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            Locale locale = LocaleUtils.getPreferredLocal();
+            Locale locale = LocaleUtils.getPreferredLocale(this);
             mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData, locale);
             author.copyFrom(newAuthorData);
-            ItemWithIdFixup.pruneList(mDb, mList);
+            ItemWithFixableId.pruneList(this, mDb, mList);
             mListAdapter.notifyDataSetChanged();
         });
 

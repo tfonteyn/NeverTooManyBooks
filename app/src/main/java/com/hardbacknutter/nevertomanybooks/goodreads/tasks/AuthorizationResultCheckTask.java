@@ -46,26 +46,27 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        Context context = App.getAppContext();
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
 
         if (result) {
-            App.showNotification(context, R.string.info_authorized,
-                                 context.getString(R.string.gr_auth_successful));
+            App.showNotification(userContext, R.string.info_authorized,
+                                 userContext.getString(R.string.gr_auth_successful));
 
         } else {
             String msg;
             if (mException instanceof FormattedMessageException) {
-                msg = ((FormattedMessageException) mException).getFormattedMessage(context);
+                msg = ((FormattedMessageException) mException).getFormattedMessage(userContext);
 
             } else if (mException != null) {
-                msg = context.getString(R.string.gr_auth_error) + ' '
-                        + context.getString(R.string.error_if_the_problem_persists);
+                msg = userContext.getString(R.string.gr_auth_error) + ' '
+                        + userContext.getString(R.string.error_if_the_problem_persists);
 
             } else {
-                msg = context.getString(R.string.error_site_authentication_failed,
-                                        context.getString(R.string.goodreads));
+                msg = userContext.getString(R.string.error_site_authentication_failed,
+                                        userContext.getString(R.string.goodreads));
             }
-            App.showNotification(context, R.string.info_not_authorized, msg);
+            App.showNotification(userContext, R.string.info_not_authorized, msg);
         }
     }
 }

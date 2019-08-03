@@ -9,18 +9,19 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.regex.Pattern;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.regex.Pattern;
 
 /**
  * Languages:
@@ -50,51 +51,50 @@ public final class LocaleUtils {
     }
 
     /**
-     * Needs to be called from main thread at App startup.
-     * <p>
-     * It's guarded against being called more then once.
+     * Populate CURRENCY_MAP.
      *
-     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
+     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>
+     * https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
      */
     @UiThread
-    public static void init() {
+    private static void createCurrencyMap() {
+        // allow re-creating
+        CURRENCY_MAP.clear();
 
-        if (CURRENCY_MAP.isEmpty()) {
-            // key in map should always be lowercase
-            CURRENCY_MAP.put("", "");
-            CURRENCY_MAP.put("€", "EUR");
+        // key in map should always be lowercase
+        CURRENCY_MAP.put("", "");
+        CURRENCY_MAP.put("€", "EUR");
 
-            // English
-            CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
-            CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-            CURRENCY_MAP.put("£", "GBP"); // British Pound
-            CURRENCY_MAP.put("$", "USD"); // Trump Disney's
+        // English
+        CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
+        CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
+        CURRENCY_MAP.put("£", "GBP"); // British Pound
+        CURRENCY_MAP.put("$", "USD"); // Trump Disney's
 
-            CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
-            CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
-            CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
+        CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
+        CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
+        CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
 
-            // supported locales (including pre-euro)
-            CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
-            CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
-            CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
-            CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
-            CURRENCY_MAP.put("dm", "DEM"); //german marks
-            CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
-            CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
-            CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
-            CURRENCY_MAP.put("f", "FRF"); // French Franc
-            CURRENCY_MAP.put("ff", "FRF"); // French Franc
-            CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-            CURRENCY_MAP.put("L", "ITL"); // Italian Lira
-            CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
-            CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
+        // supported locales (including pre-euro)
+        CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
+        CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
+        CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
+        CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
+        CURRENCY_MAP.put("dm", "DEM"); //german marks
+        CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
+        CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
+        CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
+        CURRENCY_MAP.put("f", "FRF"); // French Franc
+        CURRENCY_MAP.put("ff", "FRF"); // French Franc
+        CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
+        CURRENCY_MAP.put("L", "ITL"); // Italian Lira
+        CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
+        CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
 
-            // some others as seen on ISFDB site
-            CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
-            CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
-            CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
-        }
+        // some others as seen on ISFDB site
+        CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
+        CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
+        CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
     }
 
     /**
@@ -103,7 +103,7 @@ public final class LocaleUtils {
      * @return {@code true} if there is a change (difference)
      */
     public static boolean isChanged(@NonNull final Context context) {
-        boolean changed = !from(context).equals(getPreferredLocal());
+        boolean changed = !from(context).equals(getPreferredLocale(context));
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debug(LocaleUtils.class, "isChanged", "=" + changed);
         }
@@ -125,7 +125,7 @@ public final class LocaleUtils {
             return;
         }
 
-        Locale userLocale = getPreferredLocal();
+        Locale userLocale = getPreferredLocale(context);
 
         // Apply the user-preferred Locale globally.... but this does not override already
         // loaded resources. So.. this is for FUTURE use when new resources get initialised.
@@ -137,7 +137,7 @@ public final class LocaleUtils {
         deltaOnlyConfig.setLocale(userLocale);
 
         context.getResources().updateConfiguration(deltaOnlyConfig,
-                                                   context.getResources().getDisplayMetrics());
+                context.getResources().getDisplayMetrics());
 
 
         // see if we need to add mappings for the new/current locale
@@ -145,7 +145,7 @@ public final class LocaleUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugExit(LocaleUtils.class, "applyPreferred",
-                             toDebugString(context));
+                    toDebugString(context));
         }
 
     }
@@ -164,8 +164,8 @@ public final class LocaleUtils {
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
             Logger.debug(LocaleUtils.class, "isValid",
-                         "e=" + e.getLocalizedMessage(),
-                         "locale=" + locale);
+                    "e=" + e.getLocalizedMessage(),
+                    "locale=" + locale);
             return false;
 
         } catch (@NonNull final RuntimeException ignore) {
@@ -177,11 +177,12 @@ public final class LocaleUtils {
      * @return the user-preferred Locale as stored in the preferences.
      */
     @NonNull
-    public static Locale getPreferredLocal() {
-        String lang = App.getPrefString(Prefs.pk_ui_language);
+    public static Locale getPreferredLocale(@NonNull final Context context) {
+        String lang = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(Prefs.pk_ui_language, null);
         // the string "system" is also hardcoded in the preference string-array and
         // in the default setting in the preference screen.
-        if (lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
+        if (lang == null || lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
             return App.getSystemLocale();
         } else {
             return from(lang);
@@ -195,7 +196,8 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Locale from(@NonNull final Context context) {
-        return context.getResources().getConfiguration().locale;
+        Locale locale = context.getResources().getConfiguration().locale;
+        return locale != null ? locale : Locale.ENGLISH;
     }
 
     /**
@@ -279,7 +281,11 @@ public final class LocaleUtils {
      */
     @Nullable
     private static String currencyToISO(@NonNull final String currency) {
-        return CURRENCY_MAP.get(currency.trim().toLowerCase(App.getSystemLocale()));
+        if (CURRENCY_MAP.isEmpty()) {
+            createCurrencyMap();
+        }
+        String key = currency.trim().toLowerCase(App.getSystemLocale());
+        return CURRENCY_MAP.get(key);
     }
 
     /**
@@ -295,7 +301,7 @@ public final class LocaleUtils {
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugEnter(LocaleUtils.class, "getLabel",
-                              "iso=" + iso, toDebugString(context));
+                    "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);
     }
@@ -319,34 +325,32 @@ public final class LocaleUtils {
         return iso;
     }
 
-
-    public static Resources getLocalizedResources() {
-        //TODO: should be using a user context.
-        return getLocalizedResources(App.getAppContext(), getPreferredLocal());
-    }
-
     /**
      * Load a Resources set for the specified Locale.
+     * URGENT: review the use/abuse of getLocalizedResources
+     * ENHANCE: should we cache these ?
      *
-     * @param context Current context
-     * @param locale  the desired Locale
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the locale of a book,series,toc,...
      *
      * @return the Resources
      */
     @NonNull
     public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale locale) {
-        Configuration conf = new Configuration(context.getResources().getConfiguration());
-        String lang = locale.getLanguage();
+                                                  @NonNull final Locale desiredLocale) {
+        Resources resources = context.getResources();
+        Configuration current = resources.getConfiguration();
+        Configuration configuration = new Configuration(current);
+        String lang = desiredLocale.getLanguage();
         //FIXME: resources want 2-chars, locale 3-chars... is there a better way ?
         if (lang.length() == 2) {
-            conf.setLocale(locale);
+            configuration.setLocale(desiredLocale);
         } else {
             // any 3-character code needs to be converted to be able to find the resource.
-            conf.setLocale(new Locale(mapLanguageCode(lang)));
+            configuration.setLocale(new Locale(mapLanguageCode(lang)));
         }
 
-        Context localizedContext = context.createConfigurationContext(conf);
+        Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
     }
 
@@ -577,7 +581,9 @@ public final class LocaleUtils {
     public static String toDebugString(@NonNull final Context context) {
         Locale cur = from(context);
         Locale configLocale = context.getResources().getConfiguration().locale;
-
+        if (configLocale == null) {
+            configLocale = Locale.ENGLISH;
+        }
         return ""
                 + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
                 + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(cur)
@@ -586,8 +592,8 @@ public final class LocaleUtils {
 
                 + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
                 + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(cur)
-                + "\ngetPreferredLocal()        : " + getPreferredLocal().getDisplayName()
-                + "\ngetPreferredLocal(cur)     : " + getPreferredLocal().getDisplayName(cur)
+                + "\ngetPreferredLocale()        : " + getPreferredLocale(context).getDisplayName()
+                + "\ngetPreferredLocale(cur)     : " + getPreferredLocale(context).getDisplayName(cur)
 
                 + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
                 + "\nApp.isRecreating()         : " + App.isRecreating();
@@ -641,7 +647,7 @@ public final class LocaleUtils {
                     // Currency.getInstance sanity catch....
                     if (BuildConfig.DEBUG) {
                         Logger.error(LocaleUtils.class, e, "splitPrice",
-                                     "data[0]=" + data[0], "data[1]=" + data[1]);
+                                "data[0]=" + data[0], "data[1]=" + data[1]);
                     }
                 }
             }

@@ -24,7 +24,7 @@ public class PBoolean
     public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent) {
-        super(key, uuid, isPersistent, App.getPrefs().getBoolean(key, false));
+        super(key, uuid, isPersistent, App.getPrefBoolean(key, false));
     }
 
     /**
@@ -39,7 +39,7 @@ public class PBoolean
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Boolean defaultValue) {
-        super(key, uuid, isPersistent, App.getPrefs().getBoolean(key, defaultValue));
+        super(key, uuid, isPersistent, App.getPrefBoolean(key, defaultValue));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class PBoolean
         } else if (value == null) {
             remove();
         } else {
-            App.getPrefs(mUuid).edit().putBoolean(getKey(), value).apply();
+            getPrefs().edit().putBoolean(getKey(), value).apply();
         }
     }
 
@@ -69,7 +69,7 @@ public class PBoolean
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return App.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);
+            return getPrefs().getBoolean(getKey(), mDefaultValue);
         }
     }
 

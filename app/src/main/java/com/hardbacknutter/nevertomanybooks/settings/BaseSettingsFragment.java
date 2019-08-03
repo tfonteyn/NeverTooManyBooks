@@ -157,7 +157,7 @@ abstract class BaseSettingsFragment
         }
         ed.apply();
         if (clearSource) {
-            // API: 24 -> App.getAppContext().deleteSharedPreferences(source);
+            // API: 24 -> context.deleteSharedPreferences(source);
             sourcePrefs.edit().clear().apply();
         }
     }

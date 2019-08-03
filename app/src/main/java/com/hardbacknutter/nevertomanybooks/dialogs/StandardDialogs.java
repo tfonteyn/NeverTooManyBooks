@@ -65,7 +65,7 @@ public final class StandardDialogs {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
-                .setMessage(context.getString(R.string.confirm_delete_series, series.getName()))
+                .setMessage(context.getString(R.string.confirm_delete_series, series.getTitle()))
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {

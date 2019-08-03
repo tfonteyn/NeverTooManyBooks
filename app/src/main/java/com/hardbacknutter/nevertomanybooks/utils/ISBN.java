@@ -123,7 +123,7 @@ public class ISBN {
      *
      * @param s the isbn string, 10 or 13, or the old UPC
      */
-    private ISBN(@NonNull final String s) {
+    public ISBN(@NonNull final String s) {
         List<Integer> digits;
         // regular ISBN 10/13
         try {
@@ -427,6 +427,8 @@ public class ISBN {
     /**
      * This method does NOT check if the actual digits form a valid ISBN.
      *
+     * Allows and ignore '-' characters.
+     *
      * @return list of digits
      */
     @NonNull
@@ -455,6 +457,10 @@ public class ISBN {
                 // 'X'
                 digit = 10;
                 foundX = true;
+
+            } else if (c == '-') {
+                continue;
+
             } else {
                 // Invalid character
                 throw new NumberFormatException();
@@ -548,17 +554,14 @@ public class ISBN {
         }
         ISBN cmp = (ISBN) o;
 
-        // If either is invalid, require they match exactly
+        // If either is invalid, no match
         if (!isValid() || !cmp.isValid()) {
-            return Objects.equals(mDigits, cmp.mDigits);
-//            return mDigits.size() == cmp.mDigits.size()
-//                    && digitsMatch(mDigits.size(), 0, cmp, 0);
+            return false;
         }
 
         // same length ? they should match exactly
         if (mDigits.size() == cmp.mDigits.size()) {
             return Objects.equals(mDigits, cmp.mDigits);
-//            return digitsMatch(mDigits.size(), 0, cmp, 0);
         }
 
         // Both are valid ISBN codes and we know the lengths are either 10 or 13

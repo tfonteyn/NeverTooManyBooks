@@ -1,5 +1,7 @@
 package com.hardbacknutter.nevertomanybooks.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -7,6 +9,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
@@ -43,8 +46,10 @@ public class RestoreTask
     protected ImportOptions doInBackground(final Void... params) {
         Thread.currentThread().setName("RestoreTask");
 
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(mSettings.file)) {
+        try (BackupReader reader = BackupManager.getReader(userContext, mSettings.file)) {
 
             reader.restore(mSettings, new ProgressListener() {
 

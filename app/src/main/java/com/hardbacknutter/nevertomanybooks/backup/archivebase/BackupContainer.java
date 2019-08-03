@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -33,23 +35,27 @@ public interface BackupContainer {
     /**
      * Get a BackupReader for the referenced archive.
      *
+     * @param context Current context for resources
+     *
      * @return a new reader
      *
      * @throws IOException on failure
      */
     @NonNull
-    BackupReader newReader()
+    BackupReader newReader(@NonNull Context context)
             throws IOException;
 
     /**
      * Get a BackupWriter for the referenced archive.
+     *
+     * @param context Current context for resources
      *
      * @return a new writer
      *
      * @throws IOException on failure
      */
     @NonNull
-    BackupWriter newWriter()
+    BackupWriter newWriter(@NonNull Context context)
             throws IOException;
 
     /**
@@ -74,5 +80,5 @@ public interface BackupContainer {
      *
      * @return {@code true} if valid
      */
-    boolean isValid();
+    boolean isValid(@NonNull Context context);
 }

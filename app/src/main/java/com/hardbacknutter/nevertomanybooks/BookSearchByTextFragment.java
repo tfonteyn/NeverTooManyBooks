@@ -13,9 +13,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
@@ -23,6 +20,9 @@ import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -53,8 +53,8 @@ public class BookSearchByTextFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchCoordinatorId="
-                                                  + mBookSearchBaseModel.getSearchCoordinatorId());
+                                "SearchCoordinatorId="
+                                        + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
@@ -62,7 +62,7 @@ public class BookSearchByTextFragment
 
                             if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
                                 bookData.putString(DBDefinitions.KEY_TITLE,
-                                                   mTitleView.getText().toString().trim());
+                                        mTitleView.getText().toString().trim());
                             }
                             //noinspection ConstantConditions
                             if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
@@ -70,11 +70,11 @@ public class BookSearchByTextFragment
                                     UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
                                 // does NOT use the array, that's reserved for verified names.
                                 bookData.putString(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                                   mAuthorView.getText().toString().trim());
+                                        mAuthorView.getText().toString().trim());
                             }
                             if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
                                 bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                                                   mPublisherView.getText().toString().trim());
+                                        mPublisherView.getText().toString().trim());
                             }
 
                             Intent intent = new Intent(getContext(), EditBookActivity.class)
@@ -104,9 +104,9 @@ public class BookSearchByTextFragment
         mTitleView = view.findViewById(R.id.title);
         mAuthorView = view.findViewById(R.id.author);
         mPublisherView = view.findViewById(R.id.publisher);
+        boolean usePublisher = SearchSites.usePublisher(inflater.getContext());
         view.findViewById(R.id.publisher_group)
-            .setVisibility(SearchSites.usePublisher() ? View.VISIBLE : View.GONE);
-
+                .setVisibility(usePublisher ? View.VISIBLE : View.GONE);
         return view;
     }
 
@@ -201,11 +201,11 @@ public class BookSearchByTextFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR,
-                           mBookSearchBaseModel.getAuthorSearchText());
+                mBookSearchBaseModel.getAuthorSearchText());
         outState.putString(DBDefinitions.KEY_TITLE,
-                           mBookSearchBaseModel.getTitleSearchText());
+                mBookSearchBaseModel.getTitleSearchText());
         outState.putString(DBDefinitions.KEY_PUBLISHER,
-                           mBookSearchBaseModel.getPublisherSearchText());
+                mBookSearchBaseModel.getPublisherSearchText());
     }
 
     /**
@@ -220,8 +220,8 @@ public class BookSearchByTextFragment
         final ArrayList<String> authors = mBookSearchBaseModel.getAuthorNames(mAuthorNames, locale);
         // Now get an adapter based on the combined names
         mAuthorAdapter = new ArrayAdapter<>(getContext(),
-                                            android.R.layout.simple_dropdown_item_1line,
-                                            authors);
+                android.R.layout.simple_dropdown_item_1line,
+                authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 }

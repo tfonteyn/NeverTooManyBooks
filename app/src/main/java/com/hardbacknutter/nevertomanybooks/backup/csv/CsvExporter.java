@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertomanybooks.backup.csv;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
 
@@ -134,9 +136,10 @@ public class CsvExporter
      */
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportOptions settings) {
-
-        mUnknownString = context.getString(R.string.unknown);
-
+        //FIXME: the context we get is not always a 'userContext' so try to get correct resources
+        Resources resources = LocaleUtils.getLocalizedResources(context,
+                LocaleUtils.getPreferredLocale(context));
+        mUnknownString = resources.getString(R.string.unknown);
         mSettings = settings;
         settings.validate();
     }

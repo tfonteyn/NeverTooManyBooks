@@ -1,5 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -15,13 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -32,6 +26,13 @@ import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class ImageUtils {
 
     /*
@@ -41,6 +42,7 @@ public final class ImageUtils {
      * res/xml/preferences_book_style.xml contains the default set to 2
      */
     /** Thumbnail Scaling. */
+    @SuppressWarnings("unused")
     public static final int SCALE_X_SMALL = 1;
     /** Thumbnail Scaling. */
     public static final int SCALE_SMALL = 2;
@@ -68,7 +70,7 @@ public final class ImageUtils {
      */
     public static int getMaxImageSize(final int scale) {
         return scale * (int) App.getAppContext().getResources()
-                                .getDimension(R.dimen.cover_base_size);
+                .getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -91,8 +93,10 @@ public final class ImageUtils {
 
         boolean cacheWasChecked = false;
 
+        Context context = destView.getContext();
+
         // 1. If we want to check the cache, AND we don't have cache building happening, check it.
-        if (BooklistBuilder.imagesAreCached()
+        if (BooklistBuilder.imagesAreCached(context)
                 && !GetImageTask.hasActiveTasks()
                 && !ImageCacheWriterTask.hasActiveTasks()) {
             try (CoversDAO coversDBAdapter = CoversDAO.getInstance()) {
@@ -111,7 +115,7 @@ public final class ImageUtils {
         }
 
         // 2. The image is not in the cache but the original exists, queue a task if allowed.
-        if (BooklistBuilder.imagesAreGeneratedInBackground()) {
+        if (BooklistBuilder.imagesAreGeneratedInBackground(context)) {
             // use place holder to indicate an image is coming
             destView.setImageResource(R.drawable.ic_image);
             // go get it
@@ -159,6 +163,7 @@ public final class ImageUtils {
         setImageView(destView, bm, maxWidth, maxHeight, upscale);
     }
 
+    @SuppressWarnings("unused")
     @UiThread
     private static void setImageView(@NonNull final ImageView destView,
                                      @Nullable final Bitmap bm,
@@ -186,11 +191,11 @@ public final class ImageUtils {
                                      final boolean upscale) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "setImageView",
-                         "maxWidth=" + maxWidth,
-                         "maxHeight=" + maxHeight,
-                         "upscale=" + upscale,
-                         bm != null ? "bm.width=" + bm.getWidth() : "no bm",
-                         bm != null ? "bm.height=" + bm.getHeight() : "no bm");
+                    "maxWidth=" + maxWidth,
+                    "maxHeight=" + maxHeight,
+                    "upscale=" + upscale,
+                    bm != null ? "bm.width=" + bm.getWidth() : "no bm",
+                    bm != null ? "bm.height=" + bm.getHeight() : "no bm");
         }
 
         destView.setMaxWidth(maxWidth);
@@ -225,6 +230,7 @@ public final class ImageUtils {
         return createScaledBitmap(BitmapFactory.decodeFile(file.getPath()), maxSize, maxSize);
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     @AnyThread
     public static Bitmap createScaledBitmap(@NonNull final Bitmap src,
@@ -325,17 +331,17 @@ public final class ImageUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "createScaledBitmap",
-                         "filename = " + fileSpec,
-                         "exact=" + exact,
-                         "maxWidth=" + maxWidth,
-                         "opt.outWidth=" + opt.outWidth,
-                         "widthRatio=" + widthRatio,
-                         "maxHeight=" + maxHeight,
-                         "opt.outHeight=" + opt.outHeight,
-                         "heightRatio=" + heightRatio,
-                         "ratio=" + ratio,
-                         "idealSampleSize =" + idealSampleSize,
-                         "samplePow2=" + samplePow2);
+                    "filename = " + fileSpec,
+                    "exact=" + exact,
+                    "maxWidth=" + maxWidth,
+                    "opt.outWidth=" + opt.outWidth,
+                    "widthRatio=" + widthRatio,
+                    "maxHeight=" + maxHeight,
+                    "opt.outHeight=" + opt.outHeight,
+                    "heightRatio=" + heightRatio,
+                    "ratio=" + ratio,
+                    "idealSampleSize =" + idealSampleSize,
+                    "samplePow2=" + samplePow2);
         }
 
         final Bitmap bm;
@@ -354,12 +360,12 @@ public final class ImageUtils {
                     // TODO: Need a way to try loading images after GC().
                     // Otherwise, covers in cover browser will stay blank.
                     Logger.warn(ImageUtils.class, "createScaledBitmap",
-                                "Unexpectedly failed to decode bitmap; memory exhausted?");
+                            "Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
                 final Matrix matrix = new Matrix();
-                // Fixup ratio based on new sample size and SCALE it.
+                // Fix ratio based on new sample size and SCALE it.
                 ratio = ratio / (1.0f / opt.inSampleSize);
                 matrix.postScale(ratio, ratio);
                 bm = Bitmap.createBitmap(tmpBm, 0, 0, opt.outWidth, opt.outHeight, matrix, true);
@@ -382,8 +388,8 @@ public final class ImageUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "createScaledBitmap",
-                         "bm.width=" + bm.getWidth(),
-                         "bm.height=" + bm.getHeight());
+                    "bm.width=" + bm.getWidth(),
+                    "bm.height=" + bm.getHeight());
         }
 
         return bm;
@@ -462,12 +468,12 @@ public final class ImageUtils {
         }
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
-                                                      new BitmapFactory.Options());
+                new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.debug(ImageUtils.class, "getBitmap",
-                         "Array " + bytes.length + " bytes",
-                         "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+                    "Array " + bytes.length + " bytes",
+                    "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -705,10 +711,11 @@ public final class ImageUtils {
 
             if (mBitmap != null) {
                 if (viewIsValid) {
+                    Context context = imageView.getContext();
                     // first display
                     setImageView(imageView, mBitmap, mWidth, mHeight, true);
                     // now send to cache if needed/allowed.
-                    if (!mWasInCache && BooklistBuilder.imagesAreCached()) {
+                    if (!mWasInCache && BooklistBuilder.imagesAreCached(context)) {
                         // during displaying, the bitmap could have been up or downscaled.
                         // so we extract the currently displayed one to send to the cache.
                         Drawable drawable = imageView.getDrawable();

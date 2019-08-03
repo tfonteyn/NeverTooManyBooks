@@ -8,10 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
@@ -22,6 +18,10 @@ import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used by the set of fragments that allow viewing and editing a Book.
@@ -149,9 +149,9 @@ public class BookBaseFragmentModel
     }
 
     @NonNull
-    public Book saveBook() {
+    public Book saveBook(@NonNull final Context userContext) {
         if (mBook.getId() == 0) {
-            long id = mDb.insertBook(mBook);
+            long id = mDb.insertBook(userContext, mBook);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
                 if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
@@ -164,7 +164,7 @@ public class BookBaseFragmentModel
                 }
             }
         } else {
-            mDb.updateBook(mBook.getId(), mBook, 0);
+            mDb.updateBook(userContext, mBook.getId(), mBook, 0);
         }
 
         return mBook;
@@ -203,8 +203,8 @@ public class BookBaseFragmentModel
         mBook.refreshAuthorList(mDb);
     }
 
-    public void refreshSeriesList() {
-        mBook.refreshSeriesList(mDb);
+    public void refreshSeriesList(@NonNull final Context userContext) {
+        mBook.refreshSeriesList(userContext, mDb);
     }
 
     @NonNull

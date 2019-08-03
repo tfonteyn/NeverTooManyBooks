@@ -33,10 +33,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
-
-import com.hardbacknutter.nevertomanybooks.App;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hardbacknutter.nevertomanybooks.MenuHandler;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -51,7 +50,8 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.utils.Utils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.ExportOptionsTaskModel;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.File;
 
 /**
  * Lets the user choose an archive file to backup to.
@@ -87,8 +87,8 @@ public class BackupActivity
 
         String defaultFilename = getString(R.string.app_name) + '-'
                 + DateUtils.localSqlDateForToday()
-                           .replace(" ", "-")
-                           .replace(":", "")
+                .replace(" ", "-")
+                .replace(":", "")
                 + BackupManager.ARCHIVE_EXTENSION;
 
         mFilenameView = findViewById(R.id.file_name);
@@ -113,11 +113,11 @@ public class BackupActivity
                 if (message.success) {
                     //noinspection ConstantConditions
                     String msg = getString(R.string.export_info_success_archive_details,
-                                           message.result.file.getParent(),
-                                           message.result.file.getName(),
-                                           StorageUtils.formatFileSize(
-                                                   BackupActivity.this,
-                                                   message.result.file.length()));
+                            message.result.file.getParent(),
+                            message.result.file.getName(),
+                            StorageUtils.formatFileSize(
+                                    BackupActivity.this,
+                                    message.result.file.length()));
 
                     new AlertDialog.Builder(BackupActivity.this)
                             .setTitle(R.string.lbl_backup_to_archive)
@@ -142,7 +142,7 @@ public class BackupActivity
                             .setTitle(R.string.lbl_backup_to_archive)
                             .setMessage(msg)
                             .setPositiveButton(android.R.string.ok,
-                                               (d, which) -> d.dismiss())
+                                    (d, which) -> d.dismiss())
                             .create()
                             .show();
                 }
@@ -165,9 +165,9 @@ public class BackupActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+                .setIcon(R.drawable.ic_keyboard_hide)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -200,7 +200,7 @@ public class BackupActivity
      */
     private void doBackup() {
         File file = new File(mRootDir.getAbsolutePath()
-                                     + File.separator + mFilenameView.getText().toString().trim());
+                + File.separator + mFilenameView.getText().toString().trim());
         if (file.exists() && !file.isFile()) {
             UserMessage.show(mListView, R.string.warning_enter_valid_filename);
             return;
@@ -218,7 +218,7 @@ public class BackupActivity
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ExportOptionsDialogFragment.TAG) == null) {
                         ExportOptionsDialogFragment.newInstance(options)
-                                                   .show(fm, ExportOptionsDialogFragment.TAG);
+                                .show(fm, ExportOptionsDialogFragment.TAG);
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
@@ -242,8 +242,8 @@ public class BackupActivity
         if ((options.what & ExportOptions.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (options.dateFrom == null) {
-                String lastBackup = App.getPrefs()
-                                       .getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
+                String lastBackup = PreferenceManager.getDefaultSharedPreferences(this)
+                        .getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
                 if (lastBackup != null && !lastBackup.isEmpty()) {
                     options.dateFrom = DateUtils.parseDate(lastBackup);
                 }

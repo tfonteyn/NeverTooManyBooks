@@ -40,7 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * We then pass this URL to {@link SearchGoogleBooksEntryHandler} which FETCHES THAT URL
  * and parses it.
  * <p>
- * FIXME: the googlebooks feed/entry fetching is sub-optimal and ambiguous.
+ * FIXME: the GoogleBooks feed/entry fetching is sub-optimal and ambiguous.
  * <p>
  * - So we do NOT parse the "entry" as delivered in the "feed"
  * ==> waste of bandwidth.

@@ -15,14 +15,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.android.material.tabs.TabLayout;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertomanybooks.searches.Site;
-import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
@@ -66,7 +66,7 @@ public class SearchAdminActivity
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         int requestedTab = args == null ? SHOW_ALL_TABS
-                                        : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
+                : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
         mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);
@@ -76,13 +76,13 @@ public class SearchAdminActivity
             case TAB_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_ORDER,
-                              R.string.lbl_books);
+                        R.string.lbl_books);
                 break;
 
             case TAB_COVER_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                              R.string.lbl_cover);
+                        R.string.lbl_cover);
                 break;
 
             default:
@@ -91,10 +91,10 @@ public class SearchAdminActivity
                 FragmentManager fm = getSupportFragmentManager();
                 // add them in order! i.e. in the order the TAB_* constants are defined.
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_ORDER,
-                                                getString(R.string.lbl_books)));
+                        getString(R.string.lbl_books)));
 
                 mAdapter.add(new FragmentHolder(fm, SearchOrderFragment.TAG + TAB_COVER_ORDER,
-                                                getString(R.string.lbl_covers)));
+                        getString(R.string.lbl_covers)));
                 break;
         }
 
@@ -125,8 +125,8 @@ public class SearchAdminActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
-            .setIcon(R.drawable.ic_undo)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                .setIcon(R.drawable.ic_undo)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -140,12 +140,12 @@ public class SearchAdminActivity
             case R.id.MENU_RESET:
                 switch (mViewPager.getCurrentItem()) {
                     case TAB_ORDER:
-                        SearchSites.resetSearchOrder();
+                        SearchSites.resetSearchOrder(this);
                         ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER))
                                 .setList(SearchSites.getSites());
                         break;
                     case TAB_COVER_ORDER:
-                        SearchSites.resetCoverSearchOrder();
+                        SearchSites.resetCoverSearchOrder(this);
                         ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER))
                                 .setList(SearchSites.getSitesForCoverSearches());
                         break;
@@ -168,7 +168,7 @@ public class SearchAdminActivity
         //noinspection ConstantConditions
         for (Site site : list) {
             sites = site.isEnabled() ? sites | site.id
-                                     : sites & ~site.id;
+                    : sites & ~site.id;
         }
         Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
         // don't commit any changes, we got data to use temporarily
@@ -186,12 +186,12 @@ public class SearchAdminActivity
             // Decide later...
             list = ((SearchOrderFragment) mAdapter.getItem(TAB_ORDER)).getList();
             if (list != null) {
-                SearchSites.setSearchOrder(list);
+                SearchSites.setSearchOrder(this, list);
             }
 
             list = ((SearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).getList();
             if (list != null) {
-                SearchSites.setCoverSearchOrder(list);
+                SearchSites.setCoverSearchOrder(this, list);
             }
         }
 

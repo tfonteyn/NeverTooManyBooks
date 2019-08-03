@@ -94,7 +94,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *              </person>
  *              <factList>
  *                <fact>
- *                  ![CDATA[ Contains the following novels: <i></br>Trullion: Alast...blah blah ]]>
+ *                  ![CDATA[ Contains the following novels: <i></br>Trullion: ...blah blah ]]>
  *                </fact>
  *              </factList>
  *            </version>
@@ -110,7 +110,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *              </person>
  *              <factList>
  *                <fact>
- *                  thisrecording.com 100 Greatest Science Fiction or Fantasy Nove...blah blah
+ *                  thisrecording.com 100 Greatest Science Fiction or Fantasy ...blah blah
  *                </fact>
  *              </factList>
  *            </version>
@@ -298,7 +298,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *                </person>
  *                <factList>
  *                  <fact>
- *                      &lt;![CDATA[ To John W. Campbell, Jr., who godfathered the robots]]&gt;
+ *                      &lt;![CDATA[ To John W. Campbell, Jr., who god-fathered the robots]]&gt;
  *                  </fact>
  *                </factList>
  *            </version>
@@ -355,7 +355,7 @@ import com.hardbacknutter.nevertomanybooks.entities.Series;
  *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;When I did see Susan Calvin again, it was at the door of her office. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Escape!:&lt;br&gt;When Susan Calvin returned from Hyper Base, Alfred Lanning was waiting for her. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Francis Quinn was a politician of the new school. ]]&gt;</fact>
- *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Co-ordinator, in his private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;The Coordinator, in his private study, had that medieval curiosity, a fireplace. ]]&gt;</fact>
  *                <fact>&lt;![CDATA[ &lt;i&gt;I looked at my notes and I didn't like them.&lt;/i&gt; (Introduction) ]]&gt;</fact>
  *              </factList>
  *            </version>

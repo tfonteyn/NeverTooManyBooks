@@ -37,7 +37,7 @@ TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter
 
 FIXME: rewrite the GoogleBooks xml handlers by merging them.
 
-Issues checked: 813 down to 677 (inc)
+Issues checked: 833 down to 677 (inc)
 
 New fields:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
@@ -64,9 +64,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn, and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
 
-Dev:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
-
 Bugs seen:
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/504 - CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
 => see BooklistMappedCursorRow.java
@@ -90,6 +87,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/725 - share-function
 https://github.com/eleybourn/Book-Catalogue/issues/721 - The application directory should be cleaned
 https://github.com/eleybourn/Book-Catalogue/issues/720 - Moving user-created styles doesn't work
 https://github.com/eleybourn/Book-Catalogue/issues/719 - "Language" field content should be translated
+https://github.com/eleybourn/Book-Catalogue/issues/713 - Completely switch to Android Studio project hierarchy
 https://github.com/eleybourn/Book-Catalogue/issues/709 - Add 'date acquired' field
 https://github.com/eleybourn/Book-Catalogue/issues/696 - Order by author first name
 https://github.com/eleybourn/Book-Catalogue/issues/690 - Currency for each book

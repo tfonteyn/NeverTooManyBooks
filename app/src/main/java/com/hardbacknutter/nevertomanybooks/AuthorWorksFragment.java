@@ -45,7 +45,7 @@ public class AuthorWorksFragment
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Also show the authors book. Defaults to {@code true}. */
-    public static final String BKEY_WITH_TOCS = TAG + ":withTocEntries";
+    public static final String BKEY_WITH_TOC = TAG + ":withTocEntries";
     public static final String BKEY_WITH_BOOKS = TAG + ":withBooks";
 
     /** The ViewModel. */

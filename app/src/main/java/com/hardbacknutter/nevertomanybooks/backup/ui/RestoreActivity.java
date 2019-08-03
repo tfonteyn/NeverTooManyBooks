@@ -30,8 +30,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.io.File;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.backup.ImportOptions;
@@ -42,6 +40,8 @@ import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.ImportOptionsTaskModel;
+
+import java.io.File;
 
 /**
  * Lets the user choose an archive file to import from.
@@ -86,23 +86,23 @@ public class RestoreActivity
                 if (message.success) {
                     // see if there are any pre-200 preferences that need migrating.
                     if ((message.result.what & ImportOptions.PREFERENCES) != 0) {
-                        Prefs.migratePreV200preferences(
+                        Prefs.migratePreV200preferences(this,
                                 Prefs.PREF_LEGACY_BOOK_CATALOGUE);
                     }
                     String importMsg;
                     if (message.result.results != null) {
                         importMsg = '\n'
                                 + getString(R.string.progress_msg_n_created_m_updated,
-                                            message.result.results.booksCreated,
-                                            message.result.results.booksUpdated);
+                                message.result.results.booksCreated,
+                                message.result.results.booksUpdated);
                         if (message.result.results.booksFailed > 0) {
                             importMsg += '\n'
                                     + getString(R.string.error_failed_x,
-                                                message.result.results.booksFailed);
+                                    message.result.results.booksFailed);
                         }
                         importMsg += '\n'
                                 + getString(R.string.progress_msg_covers_handled,
-                                            message.result.results.coversImported);
+                                message.result.results.coversImported);
                     } else {
                         importMsg = getString(R.string.progress_end_import_complete);
                     }
@@ -130,7 +130,7 @@ public class RestoreActivity
                             .setTitle(R.string.lbl_import_from_archive)
                             .setMessage(msg)
                             .setPositiveButton(android.R.string.ok,
-                                               (d, which) -> d.dismiss())
+                                    (d, which) -> d.dismiss())
                             .create()
                             .show();
                 }
@@ -173,7 +173,7 @@ public class RestoreActivity
                     FragmentManager fm = getSupportFragmentManager();
                     if (fm.findFragmentByTag(ImportOptionsDialogFragment.TAG) == null) {
                         ImportOptionsDialogFragment.newInstance(options).show(fm,
-                                                                              ImportOptionsDialogFragment.TAG);
+                                ImportOptionsDialogFragment.TAG);
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (d, which) -> {

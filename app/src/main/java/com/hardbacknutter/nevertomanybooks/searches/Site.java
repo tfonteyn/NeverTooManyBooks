@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 
@@ -59,8 +60,7 @@ public class Site
         mName = name;
         mPriority = priority;
         mReliability = reliability;
-
-        loadFromPrefs();
+        loadFromPrefs(PreferenceManager.getDefaultSharedPreferences(App.getAppContext()));
     }
 
     /**
@@ -128,11 +128,10 @@ public class Site
         dest.writeInt(mReliability);
     }
 
-    private void loadFromPrefs() {
-        mEnabled = App.getPrefs().getBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
-        mPriority = App.getPrefs().getInt(PREF_PREFIX + mName + ".order", mPriority);
-        mReliability = App.getPrefs().getInt(PREF_PREFIX + mName + ".reliability",
-                                             mReliability);
+    private void loadFromPrefs(@NonNull final SharedPreferences prefs) {
+        mEnabled = prefs.getBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
+        mPriority = prefs.getInt(PREF_PREFIX + mName + ".order", mPriority);
+        mReliability = prefs.getInt(PREF_PREFIX + mName + ".reliability", mReliability);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {

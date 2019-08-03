@@ -7,28 +7,7 @@ import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
@@ -51,6 +30,28 @@ import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertomanybooks.utils.xml.XmlResponseParser;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  * For now, only INFO, Preferences and Styles are implemented.
@@ -115,11 +116,11 @@ public class XmlImporter
         }
 
         return data.replace("&quot;", "\"")
-                   .replace("&apos;", "'")
-                   .replace("&lt;", "<")
-                   .replace("&gt;", ">")
-                   // must be last of the entities
-                   .replace("&amp;", "&");
+                .replace("&apos;", "'")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                // must be last of the entities
+                .replace("&amp;", "&");
     }
 
     /**
@@ -180,6 +181,9 @@ public class XmlImporter
 
     /**
      * Read mStylePrefs from an XML stream into a given SharedPreferences object.
+     * <p>
+     * <b>Note:</b> the passed in SharedPreferences is dependent on the caller.
+     * Do <strong>not</strong> replace with mSettings.getPrefs() !
      *
      * @param entity   to read
      * @param listener Progress and cancellation provider
@@ -244,20 +248,20 @@ public class XmlImporter
 
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
-                 .setStartAction(context -> {
-                     // use as top-tag
-                     mTag = new TagInfo(context);
-                     // we only have a version on the top tag, not on every tag.
-                     String version = context.getAttributes().getValue(XmlTags.ATTR_VERSION);
+                .setStartAction(context -> {
+                    // use as top-tag
+                    mTag = new TagInfo(context);
+                    // we only have a version on the top tag, not on every tag.
+                    String version = context.getAttributes().getValue(XmlTags.ATTR_VERSION);
 
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "fromXml",
-                                      "NEW-ELEMENT",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
-                     }
-                     accessor.startElement(version == null ? 0 : Integer.parseInt(version), mTag);
-                 })
-                 .setEndAction(context -> accessor.endElement());
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                        Logger.debug(this, "fromXml",
+                                "NEW-ELEMENT",
+                                "localName=`" + context.getLocalName() + '`', mTag);
+                    }
+                    accessor.startElement(version == null ? 0 : Integer.parseInt(version), mTag);
+                })
+                .setEndAction(context -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
         XmlFilter.XmlHandler startTypedTag = context -> {
@@ -266,8 +270,8 @@ public class XmlImporter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.debug(this, "fromXml",
-                             "startTypedTag",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                        "startTypedTag",
+                        "localName=`" + context.getLocalName() + '`', mTag);
             }
             // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
@@ -305,8 +309,8 @@ public class XmlImporter
         XmlFilter.XmlHandler endTypedTag = context -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.debug(this, "fromXml",
-                             "endTypedTag",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                        "endTypedTag",
+                        "localName=`" + context.getLocalName() + '`', mTag);
             }
             try {
                 switch (mTag.type) {
@@ -324,7 +328,7 @@ public class XmlImporter
 
                     case XmlTags.XML_SERIALIZABLE:
                         accessor.putSerializable(mTag.name,
-                                                 Base64.decode(context.getBody(), Base64.DEFAULT));
+                                Base64.decode(context.getBody(), Base64.DEFAULT));
                         break;
 
                     default:
@@ -337,35 +341,35 @@ public class XmlImporter
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag.name
-                                                   + '(' + mTag.type + ')', e);
+                        + '(' + mTag.type + ')', e);
             }
         };
 
         // typed tags that only use a value attribute only need action on the start of a tag
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_BOOLEAN)
-                 .setStartAction(startTypedTag);
+                .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_INT)
-                 .setStartAction(startTypedTag);
+                .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LONG)
-                 .setStartAction(startTypedTag);
+                .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_FLOAT)
-                 .setStartAction(startTypedTag);
+                .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_DOUBLE)
-                 .setStartAction(startTypedTag);
+                .setStartAction(startTypedTag);
 
         // typed tags that have bodies.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_STRING)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
+                .setStartAction(startTypedTag)
+                .setEndAction(endTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SET)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
+                .setStartAction(startTypedTag)
+                .setEndAction(endTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LIST)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
+                .setStartAction(startTypedTag)
+                .setEndAction(endTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SERIALIZABLE)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
+                .setStartAction(startTypedTag)
+                .setEndAction(endTypedTag);
 
         /*
          * The exporter is generating List/Set tags with String/Int sub tags properly,
@@ -378,8 +382,8 @@ public class XmlImporter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.debug(this, "fromXml",
-                             "startElementInCollection",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                        "startElementInCollection",
+                        "localName=`" + context.getLocalName() + '`', mTag);
             }
 
             // if we have a value attribute, this tag is done. Handle here.
@@ -403,8 +407,8 @@ public class XmlImporter
         XmlFilter.XmlHandler endElementInCollection = context -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.debug(this, "fromXml",
-                             "endElementInCollection",
-                             "localName=`" + context.getLocalName() + '`', mTag);
+                        "endElementInCollection",
+                        "localName=`" + context.getLocalName() + '`', mTag);
             }
 
             // handle tags with bodies.
@@ -432,23 +436,23 @@ public class XmlImporter
 
         // Set<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_SET, XmlTags.XML_STRING)
-                 .setStartAction(startElementInCollection)
-                 .setEndAction(endElementInCollection);
+                XmlTags.XML_SET, XmlTags.XML_STRING)
+                .setStartAction(startElementInCollection)
+                .setEndAction(endElementInCollection);
         // List<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_LIST, XmlTags.XML_STRING)
-                 .setStartAction(startElementInCollection)
-                 .setEndAction(endElementInCollection);
+                XmlTags.XML_LIST, XmlTags.XML_STRING)
+                .setStartAction(startElementInCollection)
+                .setEndAction(endElementInCollection);
 
         // Set<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_SET, XmlTags.XML_INT)
-                 .setStartAction(startElementInCollection);
+                XmlTags.XML_SET, XmlTags.XML_INT)
+                .setStartAction(startElementInCollection);
         // List<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_LIST, XmlTags.XML_INT)
-                 .setStartAction(startElementInCollection);
+                XmlTags.XML_LIST, XmlTags.XML_INT)
+                .setStartAction(startElementInCollection);
     }
 
     /**
@@ -461,56 +465,56 @@ public class XmlImporter
                                     @NonNull final EntityReader<String> accessor) {
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
-                 .setStartAction(context -> {
+                .setStartAction(context -> {
 
-                     mTag = new TagInfo(context);
+                    mTag = new TagInfo(context);
 
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "buildLegacyFilters",
-                                      "StartAction",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
-                     }
-                 })
-                 .setEndAction(context -> {
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.debug(this, "buildLegacyFilters",
-                                      "EndAction",
-                                      "localName=`" + context.getLocalName() + '`', mTag);
-                     }
-                     try {
-                         String body = context.getBody();
-                         switch (mTag.type) {
-                             case "Int":
-                                 accessor.putInt(mTag.name, Integer.parseInt(body));
-                                 break;
-                             case "Long":
-                                 accessor.putLong(mTag.name, Long.parseLong(body));
-                                 break;
-                             case "Flt":
-                                 accessor.putFloat(mTag.name, Float.parseFloat(body));
-                                 break;
-                             case "Dbl":
-                                 accessor.putDouble(mTag.name, Double.parseDouble(body));
-                                 break;
-                             case "Str":
-                                 accessor.putString(mTag.name, body);
-                                 break;
-                             case "Bool":
-                                 accessor.putBoolean(mTag.name, Boolean.parseBoolean(body));
-                                 break;
-                             case "Serial":
-                                 accessor.putSerializable(mTag.name,
-                                                          Base64.decode(body, Base64.DEFAULT));
-                                 break;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                        Logger.debug(this, "buildLegacyFilters",
+                                "StartAction",
+                                "localName=`" + context.getLocalName() + '`', mTag);
+                    }
+                })
+                .setEndAction(context -> {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                        Logger.debug(this, "buildLegacyFilters",
+                                "EndAction",
+                                "localName=`" + context.getLocalName() + '`', mTag);
+                    }
+                    try {
+                        String body = context.getBody();
+                        switch (mTag.type) {
+                            case "Int":
+                                accessor.putInt(mTag.name, Integer.parseInt(body));
+                                break;
+                            case "Long":
+                                accessor.putLong(mTag.name, Long.parseLong(body));
+                                break;
+                            case "Flt":
+                                accessor.putFloat(mTag.name, Float.parseFloat(body));
+                                break;
+                            case "Dbl":
+                                accessor.putDouble(mTag.name, Double.parseDouble(body));
+                                break;
+                            case "Str":
+                                accessor.putString(mTag.name, body);
+                                break;
+                            case "Bool":
+                                accessor.putBoolean(mTag.name, Boolean.parseBoolean(body));
+                                break;
+                            case "Serial":
+                                accessor.putSerializable(mTag.name,
+                                        Base64.decode(body, Base64.DEFAULT));
+                                break;
 
-                             default:
-                                 throw new IllegalTypeException(mTag.type);
-                         }
+                            default:
+                                throw new IllegalTypeException(mTag.type);
+                        }
 
-                     } catch (@NonNull final NumberFormatException e) {
-                         throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
-                     }
-                 });
+                    } catch (@NonNull final NumberFormatException e) {
+                        throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
+                    }
+                });
     }
 
     @Override
@@ -633,7 +637,7 @@ public class XmlImporter
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.warn(this, "TagInfo",
-                                "invalid id in xml t: " + name);
+                            "invalid id in xml t: " + name);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);
@@ -891,7 +895,7 @@ public class XmlImporter
             // Do NOT add the group itself to the style at this point as our import
             // might not actually have it.
             for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle.getUuid(),
-                                                                  mStyle.isUserDefined())) {
+                    mStyle.isUserDefined())) {
                 mStylePrefs.putAll(group.getPreferences());
             }
         }
@@ -909,7 +913,7 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred()) {
-                BooklistStyles.addPreferredStyle(mStyle);
+                BooklistStyles.addPreferredStyle(App.getAppContext(), mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.

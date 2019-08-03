@@ -7,6 +7,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.R;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
+
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -15,17 +25,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 
 /**
  * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
@@ -49,7 +48,7 @@ public final class GoogleBooksManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return App.getPrefs().getString(PREFS_HOST_URL, "https://books.google.com");
+        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
     @Override

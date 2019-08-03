@@ -8,16 +8,17 @@ import android.net.NetworkInfo;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 public final class NetworkUtils {
 
@@ -48,8 +49,9 @@ public final class NetworkUtils {
         }
     }
 
-    public static boolean isAllowMobileData() {
-        return App.getPrefs().getBoolean(Prefs.pk_ui_network_mobile_data, false);
+    private static boolean isAllowMobileData() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                .getBoolean(Prefs.pk_ui_network_mobile_data, false);
     }
 
     /**
@@ -57,7 +59,7 @@ public final class NetworkUtils {
      * * Check for un-metered access for example.
      */
     @AnyThread
-    public static Connectivity getNetworkConnectivity() {
+    private static Connectivity getNetworkConnectivity() {
 
         ConnectivityManager connMgr = (ConnectivityManager)
                 App.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -103,7 +105,7 @@ public final class NetworkUtils {
     @WorkerThread
     public static boolean isAlive(@NonNull final String site) {
 
-        String url = site.toLowerCase(LocaleUtils.getPreferredLocal());
+        String url = site.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
         int port = url.startsWith("https://") ? 443 : 80;
         String host = url.split("//")[1].split("/")[0];
         return isAlive(host, port);
@@ -112,6 +114,7 @@ public final class NetworkUtils {
     /**
      * Check if Google DNS is reachable.
      */
+    @SuppressWarnings("unused")
     @WorkerThread
     public static boolean isGoogleAlive() {
         return isAlive("8.8.8.8", 53);
@@ -130,16 +133,16 @@ public final class NetworkUtils {
             sock.close();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                 Logger.debug(NetworkUtils.class, "isAlive",
-                             "Site: " + host + ':' + port
-                                     + ", took " + (System.nanoTime() - t) + " nano");
+                        "Site: " + host + ':' + port
+                                + ", took " + (System.nanoTime() - t) + " nano");
             }
             return true;
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                 Logger.warn(NetworkUtils.class, "isAlive",
-                            "Site unreachable: " + host + ':' + port + '\n'
-                                    + e.getLocalizedMessage());
+                        "Site unreachable: " + host + ':' + port + '\n'
+                                + e.getLocalizedMessage());
             }
             return false;
         }

@@ -138,10 +138,13 @@ public class SynchronizedDb {
      * About the SQLite version:
      * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
      *     https://developer.android.com/reference/android/database/sqlite/package-summary</a>
-     * API 27   3.19
-     * API 26   3.18
-     * API 24   3.9
-     * API 21   3.8 <=
+     * API 28   3.22.0
+     * API 27   3.19.4
+     * API 26   3.18.2
+     * API 25   3.9.2
+     * API 24   3.9.2
+     * API 23   3.8.10.2 <=
+     * API 21   3.8.6
      * API 11   3.7
      * API 8    3.6
      * API 3    3.5
@@ -590,7 +593,7 @@ public class SynchronizedDb {
     }
 
     /**
-     * @return the underlying synchronizer object.
+     * @return the underlying Synchronizer object.
      */
     @NonNull
     Synchronizer getSynchronizer() {

@@ -1,8 +1,8 @@
 package com.hardbacknutter.nevertomanybooks.database;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
-import java.util.List;
+import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertomanybooks.database.dbsync.SynchronizedDb;
@@ -13,6 +13,8 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import java.util.List;
 
 /**
  * Intention is to create cleanup routines for some columns/tables
@@ -107,7 +109,7 @@ public class DBCleaner {
             if (name != null && name.length() > 3) {
                 String iso = LocaleUtils.getISO3Language(name);
                 Logger.debug(this, "updateLanguages",
-                             "Global language update of `" + name + "` to `" + iso + '`');
+                        "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {
                     mDb.updateLanguage(name, iso);
                 }
@@ -118,9 +120,9 @@ public class DBCleaner {
     /**
      * Validates the style versus Bookshelf. No dry-run.
      */
-    public void bookshelves() {
+    public void bookshelves(@NonNull final Context context) {
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            bookshelf.validateStyle(mDb);
+            bookshelf.validateStyle(context, mDb);
         }
     }
 

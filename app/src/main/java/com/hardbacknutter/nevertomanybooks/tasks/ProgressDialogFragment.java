@@ -57,7 +57,7 @@ public class ProgressDialogFragment
     /**
      * Constructor.
      *
-     * @param titelId         Titel for the dialog, can be 0 for no title.
+     * @param titleId         resource id for the dialog title, can be 0 for no title.
      * @param isIndeterminate type of progress
      * @param maxValue        maximum value for progress if isIndeterminate==false
      *                        Pass in 0 to keep the max as set in the layout file.
@@ -66,12 +66,12 @@ public class ProgressDialogFragment
      */
     @NonNull
     @UiThread
-    public static ProgressDialogFragment newInstance(@StringRes final int titelId,
+    public static ProgressDialogFragment newInstance(@StringRes final int titleId,
                                                      final boolean isIndeterminate,
                                                      final int maxValue) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
+        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titleId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, maxValue);
         frag.setArguments(args);

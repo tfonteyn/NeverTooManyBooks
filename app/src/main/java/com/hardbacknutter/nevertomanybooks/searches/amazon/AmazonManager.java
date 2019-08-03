@@ -10,18 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
@@ -30,6 +18,17 @@ import com.hardbacknutter.nevertomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.Throttler;
+
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  * March/April 2019, I got this error:
@@ -53,19 +52,17 @@ import com.hardbacknutter.nevertomanybooks.utils.Throttler;
 public final class AmazonManager
         implements SearchEngine {
 
+    private static final String UTF_8 = "UTF-8";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "Amazon.";
-
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ", Pattern.LITERAL);
-
     /** Can only send requests at a throttled speed. */
     @NonNull
     private static final Throttler THROTTLER = new Throttler();
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
     private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
-    public static final String UTF_8 = "UTF-8";
 
     /**
      * Constructor.
@@ -76,7 +73,7 @@ public final class AmazonManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return App.getPrefs().getString(PREFS_HOST_URL, "https://www.amazon.com");
+        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
     /**

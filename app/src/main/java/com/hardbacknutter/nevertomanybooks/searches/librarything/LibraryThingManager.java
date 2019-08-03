@@ -31,18 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -54,6 +44,16 @@ import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.Throttler;
+
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -174,7 +174,8 @@ public class LibraryThingManager
             showAlert = true;
         } else {
             msgId = R.string.lt_uses_info;
-            showAlert = !App.getPrefs().getBoolean(prefName, false);
+            showAlert = !PreferenceManager.getDefaultSharedPreferences(context)
+                    .getBoolean(prefName, false);
         }
 
         if (!showAlert) {
@@ -198,7 +199,8 @@ public class LibraryThingManager
                     DialogInterface.BUTTON_NEUTRAL,
                     context.getString(R.string.btn_disable_message),
                     (d, which) -> {
-                        App.getPrefs().edit().putBoolean(prefName, true).apply();
+                        PreferenceManager.getDefaultSharedPreferences(context)
+                                .edit().putBoolean(prefName, true).apply();
                         d.dismiss();
                     });
         }
@@ -277,7 +279,7 @@ public class LibraryThingManager
      */
     @NonNull
     private static String getDevKey() {
-        String key = App.getPrefs().getString(PREFS_DEV_KEY, null);
+        String key = SearchEngine.getPref().getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }

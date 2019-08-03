@@ -19,18 +19,18 @@ public final class Csv {
      * This can be avoided by using {@link #join(CharSequence, Collection, Formatter)} and
      * providing a {@link Formatter}.
      *
-     * @param delim      delimiter, e.g. "," or ", " etc...
+     * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
      *
      * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
-    public static <E> String join(@NonNull final CharSequence delim,
+    public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Collection<E> collection) {
         if (collection.isEmpty()) {
             return "";
         }
-        return join(delim, collection, true, null, null);
+        return join(delimiter, collection, true, null, null);
     }
 
     /**
@@ -38,20 +38,20 @@ public final class Csv {
      * A {@code null} element is morphed into "".
      * This can be avoided by providing a {@link Formatter}.
      *
-     * @param delim      delimiter, e.g. "," or ", " etc...
+     * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
      * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
      *
      * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
-    public static <E> String join(@NonNull final CharSequence delim,
+    public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Collection<E> collection,
                                   @Nullable final Formatter<E> formatter) {
         if (collection.isEmpty()) {
             return "";
         }
-        return join(delim, collection, true, null, formatter);
+        return join(delimiter, collection, true, null, formatter);
     }
 
     /**
@@ -61,7 +61,7 @@ public final class Csv {
      * (but no exceptions thrown).
      * This can be avoided by providing a {@link Formatter}.
      *
-     * @param delim      delimiter, e.g. "," or ", " etc...
+     * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
      * @param prefix     (optional) prefix that will be added to each element.
      *                   Caller is responsible to add spaces if desired.
@@ -70,7 +70,7 @@ public final class Csv {
      * @return csv string, can be empty, never {@code null}.
      */
     @NonNull
-    public static <E> String join(@NonNull final CharSequence delim,
+    public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Collection<E> collection,
                                   final boolean allowEmpties,
                                   @Nullable final String prefix,
@@ -93,7 +93,7 @@ public final class Csv {
                 if (first) {
                     first = false;
                 } else {
-                    result.append(delim);
+                    result.append(delimiter);
                 }
 
                 if (prefix == null) {
@@ -109,18 +109,18 @@ public final class Csv {
     /**
      * Create a CSV List String by replicating the 'element' length'd times.
      *
-     * @param delim   delimiter, e.g. "," or ", " etc...
-     * @param element for the list
-     * @param length  nr of elements to generate
+     * @param delimiter e.g. "," or ", " etc...
+     * @param element   for the list
+     * @param length    nr of elements to generate
      *
      * @return csv string, can be empty, never {@code null}.
      */
-    public static String join(@NonNull final CharSequence delim,
+    public static String join(@NonNull final CharSequence delimiter,
                               @NonNull final String element,
                               final int length) {
         StringBuilder sb = new StringBuilder(element);
         for (int i = 1; i < length; i++) {
-            sb.append(delim).append(element);
+            sb.append(delimiter).append(element);
         }
         return sb.toString();
     }

@@ -48,7 +48,7 @@ public class PInteger
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // Use a workaround for the real default value not being a String.
-            String value = App.getPrefs(mUuid).getString(getKey(), null);
+            String value = getPrefs().getString(getKey(), null);
             if (value == null || value.isEmpty()) {
                 return mDefaultValue;
             }

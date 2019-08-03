@@ -1,5 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.searches;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
@@ -7,11 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
@@ -66,6 +69,15 @@ public interface SearchEngine {
         }
 
         return null;
+    }
+
+    /**
+     * Syntax sugar.
+     *
+     * @return preferences
+     */
+    static SharedPreferences getPref() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
     }
 
     /**

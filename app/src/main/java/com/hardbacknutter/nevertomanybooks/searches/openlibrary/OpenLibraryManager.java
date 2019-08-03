@@ -10,20 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -38,6 +24,19 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * <a href="https://openlibrary.org/developers/api">https://openlibrary.org/developers/api</a>
@@ -94,7 +93,7 @@ public class OpenLibraryManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return App.getPrefs().getString(PREFS_HOST_URL, "https://openlibrary.org");
+        return SearchEngine.getPref().getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
 
     public static void openWebsite(@NonNull final Context context,
@@ -149,7 +148,7 @@ public class OpenLibraryManager
 
         // Fetch, then save it with a suffix
         String fileSpec = ImageUtils.saveImage(String.format(BASE_URL_COVERS, isbn, sizeParam),
-                                               isbn, FILENAME_SUFFIX + '_' + size);
+                isbn, FILENAME_SUFFIX + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -181,7 +180,7 @@ public class OpenLibraryManager
 
     /**
      * <a href="https://openlibrary.org/dev/docs/api/books">
-     *     https://openlibrary.org/dev/docs/api/books</a>
+     * https://openlibrary.org/dev/docs/api/books</a>
      *
      * <br>Only the ISBN is supported.
      *

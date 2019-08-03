@@ -292,7 +292,7 @@ public class BookFragment
     protected void onLoadFieldsFromBook() {
         Book book = mBookBaseFragmentModel.getBook();
 
-        // pass the CURRENT currency code to the price formatters
+        // pass the CURRENT currency code to the price formatter
         //URGENT: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) getField(R.id.price_listed).getFormatter())

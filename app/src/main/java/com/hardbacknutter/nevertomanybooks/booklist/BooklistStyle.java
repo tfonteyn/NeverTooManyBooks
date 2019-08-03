@@ -31,20 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BooklistAdapter;
@@ -65,6 +52,20 @@ import com.hardbacknutter.nevertomanybooks.entities.Entity;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a specific style of book list (e.g. authors/series).
@@ -380,6 +381,14 @@ public class BooklistStyle
     }
 
     /**
+     * @return the SharedPreference
+     */
+    @NonNull
+    public SharedPreferences getPrefs() {
+        return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+    }
+
+    /**
      * create + set the UUID.
      *
      * @return the UUID
@@ -387,7 +396,7 @@ public class BooklistStyle
     @NonNull
     private String createUniqueName() {
         mUuid = UUID.randomUUID().toString();
-        App.getPrefs(mUuid).edit().putString(PREF_STYLE_UUID, mUuid).apply();
+        getPrefs().edit().putString(PREF_STYLE_UUID, mUuid).apply();
         return mUuid;
     }
 
@@ -411,20 +420,20 @@ public class BooklistStyle
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
 
         mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid,
-                                                 isUserDefined());
+                isUserDefined());
 
         mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
-                                       SUMMARY_SHOW_ALL);
+                SUMMARY_SHOW_ALL);
 
         mScaleFontSize = new PInteger(Prefs.pk_bob_text_size, mUuid, isUserDefined(),
-                                      TEXT_SCALE_MEDIUM);
+                TEXT_SCALE_MEDIUM);
 
         mThumbnailScale = new PInteger(Prefs.pk_bob_cover_size, mUuid, isUserDefined(),
-                                       ImageUtils.SCALE_MEDIUM);
+                ImageUtils.SCALE_MEDIUM);
 
         // all extra details for book-rows.
         mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, isUserDefined(),
-                                            true);
+                true);
         mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid, isUserDefined());
         mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid, isUserDefined());
         mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid, isUserDefined());
@@ -436,38 +445,38 @@ public class BooklistStyle
         mFilters = new LinkedHashMap<>();
 
         mFilterRead = new BooleanFilter(R.string.lbl_read,
-                                        Prefs.pk_bob_filter_read,
-                                        mUuid, isUserDefined(),
-                                        DBDefinitions.TBL_BOOKS,
-                                        DBDefinitions.DOM_BOOK_READ);
+                Prefs.pk_bob_filter_read,
+                mUuid, isUserDefined(),
+                DBDefinitions.TBL_BOOKS,
+                DBDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
         mFilterSigned = new BooleanFilter(R.string.lbl_signed,
-                                          Prefs.pk_bob_filter_signed,
-                                          mUuid, isUserDefined(),
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_SIGNED);
+                Prefs.pk_bob_filter_signed,
+                mUuid, isUserDefined(),
+                DBDefinitions.TBL_BOOKS,
+                DBDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
         mFilterAnthology = new BooleanFilter(R.string.lbl_anthology,
-                                             Prefs.pk_bob_filter_anthology,
-                                             mUuid, isUserDefined(),
-                                             DBDefinitions.TBL_BOOKS,
-                                             DBDefinitions.DOM_BOOK_TOC_BITMASK);
+                Prefs.pk_bob_filter_anthology,
+                mUuid, isUserDefined(),
+                DBDefinitions.TBL_BOOKS,
+                DBDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
         mFilterLoaned = new BooleanFilter(R.string.lbl_loaned,
-                                          Prefs.pk_bob_filter_loaned,
-                                          mUuid, isUserDefined(),
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_LOANEE);
+                Prefs.pk_bob_filter_loaned,
+                mUuid, isUserDefined(),
+                DBDefinitions.TBL_BOOKS,
+                DBDefinitions.DOM_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
 
         mFilterEdition = new BitmaskFilter(R.string.lbl_edition,
-                                           Prefs.pk_bob_filter_editions,
-                                           mUuid, isUserDefined(),
-                                           DBDefinitions.TBL_BOOKS,
-                                           DBDefinitions.DOM_BOOK_EDITION_BITMASK);
+                Prefs.pk_bob_filter_editions,
+                mUuid, isUserDefined(),
+                DBDefinitions.TBL_BOOKS,
+                DBDefinitions.DOM_BOOK_EDITION_BITMASK);
 
         mFilters.put(mFilterEdition.getKey(), mFilterEdition);
     }
@@ -579,9 +588,10 @@ public class BooklistStyle
     /**
      * store the current style as the global default one.
      */
-    public void setDefault() {
-        App.getPrefs().edit().putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                        mUuid).apply();
+    public void setDefault(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit().putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mUuid)
+                .apply();
     }
 
     /**
@@ -642,7 +652,7 @@ public class BooklistStyle
      * Preferences we don't have will be not be added.
      */
     public void updatePreferences(@NonNull final Map<String, PPref> newPrefs) {
-        SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
+        SharedPreferences.Editor ed = getPrefs().edit();
         updatePreferences(ed, newPrefs);
         ed.apply();
     }
@@ -822,7 +832,7 @@ public class BooklistStyle
                 allGroupsPreferences.putAll(newGroup.getPreferences());
                 // and add a new instance of that group
                 mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(),
-                                                           mUuid, isUserDefined()));
+                        mUuid, isUserDefined()));
             } else {
                 // otherwise, just re-add our (old) current group.
                 mStyleGroups.add(current);
@@ -949,7 +959,7 @@ public class BooklistStyle
             object = is.readObject();
         } // else it's a pre-version object, just use it
 
-        SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
+        SharedPreferences.Editor ed = getPrefs().edit();
 
         mExtraShowThumbnails.set(ed, (Boolean) object);
 
@@ -959,7 +969,7 @@ public class BooklistStyle
             mThumbnailScale.set(ed, ImageUtils.SCALE_SMALL);
         } else {
             mThumbnailScale.set(ed, legacyThumbnailScale ? ImageUtils.SCALE_MEDIUM
-                                                         : ImageUtils.SCALE_SMALL);
+                    : ImageUtils.SCALE_SMALL);
         }
 
         mExtraShowBookshelves.set(ed, (Boolean) is.readObject());
@@ -1089,7 +1099,7 @@ public class BooklistStyle
 
         db.deleteBooklistStyle(mId);
         // ENHANCE: API: 24 -> App.getAppContext().deleteSharedPreferences(mUuid);
-        App.getPrefs(mUuid).edit().clear().apply();
+        getPrefs().edit().clear().apply();
     }
 
     /**
@@ -1183,7 +1193,7 @@ public class BooklistStyle
      *
      * @return {@code true} if we want "given-names last-name" formatted authors.
      */
-    public boolean showAuthorGivenNameFirst() {
+    public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
         if (hasGroupKind(BooklistGroup.RowKind.AUTHOR)) {
             BooklistGroup.BooklistAuthorGroup authorGroup = (BooklistGroup.BooklistAuthorGroup)
                     (mStyleGroups.getGroupForKind(BooklistGroup.RowKind.AUTHOR));
@@ -1192,7 +1202,7 @@ public class BooklistStyle
             }
         }
         // return the global default.
-        return BooklistGroup.BooklistAuthorGroup.globalShowGivenNameFirst();
+        return BooklistGroup.BooklistAuthorGroup.globalShowGivenNameFirst(context);
     }
 
     /**

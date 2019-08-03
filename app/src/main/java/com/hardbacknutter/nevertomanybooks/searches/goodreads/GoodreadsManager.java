@@ -23,6 +23,7 @@ package com.hardbacknutter.nevertomanybooks.searches.goodreads;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -31,25 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import oauth.signpost.OAuth;
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.basic.DefaultOAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.exception.OAuthNotAuthorizedException;
-import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -81,6 +63,25 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.Throttler;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import oauth.signpost.OAuth;
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.exception.OAuthNotAuthorizedException;
+import oauth.signpost.http.HttpParameters;
 
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
@@ -244,7 +245,7 @@ public class GoodreadsManager
      */
     @Nullable
     public static Date getLastSyncDate() {
-        return DateUtils.parseDate(App.getPrefs().getString(PREFS_LAST_SYNC_DATE, null));
+        return DateUtils.parseDate(SearchEngine.getPref().getString(PREFS_LAST_SYNC_DATE, null));
     }
 
     /**
@@ -253,9 +254,8 @@ public class GoodreadsManager
      * @param date Last date
      */
     public static void setLastSyncDate(@Nullable final Date date) {
-
         String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
-        App.getPrefs().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
+        SearchEngine.getPref().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
@@ -266,10 +266,10 @@ public class GoodreadsManager
         sAccessToken = "";
         sAccessSecret = "";
         sHasValidCredentials = false;
-        App.getPrefs().edit()
-           .putString(ACCESS_TOKEN, "")
-           .putString(ACCESS_SECRET, "")
-           .apply();
+        SearchEngine.getPref().edit()
+                .putString(ACCESS_TOKEN, "")
+                .putString(ACCESS_SECRET, "")
+                .apply();
     }
 
     @AnyThread
@@ -297,8 +297,9 @@ public class GoodreadsManager
         }
 
         // Get the stored token values from prefs
-        sAccessToken = App.getPrefs().getString(ACCESS_TOKEN, null);
-        sAccessSecret = App.getPrefs().getString(ACCESS_SECRET, null);
+        SharedPreferences prefs = SearchEngine.getPref();
+        sAccessToken = prefs.getString(ACCESS_TOKEN, null);
+        sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
         return sAccessToken != null && !sAccessToken.isEmpty()
                 && sAccessSecret != null && !sAccessSecret.isEmpty();
@@ -672,11 +673,11 @@ public class GoodreadsManager
             // Do not sync Notes<->Review. We will add a 'Review' field later.
             // ('notes' has been disabled from the SQL)
             updateReview(reviewId,
-                         bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
-                         bookCursorRow.getString(DBDefinitions.KEY_READ_START),
-                         bookCursorRow.getString(DBDefinitions.KEY_READ_END),
-                         (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
-                         null);
+                    bookCursorRow.getBoolean(DBDefinitions.KEY_READ),
+                    bookCursorRow.getString(DBDefinitions.KEY_READ_START),
+                    bookCursorRow.getString(DBDefinitions.KEY_READ_END),
+                    (int) bookCursorRow.getDouble(DBDefinitions.KEY_RATING),
+                    null);
 
             return ExportResult.sent;
         }
@@ -878,7 +879,7 @@ public class GoodreadsManager
         // Get the URL to send the user to so they can authenticate.
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer,
-                                                     GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);
+                    GoodreadsAuthorizationActivity.AUTHORIZATION_CALLBACK);
 
         } catch (@NonNull final OAuthCommunicationException e) {
             throw new IOException(e);
@@ -900,10 +901,10 @@ public class GoodreadsManager
 
         // Temporarily save the token; this GoodreadsManager object may be destroyed
         // before the web page returns.
-        App.getPrefs().edit()
-           .putString(REQUEST_TOKEN, mConsumer.getToken())
-           .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
-           .apply();
+        SearchEngine.getPref().edit()
+                .putString(REQUEST_TOKEN, mConsumer.getToken())
+                .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+                .apply();
 
         // Open the web page, always use the app context here.
         App.getAppContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
@@ -920,10 +921,10 @@ public class GoodreadsManager
     public void handleAuthenticationAfterAuthorization()
             throws AuthorizationException,
                    IOException {
-
         // Get the temporarily saved request tokens.
-        String requestToken = App.getPrefs().getString(REQUEST_TOKEN, null);
-        String requestSecret = App.getPrefs().getString(REQUEST_SECRET, null);
+        SharedPreferences prefs = SearchEngine.getPref();
+        String requestToken = prefs.getString(REQUEST_TOKEN, null);
+        String requestSecret = prefs.getString(REQUEST_SECRET, null);
 
         // sanity check; the tokens are stored in #requestAuthorization
         if (requestToken == null || requestToken.isEmpty()
@@ -954,12 +955,12 @@ public class GoodreadsManager
         sAccessToken = mConsumer.getToken();
         sAccessSecret = mConsumer.getTokenSecret();
 
-        App.getPrefs().edit()
-           .putString(ACCESS_TOKEN, sAccessToken)
-           .putString(ACCESS_SECRET, sAccessSecret)
-           .remove(REQUEST_TOKEN)
-           .remove(REQUEST_SECRET)
-           .apply();
+        prefs.edit()
+                .putString(ACCESS_TOKEN, sAccessToken)
+                .putString(ACCESS_SECRET, sAccessSecret)
+                .remove(REQUEST_TOKEN)
+                .remove(REQUEST_SECRET)
+                .apply();
     }
 
     /**

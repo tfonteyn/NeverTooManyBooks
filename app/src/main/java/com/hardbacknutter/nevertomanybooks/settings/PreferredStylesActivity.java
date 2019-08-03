@@ -38,9 +38,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -58,6 +55,9 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Activity to edit the list of styles.
@@ -91,7 +91,7 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         mModel = ViewModelProviders.of(this).get(PreferredStylesViewModel.class);
-        mModel.init();
+        mModel.init(this);
 
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
@@ -102,13 +102,12 @@ public class PreferredStylesActivity
 
         // setup the adapter
         mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
-                                                 viewHolder -> mItemTouchHelper.startDrag(
-                                                         viewHolder));
+                viewHolder -> mItemTouchHelper.startDrag(viewHolder));
         mListAdapter.registerAdapterDataObserver(new SimpleAdapterDataObserver() {
             @Override
             public void onChanged() {
                 // we save the order after each change.
-                mModel.saveMenuOrder();
+                mModel.saveMenuOrder(PreferredStylesActivity.this);
                 // and make sure the results flags up we changed something.
                 setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
             }
@@ -124,7 +123,7 @@ public class PreferredStylesActivity
 
         if (savedInstanceState == null) {
             TipManager.display(getLayoutInflater(),
-                               R.string.tip_booklist_styles_editor, null);
+                    R.string.tip_booklist_styles_editor, null);
         }
     }
 
@@ -135,17 +134,17 @@ public class PreferredStylesActivity
 
         if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-                .setIcon(R.drawable.ic_edit);
+                    .setIcon(R.drawable.ic_edit);
             menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-                .setIcon(R.drawable.ic_delete);
+                    .setIcon(R.drawable.ic_delete);
         }
 
         menu.add(Menu.NONE, R.id.MENU_CLONE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
+                .setIcon(R.drawable.ic_content_copy);
 
         String menuTitle = style.getLabel(this);
         final MenuPicker<BooklistStyle> picker = new MenuPicker<>(this, menuTitle, menu, style,
-                                                                  this::onContextItemSelected);
+                this::onContextItemSelected);
         picker.show();
     }
 

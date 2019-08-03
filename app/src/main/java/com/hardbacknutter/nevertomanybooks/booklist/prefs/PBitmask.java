@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Set;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+
+import java.util.Set;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}
@@ -47,7 +47,7 @@ public class PBitmask
         } else if (value == null) {
             remove();
         } else {
-            App.getPrefs(mUuid).edit().putStringSet(getKey(), Prefs.toStringSet(value)).apply();
+            getPrefs().edit().putStringSet(getKey(), Prefs.toStringSet(value)).apply();
         }
     }
 
@@ -73,7 +73,7 @@ public class PBitmask
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            Set<String> value = App.getPrefs(mUuid).getStringSet(getKey(), null);
+            Set<String> value = getPrefs().getStringSet(getKey(), null);
             if (value == null || value.isEmpty()) {
                 return mDefaultValue;
             }

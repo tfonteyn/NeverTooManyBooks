@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertomanybooks.App;
-
 /**
  * An {@code List<Integer>} is stored as a CSV String.
  * <p>
@@ -43,7 +41,7 @@ public class PIntList
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            String values = App.getPrefs(mUuid).getString(getKey(), null);
+            String values = getPrefs().getString(getKey(), null);
             if (values == null || values.isEmpty()) {
                 return mDefaultValue;
             }

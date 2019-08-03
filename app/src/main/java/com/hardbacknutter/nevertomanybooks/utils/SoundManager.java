@@ -8,8 +8,8 @@ import android.media.MediaPlayer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
+import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
@@ -20,13 +20,15 @@ public final class SoundManager {
     }
 
     public static void beepLow(@NonNull final Context context) {
-        if (App.getPrefs().getBoolean(Prefs.pk_scanning_beep_if_isbn_invalid, true)) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(Prefs.pk_scanning_beep_if_isbn_invalid, true)) {
             playFile(context, R.raw.beep_low);
         }
     }
 
     public static void beepHigh(@NonNull final Context context) {
-        if (App.getPrefs().getBoolean(Prefs.pk_scanning_beep_if_isbn_valid, false)) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(Prefs.pk_scanning_beep_if_isbn_valid, false)) {
             playFile(context, R.raw.beep_high);
         }
     }

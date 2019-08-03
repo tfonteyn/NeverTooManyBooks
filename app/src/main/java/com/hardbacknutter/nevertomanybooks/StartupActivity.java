@@ -40,8 +40,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProviders;
-
-import java.lang.ref.WeakReference;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.backup.ui.BackupActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBHelper;
@@ -51,6 +50,8 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.StartupViewModel;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -117,9 +118,9 @@ public class StartupActivity
         // https://developer.android.com/reference/android/os/StrictMode
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                               .detectAll()
-                                               .penaltyLog()
-                                               .build());
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
         }
 
         // get our ViewModel; we init in mStartupStage == 1.
@@ -183,12 +184,12 @@ public class StartupActivity
             mModel.getTaskException().observe(this, e -> {
                 if (e != null) {
                     App.showNotification(this, R.string.error_unknown,
-                                         e.getLocalizedMessage());
+                            e.getLocalizedMessage());
                     finish();
                 }
             });
 
-            mModel.startTasks();
+            mModel.startTasks(this);
 
         } else {
             startNextStage();
@@ -277,17 +278,18 @@ public class StartupActivity
      * @return {@code true} when counter reached 0
      */
     private boolean decreaseStartupCounters() {
-        int opened = App.getPrefs().getInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = App.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int opened = prefs.getInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int startCount = prefs.getInt(PREF_STARTUP_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = App.getPrefs().edit();
+        final SharedPreferences.Editor ed = prefs.edit();
         if (opened == 0) {
             ed.putInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         } else {
             ed.putInt(PREF_STARTUP_COUNTDOWN, opened - 1);
         }
         ed.putInt(PREF_STARTUP_COUNT, startCount)
-          .apply();
+                .apply();
 
         return opened == 0;
     }
@@ -300,7 +302,7 @@ public class StartupActivity
      */
     private boolean initStorage() {
         int p = ContextCompat.checkSelfPermission(this,
-                                                  Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (p != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     this,

@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertomanybooks.goodreads.api;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
@@ -266,7 +268,11 @@ public abstract class ShowBookApiHandler
         mBookData = new Bundle();
         mShelves = null;
 
-        Resources resources = LocaleUtils.getLocalizedResources();
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        Resources resources = LocaleUtils.getLocalizedResources(userContext,
+                LocaleUtils.getPreferredLocale(userContext));
+        String ebook = resources.getString(R.string.book_format_ebook);
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
@@ -312,15 +318,13 @@ public abstract class ShowBookApiHandler
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(ShowBookFieldName.IS_EBOOK)
                 && mBookData.getBoolean(ShowBookFieldName.IS_EBOOK)) {
-            String ebook = LocaleUtils.getLocalizedResources()
-                                      .getString(R.string.book_format_ebook);
             mBookData.putString(DBDefinitions.KEY_FORMAT, ebook);
 
         } else if (mBookData.containsKey(DBDefinitions.KEY_FORMAT)) {
             // normalise the format
             String source = mBookData.getString(DBDefinitions.KEY_FORMAT);
             if (source != null && !source.isEmpty()) {
-                mBookData.putString(DBDefinitions.KEY_FORMAT, Format.map(resources, source));
+                mBookData.putString(DBDefinitions.KEY_FORMAT, Format.map(userContext, source));
             }
         }
 
@@ -337,11 +341,11 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
             String thisTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-            if (details != null && !details.getName().isEmpty()) {
+            if (details != null && !details.getTitle().isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
-                Series newSeries = new Series(details.getName());
+                Series newSeries = new Series(details.getTitle());
                 newSeries.setNumber(details.getPosition());
                 mSeries.add(newSeries);
                 // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does

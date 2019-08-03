@@ -1,13 +1,13 @@
 package com.hardbacknutter.nevertomanybooks.viewmodels;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import java.util.HashSet;
-import java.util.Set;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -24,6 +24,9 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <b>Note:</b> yes, this is overkill for the startup. Call it an experiment.
@@ -109,7 +112,7 @@ public class StartupViewModel
     /**
      * We use the standard AsyncTask execute, so tasks are run serially.
      */
-    public void startTasks() {
+    public void startTasks(@NonNull final Context context) {
         // Remove old logs
         Logger.clearLog();
 
@@ -129,8 +132,8 @@ public class StartupViewModel
             // cleaner must be started after the language mapper task.
             startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
 
-            if (App.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                          false)) {
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                    .getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
             }
 
@@ -235,7 +238,7 @@ public class StartupViewModel
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.updateLanguages();
                 // clean/correct style UUID's on Bookshelves for deleted styles.
-                cleaner.bookshelves();
+                cleaner.bookshelves(App.getAppContext());
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);
@@ -283,14 +286,14 @@ public class StartupViewModel
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
             publishProgress(new TaskProgressMessage(mTaskId,
-                                                    R.string.progress_msg_rebuilding_search_index));
+                    R.string.progress_msg_rebuilding_search_index));
             try {
                 mDb.rebuildFts();
 
-                App.getPrefs()
-                   .edit()
-                   .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
-                   .apply();
+                PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                        .edit()
+                        .remove(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED)
+                        .apply();
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(this, e);
                 mException = e;
@@ -338,7 +341,7 @@ public class StartupViewModel
                 }
 
                 mDb.analyze();
-                if (BooklistBuilder.imagesAreCached()) {
+                if (BooklistBuilder.imagesAreCached(App.getAppContext())) {
                     try (CoversDAO cdb = CoversDAO.getInstance()) {
                         cdb.analyze();
                     }

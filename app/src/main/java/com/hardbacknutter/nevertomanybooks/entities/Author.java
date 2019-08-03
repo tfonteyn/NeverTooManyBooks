@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -32,6 +33,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
@@ -44,7 +46,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StringList;
  * @author Philip Warner
  */
 public class Author
-        implements Parcelable, ItemWithIdFixup, Entity {
+        implements Parcelable, ItemWithFixableId, Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR =
@@ -366,7 +368,7 @@ public class Author
      * @return the locale of the Author
      */
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocal();
+        return LocaleUtils.getPreferredLocale(App.getAppContext());
     }
 
     /**
@@ -378,13 +380,22 @@ public class Author
      * @return the id.
      */
     @Override
-    public long fixupId(@NonNull final DAO db) {
-        return fixupId(db, getLocale());
+    public long fixId(@NonNull final DAO db) {
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        return fixId(userContext, db, getLocale());
     }
 
     @Override
-    public long fixupId(@NonNull final DAO db,
-                        @NonNull final Locale locale) {
+    public long fixId(@NonNull final Context userContext,
+                      @NonNull final DAO db) {
+        return fixId(userContext, db, getLocale());
+    }
+
+    @Override
+    public long fixId(@NonNull final Context userContext,
+                      @NonNull final DAO db,
+                      @NonNull final Locale locale) {
         mId = db.getAuthorId(this, locale);
         return mId;
     }

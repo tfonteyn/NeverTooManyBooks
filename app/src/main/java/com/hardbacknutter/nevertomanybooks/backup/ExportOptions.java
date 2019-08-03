@@ -1,10 +1,14 @@
 package com.hardbacknutter.nevertomanybooks.backup;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
+
+import com.hardbacknutter.nevertomanybooks.App;
 
 import java.io.File;
 import java.util.Date;
@@ -103,6 +107,10 @@ public class ExportOptions
         if (in.readInt() != 0) {
             dateFrom = new Date(in.readLong());
         }
+    }
+
+    public SharedPreferences getPrefs() {
+        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
     }
 
     @Override

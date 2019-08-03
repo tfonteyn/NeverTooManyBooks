@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertomanybooks.entities.ItemWithIdFixup;
+import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
@@ -202,8 +202,9 @@ public class EditBookFieldsFragment
 
     private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        //noinspection ConstantConditions
         if (!list.isEmpty()
-                && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(), list)) {
+                && ItemWithFixableId.pruneList(getContext(), mBookBaseFragmentModel.getDb(), list)) {
             mBookBaseFragmentModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -219,8 +220,9 @@ public class EditBookFieldsFragment
 
     private void populateSeriesListField(@NonNull final Book book) {
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        //noinspection ConstantConditions
         if (!list.isEmpty()
-                && ItemWithIdFixup.pruneList(mBookBaseFragmentModel.getDb(), list)) {
+                && ItemWithFixableId.pruneList(getContext(), mBookBaseFragmentModel.getDb(), list)) {
             mBookBaseFragmentModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         }
@@ -288,7 +290,8 @@ public class EditBookFieldsFragment
                     } else {
                         // Even though the dialog was terminated,
                         // some series MAY have been modified.
-                        mBookBaseFragmentModel.refreshSeriesList();
+                        //noinspection ConstantConditions
+                        mBookBaseFragmentModel.refreshSeriesList(getContext());
                     }
 
                     boolean wasDirty = mBookBaseFragmentModel.isDirty();

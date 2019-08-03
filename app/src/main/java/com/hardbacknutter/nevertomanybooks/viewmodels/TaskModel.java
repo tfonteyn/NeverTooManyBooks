@@ -11,7 +11,7 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskFinishedMessag
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
 
 /**
- * ViewModel to keep hold of a task and a passthrough task listener.
+ * ViewModel to keep hold of a task and a pass-through task listener.
  * <p>
  * A ViewModel can not actually have a parameter type. So, we use concrete classes, e.g.
  * <pre>

@@ -32,8 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
@@ -43,6 +41,8 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.io.File;
 
 /**
  * This is the Administration page. It contains details about LibraryThing links
@@ -77,26 +77,26 @@ public class LibraryThingAdminActivity
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL() + '/'))));
+                        Uri.parse(LibraryThingManager.getBaseURL() + '/'))));
 
         // DevKey Link.
         findViewById(R.id.dev_key_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.getBaseURL()
-                                                                + "/services/keys.php"))));
+                        Uri.parse(LibraryThingManager.getBaseURL()
+                                + "/services/keys.php"))));
 
         mDevKeyView = findViewById(R.id.dev_key);
-        String key = App.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
+        String key = SearchEngine.getPref().getString(LibraryThingManager.PREFS_DEV_KEY, "");
         mDevKeyView.setText(key);
 
         findViewById(R.id.reset_messages).setOnClickListener(v -> resetHints());
 
         findViewById(R.id.confirm).setOnClickListener(v -> {
             String devKey = mDevKeyView.getText().toString().trim();
-            App.getPrefs()
-               .edit()
-               .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
-               .apply();
+            SearchEngine.getPref()
+                    .edit()
+                    .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+                    .apply();
 
             if (!devKey.isEmpty()) {
                 UserMessage.show(mDevKeyView, R.string.progress_msg_connecting);
@@ -106,12 +106,12 @@ public class LibraryThingAdminActivity
     }
 
     private void resetHints() {
-        SharedPreferences prefs = App.getPrefs();
+        SharedPreferences prefs = SearchEngine.getPref();
         SharedPreferences.Editor ed = prefs.edit();
         for (String key : prefs.getAll().keySet()) {
             if (key.toLowerCase(App.getSystemLocale())
-                   .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase(
-                           App.getSystemLocale()))) {
+                    .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase(
+                            App.getSystemLocale()))) {
                 ed.remove(key);
             }
         }
@@ -131,7 +131,7 @@ public class LibraryThingAdminActivity
          */
         @UiThread
         private ValidateKey(@NonNull final TaskListener<Integer> taskListener) {
-            super(R.id.TASK_ID_LT_VALIDATE_KEY,taskListener);
+            super(R.id.TASK_ID_LT_VALIDATE_KEY, taskListener);
         }
 
         @Override

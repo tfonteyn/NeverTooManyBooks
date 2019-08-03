@@ -19,22 +19,13 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -52,6 +43,16 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Basic implementation of format-agnostic BackupWriter methods using
@@ -79,10 +80,11 @@ public abstract class BackupWriterAbstract
     /**
      * Constructor.
      */
-    protected BackupWriterAbstract() {
+    protected BackupWriterAbstract(@NonNull final Context context) {
         mDb = new DAO();
-
-        Resources resources = LocaleUtils.getLocalizedResources();
+        //FIXME: the context we get is not a 'userContext' so try to get correct resources
+        Resources resources = LocaleUtils.getLocalizedResources(context,
+                LocaleUtils.getPreferredLocale(context));
         mProgress_msg_covers = resources.getString(R.string.progress_msg_covers_handled_missing);
         mProgress_msg_covers_skip = resources.getString(
                 R.string.progress_msg_covers_handled_missing_skipped);
@@ -195,7 +197,7 @@ public abstract class BackupWriterAbstract
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doBackupInfoBlock(out, mProgressListener,
-                                          BackupInfo.newInstance(getContainer(), infoValues));
+                    BackupInfo.newInstance(getContainer(), infoValues));
         }
 
         out.close();
@@ -203,7 +205,6 @@ public abstract class BackupWriterAbstract
     }
 
     /**
-     *
      * @throws IOException on failure
      */
     private void doXmlTables()
@@ -304,7 +305,7 @@ public abstract class BackupWriterAbstract
         }
         if (!dryRun) {
             Logger.info(this, "doCovers", " written=" + ok,
-                        "missing=" + missing, "skipped=" + skipped);
+                    "missing=" + missing, "skipped=" + skipped);
         }
 
         return ok;

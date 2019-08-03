@@ -1,13 +1,15 @@
 package com.hardbacknutter.nevertomanybooks.viewmodels;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
-
-import java.util.ArrayList;
 
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
+
+import java.util.ArrayList;
 
 public class PreferredStylesViewModel
         extends ViewModel {
@@ -29,12 +31,12 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      */
-    public void init() {
+    public void init(@NonNull final Context context) {
         if (mDb != null) {
             return;
         }
         mDb = new DAO();
-        mList = new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
+        mList = new ArrayList<>(BooklistStyles.getStyles(context, mDb, true).values());
     }
 
     @NonNull
@@ -99,7 +101,7 @@ public class PreferredStylesViewModel
         mList.remove(style);
     }
 
-    public void saveMenuOrder() {
-        BooklistStyles.savePreferredStyleMenuOrder(mList);
+    public void saveMenuOrder(@NonNull final Context context) {
+        BooklistStyles.savePreferredStyleMenuOrder(context, mList);
     }
 }

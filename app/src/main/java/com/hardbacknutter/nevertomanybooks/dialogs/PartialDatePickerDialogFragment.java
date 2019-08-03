@@ -86,7 +86,7 @@ public class PartialDatePickerDialogFragment
      *
      * @param fieldId       the field whose content we want to edit
      * @param currentValue  the current value of the field
-     * @param dialogTitleId titel resource id for the dialog
+     * @param dialogTitleId resource id for the dialog title
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
      * @return the new instance
@@ -120,7 +120,10 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         // Get a calendar for locale-related info (defaults to current date)
-        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getPreferredLocal());
+        //noinspection ConstantConditions
+        mCalendarForCalculations =
+                Calendar.getInstance(LocaleUtils.getPreferredLocale(getContext()));
+
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
 
         // Set the day to 1 to avoid wrapping.

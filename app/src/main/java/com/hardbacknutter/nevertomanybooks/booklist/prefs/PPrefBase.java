@@ -1,5 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 
@@ -27,7 +28,7 @@ public abstract class PPrefBase<T>
     @NonNull
     protected final String mUuid;
     /** Flag to indicate the value is persisted. */
-    protected final boolean mIsPersistent;
+    final boolean mIsPersistent;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     final T mDefaultValue;
@@ -57,6 +58,10 @@ public abstract class PPrefBase<T>
         mDefaultValue = defaultValue;
     }
 
+    SharedPreferences getPrefs() {
+        return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+    }
+
     @NonNull
     @Override
     public String getKey() {
@@ -66,7 +71,7 @@ public abstract class PPrefBase<T>
     @Override
     public void remove() {
         if (mIsPersistent) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            getPrefs().edit().remove(getKey()).apply();
         }
     }
 
@@ -80,9 +85,9 @@ public abstract class PPrefBase<T>
         if (!mIsPersistent) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            App.getPrefs(mUuid).edit().remove(getKey()).apply();
+            getPrefs().edit().remove(getKey()).apply();
         } else {
-            App.getPrefs(mUuid).edit().putString(getKey(), String.valueOf(value)).apply();
+            getPrefs().edit().putString(getKey(), String.valueOf(value)).apply();
         }
     }
 

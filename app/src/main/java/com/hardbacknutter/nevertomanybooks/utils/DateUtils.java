@@ -25,6 +25,10 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,13 +41,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-
 public final class DateUtils {
-
-    /* ----------------------------- FORMATTING ------------------------------------------------- */
 
     /** Month full names cache for each Locale. */
     private static final Map<String, String[]> MONTH_LONG_NAMES = new HashMap<>();
@@ -57,60 +55,79 @@ public final class DateUtils {
     private static final SimpleDateFormat LOCAL_SQL_DATE;
 
     /**
+     * SQL Datetime formatter, UTC.
+     * Used for *non-user* dates (date published etc).
+     */
+    private static final SimpleDateFormat UTC_SQL_DATE_TIME_HH_MM_SS;
+    /**
+     * SQL Datetime formatter, UTC.
+     * Used for *non-user* dates (date published etc).
+     */
+    private static final SimpleDateFormat UTC_SQL_DATE_TIME_HH_MM;
+    /**
      * SQL Date formatter, UTC.
      * Used for *non-user* dates (date published etc).
      */
-    private static final SimpleDateFormat UTC_SQL_DATE;
-
+    private static final SimpleDateFormat UTC_SQL_DATE_YYYY_MM_DD;
     /**
-     * SQL Datetime (no seconds) formatter, UTC.
+     * SQL Date formatter, UTC.
      * Used for *non-user* dates (date published etc).
      */
-    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM;
-
-    /**
-     * SQL Datetime (with seconds) formatter, UTC.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM_SS;
-
-
-    /* ------------------------------ PARSING --------------------------------------------------- */
-
-    /** List of formats we'll use to parse dates. */
-    private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS;
+    private static final SimpleDateFormat UTC_SQL_DATE_YYYY_MM;
 
     /** Simple match for a 4 digit year. */
     private static final SimpleDateFormat YEAR =
             new SimpleDateFormat("yyyy", App.getSystemLocale());
 
+    /**
+     * List of formats we'll use to parse dates.
+     * 2019-08-03: there are 22 formats, setting capacity to 25.
+     */
+    private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
 
     static {
         // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
-        LOCAL_SQL_DATE =
-                new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
+        LOCAL_SQL_DATE = new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
 
         // Used for formatting *non-user* dates for SQL. e.g. publication dates...
         TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-        UTC_SQL_DATE_HH_MM_SS =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
-        UTC_SQL_DATE_HH_MM_SS.setTimeZone(TZ_UTC);
-        UTC_SQL_DATE_HH_MM =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm", App.getSystemLocale());
-        UTC_SQL_DATE_HH_MM.setTimeZone(TZ_UTC);
-        UTC_SQL_DATE =
-                new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
-        UTC_SQL_DATE.setTimeZone(TZ_UTC);
+        UTC_SQL_DATE_TIME_HH_MM_SS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                App.getSystemLocale());
+        UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(TZ_UTC);
+
+        UTC_SQL_DATE_TIME_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm",
+                App.getSystemLocale());
+        UTC_SQL_DATE_TIME_HH_MM.setTimeZone(TZ_UTC);
+
+        UTC_SQL_DATE_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd", App.getSystemLocale());
+        UTC_SQL_DATE_YYYY_MM_DD.setTimeZone(TZ_UTC);
+
+        UTC_SQL_DATE_YYYY_MM = new SimpleDateFormat("yyyy-MM", App.getSystemLocale());
+        UTC_SQL_DATE_YYYY_MM.setTimeZone(TZ_UTC);
+
     }
 
-    static {
+    private DateUtils() {
+    }
 
-        // create the parser list. These will be tried IN THE ORDER DEFINED HERE.
+    /**
+     * create the parser list. These will be tried IN THE ORDER DEFINED HERE.
+     *
+     * FIXME: these are created at first use, so do not support switching Locale on the fly.
+     * the month is (localized) text, or english
+     */
+    private static void createParseDateFormats() {
+        // check the device language
+        final boolean userIsEnglishSpeaking =
+                Objects.equals(Locale.ENGLISH.getISO3Language(),
+                        App.getSystemLocale().getISO3Language());
 
-        // 2019-05-04: there are 21 formats, setting capacity to 22.
-        PARSE_DATE_FORMATS = new ArrayList<>(22);
+        // allow re-creating.
+        PARSE_DATE_FORMATS.clear();
 
-        // pure numerical formats
+        //TODO: the order of adding the set of 3 "MM-dd" and "dd-MM" should be
+        // made dependent on the users locale. For now we favour US style first.
+        // numerical formats
         addParseDateFormat("MM-dd-yyyy HH:mm:ss", false);
         addParseDateFormat("MM-dd-yyyy HH:mm", false);
         addParseDateFormat("MM-dd-yyyy", false);
@@ -119,41 +136,34 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", false);
         addParseDateFormat("dd-MM-yyyy", false);
 
-        // SQL date formats, pure numerical
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM_SS);
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM);
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE);
-
+        // SQL date formats, numerical
+        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM_SS);
+        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM);
+        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM_DD);
+        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM);
 
         // add english if the user's System Locale is not English.
-        // This is done because internet sites we search are english.
-        final boolean addEnglish = !Objects.equals(Locale.ENGLISH.getISO3Language(),
-                                                   App.getSystemLocale().getISO3Language());
-        //FIXME: these are created at startup, so do not support switching Locale on the fly.
-        // the month is (localized) text, or english
-        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", addEnglish);
-        addParseDateFormat("dd-MMM-yyyy HH:mm", addEnglish);
-        addParseDateFormat("dd-MMM-yyyy", addEnglish);
+        // This is done because most (all?) internet sites we search are english.
+        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yyyy HH:mm", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yyyy", !userIsEnglishSpeaking);
 
-        addParseDateFormat("dd-MMM-yy HH:mm:ss", addEnglish);
-        addParseDateFormat("dd-MMM-yy HH:mm", addEnglish);
-        addParseDateFormat("dd-MMM-yy", addEnglish);
+        addParseDateFormat("dd-MMM-yy HH:mm:ss", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yy HH:mm", !userIsEnglishSpeaking);
+        addParseDateFormat("dd-MMM-yy", !userIsEnglishSpeaking);
 
         // "13 March 2009" added due to OpenLibrary
-        addParseDateFormat("dd MMM yyyy", addEnglish);
+        addParseDateFormat("dd MMM yyyy", !userIsEnglishSpeaking);
         // "January 12, 1987" added due to OpenLibrary
-        addParseDateFormat("MMM d, yyyy", addEnglish);
+        addParseDateFormat("MMM d, yyyy", !userIsEnglishSpeaking);
 
         // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", addEnglish);
-        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", addEnglish);
-        addParseDateFormat("EEE MMM dd ZZZZ yyyy", addEnglish);
+        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", !userIsEnglishSpeaking);
+        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", !userIsEnglishSpeaking);
+        addParseDateFormat("EEE MMM dd ZZZZ yyyy", !userIsEnglishSpeaking);
 
         // TEST: PARTIAL format... "March 2009" added due to OpenLibrary
-        addParseDateFormat("MMM yyyy", addEnglish);
-    }
-
-    private DateUtils() {
+        addParseDateFormat("MMM yyyy", !userIsEnglishSpeaking);
     }
 
     /**
@@ -212,6 +222,11 @@ public final class DateUtils {
     @Nullable
     private static Date parseDate(@NonNull final String dateString,
                                   final boolean lenient) {
+        // create on first use.
+        if (PARSE_DATE_FORMATS.isEmpty()) {
+            createParseDateFormats();
+        }
+
         // try all formats until one fits.
         for (SimpleDateFormat sdf : PARSE_DATE_FORMATS) {
             try {
@@ -232,7 +247,7 @@ public final class DateUtils {
         // try System Locale.
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-                                                       App.getSystemLocale());
+                    App.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
         } catch (@NonNull final ParseException ignore) {
@@ -295,7 +310,7 @@ public final class DateUtils {
     public static String toPrettyDateTime(@NonNull final Locale locale,
                                           @NonNull final Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-                                              locale).format(date);
+                locale).format(date);
     }
 
     /**
@@ -317,7 +332,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDateTime(@NonNull final Date date) {
-        return UTC_SQL_DATE_HH_MM_SS.format(date);
+        return UTC_SQL_DATE_TIME_HH_MM_SS.format(date);
     }
 
     /**
@@ -325,7 +340,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDateTimeForToday() {
-        return UTC_SQL_DATE_HH_MM_SS.format(
+        return UTC_SQL_DATE_TIME_HH_MM_SS.format(
                 Calendar.getInstance(App.getSystemLocale()).getTime());
     }
 
@@ -336,7 +351,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDate(@NonNull final Date date) {
-        return UTC_SQL_DATE.format(date);
+        return UTC_SQL_DATE_YYYY_MM_DD.format(date);
     }
 
     /**

@@ -2,7 +2,6 @@ package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -10,18 +9,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.List;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * See notes in the package-info.java file.
@@ -80,7 +79,7 @@ public class IsfdbManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return App.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
+        return SearchEngine.getPref().getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     /**
@@ -117,7 +116,8 @@ public class IsfdbManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        Resources resources = LocaleUtils.getLocalizedResources();
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
 
         List<Editions.Edition> editions;
 
@@ -152,7 +152,8 @@ public class IsfdbManager
             }
 
             // as per user settings.
-            if (App.getPrefs().getBoolean(PREFS_USE_PUBLISHER, false)) {
+            if (PreferenceManager.getDefaultSharedPreferences(userContext)
+                    .getBoolean(PREFS_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
                     url += "&USE_" + index + "=pub_publisher"
@@ -171,7 +172,7 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            return new IsfdbBook().fetch(editions, fetchThumbnail, resources);
+            return new IsfdbBook().fetch(editions, fetchThumbnail, userContext);
         } else {
             return new Bundle();
         }

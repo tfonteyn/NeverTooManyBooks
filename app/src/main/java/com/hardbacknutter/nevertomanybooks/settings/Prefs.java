@@ -6,14 +6,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -29,6 +22,14 @@ import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingMan
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The preference key names here are the ones that define USER settings.
@@ -162,16 +163,21 @@ public final class Prefs {
     /**
      * DEBUG method.
      */
-    public static void dumpPreferences(@Nullable final String uuid) {
+    public static void dumpPreferences(@NonNull final Context context,
+                                       @Nullable final String uuid) {
         if (BuildConfig.DEBUG /* always */) {
-            Map<String, ?> map = uuid != null ? App.getPrefs(uuid).getAll()
-                                              : App.getPrefs().getAll();
+            Map<String, ?> map;
+            if (uuid != null) {
+                map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
+            } else {
+                map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
+            }
             List<String> keyList = new ArrayList<>(map.keySet());
             String[] keys = keyList.toArray(new String[]{});
             Arrays.sort(keys);
 
             StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
-                                                         + (uuid != null ? uuid : "global"));
+                    + (uuid != null ? uuid : "global"));
             for (String key : keys) {
                 Object value = map.get(key);
                 sb.append('\n').append(key).append('=').append(value);
@@ -187,21 +193,21 @@ public final class Prefs {
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
      */
-    public static void migratePreV200preferences(@NonNull final String name) {
+    public static void migratePreV200preferences(@NonNull final Context context,
+                                                 @NonNull final String name) {
 
-        SharedPreferences oldPrefs = App.getPrefs(name);
+        SharedPreferences oldPrefs = context.getSharedPreferences(name, Context.MODE_PRIVATE);
 
         Map<String, ?> oldMap = oldPrefs.getAll();
         if (oldMap.isEmpty()) {
-            // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
+            // API: 24 -> context.deleteSharedPreferences(name);
             oldPrefs.edit().clear().apply();
             return;
         }
 
-        Context context = App.getAppContext();
-
         // write to default prefs
-        SharedPreferences.Editor ed = App.getPrefs().edit();
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
+                .edit();
 
         String styleName;
 
@@ -331,7 +337,7 @@ public final class Prefs {
 
                     case "BookList.LargeThumbnails":
                         int tSize = (Boolean) oldValue ? ImageUtils.SCALE_MEDIUM
-                                                       : ImageUtils.SCALE_SMALL;
+                                : ImageUtils.SCALE_SMALL;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_cover_size, String.valueOf(tSize));
                         break;
@@ -354,7 +360,7 @@ public final class Prefs {
 
                     case "BookList.Condensed":
                         int con = (Boolean) oldValue ? BooklistStyle.TEXT_SCALE_SMALL
-                                                     : BooklistStyle.TEXT_SCALE_MEDIUM;
+                                : BooklistStyle.TEXT_SCALE_MEDIUM;
                         // this is now a PInteger (a ListPreference), stored as a string
                         ed.putString(pk_bob_text_size, String.valueOf(con));
                         break;
@@ -399,14 +405,14 @@ public final class Prefs {
 
                     case "BooksOnBookshelf.TOP_ROW_TOP":
                         ed.putInt(BooksOnBookshelfModel.PREF_BOB_TOP_ROW_OFFSET,
-                                  (Integer) oldValue);
+                                (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
                         styleName = e.substring(0, e.length() - 2);
                         ed.putString(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                     BooklistStyles.getStyle(context, styleName).getUuid());
+                                BooklistStyles.getStyle(context, styleName).getUuid());
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -418,10 +424,11 @@ public final class Prefs {
                             uuidSet.add(BooklistStyles.getStyle(context, styleName).getUuid());
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
-                                     Csv.join(",", uuidSet));
+                                Csv.join(",", uuidSet));
                         break;
 
                     // skip obsolete keys
+                    //noinspection SpellCheckingInspection
                     case "StartupActivity.FAuthorSeriesFixupRequired":
                     case "start_in_my_books":
                     case "App.includeClassicView":
@@ -452,16 +459,16 @@ public final class Prefs {
 
                         } else if (key.startsWith("HintManager.Hint.hint_")) {
                             ed.putBoolean(key.replace("HintManager.Hint.hint_", TipManager.PREF_TIP),
-                                          (Boolean) oldValue);
+                                    (Boolean) oldValue);
 
                         } else if (key.startsWith("HintManager.Hint.")) {
                             ed.putBoolean(key.replace("HintManager.Hint.", TipManager.PREF_TIP),
-                                         (Boolean) oldValue);
+                                    (Boolean) oldValue);
 
                         } else if (key.startsWith("lt_hide_alert_")) {
                             ed.putString(key.replace("lt_hide_alert_",
-                                                     LibraryThingManager.PREFS_HIDE_ALERT),
-                                         (String) oldValue);
+                                    LibraryThingManager.PREFS_HIDE_ALERT),
+                                    (String) oldValue);
 
                         } else if (key.startsWith("field_visibility_")) {
                             //noinspection SwitchStatementWithTooFewBranches
@@ -473,15 +480,15 @@ public final class Prefs {
                                 default:
                                     // move everything else
                                     ed.putBoolean(key.replace("field_visibility_",
-                                                              App.PREFS_FIELD_VISIBILITY),
-                                                  (Boolean) oldValue);
+                                            App.PREFS_FIELD_VISIBILITY),
+                                            (Boolean) oldValue);
                                     break;
                             }
 
                         } else if (!key.startsWith("state_current_group")) {
                             Logger.warn(Prefs.class, "migratePreV200preferences",
-                                        "unknown key=" + key,
-                                        "value=" + oldValue);
+                                    "unknown key=" + key,
+                                    "value=" + oldValue);
                         }
                         break;
                 }
@@ -493,7 +500,7 @@ public final class Prefs {
         }
         ed.apply();
 
-        // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
+        // API: 24 -> context.deleteSharedPreferences(name);
         oldPrefs.edit().clear().apply();
     }
 

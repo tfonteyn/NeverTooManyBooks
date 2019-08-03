@@ -11,15 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
-import java.io.File;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
+
+import java.io.File;
+import java.util.Objects;
 
 /**
  * Wrapper for the zoomed image dialog.
@@ -84,14 +84,16 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
 
+        boolean upscale = PreferenceManager.getDefaultSharedPreferences(view.getContext())
+                .getBoolean(Prefs.pk_thumbnails_zoom_upscale, true);
+
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        boolean upscale = App.getPrefs().getBoolean(Prefs.pk_thumbnails_zoom_upscale, true);
 
         ImageView imageView = view.findViewById(R.id.coverImage);
         ImageUtils.setImageView(imageView, mImageFile,
-                                metrics.widthPixels,
-                                metrics.heightPixels,
-                                upscale);
+                metrics.widthPixels,
+                metrics.heightPixels,
+                upscale);
 
         imageView.setOnClickListener(v -> dismiss());
     }

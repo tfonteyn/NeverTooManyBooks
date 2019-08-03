@@ -1,13 +1,11 @@
 package com.hardbacknutter.nevertomanybooks.searches;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -15,6 +13,9 @@ import com.hardbacknutter.nevertomanybooks.searches.isfdb.IsfdbManager;
 import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the setup of search engines/sites.
@@ -223,24 +224,25 @@ public final class SearchSites {
     }
 
 
-    public static boolean usePublisher() {
-        return App.getPrefs().getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
+    public static boolean usePublisher(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
     }
 
     /**
      * Reset all values back to the hardcoded defaults.
      */
-    public static void reset() {
-        setSearchOrder(SEARCH_ORDER_DEFAULTS);
-        setCoverSearchOrder(COVER_SEARCH_ORDER_DEFAULTS);
+    public static void reset(@NonNull final Context context) {
+        setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
+        setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
     }
 
-    public static void resetSearchOrder() {
-        setSearchOrder(SEARCH_ORDER_DEFAULTS);
+    public static void resetSearchOrder(@NonNull final Context context) {
+        setSearchOrder(context, SEARCH_ORDER_DEFAULTS);
     }
 
-    public static void resetCoverSearchOrder() {
-        setCoverSearchOrder(COVER_SEARCH_ORDER_DEFAULTS);
+    public static void resetCoverSearchOrder(@NonNull final Context context) {
+        setCoverSearchOrder(context, COVER_SEARCH_ORDER_DEFAULTS);
     }
 
     @NonNull
@@ -258,9 +260,10 @@ public final class SearchSites {
      *
      * @param newList to use
      */
-    public static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
+    public static void setSearchOrder(@NonNull final Context context,
+                                      @NonNull final ArrayList<Site> newList) {
         sPreferredSearchOrder = newList;
-        SharedPreferences.Editor ed = App.getPrefs().edit();
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
         }
@@ -277,9 +280,10 @@ public final class SearchSites {
      *
      * @param newList to use
      */
-    public static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
+    public static void setCoverSearchOrder(@NonNull final Context context,
+                                           @NonNull final ArrayList<Site> newList) {
         sPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor ed = App.getPrefs().edit();
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
         }

@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.tararchive;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -56,8 +58,10 @@ public class TarBackupWriter
      *
      * @throws IOException on failure
      */
-    TarBackupWriter(@NonNull final TarBackupContainer container)
+    TarBackupWriter(@NonNull final Context context,
+                    @NonNull final TarBackupContainer container)
             throws IOException {
+        super(context);
         mContainer = container;
         // Open the archive for writing
         OutputStream out = new FileOutputStream(container.getFile());

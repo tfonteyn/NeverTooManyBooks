@@ -95,7 +95,7 @@ public class EditBookshelfListActivity
         mAdapter = new BookshelfAdapter(this, mList);
 
         findViewById(R.id.fab).setOnClickListener(
-                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb))));
+                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(this, mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

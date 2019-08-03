@@ -10,8 +10,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.io.File;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -30,6 +28,8 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.SerializationUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UpgradeMessageManager;
+
+import java.io.File;
 
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME_OB;
@@ -57,13 +57,13 @@ import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_BOO
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
+import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
-import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_BOOK;
+import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_STYLE_ID;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_FK_TOC_ENTRY;
-import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_PK_DOCID;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
@@ -119,7 +119,7 @@ public final class DBHelper
 
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + DAO.COLLATION + ')',
-            };
+    };
 
 
     /** Readers/Writer lock for this database. */
@@ -255,7 +255,7 @@ public final class DBHelper
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
                         Logger.debug(BooklistStyles.class, "prepareStylesTable",
-                                     "Ignore the debug message about inserting -1 here...");
+                                "Ignore the debug message about inserting -1 here...");
                     }
                 }
                 stmt.executeInsert();
@@ -282,22 +282,22 @@ public final class DBHelper
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         TableDefinition.createTables(syncedDb,
-                                     // app tables
-                                     TBL_BOOKLIST_STYLES,
-                                     // basic user data tables
-                                     TBL_BOOKSHELF,
-                                     TBL_AUTHORS,
-                                     TBL_SERIES,
-                                     TBL_BOOKS,
-                                     TBL_TOC_ENTRIES,
-                                     // link tables
-                                     TBL_BOOK_TOC_ENTRIES,
-                                     TBL_BOOK_AUTHOR,
-                                     TBL_BOOK_BOOKSHELF,
-                                     TBL_BOOK_SERIES,
-                                     TBL_BOOK_LOANEE,
-                                     // permanent booklist management tables
-                                     TBL_BOOK_LIST_NODE_SETTINGS);
+                // app tables
+                TBL_BOOKLIST_STYLES,
+                // basic user data tables
+                TBL_BOOKSHELF,
+                TBL_AUTHORS,
+                TBL_SERIES,
+                TBL_BOOKS,
+                TBL_TOC_ENTRIES,
+                // link tables
+                TBL_BOOK_TOC_ENTRIES,
+                TBL_BOOK_AUTHOR,
+                TBL_BOOK_BOOKSHELF,
+                TBL_BOOK_SERIES,
+                TBL_BOOK_LOANEE,
+                // permanent booklist management tables
+                TBL_BOOK_LIST_NODE_SETTINGS);
 
         // create the indexes not covered in the calls above.
         createIndices(syncedDb, false);
@@ -307,12 +307,12 @@ public final class DBHelper
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                                 + '(' + DOM_BOOKSHELF
-                                 + ',' + DOM_FK_STYLE_ID
-                                 + ") VALUES ("
-                                 + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
-                                 + "'," + BooklistStyles.DEFAULT_STYLE_ID
-                                 + ')');
+                + '(' + DOM_BOOKSHELF
+                + ',' + DOM_FK_STYLE_ID
+                + ") VALUES ("
+                + "'" + App.getAppContext().getString(R.string.bookshelf_my_books)
+                + "'," + BooklistStyles.DEFAULT_STYLE_ID
+                + ')');
 
         //reminder: FTS columns don't need a type nor constraints
         TBL_BOOKS_FTS.create(syncedDb, false);
@@ -611,8 +611,8 @@ public final class DBHelper
 
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugEnter(this, "onUpgrade",
-                              "Old database version: " + oldVersion,
-                              "Upgrading database: " + db.getPath());
+                    "Old database version: " + oldVersion,
+                    "Upgrading database: " + db.getPath());
         }
         if (oldVersion < 82) {
             throw new UpgradeException(R.string.error_database_upgrade_failed);
@@ -649,22 +649,22 @@ public final class DBHelper
                               @NonNull final SynchronizedDb syncedDb) {
         // we're now using the 'real' cache directory
         StorageUtils.deleteFile(new File(StorageUtils.getSharedStorage()
-                                                 + File.separator + "tmp_images"));
+                + File.separator + "tmp_images"));
 
         // migrate old properties.
-        Prefs.migratePreV200preferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
+        Prefs.migratePreV200preferences(App.getAppContext(), Prefs.PREF_LEGACY_BOOK_CATALOGUE);
 
         // add the UUID field for the move of styles to SharedPreferences
         db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
-                           + " ADD " + DOM_UUID + " text not null default ''");
+                + " ADD " + DOM_UUID + " text not null default ''");
 
         // insert the builtin style ID's so foreign key rules are possible.
         prepareStylesTable(db);
 
         // convert user styles from serialized storage to SharedPreference xml.
         try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
-                                                       + " FROM " + TBL_BOOKLIST_STYLES,
-                                               null)) {
+                        + " FROM " + TBL_BOOKLIST_STYLES,
+                null)) {
             while (stylesCursor.moveToNext()) {
                 long id = stylesCursor.getLong(0);
                 byte[] blob = stylesCursor.getBlob(1);
@@ -674,8 +674,8 @@ public final class DBHelper
                     style = SerializationUtils.deserializeObject(blob);
                     // update db with the newly created prefs file name.
                     db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES
-                                       + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
-                                       + " WHERE " + DOM_PK_ID + '=' + id);
+                            + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
+                            + " WHERE " + DOM_PK_ID + '=' + id);
 
                 } catch (@NonNull final SerializationUtils.DeserializationException e) {
                     Logger.error(this, e, "BooklistStyle id=" + id);
@@ -698,49 +698,49 @@ public final class DBHelper
         // the author name and title could be bad
         final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
         db.execSQL("UPDATE " + TBL_AUTHORS
-                           + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
-                           + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
-                           + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
+                + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
+                + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"
+                + " OR " + DOM_AUTHOR_FAMILY_NAME + " IS NULL");
 
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE + "='" + UNKNOWN + '\''
-                           + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
+                + " WHERE " + DOM_TITLE + "='' OR " + DOM_TITLE + " IS NULL");
 
         // clean columns where we are adding a "not null default ''" constraint
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_FORMAT + "=''"
-                           + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
+                + " WHERE " + DOM_BOOK_FORMAT + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GENRE + "=''"
-                           + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
+                + " WHERE " + DOM_BOOK_GENRE + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LANGUAGE + "=''"
-                           + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
+                + " WHERE " + DOM_BOOK_LANGUAGE + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_LOCATION + "=''"
-                           + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
+                + " WHERE " + DOM_BOOK_LOCATION + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PUBLISHER + "=''"
-                           + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
+                + " WHERE " + DOM_BOOK_PUBLISHER + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ISBN + "=''"
-                           + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
+                + " WHERE " + DOM_BOOK_ISBN + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_PRICE_LISTED + "=''"
-                           + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
+                + " WHERE " + DOM_BOOK_PRICE_LISTED + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DESCRIPTION + "=''"
-                           + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
+                + " WHERE " + DOM_BOOK_DESCRIPTION + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_NOTES + "=''"
-                           + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
+                + " WHERE " + DOM_BOOK_NOTES + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_START + "=''"
-                           + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
+                + " WHERE " + DOM_BOOK_READ_START + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ_END + "=''"
-                           + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
+                + " WHERE " + DOM_BOOK_READ_END + " IS NULL");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_DATE_PUBLISHED + "=''"
-                           + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
+                + " WHERE " + DOM_BOOK_DATE_PUBLISHED + " IS NULL");
 
         // clean boolean columns where we have seen non-0/1 values.
         // 'true'/'false' were seen in 5.2.2 exports. 't'/'f' just because paranoid.
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=1"
-                           + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
+                + " WHERE lower(" + DOM_BOOK_READ + ") IN ('true', 't')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_READ + "=0"
-                           + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
+                + " WHERE lower(" + DOM_BOOK_READ + ") IN ('false', 'f')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=1"
-                           + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
+                + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('true', 't')");
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_SIGNED + "=0"
-                           + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
+                + " WHERE lower(" + DOM_BOOK_SIGNED + ") IN ('false', 'f')");
 
         // Make sure the TOC bitmask is valid: int: 0,1,3. Reset anything else to 0.
         db.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=0"
@@ -748,7 +748,7 @@ public final class DBHelper
 
         // probably not needed, but there were some 'COALESCE' usages. Paranoia again...
         db.execSQL("UPDATE " + TBL_BOOKSHELF + " SET " + DOM_BOOKSHELF + "=''"
-                           + " WHERE " + DOM_BOOKSHELF + " IS NULL");
+                + " WHERE " + DOM_BOOKSHELF + " IS NULL");
 
         // recreate to get column types & constraints properly updated.
         recreateAndReloadTable(syncedDb, TBL_BOOKS);
@@ -756,25 +756,25 @@ public final class DBHelper
         // anthology-titles are now cross-book;
         // e.g. one 'story' can be present in multiple books
         db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES
-                           + '(' + DOM_FK_BOOK + " integer REFERENCES "
-                           + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
+                + '(' + DOM_FK_BOOK + " integer REFERENCES "
+                + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                           + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
-                           + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
+                + ',' + DOM_FK_TOC_ENTRY + " integer REFERENCES "
+                + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                           + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
-                           + ", PRIMARY KEY (" + DOM_FK_BOOK
-                           + ',' + DOM_FK_TOC_ENTRY + ')'
-                           + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
-                           + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
-                           + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
-                           + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
-                           + ')');
+                + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null"
+                + ", PRIMARY KEY (" + DOM_FK_BOOK
+                + ',' + DOM_FK_TOC_ENTRY + ')'
+                + ", FOREIGN KEY (" + DOM_FK_BOOK + ')'
+                + " REFERENCES " + TBL_BOOKS + '(' + DOM_PK_ID + ')'
+                + ", FOREIGN KEY (" + DOM_FK_TOC_ENTRY + ')'
+                + " REFERENCES " + TBL_TOC_ENTRIES + '(' + DOM_PK_ID + ')'
+                + ')');
 
         // move the existing book-anthology links to the new table
         db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                           + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
-                           + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
+                + " SELECT " + DOM_FK_BOOK + ',' + DOM_PK_ID + ','
+                + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
 
         // reorganise the original table
         recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
@@ -786,25 +786,25 @@ public final class DBHelper
 
         // add the 'ORDER BY' columns
         db.execSQL("ALTER TABLE " + TBL_BOOKS
-                           + " ADD " + DOM_TITLE_OB + " text not null default ''");
+                + " ADD " + DOM_TITLE_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_BOOKS, DOM_TITLE, DOM_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_SERIES
-                           + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
+                + " ADD " + DOM_SERIES_TITLE_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_SERIES, DOM_SERIES_TITLE, DOM_SERIES_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_TOC_ENTRIES
-                           + " ADD " + DOM_TITLE_OB + " text not null default ''");
+                + " ADD " + DOM_TITLE_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_TOC_ENTRIES, DOM_TITLE, DOM_TITLE_OB);
 
         db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                           + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
+                + " ADD " + DOM_AUTHOR_FAMILY_NAME_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_FAMILY_NAME,
-                                              DOM_AUTHOR_FAMILY_NAME_OB);
+                DOM_AUTHOR_FAMILY_NAME_OB);
         db.execSQL("ALTER TABLE " + TBL_AUTHORS
-                           + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
+                + " ADD " + DOM_AUTHOR_GIVEN_NAMES_OB + " text not null default ''");
         UpgradeDatabase.v200_setOrderByColumn(db, TBL_AUTHORS, DOM_AUTHOR_GIVEN_NAMES,
-                                              DOM_AUTHOR_GIVEN_NAMES_OB);
+                DOM_AUTHOR_GIVEN_NAMES_OB);
 
             /* move cover files to a sub-folder.
             Only files with matching rows in 'books' are moved. */
@@ -817,7 +817,7 @@ public final class DBHelper
         private static final long serialVersionUID = -6910121313418068318L;
 
         @StringRes
-        public final int messageId;
+        final int messageId;
 
         @SuppressWarnings("SameParameterValue")
         UpgradeException(final int messageId) {

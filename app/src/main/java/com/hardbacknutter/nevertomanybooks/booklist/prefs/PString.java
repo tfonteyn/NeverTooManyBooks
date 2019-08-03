@@ -31,7 +31,7 @@ public class PString
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // guard against the pref being there, but with value null.
-            String tmp = App.getPrefs(mUuid).getString(getKey(), mDefaultValue);
+            String tmp = getPrefs().getString(getKey(), mDefaultValue);
             return tmp != null ? tmp : mDefaultValue;
         }
     }

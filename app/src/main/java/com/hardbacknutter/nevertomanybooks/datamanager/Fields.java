@@ -81,15 +81,15 @@ import com.google.android.material.button.MaterialButton;
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
  * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
- * <li> Custom data accessors and formatters to provide application-specific data rules.</li>
+ * <li> Custom data accessors and formatter to provide application-specific data rules.</li>
  * <li> validation: calling {@link #validate} will call user-defined or predefined</li>
  * validation routines. The text of any exceptions will be available after the call.</li>
  * <li> simplified extraction of data to a {@link ContentValues} collection.</li>
  * </ul>
  * <p>
- * Formatters and Accessors
+ * Formatter and Accessors
  * <p>
- * It is up to each accessor to decide what to do with any formatters defined for a field.
+ * It is up to each accessor to decide what to do with any formatter defined for a field.
  * The fields themselves have extract() and format() methods that will apply the formatter
  * functions (if present) or just pass the value through.
  * <p>
@@ -622,7 +622,7 @@ public class Fields {
     }
 
     /**
-     * Interface definition for Field formatters.
+     * Interface definition for Field formatter.
      *
      * @author Philip Warner
      */
@@ -1789,7 +1789,8 @@ public class Fields {
          */
         @NonNull
         public Locale getLocale() {
-            return getView().getResources().getConfiguration().locale;
+            Locale locale = getView().getResources().getConfiguration().locale;
+            return locale != null ? locale : Locale.ENGLISH;
         }
 
         /**
@@ -1857,7 +1858,7 @@ public class Fields {
         }
 
         /**
-         * Wrapper to call the formatters format() method if present, or just return the raw value.
+         * Wrapper to call the formatter's format() method if present, or just return the raw value.
          *
          * @param source String to format
          *

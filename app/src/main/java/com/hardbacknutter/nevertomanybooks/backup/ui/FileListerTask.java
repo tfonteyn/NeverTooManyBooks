@@ -1,5 +1,7 @@
 package com.hardbacknutter.nevertomanybooks.backup.ui;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
@@ -56,6 +58,9 @@ public class FileListerTask
     protected ArrayList<FileDetails> doInBackground(final Void... params) {
         Thread.currentThread().setName("FileListerTask");
 
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+
         ArrayList<FileDetails> fileDetails = new ArrayList<>();
 
         // Filter for directories and our own archives.
@@ -73,7 +78,7 @@ public class FileListerTask
             BackupFileDetails fd = new BackupFileDetails(file);
             fileDetails.add(fd);
             if (BackupManager.isArchive(file)) {
-                try (BackupReader reader = BackupManager.getReader(file)) {
+                try (BackupReader reader = BackupManager.getReader(userContext, file)) {
                     fd.setInfo(reader.getInfo());
                 } catch (@NonNull final IOException e) {
                     Logger.error(this, e);

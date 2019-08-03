@@ -1,6 +1,10 @@
 package com.hardbacknutter.nevertomanybooks.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertomanybooks.database.DAO;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,17 +12,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.hardbacknutter.nevertomanybooks.database.DAO;
-
 /**
  * An entity (item) in the database which is capable of finding itself in the database
  * without using its id.
  */
-public interface ItemWithIdFixup {
+public interface ItemWithFixableId {
 
     /**
      * Passed a list of Objects, remove duplicates based on the
-     * {@link ItemWithIdFixup#stringEncoded} result.
+     * {@link ItemWithFixableId#stringEncoded} result.
      * (case insensitive + trimmed)
      * <p>
      * ENHANCE: Add {@link Author} aliases table to allow further pruning
@@ -28,12 +30,13 @@ public interface ItemWithIdFixup {
      *
      * @param db   Database connection to lookup ID's
      * @param list List to clean up
-     * @param <T>  ItemWithIdFixup object
+     * @param <T>  ItemWithFixableId object
      *
      * @return {@code true} if the list was modified.
      */
-    static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DAO db,
-                                                         @NonNull final List<T> list) {
+    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final Context userContext,
+                                                           @NonNull final DAO db,
+                                                           @NonNull final List<T> list) {
         // weeding out duplicate ID's
         Set<Long> ids = new HashSet<>();
         // weeding out duplicate uniqueNames.
@@ -45,13 +48,13 @@ public interface ItemWithIdFixup {
         while (it.hasNext()) {
             T item = it.next();
             // try to find the item.
-            long itemId = item.fixupId(db);
+            long itemId = item.fixId(userContext, db);
 
             String uniqueName = item.stringEncoded().trim().toUpperCase();
 
             // Series special case: same name + different number.
             // This means different series positions will have the same id+name but will have
-            // different numbers; so ItemWithIdFixup 'isUniqueById()' returns 'false'.
+            // different numbers; so ItemWithFixableId 'isUniqueById()' returns 'false'.
             if (ids.contains(itemId) && !item.isUniqueById() && !names.contains(uniqueName)) {
                 // unique item in the list: id+name matched, but other fields might be different.
                 ids.add(itemId);
@@ -75,26 +78,43 @@ public interface ItemWithIdFixup {
      * Tries to find the item in the database using all its fields (except the id).
      * If found, sets the item's id with the id found in the database.
      * <p>
-     * If the item has 'sub' items, then it should call fixup on those as well.
+     * If the item has 'sub' items, then it should call those as well.
      *
-     * @param db     the database
+     * @param db the database
      *
      * @return the item id (also set on the item).
      */
-    long fixupId(@NonNull DAO db);
-
+    long fixId(@NonNull DAO db);
 
     /**
-     * Same as {@link #fixupId(DAO)} but for items that need a Locale to fix themselves.
+     * Tries to find the item in the database using all its fields (except the id).
+     * If found, sets the item's id with the id found in the database.
+     * <p>
+     * If the item has 'sub' items, then it should call those as well.
      *
-     * @param db     the database
-     * @param locale Locale for any specific overrides
+     * @param userContext Current context
+     * @param db          the database
      *
      * @return the item id (also set on the item).
      */
-    default long fixupId(@NonNull DAO db,
-                         @NonNull Locale locale) {
-        return fixupId(db);
+    default long fixId(@NonNull final Context userContext,
+                       @NonNull final DAO db) {
+        return fixId(db);
+    }
+
+    /**
+     * Same as {@link #fixId(DAO)} but for items that need a Locale to fix themselves.
+     *
+     * @param userContext Current context
+     * @param db          the database
+     * @param locale      Locale for any specific overrides
+     *
+     * @return the item id (also set on the item).
+     */
+    default long fixId(@NonNull final Context userContext,
+                       @NonNull final DAO db,
+                       @NonNull final Locale locale) {
+        return fixId(userContext, db);
     }
 
     /**

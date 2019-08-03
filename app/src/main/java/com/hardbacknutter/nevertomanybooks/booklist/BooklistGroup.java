@@ -30,8 +30,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
+
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.R;
+import com.hardbacknutter.nevertomanybooks.booklist.prefs.PBoolean;
+import com.hardbacknutter.nevertomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,15 +52,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -344,7 +345,7 @@ public class BooklistGroup
         void initPrefs() {
             super.initPrefs();
             mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid,
-                                      mIsUserDefinedStyle);
+                    mIsUserDefinedStyle);
         }
 
         boolean showAll() {
@@ -465,8 +466,9 @@ public class BooklistGroup
          *
          * @return {@code true} if we want "given-names last-name" formatted authors.
          */
-        static boolean globalShowGivenNameFirst() {
-            return App.getPrefs().getBoolean(Prefs.pk_bob_format_author_name, false);
+        static boolean globalShowGivenNameFirst(@NonNull final Context context) {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+                    .getBoolean(Prefs.pk_bob_format_author_name, false);
         }
 
         @Override
@@ -484,9 +486,9 @@ public class BooklistGroup
         protected void initPrefs() {
             super.initPrefs();
             mAllAuthors = new PBoolean(Prefs.pk_bob_books_under_multiple_authors, mUuid,
-                                       mIsUserDefinedStyle);
+                    mIsUserDefinedStyle);
             mGivenNameFirst = new PBoolean(Prefs.pk_bob_format_author_name, mUuid,
-                                           mIsUserDefinedStyle);
+                    mIsUserDefinedStyle);
         }
 
         boolean showAll() {
@@ -494,7 +496,6 @@ public class BooklistGroup
         }
 
         /**
-         *
          * @return {@code true} if we want "given-names last-name" formatted authors.
          */
         boolean showAuthorGivenNameFirst() {
@@ -537,10 +538,10 @@ public class BooklistGroup
                 pShowAll.setDefaultValue(false);
                 pShowAll.setSummaryOn(
                         context.getString(R.string.pv_bob_books_under_multiple_each_1s,
-                                          description));
+                                description));
                 pShowAll.setSummaryOff(
                         context.getString(R.string.pv_bob_books_under_multiple_primary_1s_only,
-                                          description));
+                                description));
                 //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
                 category.addPreference(pShowAll);
 
@@ -624,120 +625,120 @@ public class BooklistGroup
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a",
-                                  DBDefinitions.DOM_FK_AUTHOR);
+                    DBDefinitions.DOM_FK_AUTHOR);
             rowKind.setDisplayDomain(DBDefinitions.DOM_AUTHOR_FORMATTED);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(SERIES, R.string.lbl_series, "s",
-                                  DBDefinitions.DOM_FK_SERIES);
+                    DBDefinitions.DOM_FK_SERIES);
             rowKind.setDisplayDomain(DBDefinitions.DOM_SERIES_TITLE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             //all others will use the underlying domain as the displayDomain
             rowKind = new RowKind(GENRE, R.string.lbl_genre, "g",
-                                  DBDefinitions.DOM_BOOK_GENRE);
+                    DBDefinitions.DOM_BOOK_GENRE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p",
-                                  DBDefinitions.DOM_BOOK_PUBLISHER);
+                    DBDefinitions.DOM_BOOK_PUBLISHER);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r",
-                                  DBDefinitions.DOM_READ_STATUS);
+                    DBDefinitions.DOM_READ_STATUS);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l",
-                                  DBDefinitions.DOM_LOANEE);
+                    DBDefinitions.DOM_LOANEE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp",
-                                  DBDefinitions.DOM_DATE_PUBLISHED_YEAR);
+                    DBDefinitions.DOM_DATE_PUBLISHED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mnp",
-                                  DBDefinitions.DOM_DATE_PUBLISHED_MONTH);
+                    DBDefinitions.DOM_DATE_PUBLISHED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t",
-                                  DBDefinitions.DOM_TITLE_LETTER);
+                    DBDefinitions.DOM_TITLE_LETTER);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "yra",
-                                  DBDefinitions.DOM_DATE_ADDED_YEAR);
+                    DBDefinitions.DOM_DATE_ADDED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "mna",
-                                  DBDefinitions.DOM_DATE_ADDED_MONTH);
+                    DBDefinitions.DOM_DATE_ADDED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "dya",
-                                  DBDefinitions.DOM_DATE_ADDED_DAY);
+                    DBDefinitions.DOM_DATE_ADDED_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt",
-                                  DBDefinitions.DOM_BOOK_FORMAT);
+                    DBDefinitions.DOM_BOOK_FORMAT);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yrr",
-                                  DBDefinitions.DOM_DATE_READ_YEAR);
+                    DBDefinitions.DOM_DATE_READ_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mnr",
-                                  DBDefinitions.DOM_DATE_READ_MONTH);
+                    DBDefinitions.DOM_DATE_READ_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dyr",
-                                  DBDefinitions.DOM_DATE_READ_DAY);
+                    DBDefinitions.DOM_DATE_READ_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc",
-                                  DBDefinitions.DOM_BOOK_LOCATION);
+                    DBDefinitions.DOM_BOOK_LOCATION);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lang",
-                                  DBDefinitions.DOM_BOOK_LANGUAGE);
+                    DBDefinitions.DOM_BOOK_LANGUAGE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yru",
-                                  DBDefinitions.DOM_DATE_LAST_UPDATE_YEAR);
+                    DBDefinitions.DOM_DATE_LAST_UPDATE_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mnu",
-                                  DBDefinitions.DOM_DATE_UPDATE_MONTH);
+                    DBDefinitions.DOM_DATE_UPDATE_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "dyu",
-                                  DBDefinitions.DOM_DATE_UPDATE_DAY);
+                    DBDefinitions.DOM_DATE_UPDATE_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(RATING, R.string.lbl_rating, "rat",
-                                  DBDefinitions.DOM_BOOK_RATING);
+                    DBDefinitions.DOM_BOOK_RATING);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf",
-                                  DBDefinitions.DOM_BOOKSHELF);
+                    DBDefinitions.DOM_BOOKSHELF);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yrac",
-                                  DBDefinitions.DOM_DATE_ACQUIRED_YEAR);
+                    DBDefinitions.DOM_DATE_ACQUIRED_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mnac",
-                                  DBDefinitions.DOM_DATE_ACQUIRED_MONTH);
+                    DBDefinitions.DOM_DATE_ACQUIRED_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dyac",
-                                  DBDefinitions.DOM_DATE_ACQUIRED_DAY);
+                    DBDefinitions.DOM_DATE_ACQUIRED_DAY);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUBLICATION_YEAR,
-                                  R.string.lbl_first_publication_year, "yrfp",
-                                  DBDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR);
+                    R.string.lbl_first_publication_year, "yrfp",
+                    DBDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUBLICATION_MONTH,
-                                  R.string.lbl_first_publication_month, "mnfp",
-                                  DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH);
+                    R.string.lbl_first_publication_month, "mnfp",
+                    DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             // NEWKIND: ROW_KIND_x

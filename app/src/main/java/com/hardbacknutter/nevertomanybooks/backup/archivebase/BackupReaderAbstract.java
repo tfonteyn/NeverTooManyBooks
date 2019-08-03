@@ -19,14 +19,11 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
@@ -45,6 +42,10 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.SerializationUtils.DeserializationException;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * Basic implementation of format-agnostic BackupReader methods using
@@ -74,10 +75,11 @@ public abstract class BackupReaderAbstract
     /**
      * Constructor.
      */
-    protected BackupReaderAbstract() {
+    protected BackupReaderAbstract(@NonNull final Context context) {
         mDb = new DAO();
-
-        Resources resources = LocaleUtils.getLocalizedResources();
+        //FIXME: the context we get is not a 'userContext' so try to get correct resources
+        Resources resources = LocaleUtils.getLocalizedResources(context,
+                LocaleUtils.getPreferredLocale(context));
         mProcessPreferences = resources.getString(R.string.progress_msg_process_preferences);
         mProcessCover = resources.getString(R.string.progress_msg_process_cover);
         mProcessBooklistStyles = resources.getString(R.string.progress_msg_process_booklist_style);
@@ -146,13 +148,11 @@ public abstract class BackupReaderAbstract
                         if ((mSettings.what & ImportOptions.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter()) {
-
-                                importer.doPreferences(entity, mProgressListener, App.getPrefs());
+                                importer.doPreferences(entity, mProgressListener, mSettings.getPrefs());
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }
                         break;
-
 
                     case BooklistStyles:
                         // current format
@@ -169,7 +169,6 @@ public abstract class BackupReaderAbstract
                         // skip, future extension
                         break;
 
-
                     case PreferencesPreV200:
                         // pre-v200 format
                         if ((mSettings.what & ImportOptions.PREFERENCES) != 0) {
@@ -177,8 +176,7 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, mProgressListener,
-                                                       App.getPrefs(
-                                                               Prefs.PREF_LEGACY_BOOK_CATALOGUE));
+                                        App.getAppContext().getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE));
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }
@@ -235,7 +233,9 @@ public abstract class BackupReaderAbstract
     private Importer.Results restoreBooks(@NonNull final ReaderEntity entity)
             throws IOException, ImportException {
 
-        try (Importer importer = new CsvImporter(LocaleUtils.getLocalizedResources(), mSettings)) {
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        try (Importer importer = new CsvImporter(userContext, mSettings)) {
             return importer.doBooks(entity.getStream(), null, mProgressListener);
         }
     }

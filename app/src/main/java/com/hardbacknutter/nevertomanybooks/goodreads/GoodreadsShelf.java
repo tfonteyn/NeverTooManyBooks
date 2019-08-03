@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
@@ -32,7 +33,7 @@ public class GoodreadsShelf {
     public static String canonicalizeName(@NonNull final String name) {
 
         StringBuilder canonical = new StringBuilder();
-        String lcName = name.toLowerCase(LocaleUtils.getPreferredLocal());
+        String lcName = name.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
         for (int i = 0; i < lcName.length(); i++) {
             char c = lcName.charAt(i);
             if (Character.isLetterOrDigit(c)) {

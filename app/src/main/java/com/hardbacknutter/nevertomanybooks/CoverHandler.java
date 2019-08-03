@@ -22,14 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Objects;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.cropper.CropImageActivity;
 import com.hardbacknutter.nevertomanybooks.cropper.CropImageViewTouchBase;
@@ -49,6 +42,14 @@ import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -187,43 +188,43 @@ public class CoverHandler {
 
         Menu menu = MenuPicker.createMenu(mContext);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_delete);
 
         SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0,
-                                                 R.string.menu_cover_replace)
-                                     .setIcon(R.drawable.ic_find_replace);
+                R.string.menu_cover_replace)
+                .setIcon(R.drawable.ic_find_replace);
 
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, 0,
-                           R.string.menu_cover_add_from_camera)
-                      .setIcon(R.drawable.ic_add_a_photo);
+                R.string.menu_cover_add_from_camera)
+                .setIcon(R.drawable.ic_add_a_photo);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 0,
-                           R.string.menu_cover_add_from_gallery)
-                      .setIcon(R.drawable.ic_photo_gallery);
+                R.string.menu_cover_add_from_gallery)
+                .setIcon(R.drawable.ic_photo_gallery);
         replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 0,
-                           R.string.menu_cover_search_alt_editions)
-                      .setIcon(R.drawable.ic_find_replace);
+                R.string.menu_cover_search_alt_editions)
+                .setIcon(R.drawable.ic_find_replace);
 
         SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, 0,
-                                                R.string.menu_cover_rotate)
-                                    .setIcon(R.drawable.ic_rotate_right);
+                R.string.menu_cover_rotate)
+                .setIcon(R.drawable.ic_rotate_right);
 
         rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, 0,
-                          R.string.menu_cover_rotate_cw)
-                     .setIcon(R.drawable.ic_rotate_right);
+                R.string.menu_cover_rotate_cw)
+                .setIcon(R.drawable.ic_rotate_right);
         rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, 0,
-                          R.string.menu_cover_rotate_ccw)
-                     .setIcon(R.drawable.ic_rotate_left);
+                R.string.menu_cover_rotate_ccw)
+                .setIcon(R.drawable.ic_rotate_left);
         rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, 0,
-                          R.string.menu_cover_rotate_180)
-                     .setIcon(R.drawable.ic_swap_vert);
+                R.string.menu_cover_rotate_180)
+                .setIcon(R.drawable.ic_swap_vert);
 
         menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 0, R.string.menu_cover_crop)
-            .setIcon(R.drawable.ic_crop);
+                .setIcon(R.drawable.ic_crop);
 
         String menuTitle = mResources.getString(R.string.title_cover);
         final MenuPicker<Integer> picker = new MenuPicker<>(mContext, menuTitle, menu,
-                                                            R.id.coverImage,
-                                                            this::onViewContextItemSelected);
+                R.id.coverImage,
+                this::onViewContextItemSelected);
         picker.show();
     }
 
@@ -253,8 +254,8 @@ public class CoverHandler {
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
                     TipManager.display(LayoutInflater.from(mContext),
-                                       R.string.tip_autorotate_camera_images,
-                                       null);
+                            R.string.tip_autorotate_camera_images,
+                            null);
                     mGotCameraImage = false;
                 }
                 return true;
@@ -374,11 +375,11 @@ public class CoverHandler {
             Matrix matrix = new Matrix();
             matrix.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
             Bitmap result = Bitmap.createBitmap(bitmap, 0, 0,
-                                                bitmap.getWidth(), bitmap.getHeight(),
-                                                matrix, true);
+                    bitmap.getWidth(), bitmap.getHeight(),
+                    matrix, true);
 
             File cameraFile = StorageUtils.getTempCoverFile(String.valueOf(sTempImageCounter),
-                                                            "_camera");
+                    "_camera");
             // Create a file to copy the image into
             try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
                 result.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -393,9 +394,9 @@ public class CoverHandler {
         } else {
             if (BuildConfig.DEBUG  /* WARN */) {
                 Logger.warn(this, "addCoverFromCamera",
-                            "camera image empty", "onActivityResult",
-                            "requestCode=" + requestCode,
-                            "resultCode=" + resultCode);
+                        "camera image empty", "onActivityResult",
+                        "requestCode=" + requestCode,
+                        "resultCode=" + resultCode);
             }
         }
     }
@@ -421,7 +422,7 @@ public class CoverHandler {
             boolean imageOk = false;
             // If no 'content' scheme, then use the content resolver.
             try (InputStream is = mContext.getContentResolver()
-                                          .openInputStream(selectedImageUri)) {
+                    .openInputStream(selectedImageUri)) {
                 imageOk = StorageUtils.saveInputStreamToFile(is, getCoverFile());
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
@@ -467,7 +468,7 @@ public class CoverHandler {
         while (true) {
             try {
                 Bitmap bm = ImageUtils.createScaledBitmap(file.getPath(), imageSize, imageSize,
-                                                          true);
+                        true);
                 if (bm == null) {
                     return;
                 }
@@ -475,8 +476,8 @@ public class CoverHandler {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(angle);
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
-                                                           bm.getWidth(), bm.getHeight(),
-                                                           matrix, true);
+                        bm.getWidth(), bm.getHeight(),
+                        matrix, true);
                 // if rotation worked, clean up the old one right now to save memory.
                 if (rotatedBitmap != bm) {
                     bm.recycle();
@@ -507,7 +508,8 @@ public class CoverHandler {
     }
 
     private void cropCoverImage(@NonNull final File imageFile) {
-        boolean external = App.getPrefs().getBoolean(Prefs.pk_thumbnails_external_cropper, false);
+        boolean external = PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getBoolean(Prefs.pk_thumbnails_external_cropper, false);
         if (external) {
             cropCoverImageExternal(imageFile);
         } else {
@@ -521,7 +523,8 @@ public class CoverHandler {
      * @param imageFile to crop
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
-        boolean wholeImage = App.getPrefs().getBoolean(Prefs.pk_thumbnails_crop_whole_image, false);
+        boolean wholeImage = PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getBoolean(Prefs.pk_thumbnails_crop_whole_image, false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = getCroppedTempCoverFile();
@@ -529,9 +532,9 @@ public class CoverHandler {
 
         Intent intent = new Intent(mContext, CropImageActivity.class)
                 .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
-                          imageFile.getAbsolutePath())
+                        imageFile.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
-                          cropped.getAbsolutePath())
+                        cropped.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
         mCallerFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
@@ -550,8 +553,8 @@ public class CoverHandler {
     private void cropCoverImageExternal(@NonNull final File imageFile) {
 
         Uri inputURI = FileProvider.getUriForFile(mContext,
-                                                  GenericFileProvider.AUTHORITY,
-                                                  imageFile);
+                GenericFileProvider.AUTHORITY,
+                imageFile);
         File cropped = getCroppedTempCoverFile();
         // make sure any left-over file is removed.
         StorageUtils.deleteFile(cropped);
@@ -637,7 +640,6 @@ public class CoverHandler {
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {
@@ -674,21 +676,21 @@ public class CoverHandler {
                         StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
                         ImageUtils.setImageView(mCoverView, getCoverFile(),
-                                                mMaxWidth, mMaxHeight, true);
+                                mMaxWidth, mMaxHeight, true);
                     } else {
                         if (BuildConfig.DEBUG /* WARN */) {
                             Logger.warn(this, "onActivityResult",
-                                        "RESULT_OK, but no image file?",
-                                        "requestCode=" + requestCode,
-                                        "resultCode=" + resultCode);
+                                    "RESULT_OK, but no image file?",
+                                    "requestCode=" + requestCode,
+                                    "resultCode=" + resultCode);
                         }
                     }
                 } else {
                     if (BuildConfig.DEBUG /* WARN */) {
                         Logger.warn(this, "onActivityResult",
-                                    "FAILED",
-                                    "requestCode=" + requestCode,
-                                    "resultCode=" + resultCode);
+                                "FAILED",
+                                "requestCode=" + requestCode,
+                                "resultCode=" + resultCode);
                     }
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }

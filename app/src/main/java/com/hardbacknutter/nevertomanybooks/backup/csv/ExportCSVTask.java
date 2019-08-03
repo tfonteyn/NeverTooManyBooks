@@ -7,11 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.ExportOptions;
 import com.hardbacknutter.nevertomanybooks.backup.Exporter;
@@ -21,6 +16,11 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class ExportCSVTask
         extends TaskBase<Integer> {
@@ -33,16 +33,16 @@ public class ExportCSVTask
     /**
      * Constructor.
      *
-     * @param context      Current context for accessing resources.
+     * @param userContext  Current context for accessing resources.
      * @param settings     the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public ExportCSVTask(@NonNull final Context context,
+    public ExportCSVTask(@NonNull final Context userContext,
                          @NonNull final ExportOptions settings,
                          @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_CSV_EXPORT, taskListener);
-        mExporter = new CsvExporter(context, settings);
+        mExporter = new CsvExporter(userContext, settings);
 
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
@@ -85,7 +85,7 @@ public class ExportCSVTask
                                        @Nullable final Object message) {
                     Object[] values = {message};
                     publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
-                                                            absPosition, values));
+                            absPosition, values));
                 }
 
                 @Override

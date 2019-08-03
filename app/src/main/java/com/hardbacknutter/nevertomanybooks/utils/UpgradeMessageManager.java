@@ -24,6 +24,7 @@ import android.content.pm.PackageInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -44,7 +45,7 @@ public final class UpgradeMessageManager {
      */
     private static final int[][] UPGRADE_MESSAGES = {
             {200, R.string.new_in_600},
-            };
+    };
 
     /** The message generated for this instance; will be set first time it is generated. */
     @Nullable
@@ -70,7 +71,8 @@ public final class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
-        long lastVersion = App.getPrefs().getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
+        long lastVersion = PreferenceManager.getDefaultSharedPreferences(context)
+                .getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
 
         boolean first = true;
         for (int[] msg : UPGRADE_MESSAGES) {
@@ -91,10 +93,10 @@ public final class UpgradeMessageManager {
      * Should be called after the user acknowledged the upgrade dialog message.
      */
     public static void setUpgradeAcknowledged() {
-        App.getPrefs()
-           .edit()
-           .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
-           .apply();
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                .edit()
+                .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, getVersion())
+                .apply();
     }
 
     /**

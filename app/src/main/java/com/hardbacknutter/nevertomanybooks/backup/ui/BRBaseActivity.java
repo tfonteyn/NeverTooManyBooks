@@ -13,15 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
@@ -30,6 +26,10 @@ import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class BRBaseActivity
         extends BaseActivity {
@@ -41,15 +41,20 @@ public abstract class BRBaseActivity
     private static final String BKEY_FILE_LIST = TAG + ":list";
     @NonNull
     private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
-    File mRootDir;
-    RecyclerView mListView;
-
     protected ProgressDialogFragment mProgressDialog;
-
+    File mRootDir;
+    /** User clicks on the 'up' button. */
+    private final View.OnClickListener onPathUpClickListener = view -> {
+        String parent = mRootDir.getParent();
+        if (parent == null) {
+            UserMessage.show(view, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        onPathChanged(new File(parent));
+    };
+    RecyclerView mListView;
     private FileDetailsAdapter mAdapter;
-
     private TextView mCurrentFolderView;
-
     private final TaskListener<ArrayList<FileDetails>> mFileListerTaskListener =
             new TaskListener<ArrayList<FileDetails>>() {
                 @Override
@@ -66,16 +71,6 @@ public abstract class BRBaseActivity
                     }
                 }
             };
-
-    /** User clicks on the 'up' button. */
-    private final View.OnClickListener onPathUpClickListener = view -> {
-        String parent = mRootDir.getParent();
-        if (parent == null) {
-            UserMessage.show(view, R.string.warning_no_parent_directory_found);
-            return;
-        }
-        onPathChanged(new File(parent));
-    };
 
     @Override
     protected int getLayoutId() {
@@ -101,7 +96,7 @@ public abstract class BRBaseActivity
         mListView.setAdapter(mAdapter);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
-                                             | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     void setupList(@Nullable final Bundle args) {
@@ -115,9 +110,9 @@ public abstract class BRBaseActivity
 
         } else {
             // use lastBackupFile as the root directory for the browser.
-            String lastBackupFile =
-                    App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                             StorageUtils.getSharedStorage().getAbsolutePath());
+            String lastBackupFile = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getString(BackupManager.PREF_LAST_BACKUP_FILE,
+                            StorageUtils.getSharedStorage().getAbsolutePath());
             File rootDir = new File(Objects.requireNonNull(lastBackupFile));
             // Turn the File into a directory
             if (rootDir.isDirectory()) {
@@ -188,7 +183,7 @@ public abstract class BRBaseActivity
         }
     }
 
-    protected void onTaskCancelledMessage(final Integer taskId) {
+    protected void onTaskCancelledMessage(@SuppressWarnings("unused") final Integer taskId) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }

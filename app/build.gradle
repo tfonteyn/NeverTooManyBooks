@@ -22,6 +22,7 @@ android {
         applicationId 'com.hardbacknutter.nevertomanybooks'
         minSdkVersion 23
         targetSdkVersion 28
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -43,39 +44,79 @@ android {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
-}
 
-/*
-  AndroidX release notes:  https://developer.android.com/jetpack/androidx/androidx-rn
- */
-dependencies {
-    //
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
-    implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha02'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02'
-    implementation 'androidx.core:core:1.2.0-alpha02'
-    implementation 'androidx.fragment:fragment:1.2.0-alpha01'
-    implementation 'androidx.preference:preference:1.1.0-rc01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
-    // TabLayout does not support ViewPager2 (yet?)
-    implementation 'androidx.viewpager:viewpager:1.0.0'
+    testOptions {
+        unitTests.includeAndroidResources = true
+        // mock the system stuff.. yes, should use Mockito instead.
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            reports {
+                junitXml.enabled = true
+                html.enabled = false
+            }
+        }
+    }
+
+    sourceSets {
+        test {
+
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LICENSE-notice.md'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+
+    /*
+        AndroidX release notes:  https://developer.android.com/jetpack/androidx/androidx-rn
+    */
+    dependencies {
+        //
+        implementation 'androidx.annotation:annotation:1.1.0'
+        implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+        implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
+        implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha02'
+        implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02'
+        implementation 'androidx.core:core:1.2.0-alpha02'
+        implementation 'androidx.fragment:fragment:1.2.0-alpha01'
+        implementation 'androidx.preference:preference:1.1.0-rc01'
+        implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
+        // TabLayout does not support ViewPager2 (yet?)
+        implementation 'androidx.viewpager:viewpager:1.0.0'
 //    implementation 'androidx.viewpager2:viewpager2:1.0.0-alpha03'
-    //
-    implementation 'com.google.android.material:material:1.1.0-alpha08'
-    //
-    implementation 'ch.acra:acra-mail:5.3.0'
-    implementation 'ch.acra:acra-toast:5.3.0'
-    implementation 'ch.acra:acra-dialog:5.3.0'
-    // OAuth for Goodreads secure access.
-    implementation 'oauth.signpost:signpost-core:1.2.1.2'
-    // Tar file support for backups
-    implementation 'org.apache.commons:commons-compress:1.18'
-    implementation 'commons-codec:commons-codec:1.12'
+        //
+        implementation 'com.google.android.material:material:1.1.0-alpha09'
+        //
+        implementation 'ch.acra:acra-mail:5.3.0'
+        implementation 'ch.acra:acra-toast:5.3.0'
+        implementation 'ch.acra:acra-dialog:5.3.0'
+        // OAuth for Goodreads secure access.
+        implementation 'oauth.signpost:signpost-core:1.2.1.2'
+        // Tar file support for backups
+        implementation 'org.apache.commons:commons-compress:1.18'
+        implementation 'commons-codec:commons-codec:1.12'
 
-    // jsoup HTML parser library @ https://jsoup.org/
-    // don't upgrade to quick... 1.12.1 is hitting #990 alike situation, while 1.11.3 works ok.
-    //    implementation 'org.jsoup:jsoup:1.12.1'
-    implementation 'org.jsoup:jsoup:1.11.3'
+        // jsoup HTML parser library @ https://jsoup.org/
+        // don't upgrade to quick... 1.12.1 is hitting #990 alike situation, while 1.11.3 works ok.
+        //    implementation 'org.jsoup:jsoup:1.12.1'
+        implementation 'org.jsoup:jsoup:1.11.3'
+
+        testImplementation 'org.mockito:mockito-core:1.10.19'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    }
 }
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+}
+
+

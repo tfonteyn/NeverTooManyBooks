@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.File;
@@ -57,7 +59,8 @@ public final class BackupManager {
      * @throws IOException on failure
      */
     @NonNull
-    public static BackupReader getReader(@NonNull final File file)
+    public static BackupReader getReader(@NonNull final Context context,
+                                         @NonNull final File file)
             throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
@@ -67,11 +70,11 @@ public final class BackupManager {
         // explore the file to determine which format to use
         BackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
-        if (!bkp.isValid()) {
+        if (!bkp.isValid(context)) {
             throw new IOException("not a valid archive");
         }
 
-        return bkp.newReader();
+        return bkp.newReader(context);
     }
 
     /**
@@ -84,13 +87,14 @@ public final class BackupManager {
      * @throws IOException on failure
      */
     @NonNull
-    public static BackupWriter getWriter(@NonNull final File file)
+    static BackupWriter getWriter(@NonNull final Context context,
+                                  @NonNull final File file)
             throws IOException {
 
         // We only support one backup format; so we use that.
         BackupContainer bkp = new TarBackupContainer(file);
 
-        return bkp.newWriter();
+        return bkp.newWriter(context);
     }
 
     /**

@@ -38,19 +38,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.entities.EditSeriesDialogFragment;
-import com.hardbacknutter.nevertomanybooks.entities.ItemWithIdFixup;
+import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Activity to edit a list of mSeries provided in an {@code ArrayList<Series>}
@@ -86,8 +86,8 @@ public class EditSeriesListActivity
         setTitle(R.string.title_edit_book_series);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
-                                                  android.R.layout.simple_dropdown_item_1line,
-                                                  mDb.getAllSeriesNames());
+                android.R.layout.simple_dropdown_item_1line,
+                mDb.getAllSeriesNames());
 
         mAutoCompleteTextView = findViewById(R.id.series);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -107,7 +107,7 @@ public class EditSeriesListActivity
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
 
         // see if it already exists
-        newSeries.fixupId(mDb);
+        newSeries.fixId(this, mDb);
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
@@ -140,14 +140,14 @@ public class EditSeriesListActivity
                                 @NonNull final String newNumber) {
 
         // anything actually changed ?
-        if (series.getName().equals(newName) && series.isComplete() == isComplete) {
+        if (series.getTitle().equals(newName) && series.isComplete() == isComplete) {
             if (!series.getNumber().equals(newNumber)) {
                 // Number is different.
                 // Number is not part of the Series table, but of the book_series table.
                 // so just update it and we're done here.
                 series.setNumber(newNumber);
                 Series.pruneSeriesList(mList);
-                ItemWithIdFixup.pruneList(mDb, mList);
+                ItemWithFixableId.pruneList(this, mDb, mList);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -159,7 +159,7 @@ public class EditSeriesListActivity
         newSeries.setNumber(newNumber);
 
         //See if the old one is used by any other books.
-        long nrOfReferences = mDb.countBooksInSeries(series);
+        long nrOfReferences = mDb.countBooksInSeries(this, series);
         boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
 
         // if it's not, then we can simply re-use the old object.
@@ -167,7 +167,7 @@ public class EditSeriesListActivity
             // Use the original mSeries, but update its fields
             series.copyFrom(newSeries);
             Series.pruneSeriesList(mList);
-            ItemWithIdFixup.pruneList(mDb, mList);
+            ItemWithFixableId.pruneList(this, mDb, mList);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -178,22 +178,23 @@ public class EditSeriesListActivity
 
         new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_series_changed,
-                                      series.getSortName(), newSeries.getSortName(),
-                                      allBooks))
+                        series.getSortingTitle(), newSeries.getSortingTitle(),
+                        allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .setNegativeButton(allBooks, (d, which) -> {
-                    Locale locale = LocaleUtils.getPreferredLocal();
-                    mGlobalReplacementsMade = mDb.globalReplaceSeries(series, newSeries, locale);
+                    Locale locale = LocaleUtils.getPreferredLocale(this);
+                    mGlobalReplacementsMade = mDb.globalReplaceSeries(EditSeriesListActivity.this,
+                            series, newSeries, locale);
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithIdFixup.pruneList(mDb, mList);
+                    ItemWithFixableId.pruneList(EditSeriesListActivity.this, mDb, mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithIdFixup.pruneList(mDb, mList);
+                    ItemWithFixableId.pruneList(EditSeriesListActivity.this, mDb, mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
@@ -250,7 +251,7 @@ public class EditSeriesListActivity
             mSeries = args.getParcelable(DBDefinitions.KEY_SERIES_TITLE);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
-                mSeriesName = mSeries.getName();
+                mSeriesName = mSeries.getTitle();
                 mSeriesIsComplete = mSeries.isComplete();
                 mSeriesNumber = mSeries.getNumber();
             } else {
@@ -266,7 +267,7 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
-                                     .inflate(R.layout.dialog_edit_book_series, null);
+                    .inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
@@ -298,7 +299,7 @@ public class EditSeriesListActivity
                         mSeriesNumber = mNumberView.getText().toString().trim();
                         dismiss();
                         mActivity.processChanges(mSeries, mSeriesName, mSeriesIsComplete,
-                                                 mSeriesNumber);
+                                mSeriesNumber);
                     })
                     .create();
         }
@@ -370,11 +371,11 @@ public class EditSeriesListActivity
 
             holder.seriesView.setText(series.getLabel());
 
-            if (series.getLabel().equals(series.getSortName())) {
+            if (series.getLabel().equals(series.getSortingTitle())) {
                 holder.seriesSortView.setVisibility(View.GONE);
             } else {
                 holder.seriesSortView.setVisibility(View.VISIBLE);
-                holder.seriesSortView.setText(series.getSortName());
+                holder.seriesSortView.setText(series.getSortingTitle());
             }
 
             // click -> edit
@@ -382,7 +383,7 @@ public class EditSeriesListActivity
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
                     EditBookSeriesDialogFragment.newInstance(series)
-                                                .show(fm, EditBookSeriesDialogFragment.TAG);
+                            .show(fm, EditBookSeriesDialogFragment.TAG);
                 }
             });
         }

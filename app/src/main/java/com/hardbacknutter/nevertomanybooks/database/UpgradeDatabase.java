@@ -5,8 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
-
-import java.io.File;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.database.dbsync.SynchronizedDb;
@@ -14,6 +13,9 @@ import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition
 import com.hardbacknutter.nevertomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.util.Locale;
 
 /**
  * Moved all upgrade specific definitions/methods from {@link DBHelper} here.
@@ -182,7 +184,9 @@ public final class UpgradeDatabase {
 
     /** Set the flag to indicate an FTS rebuild is required. */
     private static void scheduleFtsRebuild() {
-        App.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
+        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true)
+                .apply();
     }
 
     /**
@@ -193,8 +197,8 @@ public final class UpgradeDatabase {
     static void v200_moveCoversToDedicatedDirectory(@NonNull final SQLiteDatabase db) {
 
         try (Cursor cur = db.rawQuery("SELECT " + DBDefinitions.DOM_BOOK_UUID
-                                              + " FROM " + DBDefinitions.TBL_BOOKS,
-                                      null)) {
+                        + " FROM " + DBDefinitions.TBL_BOOKS,
+                null)) {
             while (cur.moveToNext()) {
                 final String uuid = cur.getString(0);
                 File source = StorageUtils.getFile(uuid + ".jpg");
@@ -222,17 +226,18 @@ public final class UpgradeDatabase {
                                       @NonNull final DomainDefinition source,
                                       @NonNull final DomainDefinition destination) {
 
+        Locale locale = LocaleUtils.getPreferredLocale(App.getAppContext());
         SQLiteStatement update = db.compileStatement(
                 "UPDATE " + table + " SET " + destination + "=?"
                         + " WHERE " + DBDefinitions.DOM_PK_ID + "=?");
 
         try (Cursor cur = db.rawQuery("SELECT " + DBDefinitions.DOM_PK_ID
-                                              + ',' + source + " FROM " + table,
-                                      null)) {
+                        + ',' + source + " FROM " + table,
+                null)) {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);
                 final String in = cur.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, LocaleUtils.getPreferredLocal()));
+                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

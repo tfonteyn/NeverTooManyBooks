@@ -26,7 +26,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -50,8 +49,13 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
-import java.util.Locale;
-import java.util.Set;
+import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertomanybooks.debug.DebugReport;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+import com.hardbacknutter.nevertomanybooks.debug.Tracker;
+import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -60,13 +64,8 @@ import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
 
-import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertomanybooks.debug.DebugReport;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.debug.Tracker;
-import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Application implementation. Useful for making globals available and for being a
@@ -164,23 +163,23 @@ public class App
             R.style.AppTheme_DayNight,
             R.style.AppTheme_Dark,
             R.style.AppTheme_Light,
-            };
+    };
+    /**
+     * Give static methods access to our singleton.
+     * <b>Note:</b> never store a context in a static, use the instance instead
+     */
+    public static App sInstance;
     /**
      * internal; check if an Activity should do a 'recreate()'.
      * See {@link BaseActivity} in the onResume method.
      */
     private static int sActivityRecreateStatus;
-    /**
-     * Give static methods access to our singleton.
-     * <b>Note:</b> never store a context in a static, use the instance instead
-     */
-    private static App sInstance;
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     private static int sCurrentTheme = -1;
     /** The locale used at startup; so that we can revert to system locale if we want to. */
-    private static Locale sSystemInitialLocale;
+    private static Locale sSystemInitialLocale = Locale.getDefault();
 
     /** create a singleton. */
     @SuppressWarnings("unused")
@@ -204,7 +203,7 @@ public class App
      * @return the name of this application's package.
      */
     public static String getAppPackageName() {
-        return sInstance.getApplicationContext().getPackageName();
+        return sInstance.getPackageName();
     }
 
     /**
@@ -216,7 +215,7 @@ public class App
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
         try {
-            Context context = sInstance.getApplicationContext();
+            Context context = getAppContext();
             // Get app info from the manifest
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
@@ -328,9 +327,9 @@ public class App
         ApplicationInfo ai;
         try {
             ai = sInstance.getApplicationContext()
-                          .getPackageManager()
-                          .getApplicationInfo(sInstance.getPackageName(),
-                                              PackageManager.GET_META_DATA);
+                    .getPackageManager()
+                    .getApplicationInfo(sInstance.getPackageName(),
+                            PackageManager.GET_META_DATA);
         } catch (@NonNull final PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
         }
@@ -342,21 +341,13 @@ public class App
     }
 
     /**
-     * @return the global SharedPreference
-     */
-    @NonNull
-    public static SharedPreferences getPrefs() {
-        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext());
-    }
-
-    /**
-     * @param uuid name of the preference file to get
+     * Get a global preference String. Null values results are returned as an empty string.
      *
-     * @return the SharedPreference
+     * @return the preference value string, can be empty, but never {@code null}
      */
-    @NonNull
-    public static SharedPreferences getPrefs(@NonNull final String uuid) {
-        return sInstance.getApplicationContext().getSharedPreferences(uuid, MODE_PRIVATE);
+    public static boolean getPrefBoolean(@NonNull final String key, final boolean defaultValue) {
+        Context context = sInstance.getApplicationContext();
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(key, defaultValue);
     }
 
     /**
@@ -366,7 +357,9 @@ public class App
      */
     @NonNull
     public static String getPrefString(@NonNull final String key) {
-        String value = getPrefs().getString(key, null);
+        Context context = sInstance.getApplicationContext();
+        String value = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(key, null);
         return value != null ? value : "";
     }
 
@@ -378,7 +371,9 @@ public class App
      */
     public static int getListPreference(@NonNull final String key,
                                         final int defaultValue) {
-        String value = getPrefs().getString(key, null);
+        Context context = sInstance.getApplicationContext();
+        String value = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(key, null);
         if (value == null || value.isEmpty()) {
             return defaultValue;
         }
@@ -393,15 +388,18 @@ public class App
      */
     public static Integer getMultiSelectListPreference(@NonNull final String key,
                                                        final int defaultValue) {
-        Set<String> value = getPrefs().getStringSet(key, null);
+        Context context = sInstance.getApplicationContext();
+        Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
+                .getStringSet(key, null);
         if (value == null || value.isEmpty()) {
             return defaultValue;
         }
         return Prefs.toInteger(value);
     }
 
-    public static boolean isRtl() {
-        return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocal())
+    @SuppressWarnings("unused")
+    public static boolean isRtl(@NonNull final Context context) {
+        return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocale(context))
                 == View.LAYOUT_DIRECTION_RTL;
     }
 
@@ -470,7 +468,8 @@ public class App
      * @return {@code true} if the user wants to use this field.
      */
     public static boolean isUsed(@NonNull final String fieldName) {
-        return getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
+                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**
@@ -481,19 +480,19 @@ public class App
         switch (sCurrentTheme) {
             case 0:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_DAY_NIGHT");
+                        "sCurrentTheme=THEME_DAY_NIGHT");
                 break;
             case 1:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_DARK");
+                        "sCurrentTheme=THEME_DARK");
                 break;
             case 2:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=THEME_LIGHT");
+                        "sCurrentTheme=THEME_LIGHT");
                 break;
             default:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "sCurrentTheme=eh? " + sCurrentTheme);
+                        "sCurrentTheme=eh? " + sCurrentTheme);
                 break;
         }
 
@@ -503,31 +502,32 @@ public class App
         switch (defNightMode) {
             case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
+                        "getDefaultNightMode=MODE_NIGHT_FOLLOW_SYSTEM");
                 break;
+            //noinspection deprecation
             case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
+                        "getDefaultNightMode=MODE_NIGHT_AUTO_TIME");
                 break;
             case AppCompatDelegate.MODE_NIGHT_NO:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_NO");
+                        "getDefaultNightMode=MODE_NIGHT_NO");
                 break;
             case AppCompatDelegate.MODE_NIGHT_YES:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_YES");
+                        "getDefaultNightMode=MODE_NIGHT_YES");
                 break;
             case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
+                        "getDefaultNightMode=MODE_NIGHT_AUTO_BATTERY");
                 break;
             case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
+                        "getDefaultNightMode=MODE_NIGHT_UNSPECIFIED");
                 break;
             default:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "getDefaultNightMode=Twilight Zone");
+                        "getDefaultNightMode=Twilight Zone");
                 break;
 
         }
@@ -537,19 +537,19 @@ public class App
         switch (currentNightMode) {
             case Configuration.UI_MODE_NIGHT_NO:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_NO");
+                        "currentNightMode=UI_MODE_NIGHT_NO");
                 break;
             case Configuration.UI_MODE_NIGHT_YES:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_YES");
+                        "currentNightMode=UI_MODE_NIGHT_YES");
                 break;
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
+                        "currentNightMode=UI_MODE_NIGHT_UNDEFINED");
                 break;
             default:
                 Logger.debug(App.class, "debugDayNightMode",
-                             "currentNightMode=Twilight Zone");
+                        "currentNightMode=Twilight Zone");
                 break;
         }
     }
@@ -605,7 +605,7 @@ public class App
         setSystemLocale();
 
         // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocal());
+        newConfig.setLocale(LocaleUtils.getPreferredLocale(sInstance.getApplicationContext()));
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 
@@ -620,7 +620,6 @@ public class App
         try {
             // preserve startup==system Locale
             sSystemInitialLocale = Locale.getDefault();
-            LocaleUtils.init();
             LocaleUtils.applyPreferred(getBaseContext());
         } catch (@NonNull final RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.

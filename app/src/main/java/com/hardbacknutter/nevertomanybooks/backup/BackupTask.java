@@ -1,5 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.backup;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
@@ -7,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +77,9 @@ public class BackupTask
     protected ExportOptions doInBackground(final Void... params) {
         Thread.currentThread().setName("BackupTask");
 
-        try (BackupWriter writer = BackupManager.getWriter(mTmpFile)) {
+        //TODO: should be using a user context.
+        Context userContext = App.getAppContext();
+        try (BackupWriter writer = BackupManager.getWriter(userContext, mTmpFile)) {
 
             writer.backup(mSettings, new ProgressListener() {
 
@@ -125,7 +129,8 @@ public class BackupTask
             //noinspection ConstantConditions
             StorageUtils.renameFile(mTmpFile, mSettings.file);
 
-            SharedPreferences.Editor ed = App.getPrefs().edit();
+            SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(userContext)
+                    .edit();
             // if the backup was a full one (not a 'since') remember that.
             if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);

@@ -11,7 +11,7 @@
 <resources>
 
     <!-- ####################################################################################### -->
-    <!-- == order formatters (mainly for RTL which we don't support yet) == -->
+    <!-- == order formatter (mainly for RTL which we don't support yet) == -->
     <!-- ####################################################################################### -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>

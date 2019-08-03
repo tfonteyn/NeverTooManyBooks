@@ -1,6 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.searches.isfdb;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -13,10 +13,10 @@ import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 public class IsfdbGetBookTask
         extends AsyncTask<Void, Void, Bundle> {
@@ -65,13 +65,14 @@ public class IsfdbGetBookTask
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetBookTask");
         try {
-            Resources resources = LocaleUtils.getLocalizedResources();
+            //TODO: should be using a user context.
+            Context userContext = App.getAppContext();
 
             if (mEditions != null) {
-                return new IsfdbBook().fetch(mEditions, false, resources);
+                return new IsfdbBook().fetch(mEditions, false, userContext);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBook().fetch(mIsfdbId, false, resources);
+                return new IsfdbBook().fetch(mIsfdbId, false, userContext);
             } else {
                 if (BuildConfig.DEBUG) {
                     Logger.debugWithStackTrace(this, "doInBackground", "how did we get here?");

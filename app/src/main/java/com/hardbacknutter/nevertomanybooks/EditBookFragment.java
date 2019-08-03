@@ -313,7 +313,8 @@ public class EditBookFragment
      * Save the collected book details.
      */
     private void saveBook() {
-        Book book = mBookBaseFragmentModel.saveBook();
+        //noinspection ConstantConditions
+        Book book = mBookBaseFragmentModel.saveBook(getContext());
 
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID, book.getId());
         mActivity.setResult(Activity.RESULT_OK, data);

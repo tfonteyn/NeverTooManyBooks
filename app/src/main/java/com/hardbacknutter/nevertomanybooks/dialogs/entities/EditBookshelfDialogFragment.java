@@ -31,9 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import java.lang.ref.WeakReference;
-import java.util.Objects;
-
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -42,6 +39,9 @@ import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 /**
  * Dialog to edit an existing or new bookshelf.
@@ -135,7 +135,7 @@ public class EditBookshelfDialogFragment
             Context c = getContext();
             @SuppressWarnings("ConstantConditions")
             String msg = c.getString(R.string.warning_x_already_exists,
-                                     c.getString(R.string.lbl_bookshelf));
+                    c.getString(R.string.lbl_bookshelf));
             UserMessage.show(mNameView, msg);
             return;
         }
@@ -149,7 +149,8 @@ public class EditBookshelfDialogFragment
 
         // At this point, we know changes were made.
         // Create a new Bookshelf as a holder for the changes.
-        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb));
+        //noinspection ConstantConditions
+        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(getContext(), mDb));
         // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
         // copy new values
         mBookshelf.copyFrom(newBookshelf);
@@ -157,13 +158,14 @@ public class EditBookshelfDialogFragment
         if (existingShelf != null) {
             mergeShelves(mBookshelf, existingShelf);
         } else {
-            if (mDb.updateOrInsertBookshelf(mBookshelf)) {
+            long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
+            if (mDb.updateOrInsertBookshelf(mBookshelf, styleId)) {
                 if (mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                         Logger.debug(this, "onBookshelfChanged",
-                                     Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                     }
                 }
             }
@@ -203,7 +205,7 @@ public class EditBookshelfDialogFragment
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                             Logger.debug(this, "onBookshelfChanged",
-                                         Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                                    Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                         }
                     }
                 })

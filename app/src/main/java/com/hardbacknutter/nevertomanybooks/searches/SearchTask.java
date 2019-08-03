@@ -231,13 +231,13 @@ public class SearchTask
         String bookTitle = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (bookTitle != null) {
             SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-            if (details != null && !details.getName().isEmpty()) {
+            if (details != null && !details.getTitle().isEmpty()) {
                 ArrayList<Series> list =
                         mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                 if (list == null) {
                     list = new ArrayList<>();
                 }
-                Series newSeries = new Series(details.getName());
+                Series newSeries = new Series(details.getTitle());
                 newSeries.setNumber(details.getPosition());
                 list.add(newSeries);
                 // store Series back

@@ -76,7 +76,7 @@ public class CheckListDialogFragment<T>
      * Constructor.
      *
      * @param fieldId       the field whose content we want to edit
-     * @param dialogTitleId titel resource id for the dialog
+     * @param dialogTitleId resource id for the dialog title
      * @param listGetter    callback interface for getting the list to use.
      * @param <T>           type of the {@link CheckListItem}
      *
