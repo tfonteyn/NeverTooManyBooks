@@ -2,7 +2,6 @@ package com.hardbacknutter.nevertomanybooks.backup.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,67 +9,43 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.backup.BackupManager;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public abstract class BRBaseActivity
         extends BaseActivity {
 
-    /** Fragment manager tag. */
-    private static final String TAG = "BRBaseActivity";
-
-    private static final String BKEY_ROOT_PATH = TAG + ":root";
-    private static final String BKEY_FILE_LIST = TAG + ":list";
-    @NonNull
-    private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
+    /** FIXME: this is duplication from the model. */
+    private final ArrayList<BRBaseActivity.FileDetails> mFileDetails = new ArrayList<>();
     protected ProgressDialogFragment mProgressDialog;
-    File mRootDir;
     RecyclerView mListView;
-    private FileDetailsAdapter mAdapter;
-    private TextView mCurrentFolderView;
-    private final TaskListener<ArrayList<FileDetails>> mFileListerTaskListener =
-            new TaskListener<ArrayList<FileDetails>>() {
-                @Override
-                public void onTaskFinished(@NonNull final TaskFinishedMessage<ArrayList<FileDetails>> message) {
-                    //noinspection SwitchStatementWithTooFewBranches
-                    switch (message.taskId) {
-                        case R.id.TASK_ID_FILE_LISTER:
-                            onGotFileList(message.result);
-                            break;
-
-                        default:
-                            Logger.warnWithStackTrace(this, "Unknown taskId=" + message.taskId);
-                            break;
-                    }
-                }
-            };
+    /** The ViewModel. */
+    BRBaseModel mModel;
     /** User clicks on the 'up' button. */
     private final View.OnClickListener onPathUpClickListener = view -> {
-        String parent = mRootDir.getParent();
+        //noinspection ConstantConditions
+        String parent = mModel.getRootDir().getParent();
         if (parent == null) {
             UserMessage.show(view, R.string.warning_no_parent_directory_found);
             return;
         }
-        onPathChanged(new File(parent));
+        mModel.onPathChanged(new File(parent));
     };
+    private FileDetailsAdapter mAdapter;
+    private TextView mCurrentFolderView;
 
     @Override
     protected int getLayoutId() {
@@ -80,6 +55,10 @@ public abstract class BRBaseActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mModel = ViewModelProviders.of(this).get(BRBaseModel.class);
+        mModel.init(this);
+        mModel.getFileDetails().observe(this, this::onGotFileList);
 
         mCurrentFolderView = findViewById(R.id.current_folder);
         mCurrentFolderView.setOnClickListener(onPathUpClickListener);
@@ -96,53 +75,7 @@ public abstract class BRBaseActivity
         mListView.setAdapter(mAdapter);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
-                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-    }
-
-    void setupList(@Nullable final Bundle args) {
-
-        // populate with the existing content if we have it
-        if (args != null) {
-            mRootDir = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
-            ArrayList<FileDetails> list = Objects.requireNonNull(
-                    args.getParcelableArrayList(BKEY_FILE_LIST));
-            onGotFileList(list);
-
-        } else {
-            // use lastBackupFile as the root directory for the browser.
-            String lastBackupFile = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                            StorageUtils.getSharedStorage().getAbsolutePath());
-            File rootDir = new File(Objects.requireNonNull(lastBackupFile));
-            // Turn the File into a directory
-            if (rootDir.isDirectory()) {
-                rootDir = new File(rootDir.getAbsolutePath());
-            } else {
-                rootDir = new File(rootDir.getParent());
-            }
-            if (!rootDir.exists()) {
-                // fall back to default
-                rootDir = StorageUtils.getSharedStorage();
-            }
-            mCurrentFolderView.setText(rootDir.getAbsolutePath());
-
-            // start the task to get the content
-            onPathChanged(rootDir);
-        }
-    }
-
-    /**
-     * A new root directory is selected.
-     * <p>
-     * Rebuild the file list in background.
-     *
-     * @param rootDir the new root
-     */
-    private void onPathChanged(@NonNull final File rootDir) {
-        if (rootDir.isDirectory()) {
-            mRootDir = rootDir;
-            new FileListerTask(mRootDir, mFileListerTaskListener).execute();
-        }
+                                     | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     /**
@@ -159,7 +92,8 @@ public abstract class BRBaseActivity
      * @param fileDetails List of FileDetails
      */
     private void onGotFileList(@NonNull final ArrayList<FileDetails> fileDetails) {
-        mCurrentFolderView.setText(mRootDir.getAbsolutePath());
+        //noinspection ConstantConditions
+        mCurrentFolderView.setText(mModel.getRootDir().getAbsolutePath());
 
         mFileDetails.clear();
         mFileDetails.addAll(fileDetails);
@@ -167,22 +101,17 @@ public abstract class BRBaseActivity
     }
 
     /**
-     * Save our root path and list.
+     * Common for Backup and Restore activity; handles options-model results.
      */
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(BKEY_ROOT_PATH, mRootDir.getAbsolutePath());
-        outState.putParcelableArrayList(BKEY_FILE_LIST, mFileDetails);
-    }
-
     protected void onTaskProgressMessage(final TaskListener.TaskProgressMessage message) {
         if (mProgressDialog != null) {
             mProgressDialog.onProgress(message);
         }
     }
 
+    /**
+     * Common for Backup and Restore activity; handles options-model results.
+     */
     protected void onTaskCancelledMessage(@SuppressWarnings("unused") final Integer taskId) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
@@ -193,8 +122,7 @@ public abstract class BRBaseActivity
     /**
      * Interface for details of mFileDetails in current directory.
      */
-    public interface FileDetails
-            extends Parcelable {
+    public interface FileDetails {
 
         /** Get the underlying File object. */
         @NonNull
@@ -268,7 +196,7 @@ public abstract class BRBaseActivity
             holder.itemView.setOnClickListener(v -> {
                 if (file.isDirectory()) {
                     // descend into the selected directory
-                    onPathChanged(file);
+                    mModel.onPathChanged(file);
                 } else {
                     onFileSelected(file);
                 }

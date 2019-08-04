@@ -26,24 +26,10 @@ import java.util.Locale;
  * Implementation of {@link FileDetails} that collects data about backup mFileDetails
  * in a background thread.
  *
- * URGENT: remove Parcelable
- *
  * @author pjw
  */
 public class BackupFileDetails
         implements FileDetails {
-
-    /** {@link Parcelable}. */
-    public static final Creator<BackupFileDetails> CREATOR =
-            new Creator<BackupFileDetails>() {
-                public BackupFileDetails createFromParcel(@NonNull final Parcel source) {
-                    return new BackupFileDetails(source);
-                }
-
-                public BackupFileDetails[] newArray(final int size) {
-                    return new BackupFileDetails[size];
-                }
-            };
 
     /** File for this item. */
     @NonNull
@@ -57,24 +43,8 @@ public class BackupFileDetails
      *
      * @param file to use
      */
-    BackupFileDetails(@NonNull final File file) {
+    public BackupFileDetails(@NonNull final File file) {
         mFile = file;
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private BackupFileDetails(@NonNull final Parcel in) {
-        mFile = new File(in.readString());
-        // flag to indicate the Parcel has the info bundle
-        boolean hasInfo = in.readInt() != 0;
-        if (hasInfo) {
-            mInfo = in.readParcelable(getClass().getClassLoader());
-        } else {
-            mInfo = null;
-        }
     }
 
     public void setInfo(@NonNull final BackupInfo info) {
@@ -141,28 +111,6 @@ public class BackupFileDetails
                                                                    new Date(mFile.lastModified())));
                 holder.fileContentView.setVisibility(View.GONE);
             }
-        }
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * Save all fields that must be persisted.
-     */
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(mFile.getAbsolutePath());
-        if (mInfo != null) {
-            // flag to indicate the Parcel has the info bundle
-            dest.writeInt(1);
-            dest.writeParcelable(mInfo, flags);
-        } else {
-            dest.writeInt(0);
         }
     }
 }

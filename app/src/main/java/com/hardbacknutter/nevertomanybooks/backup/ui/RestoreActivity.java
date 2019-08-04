@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertomanybooks.viewmodels.ImportOptionsTaskModel;
 
 import java.io.File;
 
@@ -52,7 +51,7 @@ public class RestoreActivity
     private static final String TAG = "RestoreActivity";
 
     /** The ViewModel. */
-    private ImportOptionsTaskModel mModel;
+    private ImportOptionsTaskModel mOptionsModel;
 
     private final ImportOptionsDialogFragment.OptionsListener mOptionsListener = this::onOptionsSet;
 
@@ -60,20 +59,18 @@ public class RestoreActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(ImportOptionsTaskModel.class);
-        mModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
-        mModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
+        mOptionsModel = ViewModelProviders.of(this).get(ImportOptionsTaskModel.class);
+        mOptionsModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
+        mOptionsModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
+        mOptionsModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
 
         FragmentManager fm = getSupportFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setTask(mModel.getTask());
+            mProgressDialog.setTask(mOptionsModel.getTask());
         }
 
         setTitle(R.string.title_import);
-
-        setupList(savedInstanceState);
     }
 
     private void onTaskFinishedMessage(final TaskListener.TaskFinishedMessage<ImportOptions> message) {
@@ -202,10 +199,10 @@ public class RestoreActivity
                     R.string.progress_msg_importing, false, 0);
             mProgressDialog.show(fm, TAG);
 
-            RestoreTask task = new RestoreTask(options, mModel.getTaskListener());
-            mModel.setTask(task);
+            RestoreTask task = new RestoreTask(options, mOptionsModel.getTaskListener());
+            mOptionsModel.setTask(task);
             task.execute();
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setTask(mOptionsModel.getTask());
     }
 }

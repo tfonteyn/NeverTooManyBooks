@@ -330,6 +330,8 @@ public class AdminFragment
         content.findViewById(R.id.cbx_group).setVisibility(View.GONE);
 
         Checkable radioNewAndUpdatedBooks = content.findViewById(R.id.radioNewAndUpdatedBooks);
+        // propose the careful option.
+        radioNewAndUpdatedBooks.setChecked(true);
 
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())

@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.MenuHandler;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -48,8 +49,6 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertomanybooks.utils.Utils;
-import com.hardbacknutter.nevertomanybooks.viewmodels.ExportOptionsTaskModel;
 
 import java.io.File;
 
@@ -63,7 +62,7 @@ public class BackupActivity
 
     private EditText mFilenameView;
     /** The ViewModel. */
-    private ExportOptionsTaskModel mModel;
+    private ExportOptionsTaskModel mOptionsModel;
 
     private final ExportOptionsDialogFragment.OptionsListener mOptionsListener = this::onOptionsSet;
 
@@ -71,16 +70,16 @@ public class BackupActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = ViewModelProviders.of(this).get(ExportOptionsTaskModel.class);
-        mModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
-        mModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
-        mModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
+        mOptionsModel = ViewModelProviders.of(this).get(ExportOptionsTaskModel.class);
+        mOptionsModel.getTaskFinishedMessage().observe(this, this::onTaskFinishedMessage);
+        mOptionsModel.getTaskProgressMessage().observe(this, this::onTaskProgressMessage);
+        mOptionsModel.getTaskCancelledMessage().observe(this, this::onTaskCancelledMessage);
 
         FragmentManager fm = getSupportFragmentManager();
 
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
         if (mProgressDialog != null) {
-            mProgressDialog.setTask(mModel.getTask());
+            mProgressDialog.setTask(mOptionsModel.getTask());
         }
 
         setTitle(R.string.title_backup);
@@ -99,8 +98,6 @@ public class BackupActivity
         fab.setImageResource(R.drawable.ic_save);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> doBackup());
-
-        setupList(savedInstanceState);
     }
 
     private void onTaskFinishedMessage(final TaskListener.TaskFinishedMessage<ExportOptions> message) {
@@ -176,7 +173,7 @@ public class BackupActivity
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_HIDE_KEYBOARD:
-                Utils.hideKeyboard(getWindow().getDecorView());
+                App.hideKeyboard(getWindow().getDecorView());
                 return true;
 
             default:
@@ -198,7 +195,8 @@ public class BackupActivity
      * Local handler for 'Save'. Perform basic validation, and pass on.
      */
     private void doBackup() {
-        File file = new File(mRootDir.getAbsolutePath()
+        //noinspection ConstantConditions
+        File file = new File(mModel.getRootDir().getAbsolutePath()
                 + File.separator + mFilenameView.getText().toString().trim());
         if (file.exists() && !file.isFile()) {
             UserMessage.show(mListView, R.string.warning_enter_valid_filename);
@@ -259,10 +257,10 @@ public class BackupActivity
                     R.string.progress_msg_backing_up, false, 0);
             mProgressDialog.show(fm, TAG);
 
-            BackupTask task = new BackupTask(options, mModel.getTaskListener());
-            mModel.setTask(task);
+            BackupTask task = new BackupTask(options, mOptionsModel.getTaskListener());
+            mOptionsModel.setTask(task);
             task.execute();
         }
-        mProgressDialog.setTask(mModel.getTask());
+        mProgressDialog.setTask(mOptionsModel.getTask());
     }
 }
