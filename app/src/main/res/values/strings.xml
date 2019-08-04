@@ -1238,10 +1238,6 @@
     <string name="X_warning_missing_author">The author is missing.</string>
     <string name="X_warning_missing_title">The title is missing.</string>
 
-    <string name="X_info_no_bookshelves_yet">
-        You have not created any bookshelves yet.
-        Please add some using the menu at the bottom of this screen.
-    </string>
     <string name="X_info_no_books_yet">
         There are no books on this Bookshelf.
         Please add some using the menu at the bottom of this screen.
@@ -1255,17 +1251,11 @@
         You can add some using the text area and button at the top of this screen.
     </string>
 
-    <string name="X_menu_add_bookshelf">Add Bookshelf</string>
     <string name="X_menu_edit_author">Edit Author…</string>
     <string name="X_menu_edit_series">Edit Series…</string>
     <string name="X_menu_delete_series">Delete Series…</string>
-    <string name="X_menu_cover_options">Cover Options…</string>
     <string name="X_menu_search_books">Search Books</string>
-    <string name="X_menu_sort_by">Sort By</string>
     <string name="X_menu_delete_toc_entry">Delete Title from TOC</string>
-
-    <string name="X_title_select_cover">Select Cover</string>
-    <string name="X_title_cover_detail">Cover Detail</string>
 
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_btn_set_authors">Set Authors…</string>
@@ -1273,18 +1263,13 @@
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
     <string name="X_lbl_loan_book_available">Available</string>
-    <!-- Shown in lists. Whether a book is loaned to someone.
-    This is a little arrow pointing to the name of the person who has the book -->
-    <string name="X_lbl_loaned_to_short">→</string>
-    <string name="X_lbl_loaned_to_long">This book has been lend to:</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-    <string name="X_lbl_series_num_long">Series #</string>
 
     <string name="X_updated">Updated</string>
-    <string name="X_file_size">Size</string>
+    <string name="X_size">Size</string>
+
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_select_bookshelves">Select Bookshelves</string>
-    <string name="X_nobody">Nobody</string>
     <string name="X_search_title">Search Results</string>
     <string name="X_results_found">Results Found</string>
     <string name="X_unsaved_edits_title">Unsaved Changes</string>

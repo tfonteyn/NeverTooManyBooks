@@ -71,11 +71,8 @@
     <string name="btn_confirm_update">Ενημέρωση</string>
     <string name="X_info_no_books_yet">Δεν υπάρχουν βιβλία σε αυτό το ράφι. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_expand_all">Επέκταση Όλων</string>
-    <string name="X_menu_sort_by">Ταξινόμηση κατα</string>
     <string name="menu_collapse_all">Απόκρυψη Όλων</string>
     <string name="menu_search">Αναζήτηση</string>
-    <string name="X_info_no_bookshelves_yet">Δεν έχετε δημιουργήσει ακόμα ράφια. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
-    <string name="X_menu_add_bookshelf">Δημιουργία Ραφιού</string>
     <string name="menu_bookshelves">βιβλία Ράφια…</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="lbl_bookshelf">Ράφι</string>
@@ -88,7 +85,6 @@
     <string name="warning_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
     <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Σειρές #</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="X_search_title">Αποτελέσματα αναζήτησης</string>
@@ -103,8 +99,6 @@
     <string name="menu_loan_lend_book">Δανεισμός βιβλίου…</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
     <string name="lbl_notes">Σημειώσεις</string>
-    <string name="X_lbl_loaned_to_long">Αυτο το βιβλία έχει δανειστεί στον/στην:</string>
-    <string name="X_nobody">Κανείς</string>
     <string name="lbl_lend_to">Δανεισμός βιβλίου στον/στην:</string>
     <string name="btn_loan_returned">Έχει επιστραφεί</string>
     <string name="name">Όνομα</string>
@@ -174,7 +168,6 @@
     <string name="X_info_no_authors_yet">Δεν υπάρχουν συγγραφείς για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.Please add some using the text area and button at the top of this screen.</string>
     <string name="X_info_no_series_yet">>Δεν υπάρχουν σειρές για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
-    <string name="X_title_cover_detail">Λεπτομέρειες εξωφύλλου</string>
     <string name="title_select_image">Επιλογή εικόνας</string>
     <string name="X_btn_set_authors">Ορισμός συγγραφέων…</string>
     <string name="and_others">κτλ.</string>
@@ -198,7 +191,6 @@
     <string name="X_menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
-    <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
     <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n «%1$s» σε \n «%2$s»\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή «%3$s» θα εφαρμοστεί στιγμιαία.</string>
@@ -373,7 +365,6 @@
     <string name="gr_btn_send_all">Αποστολή όλων</string>
     <string name="gr_btn_send_updated">Αποστολή ενημερωμένων</string>
     <string name="gr_sync_with_goodreads">Συγχρονισμός με το Goodreads</string>
-    <string name="X_menu_cover_options">Επιλογές Εξωφύλλου…</string>
     <string name="gr_tq_show_events_ellipsis">Εμφάνιση events…</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε συγγραφέα, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
     <string name="tip_series_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε σειρά, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
@@ -412,7 +403,7 @@
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_book">Βιβλίο</string>
-    <string name="X_file_size">Μέγεθος</string>
+    <string name="X_size">Μέγεθος</string>
     <string name="X_updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
     <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
@@ -542,7 +533,6 @@
     <string name="lbl_update_month">Μήνας ενημέρωσης</string>
     <string name="lbl_update_day">Ημέρα ενημέρωσης</string>
     <string name="tab_lbl_content">περιεχόμενο</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Βιβλία</string>

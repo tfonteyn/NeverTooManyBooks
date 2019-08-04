@@ -67,11 +67,8 @@
     <string name="btn_confirm_update">Güncelle</string>
     <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
     <string name="menu_expand_all">Hepsini göster</string>
-    <string name="X_menu_sort_by">Sırala</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
     <string name="menu_search">Ara</string>
-    <string name="X_info_no_bookshelves_yet">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
-    <string name="X_menu_add_bookshelf">Kitaplık oluştur</string>
     <string name="menu_bookshelves">Kitaplıkları…</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="lbl_bookshelf">Kitaplık</string>
@@ -84,7 +81,6 @@
     <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Dizi #</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
     <string name="warning_import_be_cautious">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="X_search_title">Kitap kataloğu: Arama sonuçları</string>
@@ -99,8 +95,6 @@
     <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
     <string name="lbl_notes">Notlar</string>
-    <string name="X_lbl_loaned_to_long">Kitabın ödünç verildiği kişi:</string>
-    <string name="X_nobody">Hiç kimse</string>
     <string name="lbl_lend_to">Şuna ödünç ver:</string>
     <string name="btn_loan_returned">Geri geldi</string>
     <string name="name">Ad</string>
@@ -169,7 +163,6 @@
     <string name="X_info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
     <string name="X_info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
     <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
-    <string name="X_title_cover_detail">Kapak ayrıntısı</string>
     <string name="title_select_image">Resim seç</string>
     <string name="X_btn_set_authors">Yazar ekle…</string>
     <string name="and_others">ve diğerleri</string>
@@ -193,7 +186,6 @@
     <string name="X_menu_edit_series">Serileri düzenle…</string>
     <string name="title_delete_series">Serileri sil</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
-    <string name="X_title_select_cover">Kapak seç</string>
     <string name="warning_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="X_unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
     <string name="confirm_apply_author_changed">Yazarı şundan:\n “%1$s” şuna:\n “%2$s” değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
@@ -368,7 +360,6 @@
     <string name="gr_btn_send_all">Tümünü gönder</string>
     <string name="gr_btn_send_updated">Güncellenenleri gönder</string>
     <string name="gr_sync_with_goodreads">Goodreads ile eşitle</string>
-    <string name="X_menu_cover_options">Kapak seçenekleri…</string>
     <string name="gr_tq_show_events_ellipsis">Olayları göster…</string>
     <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
     <string name="tip_series_book_may_appear_more_than_once">Eğer her bir seride gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
@@ -407,7 +398,7 @@
     <string name="lbl_added_month">Eklenen ay</string>
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_book">Kitap</string>
-    <string name="X_file_size">Boyut</string>
+    <string name="X_size">Boyut</string>
     <string name="X_updated">Güncellenmiş</string>
     <string name="import_error_csv_file_not_found">
         Herhangi bir dışa aktarma dosyası bulunamadı
@@ -554,7 +545,6 @@
     <string name="lbl_update_month">Ayı güncelle</string>
     <string name="lbl_update_day">Günü güncelle</string>
     <string name="lbl_location_long">Kitabın yeri</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Kitaplar</string>

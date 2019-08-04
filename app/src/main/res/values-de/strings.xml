@@ -77,13 +77,8 @@
     </string>
     <string name="X_use_default_setting">Standardeinstellung verwenden</string>
     <string name="menu_expand_all">Alles ausklappen</string>
-    <string name="X_menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="menu_search">Suche</string>
-    <string name="X_info_no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt.
-        Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.
-    </string>
-    <string name="X_menu_add_bookshelf">Bücherregal erstellen</string>
     <string name="menu_bookshelves">Bücherregale…</string>
     <string name="warning_cannot_delete_1st_bs">
         Das erste Bücherregal kann nicht gelöscht werden
@@ -101,7 +96,6 @@
     </string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Bücher importieren</string>
     <string name="warning_import_be_cautious">
         Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben,
@@ -120,8 +114,6 @@
     <string name="menu_loan_lend_book">Buch verleihen…</string>
     <string name="error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
     <string name="lbl_notes">Notizen</string>
-    <string name="X_lbl_loaned_to_long">Dieses Buch wurde verliehen an:</string>
-    <string name="X_nobody">Niemand</string>
     <string name="lbl_lend_to">Verleihe Buch an:</string>
     <string name="btn_loan_returned">Zurückgegeben</string>
     <string name="name">Name</string>
@@ -231,7 +223,6 @@
         Knopf oben auf dieser Seite hinzufügen.
     </string>
     <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
-    <string name="X_title_cover_detail">Coverdetails</string>
     <string name="title_select_image">Bild auswählen</string>
     <string name="X_btn_set_authors">Autor angeben…</string>
     <string name="and_others">et. al.</string>
@@ -268,7 +259,6 @@
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
     </string>
-    <string name="X_title_select_cover">Cover auswählen</string>
     <string name="warning_unsaved_edits2">
         Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?
     </string>
@@ -536,7 +526,6 @@
     <string name="gr_btn_send_all">Alles senden</string>
     <string name="gr_btn_send_updated">Geänderte senden</string>
     <string name="gr_sync_with_goodreads">Mit Goodreads synchronisieren</string>
-    <string name="X_menu_cover_options">Umschlag-Einstellungen…</string>
     <string name="gr_tq_show_events_ellipsis">Ereignisse anzeigen…</string>
     <string name="tip_authors_book_may_appear_more_than_once">
         Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird.
@@ -586,7 +575,7 @@
     <string name="lbl_added_month">Monat der Erfassung</string>
     <string name="lbl_added_day">Tag der Erfassung</string>
     <string name="lbl_book">Buch</string>
-    <string name="X_file_size">Größe</string>
+    <string name="X_size">Größe</string>
     <string name="X_updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
     <string name="import_warning_select_csv_file">
@@ -812,7 +801,6 @@
         Um Bücher über den ISBN-Code scannen zu können, musst du entweder Zxing oder pic2shop
         als Barcodescanner-App installieren.
     </string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Inhalt</string>
     <string name="warning_x_already_exists">%1$s existiert bereits</string>
     <string name="lbl_publication">Veröffentlichung</string>

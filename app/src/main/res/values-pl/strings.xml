@@ -104,11 +104,8 @@
     <string name="btn_confirm_update">Aktualizuj</string>
     <string name="X_info_no_books_yet">Na tej półce nie ma książek. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="menu_expand_all">Rozwiń wszystko</string>
-    <string name="X_menu_sort_by">Sortuj wg</string>
     <string name="menu_collapse_all">Zwiń wszystko</string>
     <string name="menu_search">Szukaj</string>
-    <string name="X_info_no_bookshelves_yet">Nie utworzyłeś jeszcze żadnej półki. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
-    <string name="X_menu_add_bookshelf">Utwórz półkę</string>
     <string name="menu_bookshelves">Półkami…</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki</string>
     <string name="lbl_bookshelf">Półka</string>
@@ -121,7 +118,6 @@
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
     <string name="lbl_series">Seria</string>
     <string name="lbl_series_num">tom#</string>
-    <string name="X_lbl_series_num_long">Seria tom#</string>
     <string name="title_import_book_data">Importuj książki</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="X_search_title">Katalog książek: Wynik wyszukiwania</string>
@@ -136,8 +132,6 @@
     <string name="menu_loan_lend_book">Wypożycz książkę…</string>
     <string name="error_unknown">Wystąpił nieznany błąd</string>
     <string name="lbl_notes">Notatki</string>
-    <string name="X_lbl_loaned_to_long">Ta książka została wypożyczona:</string>
-    <string name="X_nobody">Nikt</string>
     <string name="lbl_lend_to">Wypożycz książkę:</string>
     <string name="btn_loan_returned">Zwrócona</string>
     <string name="name">Imię i nazwisko</string>
@@ -208,7 +202,6 @@
     <string name="X_info_no_authors_yet">Brak autora(ów) tej ksiażki. Dodaj autora używając pola tekstowego na górze.</string>
     <string name="X_info_no_series_yet">Brak serii dla tej ksiażki. Dodaj serię używając pola tekstowego na górze.</string>
     <string name="X_warning_cover_corrupt">Okładka jest uszkodzona</string>
-    <string name="X_title_cover_detail">Szczegóły okładki</string>
     <string name="title_select_image">Wybierz zdjęcie</string>
     <string name="X_btn_set_authors">Przypisz autorów…</string>
     <string name="and_others">i inni</string>
@@ -232,7 +225,6 @@
     <string name="X_menu_edit_series">Edytuj serię…</string>
     <string name="title_delete_series">Usuń serię</string>
     <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
-    <string name="X_title_select_cover">Wybierz okładkę</string>
     <string name="warning_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
     <string name="X_unsaved_edits_title">Niezapisane zmiany</string>
     <string name="confirm_apply_author_changed">Zmieniłeś autora z :\n  „%1$s” na \n  „%2$s”\nJak chcesz zastosować tę zmianę?\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
@@ -279,7 +271,6 @@
     <string name="lbl_x_pages">%1$d stron</string>
     <string name="lbl_location_long">Lokalizacja książki</string>
     <string name="lbl_publication">Publikacja</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_year">Rok</string>
@@ -304,7 +295,7 @@
     <string name="lbl_book">Książka</string>
     <string name="info_not_authorized">Nieautoryzowany</string>
     <string name="info_authorized">Upoważniony</string>
-    <string name="X_file_size">Rozmiar</string>
+    <string name="X_size">Rozmiar</string>
     <string name="btn_show_results">Pokaż wyniki</string>
     <string name="style_builtin_compact">Kompaktowy</string>
     <string name="retry">spróbować\\nponownie</string>
@@ -322,7 +313,6 @@
     <string name="book_format_hardcover">Twarda</string>
     <string name="lbl_covers">Okładka</string>
     <string name="progress_msg_process_cover">Okładki…</string>
-    <string name="X_menu_cover_options">Opcje okładki</string>
     <string name="lbl_cover_images">Obrazy okładkowe</string>
     <string name="lbl_cover">Okładka</string>
     <string name="info_tap_on_image_to_select">Stuknij w większy obraz, aby go wybrać</string>

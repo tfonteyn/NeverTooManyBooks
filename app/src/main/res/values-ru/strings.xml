@@ -70,11 +70,8 @@
     <string name="btn_confirm_update">Обновить</string>
     <string name="X_info_no_books_yet">На этой полке нет книг. Пожалуйста, добавьте книги, используя меню в нижней части этого экрана.</string>
     <string name="menu_expand_all">Развернуть всё</string>
-    <string name="X_menu_sort_by">Отсортировать по</string>
     <string name="menu_collapse_all">Свернуть всё</string>
     <string name="menu_search">Поиск</string>
-    <string name="X_info_no_bookshelves_yet">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
-    <string name="X_menu_add_bookshelf">Создать полку</string>
     <string name="menu_bookshelves">Полки…</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="lbl_bookshelf">Книжная полка</string>
@@ -87,7 +84,6 @@
     <string name="warning_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
     <string name="lbl_series">Серия</string>
     <string name="lbl_series_num">№</string>
-    <string name="X_lbl_series_num_long">Серия №</string>
     <string name="title_import_book_data">Импортировать книги</string>
     <string name="warning_import_be_cautious">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="X_search_title">Книжный каталог: результаты поиска</string>
@@ -102,8 +98,6 @@
     <string name="menu_loan_lend_book">Одолжить книгу…</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="lbl_notes">Заметки</string>
-    <string name="X_lbl_loaned_to_long">Книга дана вдолг:</string>
-    <string name="X_nobody">Никто</string>
     <string name="lbl_lend_to">Одолжить книгу:</string>
     <string name="btn_loan_returned">Возвращена</string>
     <string name="name">Имя</string>
@@ -173,7 +167,6 @@
     <string name="X_info_no_authors_yet">Не указаны авторы книги. Пожалуйста, добавьте автора(ов), используя текстовую область и кнопку в верхней части этого экрана.</string>
     <string name="X_info_no_series_yet">Не указана серия книги. Вы можете добавить серию используя текстовую область в верхней части этого экрана.</string>
     <string name="X_warning_cover_corrupt">Обложка испорчена</string>
-    <string name="X_title_cover_detail">Детальная информация об обложке</string>
     <string name="title_select_image">Выбор картинки</string>
     <string name="X_btn_set_authors">Установка авторов…</string>
     <string name="and_others">и др.</string>
@@ -197,7 +190,6 @@
     <string name="X_menu_edit_series">Редактирование серии…</string>
     <string name="title_delete_series">Удаление серии</string>
     <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
-    <string name="X_title_select_cover">Выбрать обложку</string>
     <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
     <string name="X_unsaved_edits_title">Несохранённые изменения</string>
     <string name="confirm_apply_author_changed">Вы изменили имя автора с:\n  «%1$s» на \n  «%2$s»\nКак вы хотите применить это изменение?\nЗамечание: выбор «%3$s» будет применён немедленно.</string>
@@ -369,7 +361,6 @@
     <string name="gr_btn_send_all">Отправить все</string>
     <string name="gr_btn_send_updated">Отправить обновленные</string>
     <string name="gr_sync_with_goodreads">Синхронизировать с Goodreads</string>
-    <string name="X_menu_cover_options">Настройки обложек…</string>
     <string name="gr_tq_show_events_ellipsis">Показать события…</string>
     <string name="tip_authors_book_may_appear_more_than_once">Если показывается по авторам,
         то одна и та же книга может появиться в списке многократно.
@@ -407,7 +398,7 @@
     <string name="lbl_added_month">Добавленый месяц</string>
     <string name="lbl_added_day">Добавленый день</string>
     <string name="lbl_book">Книга</string>
-    <string name="X_file_size">Размер</string>
+    <string name="X_size">Размер</string>
     <string name="X_updated">Обновлено</string>
     <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
     <string name="import_warning_select_csv_file">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
@@ -533,7 +524,6 @@
     <string name="lbl_update_year">Год обновления</string>
     <string name="lbl_update_month">Месяц обновления</string>
     <string name="lbl_update_day">День обновленияy</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">книги</string>

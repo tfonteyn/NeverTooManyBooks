@@ -71,11 +71,8 @@
     <string name="btn_confirm_update">Aggiorna</string>
     <string name="X_info_no_books_yet">Non ci sono libri in questa libreria. Per aggiungerne utilizza il menù nella parte inferiore dello schermo.</string>
     <string name="menu_expand_all">Espandi tutto</string>
-    <string name="X_menu_sort_by">Ordina per</string>
     <string name="menu_collapse_all">Comprimi tutto</string>
     <string name="menu_search">Cerca</string>
-    <string name="X_info_no_bookshelves_yet">Non hai creato ancora nessuna libreria. Per crearne utilizza il menù nella parte inferiore dello schermo.</string>
-    <string name="X_menu_add_bookshelf">Crea libreria</string>
     <string name="menu_bookshelves">Librerie…</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria</string>
     <string name="lbl_bookshelf">Libreria</string>
@@ -88,7 +85,6 @@
     <string name="warning_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importa libri</string>
     <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="X_search_title">Risultati ricerca</string>
@@ -102,8 +98,6 @@
     <string name="menu_loan_lend_book">Presta libro…</string>
     <string name="error_unknown">Si è verificato un errore non identificato</string>
     <string name="lbl_notes">Note</string>
-    <string name="X_lbl_loaned_to_long">Questo libro è stato prestato a:</string>
-    <string name="X_nobody">Nessuno</string>
     <string name="lbl_lend_to">Libro prestato a:</string>
     <string name="btn_loan_returned">Restituito</string>
     <string name="name">Nome</string>
@@ -174,7 +168,6 @@
     <string name="X_info_no_authors_yet">Nessun autore inserito per questo libro. Aggiungine utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
     <string name="X_info_no_series_yet">Nessuna serie inserita per questo libro. Puoi aggiungerne utilizzando l\'area di testo e il pulsante nella parte superiore dello schermo.</string>
     <string name="X_warning_cover_corrupt">Copertina danneggiata</string>
-    <string name="X_title_cover_detail">Dettagli copertina</string>
     <string name="title_select_image">Seleziona immagine</string>
     <string name="X_btn_set_authors">Imposta autori…</string>
     <string name="and_others">e altri</string>
@@ -198,7 +191,6 @@
     <string name="X_menu_edit_series">Modifica serie…</string>
     <string name="title_delete_series">Cancella serie</string>
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
-    <string name="X_title_select_cover">Seleziona copertina</string>
     <string name="warning_unsaved_edits2">Non hai salvato le modifiche. Vuoi continuare comunque?</string>
     <string name="X_unsaved_edits_title">Modifiche non salvate</string>
     <string name="confirm_apply_author_changed">Hai modificato l«autore da:\n  «%1$s» a \n  «%2$s»\nCome desideri applicare questa modifica?\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
@@ -373,7 +365,6 @@
     <string name="gr_btn_send_all">Invia tutti</string>
     <string name="gr_btn_send_updated">Invia modificati</string>
     <string name="gr_sync_with_goodreads">Sincronizza con Goodreads</string>
-    <string name="X_menu_cover_options">Opzioni Copertine…</string>
     <string name="gr_tq_show_events_ellipsis">Mostra eventi…</string>
     <string name="tip_authors_book_may_appear_more_than_once">Se mostrato per ciascun autore, uno stesso libro può risultare elencato più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
     <string name="tip_series_book_may_appear_more_than_once">If mostrato in ciascuna serie, uno stesso libro pu\o comparire in lista più di una volta. In quel caso la cancellazione di una qualsiasi delle occorrenze multiple provocherà la cancellazione dall\'elenco di tutte le occorrenze.</string>
@@ -412,7 +403,7 @@
     <string name="lbl_added_month">Mese di inserimento</string>
     <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_book">Libro</string>
-    <string name="X_file_size">Dimensioni</string>
+    <string name="X_size">Dimensioni</string>
     <string name="X_updated">Aggiornato</string>
     <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
     <string name="import_warning_select_csv_file">
@@ -564,7 +555,6 @@
         volontari (se abbiamo dimenticato qualcuno, grazie per comunicarcelo):
     </string>
 
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Contenuto</string>
     <string name="warning_x_already_exists">%1$s già presente in elenco</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>

@@ -74,11 +74,8 @@
     <string name="btn_confirm_update">Actualizar</string>
     <string name="X_info_no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_expand_all">Expandir todo</string>
-    <string name="X_menu_sort_by">Ordenar por</string>
     <string name="menu_collapse_all">Comprimir todo</string>
     <string name="menu_search">Buscar</string>
-    <string name="X_info_no_bookshelves_yet">Todavía no has creado ninguna biblioteca. Cree una utilizando el menú al pie de esta pantalla.</string>
-    <string name="X_menu_add_bookshelf">Crear biblioteca</string>
     <string name="menu_bookshelves">Bibliotecas…</string>
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="lbl_bookshelf">Biblioteca</string>
@@ -91,7 +88,6 @@
     <string name="warning_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importar libros</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
     <string name="X_search_title">Buscar resultados</string>
@@ -106,8 +102,6 @@
     <string name="menu_loan_lend_book">Prestar libro…</string>
     <string name="error_unknown">Se ha producido un error desconocido</string>
     <string name="lbl_notes">Notas</string>
-    <string name="X_lbl_loaned_to_long">Este libro ha sido prestado a:</string>
-    <string name="X_nobody">Nadie</string>
     <string name="lbl_lend_to">Libro prestado a:</string>
     <string name="btn_loan_returned">Devuelto</string>
     <string name="name">Nombre</string>
@@ -179,7 +173,6 @@
     <string name="X_info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
 
     <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
-    <string name="X_title_cover_detail">Portada</string>
     <string name="title_select_image">Seleccionar imagen</string>
     <string name="X_btn_set_authors">Definir autores…</string>
     <string name="and_others">et. al.</string>
@@ -203,7 +196,6 @@
     <string name="X_menu_edit_series">Modificar serie…</string>
     <string name="title_delete_series">Eliminar serie</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
-    <string name="X_title_select_cover">Seleccionar portada</string>
     <string name="warning_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
     <string name="X_unsaved_edits_title">Cambios sin guardar</string>
     <string name="confirm_apply_author_changed">Ha cambiado el autor de :\n  «%1$s» a \n  «%2$s»\n¿Cómo quiere aplicar este cambio?\nNota: La opción «%3$s» se aplicará de manera inmediata.</string>
@@ -381,7 +373,6 @@
     <string name="gr_btn_send_all">Enviar todo</string>
     <string name="gr_btn_send_updated">Sólo actualizados</string>
     <string name="gr_sync_with_goodreads">Sincronizar con Goodreads</string>
-    <string name="X_menu_cover_options">Opciones de Portadas…</string>
     <string name="gr_tq_show_events_ellipsis">Mostrar eventos…</string>
     <string name="tip_authors_book_may_appear_more_than_once">
         Si se muestra para cada autor, un mismo libro puede aparecer más de una vez en un listado.
@@ -430,7 +421,7 @@
     <string name="lbl_added_month">Mes de inclusión</string>
     <string name="lbl_added_day">Día de inclusión</string>
     <string name="lbl_book">Libro</string>
-    <string name="X_file_size">Tamaño</string>
+    <string name="X_size">Tamaño</string>
     <string name="X_updated">Actualizado</string>
     <string name="import_error_csv_file_not_found">No se han encontrado archivos exportados</string>
     <string name="import_warning_select_csv_file">
@@ -640,7 +631,6 @@
     <string name="progress_msg_process_booklist_style">Estilos de listas de libros…</string>
     <string name="lbl_field_usage_skip">Omitir</string>
     <string name="progress_msg_saving_image">Guardando imagen…</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Libros</string>

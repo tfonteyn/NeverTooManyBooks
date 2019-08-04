@@ -211,14 +211,12 @@
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">nr.</string>
-    <string name="X_lbl_series_num_long">Serie nr.</string>
     <string name="lbl_notes">Notities</string>
     <string name="lbl_lend_to">Leen boek aan:</string>
     <string name="lbl_price_listed">Prijs</string>
     <string name="lbl_update_fields_long">Automatisch Velden bijwerken</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="lbl_select_fields">Selecteer velden</string>
-    <string name="X_lbl_loaned_to_long">Dit boek is uitgeleend aan:</string>
     <string name="lbl_website">Webpagina:</string>
     <string name="lbl_sourcecode">Broncode:</string>
     <string name="lbl_contacts">Contacten:</string>
@@ -256,16 +254,12 @@
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_creators">Oorspronkelijk door:</string>
     <string name="X_lbl_loan_book_available">Beschikbaar</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="lbl_upgrade">Sinds uw laatste upgrade</string>
-
 
     <string name="menu_add_book">Boek Toevoegen…</string>
     <string name="menu_expand_all">Alles uitklappen</string>
-    <string name="X_menu_sort_by">Sorteren op</string>
     <string name="menu_collapse_all">Alles inklappen</string>
     <string name="menu_search">Zoeken</string>
-    <string name="X_menu_add_bookshelf">Boekenplank maken</string>
     <string name="menu_bookshelves">Boekenplanken…</string>
     <string name="menu_administration_long">Administratieve Functies</string>
     <string name="menu_administration">Beheer</string>
@@ -321,14 +315,12 @@
     <string name="title_search_for">zoeken naar auteurs of titels</string>
     <string name="title_import_book_data">Boeken Importeren</string>
     <string name="title_install_scan">Streepjescode Scanner Installeren</string>
-    <string name="X_title_cover_detail">Omslagafbeelding detail</string>
     <string name="title_delete_series">Verwijderen serie</string>
     <string name="title_select_image">Selecteer afbeelding</string>
     <string name="title_backup">Back-up</string>
     <string name="title_cover">Omslag miniatuur</string>
     <string name="title_duplicate_book">Dupliceer Boek</string>
     <string name="title_edit_book_series">Series bewerken</string>
-    <string name="X_title_select_cover">Selecteer omslagafbeelding</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
     <string name="title_search_filtered_on_x">Gefiltered: %1$s</string>
     <string name="title_send_mail">Bericht versturen…</string>
@@ -429,9 +421,6 @@
     <string name="X_info_no_books_yet">
         Er staan geen boeken op deze boekenplank.
         Voeg er een paar toe via het menu onderaan dit scherm.
-    </string>
-    <string name="X_info_no_bookshelves_yet">
-        Je hebt nog geen boekenplank aangemaakt. Voeg er een toe via het menu onderaan dit scherm.
     </string>
     <string name="X_info_no_authors_yet">
         Er zijn geen auteurs voor dit boek.
@@ -570,14 +559,10 @@
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen.</string>
 
 
-
-
-
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="bookshelf_all_books">Alle Boeken</string>
     <string name="X_search_title">Zoekresultaten</string>
     <string name="X_results_found">Gevonden resultaten</string>
-    <string name="X_nobody">Niemand</string>
     <string name="name">Naam</string>
 
     <string name="confirm_overwrite_thumbnail">
@@ -811,7 +796,6 @@
     <string name="gr_btn_send_all">Zend alles</string>
     <string name="gr_btn_send_updated">Zend bijgewerkte</string>
     <string name="gr_sync_with_goodreads">Synchroniseer met Goodreads</string>
-    <string name="X_menu_cover_options">Boekomslag opties…</string>
     <string name="gr_tq_show_events_ellipsis">Toon gebeurtenissen…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd
@@ -835,7 +819,7 @@
     </string>
     <string name="lbl_read_and_unread">Gelezen &amp; Ongelezen</string>
 
-    <string name="X_file_size">Grootte</string>
+    <string name="X_size">Grootte</string>
     <string name="X_updated">Bijgewerkt</string>
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
     <string name="import_warning_select_csv_file">

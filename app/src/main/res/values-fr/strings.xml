@@ -59,7 +59,6 @@
     <string name="lbl_contacts">Contact:</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_num">No</string>
-    <string name="X_lbl_series_num_long">Série No</string>
     <string name="X_use_default_setting">Utiliser les réglages par défaut</string>
     <string name="title_add_book">Ajouter un livre</string>
     <string name="menu_add_book">Ajouter un livre…</string>
@@ -76,11 +75,8 @@
     <string name="btn_confirm_update">Mettre à jour</string>
     <string name="X_info_no_books_yet">Il n\'y a pas de livre dans cette biblothèque. Veuillez en ajouter par le menu en bas de cet écran.</string>
     <string name="menu_expand_all">Tout étendre</string>
-    <string name="X_menu_sort_by">Trier par</string>
     <string name="menu_collapse_all">Tout réduire</string>
     <string name="menu_search">Recherche</string>
-    <string name="X_info_no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
-    <string name="X_menu_add_bookshelf">Créer une bibliothèque</string>
     <string name="menu_bookshelves">Bibliothèques…</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
     <string name="lbl_bookshelf">Bibliothèque : </string>
@@ -109,8 +105,6 @@
     <string name="menu_loan_lend_book">Prêter le livre…</string>
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="lbl_notes">Notes</string>
-    <string name="X_lbl_loaned_to_long">Ce livre a été prêté à :</string>
-    <string name="X_nobody">Personne</string>
     <string name="lbl_lend_to">Prêter le livre à :</string>
     <string name="btn_loan_returned">Rendu</string>
     <string name="name">Nom</string>
@@ -191,7 +185,6 @@
     <string name="X_info_no_authors_yet">Il n\'y a pas d\'auteur pour ce livre. Veuillez en ajouter un en utilisant la zone de texte et le bouton en haut de cet écran.</string>
     <string name="X_info_no_series_yet">Il n\'y a pas de série pour ce livre. Vous pouvez en ajouter une en utilisant la zone de texte et le bouton en haut de cet écran.</string>
     <string name="X_warning_cover_corrupt">Couverture corrompue</string>
-    <string name="X_title_cover_detail">Détails de la couverture</string>
     <string name="title_select_image">Choisissez une image</string>
     <string name="X_btn_set_authors">Définir les auteurs…</string>
     <string name="and_others">et cie.</string>
@@ -218,7 +211,6 @@
         Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
         Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.
     </string>
-    <string name="X_title_select_cover">Choisissez une couverture</string>
     <string name="warning_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>
     <string name="X_unsaved_edits_title">Modifications non sauvegardées</string>
     <string name="confirm_apply_author_changed">
@@ -436,7 +428,6 @@
     <string name="gr_btn_send_all">Tout envoyer</string>
     <string name="gr_btn_send_updated">Envoi mis à jour</string>
     <string name="gr_sync_with_goodreads">Synchroniser avec Goodreads</string>
-    <string name="X_menu_cover_options">Options de couverture…</string>
     <string name="gr_tq_show_events_ellipsis">Montrer les événement…</string>
     <string name="gr_send_books_to_goodreads_blurb">
         Vous êtes sur le point d\'envoyer votre bibliothèque à Goodreads.\n
@@ -491,7 +482,7 @@
     <string name="lbl_added_month">Mois d\'ajout</string>
     <string name="lbl_added_day">Jour d\'ajout</string>
     <string name="lbl_book">Livre</string>
-    <string name="X_file_size">Taille</string>
+    <string name="X_size">Taille</string>
     <string name="X_updated">Mis à jour</string>
     <string name="import_error_csv_file_not_found">Aucun fichier export n\'a été trouvé</string>
     <string name="import_warning_select_csv_file">
@@ -653,7 +644,6 @@
         personnes, et n\'aurait pas une diffusion et une utilisation aussi large sans l\'aide
         de nos généreux traducteurs (si nous avons oublié quelqu\'un, merci de nous le dire):
     </string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="pv_reformat_titles_prefixes">le|Le|la|La|les|Les|un|Un|une|Une</string>
     <string name="menu_set_read">Marqué comme lu</string>
     <string name="menu_set_unread">Maqué comme non lu</string>

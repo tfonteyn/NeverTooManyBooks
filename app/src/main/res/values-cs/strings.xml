@@ -203,11 +203,8 @@
     <string name="btn_confirm_update">Upravit</string>
     <string name="X_info_no_books_yet">V této knihovně nemáte v současnosti žádnou knihu. Pro přidání knihy použijte menu ve spodní části obrazovky.</string>
     <string name="menu_expand_all">Rozbalit vše</string>
-    <string name="X_menu_sort_by">Seřadit podle</string>
     <string name="menu_collapse_all">Sbalit vše</string>
     <string name="menu_search">Hledat</string>
-    <string name="X_info_no_bookshelves_yet">Zatím nemáte vytvořenou žádnou knihovnu. Pro její vytvoření použijte menu ve spodní části obrazovky.</string>
-    <string name="X_menu_add_bookshelf">Vytvořit knihovnu</string>
     <string name="menu_bookshelves">Knihovny…</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
     <string name="lbl_bookshelf">Knihovna</string>
@@ -220,7 +217,6 @@
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_num">#</string>
-    <string name="X_lbl_series_num_long">Série #</string>
     <string name="title_import_book_data">Importovat knihy</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="X_search_title">Výsledky vyhledávání</string>
@@ -235,8 +231,6 @@
     <string name="menu_loan_lend_book">Půjčit knihu…</string>
     <string name="error_unknown">Neznámá chyba</string>
     <string name="lbl_notes">Poznámky</string>
-    <string name="X_lbl_loaned_to_long">Tato kniha byla půjčena:</string>
-    <string name="X_nobody">Nikdo</string>
     <string name="lbl_lend_to">Půjčit knihu:</string>
     <string name="btn_loan_returned">Vráceno</string>
     <string name="name">Jméno</string>
@@ -308,7 +302,6 @@
     <string name="X_info_no_authors_yet">Tato kniha nemá autora. Prosím přidejte jej prostřednictví pole v horní části obrazovky.</string>
     <string name="X_info_no_series_yet">Pro tuto knihu není zadána žádná série. Pro její zadání můžete použít pole v horní části obrazovky.</string>
     <string name="X_warning_cover_corrupt">Obálka je poškozena</string>
-    <string name="X_title_cover_detail">Detail obálky</string>
     <string name="title_select_image">Zvolit obrázek</string>
     <string name="X_btn_set_authors">Zadat autory…</string>
     <string name="and_others">a další</string>
@@ -332,7 +325,6 @@
     <string name="X_menu_edit_series">Upravit série…</string>
     <string name="title_delete_series">Smazat série</string>
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
-    <string name="X_title_select_cover">Vybrat obálku</string>
     <string name="warning_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
     <string name="X_unsaved_edits_title">Změny nejsou uloženy</string>
     <string name="confirm_apply_author_changed">Změnil jste autora z:\n „%1$s“ na\n „%2$s“\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba „%3$s“ bude aplikována okamžitě.</string>
@@ -453,7 +445,6 @@
     <string name="style_builtin_unread">Nepřečtené (Autor/Série)</string>
     <string name="btn_tell_me_more">Dozvědět se více</string>
     <string name="unknown">Neznámý</string>
-    <string name="X_menu_cover_options">Možnosti obálky…</string>
     <string name="tip_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
     <string name="tip_series_book_may_appear_more_than_once">Při zobrazení pod každou sérií se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
     <string name="tip_background_tasks">
@@ -475,7 +466,7 @@
     <string name="lbl_added_month">Měsíc přidání</string>
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_book">Kniha</string>
-    <string name="X_file_size">Velikost</string>
+    <string name="X_size">Velikost</string>
     <string name="X_updated">Aktualizování</string>
     <string name="import_error_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
     <string name="import_warning_select_csv_file">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
@@ -484,7 +475,6 @@
     </string>
     <string name="warning_missing_name">Jméno nesmí být prázdné</string>
     <string name="tab_lbl_content">Obsah</string>
-    <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_year">Rok</string>
