@@ -61,9 +61,9 @@ public class EditBookActivity
             Fragment frag = new EditBookFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
+                    .commit();
         }
     }
 
@@ -81,7 +81,7 @@ public class EditBookActivity
                 BookBaseFragmentModel.class);
 
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
-                                            bookBaseFragmentModel.getBook().getId());
+                bookBaseFragmentModel.getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         setResult(Activity.RESULT_OK, data);
 

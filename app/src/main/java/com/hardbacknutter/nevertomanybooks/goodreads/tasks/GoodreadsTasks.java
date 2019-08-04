@@ -39,15 +39,15 @@ public final class GoodreadsTasks {
         // It still depends on the 'result' code what the next step is.
 
         //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
+        Context context = App.getAppContext();
 
         // if auth failed, either first or second time, complain and bail out.
         if (message.result == GR_RESULT_CODE_AUTHORIZATION_FAILED
-                ||
-                (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
-                        && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
-            return userContext.getString(R.string.error_site_authentication_failed,
-                                     userContext.getString(R.string.goodreads));
+            ||
+            (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
+             && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
+            return context.getString(R.string.error_site_authentication_failed,
+                                     context.getString(R.string.goodreads));
         }
 
 
@@ -57,14 +57,15 @@ public final class GoodreadsTasks {
 
         } else if (message.success) {
             // authenticated fine, just show info results.
-            return userContext.getString(message.result);
+            return context.getString(message.result);
 
         } else {
             // some non-auth related error occurred.
-            String msg = userContext.getString(message.result);
+            String msg = context.getString(message.result);
             if (message.exception instanceof FormattedMessageException) {
-                msg += ' ' + ((FormattedMessageException) message.exception).getFormattedMessage(
-                        userContext);
+                msg += ' ' + ((FormattedMessageException) message.exception)
+                        .getFormattedMessage(context);
+
             } else if (message.exception != null) {
                 msg += ' ' + message.exception.getLocalizedMessage();
             }

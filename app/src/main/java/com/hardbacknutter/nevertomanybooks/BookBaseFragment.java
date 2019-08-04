@@ -39,11 +39,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataViewer;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
@@ -54,6 +49,11 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BookBaseFragmentModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base class for {@link BookFragment} and {@link EditBookBaseFragment}.
@@ -123,7 +123,7 @@ public abstract class BookBaseFragment
         // Activity scope!
         //noinspection ConstantConditions
         mBookBaseFragmentModel = ViewModelProviders.of(getActivity())
-                                                   .get(BookBaseFragmentModel.class);
+                .get(BookBaseFragmentModel.class);
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mBookBaseFragmentModel.init(args);
         mBookBaseFragmentModel.getUserMessage().observe(this, this::showUserMessage);
@@ -143,7 +143,7 @@ public abstract class BookBaseFragment
         if (needs != null && needs) {
             //noinspection ConstantConditions
             RequestAuthTask.needsRegistration(getContext(),
-                                              mBookBaseFragmentModel.getGoodreadsTaskListener());
+                    mBookBaseFragmentModel.getGoodreadsTaskListener());
         }
     }
 
@@ -255,11 +255,11 @@ public abstract class BookBaseFragment
                         new Intent(getContext(), UpdateFieldsFromInternetActivity.class)
                                 .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
                                 .putExtra(DBDefinitions.KEY_TITLE,
-                                          book.getString(DBDefinitions.KEY_TITLE))
+                                        book.getString(DBDefinitions.KEY_TITLE))
                                 .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                        book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                        UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
@@ -289,8 +289,8 @@ public abstract class BookBaseFragment
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                             Logger.debug(this, "BookBaseFragment.onActivityResult",
-                                         "wasCancelled= " + data.getBooleanExtra(
-                                                 UniqueId.BKEY_CANCELED, false));
+                                    "wasCancelled= " + data.getBooleanExtra(
+                                            UniqueId.BKEY_CANCELED, false));
                         }
                     }
                 }
@@ -299,9 +299,9 @@ public abstract class BookBaseFragment
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.warnWithStackTrace("BookBaseFragment.onActivityResult",
-                                              "NOT HANDLED:",
-                                              "requestCode=" + requestCode,
-                                              "resultCode=" + resultCode);
+                            "NOT HANDLED:",
+                            "requestCode=" + requestCode,
+                            "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -334,77 +334,77 @@ public abstract class BookBaseFragment
         //  setVisibility(hideIfEmpty, R.id.toc, R.id.row_toc);
 
         setVisibility(R.id.series, hideIfEmpty,
-                      R.id.lbl_series);
+                R.id.lbl_series);
         setVisibility(R.id.isbn, hideIfEmpty,
-                      R.id.lbl_isbn);
+                R.id.lbl_isbn);
         setVisibility(R.id.description, hideIfEmpty,
-                      R.id.lbl_description);
+                R.id.lbl_description);
         setVisibility(R.id.pages, hideIfEmpty,
-                      R.id.lbl_pages);
+                R.id.lbl_pages);
         setVisibility(R.id.format, hideIfEmpty,
-                      R.id.lbl_format);
+                R.id.lbl_format);
         setVisibility(R.id.genre, hideIfEmpty,
-                      R.id.lbl_genre);
+                R.id.lbl_genre);
         setVisibility(R.id.language, hideIfEmpty,
-                      R.id.lbl_language);
+                R.id.lbl_language);
 
         setVisibility(R.id.publisher, hideIfEmpty);
         setVisibility(R.id.date_published, hideIfEmpty);
         setVisibility(R.id.first_publication, hideIfEmpty,
-                      R.id.lbl_first_publication);
+                R.id.lbl_first_publication);
         setVisibility(R.id.price_listed, hideIfEmpty,
-                      R.id.price_listed_currency,
-                      R.id.lbl_price_listed);
+                R.id.price_listed_currency,
+                R.id.lbl_price_listed);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
-                                  R.id.publisher,
-                                  R.id.date_published,
-                                  R.id.price_listed,
-                                  R.id.first_publication);
+                R.id.publisher,
+                R.id.date_published,
+                R.id.price_listed,
+                R.id.first_publication);
 
         // personal fields
         setVisibility(R.id.loaned_to, hideIfEmpty);
         setVisibility(R.id.read, hideIfEmpty);
         setVisibility(R.id.notes, hideIfEmpty);
         setVisibility(R.id.bookshelves, hideIfEmpty,
-                      R.id.lbl_bookshelves);
+                R.id.lbl_bookshelves);
         setVisibility(R.id.edition, hideIfEmpty,
-                      R.id.lbl_edition);
+                R.id.lbl_edition);
         setVisibility(R.id.location, hideIfEmpty,
-                      R.id.lbl_location,
-                      R.id.lbl_location_long);
+                R.id.lbl_location,
+                R.id.lbl_location_long);
         setVisibility(R.id.date_acquired, hideIfEmpty,
-                      R.id.lbl_date_acquired);
+                R.id.lbl_date_acquired);
         setVisibility(R.id.price_paid, hideIfEmpty,
-                      R.id.price_paid_currency,
-                      R.id.lbl_price_paid);
+                R.id.price_paid_currency,
+                R.id.lbl_price_paid);
         setVisibility(R.id.signed, hideIfEmpty,
-                      R.id.lbl_signed);
+                R.id.lbl_signed);
         setVisibility(R.id.rating, hideIfEmpty,
-                      R.id.lbl_rating);
+                R.id.lbl_rating);
 
         setVisibility(R.id.read_start, hideIfEmpty,
-                      R.id.lbl_read_start);
+                R.id.lbl_read_start);
         setVisibility(R.id.read_end, hideIfEmpty,
-                      R.id.lbl_read_end);
+                R.id.lbl_read_end);
         // Hide the baseline for the read labels if both labels are gone.
         setBaselineVisibility(R.id.lbl_read_start_end_baseline,
-                              R.id.lbl_read_start, R.id.lbl_read_end);
+                R.id.lbl_read_start, R.id.lbl_read_end);
         // Hide the baseline for the value field if the labels are gone.
         setBaselineVisibility(R.id.read_start_end_baseline,
-                              R.id.lbl_read_start_end_baseline);
+                R.id.lbl_read_start_end_baseline);
 
         // Hide the Notes label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
-                                  R.id.notes,
-                                  R.id.lbl_edition,
-                                  R.id.lbl_signed,
-                                  R.id.lbl_date_acquired,
-                                  R.id.lbl_price_paid,
-                                  R.id.lbl_read_start,
-                                  R.id.lbl_read_end,
-                                  R.id.lbl_location);
+                R.id.notes,
+                R.id.lbl_edition,
+                R.id.lbl_signed,
+                R.id.lbl_date_acquired,
+                R.id.lbl_price_paid,
+                R.id.lbl_read_start,
+                R.id.lbl_read_end,
+                R.id.lbl_location);
 
         //NEWKIND: new fields
     }
@@ -691,8 +691,8 @@ public abstract class BookBaseFragment
                 sb.append(' ');
             }
             sb.append(view.getClass().getCanonicalName())
-              .append(" (").append(view.getId()).append(')')
-              .append(" ->");
+                    .append(" (").append(view.getId()).append(')')
+                    .append(" ->");
 
             if (view instanceof TextView) {
                 String s = ((TextView) view).getText().toString().trim();

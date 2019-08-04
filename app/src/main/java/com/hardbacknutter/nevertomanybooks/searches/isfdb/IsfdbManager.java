@@ -117,7 +117,7 @@ public class IsfdbManager
             throws IOException {
 
         //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
+        Context context = App.getAppContext();
 
         List<Editions.Edition> editions;
 
@@ -126,40 +126,40 @@ public class IsfdbManager
 
         } else {
             String url = getBaseURL() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
-                    + "ORDERBY=pub_title"
-                    + "&ACTION=query"
-                    + "&START=0"
-                    + "&TYPE=Publication"
-                    + "&C=AND"
-                    + "&";
+                         + "ORDERBY=pub_title"
+                         + "&ACTION=query"
+                         + "&START=0"
+                         + "&TYPE=Publication"
+                         + "&C=AND"
+                         + "&";
 
             int index = 0;
 
             if (author != null && !author.isEmpty()) {
                 index++;
                 url += "&USE_" + index + "=author_canonical"
-                        + "&O_" + index + "=contains"
-                        + "&TERM_" + index + "="
-                        + URLEncoder.encode(author, CHARSET_ENCODE_URL);
+                       + "&O_" + index + "=contains"
+                       + "&TERM_" + index + "="
+                       + URLEncoder.encode(author, CHARSET_ENCODE_URL);
             }
 
             if (title != null && !title.isEmpty()) {
                 index++;
                 url += "&USE_" + index + "=pub_title"
-                        + "&O_" + index + "=contains"
-                        + "&TERM_" + index + "="
-                        + URLEncoder.encode(DAO.unMangleTitle(title), CHARSET_ENCODE_URL);
+                       + "&O_" + index + "=contains"
+                       + "&TERM_" + index + "="
+                       + URLEncoder.encode(DAO.unMangleTitle(title), CHARSET_ENCODE_URL);
             }
 
             // as per user settings.
-            if (PreferenceManager.getDefaultSharedPreferences(userContext)
-                    .getBoolean(PREFS_USE_PUBLISHER, false)) {
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PREFS_USE_PUBLISHER, false)) {
                 if (publisher != null && !publisher.isEmpty()) {
                     index++;
                     url += "&USE_" + index + "=pub_publisher"
-                            + "&O_" + index + "=contains"
-                            + "&TERM_" + index + "="
-                            + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
+                           + "&O_" + index + "=contains"
+                           + "&TERM_" + index + "="
+                           + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
                 }
             }
 
@@ -172,7 +172,7 @@ public class IsfdbManager
         }
 
         if (!editions.isEmpty()) {
-            return new IsfdbBook().fetch(editions, fetchThumbnail, userContext);
+            return new IsfdbBook().fetch(editions, fetchThumbnail, context);
         } else {
             return new Bundle();
         }

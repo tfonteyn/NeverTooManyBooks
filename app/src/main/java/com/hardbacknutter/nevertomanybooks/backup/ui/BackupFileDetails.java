@@ -9,12 +9,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertomanybooks.backup.ui.BRBaseActivity.FileDetails;
@@ -22,14 +16,22 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Implementation of {@link FileDetails} that collects data about backup mFileDetails
  * in a background thread.
  *
+ * URGENT: remove Parcelable
+ *
  * @author pjw
  */
 public class BackupFileDetails
-        implements FileDetails, Parcelable {
+        implements FileDetails {
 
     /** {@link Parcelable}. */
     public static final Creator<BackupFileDetails> CREATOR =
@@ -102,7 +104,6 @@ public class BackupFileDetails
 
             holder.sizeView.setText(StorageUtils.formatFileSize(context, mFile.length()));
 
-
             Locale locale = LocaleUtils.from(context);
             if (mInfo != null) {
                 List<String> args = new ArrayList<>();
@@ -120,7 +121,6 @@ public class BackupFileDetails
                 } else if (mInfo.hasCovers()) {
                     args.add(context.getString(R.string.lbl_covers));
                 }
-
                 if (mInfo.hasPreferences()) {
                     args.add(context.getString(R.string.lbl_settings));
                 }

@@ -23,15 +23,15 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriter;
 import com.hardbacknutter.nevertomanybooks.backup.tararchive.TarBackupContainer;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Encapsulates the actual container used for backup/restore.
@@ -108,7 +108,7 @@ public final class BackupManager {
         String name = file.getName().toLowerCase(App.getSystemLocale());
         // our own extension
         return name.endsWith(ARCHIVE_EXTENSION)
-                // TarBackupContainer reads (duh) .tar files.
-                || name.endsWith(".tar");
+               // TarBackupContainer reads (duh) .tar files.
+               || name.endsWith(".tar");
     }
 }

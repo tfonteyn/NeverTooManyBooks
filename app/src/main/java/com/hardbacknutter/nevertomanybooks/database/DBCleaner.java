@@ -122,7 +122,7 @@ public class DBCleaner {
      */
     public void bookshelves(@NonNull final Context context) {
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            bookshelf.validateStyle(context, mDb);
+            bookshelf.validateStyle(mDb);
         }
     }
 

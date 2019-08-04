@@ -17,9 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
@@ -29,6 +26,9 @@ import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 // Try stopping the soft input keyboard to pop up at all cost when entering isbn....
 
@@ -116,8 +116,8 @@ public class BookSearchByIsbnFragment
                                              @NonNull final Bundle bookData) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.debugEnter(this, "onSearchFinished",
-                                          "SearchCoordinatorId="
-                                                  + mBookSearchBaseModel.getSearchCoordinatorId());
+                                "SearchCoordinatorId="
+                                        + mBookSearchBaseModel.getSearchCoordinatorId());
                     }
                     try {
                         if (!wasCancelled) {
@@ -390,25 +390,25 @@ public class BookSearchByIsbnFragment
 
         // User wants to add regardless
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
-                         (d, which) -> startSearch());
+                (d, which) -> startSearch());
 
         // User wants to review the existing book
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit),
-                         (d, which) -> {
-                             Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                     .putExtra(DBDefinitions.KEY_PK_ID, existingId);
-                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
-                         });
+                (d, which) -> {
+                    Intent intent = new Intent(getContext(), EditBookActivity.class)
+                            .putExtra(DBDefinitions.KEY_PK_ID, existingId);
+                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                });
 
         // User aborts this isbn
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         (d, which) -> {
-                             // reset the now-discarded details
-                             mBookSearchBaseModel.clearSearchText();
-                             if (mScanMode) {
-                                 startScannerActivity();
-                             }
-                         });
+                (d, which) -> {
+                    // reset the now-discarded details
+                    mBookSearchBaseModel.clearSearchText();
+                    if (mScanMode) {
+                        startScannerActivity();
+                    }
+                });
         dialog.show();
     }
 
@@ -489,7 +489,7 @@ public class BookSearchByIsbnFragment
                         Intent lastBookData = mBookSearchBaseModel.getLastBookData();
                         mActivity.setResult(lastBookData != null ? Activity.RESULT_OK
                                                                  : Activity.RESULT_CANCELED,
-                                            lastBookData);
+                                lastBookData);
                         // and exit if no dialog present.
                         if (!mDisplayingAlert) {
                             mActivity.finish();

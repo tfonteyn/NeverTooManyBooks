@@ -23,8 +23,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
@@ -33,6 +31,8 @@ import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertomanybooks.widgets.cfs.CFSRecyclerView;
+
+import java.util.ArrayList;
 
 /**
  * Display all TocEntry's for an Author.
@@ -393,7 +393,7 @@ public class AuthorWorksFragment
                                        final int position) {
             // make sure it's still in range.
             int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-            // first character, don't care about Locale locale = LocaleUtils.from(getContext());
+            // first character only, don't care about Locale locale...
             return new String[]{mModel.getTocEntries().get(index)
                                       .getTitle().substring(0, 1).toUpperCase()};
         }

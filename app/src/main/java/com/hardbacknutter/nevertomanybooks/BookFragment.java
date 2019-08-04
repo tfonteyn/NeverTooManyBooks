@@ -27,9 +27,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
@@ -49,6 +46,9 @@ import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.FlattenedBooklistModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for representing read-only book details.
@@ -73,7 +73,7 @@ public class BookFragment
             } else {
                 // we don't expect/implement any others.
                 Logger.warnWithStackTrace(this, "bookId=" + bookId,
-                                          "fieldsChanged=" + fieldsChanged);
+                        "fieldsChanged=" + fieldsChanged);
             }
         }
     };
@@ -160,8 +160,8 @@ public class BookFragment
 
         if (savedInstanceState == null) {
             TipManager.display(getLayoutInflater(),
-                               R.string.tip_view_only_help,
-                               null);
+                    R.string.tip_view_only_help,
+                    null);
         }
     }
 
@@ -187,23 +187,23 @@ public class BookFragment
         fields.add(R.id.title, DBDefinitions.KEY_TITLE);
         fields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
-              .setShowHtml(true);
+                .setShowHtml(true);
 
         fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter());
+                .setFormatter(new Fields.LanguageFormatter());
         fields.add(R.id.pages, DBDefinitions.KEY_PAGES)
-              .setFormatter(new Fields.PagesFormatter())
-              .setZeroIsEmpty(true);
+                .setFormatter(new Fields.PagesFormatter())
+                .setZeroIsEmpty(true);
         fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-              .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
-              .setFormatter(new Fields.PriceFormatter());
+                .setFormatter(new Fields.PriceFormatter());
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR);
@@ -211,39 +211,39 @@ public class BookFragment
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE);
 
         Field coverImageField = fields.add(R.id.coverImage, DBDefinitions.KEY_BOOK_UUID,
-                                           UniqueId.BKEY_IMAGE)
-                                      .setScale(IMAGE_SCALE);
+                UniqueId.BKEY_IMAGE)
+                .setScale(IMAGE_SCALE);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
-                                         mBookBaseFragmentModel.getBook(),
-                                         fields.getField(R.id.isbn).getView(),
-                                         coverImageField.getView(),
-                                         IMAGE_SCALE);
+                mBookBaseFragmentModel.getBook(),
+                fields.getField(R.id.isbn).getView(),
+                coverImageField.getView(),
+                IMAGE_SCALE);
 
         // Personal fields
         fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
-              .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
-              .setFormatter(new Fields.PriceFormatter());
+                .setFormatter(new Fields.PriceFormatter());
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-              .setFormatter(new Fields.BookEditionsFormatter())
-              .setZeroIsEmpty(true);
+                .setFormatter(new Fields.BookEditionsFormatter())
+                .setZeroIsEmpty(true);
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         fields.add(R.id.rating, DBDefinitions.KEY_RATING);
         fields.add(R.id.notes, DBDefinitions.KEY_NOTES)
-              .setShowHtml(true);
+                .setShowHtml(true);
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
-              .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
-              .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         //noinspection ConstantConditions
         fields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
-              .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
-              .setZeroIsEmpty(true);
+                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(getContext()))
+                .setZeroIsEmpty(true);
 
         // defined, but handled manually
         fields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
@@ -276,7 +276,7 @@ public class BookFragment
 
         //  set the current visible book id as the result data.
         Intent data = new Intent().putExtra(DBDefinitions.KEY_PK_ID,
-                                            mBookBaseFragmentModel.getBook().getId());
+                mBookBaseFragmentModel.getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
 
         super.onPause();
@@ -364,8 +364,8 @@ public class BookFragment
                                                 @NonNull final View v,
                                                 @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
-                             MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
-                        .setIcon(R.drawable.ic_people);
+                            MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book)
+                            .setIcon(R.drawable.ic_people);
                 }
             });
         } else {
@@ -455,35 +455,35 @@ public class BookFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-            .setIcon(R.drawable.ic_edit)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                .setIcon(R.drawable.ic_edit)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_delete);
         menu.add(Menu.NONE, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
-            .setIcon(R.drawable.ic_content_copy);
+                .setIcon(R.drawable.ic_content_copy);
 
         // Only one of these two is made visible.
         menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
         menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         menu.add(R.id.MENU_UPDATE_FROM_INTERNET, R.id.MENU_UPDATE_FROM_INTERNET,
-                 MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
+                MenuHandler.ORDER_UPDATE_FIELDS, R.string.lbl_update_fields)
+                .setIcon(R.drawable.ic_cloud_download);
 
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             // Only one of these two is made visible.
             menu.add(R.id.MENU_BOOK_LOAN_ADD, R.id.MENU_BOOK_LOAN_ADD,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
+                    MenuHandler.ORDER_LENDING, R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_DELETE, R.id.MENU_BOOK_LOAN_DELETE,
-                     MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
+                    MenuHandler.ORDER_LENDING, R.string.menu_loan_return_book);
         }
 
         menu.add(Menu.NONE, R.id.MENU_SHARE, MenuHandler.ORDER_SHARE, R.string.menu_share_this)
-            .setIcon(R.drawable.ic_share);
+                .setIcon(R.drawable.ic_share);
 
         menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS,
-                 MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
-            .setIcon(R.drawable.ic_goodreads2);
+                MenuHandler.ORDER_SEND_TO_GOODREADS, R.string.gr_menu_send_to_goodreads)
+                .setIcon(R.drawable.ic_goodreads2);
 
         MenuHandler.addViewBookSubMenu(menu);
         MenuHandler.addAmazonSearchSubMenu(menu);
@@ -568,7 +568,7 @@ public class BookFragment
             case R.id.MENU_SHARE:
                 //noinspection ConstantConditions
                 Intent shareIntent = Intent.createChooser(book.getShareBookIntent(getContext()),
-                                                          getString(R.string.menu_share_this));
+                        getString(R.string.menu_share_this));
                 startActivity(shareIntent);
                 return true;
 

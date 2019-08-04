@@ -105,7 +105,7 @@ public final class NetworkUtils {
     @WorkerThread
     public static boolean isAlive(@NonNull final String site) {
 
-        String url = site.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
+        String url = site.toLowerCase(LocaleUtils.getPreferredLocale());
         int port = url.startsWith("https://") ? 443 : 80;
         String host = url.split("//")[1].split("/")[0];
         return isAlive(host, port);

@@ -34,9 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.dialogs.entities.EditAuthorBaseDialogFragment;
@@ -47,6 +44,9 @@ import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Activity to edit a list of authors provided in an {@code ArrayList<Author>}
@@ -79,9 +79,9 @@ public class EditAuthorListActivity
         setTitle(R.string.title_edit_book_authors);
 
         mAutoCompleteAdapter = new ArrayAdapter<>(this,
-                                                  android.R.layout.simple_dropdown_item_1line,
-                                                  mDb.getAuthorNames(
-                                                          DBDefinitions.KEY_AUTHOR_FORMATTED));
+                android.R.layout.simple_dropdown_item_1line,
+                mDb.getAuthorNames(
+                        DBDefinitions.KEY_AUTHOR_FORMATTED));
 
         mAutoCompleteTextView = findViewById(R.id.author);
         mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
@@ -157,7 +157,7 @@ public class EditAuthorListActivity
                 .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setMessage(getString(R.string.confirm_apply_author_changed,
-                                      author.getSortName(), newAuthorData.getSortName(), allBooks))
+                        author.getSortName(), newAuthorData.getSortName(), allBooks))
                 .create();
 
         /*
@@ -178,11 +178,11 @@ public class EditAuthorListActivity
          * - add new author to book
          */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                         (d, which) -> {
-                             author.copyFrom(newAuthorData);
-                             ItemWithFixableId.pruneList(this, mDb, mList);
-                             mListAdapter.notifyDataSetChanged();
-                         });
+                (d, which) -> {
+                    author.copyFrom(newAuthorData);
+                    ItemWithFixableId.pruneList(this, mDb, mList);
+                    mListAdapter.notifyDataSetChanged();
+                });
 
         /*
          * Choosing 'all books':
@@ -208,8 +208,8 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, (d, which) -> {
-            Locale locale = LocaleUtils.getPreferredLocale(this);
-            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData, locale);
+            Locale userLocale = LocaleUtils.getPreferredLocale();
+            mGlobalReplacementsMade = mDb.globalReplaceAuthor(author, newAuthorData, userLocale);
             author.copyFrom(newAuthorData);
             ItemWithFixableId.pruneList(this, mDb, mList);
             mListAdapter.notifyDataSetChanged();
@@ -322,7 +322,7 @@ public class EditAuthorListActivity
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
                     EditBookAuthorDialogFragment.newInstance(author)
-                                                .show(fm, EditBookAuthorDialogFragment.TAG);
+                            .show(fm, EditBookAuthorDialogFragment.TAG);
                 }
             });
         }

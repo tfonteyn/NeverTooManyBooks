@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -173,15 +174,17 @@ class ImportLegacyTask
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
 
+        Locale userLocale = LocaleUtils.getPreferredLocale();
+
         try (DAO db = new DAO()) {
             // Load the Goodreads reviews
-            boolean ok = processReviews(queueManager, db);
+            boolean ok = processReviews(context, userLocale, queueManager, db);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
                         new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
-                                true),
+                                                true),
                         QueueManager.Q_MAIN);
             }
             return ok;
@@ -196,7 +199,9 @@ class ImportLegacyTask
      *
      * @throws CredentialsException with GoodReads
      */
-    private boolean processReviews(@NonNull final QueueManager queueManager,
+    private boolean processReviews(@NonNull final Context context,
+                                   @NonNull final Locale userLocale,
+                                   @NonNull final QueueManager queueManager,
                                    @NonNull final DAO db)
             throws CredentialsException {
 
@@ -261,7 +266,7 @@ class ImportLegacyTask
                 }
 
                 // Processing may involve a SLOW thumbnail download...don't run in TX!
-                processReview(db, review);
+                processReview(context, userLocale, db, review);
                 //SyncLock tx = db.startTransaction(true);
                 //try {
                 //    processReview(db, review);
@@ -287,7 +292,9 @@ class ImportLegacyTask
     /**
      * Process one review (book).
      */
-    private void processReview(@NonNull final DAO db,
+    private void processReview(@NonNull final Context context,
+                               @NonNull final Locale userLocale,
+                               @NonNull final DAO db,
                                @NonNull final Bundle review) {
 
         long grBookId = review.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
@@ -317,11 +324,11 @@ class ImportLegacyTask
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(db, cursorRow, review);
+                    updateBook(context, userLocale, db, cursorRow, review);
                 } while (cursor.moveToNext());
             } else {
                 // Create the book
-                insertBook(db, review);
+                insertBook(context, userLocale, db, review);
             }
         } finally {
             if (cursor != null) {
@@ -356,9 +363,9 @@ class ImportLegacyTask
             }
         }
 
-        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
+        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocale());
         return mBookshelfLookup.containsKey(lcGrShelfName) ? mBookshelfLookup.get(lcGrShelfName)
-                : grShelfName;
+                                                           : grShelfName;
     }
 
     /**
@@ -376,7 +383,9 @@ class ImportLegacyTask
     /**
      * Update the book using the GR data.
      */
-    private void updateBook(@NonNull final DAO db,
+    private void updateBook(@NonNull final Context context,
+                            @NonNull final Locale userLocale,
+                            @NonNull final DAO db,
                             @NonNull final MappedCursorRow bookCursorRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
@@ -393,23 +402,21 @@ class ImportLegacyTask
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
-
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        db.updateBook(userContext, bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
-                DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(context, userLocale, bookCursorRow.getLong(DBDefinitions.KEY_PK_ID), book,
+                      DAO.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
      * Create a new book.
      */
-    private void insertBook(@NonNull final DAO db,
+    private void insertBook(@NonNull final Context context,
+                            @NonNull final Locale userLocale,
+                            @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
         Book book = new Book(buildBundle(db, null, review));
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        long id = db.insertBook(userContext, book);
+        long id = db.insertBook(context, userLocale, book);
+
         if (id > 0) {
             if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
                 String uuid = db.getBookUuid(id);
@@ -451,13 +458,13 @@ class ImportLegacyTask
         addStringIfNonBlank(review, bookData, DBDefinitions.KEY_PAGES);
 
         addDateIfValid(review, DBDefinitions.KEY_READ_START,
-                bookData, DBDefinitions.KEY_READ_START);
+                       bookData, DBDefinitions.KEY_READ_START);
 
         String readEnd = addDateIfValid(review, DBDefinitions.KEY_READ_END,
-                bookData, DBDefinitions.KEY_READ_END);
+                                        bookData, DBDefinitions.KEY_READ_END);
 
         Double rating = addDoubleIfPresent(review, DBDefinitions.KEY_RATING,
-                bookData, DBDefinitions.KEY_RATING);
+                                           bookData, DBDefinitions.KEY_RATING);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
@@ -488,10 +495,10 @@ class ImportLegacyTask
          * Build the publication date based on the components
          */
         String pubDate = GoodreadsManager.buildDate(review,
-                ReviewField.PUBLICATION_YEAR,
-                ReviewField.PUBLICATION_MONTH,
-                ReviewField.PUBLICATION_DAY,
-                null);
+                                                    ReviewField.PUBLICATION_YEAR,
+                                                    ReviewField.PUBLICATION_MONTH,
+                                                    ReviewField.PUBLICATION_DAY,
+                                                    null);
         if (pubDate != null && !pubDate.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
@@ -540,7 +547,7 @@ class ImportLegacyTask
                 newSeries.setNumber(details.getPosition());
                 allSeries.add(newSeries);
                 bookData.putString(DBDefinitions.KEY_TITLE,
-                        bookTitle.substring(0, details.startChar - 1));
+                                   bookTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
                 bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, allSeries);
@@ -573,14 +580,14 @@ class ImportLegacyTask
                         ListReviewsApiHandler.ReviewField.SHELF));
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(App.getAppContext(), db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyles.getDefaultStyle(db)));
                 }
             }
             //TEST see above
             //--- begin 2019-02-04 ---
             //TODO: should be using a user context.
-            Context userContext = App.getAppContext();
-            ItemWithFixableId.pruneList(userContext, db, bsList);
+            Context context = App.getAppContext();
+            ItemWithFixableId.pruneList(context, db, bsList);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
@@ -592,7 +599,7 @@ class ImportLegacyTask
         if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ReviewField.ADDED,
-                    bookData, DBDefinitions.KEY_DATE_ADDED);
+                                bookData, DBDefinitions.KEY_DATE_ADDED);
 
             // fetch thumbnail
             String thumbnail;
@@ -612,7 +619,7 @@ class ImportLegacyTask
             if (thumbnail != null) {
                 long grBookId = bookData.getLong(DBDefinitions.KEY_GOODREADS_BOOK_ID);
                 String fileSpec = ImageUtils.saveImage(thumbnail, String.valueOf(grBookId),
-                        GoodreadsManager.FILENAME_SUFFIX + '_' + size);
+                                                       GoodreadsManager.FILENAME_SUFFIX + '_' + size);
                 if (fileSpec != null) {
                     ArrayList<String> imageList = new ArrayList<>();
                     imageList.add(fileSpec);

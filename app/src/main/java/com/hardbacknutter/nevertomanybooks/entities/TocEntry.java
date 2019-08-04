@@ -351,29 +351,16 @@ public class TocEntry
     @NonNull
     @Override
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale(App.getAppContext());
+        return LocaleUtils.getPreferredLocale();
     }
 
     @Override
-    public long fixId(@NonNull final DAO db) {
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        return fixId(userContext, db, getLocale());
-    }
-
-    @Override
-    public long fixId(@NonNull final Context userContext,
-                      @NonNull final DAO db) {
-        return fixId(userContext, db, getLocale());
-    }
-
-    @Override
-    public long fixId(@NonNull final Context userContext,
+    public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale tocLocale) {
         // let the Author use its own Locale.
-        mAuthor.fixId(userContext, db);
-        mId = db.getTocEntryId(userContext, this, tocLocale);
+        mAuthor.fixId(context, db);
+        mId = db.getTocEntryId(context, this, tocLocale);
         return mId;
     }
 

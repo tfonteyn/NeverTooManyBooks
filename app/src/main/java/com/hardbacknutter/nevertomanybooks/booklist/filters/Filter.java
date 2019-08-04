@@ -16,12 +16,12 @@ public interface Filter<T> {
     String getExpression();
 
     /**
-     * @param context Current context for accessing resources.
+     * @param context Current context for accessing string resources.
      *
      * @return a human readable label/name for this filter, or {@code null} if none.
      */
     @Nullable
-    default String getLabel(@NonNull Context context) {
+    default String getLabel(@NonNull final Context context) {
         return null;
     }
 

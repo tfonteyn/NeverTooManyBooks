@@ -29,9 +29,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivityWithTasks;
+
+import java.util.Objects;
 
 /**
  * Searches the internet for book details based on:
@@ -58,9 +58,9 @@ public class BookSearchActivity
             Fragment frag = createFragment(tag);
             frag.setArguments(args);
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, tag)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, tag)
+                    .commit();
         }
     }
 

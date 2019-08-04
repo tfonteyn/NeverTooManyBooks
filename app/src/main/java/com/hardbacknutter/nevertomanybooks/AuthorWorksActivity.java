@@ -36,9 +36,9 @@ public class AuthorWorksActivity
             Fragment frag = new AuthorWorksFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, AuthorWorksFragment.TAG)
+                    .commit();
         }
     }
 

@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Basic implementation of format-agnostic BackupReader methods using
@@ -77,12 +78,9 @@ public abstract class BackupReaderAbstract
      */
     protected BackupReaderAbstract(@NonNull final Context context) {
         mDb = new DAO();
-        //FIXME: the context we get is not a 'userContext' so try to get correct resources
-        Resources resources = LocaleUtils.getLocalizedResources(context,
-                LocaleUtils.getPreferredLocale(context));
-        mProcessPreferences = resources.getString(R.string.progress_msg_process_preferences);
-        mProcessCover = resources.getString(R.string.progress_msg_process_cover);
-        mProcessBooklistStyles = resources.getString(R.string.progress_msg_process_booklist_style);
+        mProcessPreferences = context.getString(R.string.progress_msg_process_preferences);
+        mProcessCover = context.getString(R.string.progress_msg_process_cover);
+        mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
     }
 
     /**
@@ -94,6 +92,10 @@ public abstract class BackupReaderAbstract
     public void restore(@NonNull final ImportOptions settings,
                         @NonNull final ProgressListener listener)
             throws IOException, ImportException {
+
+        //TODO: should be using a user context.
+        Context context = App.getAppContext();
+        Locale userLocale = LocaleUtils.getPreferredLocale();
 
         mSettings = settings;
         mProgressListener = listener;
@@ -138,7 +140,7 @@ public abstract class BackupReaderAbstract
                     case Books:
                         if ((mSettings.what & ImportOptions.BOOK_CSV) != 0) {
                             // a CSV file with all book data
-                            mSettings.results = restoreBooks(entity);
+                            mSettings.results = restoreBooks(context, userLocale, entity);
                             entitiesRead |= ImportOptions.BOOK_CSV;
                         }
                         break;
@@ -176,7 +178,7 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, mProgressListener,
-                                        App.getAppContext().getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE));
+                                        context.getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE));
                             }
                             entitiesRead |= ImportOptions.PREFERENCES;
                         }
@@ -230,13 +232,13 @@ public abstract class BackupReaderAbstract
      *
      * @throws IOException on failure
      */
-    private Importer.Results restoreBooks(@NonNull final ReaderEntity entity)
+    private Importer.Results restoreBooks(@NonNull final Context context,
+                                          @NonNull final Locale userLocale,
+                                          @NonNull final ReaderEntity entity)
             throws IOException, ImportException {
 
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        try (Importer importer = new CsvImporter(userContext, mSettings)) {
-            return importer.doBooks(entity.getStream(), null, mProgressListener);
+        try (Importer importer = new CsvImporter(context, mSettings)) {
+            return importer.doBooks(context, userLocale, entity.getStream(), null, mProgressListener);
         }
     }
 

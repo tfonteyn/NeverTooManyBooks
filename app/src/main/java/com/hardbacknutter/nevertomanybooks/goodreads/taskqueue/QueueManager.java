@@ -20,6 +20,7 @@
 
 package com.hardbacknutter.nevertomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,13 +28,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertomanybooks.App;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.hardbacknutter.nevertomanybooks.App;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -48,7 +49,7 @@ public final class QueueManager {
     /*
      * Queues we need.
      */
-    /**  main: long-running tasks, or tasks that can just wait. */
+    /** main: long-running tasks, or tasks that can just wait. */
     public static final String Q_MAIN = "main";
     /** small_jobs: trivial background tasks that will only take a few seconds. */
     public static final String Q_SMALL_JOBS = "small_jobs";
@@ -305,7 +306,9 @@ public final class QueueManager {
      */
     boolean runTask(@NonNull final Task task) {
         if (task instanceof TQTask) {
-            return ((TQTask) task).run(this, App.getAppContext());
+            //TODO: should be using a user context.
+            Context context = App.getAppContext();
+            return ((TQTask) task).run(this, context);
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");

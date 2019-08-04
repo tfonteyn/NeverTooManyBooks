@@ -31,10 +31,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 
 /**
  * Hosting activity for showing a book.
@@ -59,9 +59,9 @@ public class BookDetailsActivity
             Fragment frag = new BookFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, BookFragment.TAG)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, BookFragment.TAG)
+                    .commit();
         }
     }
 

@@ -760,7 +760,7 @@
 
     <string name="style_builtin_author_series">Auteur daarna Serie</string>
     <string name="style_builtin_series">Series</string>
-    <string name="style_builtin_title_first_letter">Eerste letter v/d titel</string>
+    <string name="style_builtin_title_first_letter">Eerste letter van de titel</string>
     <string name="style_builtin_genre">Genrenaam</string>
     <string name="style_builtin_loaned">Uitlenen</string>
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>

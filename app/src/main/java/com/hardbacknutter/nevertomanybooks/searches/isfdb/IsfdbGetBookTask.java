@@ -9,14 +9,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.lang.ref.WeakReference;
-import java.net.SocketTimeoutException;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+
+import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
+import java.util.List;
 
 public class IsfdbGetBookTask
         extends AsyncTask<Void, Void, Bundle> {
@@ -66,13 +66,13 @@ public class IsfdbGetBookTask
         Thread.currentThread().setName("IsfdbGetBookTask");
         try {
             //TODO: should be using a user context.
-            Context userContext = App.getAppContext();
+            Context context = App.getAppContext();
 
             if (mEditions != null) {
-                return new IsfdbBook().fetch(mEditions, false, userContext);
+                return new IsfdbBook().fetch(mEditions, false, context);
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBook().fetch(mIsfdbId, false, userContext);
+                return new IsfdbBook().fetch(mIsfdbId, false, context);
             } else {
                 if (BuildConfig.DEBUG) {
                     Logger.debugWithStackTrace(this, "doInBackground", "how did we get here?");

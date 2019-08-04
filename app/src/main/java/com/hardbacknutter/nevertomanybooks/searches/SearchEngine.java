@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 public interface SearchEngine {
 
     /**
-     * If a {@link SearchEngine} does not support a specific (and faster) way/api
+     * If an implementation does not support a specific (and faster) way/api
      * to fetch a cover image, then {@link SearchEngine#getCoverImage(String, ImageSize)}
      * can call this fallback method.
      * Do NOT use if the site either does not support returning images during search,

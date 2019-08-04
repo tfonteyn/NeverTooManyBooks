@@ -55,9 +55,9 @@ public class AdminActivity
             Fragment frag = new AdminFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, AdminFragment.TAG)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, AdminFragment.TAG)
+                    .commit();
         }
     }
 }

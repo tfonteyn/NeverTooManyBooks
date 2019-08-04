@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
 
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
@@ -226,7 +225,7 @@ public class Book
         // TEST: There's a problem with the facebook app in android,
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
-                title, author, series, ratingString);
+                                        title, author, series, ratingString);
         return new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text)
@@ -258,73 +257,73 @@ public class Book
 //        DOM_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(DBDefinitions.KEY_TITLE,
-                getString(DBDefinitions.KEY_TITLE));
+                           getString(DBDefinitions.KEY_TITLE));
         bookData.putString(DBDefinitions.KEY_ISBN,
-                getString(DBDefinitions.KEY_ISBN));
+                           getString(DBDefinitions.KEY_ISBN));
 
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
+                                        getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
+                                        getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
-                getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
+                                        getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
 
         // publication data
         bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                getString(DBDefinitions.KEY_PUBLISHER));
+                           getString(DBDefinitions.KEY_PUBLISHER));
         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
-                getLong(DBDefinitions.KEY_TOC_BITMASK));
+                         getLong(DBDefinitions.KEY_TOC_BITMASK));
         bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
-                getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                           getString(DBDefinitions.KEY_DATE_PUBLISHED));
         bookData.putString(DBDefinitions.KEY_PRICE_LISTED,
-                getString(DBDefinitions.KEY_PRICE_LISTED));
+                           getString(DBDefinitions.KEY_PRICE_LISTED));
         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+                           getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+                           getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
         bookData.putString(DBDefinitions.KEY_FORMAT,
-                getString(DBDefinitions.KEY_FORMAT));
+                           getString(DBDefinitions.KEY_FORMAT));
         bookData.putString(DBDefinitions.KEY_GENRE,
-                getString(DBDefinitions.KEY_GENRE));
+                           getString(DBDefinitions.KEY_GENRE));
         bookData.putString(DBDefinitions.KEY_LANGUAGE,
-                getString(DBDefinitions.KEY_LANGUAGE));
+                           getString(DBDefinitions.KEY_LANGUAGE));
         bookData.putString(DBDefinitions.KEY_PAGES,
-                getString(DBDefinitions.KEY_PAGES));
+                           getString(DBDefinitions.KEY_PAGES));
         // common blurb
         bookData.putString(DBDefinitions.KEY_DESCRIPTION,
-                getString(DBDefinitions.KEY_DESCRIPTION));
+                           getString(DBDefinitions.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
         bookData.putLong(DBDefinitions.KEY_EDITION_BITMASK,
-                getLong(DBDefinitions.KEY_EDITION_BITMASK));
+                         getLong(DBDefinitions.KEY_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
         bookData.putLong(DBDefinitions.KEY_SIGNED,
-                getLong(DBDefinitions.KEY_SIGNED));
+                         getLong(DBDefinitions.KEY_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
         bookData.putLong(DBDefinitions.KEY_READ,
-                getLong(DBDefinitions.KEY_READ));
+                         getLong(DBDefinitions.KEY_READ));
 
         bookData.putDouble(DBDefinitions.KEY_RATING,
-                getDouble(DBDefinitions.KEY_RATING));
+                           getDouble(DBDefinitions.KEY_RATING));
 
         bookData.putString(DBDefinitions.KEY_NOTES,
-                getString(DBDefinitions.KEY_NOTES));
+                           getString(DBDefinitions.KEY_NOTES));
         bookData.putString(DBDefinitions.KEY_LOCATION,
-                getString(DBDefinitions.KEY_LOCATION));
+                           getString(DBDefinitions.KEY_LOCATION));
         bookData.putString(DBDefinitions.KEY_READ_START,
-                getString(DBDefinitions.KEY_READ_START));
+                           getString(DBDefinitions.KEY_READ_START));
         bookData.putString(DBDefinitions.KEY_READ_END,
-                getString(DBDefinitions.KEY_READ_END));
+                           getString(DBDefinitions.KEY_READ_END));
         bookData.putString(DBDefinitions.KEY_DATE_ACQUIRED,
-                getString(DBDefinitions.KEY_DATE_ACQUIRED));
+                           getString(DBDefinitions.KEY_DATE_ACQUIRED));
         bookData.putString(DBDefinitions.KEY_PRICE_PAID,
-                getString(DBDefinitions.KEY_PRICE_PAID));
+                           getString(DBDefinitions.KEY_PRICE_PAID));
         bookData.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
+                           getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
         return bookData;
     }
@@ -414,7 +413,7 @@ public class Book
                 //con: the sublist comes in as one column. Will need json format to keep it flexible
                 // and then decode here (or StringList custom (de)coding? hum...)
                 putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
-                        db.getBookshelvesByBookId(bookId));
+                                       db.getBookshelvesByBookId(bookId));
                 putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
                 putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
                 putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
@@ -587,7 +586,7 @@ public class Book
             // we now have an ISO code, or an invalid language.
             bookLocale = new Locale(lang);
             if (!LocaleUtils.isValid(bookLocale)) {
-                bookLocale = LocaleUtils.getPreferredLocale(App.getAppContext());
+                bookLocale = LocaleUtils.getPreferredLocale();
             } else if (updateLanguage) {
                 putString(DBDefinitions.KEY_LANGUAGE, lang);
             }
@@ -600,10 +599,10 @@ public class Book
             // have a language and did not.
             if (BuildConfig.DEBUG) {
                 Logger.debug(this, "getLocale", "no language set for",
-                        "id=" + getId(),
-                        "title=" + get(DBDefinitions.KEY_TITLE));
+                             "id=" + getId(),
+                             "title=" + get(DBDefinitions.KEY_TITLE));
             }
-            return LocaleUtils.getPreferredLocale(App.getAppContext());
+            return LocaleUtils.getPreferredLocale();
         }
     }
 
@@ -612,11 +611,11 @@ public class Book
      *
      * @param db Database connection
      */
-    public void refreshSeriesList(@NonNull final Context userContext,
+    public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         for (Series series : list) {
-            db.refreshSeries(userContext, series);
+            db.refreshSeries(context, series);
         }
         putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }
@@ -649,12 +648,12 @@ public class Book
 
         // set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask.
         addAccessor(HAS_MULTIPLE_WORKS,
-                new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                        TocEntry.Authors.MULTIPLE_WORKS));
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
+                                            TocEntry.Authors.MULTIPLE_WORKS));
         // set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask.
         addAccessor(HAS_MULTIPLE_AUTHORS,
-                new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
-                        TocEntry.Authors.MULTIPLE_AUTHORS));
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
+                                            TocEntry.Authors.MULTIPLE_AUTHORS));
     }
 
     @Nullable

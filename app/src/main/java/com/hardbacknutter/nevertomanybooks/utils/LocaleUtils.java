@@ -103,7 +103,7 @@ public final class LocaleUtils {
      * @return {@code true} if there is a change (difference)
      */
     public static boolean isChanged(@NonNull final Context context) {
-        boolean changed = !from(context).equals(getPreferredLocale(context));
+        boolean changed = !from(context).equals(getPreferredLocale());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debug(LocaleUtils.class, "isChanged", "=" + changed);
         }
@@ -118,14 +118,15 @@ public final class LocaleUtils {
     public static void applyPreferred(@NonNull final Context context) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(LocaleUtils.class, "applyPreferred", toDebugString(context));
+            Logger.debugEnter(LocaleUtils.class, "applyPreferred",
+                              toDebugString(context));
         }
 
         if (!isChanged(context)) {
             return;
         }
 
-        Locale userLocale = getPreferredLocale(context);
+        Locale userLocale = getPreferredLocale();
 
         // Apply the user-preferred Locale globally.... but this does not override already
         // loaded resources. So.. this is for FUTURE use when new resources get initialised.
@@ -136,18 +137,16 @@ public final class LocaleUtils {
         Configuration deltaOnlyConfig = new Configuration();
         deltaOnlyConfig.setLocale(userLocale);
 
-        context.getResources().updateConfiguration(deltaOnlyConfig,
-                context.getResources().getDisplayMetrics());
-
+        Resources resources = context.getResources();
+        resources.updateConfiguration(deltaOnlyConfig, resources.getDisplayMetrics());
 
         // see if we need to add mappings for the new/current locale
         createLanguageMappingCache(userLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugExit(LocaleUtils.class, "applyPreferred",
-                    toDebugString(context));
+                             toDebugString(context));
         }
-
     }
 
     /**
@@ -164,8 +163,8 @@ public final class LocaleUtils {
         } catch (@NonNull final MissingResourceException e) {
             // log but ignore.
             Logger.debug(LocaleUtils.class, "isValid",
-                    "e=" + e.getLocalizedMessage(),
-                    "locale=" + locale);
+                         "e=" + e.getLocalizedMessage(),
+                         "locale=" + locale);
             return false;
 
         } catch (@NonNull final RuntimeException ignore) {
@@ -177,9 +176,9 @@ public final class LocaleUtils {
      * @return the user-preferred Locale as stored in the preferences.
      */
     @NonNull
-    public static Locale getPreferredLocale(@NonNull final Context context) {
-        String lang = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(Prefs.pk_ui_language, null);
+    public static Locale getPreferredLocale() {
+        String lang = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                                       .getString(Prefs.pk_ui_language, null);
         // the string "system" is also hardcoded in the preference string-array and
         // in the default setting in the preference screen.
         if (lang == null || lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
@@ -301,7 +300,7 @@ public final class LocaleUtils {
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugEnter(LocaleUtils.class, "getLabel",
-                    "iso=" + iso, toDebugString(context));
+                              "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);
     }
@@ -327,7 +326,6 @@ public final class LocaleUtils {
 
     /**
      * Load a Resources set for the specified Locale.
-     * URGENT: review the use/abuse of getLocalizedResources
      * ENHANCE: should we cache these ?
      *
      * @param context       Current context
@@ -338,8 +336,7 @@ public final class LocaleUtils {
     @NonNull
     public static Resources getLocalizedResources(@NonNull final Context context,
                                                   @NonNull final Locale desiredLocale) {
-        Resources resources = context.getResources();
-        Configuration current = resources.getConfiguration();
+        Configuration current = context.getResources().getConfiguration();
         Configuration configuration = new Configuration(current);
         String lang = desiredLocale.getLanguage();
         //FIXME: resources want 2-chars, locale 3-chars... is there a better way ?
@@ -579,24 +576,24 @@ public final class LocaleUtils {
     }
 
     public static String toDebugString(@NonNull final Context context) {
-        Locale cur = from(context);
+        Locale currentLocale = from(context);
         Locale configLocale = context.getResources().getConfiguration().locale;
         if (configLocale == null) {
             configLocale = Locale.ENGLISH;
         }
         return ""
-                + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
-                + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(cur)
-                + "\nconfiguration.locale       : " + configLocale.getDisplayName()
-                + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(cur)
+               + "\nsSystemInitialLocale       : " + App.getSystemLocale().getDisplayName()
+               + "\nsSystemInitialLocale(cur)  : " + App.getSystemLocale().getDisplayName(currentLocale)
+               + "\nconfiguration.locale       : " + configLocale.getDisplayName()
+               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(currentLocale)
 
-                + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
-                + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(cur)
-                + "\ngetPreferredLocale()        : " + getPreferredLocale(context).getDisplayName()
-                + "\ngetPreferredLocale(cur)     : " + getPreferredLocale(context).getDisplayName(cur)
+               + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
+               + "\nLocale.getDefault(cur)     : " + Locale.getDefault().getDisplayName(currentLocale)
+               + "\ngetPreferredLocale()        : " + getPreferredLocale().getDisplayName()
+               + "\ngetPreferredLocale(cur)     : " + getPreferredLocale().getDisplayName(currentLocale)
 
-                + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
-                + "\nApp.isRecreating()         : " + App.isRecreating();
+               + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
+               + "\nApp.isRecreating()         : " + App.isRecreating();
     }
 
     /**
@@ -647,7 +644,7 @@ public final class LocaleUtils {
                     // Currency.getInstance sanity catch....
                     if (BuildConfig.DEBUG) {
                         Logger.error(LocaleUtils.class, e, "splitPrice",
-                                "data[0]=" + data[0], "data[1]=" + data[1]);
+                                     "data[0]=" + data[0], "data[1]=" + data[1]);
                     }
                 }
             }

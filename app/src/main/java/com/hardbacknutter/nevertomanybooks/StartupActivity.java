@@ -183,7 +183,7 @@ public class StartupActivity
             // any error, notify user and die.
             mModel.getTaskException().observe(this, e -> {
                 if (e != null) {
-                    App.showNotification(this, R.string.error_unknown,
+                    App.showNotification(this, getString(R.string.error_unknown),
                             e.getLocalizedMessage());
                     finish();
                 }

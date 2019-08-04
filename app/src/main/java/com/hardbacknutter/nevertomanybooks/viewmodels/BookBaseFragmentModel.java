@@ -17,11 +17,13 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Used by the set of fragments that allow viewing and editing a Book.
@@ -149,9 +151,10 @@ public class BookBaseFragmentModel
     }
 
     @NonNull
-    public Book saveBook(@NonNull final Context userContext) {
+    public Book saveBook(@NonNull final Context context) {
+        Locale userLocale = LocaleUtils.getPreferredLocale();
         if (mBook.getId() == 0) {
-            long id = mDb.insertBook(userContext, mBook);
+            long id = mDb.insertBook(context, userLocale, mBook);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
                 if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
@@ -164,7 +167,7 @@ public class BookBaseFragmentModel
                 }
             }
         } else {
-            mDb.updateBook(userContext, mBook.getId(), mBook, 0);
+            mDb.updateBook(context, userLocale, mBook.getId(), mBook, 0);
         }
 
         return mBook;
@@ -203,8 +206,8 @@ public class BookBaseFragmentModel
         mBook.refreshAuthorList(mDb);
     }
 
-    public void refreshSeriesList(@NonNull final Context userContext) {
-        mBook.refreshSeriesList(userContext, mDb);
+    public void refreshSeriesList(@NonNull final Context context) {
+        mBook.refreshSeriesList(context, mDb);
     }
 
     @NonNull

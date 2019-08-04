@@ -20,19 +20,13 @@
 package com.hardbacknutter.nevertomanybooks.datamanager;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.datamanager.accessors.DataAccessor;
@@ -47,6 +41,13 @@ import com.hardbacknutter.nevertomanybooks.datamanager.validators.ValidatorExcep
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.utils.IllegalTypeException;
 import com.hardbacknutter.nevertomanybooks.utils.UniqueMap;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to manage a version of a set of related data.
@@ -161,8 +162,8 @@ public class DataManager {
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
                 Logger.warnWithStackTrace(this, "putAll",
-                                           "key=`" + key + '`',
-                                           "value=" + value);
+                        "key=`" + key + '`',
+                        "value=" + value);
                 if (value != null) {
                     putString(key, value.toString());
                 }
@@ -269,7 +270,6 @@ public class DataManager {
     /**
      * @return a double value.
      */
-    @SuppressWarnings("WeakerAccess")
     public double getDouble(@NonNull final String key) {
         return mDatumMap.getOrNew(key).getDouble(mRawData);
     }
@@ -457,8 +457,8 @@ public class DataManager {
                                 @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always */) {
             Logger.debugWithStackTrace(this, "putSerializable",
-                                       "key=" + key,
-                                       "type=" + value.getClass().getCanonicalName());
+                    "key=" + key,
+                    "type=" + value.getClass().getCanonicalName());
         }
         mRawData.putSerializable(key, value);
     }
@@ -593,8 +593,8 @@ public class DataManager {
             int cnt = 0;
             for (ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++cnt).append(") ")
-                       .append(e.getFormattedMessage(context))
-                       .append('\n');
+                        .append(e.getFormattedMessage(context))
+                        .append('\n');
             }
             return message.toString();
         }

@@ -1,17 +1,11 @@
 package com.hardbacknutter.nevertomanybooks.backup.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -21,6 +15,13 @@ import com.hardbacknutter.nevertomanybooks.backup.ui.BRBaseActivity.FileDetails;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Object to provide a FileListerFragmentTask specific to archive mFileDetails.
@@ -33,8 +34,8 @@ public class FileListerTask
      */
     private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
             (o1, o2) -> o1.getFile().getName().toLowerCase(App.getSystemLocale())
-                          .compareTo(o2.getFile().getName()
-                                       .toLowerCase(App.getSystemLocale()));
+                    .compareTo(o2.getFile().getName()
+                            .toLowerCase(App.getSystemLocale()));
 
     @NonNull
     private final File mRootDir;
@@ -59,7 +60,7 @@ public class FileListerTask
         Thread.currentThread().setName("FileListerTask");
 
         //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
+        Context context = App.getAppContext();
 
         ArrayList<FileDetails> fileDetails = new ArrayList<>();
 
@@ -78,7 +79,7 @@ public class FileListerTask
             BackupFileDetails fd = new BackupFileDetails(file);
             fileDetails.add(fd);
             if (BackupManager.isArchive(file)) {
-                try (BackupReader reader = BackupManager.getReader(userContext, file)) {
+                try (BackupReader reader = BackupManager.getReader(context, file)) {
                     fd.setInfo(reader.getInfo());
                 } catch (@NonNull final IOException e) {
                     Logger.error(this, e);

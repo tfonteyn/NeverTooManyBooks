@@ -140,8 +140,8 @@ public class EditSeriesDialogFragment
                     mSeries.setTitle(mName);
                     mSeries.setComplete(mIsComplete);
 
-                    mDb.updateOrInsertSeries(getContext(),
-                            mSeries, LocaleUtils.getPreferredLocale(getContext()));
+                    mDb.updateOrInsertSeries(getContext(), mSeries,
+                            LocaleUtils.getPreferredLocale());
 
                     Bundle data = new Bundle();
                     data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());

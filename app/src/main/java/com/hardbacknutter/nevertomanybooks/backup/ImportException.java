@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertomanybooks.App;
+
 /**
  * Importing data can give a more detailed reason of failure.
  * String ID and args are stored for later retrieval.

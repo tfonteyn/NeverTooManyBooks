@@ -183,18 +183,18 @@ public class EditSeriesListActivity
                 .setTitle(R.string.title_scope_of_change)
                 .setIcon(R.drawable.ic_info_outline)
                 .setNegativeButton(allBooks, (d, which) -> {
-                    Locale locale = LocaleUtils.getPreferredLocale(this);
-                    mGlobalReplacementsMade = mDb.globalReplaceSeries(EditSeriesListActivity.this,
-                            series, newSeries, locale);
+                    Locale userLocale = LocaleUtils.getPreferredLocale();
+                    mGlobalReplacementsMade = mDb.globalReplaceSeries(this,
+                            series, newSeries, userLocale);
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(EditSeriesListActivity.this, mDb, mList);
+                    ItemWithFixableId.pruneList(this, mDb, mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .setPositiveButton(R.string.btn_this_book, (d, which) -> {
                     series.copyFrom(newSeries);
                     Series.pruneSeriesList(mList);
-                    ItemWithFixableId.pruneList(EditSeriesListActivity.this, mDb, mList);
+                    ItemWithFixableId.pruneList(this, mDb, mList);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()

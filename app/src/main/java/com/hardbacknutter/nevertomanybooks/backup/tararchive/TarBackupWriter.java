@@ -24,6 +24,12 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
+import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriterAbstract;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,12 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-
-import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
-import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriterAbstract;
 
 /**
  * Implementation of TAR-specific writer functions.

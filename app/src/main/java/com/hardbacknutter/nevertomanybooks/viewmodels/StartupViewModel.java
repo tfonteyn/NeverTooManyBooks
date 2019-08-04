@@ -228,6 +228,9 @@ public class StartupViewModel
         protected Void doInBackground(final Void... params) {
             Thread.currentThread().setName("DBCleanerTask");
 
+            //TODO: should be using a user context.
+            Context context = App.getAppContext();
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Logger.debug(this, "doInBackground", "taskId=" + getId());
             }
@@ -238,7 +241,7 @@ public class StartupViewModel
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.updateLanguages();
                 // clean/correct style UUID's on Bookshelves for deleted styles.
-                cleaner.bookshelves(App.getAppContext());
+                cleaner.bookshelves(context);
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);

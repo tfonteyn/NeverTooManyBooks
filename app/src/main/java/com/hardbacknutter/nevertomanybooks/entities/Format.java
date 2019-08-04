@@ -1,17 +1,15 @@
 package com.hardbacknutter.nevertomanybooks.entities;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertomanybooks.R;
+import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 
 /**
  * System wide book format representation.
@@ -59,15 +57,12 @@ public final class Format {
     public static String map(@NonNull final Context context,
                              @NonNull final String source) {
 
-        //FIXME: the context we get is not always a 'userContext' so try to get correct resources
-        Resources resources = LocaleUtils.getLocalizedResources(context,
-                LocaleUtils.getPreferredLocale(context));
-        Locale locale = resources.getConfiguration().locale;
+        Locale locale = context.getResources().getConfiguration().locale;
         if (locale == null) {
             locale = Locale.ENGLISH;
         }
         Integer resId = MAPPER.get(source.toLowerCase(locale));
-        return resId != null ? resources.getString(resId)
+        return resId != null ? context.getString(resId)
                              : source;
     }
 }

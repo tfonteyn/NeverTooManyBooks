@@ -123,8 +123,7 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         try (DAO db = new DAO()) {
             mBooklistStyles.clear();
-            //noinspection ConstantConditions
-            mBooklistStyles.addAll(BooklistStyles.getStyles(getContext(), db, mShowAllStyles).values());
+            mBooklistStyles.addAll(BooklistStyles.getStyles(db, mShowAllStyles).values());
         }
     }
 

@@ -362,8 +362,7 @@ public class XmlExporter
     }
 
     /**
-     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ProgressListener, boolean)}.
-     * Not in direct use yet.
+     * Fulfils the interface contract. Not in direct use yet.
      * <p>
      * <br>{@inheritDoc}
      */

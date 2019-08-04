@@ -317,7 +317,7 @@ public class BooksOnBookshelf
 //        // set the list, this will trigger the adapter to refresh.
 //        mAdapter.setCursor(mModel.getListCursor());
 
-        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this), mModel.getDb(), cursor);
+        mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(), mModel.getDb(), cursor);
         mAdapter.setOnItemClickListener(this::onItemClick);
         mAdapter.setOnItemLongClickListener(this::onItemLongClick);
         mListView.setAdapter(mAdapter);
@@ -430,7 +430,7 @@ public class BooksOnBookshelf
         }
 
         // Update the activity title using the current style name.
-        setTitle(mModel.getCurrentStyle(this).getLabel(this));
+        setTitle(mModel.getCurrentStyle().getLabel(this));
 
         mProgressBar.setVisibility(View.GONE);
 
@@ -724,7 +724,7 @@ public class BooksOnBookshelf
 
                         case R.id.MENU_DEBUG_DUMP_STYLE:
                             Logger.debug(this, "onOptionsItemSelected",
-                                    mModel.getCurrentStyle(this));
+                                    mModel.getCurrentStyle());
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
@@ -751,7 +751,7 @@ public class BooksOnBookshelf
 
     private void showStylePicker() {
         StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                mModel.getCurrentStyle(this), false);
+                mModel.getCurrentStyle(), false);
     }
 
     /**
@@ -1484,7 +1484,7 @@ public class BooksOnBookshelf
                         if (style != null) {
                             // save the new bookshelf/style combination
                             mModel.getCurrentBookshelf().setAsPreferred(this);
-                            mModel.setCurrentStyle(this, style);
+                            mModel.setCurrentStyle(style);
                         }
                         mModel.setFullRebuild(true);
                         break;
@@ -1616,7 +1616,7 @@ public class BooksOnBookshelf
      * Display the number of books in the current list.
      */
     private void setBookCountField() {
-        int showHeaderFlags = mModel.getCurrentStyle(this).getShowHeaderInfo();
+        int showHeaderFlags = mModel.getCurrentStyle().getShowHeaderInfo();
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             int totalBooks = mModel.getTotalBooks();
             int uniqueBooks = mModel.getUniqueBooks();
@@ -1642,7 +1642,7 @@ public class BooksOnBookshelf
      */
     private boolean setHeaderTextVisibility() {
 
-        BooklistStyle style = mModel.getCurrentStyle(this);
+        BooklistStyle style = mModel.getCurrentStyle();
         // for level, set the visibility of the views.
         for (int level = 1; level <= 2; level++) {
             int index = level - 1;

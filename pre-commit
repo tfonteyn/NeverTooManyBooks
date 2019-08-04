@@ -9,30 +9,33 @@
 # it wants to stop the commit.
 #
 
-
 # make sure table types are Temporary (i.e. not Standard)
 function checkTempTableUsage {
 
-  grep -e TableTypes.Standard $1
+  grep  -e "^[^/].*TableTypes.Standard" $1
   if [ $? == 0 ]; then
     echo "$1 contains TableTypes.Standard, aborting"
     exit 1
   fi
 }
+# Main src dir.
+SRC="app/src/main"
 
-checkTempTableUsage "src/hardbacknutter.nevertomanybooks/booklist/BooklistBuilder.java"
-checkTempTableUsage "src/hardbacknutter.nevertomanybooks/booklist/FlattenedBooklist.java"
-checkTempTableUsage "hardbacknutter.nevertomanybooks/database/DBDefinitions.java"
 
-MF=AndroidManifest.xml
-echo "Cleaning $MF"
-if [ ! -f $MF ]; then
+PR="${SRC}/java/com/hardbacknutter/nevertomanybooks"
+checkTempTableUsage "${PR}/database/DBDefinitions.java"
+
+MF="AndroidManifest.xml"
+
+echo "Cleaning ${SRC}/${MF}"
+if [ ! -f ${SRC}/${MF} ]; then
   echo "Manifest File not found!"
   exit 1
 fi
 
 # backup to the 'outside' with developer keys
-cp $MF ../BC-AndroidManifest_`date +%Y-%m-%d_%H-%M-%S`.xml
+cp ${SRC}/${MF} ../${MF}_`date +%Y-%m-%d_%H-%M-%S`.txt
 # remove developer keys (all manifest meta-data values really)
-sed -i -e 's/android:value=".*"/android:value=""/g' $MF
+sed -i -e 's/android:value=".*"/android:value=""/g' ${SRC}/${MF}
+
 

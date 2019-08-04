@@ -93,29 +93,29 @@ public class EditBookPublicationFragment
 
         field = fields.add(R.id.format, DBDefinitions.KEY_FORMAT);
         initValuePicker(field, R.string.lbl_format, R.id.btn_format,
-                        mBookBaseFragmentModel.getFormats());
+                mBookBaseFragmentModel.getFormats());
 
         field = fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
-                      .setFormatter(new Fields.LanguageFormatter());
+                .setFormatter(new Fields.LanguageFormatter());
         initValuePicker(field, R.string.lbl_language, R.id.btn_language,
-                        mBookBaseFragmentModel.getLanguagesCodes());
+                mBookBaseFragmentModel.getLanguagesCodes());
 
         field = fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher,
-                        mBookBaseFragmentModel.getPublishers());
+                mBookBaseFragmentModel.getPublishers());
 
         field = fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
-                      .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_date_published, false);
 
         field = fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-                      .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_first_publication, false);
 
         fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED);
         field = fields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
-                        mBookBaseFragmentModel.getListPriceCurrencyCodes());
+                mBookBaseFragmentModel.getListPriceCurrencyCodes());
     }
 
     @Override

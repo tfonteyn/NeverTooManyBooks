@@ -40,9 +40,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
@@ -52,6 +49,9 @@ import com.hardbacknutter.nevertomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
@@ -95,7 +95,7 @@ public class EditBookshelfListActivity
         mAdapter = new BookshelfAdapter(this, mList);
 
         findViewById(R.id.fab).setOnClickListener(
-                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(this, mDb))));
+                v -> editItem(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb))));
 
         RecyclerView listView = findViewById(android.R.id.list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -119,13 +119,13 @@ public class EditBookshelfListActivity
 
         Menu menu = MenuPicker.createMenu(this);
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-            .setIcon(R.drawable.ic_edit);
+                .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_delete);
 
         String menuTitle = bookshelf.getName();
         final MenuPicker<Bookshelf> picker = new MenuPicker<>(this, menuTitle, menu, bookshelf,
-                                                              this::onContextItemSelected);
+                this::onContextItemSelected);
         picker.show();
     }
 
@@ -170,7 +170,7 @@ public class EditBookshelfListActivity
         FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
             EditBookshelfDialogFragment.newInstance(bookshelf)
-                                       .show(fm, EditBookshelfDialogFragment.TAG);
+                    .show(fm, EditBookshelfDialogFragment.TAG);
         }
     }
 

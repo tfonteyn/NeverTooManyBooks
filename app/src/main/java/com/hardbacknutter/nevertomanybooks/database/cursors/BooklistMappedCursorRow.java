@@ -28,8 +28,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistGroup;
@@ -40,6 +38,8 @@ import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import java.util.Locale;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -90,7 +90,7 @@ public class BooklistMappedCursorRow
      */
     public boolean hasAuthorId() {
         return getColumnIndex(DBDefinitions.KEY_FK_AUTHOR) >= 0
-                && getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+               && getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
     }
 
     /**
@@ -100,26 +100,26 @@ public class BooklistMappedCursorRow
      */
     public boolean hasSeriesId() {
         return getColumnIndex(DBDefinitions.KEY_FK_SERIES) >= 0
-                && getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+               && getLong(DBDefinitions.KEY_FK_SERIES) > 0;
     }
 
     /**
      * Get the full set of 'level' texts for this row.
      *
-     * @param context Current context
+     * @param context Current context for accessing resources.
      *
      * @return level-text array
      */
     @Nullable
     public String[] getLevelText(@NonNull final Context context) {
         return new String[]{getLevelText(context, 1),
-                            getLevelText(context, 2)};
+                getLevelText(context, 2)};
     }
 
     /**
      * Get the text associated with the matching level group for the current item.
      *
-     * @param context Current context
+     * @param context Current context for accessing resources.
      * @param level   to get
      *
      * @return the text for that level, or {@code null} if none present.
@@ -183,7 +183,7 @@ public class BooklistMappedCursorRow
     /**
      * Perform any special formatting for a row group.
      *
-     * @param context Current context
+     * @param context Current context for accessing resources.
      * @param level   Level of the row group
      * @param source  Source value
      *

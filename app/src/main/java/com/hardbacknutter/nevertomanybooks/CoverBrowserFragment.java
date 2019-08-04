@@ -43,11 +43,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.RejectedExecutionException;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.searches.SearchEngine;
@@ -56,6 +51,11 @@ import com.hardbacknutter.nevertomanybooks.searches.librarything.LibraryThingMan
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.viewmodels.CoverBrowserViewModel;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -173,7 +173,7 @@ public class CoverBrowserFragment
             imageView.setAdjustViewBounds(true);
             imageView.setLayoutParams(
                     new ImageSwitcher.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                   ViewGroup.LayoutParams.WRAP_CONTENT));
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
 
             // placeholder image
             imageView.setImageResource(R.drawable.ic_image);
@@ -185,13 +185,13 @@ public class CoverBrowserFragment
             String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_FILE_SPEC);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(CoverBrowserFragment.this, "mImageSwitcherView.onClick",
-                             "fileSpec=" + fileSpec);
+                        "fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
                 Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment().onActivityResult(getTargetRequestCode(),
-                                                     Activity.RESULT_OK, data);
+                        Activity.RESULT_OK, data);
             }
             // close the CoverBrowserFragment
             dismiss();
@@ -408,13 +408,13 @@ public class CoverBrowserFragment
 
             // Get the image file; try the sizes in order as specified here.
             holder.fileInfo = mModel.getFileManager().getFile(isbn,
-                                                              SearchEngine.ImageSize.SMALL,
-                                                              SearchEngine.ImageSize.MEDIUM,
-                                                              SearchEngine.ImageSize.LARGE);
+                    SearchEngine.ImageSize.SMALL,
+                    SearchEngine.ImageSize.MEDIUM,
+                    SearchEngine.ImageSize.LARGE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Logger.debug(this, "onBindViewHolder",
-                             "fileInfo=" + holder.fileInfo);
+                        "fileInfo=" + holder.fileInfo);
             }
 
             File imageFile = null;
@@ -438,8 +438,8 @@ public class CoverBrowserFragment
                         // some books have a LOT of editions... Dr. Asimov
                         if (BuildConfig.DEBUG /* always */) {
                             Logger.debug(this, "onBindViewHolder",
-                                         "isbn=" + isbn,
-                                         "Exception msg=" + e.getLocalizedMessage());
+                                    "isbn=" + isbn,
+                                    "Exception msg=" + e.getLocalizedMessage());
                         }
                     }
                 }
@@ -453,8 +453,8 @@ public class CoverBrowserFragment
                     if (holder.fileInfo.size.equals(SearchEngine.ImageSize.LARGE)) {
                         // no need to search, just load it.
                         ImageUtils.setImageView(holder.imageView,
-                                                new File(holder.fileInfo.fileSpec),
-                                                mWidth, mHeight, true);
+                                new File(holder.fileInfo.fileSpec),
+                                mWidth, mHeight, true);
                     } else {
                         // see if we can get a larger image.
 

@@ -15,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
 import com.hardbacknutter.nevertomanybooks.searches.SearchCoordinator;
@@ -28,6 +26,8 @@ import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertomanybooks.utils.Utils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BookSearchBaseModel;
+
+import java.util.Objects;
 
 /**
  * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
@@ -95,14 +95,14 @@ public abstract class BookSearchBaseFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_HIDE_KEYBOARD,
-                 MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
-            .setIcon(R.drawable.ic_keyboard_hide)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                MenuHandler.ORDER_HIDE_KEYBOARD, R.string.menu_hide_keyboard)
+                .setIcon(R.drawable.ic_keyboard_hide)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
-            .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -119,7 +119,7 @@ public abstract class BookSearchBaseFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                  SearchAdminActivity.TAB_ORDER);
+                                SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -140,7 +140,7 @@ public abstract class BookSearchBaseFragment
         if (mBookSearchBaseModel.getSearchCoordinatorId() != 0) {
             SearchCoordinator.MESSAGE_SWITCH
                     .addListener(mBookSearchBaseModel.getSearchCoordinatorId(), true,
-                                 getSearchFinishedListener());
+                            getSearchFinishedListener());
         }
     }
 
@@ -181,11 +181,11 @@ public abstract class BookSearchBaseFragment
             mTaskManager.sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
             searchCoordinator.search(mBookSearchBaseModel.getSearchSites(),
-                                     mBookSearchBaseModel.getIsbnSearchText(),
-                                     mBookSearchBaseModel.getAuthorSearchText(),
-                                     mBookSearchBaseModel.getTitleSearchText(),
-                                     mBookSearchBaseModel.getPublisherSearchText(),
-                                     true);
+                    mBookSearchBaseModel.getIsbnSearchText(),
+                    mBookSearchBaseModel.getAuthorSearchText(),
+                    mBookSearchBaseModel.getTitleSearchText(),
+                    mBookSearchBaseModel.getPublisherSearchText(),
+                    true);
 
             // reset the details so we don't restart the search unnecessarily
             mBookSearchBaseModel.clearSearchText();
@@ -232,7 +232,7 @@ public abstract class BookSearchBaseFragment
                     Objects.requireNonNull(data);
                     mBookSearchBaseModel.setSearchSites(
                             data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
-                                             mBookSearchBaseModel.getSearchSites()));
+                                    mBookSearchBaseModel.getSearchSites()));
                 }
                 break;
 
@@ -252,9 +252,9 @@ public abstract class BookSearchBaseFragment
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.warnWithStackTrace(this, "BookSearchBaseFragment.onActivityResult",
-                                              "NOT HANDLED:",
-                                              "requestCode=" + requestCode,
-                                              "resultCode=" + resultCode);
+                            "NOT HANDLED:",
+                            "requestCode=" + requestCode,
+                            "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

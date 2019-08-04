@@ -815,6 +815,19 @@ public class TableDefinition
         }
     }
 
+    @Nullable
+    private TableInfo mTableInfo;
+
+    @NonNull
+    public TableInfo getTableInfo(@NonNull final SynchronizedDb syncedDb) {
+        synchronized (this) {
+            if (mTableInfo == null) {
+                mTableInfo = new TableInfo(syncedDb, mName);
+            }
+        }
+        return mTableInfo;
+    }
+
     /**
      * Supported/used table types.
      * <p>

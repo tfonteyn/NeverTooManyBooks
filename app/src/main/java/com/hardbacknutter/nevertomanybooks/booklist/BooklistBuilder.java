@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -246,7 +247,7 @@ public class BooklistBuilder
      * Constructor.
      *
      * @param context Current context for accessing resources.
-     * @param style   Book list style to use
+     * @param style     Book list style to use
      */
     public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
@@ -467,8 +468,8 @@ public class BooklistBuilder
         // Build a sort mask based on if triggers are used;
         // we can not reverse sort if they are not used.
         final int sortDescendingMask = listMode.useTriggers
-                ? SummaryBuilder.FLAG_SORT_DESCENDING
-                : SummaryBuilder.FLAG_NONE;
+                                       ? SummaryBuilder.FLAG_SORT_DESCENDING
+                                       : SummaryBuilder.FLAG_NONE;
 
         SummaryBuilder summary = new SummaryBuilder();
 
@@ -1831,6 +1832,7 @@ public class BooklistBuilder
     }
 
     public String debugInfoForTables() {
+        // not calling mListTable.getTableInfo, so we don't cache this data in debug.
         TableInfo listTableInfo = new TableInfo(mSyncedDb, mListTable.getName());
         TableInfo navTableInfo = new TableInfo(mSyncedDb, mNavTable.getName());
 
@@ -2368,15 +2370,15 @@ public class BooklistBuilder
                     // The expression uses the OB column.
                     addDomain(DOM_AUTHOR_SORT,
                             mStyle.sortAuthorByGiven()
-                                    ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
-                                    : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
+                            ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
+                            : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
                             SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                     // Add the 'formatted' field of the requested type for displaying.
                     addDomain(DOM_AUTHOR_FORMATTED,
                             buildInfoHolder.authorGroup.showAuthorGivenNameFirst()
-                                    ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                                    : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                            ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                            : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
                             SummaryBuilder.FLAG_GROUPED);
 
                     // We also want the ID

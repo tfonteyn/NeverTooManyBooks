@@ -13,9 +13,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataManager;
@@ -31,6 +28,9 @@ import com.hardbacknutter.nevertomanybooks.entities.Book;
 import com.hardbacknutter.nevertomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.

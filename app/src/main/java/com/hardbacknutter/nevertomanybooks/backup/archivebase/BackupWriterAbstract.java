@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertomanybooks.backup.archivebase;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
@@ -41,7 +40,6 @@ import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyles;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 
 import java.io.BufferedWriter;
@@ -82,11 +80,8 @@ public abstract class BackupWriterAbstract
      */
     protected BackupWriterAbstract(@NonNull final Context context) {
         mDb = new DAO();
-        //FIXME: the context we get is not a 'userContext' so try to get correct resources
-        Resources resources = LocaleUtils.getLocalizedResources(context,
-                LocaleUtils.getPreferredLocale(context));
-        mProgress_msg_covers = resources.getString(R.string.progress_msg_covers_handled_missing);
-        mProgress_msg_covers_skip = resources.getString(
+        mProgress_msg_covers = context.getString(R.string.progress_msg_covers_handled_missing);
+        mProgress_msg_covers_skip = context.getString(
                 R.string.progress_msg_covers_handled_missing_skipped);
     }
 
@@ -103,6 +98,9 @@ public abstract class BackupWriterAbstract
             throws IOException {
         mSettings = settings;
         mProgressListener = listener;
+
+        //TODO: should be using a user context.
+        Context context = App.getAppContext();
 
         // do a cleanup first
         mDb.purge();
@@ -133,7 +131,7 @@ public abstract class BackupWriterAbstract
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
 
-                Exporter mExporter = new CsvExporter(App.getAppContext(), mSettings);
+                Exporter mExporter = new CsvExporter(context, mSettings);
                 try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
                     //FIXME: we know the # of covers... should pass it.
                     infoValues.bookCount = mExporter.doBooks(output, mProgressListener, includeCovers);
@@ -150,11 +148,11 @@ public abstract class BackupWriterAbstract
             }
 
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportOptions.XML_TABLES) != 0) {
+                && (mSettings.what & ExportOptions.XML_TABLES) != 0) {
                 doXmlTables();
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportOptions.BOOK_CSV) != 0) {
+                && (mSettings.what & ExportOptions.BOOK_CSV) != 0) {
                 try {
                     //noinspection ConstantConditions
                     putBooks(tempBookCsvFile);
@@ -163,15 +161,15 @@ public abstract class BackupWriterAbstract
                 }
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportOptions.COVERS) != 0) {
+                && (mSettings.what & ExportOptions.COVERS) != 0) {
                 doCovers(false);
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
+                && (mSettings.what & ExportOptions.BOOK_LIST_STYLES) != 0) {
                 doStyles();
             }
             if (!mProgressListener.isCancelled()
-                    && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
+                && (mSettings.what & ExportOptions.PREFERENCES) != 0) {
                 doPreferences();
             }
         } finally {
@@ -197,7 +195,7 @@ public abstract class BackupWriterAbstract
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doBackupInfoBlock(out, mProgressListener,
-                    BackupInfo.newInstance(getContainer(), infoValues));
+                                          BackupInfo.newInstance(getContainer(), infoValues));
         }
 
         out.close();
@@ -281,7 +279,7 @@ public abstract class BackupWriterAbstract
                 File cover = StorageUtils.getCoverFile(uuid);
                 if (cover.exists()) {
                     if (cover.exists()
-                            && (mSettings.dateFrom == null || sinceTime < cover.lastModified())) {
+                        && (mSettings.dateFrom == null || sinceTime < cover.lastModified())) {
                         if (!dryRun) {
                             putFile(cover.getName(), cover);
                         }
@@ -305,7 +303,7 @@ public abstract class BackupWriterAbstract
         }
         if (!dryRun) {
             Logger.info(this, "doCovers", " written=" + ok,
-                    "missing=" + missing, "skipped=" + skipped);
+                        "missing=" + missing, "skipped=" + skipped);
         }
 
         return ok;

@@ -102,13 +102,12 @@ class CropHighlightView {
         mDrawRect = computeLayout();
         mMode = ModifyMode.None;
 
-        // use the context so the theme is used: getResources().getDrawable(id, getTheme());
-        mResizeDrawableWidth = context.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableHeight = context.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableDiagonal = context.getDrawable(R.drawable.ic_crop);
-
         Resources res = context.getResources();
         Resources.Theme theme = context.getTheme();
+
+        mResizeDrawableWidth = res.getDrawable(R.drawable.ic_adjust, theme);
+        mResizeDrawableHeight = res.getDrawable(R.drawable.ic_adjust, theme);
+        mResizeDrawableDiagonal = res.getDrawable(R.drawable.ic_crop, theme);
         mFocusPaint.setColor(res.getColor(R.color.CropHighlightView_focusPaint, theme));
         mNoFocusPaint.setColor(res.getColor(R.color.CropHighlightView_noFocusPaint, theme));
         mOutlinePaint.setStrokeWidth(3F);

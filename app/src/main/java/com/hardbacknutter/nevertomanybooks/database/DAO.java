@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertomanybooks.database;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -34,7 +33,6 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BooksOnBookshelf;
@@ -57,6 +55,7 @@ import com.hardbacknutter.nevertomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertomanybooks.database.definitions.TableInfo;
+import com.hardbacknutter.nevertomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
@@ -65,7 +64,6 @@ import com.hardbacknutter.nevertomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ISBN;
@@ -186,7 +184,7 @@ import static com.hardbacknutter.nevertomanybooks.database.DBDefinitions.TBL_TOC
  * updateOrInsert:
  * * return true for success (either insert or update with rowsAffected > 0)
  * <p>
- * TODO: caching of statements forces synchronisation (2019-03-15: finally updated all lines where needed)... is it worth it ?
+ * TODO: caching of statements forces synchronisation ... is it worth it ?
  * TODO: there is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
 public class DAO
@@ -315,7 +313,7 @@ public class DAO
             sSyncedDb.execSQL("PRAGMA recursive_triggers = OFF");
 
             sSyncedDb.getUnderlyingDatabase()
-                    .setMaxSqlCacheSize(PREPARED_CACHE_SIZE);
+                     .setMaxSqlCacheSize(PREPARED_CACHE_SIZE);
         }
 
         // for debug
@@ -359,7 +357,7 @@ public class DAO
 
     /**
      * Prepare a string to be inserted in the 'Order By' column.
-     * e.g. the Title of a book: strip spaces etc, make lowercase,...
+     * e.g. Author names, the Title of a book: strip spaces etc, make lowercase,...
      *
      * @param value  to encode
      * @param locale to use for case manipulation
@@ -371,7 +369,7 @@ public class DAO
 
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return value.replaceAll("\\W", "")
-                .toLowerCase(locale);
+                    .toLowerCase(locale);
     }
 
     /**
@@ -379,7 +377,7 @@ public class DAO
      */
     private static void debugAddInstance(@NonNull final DAO db) {
         Logger.debug(db, "debugAddInstance",
-                "count=" + DEBUG_INSTANCE_COUNT.incrementAndGet());
+                     "count=" + DEBUG_INSTANCE_COUNT.incrementAndGet());
 
         INSTANCES.add(new InstanceRefDebug(db));
 
@@ -390,7 +388,7 @@ public class DAO
      */
     private static void debugRemoveInstance(@NonNull final DAO db) {
         Logger.debug(db, "debugRemoveInstance",
-                "count=" + DEBUG_INSTANCE_COUNT.decrementAndGet());
+                     "count=" + DEBUG_INSTANCE_COUNT.decrementAndGet());
 
         Iterator<InstanceRefDebug> it = INSTANCES.iterator();
         while (it.hasNext()) {
@@ -398,7 +396,7 @@ public class DAO
             DAO refDb = ref.get();
             if (refDb == null) {
                 Logger.debug(DAO.class, "debugRemoveInstance",
-                        "**** Missing ref (not closed?) ****", ref);
+                             "**** Missing ref (not closed?) ****", ref);
             } else {
                 if (refDb == db) {
                     it.remove();
@@ -416,7 +414,7 @@ public class DAO
         for (InstanceRefDebug ref : INSTANCES) {
             if (ref.get() == null) {
                 Logger.debug(DAO.class, "debugDumpInstances",
-                        "**** Missing ref (not closed?) ****", ref);
+                             "**** Missing ref (not closed?) ****", ref);
             } else {
                 Logger.debug(DAO.class, "debugDumpInstances", ref);
             }
@@ -454,7 +452,7 @@ public class DAO
         // Because FTS does not understand locales in all android up to 4.2,
         // we do case folding here using the user preferred locale.
         //TEST: is this really needed? was done in BooklistBuilder, but not in #searchFts
-        search = search.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext()));
+        search = search.toLowerCase(LocaleUtils.getPreferredLocale());
 
         // Output buffer
         final StringBuilder out = new StringBuilder();
@@ -542,15 +540,15 @@ public class DAO
         }
 
         return "SELECT " + DOM_PK_DOCID
-                + " FROM " + TBL_BOOKS_FTS
-                + " WHERE " + TBL_BOOKS_FTS
-                + " MATCH '" + parameters.toString().trim() + '\'';
+               + " FROM " + TBL_BOOKS_FTS
+               + " WHERE " + TBL_BOOKS_FTS
+               + " MATCH '" + parameters.toString().trim() + '\'';
     }
 
     /**
      * Cuts of a trailing ", text" part of the passed in String.
      * <p>
-     * The intention is to undo what {@link #preprocessTitle} does,
+     * The intention is to undo what {@link ItemWithTitle#preprocessTitle} does,
      * so we can use the string for internet searches on less flexible sites.
      * <p>
      * This is certainly not ideal.
@@ -569,64 +567,6 @@ public class DAO
         } else {
             return title;
         }
-    }
-
-    /**
-     * Move "The, A, An" etc... to the end of the string.
-     * <p>
-     * IMPORTANT: the passed locale should be the locale of the title itself.
-     * e.g. the user has a phone set to Locale Danish.
-     * But they use our app set to Locale German.
-     * And the book they have is written in Spanish.
-     * <p>
-     * The passed 'userContext' should be based on German, the 'titleLocale' should be Spanish.
-     *
-     * @param item     to get and format the title of
-     * @param isInsert should be {@code true} for an insert, {@code false} for an update
-     *
-     * @return formatted title
-     */
-    private String preprocessTitle(@NonNull final Context userContext,
-                                   @NonNull final ItemWithTitle item,
-                                   final boolean isInsert) {
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(userContext);
-        boolean whenInserting = prefs.getBoolean(Prefs.pk_reformat_titles_on_insert, true);
-        boolean whenUpdating = prefs.getBoolean(Prefs.pk_reformat_titles_on_update, true);
-
-        if ((isInsert && whenInserting) || (!isInsert && whenUpdating)) {
-            return preprocessTitle(userContext, item);
-        } else {
-            return item.getTitle();
-        }
-    }
-
-    /**
-     * Move "The, A, An" etc... to the end of the string.
-     * <p>
-     *
-     * @return formatted title
-     */
-    private String preprocessTitle(@NonNull final Context userContext,
-                                   @NonNull final ItemWithTitle item) {
-
-        StringBuilder newTitle = new StringBuilder();
-        String[] titleWords = item.getTitle().split(" ");
-        try {
-            if (titleWords[0].matches(item.getTitleReorderPattern(userContext))) {
-                for (int i = 1; i < titleWords.length; i++) {
-                    if (i != 1) {
-                        newTitle.append(' ');
-                    }
-                    newTitle.append(titleWords[i]);
-                }
-                newTitle.append(", ").append(titleWords[0]);
-                return newTitle.toString();
-            }
-        } catch (@NonNull final RuntimeException ignore) {
-            //do nothing. Title stays the same
-        }
-        return item.getTitle();
     }
 
     public void recreateTriggers() {
@@ -657,7 +597,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_GOODREADS_SYNC_DATE);
         if (stmt == null) {
             stmt = mStatements.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
-                    SqlUpdate.GOODREADS_LAST_SYNC_DATE);
+                                   SqlUpdate.GOODREADS_LAST_SYNC_DATE);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -760,7 +700,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_TOC_ENTRIES);
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_TOC_ENTRIES,
-                    SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
+                                   SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -778,7 +718,7 @@ public class DAO
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
-    public long getTocEntryId(@NonNull final Context userContext,
+    public long getTocEntryId(@NonNull final Context context,
                               @NonNull final TocEntry tocEntry,
                               @NonNull final Locale tocLocale) {
 
@@ -787,7 +727,7 @@ public class DAO
             stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
 
-        String preprocessedTitle = preprocessTitle(userContext, tocEntry);
+        String preprocessedTitle = tocEntry.preprocessTitle(context);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         // the check of preprocessTitle is unconditional as it's an OR.
@@ -846,11 +786,11 @@ public class DAO
 
             while (cursor.moveToNext()) {
                 TocEntry tocEntry = new TocEntry(mapper.getLong(DOM_PK_ID.name),
-                        author,
-                        mapper.getString(DOM_TITLE.name),
-                        mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
-                        mapper.getString(DOM_TOC_TYPE.name).charAt(0),
-                        mapper.getInt(DOM_BL_BOOK_COUNT.name));
+                                                 author,
+                                                 mapper.getString(DOM_TITLE.name),
+                                                 mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
+                                                 mapper.getString(DOM_TOC_TYPE.name).charAt(0),
+                                                 mapper.getInt(DOM_BL_BOOK_COUNT.name));
                 list.add(tocEntry);
             }
         }
@@ -902,8 +842,8 @@ public class DAO
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
 
         return sSyncedDb.update(TBL_AUTHORS.getName(), cv,
-                DOM_PK_ID + "=?",
-                new String[]{String.valueOf(author.getId())});
+                                DOM_PK_ID + "=?",
+                                new String[]{String.valueOf(author.getId())});
     }
 
     /**
@@ -945,7 +885,7 @@ public class DAO
     @Nullable
     public Author getAuthor(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.AUTHOR_BY_ID,
-                new String[]{String.valueOf(id)})) {
+                                                new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Author(id, mapper);
@@ -1025,7 +965,7 @@ public class DAO
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
             Logger.debug(this, "globalReplaceAuthor",
-                    "from=" + from.getId(), "to=" + to.getId());
+                         "from=" + from.getId(), "to=" + to.getId());
         }
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
@@ -1037,9 +977,9 @@ public class DAO
             globalReplaceId(TBL_BOOK_AUTHOR, DOM_FK_AUTHOR, from.getId(), to.getId());
 
             globalReplacePositionedBookItem(TBL_BOOK_AUTHOR,
-                    DOM_FK_AUTHOR,
-                    DOM_BOOK_AUTHOR_POSITION,
-                    from.getId(), to.getId());
+                                            DOM_FK_AUTHOR,
+                                            DOM_BOOK_AUTHOR_POSITION,
+                                            from.getId(), to.getId());
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
@@ -1065,7 +1005,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES);
         if (stmt == null) {
             stmt = mStatements.add(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES,
-                    SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
+                                   SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -1186,7 +1126,7 @@ public class DAO
      * @param book  A collection with the columns to be set. May contain extra data.
      * @param isNew indicates if the book is new
      */
-    private void preprocessBook(@NonNull final Context userContext,
+    private void preprocessBook(@NonNull final Context context,
                                 @NonNull final Book book,
                                 final boolean isNew) {
 
@@ -1194,13 +1134,13 @@ public class DAO
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)
-                || book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
+            || book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
             preprocessLegacyAuthor(book);
         }
 
         // Handle TITLE
         if (book.containsKey(DBDefinitions.KEY_TITLE)) {
-            String title = preprocessTitle(userContext, book, isNew);
+            String title = book.preprocessTitle(context, isNew);
             book.putString(DOM_TITLE_OB.name, encodeOrderByColumn(title, bookLocale));
         }
 
@@ -1310,29 +1250,29 @@ public class DAO
 
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
-                && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
+            && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
             preprocessPrice(book, DBDefinitions.KEY_PRICE_LISTED,
-                    DBDefinitions.KEY_PRICE_LISTED,
-                    DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+                            DBDefinitions.KEY_PRICE_LISTED,
+                            DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         }
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID)
-                && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
+            && !book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             preprocessPrice(book, DBDefinitions.KEY_PRICE_PAID,
-                    DBDefinitions.KEY_PRICE_PAID,
-                    DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+                            DBDefinitions.KEY_PRICE_PAID,
+                            DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
 
         // Handle currencies making sure they are uppercase
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                    book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                            .toUpperCase(bookLocale));
+                           book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+                               .toUpperCase(bookLocale));
         }
         if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
             book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                    book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                            .toUpperCase(bookLocale));
+                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)
+                               .toUpperCase(bookLocale));
         }
     }
 
@@ -1352,7 +1292,7 @@ public class DAO
                                  @NonNull final String keyPriceCurrency) {
         Bundle dest = new Bundle();
         LocaleUtils.splitPrice(book.getString(keyPriceWithCurrency),
-                keyPrice, keyPriceCurrency, dest);
+                               keyPrice, keyPriceCurrency, dest);
         String price = dest.getString(keyPrice);
         if (price != null) {
             book.remove(keyPriceWithCurrency);
@@ -1375,8 +1315,8 @@ public class DAO
             if (author.fixId(this) == 0) {
                 if (BuildConfig.DEBUG /* always. */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
-                            "KEY_AUTHOR_FORMATTED",
-                            "inserting author: " + author.stringEncoded());
+                                 "KEY_AUTHOR_FORMATTED",
+                                 "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author, book.getLocale());
             }
@@ -1395,8 +1335,8 @@ public class DAO
             if (author.fixId(this) == 0) {
                 if (BuildConfig.DEBUG /* always. */) {
                     Logger.debug(this, "preprocessLegacyAuthor",
-                            "KEY_AUTHOR_FAMILY_NAME",
-                            "inserting author: " + author.stringEncoded());
+                                 "KEY_AUTHOR_FAMILY_NAME",
+                                 "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author, book.getLocale());
             }
@@ -1434,7 +1374,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_UPDATE_DATE);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOK_UPDATE_DATE,
-                    SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
+                                   SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
         }
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
@@ -1482,7 +1422,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_TITLE);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOK_TITLE,
-                    SqlGet.BOOK_TITLE_BY_BOOK_ID);
+                                   SqlGet.BOOK_TITLE_BY_BOOK_ID);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -1501,7 +1441,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_ISBN);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOK_ISBN,
-                    SqlGet.BOOK_ISBN_BY_BOOK_ID);
+                                   SqlGet.BOOK_ISBN_BY_BOOK_ID);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -1571,13 +1511,16 @@ public class DAO
     /**
      * Create a new book using the details provided.
      *
-     * @param book A collection with the columns to be set. May contain extra data.
+     * @param context    Current context
+     * @param userLocale the user Locale; can be different from the book Locale
+     * @param book       A collection with the columns to be set. May contain extra data.
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBook(@NonNull final Context userContext,
+    public long insertBook(@NonNull final Context context,
+                           @NonNull final Locale userLocale,
                            @NonNull final Book book) {
-        return insertBook(userContext, 0, book);
+        return insertBook(context, userLocale, 0, book);
     }
 
     /**
@@ -1585,15 +1528,18 @@ public class DAO
      * <p>
      * Transaction: participate, or run in new.
      *
-     * @param bookId of the book
-     *               zero: a new book
-     *               non-zero: will override the autoIncrement, only an Import should use this
-     * @param book   A collection with the columns to be set. May contain extra data.
-     *               The id will be updated.
+     * @param context    Current context
+     * @param userLocale the user Locale; can be different from the book Locale
+     * @param bookId     of the book
+     *                   zero: a new book
+     *                   non-zero: will override the autoIncrement, only an Import should use this
+     * @param book       A collection with the columns to be set. May contain extra data.
+     *                   The id will be updated.
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBook(@NonNull final Context userContext,
+    public long insertBook(@NonNull final Context context,
+                           @NonNull final Locale userLocale,
                            final long bookId,
                            @NonNull final Book /* in/out */ book) {
 
@@ -1610,7 +1556,7 @@ public class DAO
                 Logger.debug(this, "insertBook", book);
             }
             // Cleanup fields (author, series, title and remove blank fields, etc...)
-            preprocessBook(userContext, book, bookId == 0);
+            preprocessBook(context, book, bookId == 0);
 
             // Make sure we have an author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -1620,7 +1566,7 @@ public class DAO
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(userContext, TBL_BOOKS.getName(), book);
+            ContentValues cv = filterValues(userLocale, TBL_BOOKS, book);
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1639,7 +1585,7 @@ public class DAO
 
             long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
-                insertBookDependents(userContext, newBookId, book);
+                insertBookDependents(context, newBookId, book);
                 insertFts(newBookId);
                 // it's an insert, success only if we really inserted.
                 if (txLock != null) {
@@ -1668,14 +1614,17 @@ public class DAO
     /**
      * Transaction: participate, or run in new.
      *
-     * @param bookId of the book; takes precedence over the id of the book itself.
-     * @param book   A collection with the columns to be set. May contain extra data.
-     * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} for flag definitions
+     * @param context    Current context
+     * @param userLocale the user Locale; can be different from the book Locale
+     * @param bookId     of the book; takes precedence over the id of the book itself.
+     * @param book       A collection with the columns to be set. May contain extra data.
+     * @param flags      See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} for flag definitions
      *
      * @return the number of rows affected, should be 1 for success.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int updateBook(@NonNull final Context userContext,
+    public int updateBook(@NonNull final Context context,
+                          @NonNull final Locale userLocale,
                           final long bookId,
                           @NonNull final Book book,
                           final int flags) {
@@ -1695,9 +1644,9 @@ public class DAO
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
             // and remove blank fields for which we have defaults)
-            preprocessBook(userContext, book, bookId == 0);
+            preprocessBook(context, book, bookId == 0);
 
-            ContentValues cv = filterValues(userContext, TBL_BOOKS.getName(), book);
+            ContentValues cv = filterValues(userLocale, TBL_BOOKS, book);
 
             // Disallow UUID updates
             if (cv.containsKey(DOM_BOOK_UUID.name)) {
@@ -1707,7 +1656,7 @@ public class DAO
             // set the DOM_DATE_LAST_UPDATED to 'now' if we're allowed,
             // or if it's not present already.
             if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0
-                    || !cv.containsKey(DOM_DATE_LAST_UPDATED.name)) {
+                || !cv.containsKey(DOM_DATE_LAST_UPDATED.name)) {
                 cv.put(DOM_DATE_LAST_UPDATED.name, DateUtils.utcSqlDateTimeForToday());
             }
 
@@ -1715,9 +1664,9 @@ public class DAO
             // A prepared statement would be faster for importing books....
             // but we don't know what columns are provided in the bundle....
             int rowsAffected = sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
-                    new String[]{String.valueOf(bookId)});
+                                                new String[]{String.valueOf(bookId)});
 
-            insertBookDependents(userContext, bookId, book);
+            insertBookDependents(context, bookId, book);
             updateFts(bookId);
 
             if (txLock != null) {
@@ -1757,7 +1706,7 @@ public class DAO
         }
 
         return 0 < sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
-                new String[]{String.valueOf(id)});
+                                    new String[]{String.valueOf(id)});
     }
 
     /**
@@ -1774,7 +1723,7 @@ public class DAO
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, isComplete);
 
         return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv, DOM_PK_ID + "=?",
-                new String[]{String.valueOf(authorId)});
+                                    new String[]{String.valueOf(authorId)});
     }
 
     /**
@@ -1791,7 +1740,7 @@ public class DAO
         cv.put(DOM_SERIES_IS_COMPLETE.name, isComplete);
 
         return 0 < sSyncedDb.update(TBL_SERIES.getName(), cv, DOM_PK_ID + "=?",
-                new String[]{String.valueOf(seriesId)});
+                                    new String[]{String.valueOf(seriesId)});
     }
 
     /**
@@ -1803,12 +1752,12 @@ public class DAO
      * @param book   A collection with the columns to be set. May contain extra data.
      *               The id should be disregarded in favour of the parameter 'bookId'.
      */
-    private void insertBookDependents(@NonNull final Context userContext,
+    private void insertBookDependents(@NonNull final Context context,
                                       final long bookId,
                                       @NonNull final Book book) {
 
         if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
-            insertBookBookshelf(userContext, bookId, book);
+            insertBookBookshelf(context, bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
@@ -1816,16 +1765,16 @@ public class DAO
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-            insertBookSeries(userContext, bookId, book);
+            insertBookSeries(context, bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
             // update: toc entries are two steps away; they can exist in other books
-            updateOrInsertTOC(userContext, bookId, book);
+            updateOrInsertTOC(context, bookId, book);
         }
 
         if (book.containsKey(DBDefinitions.KEY_LOANEE)
-                && !book.getString(DBDefinitions.KEY_LOANEE).isEmpty()) {
+            && !book.getString(DBDefinitions.KEY_LOANEE).isEmpty()) {
             updateOrInsertLoan(bookId, book.getString(DOM_LOANEE.name));
         }
     }
@@ -1870,7 +1819,6 @@ public class DAO
                 return stmt.simpleQueryForLongOrZero();
             }
         }
-
     }
 
     /**
@@ -1904,7 +1852,7 @@ public class DAO
      * @param book   A collection with the columns to be set. May contain extra data.
      *               The id should be disregarded in favour of the parameter 'bookId'.
      */
-    private void insertBookSeries(@NonNull final Context userContext,
+    private void insertBookSeries(@NonNull final Context context,
                                   final long bookId,
                                   @NonNull final Book book) {
         if (!sSyncedDb.inTransaction()) {
@@ -1933,17 +1881,17 @@ public class DAO
             final Map<String, Boolean> idHash = new HashMap<>();
             int position = 0;
             for (Series series : list) {
-                if (series.fixId(userContext,this) == 0) {
+                if (series.fixId(context, this) == 0) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookSeries",
-                                "inserting series: " + series.stringEncoded());
+                                     "inserting series: " + series.stringEncoded());
                     }
 
-                    insertSeries(userContext, series, series.getLocale());
+                    insertSeries(context, series, series.getLocale());
                 }
 
                 String uniqueId = series.getId() + '_'
-                        + series.getNumber().toUpperCase(series.getLocale());
+                                  + series.getNumber().toUpperCase(series.getLocale());
                 if (!idHash.containsKey(uniqueId)) {
                     idHash.put(uniqueId, true);
                     position++;
@@ -1985,7 +1933,7 @@ public class DAO
      * @param book   A collection with the columns to be set. May contain extra data.
      *               The id should be disregarded in favour of the parameter 'bookId'.
      */
-    private void updateOrInsertTOC(@NonNull final Context userContext,
+    private void updateOrInsertTOC(@NonNull final Context context,
                                    final long bookId,
                                    @NonNull final Book book) {
         if (!sSyncedDb.inTransaction()) {
@@ -2013,7 +1961,7 @@ public class DAO
         SynchronizedStatement insertBookTocStmt = mStatements.get(STMT_INSERT_BOOK_TOC_ENTRY);
         if (insertBookTocStmt == null) {
             insertBookTocStmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY,
-                    SqlInsert.BOOK_TOC_ENTRY);
+                                                SqlInsert.BOOK_TOC_ENTRY);
         }
 
         Locale bookLocale = book.getLocale();
@@ -2021,15 +1969,15 @@ public class DAO
         for (TocEntry tocEntry : list) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                 Logger.debug(this, "updateOrInsertTOC",
-                        "Adding TocEntryByBookId: " + tocEntry);
+                             "Adding TocEntryByBookId: " + tocEntry);
             }
 
             // handle the author.
             Author author = tocEntry.getAuthor();
-            if (author.fixId(userContext, this) == 0) {
+            if (author.fixId(context, this) == 0) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                     Logger.debug(this, "updateOrInsertTOC",
-                            "inserting author: " + author.stringEncoded());
+                                 "inserting author: " + author.stringEncoded());
                 }
                 // this basically will only happen if a multi-author anthology is added,
                 // with an entry by an Author from whom we have no Books.
@@ -2039,16 +1987,16 @@ public class DAO
             }
 
             // As an entry can exist in multiple books, try to find the entry.
-            if (tocEntry.fixId(userContext, this, bookLocale) == 0) {
+            if (tocEntry.fixId(context, this, bookLocale) == 0) {
                 // it's a new entry.
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                     Logger.debug(this, "updateOrInsertTOC",
-                            "inserting tocEntry: " + tocEntry.stringEncoded());
+                                 "inserting tocEntry: " + tocEntry.stringEncoded());
                 }
                 // Be cautious; other threads may use the cached stmt, and set parameters.
                 synchronized (insertTocStmt) {
-                    String title = preprocessTitle(userContext, tocEntry, true);
+                    String title = tocEntry.preprocessTitle(context, true);
 
                     insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
                     insertTocStmt.bindString(2, title);
@@ -2064,7 +2012,7 @@ public class DAO
                 // We *do* update the title to allow corrections of case,
                 // as the find was done on the DOM_TITLE_OB field.
                 // and we update the DOM_TITLE_OB as well obviously.
-                String title = preprocessTitle(userContext, tocEntry, false);
+                String title = tocEntry.preprocessTitle(context, false);
 
                 ContentValues cv = new ContentValues();
                 cv.put(DOM_TITLE.name, title);
@@ -2072,8 +2020,8 @@ public class DAO
                 cv.put(DOM_DATE_FIRST_PUBLICATION.name, tocEntry.getFirstPublication());
 
                 sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
-                        DOM_PK_ID + "=?",
-                        new String[]{String.valueOf(tocEntry.getId())});
+                                 DOM_PK_ID + "=?",
+                                 new String[]{String.valueOf(tocEntry.getId())});
             }
 
             // create the book<->TocEntry link.
@@ -2108,9 +2056,9 @@ public class DAO
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
                 Logger.debug(this, "updateOrInsertTOC",
-                        "\n     bookId   : " + bookId,
-                        "\n     authorId : " + author.getId(),
-                        "\n     position : " + position);
+                             "\n     bookId   : " + bookId,
+                             "\n     authorId : " + author.getId(),
+                             "\n     position : " + position);
             }
         }
     }
@@ -2160,7 +2108,7 @@ public class DAO
                 if (author.fixId(this) == 0) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                         Logger.debug(this, "insertBookAuthors",
-                                "inserting author: " + author.stringEncoded());
+                                     "inserting author: " + author.stringEncoded());
                     }
                     insertAuthor(author, book.getLocale());
                 }
@@ -2215,7 +2163,7 @@ public class DAO
      * @param book   A collection with the columns to be set. May contain extra data.
      *               The id should be disregarded in favour of the parameter 'bookId'.
      */
-    private void insertBookBookshelf(@NonNull final Context userContext,
+    private void insertBookBookshelf(@NonNull final Context context,
                                      final long bookId,
                                      @NonNull final Book book) {
         if (!sSyncedDb.inTransaction()) {
@@ -2243,12 +2191,12 @@ public class DAO
                 continue;
             }
 
-            if (bookshelf.fixId(userContext, this) == 0) {
+            if (bookshelf.fixId(context, this) == 0) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_INSERT_BOOK_LINKS) {
                     Logger.debug(this, "insertBookBookshelf",
-                            "inserting bookshelf: " + bookshelf.stringEncoded());
+                                 "inserting bookshelf: " + bookshelf.stringEncoded());
                 }
-                long styleId = bookshelf.getStyle(userContext, this).getId();
+                long styleId = bookshelf.getStyle(this).getId();
                 insertBookshelf(bookshelf, styleId);
             }
             // Be cautious; other threads may use the cached stmt, and set parameters.
@@ -2273,7 +2221,7 @@ public class DAO
         SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_BOOKSHELF);
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_BOOKSHELF,
-                    SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
+                                   SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -2305,13 +2253,13 @@ public class DAO
          */
         SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 "UPDATE " + table + " SET " + domain + "=? WHERE " + domain + "=?"
-                        + " AND NOT EXISTS"
+                + " AND NOT EXISTS"
 
-                        + " (SELECT NULL FROM " + table.ref() + " WHERE "
-                        // left: the aliased table, right the actual table
-                        + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
-                        // left: the aliased table
-                        + " AND " + table.dot(domain) + "=?)");
+                + " (SELECT NULL FROM " + table.ref() + " WHERE "
+                // left: the aliased table, right the actual table
+                + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
+                // left: the aliased table
+                + " AND " + table.dot(domain) + "=?)");
 
         stmt.bindLong(1, toId);
         stmt.bindLong(2, fromId);
@@ -2355,21 +2303,21 @@ public class DAO
         + "                 and ba." + objectIdField + " = " + newId + ")";
          */
         String sql = "SELECT " + DOM_FK_BOOK + ',' + positionField
-                + " FROM " + table + " WHERE " + domain + "=?"
-                + " AND EXISTS"
+                     + " FROM " + table + " WHERE " + domain + "=?"
+                     + " AND EXISTS"
 
-                + " (SELECT NULL FROM " + table.ref() + " WHERE "
-                // left: the aliased table, right the actual table
-                + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
-                // left: the aliased table
-                + " AND " + table.dot(domain) + "=?)";
+                     + " (SELECT NULL FROM " + table.ref() + " WHERE "
+                     // left: the aliased table, right the actual table
+                     + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
+                     // left: the aliased table
+                     + " AND " + table.dot(domain) + "=?)";
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                 String.valueOf(toId)})) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                 Logger.debug(this, "globalReplacePositionedBookItem",
-                        "Re-position, total count=" + cursor.getCount());
+                             "Re-position, total count=" + cursor.getCount());
             }
 
             // Get the column indexes we need
@@ -2379,22 +2327,22 @@ public class DAO
             // Delete a specific object record
             delStmt = sSyncedDb.compileStatement(
                     "DELETE FROM " + table
-                            + " WHERE " + domain + "=? AND " + DOM_FK_BOOK + "=?");
+                    + " WHERE " + domain + "=? AND " + DOM_FK_BOOK + "=?");
 
             // Get the position of the already-existing 'new/replacement' object
             replacementIdPosStmt = sSyncedDb.compileStatement(
                     "SELECT " + positionField + " FROM " + table
-                            + " WHERE " + DOM_FK_BOOK + "=? AND " + domain + "=?");
+                    + " WHERE " + DOM_FK_BOOK + "=? AND " + domain + "=?");
 
             // Move a single entry to a new position
             moveStmt = sSyncedDb.compileStatement(
                     "UPDATE " + table + " SET " + positionField + "=?"
-                            + " WHERE " + DOM_FK_BOOK + "=? AND " + positionField + "=?");
+                    + " WHERE " + DOM_FK_BOOK + "=? AND " + positionField + "=?");
 
             // Sanity check to deal with legacy bad data
             checkMinStmt = sSyncedDb.compileStatement(
                     "SELECT min(" + positionField + ") FROM " + table
-                            + " WHERE " + DOM_FK_BOOK + "=?");
+                    + " WHERE " + DOM_FK_BOOK + "=?");
 
             // Loop through all instances of the old object appearing
             while (cursor.moveToNext()) {
@@ -2408,9 +2356,9 @@ public class DAO
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                     Logger.debug(this, "globalReplacePositionedBookItem",
-                            "id=" + bookId,
-                            "to=" + toId,
-                            "replacementIdPos=" + replacementIdPos);
+                                 "id=" + bookId,
+                                 "to=" + toId,
+                                 "replacementIdPos=" + replacementIdPos);
                 }
                 // Delete the old record
                 delStmt.bindLong(1, fromId);
@@ -2422,9 +2370,9 @@ public class DAO
                 if (replacementIdPos > pos) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                         Logger.debug(this, "globalReplacePositionedBookItem",
-                                "id=" + bookId,
-                                "pos=" + pos,
-                                "replacementIdPos=" + replacementIdPos);
+                                     "id=" + bookId,
+                                     "pos=" + pos,
+                                     "replacementIdPos=" + replacementIdPos);
                     }
                     moveStmt.bindLong(1, pos);
                     moveStmt.bindLong(2, bookId);
@@ -2443,8 +2391,8 @@ public class DAO
                 if (minPos > 1) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
                         Logger.debug(this, "globalReplacePositionedBookItem",
-                                "id=" + bookId,
-                                "pos to 1, minPos=" + minPos);
+                                     "id=" + bookId,
+                                     "pos to 1, minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
                     moveStmt.bindLong(2, bookId);
@@ -2477,7 +2425,7 @@ public class DAO
     public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
         ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
-                new String[]{String.valueOf(bookId)})) {
+                                                new String[]{String.valueOf(bookId)})) {
             if (cursor.getCount() == 0) {
                 return list;
             }
@@ -2487,10 +2435,10 @@ public class DAO
                 Author author = new Author(mapper.getLong(DOM_FK_AUTHOR.name), mapper);
 
                 list.add(new TocEntry(mapper.getLong(DOM_PK_ID.name),
-                        author,
-                        mapper.getString(DOM_TITLE.name),
-                        mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
-                        TocEntry.Type.TYPE_BOOK, 1));
+                                      author,
+                                      mapper.getString(DOM_TITLE.name),
+                                      mapper.getString(DOM_DATE_FIRST_PUBLICATION.name),
+                                      TocEntry.Type.TYPE_BOOK, 1));
             }
         }
         return list;
@@ -2506,7 +2454,7 @@ public class DAO
     public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
         ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
-                new String[]{String.valueOf(tocId)})) {
+                                                new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -2556,7 +2504,7 @@ public class DAO
     public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
         ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_AUTHOR_ID,
-                new String[]{String.valueOf(authorId)})) {
+                                                new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -2574,7 +2522,7 @@ public class DAO
     public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
         ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOK_IDS_BY_SERIES_ID,
-                new String[]{String.valueOf(seriesId)})) {
+                                                new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -2593,7 +2541,7 @@ public class DAO
     public ArrayList<Author> getAuthorsByBookId(final long bookId) {
         ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
-                new String[]{String.valueOf(bookId)})) {
+                                                new String[]{String.valueOf(bookId)})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(mapper.getLong(DOM_PK_ID.name), mapper));
@@ -2613,7 +2561,7 @@ public class DAO
     public ArrayList<Series> getSeriesByBookId(final long bookId) {
         ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
-                new String[]{String.valueOf(bookId)})) {
+                                                new String[]{String.valueOf(bookId)})) {
             if (cursor.getCount() == 0) {
                 return list;
             }
@@ -2628,6 +2576,8 @@ public class DAO
     /**
      * Return the SQL for a list of all books in the database.
      *
+     * TODO: redo this so the sql becomes static
+     *
      * @param whereClause to add to books search criteria (without the keyword 'WHERE')
      *
      * @return A full piece of SQL to perform the search
@@ -2635,7 +2585,9 @@ public class DAO
     @NonNull
     private String getAllBooksSql(@NonNull final String whereClause) {
 
-        //TODO: redo this so the sql becomes static
+        //TODO: should be using a user context.
+        Context context = App.getAppContext();
+        String andOthersText = context.getString(R.string.and_others);
 
         // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
         // BUT... here they have double-use:
@@ -2644,10 +2596,15 @@ public class DAO
         //
         // so DO NOT replace them with table.dot() etc... !
         return SqlAllBooks.PREFIX
-                + SqlAllBooks.ALL_BOOKS
-                + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
-                + " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_OB) + ' ' + COLLATION + " ASC"
-                + SqlAllBooks.SUFFIX;
+               + ",CASE WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
+               + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
+               + " ELSE " + DOM_SERIES_FORMATTED + " || ' " + andOthersText + '\''
+               + " END AS " + DOM_SERIES_FORMATTED
+               + " FROM ("
+               + /* */ SqlAllBooks.ALL_BOOKS
+               + /* */ (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+               + /* */ " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_OB) + ' ' + COLLATION + " ASC"
+               + ") b" + SqlAllBooks.SUFFIX;
     }
 
     /**
@@ -2662,9 +2619,9 @@ public class DAO
     public BookCursor fetchBookById(final long bookId) {
         return (BookCursor)
                 sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                        getAllBooksSql(TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
-                        new String[]{String.valueOf(bookId)},
-                        "");
+                                              getAllBooksSql(TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
+                                              new String[]{String.valueOf(bookId)},
+                                              "");
     }
 
     /**
@@ -2684,24 +2641,24 @@ public class DAO
         String whereClause;
         if (bookIds == null || bookIds.isEmpty()) {
             whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + ">=" + fromBookIdOnwards;
+                          + ">=" + fromBookIdOnwards;
 
         } else if (bookIds.size() == 1) {
             whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + '=' + bookIds.get(0);
+                          + '=' + bookIds.get(0);
 
         } else {
             whereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + " IN (" + Csv.join(",", bookIds) + ')'
-                    + " AND (" + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
-                    + ">=" + fromBookIdOnwards + ')';
+                          + " IN (" + Csv.join(",", bookIds) + ')'
+                          + " AND (" + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
+                          + ">=" + fromBookIdOnwards + ')';
         }
 
         // the order by is used to be able to restart the update.
         String sql = getAllBooksSql(whereClause) + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                sql, null, "");
+                                                          sql, null, "");
     }
 
     /**
@@ -2724,12 +2681,12 @@ public class DAO
             where.append("='").append(encodeString(isbnList.get(0))).append('\'');
         } else {
             where.append(" IN (")
-                    .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
-                    .append(')');
+                 .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
+                 .append(')');
         }
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                where.toString(),
-                null, "");
+                                                          where.toString(),
+                                                          null, "");
     }
 
     /**
@@ -2747,13 +2704,13 @@ public class DAO
             whereClause = "";
         } else {
             whereClause = " WHERE " + TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED)
-                    + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
+                          + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
         }
 
         String sql = SqlAllBooks.ALL_BOOKS + whereClause + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
         return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                sql, null, "");
+                                                          sql, null, "");
     }
 
     /**
@@ -2820,8 +2777,8 @@ public class DAO
         SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             rowsAffected = sSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                    DOM_FK_BOOKSHELF + "=?",
-                    new String[]{String.valueOf(sourceId)});
+                                            DOM_FK_BOOKSHELF + "=?",
+                                            new String[]{String.valueOf(sourceId)});
 
             // delete the now empty shelf.
             deleteBookshelf(sourceId);
@@ -2877,7 +2834,7 @@ public class DAO
     public Bookshelf getBookshelfByName(@NonNull final String name) {
 
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
-                new String[]{name})) {
+                                                new String[]{name})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
@@ -2894,7 +2851,7 @@ public class DAO
     @Nullable
     public Bookshelf getBookshelf(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_ID,
-                new String[]{String.valueOf(id)})) {
+                                                new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper);
@@ -2920,8 +2877,8 @@ public class DAO
         cv.put(DOM_FK_STYLE_ID.name, styleId);
 
         return sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
-                DOM_PK_ID + "=?",
-                new String[]{String.valueOf(bookshelf.getId())});
+                                DOM_PK_ID + "=?",
+                                new String[]{String.valueOf(bookshelf.getId())});
     }
 
     /**
@@ -2973,7 +2930,7 @@ public class DAO
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
-                new String[]{String.valueOf(bookId)})) {
+                                                new String[]{String.valueOf(bookId)})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.name), mapper));
@@ -3090,7 +3047,7 @@ public class DAO
         }
 
         String sql = "SELECT DISTINCT " + column + " FROM " + TBL_BOOKS
-                + " ORDER BY upper(" + column + ") " + COLLATION;
+                     + " ORDER BY upper(" + column + ") " + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             ArrayList<String> list = getFirstColumnAsList(cursor);
@@ -3246,8 +3203,8 @@ public class DAO
         ContentValues cv = new ContentValues();
         cv.put(DOM_LOANEE.name, loanee);
         int rowsAffected = sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
-                DOM_FK_BOOK + "=?",
-                new String[]{String.valueOf(bookId)});
+                                            DOM_FK_BOOK + "=?",
+                                            new String[]{String.valueOf(bookId)});
         return rowsAffected > 0;
     }
 
@@ -3327,7 +3284,7 @@ public class DAO
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    private long insertSeries(@NonNull final Context userContext,
+    private long insertSeries(@NonNull final Context context,
                               @NonNull final Series /* in/out */ series,
                               @NonNull final Locale seriesLocale) {
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_SERIES);
@@ -3335,7 +3292,7 @@ public class DAO
             stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
 
-        String title = preprocessTitle(userContext, series, true);
+        String title = series.preprocessTitle(context, true);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -3355,10 +3312,10 @@ public class DAO
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateSeries(@NonNull final Context userContext,
+    private int updateSeries(@NonNull final Context context,
                              @NonNull final Series series,
                              @NonNull final Locale seriesLocale) {
-        String title = preprocessTitle(userContext, series, false);
+        String title = series.preprocessTitle(context, false);
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_SERIES_TITLE.name, title);
@@ -3366,8 +3323,8 @@ public class DAO
         cv.put(DOM_SERIES_IS_COMPLETE.name, series.isComplete());
 
         return sSyncedDb.update(TBL_SERIES.getName(), cv,
-                DOM_PK_ID + "=?",
-                new String[]{String.valueOf(series.getId())});
+                                DOM_PK_ID + "=?",
+                                new String[]{String.valueOf(series.getId())});
     }
 
     /**
@@ -3378,15 +3335,15 @@ public class DAO
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsertSeries(@NonNull final Context userContext,
+    public boolean updateOrInsertSeries(@NonNull final Context context,
                                         @NonNull final /* in/out */ Series series,
                                         @NonNull final Locale seriesLocale) {
         if (series.getId() != 0) {
-            return updateSeries(userContext, series, seriesLocale) > 0;
+            return updateSeries(context, series, seriesLocale) > 0;
         } else {
             // try to find first.
-            if (series.fixId(userContext, this) == 0) {
-                return insertSeries(userContext, series, seriesLocale) > 0;
+            if (series.fixId(context, this) == 0) {
+                return insertSeries(context, series, seriesLocale) > 0;
             }
         }
         return false;
@@ -3430,7 +3387,7 @@ public class DAO
     @Nullable
     public Series getSeries(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
-                new String[]{String.valueOf(id)})) {
+                                                new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor);
             if (cursor.moveToFirst()) {
                 return new Series(id, mapper);
@@ -3446,7 +3403,7 @@ public class DAO
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
-    public long getSeriesId(@NonNull final Context userContext,
+    public long getSeriesId(@NonNull final Context context,
                             @NonNull final Series series,
                             @NonNull final Locale seriesLocale) {
         SynchronizedStatement stmt = mStatements.get(STMT_GET_SERIES_ID);
@@ -3454,7 +3411,7 @@ public class DAO
             stmt = mStatements.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
         }
 
-        String preprocessedTitle = preprocessTitle(userContext, series);
+        String preprocessedTitle = series.preprocessTitle(context);
 
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
@@ -3471,11 +3428,11 @@ public class DAO
      * <p>
      * Will NOT insert a new Series if not found.
      */
-    public void refreshSeries(@NonNull final Context userContext,
+    public void refreshSeries(@NonNull final Context context,
                               @NonNull final Series /* out */ series) {
         if (series.getId() == 0) {
             // It wasn't a known series; see if it is now. If so, update ID.
-            series.fixId(userContext, this);
+            series.fixId(context, this);
         } else {
             // It was a known author, see if it still is and fetch possibly updated fields.
             Series dbSeries = getSeries(series.getId());
@@ -3492,19 +3449,19 @@ public class DAO
     /**
      * @return {@code true} for success.
      */
-    public boolean globalReplaceSeries(@NonNull final Context userContext,
+    public boolean globalReplaceSeries(@NonNull final Context context,
                                        @NonNull final Series from,
                                        @NonNull final Series to,
                                        @NonNull final Locale locale) {
 
         // process the destination Series.
-        if (!updateOrInsertSeries(userContext, to, locale)) {
+        if (!updateOrInsertSeries(context, to, locale)) {
             Logger.warnWithStackTrace(this, "Could not update", "series=" + to);
             return false;
         }
 
         // Do some basic sanity checks
-        if (from.getId() == 0 && from.fixId(userContext, this) == 0) {
+        if (from.getId() == 0 && from.fixId(context, this) == 0) {
             Logger.warnWithStackTrace(this, "Old Series is not defined");
             return false;
         }
@@ -3515,7 +3472,7 @@ public class DAO
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
             Logger.debug(this, "globalReplaceSeries",
-                    "from=" + from.getId() + ", to=" + to.getId());
+                         "from=" + from.getId() + ", to=" + to.getId());
         }
 
         SyncLock txLock = sSyncedDb.beginTransaction(true);
@@ -3524,9 +3481,9 @@ public class DAO
             globalReplaceId(TBL_BOOK_SERIES, DOM_FK_SERIES, from.getId(), to.getId());
 
             globalReplacePositionedBookItem(TBL_BOOK_SERIES,
-                    DOM_FK_SERIES,
-                    DOM_BOOK_SERIES_POSITION,
-                    from.getId(), to.getId());
+                                            DOM_FK_SERIES,
+                                            DOM_BOOK_SERIES_POSITION,
+                                            from.getId(), to.getId());
 
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
@@ -3543,9 +3500,9 @@ public class DAO
      *
      * @return number of books in series
      */
-    public long countBooksInSeries(@NonNull final Context userContext,
+    public long countBooksInSeries(@NonNull final Context context,
                                    @NonNull final Series series) {
-        if (series.getId() == 0 && series.fixId(userContext,this) == 0) {
+        if (series.getId() == 0 && series.fixId(context, this) == 0) {
             return 0;
         }
 
@@ -3598,9 +3555,9 @@ public class DAO
         String sql = getAllBooksSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
         return (BookCursor)
                 sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                        sql,
-                        new String[]{String.valueOf(grBookId)},
-                        "");
+                                              sql,
+                                              new String[]{String.valueOf(grBookId)},
+                                              "");
     }
 
     /**
@@ -3617,7 +3574,7 @@ public class DAO
     public BookCursor fetchBooksForExportToGoodreads(final long startId,
                                                      final boolean updatesOnly) {
         String sql = SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND
-                + " WHERE " + DOM_PK_ID + ">?";
+                     + " WHERE " + DOM_PK_ID + ">?";
 
         if (updatesOnly) {
             sql += " AND " + DOM_DATE_LAST_UPDATED + '>' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -3628,9 +3585,9 @@ public class DAO
 
         return (BookCursor)
                 sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                        sql,
-                        new String[]{String.valueOf(startId)},
-                        "");
+                                              sql,
+                                              new String[]{String.valueOf(startId)},
+                                              "");
     }
 
     /**
@@ -3644,9 +3601,9 @@ public class DAO
     public BookCursor fetchBookForExportToGoodreads(final long bookId) {
         return (BookCursor)
                 sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                        SqlSelect.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
-                        new String[]{String.valueOf(bookId)},
-                        "");
+                                              SqlSelect.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
+                                              new String[]{String.valueOf(bookId)},
+                                              "");
     }
 
     /**
@@ -3704,31 +3661,31 @@ public class DAO
      * e.g. if a columns says it's Integer, an incoming boolean will be transformed to 0/1</li>
      * </ul>
      *
-     * @param tableName destination table
-     * @param book      A collection with the columns to be set. May contain extra data.
+     * @param userLocale      the user Locale; can be different from the item Locale
+     * @param tableDefinition destination table
+     * @param data            A collection with the columns to be set. May contain extra data.
      *
      * @return New and filtered ContentValues
      */
     @NonNull
-    private ContentValues filterValues(@NonNull final Context userContext,
-                                       @NonNull final String tableName,
-                                       @NonNull final Book book) {
+    private ContentValues filterValues(@NonNull final Locale userLocale,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @NonNull final TableDefinition tableDefinition,
+                                       @NonNull final DataManager data) {
 
-        TableInfo table = new TableInfo(sSyncedDb, tableName);
-
-        Locale locale = LocaleUtils.getPreferredLocale(userContext);
+        TableInfo tableInfo = tableDefinition.getTableInfo(sSyncedDb);
 
         ContentValues cv = new ContentValues();
         // Create the arguments
-        for (String key : book.keySet()) {
+        for (String key : data.keySet()) {
             // Get column info for this column.
-            ColumnInfo columnInfo = table.getColumn(key);
+            ColumnInfo columnInfo = tableInfo.getColumn(key);
             // Check if we actually have a matching column.
             if (columnInfo != null) {
                 // Never update PK.
                 if (!columnInfo.isPrimaryKey) {
                     // Try to set the appropriate value, but if that fails, just use TEXT...
-                    Object entry = book.get(key);
+                    Object entry = data.get(key);
                     try {
                         switch (columnInfo.storageClass) {
                             case Real:
@@ -3758,7 +3715,7 @@ public class DAO
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
                                 } else if (entry != null) {
-                                    String s = entry.toString().toLowerCase(locale);
+                                    String s = entry.toString().toLowerCase(userLocale);
                                     if (!s.isEmpty()) {
                                         // It's not strictly needed to do these conversions.
                                         // parseInt/catch works, but it's not elegant...
@@ -3803,15 +3760,15 @@ public class DAO
                                 } else if (entry != null) {
                                     throw new IllegalArgumentException(
                                             "non-null Blob but not a byte[] "
-                                                    + "? column.name=" + columnInfo.name
-                                                    + ", key=" + key);
+                                            + "? column.name=" + columnInfo.name
+                                            + ", key=" + key);
                                 }
                                 break;
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         Logger.error(this, e,
-                                "column=" + columnInfo.name,
-                                "stringValue=" + entry.toString());
+                                     "column=" + columnInfo.name,
+                                     "stringValue=" + entry.toString());
                         // not really ok, but let's store it anyhow.
                         cv.put(columnInfo.name, entry.toString());
                     }
@@ -3859,8 +3816,8 @@ public class DAO
             titleText.setLength(0);
             // Get list of authors
             try (Cursor authors = sSyncedDb.rawQuery(SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(
-                            cursorRow.getLong(DOM_PK_ID.name))})) {
+                                                     new String[]{String.valueOf(
+                                                             cursorRow.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3879,8 +3836,8 @@ public class DAO
 
             // Get list of series
             try (Cursor series = sSyncedDb.rawQuery(SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(
-                            cursorRow.getLong(DOM_PK_ID.name))})) {
+                                                    new String[]{String.valueOf(
+                                                            cursorRow.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.DOM_SERIES_INFO);
@@ -3895,8 +3852,8 @@ public class DAO
 
             // Get list of anthology data (author and title)
             try (Cursor tocEntries = sSyncedDb.rawQuery(SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(
-                            cursorRow.getLong(DOM_PK_ID.name))})) {
+                                                        new String[]{String.valueOf(
+                                                                cursorRow.getLong(DOM_PK_ID.name))})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo =
@@ -3923,7 +3880,7 @@ public class DAO
                 bindStringOrNull(stmt, 2, cursorRow.getString(DOM_TITLE.name) + "; " + titleText);
                 // We could add a 'series' column, or just add it as part of the description
                 bindStringOrNull(stmt, 3,
-                        cursorRow.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
+                                 cursorRow.getString(DOM_BOOK_DESCRIPTION.name) + seriesText);
                 bindStringOrNull(stmt, 4, cursorRow.getString(DOM_BOOK_NOTES.name));
                 bindStringOrNull(stmt, 5, cursorRow.getString(DOM_BOOK_PUBLISHER.name));
                 bindStringOrNull(stmt, 6, cursorRow.getString(DOM_BOOK_GENRE.name));
@@ -3951,8 +3908,7 @@ public class DAO
         } else {
             // Because FTS does not understand locales in all android up to 4.2,
             // we do case folding here using the user preferred locale. TEST: check if still so.
-            stmt.bindString(position,
-                    s.toLowerCase(LocaleUtils.getPreferredLocale(App.getAppContext())));
+            stmt.bindString(position, s.toLowerCase(LocaleUtils.getPreferredLocale()));
         }
     }
 
@@ -3975,9 +3931,9 @@ public class DAO
 
             try (BookCursor books = (BookCursor)
                     sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                            SqlSelect.BOOK_BY_ID,
-                            new String[]{String.valueOf(bookId)},
-                            "")) {
+                                                  SqlSelect.BOOK_BY_ID,
+                                                  new String[]{String.valueOf(bookId)},
+                                                  "")) {
                 ftsSendBooks(books, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -4004,9 +3960,9 @@ public class DAO
             }
             try (BookCursor books = (BookCursor)
                     sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                            SqlSelect.BOOK_BY_ID,
-                            new String[]{String.valueOf(bookId)},
-                            "")) {
+                                                  SqlSelect.BOOK_BY_ID,
+                                                  new String[]{String.valueOf(bookId)},
+                                                  "")) {
                 ftsSendBooks(books, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -4047,9 +4003,9 @@ public class DAO
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
                  BookCursor books = (BookCursor)
                          sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
-                                 SqlSelectFullTable.BOOKS,
-                                 null,
-                                 "")) {
+                                                       SqlSelectFullTable.BOOKS,
+                                                       null,
+                                                       "")) {
                 ftsSendBooks(books, insert);
             }
 
@@ -4074,7 +4030,7 @@ public class DAO
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Logger.debug(this, "rebuildFts",
-                    (System.nanoTime() - t0) + "nano");
+                         (System.nanoTime() - t0) + "nano");
         }
     }
 
@@ -4119,8 +4075,8 @@ public class DAO
         @NonNull
         public String toString() {
             return "DAOInstanceRefDebug{"
-                    + "mCreationStackTrace=\n" + Log.getStackTraceString(mCreationStackTrace)
-                    + "\n}";
+                   + "mCreationStackTrace=\n" + Log.getStackTraceString(mCreationStackTrace)
+                   + "\n}";
         }
     }
 
@@ -4139,21 +4095,18 @@ public class DAO
          * {@link #getAllBooksSql(String)}.
          */
         private static final String PREFIX = ""
-                + "SELECT b.*"
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
-                + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
-                + ',' + "a." + DOM_FK_AUTHOR + " AS " + DOM_FK_AUTHOR
+                                             + "SELECT b.*"
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                                             + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
+                                             + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
+                                             + ',' + "a." + DOM_FK_AUTHOR + " AS " + DOM_FK_AUTHOR
 
-                // use a dummy series for books not in a series (i.e. don't use null's)
-                + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS " + DOM_FK_SERIES
-                + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
-                + ',' + "COALESCE(s." + DOM_BOOK_NUM_IN_SERIES + ", '') AS " + DOM_BOOK_NUM_IN_SERIES
-
-                + ',' + SqlColumns.EXP_SERIES_LIST + " AS " + DOM_SERIES_FORMATTED
-                + " FROM (";
+                                             // use a dummy series for books not in a series (i.e. don't use null's)
+                                             + ',' + "COALESCE(s." + DOM_FK_SERIES + ", 0) AS " + DOM_FK_SERIES
+                                             + ',' + "COALESCE(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
+                                             + ',' + "COALESCE(s." + DOM_BOOK_NUM_IN_SERIES + ", '') AS " + DOM_BOOK_NUM_IN_SERIES;
 
         /**
          * set of fields suitable for a select of a Book.
@@ -4162,71 +4115,71 @@ public class DAO
          * <b>Developer:</b> adding fields ? Now is a good time to update {@link Book#duplicate}/
          */
         private static final String BOOK = TBL_BOOKS.dotAs(DOM_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
-                + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
-                // publication data
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
-                + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PAGES)
-                // common blurb
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
+                                           // publication data
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_FORMAT)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GENRE)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PAGES)
+                                           // common blurb
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION)
 
-                // partially edition info, partially user-owned info.
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK)
-                // user data
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_NOTES)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LOCATION)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_SIGNED)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_RATING)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_START)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_END)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY)
-                // added/updated
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED)
-                + ',' + TBL_BOOKS.dotAs(DOM_DATE_LAST_UPDATED)
-                // external links
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
+                                           // partially edition info, partially user-owned info.
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK)
+                                           // user data
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_NOTES)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LOCATION)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_SIGNED)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_RATING)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_START)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_READ_END)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY)
+                                           // added/updated
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_DATE_LAST_UPDATED)
+                                           // external links
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_ID)
+                                           + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)
 
-                // Find the first (i.e. primary) Series
-                + ',' + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)"
-                + " AS " + DOM_FK_SERIES
+                                           // Find the first (i.e. primary) Series
+                                           + ',' + "(SELECT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                                           + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)"
+                                           + " AS " + DOM_FK_SERIES
 
-                // Find the first (i.e. primary) Series number
-                + ',' + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)"
-                + " AS " + DOM_BOOK_NUM_IN_SERIES
+                                           // Find the first (i.e. primary) Series number
+                                           + ',' + "(SELECT " + DOM_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
+                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                                           + " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)"
+                                           + " AS " + DOM_BOOK_NUM_IN_SERIES
 
-                // Get the total series count
-                + ','
-                + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
+                                           // Get the total series count
+                                           + ','
+                                           + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
+                                           + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                                           + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES
 
-                // Find the first (i.e. primary) Author
-                + ','
-                + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
-                + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
-                + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1)"
-                + " AS " + DOM_FK_AUTHOR
+                                           // Find the first (i.e. primary) Author
+                                           + ','
+                                           + "(SELECT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
+                                           + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID)
+                                           + " ORDER BY " + DOM_BOOK_AUTHOR_POSITION
+                                           + ',' + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + " LIMIT 1)"
+                                           + " AS " + DOM_FK_AUTHOR
 
 //                // Get the total author count. TODO: does not seem to get used any longer.
 //                + ','
@@ -4240,44 +4193,43 @@ public class DAO
          * {@link #fetchBooksForExport(Date)}.
          */
         private static final String ALL_BOOKS = "SELECT DISTINCT " + BOOK
-                // use an empty loanee (i.e. don't use null's)
-                + ',' + "COALESCE(" + DOM_LOANEE + ", '') AS " + DOM_LOANEE
+                                                // use an empty loanee (i.e. don't use null's)
+                                                + ',' + "COALESCE(" + DOM_LOANEE + ", '') AS " + DOM_LOANEE
 
-                + " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LOANEE.ref()
-                + " ON (" + TBL_BOOK_LOANEE.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')';
+                                                + " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LOANEE.ref()
+                                                + " ON (" + TBL_BOOK_LOANEE.dot(DOM_FK_BOOK) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')';
 
         /**
          * {@link #getAllBooksSql(String)}.
          */
         private static final String SUFFIX = ""
-                + ") b"
-                // with their primary author
-                + " JOIN ("
-                + "SELECT " + DOM_FK_AUTHOR
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
-                + ',' + TBL_BOOK_AUTHOR.dotAs(DOM_FK_BOOK)
+                                             // with their primary author
+                                             + " JOIN ("
+                                             + "SELECT " + DOM_FK_AUTHOR
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                                             + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                                             + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
+                                             + ',' + TBL_BOOK_AUTHOR.dotAs(DOM_FK_BOOK)
 
-                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + ") a ON a." + DOM_FK_BOOK + "=b." + DOM_PK_ID
-                + " AND a." + DOM_FK_AUTHOR + "=b." + DOM_FK_AUTHOR
+                                             + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                                             + ") a ON a." + DOM_FK_BOOK + "=b." + DOM_PK_ID
+                                             + " AND a." + DOM_FK_AUTHOR + "=b." + DOM_FK_AUTHOR
 
-                // and (if they have one) their primary series
-                + " LEFT OUTER JOIN ("
-                + "SELECT " + DOM_FK_SERIES
-                + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
-                + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
-                + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_NUM_IN_SERIES)
-                + ',' + TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK)
-                + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER + " AS " + DOM_SERIES_FORMATTED
+                                             // and (if they have one) their primary series
+                                             + " LEFT OUTER JOIN ("
+                                             + "SELECT " + DOM_FK_SERIES
+                                             + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
+                                             + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
+                                             + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_NUM_IN_SERIES)
+                                             + ',' + TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK)
+                                             + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER + " AS " + DOM_SERIES_FORMATTED
 
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
-                + ") s ON s." + DOM_FK_BOOK + "=b." + DOM_PK_ID
-                + " AND s." + DOM_FK_SERIES + "=b." + DOM_FK_SERIES
-                + " AND lower(s." + DOM_BOOK_NUM_IN_SERIES + ")=lower(b." + DOM_BOOK_NUM_IN_SERIES + ')'
-                + COLLATION;
+                                             + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                                             + ") s ON s." + DOM_FK_BOOK + "=b." + DOM_PK_ID
+                                             + " AND s." + DOM_FK_SERIES + "=b." + DOM_FK_SERIES
+                                             + " AND lower(s." + DOM_BOOK_NUM_IN_SERIES + ")=lower(b." + DOM_BOOK_NUM_IN_SERIES + ')'
+                                             + COLLATION;
     }
 
     /**
@@ -4291,11 +4243,11 @@ public class DAO
          * Not used for display.
          */
         public static final String EXP_AUTHOR_SORT_LAST_FIRST = "CASE"
-                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
-                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-                + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB) + "||"
-                + /*      */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB)
-                + " END";
+                                                                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
+                                                                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+                                                                + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB) + "||"
+                                                                + /*      */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB)
+                                                                + " END";
 
         /**
          * SQL column: SORT author names in 'givenlast' form.
@@ -4303,11 +4255,11 @@ public class DAO
          * Not used for display.
          */
         public static final String EXP_AUTHOR_SORT_FIRST_LAST = "CASE"
-                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
-                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-                + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "||"
-                + /*      */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
-                + " END";
+                                                                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "=''"
+                                                                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+                                                                + " ELSE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES_OB) + "||"
+                                                                + /*      */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME_OB)
+                                                                + " END";
 
         /**
          * Single column, with the formatted name of the Author.
@@ -4316,11 +4268,11 @@ public class DAO
          * otherwise -> "FamilyName, GivenNames"
          */
         public static final String EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN = "CASE"
-                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
-                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                + " ELSE " + (TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                + " || ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES))
-                + " END";
+                                                                             + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
+                                                                             + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                                                                             + " ELSE " + (TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                                                                                           + " || ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES))
+                                                                             + " END";
 
         /**
          * Single column, with the formatted name of the Author.
@@ -4329,30 +4281,30 @@ public class DAO
          * otherwise -> "GivenNames FamilyName"
          */
         public static final String EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY = "CASE"
-                + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
-                + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                + " ELSE " + (TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME))
-                + " END";
+                                                                             + " WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
+                                                                             + " THEN " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                                                                             + " ELSE " + (TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
+                                                                                           + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME))
+                                                                             + " END";
         public static final String EXP_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
-                + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
-                + " THEN 1 ELSE 0"
-                + " END";
+                                                                         + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
+                                                                         + " THEN 1 ELSE 0"
+                                                                         + " END";
         /**
          * SQL column: return 1 if the book is available, 0 if not.
          * {@link DBDefinitions#DOM_LOANEE_AS_BOOLEAN}
          */
         public static final String EXP_LOANEE_AS_BOOLEAN = "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-                + " THEN 1 ELSE 0"
-                + " END";
+                                                           + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
+                                                           + " THEN 1 ELSE 0"
+                                                           + " END";
         /**
          * SQL column: return "" if the book is available, "loanee name" if not.
          */
         public static final String EXP_BOOK_LOANEE_OR_EMPTY = "CASE"
-                + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
-                + " THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
-                + " END";
+                                                              + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
+                                                              + " THEN '' ELSE " + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
+                                                              + " END";
         /**
          * Single column, with the formatted name of the Series.
          * <p>
@@ -4360,10 +4312,10 @@ public class DAO
          * otherwise -> "SeriesName #number"
          */
         private static final String EXP_SERIES_WITH_NUMBER = "CASE"
-                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
-                + " THEN " + DOM_SERIES_TITLE
-                + " ELSE " + DOM_SERIES_TITLE + " || ' #' || " + DOM_BOOK_NUM_IN_SERIES
-                + " END";
+                                                             + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
+                                                             + " THEN " + DOM_SERIES_TITLE
+                                                             + " ELSE " + DOM_SERIES_TITLE + " || ' #' || " + DOM_BOOK_NUM_IN_SERIES
+                                                             + " END";
         /**
          * Single column, with the formatted name of the Series.
          * <p>
@@ -4371,22 +4323,10 @@ public class DAO
          * otherwise -> "SeriesName (number)"
          */
         private static final String EXP_SERIES_WITH_NUMBER_IN_BRACKETS = "CASE"
-                + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
-                + " THEN " + DOM_SERIES_TITLE
-                + " ELSE " + DOM_SERIES_TITLE + " || ' (' || " + DOM_BOOK_NUM_IN_SERIES + " || ')'"
-                + " END";
-        /**
-         * Series a book belongs to.
-         * <p>
-         * If the book has more then one series, concat " et al" after the primary series.
-         */
-        private static final String EXP_SERIES_LIST = "CASE"
-                + " WHEN " + COLUMN_ALIAS_NR_OF_SERIES + "<2"
-                + " THEN COALESCE(s." + DOM_SERIES_FORMATTED + ",'')"
-                + " ELSE " + DOM_SERIES_FORMATTED + " || ' "
-                //TODO: should be using a user context.
-                + App.getAppContext().getString(R.string.and_others) + '\''
-                + " END";
+                                                                         + " WHEN " + DOM_BOOK_NUM_IN_SERIES + "=''"
+                                                                         + " THEN " + DOM_SERIES_TITLE
+                                                                         + " ELSE " + DOM_SERIES_TITLE + " || ' (' || " + DOM_BOOK_NUM_IN_SERIES + " || ')'"
+                                                                         + " END";
     }
 
     /**
@@ -4402,14 +4342,14 @@ public class DAO
          */
         static final String GOODREADS_BOOK_DATA_TO_SEND =
                 "SELECT " + DOM_PK_ID
-                        + ',' + DOM_BOOK_ISBN
-                        + ',' + DOM_BOOK_GOODREADS_ID
-                        + ',' + DOM_BOOK_READ
-                        + ',' + DOM_BOOK_READ_START
-                        + ',' + DOM_BOOK_READ_END
-                        + ',' + DOM_BOOK_RATING
-                        //+ ',' + DOM_BOOK_NOTES
-                        + " FROM " + TBL_BOOKS;
+                + ',' + DOM_BOOK_ISBN
+                + ',' + DOM_BOOK_GOODREADS_ID
+                + ',' + DOM_BOOK_READ
+                + ',' + DOM_BOOK_READ_START
+                + ',' + DOM_BOOK_READ_END
+                + ',' + DOM_BOOK_RATING
+                //+ ',' + DOM_BOOK_NOTES
+                + " FROM " + TBL_BOOKS;
 
         /** {@link Book}, all columns. */
         private static final String BOOKS =
@@ -4425,15 +4365,15 @@ public class DAO
 
         /** {@link Bookshelf} all columns. */
         private static final String BOOKSHELVES = "SELECT "
-                + TBL_BOOKSHELF.dot(DOM_PK_ID)
-                + ',' + TBL_BOOKSHELF.dot(DOM_BOOKSHELF)
-                + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE_ID)
-                + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
-                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
+                                                  + TBL_BOOKSHELF.dot(DOM_PK_ID)
+                                                  + ',' + TBL_BOOKSHELF.dot(DOM_BOOKSHELF)
+                                                  + ',' + TBL_BOOKSHELF.dot(DOM_FK_STYLE_ID)
+                                                  + ',' + TBL_BOOKLIST_STYLES.dot(DOM_UUID)
+                                                  + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
 
         /** {@link Bookshelf} all columns. Ordered, will be displayed to user. */
         private static final String BOOKSHELVES_ORDERED = BOOKSHELVES
-                + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
+                                                          + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
 
         /** {@link BooklistStyle} all columns. */
         private static final String BOOKLIST_STYLES =
@@ -4446,76 +4386,76 @@ public class DAO
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FAMILY_NAMES =
                 "SELECT DISTINCT "
-                        + DOM_AUTHOR_FAMILY_NAME
-                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
-                        + " FROM " + TBL_AUTHORS
-                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION;
+                + DOM_AUTHOR_FAMILY_NAME
+                + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                + " FROM " + TBL_AUTHORS
+                + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_GIVEN_NAMES =
                 "SELECT DISTINCT "
-                        + DOM_AUTHOR_GIVEN_NAMES
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
-                        + " FROM " + TBL_AUTHORS
-                        + " ORDER BY " + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
+                + DOM_AUTHOR_GIVEN_NAMES
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                + " FROM " + TBL_AUTHORS
+                + " ORDER BY " + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FORMATTED_NAMES =
                 "SELECT "
-                        + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
-                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
-                        + " FROM " + TBL_AUTHORS.ref()
-                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
+                + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
+                + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                + " FROM " + TBL_AUTHORS.ref()
+                + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FORMATTED_NAMES_GIVEN_FIRST =
                 "SELECT "
-                        + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
-                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
-                        + " FROM " + TBL_AUTHORS.ref()
-                        + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
+                + SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY + " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST
+                + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                + " FROM " + TBL_AUTHORS.ref()
+                + " ORDER BY " + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String SERIES_NAME =
                 "SELECT "
-                        + DOM_SERIES_TITLE
-                        + ',' + DOM_SERIES_TITLE_OB
-                        + " FROM " + TBL_SERIES
-                        + " ORDER BY " + DOM_SERIES_TITLE_OB + COLLATION;
+                + DOM_SERIES_TITLE
+                + ',' + DOM_SERIES_TITLE_OB
+                + " FROM " + TBL_SERIES
+                + " ORDER BY " + DOM_SERIES_TITLE_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String FORMATS =
                 "SELECT DISTINCT " + DOM_BOOK_FORMAT
-                        + " FROM " + TBL_BOOKS
-                        + " ORDER BY lower(" + DOM_BOOK_FORMAT + ')' + COLLATION;
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_FORMAT + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
                 "SELECT DISTINCT " + DOM_BOOK_GENRE
-                        + " FROM " + TBL_BOOKS
-                        + " ORDER BY lower(" + DOM_BOOK_GENRE + ')' + COLLATION;
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_GENRE + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + DOM_BOOK_LANGUAGE
-                        + " FROM " + TBL_BOOKS
-                        + " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ')' + COLLATION;
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
                 "SELECT DISTINCT " + DOM_BOOK_LOCATION
-                        + " FROM " + TBL_BOOKS
-                        + " ORDER BY lower(" + DOM_BOOK_LOCATION + ')' + COLLATION;
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_LOCATION + ')' + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String PUBLISHERS =
                 "SELECT DISTINCT " + DOM_BOOK_PUBLISHER
-                        + " FROM " + TBL_BOOKS
-                        + " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ')' + COLLATION;
+                + " FROM " + TBL_BOOKS
+                + " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ')' + COLLATION;
     }
 
     /**
@@ -4528,85 +4468,85 @@ public class DAO
          */
         private static final String BOOKSHELVES_BY_BOOK_ID =
                 "SELECT DISTINCT "
-                        + TBL_BOOKSHELF.dotAs(DOM_PK_ID)
-                        + ',' + TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
-                        + ',' + TBL_BOOKSHELF.dotAs(DOM_FK_STYLE_ID)
-                        + ',' + TBL_BOOKLIST_STYLES.dotAs(DOM_UUID)
-                        + " FROM " + TBL_BOOK_BOOKSHELF.ref()
-                        + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
-                        + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES)
-                        + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK) + "=?"
-                        + " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ')' + COLLATION;
+                + TBL_BOOKSHELF.dotAs(DOM_PK_ID)
+                + ',' + TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
+                + ',' + TBL_BOOKSHELF.dotAs(DOM_FK_STYLE_ID)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(DOM_UUID)
+                + " FROM " + TBL_BOOK_BOOKSHELF.ref()
+                + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
+                + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES)
+                + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK) + "=?"
+                + " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ')' + COLLATION;
 
         /**
          * All Authors for a Book; ordered by position, family, given.
          */
         private static final String AUTHORS_BY_BOOK_ID =
                 "SELECT DISTINCT " + TBL_AUTHORS.dotAs(DOM_PK_ID)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME_OB)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES_OB)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                        + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
-                        + ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
-                        + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                        + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + "=?"
-                        + " ORDER BY "
-                        + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC"
-                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION + "ASC"
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION + "ASC";
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME_OB)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES_OB)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
+                + ',' + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + "=?"
+                + " ORDER BY "
+                + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC"
+                + ',' + DOM_AUTHOR_FAMILY_NAME_OB + COLLATION + "ASC"
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB + COLLATION + "ASC";
 
         /**
          * All Series for a Book; ordered by position, name.
          */
         private static final String SERIES_BY_BOOK_ID =
                 "SELECT DISTINCT " + TBL_SERIES.dotAs(DOM_PK_ID)
-                        + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
-                        + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE_OB)
-                        + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
-                        + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_NUM_IN_SERIES)
-                        + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION)
-                        + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER_IN_BRACKETS + " AS " + DOM_SERIES_FORMATTED
-                        + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
-                        + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + "=?"
-                        + " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION)
-                        + ',' + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + COLLATION + "ASC";
+                + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
+                + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE_OB)
+                + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
+                + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_NUM_IN_SERIES)
+                + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION)
+                + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER_IN_BRACKETS + " AS " + DOM_SERIES_FORMATTED
+                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + "=?"
+                + " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION)
+                + ',' + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + COLLATION + "ASC";
 
         /**
          * All TocEntry's for a Book; ordered by position in the book.
          */
         private static final String TOC_ENTRIES_BY_BOOK_ID =
                 "SELECT " + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_FK_AUTHOR)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_DATE_FIRST_PUBLICATION)
-                        // for convenience, we fetch the Author here
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
-                        + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_FK_AUTHOR)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                // for convenience, we fetch the Author here
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
 
-                        + " FROM " + TBL_TOC_ENTRIES.ref()
-                        + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
-                        + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
-                        + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK) + "=?"
-                        + " ORDER BY " + TBL_BOOK_TOC_ENTRIES.dot(DOM_BOOK_TOC_ENTRY_POSITION);
+                + " FROM " + TBL_TOC_ENTRIES.ref()
+                + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
+                + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK) + "=?"
+                + " ORDER BY " + TBL_BOOK_TOC_ENTRIES.dot(DOM_BOOK_TOC_ENTRY_POSITION);
 
         /**
          * All Books (id only!) for a given Author.
          */
         private static final String BOOK_IDS_BY_AUTHOR_ID =
                 "SELECT " + TBL_BOOKS.dotAs(DOM_PK_ID)
-                        + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
-                        + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + "=?";
+                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + "=?";
 
         /**
          * All Books (id only!) for a given Series.
          */
         private static final String BOOK_IDS_BY_SERIES_ID =
                 "SELECT " + TBL_BOOKS.dotAs(DOM_PK_ID)
-                        + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
-                        + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES) + "=?";
+                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
+                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES) + "=?";
 
 
         /**
@@ -4618,15 +4558,15 @@ public class DAO
          */
         private static final String TOC_ENTRIES_BY_AUTHOR_ID =
                 "SELECT " + "'" + TocEntry.Type.TYPE_TOC + "' AS " + DOM_TOC_TYPE
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE_OB)
-                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_DATE_FIRST_PUBLICATION)
-                        + ", COUNT(" + TBL_TOC_ENTRIES.dot(DOM_PK_ID) + ") AS " + DOM_BL_BOOK_COUNT
-                        + " FROM " + TBL_TOC_ENTRIES.ref()
-                        + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
-                        + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR) + "=?"
-                        + " GROUP BY " + DOM_PK_ID;
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE_OB)
+                + ',' + TBL_TOC_ENTRIES.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                + ", COUNT(" + TBL_TOC_ENTRIES.dot(DOM_PK_ID) + ") AS " + DOM_BL_BOOK_COUNT
+                + " FROM " + TBL_TOC_ENTRIES.ref()
+                + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR) + "=?"
+                + " GROUP BY " + DOM_PK_ID;
 
         /**
          * All Book titles and their first pub. date, for an Author..
@@ -4637,13 +4577,13 @@ public class DAO
          */
         private static final String BOOK_TITLES_BY_AUTHOR_ID =
                 "SELECT " + "'" + TocEntry.Type.TYPE_BOOK + "' AS " + DOM_TOC_TYPE
-                        + ',' + TBL_BOOKS.dotAs(DOM_PK_ID)
-                        + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
-                        + ',' + TBL_BOOKS.dotAs(DOM_TITLE_OB)
-                        + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
-                        + ",1 AS " + DOM_BL_BOOK_COUNT
-                        + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
-                        + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + "=?";
+                + ',' + TBL_BOOKS.dotAs(DOM_PK_ID)
+                + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
+                + ',' + TBL_BOOKS.dotAs(DOM_TITLE_OB)
+                + ',' + TBL_BOOKS.dotAs(DOM_DATE_FIRST_PUBLICATION)
+                + ",1 AS " + DOM_BL_BOOK_COUNT
+                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR) + "=?";
 
         /**
          * All TocEntry's + book titles for an Author; ordered by title.
@@ -4664,26 +4604,26 @@ public class DAO
          */
         static final String BOOK_ID_BY_ISBN =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS
-                        + " WHERE lower(" + DOM_BOOK_ISBN + ")=lower(?)";
+                + " WHERE lower(" + DOM_BOOK_ISBN + ")=lower(?)";
         /**
          * Find the Book ID based on a search for the ISBN (both 10 & 13).
          */
         static final String BOOK_ID_BY_ISBN2 =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS
-                        + " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?),lower(?))";
+                + " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?),lower(?))";
 
         static final String BOOKLIST_STYLE_ID_BY_UUID =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKLIST_STYLES
-                        + " WHERE " + DOM_UUID + "=?";
+                + " WHERE " + DOM_UUID + "=?";
 
         static final String AUTHOR_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_AUTHORS
-                        + " WHERE " + DOM_AUTHOR_FAMILY_NAME_OB + "=?" + COLLATION
-                        + " AND " + DOM_AUTHOR_GIVEN_NAMES_OB + "=?" + COLLATION;
+                + " WHERE " + DOM_AUTHOR_FAMILY_NAME_OB + "=?" + COLLATION
+                + " AND " + DOM_AUTHOR_GIVEN_NAMES_OB + "=?" + COLLATION;
 
         static final String BOOKSHELF_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + DOM_BOOKSHELF
-                        + " WHERE lower(" + DOM_BOOKSHELF + ")=lower(?)" + COLLATION;
+                + " WHERE lower(" + DOM_BOOKSHELF + ")=lower(?)" + COLLATION;
 
         /**
          * Get the id of a {@link Series} by its Title.
@@ -4691,8 +4631,8 @@ public class DAO
          */
         static final String SERIES_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_SERIES
-                        + " WHERE " + DOM_SERIES_TITLE_OB + "=?" + COLLATION
-                        + " OR " + DOM_SERIES_TITLE_OB + "=?" + COLLATION;
+                + " WHERE " + DOM_SERIES_TITLE_OB + "=?" + COLLATION
+                + " OR " + DOM_SERIES_TITLE_OB + "=?" + COLLATION;
 
         /**
          * Get the id of a {@link TocEntry} by its Title.
@@ -4700,26 +4640,26 @@ public class DAO
          */
         static final String TOC_ENTRY_ID =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_TOC_ENTRIES
-                        + " WHERE " + DOM_FK_AUTHOR + "=?"
-                        + " AND (" + DOM_TITLE_OB + "=? " + COLLATION
-                        + " OR " + DOM_TITLE_OB + "=?" + COLLATION + ')';
+                + " WHERE " + DOM_FK_AUTHOR + "=?"
+                + " AND (" + DOM_TITLE_OB + "=? " + COLLATION
+                + " OR " + DOM_TITLE_OB + "=?" + COLLATION + ')';
 
         static final String BOOK_ID_BY_TOC_ENTRY_ID =
                 "SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES
-                        + " WHERE " + DOM_FK_TOC_ENTRY + "=?";
+                + " WHERE " + DOM_FK_TOC_ENTRY + "=?";
 
         /**
          * Get the UUID of a {@link Book} by its id.
          */
         static final String BOOK_UUID_BY_ID =
                 "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS
-                        + " WHERE " + DOM_PK_ID + "=?";
+                + " WHERE " + DOM_PK_ID + "=?";
         /**
          * Get the id of a {@link Book} by its UUID.
          */
         static final String BOOK_ID_BY_UUID =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS
-                        + " WHERE " + DOM_BOOK_UUID + "=?";
+                + " WHERE " + DOM_BOOK_UUID + "=?";
         /**
          * Get the ISBN of a {@link Book} by its id.
          */
@@ -4735,7 +4675,7 @@ public class DAO
          */
         static final String LOANEE_BY_BOOK_ID =
                 "SELECT " + DOM_LOANEE + " FROM " + TBL_BOOK_LOANEE
-                        + " WHERE " + DOM_FK_BOOK + "=?";
+                + " WHERE " + DOM_FK_BOOK + "=?";
     }
 
     /**
@@ -4747,38 +4687,38 @@ public class DAO
          * Get a {@link Book} by its id.
          */
         static final String BOOK_BY_ID = SqlSelectFullTable.BOOKS
-                + " WHERE " + DOM_PK_ID + "=?";
+                                         + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Get a {@link Bookshelf} by its id.
          */
         static final String BOOKSHELF_BY_ID = SqlSelectFullTable.BOOKSHELVES
-                + " WHERE " + TBL_BOOKSHELF.dot(DOM_PK_ID) + "=?";
+                                              + " WHERE " + TBL_BOOKSHELF.dot(DOM_PK_ID) + "=?";
 
         /**
          * Get a {@link Bookshelf} by its name.
          */
         static final String BOOKSHELF_BY_NAME = SqlSelectFullTable.BOOKSHELVES
-                + " WHERE lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ")=lower(?)" + COLLATION;
+                                                + " WHERE lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ")=lower(?)" + COLLATION;
 
         /**
          * Get an {@link Author} by its id.
          */
         static final String AUTHOR_BY_ID = SqlSelectFullTable.AUTHORS
-                + " WHERE " + DOM_PK_ID + "=?";
+                                           + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Get a {@link Series} by its id.
          */
         static final String SERIES_BY_ID = SqlSelectFullTable.SERIES
-                + " WHERE " + DOM_PK_ID + "=?";
+                                           + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Get the last-update-date for a {@link Book} by its id.
          */
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
                 "SELECT " + DOM_DATE_LAST_UPDATED + " FROM " + TBL_BOOKS
-                        + " WHERE " + DOM_PK_ID + "=?";
+                + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Get the booklist extra fields including the bookshelves as a single csv string.
@@ -4786,24 +4726,24 @@ public class DAO
          * GROUP_CONCAT: The order of the concatenated elements is arbitrary.
          */
         static final String BOOK_EXTRAS = "SELECT "
-                + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_ISBN)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
+                                          + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + DOM_AUTHOR_FORMATTED
+                                          + ',' + TBL_BOOKS.dot(DOM_BOOK_LOCATION)
+                                          + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
+                                          + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
+                                          + ',' + TBL_BOOKS.dot(DOM_BOOK_ISBN)
+                                          + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
 
-                + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ",', ')"
-                + " AS " + DOM_BOOKSHELF
+                                          + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ",', ')"
+                                          + " AS " + DOM_BOOKSHELF
 
-                + " FROM " + TBL_BOOKS.ref()
-                + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
-                + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?"
-                // primary author only.
-                + " GROUP BY " + DOM_AUTHOR_FORMATTED
-                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
-                + " LIMIT 1";
+                                          + " FROM " + TBL_BOOKS.ref()
+                                          + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                                          + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
+                                          + " WHERE " + TBL_BOOKS.dot(DOM_PK_ID) + "=?"
+                                          // primary author only.
+                                          + " GROUP BY " + DOM_AUTHOR_FORMATTED
+                                          + " ORDER BY " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+                                          + " LIMIT 1";
 
         /**
          * Check if a {@link Book} exists.
@@ -4816,18 +4756,18 @@ public class DAO
          */
         static final String COUNT_BOOKS_IN_SERIES =
                 "SELECT COUNT(" + DOM_FK_BOOK + ") FROM " + TBL_BOOK_SERIES
-                        + " WHERE " + DOM_FK_SERIES + "=?";
+                + " WHERE " + DOM_FK_SERIES + "=?";
 
         /**
          * Count the number of {@link Book}'s by an {@link Author}.
          */
         static final String COUNT_BOOKS_BY_AUTHOR =
                 "SELECT COUNT(" + DOM_FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR
-                        + " WHERE " + DOM_FK_AUTHOR + "=?";
+                + " WHERE " + DOM_FK_AUTHOR + "=?";
 
         static final String COUNT_TOC_ENTRIES_BY_AUTHOR =
                 "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_TOC_ENTRIES
-                        + " WHERE " + DOM_FK_AUTHOR + "=?";
+                + " WHERE " + DOM_FK_AUTHOR + "=?";
 
         /**
          * Get the needed fields of a {@link Book} to send to Goodreads.
@@ -4838,46 +4778,46 @@ public class DAO
                 SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + DOM_PK_ID + "=?";
 
         static final String SEARCH_SUGGESTIONS = "SELECT * FROM ("
-                // Book Title
-                + "SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_TITLE, SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_BOOKS.dotAs(DOM_TITLE, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_BOOKS.ref()
-                + " WHERE " + TBL_BOOKS.dot(DOM_TITLE) + " LIKE ?"
+                                                 // Book Title
+                                                 + "SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID)
+                                                 + ',' + TBL_BOOKS.dotAs(DOM_TITLE, SearchManager.SUGGEST_COLUMN_TEXT_1)
+                                                 + ',' + TBL_BOOKS.dotAs(DOM_TITLE, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                                                 + " FROM " + TBL_BOOKS.ref()
+                                                 + " WHERE " + TBL_BOOKS.dot(DOM_TITLE) + " LIKE ?"
 
-                + " UNION "
+                                                 + " UNION "
 
-                // Author Family Name
-                + " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME,
-                SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME,
-                SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " LIKE ?"
+                                                 // Author Family Name
+                                                 + " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID)
+                                                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME,
+                                                                           SearchManager.SUGGEST_COLUMN_TEXT_1)
+                                                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME,
+                                                                           SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                                                 + " FROM " + TBL_AUTHORS.ref()
+                                                 + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " LIKE ?"
 
-                + " UNION "
+                                                 + " UNION "
 
-                // Author Given Names
-                + " SELECT \"AG\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES,
-                SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES,
-                SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " LIKE ?"
+                                                 // Author Given Names
+                                                 + " SELECT \"AG\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID)
+                                                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES,
+                                                                           SearchManager.SUGGEST_COLUMN_TEXT_1)
+                                                 + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES,
+                                                                           SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                                                 + " FROM " + TBL_AUTHORS.ref()
+                                                 + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " LIKE ?"
 
-                + " UNION "
+                                                 + " UNION "
 
-                // Book ISBN
-                + " SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_BOOKS.ref()
-                + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?"
+                                                 // Book ISBN
+                                                 + " SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID)
+                                                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_1)
+                                                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                                                 + " FROM " + TBL_BOOKS.ref()
+                                                 + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?"
 
-                + " ) AS zzz "
-                + " ORDER BY lower(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ')' + COLLATION;
+                                                 + " ) AS zzz "
+                                                 + " ORDER BY lower(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ')' + COLLATION;
     }
 
     /**
@@ -4887,75 +4827,75 @@ public class DAO
 
         static final String BOOKSHELF =
                 "INSERT INTO " + TBL_BOOKSHELF
-                        + '(' + DOM_BOOKSHELF
-                        + ',' + DOM_FK_STYLE_ID
-                        + ") VALUES (?,?)";
+                + '(' + DOM_BOOKSHELF
+                + ',' + DOM_FK_STYLE_ID
+                + ") VALUES (?,?)";
 
         static final String AUTHOR =
                 "INSERT INTO " + TBL_AUTHORS
-                        + '(' + DOM_AUTHOR_FAMILY_NAME
-                        + ',' + DOM_AUTHOR_FAMILY_NAME_OB
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES
-                        + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
-                        + ',' + DOM_AUTHOR_IS_COMPLETE
-                        + ") VALUES (?,?,?,?,?)";
+                + '(' + DOM_AUTHOR_FAMILY_NAME
+                + ',' + DOM_AUTHOR_FAMILY_NAME_OB
+                + ',' + DOM_AUTHOR_GIVEN_NAMES
+                + ',' + DOM_AUTHOR_GIVEN_NAMES_OB
+                + ',' + DOM_AUTHOR_IS_COMPLETE
+                + ") VALUES (?,?,?,?,?)";
 
         static final String SERIES =
                 "INSERT INTO " + TBL_SERIES
-                        + '(' + DOM_SERIES_TITLE
-                        + ',' + DOM_SERIES_TITLE_OB
-                        + ',' + DOM_SERIES_IS_COMPLETE
-                        + ") VALUES (?,?,?)";
+                + '(' + DOM_SERIES_TITLE
+                + ',' + DOM_SERIES_TITLE_OB
+                + ',' + DOM_SERIES_IS_COMPLETE
+                + ") VALUES (?,?,?)";
 
         static final String TOC_ENTRY =
                 "INSERT INTO " + TBL_TOC_ENTRIES
-                        + '(' + DOM_FK_AUTHOR
-                        + ',' + DOM_TITLE
-                        + ',' + DOM_TITLE_OB
-                        + ',' + DOM_DATE_FIRST_PUBLICATION
-                        + ") VALUES (?,?,?,?)";
+                + '(' + DOM_FK_AUTHOR
+                + ',' + DOM_TITLE
+                + ',' + DOM_TITLE_OB
+                + ',' + DOM_DATE_FIRST_PUBLICATION
+                + ") VALUES (?,?,?,?)";
 
 
         static final String BOOK_TOC_ENTRY =
                 "INSERT INTO " + TBL_BOOK_TOC_ENTRIES
-                        + '(' + DOM_FK_TOC_ENTRY
-                        + ',' + DOM_FK_BOOK
-                        + ',' + DOM_BOOK_TOC_ENTRY_POSITION
-                        + ") VALUES (?,?,?)";
+                + '(' + DOM_FK_TOC_ENTRY
+                + ',' + DOM_FK_BOOK
+                + ',' + DOM_BOOK_TOC_ENTRY_POSITION
+                + ") VALUES (?,?,?)";
 
         static final String BOOK_BOOKSHELF =
                 "INSERT INTO " + TBL_BOOK_BOOKSHELF
-                        + '(' + DOM_FK_BOOK
-                        + ',' + DOM_BOOKSHELF
-                        + ") VALUES (?,?)";
+                + '(' + DOM_FK_BOOK
+                + ',' + DOM_BOOKSHELF
+                + ") VALUES (?,?)";
 
         static final String BOOK_AUTHOR =
                 "INSERT INTO " + TBL_BOOK_AUTHOR
-                        + '(' + DOM_FK_BOOK
-                        + ',' + DOM_FK_AUTHOR
-                        + ',' + DOM_BOOK_AUTHOR_POSITION
-                        + ") VALUES(?,?,?)";
+                + '(' + DOM_FK_BOOK
+                + ',' + DOM_FK_AUTHOR
+                + ',' + DOM_BOOK_AUTHOR_POSITION
+                + ") VALUES(?,?,?)";
 
         static final String BOOK_SERIES =
                 "INSERT INTO " + TBL_BOOK_SERIES
-                        + '(' + DOM_FK_BOOK
-                        + ',' + DOM_FK_SERIES
-                        + ',' + DOM_BOOK_NUM_IN_SERIES
-                        + ',' + DOM_BOOK_SERIES_POSITION
-                        + ") VALUES(?,?,?,?)";
+                + '(' + DOM_FK_BOOK
+                + ',' + DOM_FK_SERIES
+                + ',' + DOM_BOOK_NUM_IN_SERIES
+                + ',' + DOM_BOOK_SERIES_POSITION
+                + ") VALUES(?,?,?,?)";
 
         static final String BOOK_LOANEE =
                 "INSERT INTO " + TBL_BOOK_LOANEE
-                        + '(' + DOM_FK_BOOK
-                        + ',' + DOM_LOANEE
-                        + ") VALUES(?,?)";
+                + '(' + DOM_FK_BOOK
+                + ',' + DOM_LOANEE
+                + ") VALUES(?,?)";
 
 
         static final String BOOKLIST_STYLE =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
-                        + '(' + DOM_UUID
-                        + ',' + DOM_STYLE_IS_BUILTIN
-                        + ") VALUES (?,?)";
+                + '(' + DOM_UUID
+                + ',' + DOM_STYLE_IS_BUILTIN
+                + ") VALUES (?,?)";
     }
 
     /**
@@ -4969,44 +4909,44 @@ public class DAO
          */
         static final String GOODREADS_LAST_SYNC_DATE =
                 "UPDATE " + TBL_BOOKS + " SET "
-                        + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
-                        + " WHERE " + DOM_PK_ID + "=?";
+                + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Update a single Book's Goodreads id. Do not update the last-update-date!
          */
         static final String GOODREADS_BOOK_ID =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GOODREADS_ID + "=?"
-                        + " WHERE " + DOM_PK_ID + "=?";
+                + " WHERE " + DOM_PK_ID + "=?";
 
         static final String AUTHOR_ON_TOC_ENTRIES =
                 "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_FK_AUTHOR + "=?"
-                        + " WHERE " + DOM_FK_AUTHOR + "=?";
+                + " WHERE " + DOM_FK_AUTHOR + "=?";
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_FORMAT + "=?"
-                        + " WHERE " + DOM_BOOK_FORMAT + "=?";
+                + ',' + DOM_BOOK_FORMAT + "=?"
+                + " WHERE " + DOM_BOOK_FORMAT + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_GENRE + "=?"
-                        + " WHERE " + DOM_BOOK_GENRE + "=?";
+                + ',' + DOM_BOOK_GENRE + "=?"
+                + " WHERE " + DOM_BOOK_GENRE + "=?";
 
         static final String LANGUAGE =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_LANGUAGE + "=?"
-                        + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
+                + ',' + DOM_BOOK_LANGUAGE + "=?"
+                + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
 
         static final String LOCATION =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_LOCATION + "=?"
-                        + " WHERE " + DOM_BOOK_LOCATION + "=?";
+                + ',' + DOM_BOOK_LOCATION + "=?"
+                + " WHERE " + DOM_BOOK_LOCATION + "=?";
 
         static final String PUBLISHER =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-                        + ',' + DOM_BOOK_PUBLISHER + "=?"
-                        + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
+                + ',' + DOM_BOOK_PUBLISHER + "=?"
+                + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
     }
 
     /**
@@ -5090,17 +5030,17 @@ public class DAO
          * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
          */
         static final String PURGE_AUTHORS = "DELETE FROM " + TBL_AUTHORS
-                + " WHERE " + DOM_PK_ID + " NOT IN"
-                + " (SELECT DISTINCT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR + ')'
-                + " AND " + DOM_PK_ID + " NOT IN"
-                + " (SELECT DISTINCT " + DOM_FK_AUTHOR + " FROM " + TBL_TOC_ENTRIES + ')';
+                                            + " WHERE " + DOM_PK_ID + " NOT IN"
+                                            + " (SELECT DISTINCT " + DOM_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR + ')'
+                                            + " AND " + DOM_PK_ID + " NOT IN"
+                                            + " (SELECT DISTINCT " + DOM_FK_AUTHOR + " FROM " + TBL_TOC_ENTRIES + ')';
 
         /**
          * Purge a {@link Series} if no longer in use.
          */
         static final String PURGE_SERIES = "DELETE FROM " + TBL_SERIES
-                + " WHERE " + DOM_PK_ID + " NOT IN"
-                + " (SELECT DISTINCT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES + ')';
+                                           + " WHERE " + DOM_PK_ID + " NOT IN"
+                                           + " (SELECT DISTINCT " + DOM_FK_SERIES + " FROM " + TBL_BOOK_SERIES + ')';
 
         private SqlDelete() {
         }
@@ -5112,43 +5052,43 @@ public class DAO
     private static final class SqlFTS {
 
         static final String GET_AUTHORS_BY_BOOK_ID = "SELECT "
-                + TBL_AUTHORS.dot("*")
-                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + "=?";
+                                                     + TBL_AUTHORS.dot("*")
+                                                     + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                                                     + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK) + "=?";
 
         static final String DOM_SERIES_INFO = "seriesInfo";
         static final String GET_SERIES_BY_BOOK_ID = "SELECT "
-                + TBL_SERIES.dot(DOM_SERIES_TITLE) + " || ' ' || "
-                + " COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES) + ",'')"
-                + " AS " + DOM_SERIES_INFO
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
-                + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + "=?";
+                                                    + TBL_SERIES.dot(DOM_SERIES_TITLE) + " || ' ' || "
+                                                    + " COALESCE(" + TBL_BOOK_SERIES.dot(DOM_BOOK_NUM_IN_SERIES) + ",'')"
+                                                    + " AS " + DOM_SERIES_INFO
+                                                    + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                                                    + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK) + "=?";
 
         static final String DOM_TOC_ENTRY_AUTHOR_INFO = "TOCEntryAuthor";
         static final String DOM_TOC_ENTRY_TITLE = "TOCEntryTitle";
 
         static final String GET_TOC_ENTRIES_BY_BOOK_ID = "SELECT "
-                + (TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                + " || ' ' || " + TBL_AUTHORS.dot(
+                                                         + (TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
+                                                            + " || ' ' || " + TBL_AUTHORS.dot(
                 DOM_AUTHOR_FAMILY_NAME)) + " AS " + DOM_TOC_ENTRY_AUTHOR_INFO
-                + ',' + DOM_TITLE + " AS " + DOM_TOC_ENTRY_TITLE
-                + " FROM " + TBL_TOC_ENTRIES.ref()
-                + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
-                + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK) + "=?";
+                                                         + ',' + DOM_TITLE + " AS " + DOM_TOC_ENTRY_TITLE
+                                                         + " FROM " + TBL_TOC_ENTRIES.ref()
+                                                         + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                                                         + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
+                                                         + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK) + "=?";
 
         // the body of an INSERT INTO [table]. Used more then once.
         static final String INSERT_BODY =
                 " (" + DOM_FTS_AUTHOR_NAME
-                        + ',' + DOM_TITLE
-                        + ',' + DOM_BOOK_DESCRIPTION
-                        + ',' + DOM_BOOK_NOTES
-                        + ',' + DOM_BOOK_PUBLISHER
-                        + ',' + DOM_BOOK_GENRE
-                        + ',' + DOM_BOOK_LOCATION
-                        + ',' + DOM_BOOK_ISBN
-                        + ',' + DOM_PK_DOCID
-                        + ") VALUES (?,?,?,?,?,?,?,?,?)";
+                + ',' + DOM_TITLE
+                + ',' + DOM_BOOK_DESCRIPTION
+                + ',' + DOM_BOOK_NOTES
+                + ',' + DOM_BOOK_PUBLISHER
+                + ',' + DOM_BOOK_GENRE
+                + ',' + DOM_BOOK_LOCATION
+                + ',' + DOM_BOOK_ISBN
+                + ',' + DOM_PK_DOCID
+                + ") VALUES (?,?,?,?,?,?,?,?,?)";
 
         // The parameter order MUST match the order expected in UPDATE.
         static final String INSERT =
@@ -5157,14 +5097,14 @@ public class DAO
         // The parameter order MUST match the order expected in INSERT.
         static final String UPDATE =
                 "UPDATE " + TBL_BOOKS_FTS + " SET "
-                        + DOM_FTS_AUTHOR_NAME + "=?"
-                        + ',' + DOM_TITLE + "=?"
-                        + ',' + DOM_BOOK_DESCRIPTION + "=?"
-                        + ',' + DOM_BOOK_NOTES + "=?"
-                        + ',' + DOM_BOOK_PUBLISHER + "=?"
-                        + ',' + DOM_BOOK_GENRE + "=?"
-                        + ',' + DOM_BOOK_LOCATION + "=?"
-                        + ',' + DOM_BOOK_ISBN + "=?"
-                        + " WHERE " + DOM_PK_DOCID + "=?";
+                + DOM_FTS_AUTHOR_NAME + "=?"
+                + ',' + DOM_TITLE + "=?"
+                + ',' + DOM_BOOK_DESCRIPTION + "=?"
+                + ',' + DOM_BOOK_NOTES + "=?"
+                + ',' + DOM_BOOK_PUBLISHER + "=?"
+                + ',' + DOM_BOOK_GENRE + "=?"
+                + ',' + DOM_BOOK_LOCATION + "=?"
+                + ',' + DOM_BOOK_ISBN + "=?"
+                + " WHERE " + DOM_PK_DOCID + "=?";
     }
 }

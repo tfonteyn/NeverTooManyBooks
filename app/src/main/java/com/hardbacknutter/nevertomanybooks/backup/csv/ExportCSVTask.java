@@ -33,16 +33,16 @@ public class ExportCSVTask
     /**
      * Constructor.
      *
-     * @param userContext  Current context for accessing resources.
+     * @param context      Current context for accessing resources.
      * @param settings     the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public ExportCSVTask(@NonNull final Context userContext,
+    public ExportCSVTask(@NonNull final Context context,
                          @NonNull final ExportOptions settings,
                          @NonNull final TaskListener<Integer> taskListener) {
         super(R.id.TASK_ID_CSV_EXPORT, taskListener);
-        mExporter = new CsvExporter(userContext, settings);
+        mExporter = new CsvExporter(context, settings);
 
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
@@ -85,7 +85,7 @@ public class ExportCSVTask
                                        @Nullable final Object message) {
                     Object[] values = {message};
                     publishProgress(new TaskProgressMessage(mTaskId, mMaxPosition,
-                            absPosition, values));
+                                                            absPosition, values));
                 }
 
                 @Override

@@ -226,7 +226,7 @@ public final class UpgradeDatabase {
                                       @NonNull final DomainDefinition source,
                                       @NonNull final DomainDefinition destination) {
 
-        Locale locale = LocaleUtils.getPreferredLocale(App.getAppContext());
+        Locale userLocale = LocaleUtils.getPreferredLocale();
         SQLiteStatement update = db.compileStatement(
                 "UPDATE " + table + " SET " + destination + "=?"
                         + " WHERE " + DBDefinitions.DOM_PK_ID + "=?");
@@ -237,7 +237,7 @@ public final class UpgradeDatabase {
             while (cur.moveToNext()) {
                 final long id = cur.getLong(0);
                 final String in = cur.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
+                update.bindString(1, DAO.encodeOrderByColumn(in, userLocale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

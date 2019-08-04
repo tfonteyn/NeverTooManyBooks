@@ -13,10 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
@@ -25,18 +21,22 @@ import com.hardbacknutter.nevertomanybooks.database.cursors.MappedCursorRow;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
 import com.hardbacknutter.nevertomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
-import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.BindableItemCursor;
 import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.ContextDialogItem;
 import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.Event;
 import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.EventsCursor;
 import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.QueueManager;
+import com.hardbacknutter.nevertomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Task *MUST* be serializable.
@@ -101,7 +101,7 @@ abstract class SendBooksLegacyTaskBase
     /**
      * Try to export one book.
      *
-     * @param context   Current context
+     * @param context   Current context for accessing resources.
      * @param grManager the Goodreads Manager
      *
      * @return {@code false} on failure, {@code true} on success
@@ -276,7 +276,7 @@ abstract class SendBooksLegacyTaskBase
             holder.errorView.setText(getDescription());
 
             String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
-                                                     eventsCursor.getEventDate());
+                    eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
@@ -347,7 +347,7 @@ abstract class SendBooksLegacyTaskBase
 
             // DELETE EVENT
             items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                                            () -> QueueManager.getQueueManager().deleteEvent(id)));
+                    () -> QueueManager.getQueueManager().deleteEvent(id)));
 
             // RETRY EVENT
             String isbn = db.getBookIsbn(mBookId);

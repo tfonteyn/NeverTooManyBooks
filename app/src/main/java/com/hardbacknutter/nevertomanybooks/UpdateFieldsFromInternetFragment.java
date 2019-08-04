@@ -22,11 +22,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivityWithTasks;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.debug.Tracker;
@@ -41,7 +37,11 @@ import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTaskListene
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.hardbacknutter.nevertomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -173,11 +173,11 @@ public class UpdateFieldsFromInternetFragment
         if ((mSearchSites & SearchSites.LIBRARY_THING) != 0) {
             //noinspection ConstantConditions
             LibraryThingManager.showLtAlertIfNecessary(getContext(), false,
-                                                       "update_from_internet");
+                    "update_from_internet");
         }
 
         TipManager.display(getLayoutInflater(),
-                           R.string.tip_update_fields_from_internet, null);
+                R.string.tip_update_fields_from_internet, null);
 
         // Check general network connectivity. If none, WARN the user.
         if (!NetworkUtils.isNetworkAvailable()) {
@@ -201,24 +201,24 @@ public class UpdateFieldsFromInternetFragment
     private void initFields() {
 
         addListField(R.string.lbl_author, DBDefinitions.KEY_FK_AUTHOR,
-                     UniqueId.BKEY_AUTHOR_ARRAY);
+                UniqueId.BKEY_AUTHOR_ARRAY);
 
         addField(R.string.lbl_title, CopyIfBlank, DBDefinitions.KEY_TITLE);
         addField(R.string.lbl_isbn, CopyIfBlank, DBDefinitions.KEY_ISBN);
         addField(R.string.lbl_cover, CopyIfBlank, UniqueId.BKEY_IMAGE);
 
         addListField(R.string.lbl_series, DBDefinitions.KEY_SERIES_TITLE,
-                     UniqueId.BKEY_SERIES_ARRAY);
+                UniqueId.BKEY_SERIES_ARRAY);
 
         addListField(R.string.lbl_table_of_content, DBDefinitions.KEY_TOC_BITMASK,
-                     UniqueId.BKEY_TOC_ENTRY_ARRAY);
+                UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         addField(R.string.lbl_publisher, CopyIfBlank,
-                 DBDefinitions.KEY_PUBLISHER);
+                DBDefinitions.KEY_PUBLISHER);
         addField(R.string.lbl_date_published, CopyIfBlank,
-                 DBDefinitions.KEY_DATE_PUBLISHED);
+                DBDefinitions.KEY_DATE_PUBLISHED);
         addField(R.string.lbl_first_publication, CopyIfBlank,
-                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+                DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
         addField(R.string.lbl_description, CopyIfBlank, DBDefinitions.KEY_DESCRIPTION);
 
@@ -250,7 +250,7 @@ public class UpdateFieldsFromInternetFragment
 
         if (App.isUsed(fieldId)) {
             mFieldUsages.put(fieldId, new FieldUsage(nameStringId, defaultUsage,
-                                                     false, fieldId));
+                    false, fieldId));
         }
     }
 
@@ -267,7 +267,7 @@ public class UpdateFieldsFromInternetFragment
 
         if (App.isUsed(visField)) {
             mFieldUsages.put(fieldId, new FieldUsage(nameStringId, FieldUsage.Usage.Append,
-                                                     true, fieldId));
+                    true, fieldId));
         }
     }
 
@@ -284,7 +284,7 @@ public class UpdateFieldsFromInternetFragment
         FieldUsage field = mFieldUsages.get(fieldId);
         if (field != null && field.isWanted()) {
             mFieldUsages.put(relatedFieldId,
-                             new FieldUsage(0, field.usage, field.canAppend(), relatedFieldId));
+                    new FieldUsage(0, field.usage, field.canAppend(), relatedFieldId));
         }
     }
 
@@ -295,7 +295,7 @@ public class UpdateFieldsFromInternetFragment
 
         for (FieldUsage usage : mFieldUsages.values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                   mFieldListView, false);
+                    mFieldListView, false);
 
             TextView fieldLabel = row.findViewById(R.id.field);
             //noinspection ConstantConditions
@@ -322,9 +322,9 @@ public class UpdateFieldsFromInternetFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
-            .setIcon(R.drawable.ic_search)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                MenuHandler.ORDER_SEARCH_SITES, R.string.lbl_search_sites)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -337,7 +337,7 @@ public class UpdateFieldsFromInternetFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                  SearchAdminActivity.TAB_ORDER);
+                                SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -359,7 +359,7 @@ public class UpdateFieldsFromInternetFragment
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
-                                                    mSearchSites);
+                            mSearchSites);
                 }
                 break;
 
@@ -448,13 +448,13 @@ public class UpdateFieldsFromInternetFragment
 
         UpdateFieldsFromInternetTask updateTask =
                 new UpdateFieldsFromInternetTask(mTaskManager, mSearchSites, mFieldUsages,
-                                                 mManagedTaskListener);
+                        mManagedTaskListener);
 
         updateTask.setBookId(mBookIds);
 
         mUpdateSenderId = updateTask.getSenderId();
         UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, false,
-                                                                mManagedTaskListener);
+                mManagedTaskListener);
         updateTask.start();
     }
 
@@ -463,7 +463,7 @@ public class UpdateFieldsFromInternetFragment
     public void onPause() {
         if (mUpdateSenderId != 0) {
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH.removeListener(mUpdateSenderId,
-                                                                       mManagedTaskListener);
+                    mManagedTaskListener);
         }
         super.onPause();
     }
@@ -474,7 +474,7 @@ public class UpdateFieldsFromInternetFragment
         super.onResume();
         if (mUpdateSenderId != 0) {
             UpdateFieldsFromInternetTask.MESSAGE_SWITCH.addListener(mUpdateSenderId, true,
-                                                                    mManagedTaskListener);
+                    mManagedTaskListener);
         }
     }
 }

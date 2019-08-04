@@ -27,18 +27,18 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.database.cursors.ColumnMapper;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StringList;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to hold author data.
@@ -367,36 +367,17 @@ public class Author
      *
      * @return the locale of the Author
      */
+    @Override
+    @NonNull
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale(App.getAppContext());
-    }
-
-    /**
-     * Finds the Author by using all fields except the id.
-     * Then 'fixup' the local id with the id from the database.
-     *
-     * @param db database
-     *
-     * @return the id.
-     */
-    @Override
-    public long fixId(@NonNull final DAO db) {
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        return fixId(userContext, db, getLocale());
+        return LocaleUtils.getPreferredLocale();
     }
 
     @Override
-    public long fixId(@NonNull final Context userContext,
-                      @NonNull final DAO db) {
-        return fixId(userContext, db, getLocale());
-    }
-
-    @Override
-    public long fixId(@NonNull final Context userContext,
+    public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
-                      @NonNull final Locale locale) {
-        mId = db.getAuthorId(this, locale);
+                      @NonNull final Locale authorLocale) {
+        mId = db.getAuthorId(this, authorLocale);
         return mId;
     }
 
@@ -414,7 +395,7 @@ public class Author
      * <p>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *     AND all other fields are equal</li>
+     * AND all other fields are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */

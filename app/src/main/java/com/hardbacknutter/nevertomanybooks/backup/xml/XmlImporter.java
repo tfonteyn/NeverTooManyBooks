@@ -1,5 +1,6 @@
 package com.hardbacknutter.nevertomanybooks.backup.xml;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Base64;
@@ -46,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -130,7 +132,9 @@ public class XmlImporter
      */
     @NonNull
     @Override
-    public Results doBooks(@NonNull final InputStream importStream,
+    public Results doBooks(@NonNull final Context context,
+                           @NonNull final Locale userLocale,
+                           @NonNull final InputStream importStream,
                            @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener listener) {
         throw new UnsupportedOperationException();

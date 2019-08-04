@@ -19,12 +19,15 @@
  */
 package com.hardbacknutter.nevertomanybooks.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * Interface definition for an importer.
@@ -46,7 +49,9 @@ public interface Importer
      * @throws IOException on failure
      */
     @NonNull
-    Results doBooks(@NonNull InputStream importStream,
+    Results doBooks(@NonNull final Context context,
+                    @NonNull final Locale userLocale,
+                    @NonNull InputStream importStream,
                     @Nullable CoverFinder coverFinder,
                     @NonNull ProgressListener listener)
             throws IOException, ImportException;

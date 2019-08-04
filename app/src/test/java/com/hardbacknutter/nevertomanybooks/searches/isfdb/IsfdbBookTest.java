@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.hardbacknutter.nevertomanybooks.BundleMock;
+import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.UniqueId;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.entities.Author;
@@ -41,7 +42,7 @@ class IsfdbBookTest {
     private final String baseUri = "http://www.isfdb.org";
     @SuppressWarnings("FieldCanBeLocal")
     private final String filename = "/isfdb-valid-book.html";
-    private final String bookType = "Paperback";
+    private final String bookType_paperback = "Paperback";
 
     @Mock
     Context mContext;
@@ -70,7 +71,7 @@ class IsfdbBookTest {
         when(mContext.createConfigurationContext(anyObject())).thenReturn(mContext);
         when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
 
-        when(mResources.getString(anyInt())).thenReturn(bookType);
+        when(mContext.getString(R.string.book_format_paperback)).thenReturn(bookType_paperback);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
 
         // Supposedly we should run two tests; i.e. true/false return.
@@ -108,7 +109,7 @@ class IsfdbBookTest {
         assertEquals("1.95", bookData.getString(DBDefinitions.KEY_PRICE_LISTED));
         assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", bookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals(bookType, bookData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals(bookType_paperback, bookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("COLLECTION", bookData.getString(IsfdbBook.BookField.BOOK_TYPE));
         assertEquals(TocEntry.Authors.MULTIPLE_WORKS | TocEntry.Authors.MULTIPLE_AUTHORS,
                 bookData.getLong(DBDefinitions.KEY_TOC_BITMASK));

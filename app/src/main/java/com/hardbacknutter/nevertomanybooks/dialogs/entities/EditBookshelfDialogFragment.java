@@ -149,8 +149,7 @@ public class EditBookshelfDialogFragment
 
         // At this point, we know changes were made.
         // Create a new Bookshelf as a holder for the changes.
-        //noinspection ConstantConditions
-        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(getContext(), mDb));
+        Bookshelf newBookshelf = new Bookshelf(mName, mBookshelf.getStyle(mDb));
         // yes, this is NOT efficient and plain dumb. But.. it will allow flex later on.
         // copy new values
         mBookshelf.copyFrom(newBookshelf);
@@ -158,7 +157,7 @@ public class EditBookshelfDialogFragment
         if (existingShelf != null) {
             mergeShelves(mBookshelf, existingShelf);
         } else {
-            long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
+            long styleId = mBookshelf.getStyle(mDb).getId();
             if (mDb.updateOrInsertBookshelf(mBookshelf, styleId)) {
                 if (mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);

@@ -31,14 +31,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.

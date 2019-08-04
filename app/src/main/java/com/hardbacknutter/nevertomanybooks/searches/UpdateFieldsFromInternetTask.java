@@ -27,14 +27,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
@@ -50,7 +42,17 @@ import com.hardbacknutter.nevertomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTask;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.ManagedTaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
+import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ManagedTask to update requested fields by doing a search.
@@ -193,6 +195,8 @@ public class UpdateFieldsFromInternetTask
             throws InterruptedException {
         int progressCounter = 0;
 
+        Context context = getContext();
+
         try (BookCursor books = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
 
             int langCol = books.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
@@ -244,10 +248,10 @@ public class UpdateFieldsFromInternetTask
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
                 // if no data required, skip to next book
                 if (mCurrentBookFieldUsages.isEmpty()
-                        || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
+                    || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderUpdate(
-                            getResources().getString(R.string.progress_msg_skip_title, title));
+                            context.getString(R.string.progress_msg_skip_title, title));
                     continue;
                 }
 
@@ -283,11 +287,11 @@ public class UpdateFieldsFromInternetTask
             // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = getResources().getString(R.string.progress_end_num_books_searched,
-                                                     progressCounter);
+            mFinalMessage = context.getString(R.string.progress_end_num_books_searched,
+                                              progressCounter);
             if (isCancelled()) {
-                mFinalMessage = getResources().getString(R.string.progress_end_cancelled_info,
-                                                         mFinalMessage);
+                mFinalMessage = context.getString(R.string.progress_end_cancelled_info,
+                                                  mFinalMessage);
             }
         }
     }
@@ -385,7 +389,7 @@ public class UpdateFieldsFromInternetTask
         for (String key : newBookData.keySet()) {
             //noinspection ConstantConditions
             if (!mCurrentBookFieldUsages.containsKey(key)
-                    || !mCurrentBookFieldUsages.get(key).isWanted()) {
+                || !mCurrentBookFieldUsages.get(key).isWanted()) {
                 toRemove.add(key);
             }
         }
@@ -453,8 +457,9 @@ public class UpdateFieldsFromInternetTask
             }
 
             //TODO: should be using a user context.
-            Context userContext = App.getAppContext();
-            mDb.updateBook(userContext, mCurrentBookId, new Book(newBookData), 0);
+            Context context = App.getAppContext();
+            Locale userLocale = LocaleUtils.getPreferredLocale();
+            mDb.updateBook(context, userLocale, mCurrentBookId, new Book(newBookData), 0);
         }
     }
 

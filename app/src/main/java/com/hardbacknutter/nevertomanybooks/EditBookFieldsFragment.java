@@ -31,8 +31,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields.Field;
@@ -44,6 +42,8 @@ import com.hardbacknutter.nevertomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertomanybooks.entities.Series;
 import com.hardbacknutter.nevertomanybooks.utils.Csv;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
+
+import java.util.ArrayList;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -109,18 +109,18 @@ public class EditBookFieldsFragment
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
         Field coverImageField = fields.add(R.id.coverImage,
-                                           DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
-                                      .setScale(ImageUtils.SCALE_MEDIUM);
+                DBDefinitions.KEY_BOOK_UUID, UniqueId.BKEY_IMAGE)
+                .setScale(ImageUtils.SCALE_MEDIUM);
 
         mCoverHandler = new CoverHandler(this, mBookBaseFragmentModel.getDb(),
-                                         book,
-                                         fields.getField(R.id.isbn).getView(),
-                                         coverImageField.getView(),
-                                         ImageUtils.SCALE_MEDIUM);
+                book,
+                fields.getField(R.id.isbn).getView(),
+                coverImageField.getView(),
+                ImageUtils.SCALE_MEDIUM);
 
         // defined, but handled manually
         fields.add(R.id.author, "", DBDefinitions.KEY_FK_AUTHOR)
-              .getView().setOnClickListener(v -> {
+                .getView().setOnClickListener(v -> {
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
@@ -133,7 +133,7 @@ public class EditBookFieldsFragment
 
         // defined, but handled manually
         fields.add(R.id.series, "", DBDefinitions.KEY_SERIES_TITLE)
-              .getView().setOnClickListener(v -> {
+                .getView().setOnClickListener(v -> {
             // use the current title.
             String title = fields.getField(R.id.title).getValue().toString();
             ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -149,7 +149,7 @@ public class EditBookFieldsFragment
 
         field = fields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre,
-                        mBookBaseFragmentModel.getGenres());
+                mBookBaseFragmentModel.getGenres());
 
         // Personal fields
 

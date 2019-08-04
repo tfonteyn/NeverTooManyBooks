@@ -136,11 +136,6 @@ public abstract class ManagedTask
 
 
     @NonNull
-    protected Resources getResources() {
-        return mTaskManager.getContext().getResources();
-    }
-
-    @NonNull
     protected Context getContext() {
         return mTaskManager.getContext();
     }
@@ -164,14 +159,14 @@ public abstract class ManagedTask
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
         MESSAGE_SWITCH.send(mMessageSenderId, listener -> {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                                    Logger.debug(this, "run",
-                                                 "ManagedTask=" + getName(),
-                                                 "Delivering 'onTaskFinished' to: " + listener);
-                                }
-                                listener.onTaskFinished(this);
-                                return false;
-                            }
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                        Logger.debug(this, "run",
+                                "ManagedTask=" + getName(),
+                                "Delivering 'onTaskFinished' to: " + listener);
+                    }
+                    listener.onTaskFinished(this);
+                    return false;
+                }
         );
     }
 

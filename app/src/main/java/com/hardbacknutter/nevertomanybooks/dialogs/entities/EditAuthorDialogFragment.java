@@ -69,8 +69,7 @@ public class EditAuthorDialogFragment
     protected void confirmChanges(@NonNull final Author author,
                                   @NonNull final Author newAuthorData) {
         author.copyFrom(newAuthorData);
-        //noinspection ConstantConditions
-        mDb.updateOrInsertAuthor(author, LocaleUtils.getPreferredLocale(getContext()));
+        mDb.updateOrInsertAuthor(author, LocaleUtils.getPreferredLocale());
 
         Bundle data = new Bundle();
         data.putLong(DBDefinitions.KEY_FK_AUTHOR, author.getId());

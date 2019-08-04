@@ -21,7 +21,6 @@
 package com.hardbacknutter.nevertomanybooks;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -45,9 +44,6 @@ import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.ref.WeakReference;
-import java.util.Locale;
-
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistGroup.RowKind;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertomanybooks.booklist.BooklistSupportProvider;
@@ -66,6 +62,9 @@ import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertomanybooks.widgets.FastScrollerOverlay;
+
+import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * Handles all views in a multi-type list showing books, authors, series etc.
@@ -688,11 +687,11 @@ public class BooklistAdapter
             super(itemView);
             mDb = db;
 
-            Resources resources = itemView.getResources();
+            Context context = itemView.getContext();
             // fetch once and re-use later.
-            mName_colon_value = resources.getString(R.string.name_colon_value);
-            mShelvesLabel = resources.getString(R.string.lbl_bookshelves);
-            mLocationLabel = resources.getString(R.string.lbl_location);
+            mName_colon_value = context.getString(R.string.name_colon_value);
+            mShelvesLabel = context.getString(R.string.lbl_bookshelves);
+            mLocationLabel = context.getString(R.string.lbl_location);
 
             // always visible
             titleView = itemView.findViewById(R.id.title);
@@ -749,7 +748,7 @@ public class BooklistAdapter
             }
 
             if (App.isUsed(DBDefinitions.KEY_LOANEE)
-                    && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
+                && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
                 onLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
             }
 

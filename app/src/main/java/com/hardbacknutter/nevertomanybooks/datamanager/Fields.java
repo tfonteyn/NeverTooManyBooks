@@ -46,16 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
+import com.google.android.material.button.MaterialButton;
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.BuildConfig;
 import com.hardbacknutter.nevertomanybooks.R;
@@ -67,7 +58,16 @@ import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
-import com.google.android.material.button.MaterialButton;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -188,7 +188,7 @@ public class Fields {
      */
     private static void debugNullView(@NonNull final Field field) {
         String msg = "NULL View: col=" + field.mColumn + ", id=" + field.id
-                + ", group=" + field.group;
+                     + ", group=" + field.group;
         Fields fields = field.getFields();
         if (fields == null) {
             msg += ". Fields is NULL.";
@@ -1189,7 +1189,7 @@ public class Fields {
         private final String mNo;
 
         /**
-         * @param context Current context for accessing resources.
+         * @param context Current context for accessing string resources.
          */
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mYes = context.getString(R.string.yes);
@@ -1264,7 +1264,7 @@ public class Fields {
 
             } catch (@NonNull final IllegalArgumentException e) {
                 Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`,"
-                        + " source=`" + source + '`');
+                                      + " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;
             }
         }
@@ -1613,16 +1613,16 @@ public class Fields {
         @NonNull
         public String toString() {
             return "Field{"
-                    + "id=" + id
-                    //+ ", mFields=" + mFields
-                    + ", group='" + group + '\''
-                    + ", mColumn='" + mColumn + '\''
-                    + ", formatter=" + formatter
-                    + ", mIsUsed=" + mIsUsed
-                    + ", mDoNoFetch=" + mDoNoFetch
-                    + ", mFieldValidator=" + mFieldValidator
-                    + ", mFieldDataAccessor=" + mFieldDataAccessor
-                    + '}';
+                   + "id=" + id
+                   //+ ", mFields=" + mFields
+                   + ", group='" + group + '\''
+                   + ", mColumn='" + mColumn + '\''
+                   + ", formatter=" + formatter
+                   + ", mIsUsed=" + mIsUsed
+                   + ", mDoNoFetch=" + mDoNoFetch
+                   + ", mFieldValidator=" + mFieldValidator
+                   + ", mFieldDataAccessor=" + mFieldDataAccessor
+                   + '}';
         }
 
         /**

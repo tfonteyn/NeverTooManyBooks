@@ -458,27 +458,14 @@ public class Series
     @NonNull
     @Override
     public Locale getLocale() {
-        return LocaleUtils.getPreferredLocale(App.getAppContext());
+        return LocaleUtils.getPreferredLocale();
     }
 
     @Override
-    public long fixId(@NonNull final DAO db) {
-        //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        return fixId(userContext, db, getLocale());
-    }
-
-    @Override
-    public long fixId(@NonNull final Context userContext,
-                      @NonNull final DAO db) {
-        return fixId(userContext, db, getLocale());
-    }
-
-    @Override
-    public long fixId(@NonNull final Context userContext,
+    public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale seriesLocale) {
-        mId = db.getSeriesId(userContext, this, seriesLocale);
+        mId = db.getSeriesId(context, this, seriesLocale);
         return mId;
     }
 

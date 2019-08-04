@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public interface ItemWithFixableId {
      *
      * @return {@code true} if the list was modified.
      */
-    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final Context userContext,
+    static <T extends ItemWithFixableId> boolean pruneList(@NonNull final Context context,
                                                            @NonNull final DAO db,
                                                            @NonNull final List<T> list) {
         // weeding out duplicate ID's
@@ -48,7 +49,7 @@ public interface ItemWithFixableId {
         while (it.hasNext()) {
             T item = it.next();
             // try to find the item.
-            long itemId = item.fixId(userContext, db);
+            long itemId = item.fixId(context, db);
 
             String uniqueName = item.stringEncoded().trim().toUpperCase();
 
@@ -75,47 +76,52 @@ public interface ItemWithFixableId {
     }
 
     /**
-     * Tries to find the item in the database using all its fields (except the id).
-     * If found, sets the item's id with the id found in the database.
-     * <p>
-     * If the item has 'sub' items, then it should call those as well.
+     * @return the item Locale
+     */
+    @NonNull
+    Locale getLocale();
+
+    /**
+     * Convenience method for {@link #fixId(Context, DAO, Locale)}.
      *
      * @param db the database
      *
      * @return the item id (also set on the item).
      */
-    long fixId(@NonNull DAO db);
+    default long fixId(@NonNull DAO db) {
+        //TODO: should be using a user context.
+        Context context = App.getAppContext();
+        return fixId(context, db, getLocale());
+    }
 
     /**
-     * Tries to find the item in the database using all its fields (except the id).
+     * Convenience method for {@link #fixId(Context, DAO, Locale)}.
+     *
+     * @param context Current context
+     * @param db      the database
+     *
+     * @return the item id (also set on the item).
+     */
+    default long fixId(@NonNull final Context context,
+                       @NonNull final DAO db) {
+        return fixId(context, db, getLocale());
+    }
+
+    /**
+     * Tries to find the item in the database using all or some of its fields (except the id).
      * If found, sets the item's id with the id found in the database.
      * <p>
      * If the item has 'sub' items, then it should call those as well.
      *
-     * @param userContext Current context
-     * @param db          the database
+     * @param context Current context
+     * @param db      the database
+     * @param locale  Locale that will override the items Locale
      *
      * @return the item id (also set on the item).
      */
-    default long fixId(@NonNull final Context userContext,
-                       @NonNull final DAO db) {
-        return fixId(db);
-    }
-
-    /**
-     * Same as {@link #fixId(DAO)} but for items that need a Locale to fix themselves.
-     *
-     * @param userContext Current context
-     * @param db          the database
-     * @param locale      Locale for any specific overrides
-     *
-     * @return the item id (also set on the item).
-     */
-    default long fixId(@NonNull final Context userContext,
-                       @NonNull final DAO db,
-                       @NonNull final Locale locale) {
-        return fixId(userContext, db);
-    }
+    long fixId(@NonNull final Context context,
+               @NonNull final DAO db,
+               @NonNull final Locale locale);
 
     /**
      * @return a unique name for this object, representing all it's data (except id).

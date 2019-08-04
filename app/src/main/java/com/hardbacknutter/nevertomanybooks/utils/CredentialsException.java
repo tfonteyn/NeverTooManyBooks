@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.FormattedMessageException;
 
@@ -47,17 +46,6 @@ public class CredentialsException
         mSite = site;
     }
 
-    /**
-     * Use {@link #getFormattedMessage} directly if possible.
-     */
-    @Override
-    public String getLocalizedMessage() {
-        return getFormattedMessage(App.getAppContext());
-    }
-
-    /**
-     * Preferred way of getting the message.
-     */
     @NonNull
     @Override
     public String getFormattedMessage(@NonNull final Context context) {

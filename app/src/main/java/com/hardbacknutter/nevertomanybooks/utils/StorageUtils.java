@@ -30,6 +30,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertomanybooks.App;
+import com.hardbacknutter.nevertomanybooks.BuildConfig;
+import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertomanybooks.R;
+import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertomanybooks.debug.Logger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,14 +60,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.hardbacknutter.nevertomanybooks.App;
-import com.hardbacknutter.nevertomanybooks.BuildConfig;
-import com.hardbacknutter.nevertomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertomanybooks.R;
-import com.hardbacknutter.nevertomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertomanybooks.debug.Logger;
 
 /**
  * Class to wrap common storage related functions.
@@ -168,10 +168,10 @@ public final class StorageUtils {
         try {
             //noinspection ResultOfMethodCallIgnored
             new File(SHARED_STORAGE_PATH + File.separator
-                             + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+                     + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
             //noinspection ResultOfMethodCallIgnored
             new File(COVER_FILE_PATH + File.separator
-                             + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+                     + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return 0;
         } catch (@NonNull final IOException e) {
@@ -228,8 +228,8 @@ public final class StorageUtils {
     public static File getTempCoverFile(@NonNull final String name,
                                         @Nullable final String suffix) {
         return new File(getTemp() + File.separator
-                                + "tmp" + name + (suffix != null ? suffix : "")
-                                + ".jpg");
+                        + "tmp" + name + (suffix != null ? suffix : "")
+                        + ".jpg");
     }
 
     /**

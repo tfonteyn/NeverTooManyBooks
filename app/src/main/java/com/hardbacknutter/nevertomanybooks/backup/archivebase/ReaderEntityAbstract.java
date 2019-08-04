@@ -40,7 +40,7 @@ public abstract class ReaderEntityAbstract
         implements ReaderEntity {
 
     /** Buffer size for buffered streams. */
-    protected static final int BUFFER_SIZE = 32768;
+    private static final int BUFFER_SIZE = 32768;
 
     @NonNull
     private final BackupEntityType mType;

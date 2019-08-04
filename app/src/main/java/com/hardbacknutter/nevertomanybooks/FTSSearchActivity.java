@@ -37,13 +37,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -195,7 +195,7 @@ public class FTSSearchActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -225,8 +225,8 @@ public class FTSSearchActivity
 
         String tmpMsg = null;
         try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
-                                           mTitleSearchText,
-                                           mKeywordsSearchText)) {
+                mTitleSearchText,
+                mKeywordsSearchText)) {
             // Null return means searchFts thought the parameters were effectively blank.
             if (cursor != null) {
                 int count = cursor.getCount();

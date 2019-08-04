@@ -63,7 +63,7 @@ class SendOneBookLegacyTask
      * Perform the main task. Called from within {@link #run}
      *
      * @param queueManager QueueManager
-     * @param context      Current context
+     * @param context      Current context for accessing resources.
      * @param grManager    the Goodreads Manager
      *
      * @return {@code true} for success

@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.hardbacknutter.nevertomanybooks.About;
 import com.hardbacknutter.nevertomanybooks.AdminActivity;
 import com.hardbacknutter.nevertomanybooks.App;
@@ -28,8 +30,6 @@ import com.hardbacknutter.nevertomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertomanybooks.utils.LocaleUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 /**
  * Base class for all (most?) Activity's.
@@ -108,7 +108,8 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(this));
+            Logger.debugEnter(this, "BaseActivity.onResume",
+                    LocaleUtils.toDebugString(this));
         }
 
         if (App.isInNeedOfRecreating()) {
@@ -159,22 +160,22 @@ public abstract class BaseActivity
 
             case R.id.nav_manage_bookshelves:
                 startActivityForResult(new Intent(this, EditBookshelfListActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                        UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
 
             case R.id.nav_edit_list_styles:
                 startActivityForResult(new Intent(this, PreferredStylesActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                        UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
 
             case R.id.nav_settings:
                 startActivityForResult(new Intent(this, SettingsActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_SETTINGS);
+                        UniqueId.REQ_NAV_PANEL_SETTINGS);
                 return true;
 
             case R.id.nav_admin:
                 startActivityForResult(new Intent(this, AdminActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_ADMIN);
+                        UniqueId.REQ_NAV_PANEL_ADMIN);
                 return true;
 
             case R.id.nav_about:
@@ -225,7 +226,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_SETTINGS");
+                            "REQ_NAV_PANEL_SETTINGS");
                 }
                 //noinspection SwitchStatementWithTooFewBranches
                 switch (resultCode) {
@@ -239,7 +240,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                            "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
@@ -247,7 +248,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_EDIT_STYLES");
+                            "REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
 
@@ -255,7 +256,7 @@ public abstract class BaseActivity
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.debug(this, "BaseActivity.onActivityResult",
-                                 "REQ_NAV_PANEL_ADMIN");
+                            "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
@@ -266,9 +267,9 @@ public abstract class BaseActivity
                     // the super call will redirect those.
                     if ((requestCode & 0xFF) != 0) {
                         Logger.warn(this, "BaseActivity.onActivityResult",
-                                    "NOT HANDLED",
-                                    "requestCode=" + requestCode,
-                                    "resultCode=" + resultCode);
+                                "NOT HANDLED",
+                                "requestCode=" + requestCode,
+                                "resultCode=" + resultCode);
                     }
                 }
                 super.onActivityResult(requestCode, resultCode, data);
@@ -288,7 +289,7 @@ public abstract class BaseActivity
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
-                              "key=" + key);
+                    "key=" + key);
         }
 
         // Trigger a recreate of this activity, if the setting has changed.

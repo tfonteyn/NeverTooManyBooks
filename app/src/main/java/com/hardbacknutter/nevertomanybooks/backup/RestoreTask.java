@@ -1,6 +1,7 @@
 package com.hardbacknutter.nevertomanybooks.backup;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,9 +48,9 @@ public class RestoreTask
         Thread.currentThread().setName("RestoreTask");
 
         //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
+        Context context = App.getAppContext();
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(userContext, mSettings.file)) {
+        try (BackupReader reader = BackupManager.getReader(context, mSettings.file)) {
 
             reader.restore(mSettings, new ProgressListener() {
 

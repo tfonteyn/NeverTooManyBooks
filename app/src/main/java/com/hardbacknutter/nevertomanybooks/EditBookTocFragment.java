@@ -47,10 +47,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertomanybooks.datamanager.Fields.Field;
@@ -76,6 +72,10 @@ import com.hardbacknutter.nevertomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertomanybooks.widgets.SimpleAdapterDataObserver;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertomanybooks.widgets.ddsupport.StartDragListener;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
@@ -206,7 +206,7 @@ public class EditBookTocFragment
                     // remove the top one, and try again
                     mIsfdbEditions.remove(0);
                     new IsfdbGetBookTask(mIsfdbEditions,
-                                         mIsfdbResultsListener).execute();
+                            mIsfdbResultsListener).execute();
                 }
             };
 
@@ -298,7 +298,7 @@ public class EditBookTocFragment
         Field field;
         // Anthology is provided as a bitmask, see {@link Book#initValidators()}
         fields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-              .getView().setOnClickListener(v -> {
+                .getView().setOnClickListener(v -> {
             // enable controls as applicable.
             mMultipleAuthorsView.setEnabled(((Checkable) v).isChecked());
         });
@@ -357,14 +357,14 @@ public class EditBookTocFragment
         super.onSaveFieldsToBook();
         // no special validation done.
         mBookBaseFragmentModel.getBook()
-                              .putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+                .putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
-            .setIcon(R.drawable.ic_autorenew);
+                .setIcon(R.drawable.ic_autorenew);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -377,7 +377,7 @@ public class EditBookTocFragment
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 if (mBookBaseFragmentModel.getBook().containsKey(DBDefinitions.KEY_ISFDB_ID)) {
                     long isfdbId = mBookBaseFragmentModel.getBook()
-                                                         .getLong(DBDefinitions.KEY_ISFDB_ID);
+                            .getLong(DBDefinitions.KEY_ISFDB_ID);
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
                     new IsfdbGetBookTask(isfdbId, mIsfdbResultsListener).execute();
@@ -404,13 +404,13 @@ public class EditBookTocFragment
         @SuppressWarnings("ConstantConditions")
         Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit)
-            .setIcon(R.drawable.ic_edit);
+                .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete)
-            .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_delete);
 
         String menuTitle = item.getTitle();
         final MenuPicker<Integer> picker = new MenuPicker<>(getContext(), menuTitle, menu, position,
-                                                            this::onContextItemSelected);
+                this::onContextItemSelected);
         picker.show();
     }
 
@@ -464,7 +464,7 @@ public class EditBookTocFragment
         FragmentManager fm = getChildFragmentManager();
         if (fm.findFragmentByTag(EditTocEntryDialogFragment.TAG) == null) {
             EditTocEntryDialogFragment.newInstance(tocEntry, mMultipleAuthorsView.isChecked())
-                                      .show(fm, EditTocEntryDialogFragment.TAG);
+                    .show(fm, EditTocEntryDialogFragment.TAG);
         }
     }
 
@@ -530,7 +530,7 @@ public class EditBookTocFragment
             @SuppressLint("InflateParams")
             @SuppressWarnings("ConstantConditions")
             View root = getActivity().getLayoutInflater()
-                                     .inflate(R.layout.dialog_toc_confirm, null);
+                    .inflate(R.layout.dialog_toc_confirm, null);
 
             TextView textView = root.findViewById(R.id.content);
             if (hasToc) {
@@ -551,13 +551,13 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 this::onCommitToc);
+                        this::onCommitToc);
             }
 
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
-                                 this::onGetNext);
+                        this::onGetNext);
             }
 
             return dialog;
@@ -570,7 +570,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onCommitToc",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }
@@ -582,7 +582,7 @@ public class EditBookTocFragment
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                     Logger.debug(this, "onGetNext",
-                                 Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
+                            Logger.WEAK_REFERENCE_TO_LISTENER_WAS_DEAD);
                 }
             }
         }

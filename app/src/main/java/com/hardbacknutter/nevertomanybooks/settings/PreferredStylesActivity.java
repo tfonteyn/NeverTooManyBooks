@@ -91,7 +91,7 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         mModel = ViewModelProviders.of(this).get(PreferredStylesViewModel.class);
-        mModel.init(this);
+        mModel.init();
 
         mListView = findViewById(android.R.id.list);
         mLayoutManager = new LinearLayoutManager(this);

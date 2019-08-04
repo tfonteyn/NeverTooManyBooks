@@ -35,7 +35,7 @@ public interface BackupContainer {
     /**
      * Get a BackupReader for the referenced archive.
      *
-     * @param context Current context for resources
+     * @param context Current context for accessing resources.
      *
      * @return a new reader
      *
@@ -48,7 +48,7 @@ public interface BackupContainer {
     /**
      * Get a BackupWriter for the referenced archive.
      *
-     * @param context Current context for resources
+     * @param context Current context for accessing resources.
      *
      * @return a new writer
      *

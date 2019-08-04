@@ -31,12 +31,12 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      */
-    public void init(@NonNull final Context context) {
+    public void init() {
         if (mDb != null) {
             return;
         }
         mDb = new DAO();
-        mList = new ArrayList<>(BooklistStyles.getStyles(context, mDb, true).values());
+        mList = new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
     }
 
     @NonNull

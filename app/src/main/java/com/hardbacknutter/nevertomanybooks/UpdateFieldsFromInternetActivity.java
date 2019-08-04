@@ -50,9 +50,9 @@ public class UpdateFieldsFromInternetActivity
             Fragment frag = new UpdateFieldsFromInternetFragment();
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, frag, UpdateFieldsFromInternetFragment.TAG)
-              .commit();
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_fragment, frag, UpdateFieldsFromInternetFragment.TAG)
+                    .commit();
         }
     }
 }

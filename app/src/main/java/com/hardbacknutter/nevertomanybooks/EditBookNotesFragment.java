@@ -91,7 +91,7 @@ public class EditBookNotesFragment
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.add(R.id.read, DBDefinitions.KEY_READ)
-              .getView().setOnClickListener(v -> {
+                .getView().setOnClickListener(v -> {
             // when user sets 'read', also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
@@ -112,27 +112,27 @@ public class EditBookNotesFragment
         fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID);
         field = fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
-                        mBookBaseFragmentModel.getPricePaidCurrencyCodes());
+                mBookBaseFragmentModel.getPricePaidCurrencyCodes());
 
         field = fields.add(R.id.location, DBDefinitions.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location,
-                        mBookBaseFragmentModel.getLocations());
+                mBookBaseFragmentModel.getLocations());
 
         field = fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
-                      .setFormatter(new Fields.BookEditionsFormatter());
+                .setFormatter(new Fields.BookEditionsFormatter());
         initCheckListEditor(field, R.string.lbl_edition, () ->
                 mBookBaseFragmentModel.getBook().getEditableEditionList());
 
         field = fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
-                      .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_date_acquired, true);
 
         field = fields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
-                      .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_start, true);
 
         field = fields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
-                      .setFormatter(dateFormatter);
+                .setFormatter(dateFormatter);
         initPartialDatePicker(field, R.string.lbl_read_end, true);
 
         fields.addCrossValidator(new Fields.FieldCrossValidator() {

@@ -23,15 +23,15 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.regex.Pattern;
-
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupContainer;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupInfo;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupReader;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriter;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * Class to handle TAR archive storage.
@@ -57,7 +57,7 @@ public class TarBackupContainer
         implements BackupContainer {
 
     /** Buffer size for buffered streams. */
-    public static final int BUFFER_SIZE = 32768;
+    static final int BUFFER_SIZE = 32768;
     /** Always first entry; Used in the storage and identification of data store in TAR file. */
     static final String INFO_FILE = "INFO.xml";
     /** Used in the storage and identification of data store in TAR file. */
@@ -107,14 +107,14 @@ public class TarBackupContainer
     @NonNull
     public BackupReader newReader(@NonNull final Context context)
             throws IOException {
-        return new TarBackupReader(context,this);
+        return new TarBackupReader(context, this);
     }
 
     @Override
     @NonNull
     public BackupWriter newWriter(@NonNull final Context context)
             throws IOException {
-        return new TarBackupWriter(context,this);
+        return new TarBackupWriter(context, this);
     }
 
     /**

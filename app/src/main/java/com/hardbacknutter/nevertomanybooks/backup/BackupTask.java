@@ -10,9 +10,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.backup.archivebase.BackupWriter;
@@ -22,6 +19,9 @@ import com.hardbacknutter.nevertomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertomanybooks.tasks.TaskListener.TaskProgressMessage;
 import com.hardbacknutter.nevertomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertomanybooks.utils.StorageUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class BackupTask
         extends TaskBase<ExportOptions> {
@@ -52,7 +52,7 @@ public class BackupTask
         // Ensure the file key extension is what we want
         if (!BackupManager.isArchive(mSettings.file)) {
             mSettings.file = new File(mSettings.file.getAbsoluteFile()
-                                              + BackupManager.ARCHIVE_EXTENSION);
+                                      + BackupManager.ARCHIVE_EXTENSION);
         }
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
@@ -78,8 +78,8 @@ public class BackupTask
         Thread.currentThread().setName("BackupTask");
 
         //TODO: should be using a user context.
-        Context userContext = App.getAppContext();
-        try (BackupWriter writer = BackupManager.getWriter(userContext, mTmpFile)) {
+        Context context = App.getAppContext();
+        try (BackupWriter writer = BackupManager.getWriter(context, mTmpFile)) {
 
             writer.backup(mSettings, new ProgressListener() {
 
@@ -129,8 +129,8 @@ public class BackupTask
             //noinspection ConstantConditions
             StorageUtils.renameFile(mTmpFile, mSettings.file);
 
-            SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(userContext)
-                    .edit();
+            SharedPreferences.Editor ed = PreferenceManager
+                    .getDefaultSharedPreferences(App.getAppContext()).edit();
             // if the backup was a full one (not a 'since') remember that.
             if ((mSettings.what & ExportOptions.EXPORT_SINCE) == 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);

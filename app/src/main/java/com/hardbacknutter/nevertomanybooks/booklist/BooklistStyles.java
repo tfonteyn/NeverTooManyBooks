@@ -21,11 +21,13 @@
 package com.hardbacknutter.nevertomanybooks.booklist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertomanybooks.App;
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.database.DAO;
 import com.hardbacknutter.nevertomanybooks.settings.Prefs;
@@ -174,18 +176,17 @@ public final class BooklistStyles {
      * @return the style.
      */
     @NonNull
-    public static BooklistStyle getDefaultStyle(@NonNull final Context context,
-                                                @NonNull final DAO db) {
+    public static BooklistStyle getDefaultStyle(@NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
-        String uuid = PreferenceManager.getDefaultSharedPreferences(context)
+        String uuid = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                 .getString(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE_UUID);
         if (DEFAULT_STYLE_UUID.equals(uuid)) {
             return DEFAULT_STYLE;
         }
 
         // check that the style really/still exists!
-        BooklistStyle style = getStyles(context, db, true).get(uuid);
+        BooklistStyle style = getStyles(db, true).get(uuid);
         if (style == null) {
             return DEFAULT_STYLE;
         }
@@ -201,12 +202,11 @@ public final class BooklistStyles {
      * @return the style, or if not found, some default.
      */
     @NonNull
-    public static BooklistStyle getStyle(@NonNull final Context context,
-                                         @NonNull final DAO db,
+    public static BooklistStyle getStyle(@NonNull final DAO db,
                                          @NonNull final String uuid) {
-        BooklistStyle style = getStyles(context, db, true).get(uuid);
+        BooklistStyle style = getStyles(db, true).get(uuid);
         if (style == null) {
-            return getDefaultStyle(context, db);
+            return getDefaultStyle(db);
         }
         return style;
     }
@@ -451,8 +451,7 @@ public final class BooklistStyles {
      * @return ordered list
      */
     @NonNull
-    public static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
-                                                       @NonNull final DAO db,
+    public static Map<String, BooklistStyle> getStyles(@NonNull final DAO db,
                                                        final boolean all) {
         // Get all styles: user
         Map<String, BooklistStyle> allStyles = getUserStyles(db);
@@ -460,7 +459,7 @@ public final class BooklistStyles {
         allStyles.putAll(getBuiltinStyles());
 
         // filter, so the list only shows the preferred ones.
-        Map<String, BooklistStyle> styles = filterPreferredStyles(context, allStyles);
+        Map<String, BooklistStyle> styles = filterPreferredStyles(allStyles);
 
         // but if we want all, add the missing styles to the end of the list
         if (all) {
@@ -485,13 +484,12 @@ public final class BooklistStyles {
      */
     @NonNull
     private static Map<String, BooklistStyle> filterPreferredStyles(
-            @NonNull final Context context,
             @NonNull final Map<String, BooklistStyle> allStyles) {
 
         Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
 
         // first check the saved and ordered list
-        for (String uuid : getPreferredStyleMenuOrder(context)) {
+        for (String uuid : getPreferredStyleMenuOrder()) {
             BooklistStyle style = allStyles.get(uuid);
             if (style != null) {
                 // catch mismatches in any imported bad-data.
@@ -521,9 +519,9 @@ public final class BooklistStyles {
      * @return the uuid's of the preferred styles from user preferences.
      */
     @NonNull
-    private static Set<String> getPreferredStyleMenuOrder(@NonNull final Context context) {
+    private static Set<String> getPreferredStyleMenuOrder() {
         Set<String> uuidSet = new LinkedHashSet<>();
-        String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
+        String itemsStr = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                 .getString(PREF_BL_PREFERRED_STYLES, null);
 
         if (itemsStr != null && !itemsStr.isEmpty()) {
@@ -557,7 +555,7 @@ public final class BooklistStyles {
      */
     public static void addPreferredStyle(@NonNull final Context context,
                                          @NonNull final BooklistStyle style) {
-        Set<String> list = getPreferredStyleMenuOrder(context);
+        Set<String> list = getPreferredStyleMenuOrder();
         list.add(style.getUuid());
         setPreferredStyleMenuOrder(context, list);
     }

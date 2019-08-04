@@ -10,10 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.entities.Entity;
+
+import java.util.List;
 
 /**
  * Add a list of RadioButtons to a RecyclerView.

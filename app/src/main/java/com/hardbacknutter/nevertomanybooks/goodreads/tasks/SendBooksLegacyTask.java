@@ -107,11 +107,12 @@ class SendBooksLegacyTask
      * Deal with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
      *
-     * @param context   Current context
+     * @param context   Current context for accessing resources.
      * @param grManager the Goodreads Manager
      *
      * @return {@code true} on success.
      */
+    @Override
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
@@ -147,7 +148,8 @@ class SendBooksLegacyTask
         }
 
         // Notify the user with a system Notification.
-        App.showNotification(context, R.string.gr_title_send_book,
+        App.showNotification(context,
+                             context.getString(R.string.gr_title_send_book),
                              context.getString(R.string.gr_send_all_books_results,
                                                mCount, mSent, mNoIsbn, mNotFound));
         return true;
@@ -163,7 +165,7 @@ class SendBooksLegacyTask
     @CallSuper
     public String getDescription(@NonNull final Context context) {
         return super.getDescription(context)
-                + " (" + context.getString(R.string.x_of_y, mCount, mTotalBooks) + ')';
+               + " (" + context.getString(R.string.x_of_y, mCount, mTotalBooks) + ')';
     }
 
     @Override

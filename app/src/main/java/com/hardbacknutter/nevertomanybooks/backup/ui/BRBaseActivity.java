@@ -43,15 +43,6 @@ public abstract class BRBaseActivity
     private final ArrayList<FileDetails> mFileDetails = new ArrayList<>();
     protected ProgressDialogFragment mProgressDialog;
     File mRootDir;
-    /** User clicks on the 'up' button. */
-    private final View.OnClickListener onPathUpClickListener = view -> {
-        String parent = mRootDir.getParent();
-        if (parent == null) {
-            UserMessage.show(view, R.string.warning_no_parent_directory_found);
-            return;
-        }
-        onPathChanged(new File(parent));
-    };
     RecyclerView mListView;
     private FileDetailsAdapter mAdapter;
     private TextView mCurrentFolderView;
@@ -71,6 +62,15 @@ public abstract class BRBaseActivity
                     }
                 }
             };
+    /** User clicks on the 'up' button. */
+    private final View.OnClickListener onPathUpClickListener = view -> {
+        String parent = mRootDir.getParent();
+        if (parent == null) {
+            UserMessage.show(view, R.string.warning_no_parent_directory_found);
+            return;
+        }
+        onPathChanged(new File(parent));
+    };
 
     @Override
     protected int getLayoutId() {
@@ -92,7 +92,7 @@ public abstract class BRBaseActivity
                 new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mAdapter = new FileDetailsAdapter(this);
+        mAdapter = new FileDetailsAdapter(getLayoutInflater());
         mListView.setAdapter(mAdapter);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
@@ -241,10 +241,10 @@ public abstract class BRBaseActivity
         /**
          * Constructor.
          *
-         * @param context Current context
+         * @param inflater Current context
          */
-        FileDetailsAdapter(@NonNull final Context context) {
-            mInflater = LayoutInflater.from(context);
+        FileDetailsAdapter(@NonNull final LayoutInflater inflater) {
+            mInflater = inflater;
         }
 
         @NonNull

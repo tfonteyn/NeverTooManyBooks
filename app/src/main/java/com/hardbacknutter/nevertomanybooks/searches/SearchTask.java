@@ -21,6 +21,7 @@
 package com.hardbacknutter.nevertomanybooks.searches;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -106,9 +107,9 @@ public class SearchTask
         mTaskId = taskId;
         mSearchEngine = searchEngine;
 
-        Context context = manager.getContext();
+        Context context = getContext();
         mProgressTitle = context.getString(R.string.progress_msg_searching_site,
-                                           context.getString(mSearchEngine.getNameResId()));
+                context.getString(mSearchEngine.getNameResId()));
     }
 
     /**
@@ -256,7 +257,7 @@ public class SearchTask
     private void setFinalError(@StringRes final int error) {
         Context context = getContext();
         mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle,
-                                          context.getString(error));
+                context.getString(error));
     }
 
     /**
@@ -273,8 +274,8 @@ public class SearchTask
      * Show an unexpected exception message after task finish.
      */
     private void setFinalError(@NonNull final Exception e) {
-        Context context = getContext();
         String s;
+        Context context = getContext();
         try {
             if (e instanceof FormattedMessageException) {
                 // we have a clean user message.
@@ -288,5 +289,4 @@ public class SearchTask
         }
         mFinalMessage = context.getString(R.string.error_search_exception, mProgressTitle, s);
     }
-
 }

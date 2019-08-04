@@ -42,7 +42,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
@@ -224,15 +223,20 @@ public class App
         return packageInfo;
     }
 
+    public static void showNotification(@NonNull final String title,
+                                        @NonNull final String message) {
+        showNotification(getAppContext(), title, message);
+    }
+
     /**
      * Show a notification while this app is running.
      *
      * @param context Current context
-     * @param titleId string resource for the title
+     * @param title   the title to display
      * @param message the message to display
      */
     public static void showNotification(@NonNull final Context context,
-                                        @StringRes final int titleId,
+                                        @NonNull final String title,
                                         @NonNull final String message) {
 
         // Create the notifier if not done yet.
@@ -250,7 +254,7 @@ public class App
 
         Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.drawable.ic_info_outline)
-                .setContentTitle(context.getString(titleId))
+                .setContentTitle(title)
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
@@ -398,8 +402,8 @@ public class App
     }
 
     @SuppressWarnings("unused")
-    public static boolean isRtl(@NonNull final Context context) {
-        return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocale(context))
+    public static boolean isRtl() {
+        return TextUtils.getLayoutDirectionFromLocale(LocaleUtils.getPreferredLocale())
                 == View.LAYOUT_DIRECTION_RTL;
     }
 
@@ -605,7 +609,7 @@ public class App
         setSystemLocale();
 
         // override in the new config
-        newConfig.setLocale(LocaleUtils.getPreferredLocale(sInstance.getApplicationContext()));
+        newConfig.setLocale(LocaleUtils.getPreferredLocale());
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 
