@@ -45,7 +45,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.hardbacknutter.nevertomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertomanybooks.entities.Book;
-import com.hardbacknutter.nevertomanybooks.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -214,7 +213,7 @@ public class EditBookFragment
 
             case R.id.MENU_HIDE_KEYBOARD:
                 //noinspection ConstantConditions
-                Utils.hideKeyboard(getView());
+                App.hideKeyboard(getView());
                 return true;
 
             default:

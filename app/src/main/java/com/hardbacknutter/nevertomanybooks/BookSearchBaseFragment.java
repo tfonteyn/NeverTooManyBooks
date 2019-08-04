@@ -24,7 +24,6 @@ import com.hardbacknutter.nevertomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertomanybooks.tasks.managedtasks.TaskManager;
 import com.hardbacknutter.nevertomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertomanybooks.utils.Utils;
 import com.hardbacknutter.nevertomanybooks.viewmodels.BookSearchBaseModel;
 
 import java.util.Objects;
@@ -113,7 +112,7 @@ public abstract class BookSearchBaseFragment
         switch (item.getItemId()) {
             case R.id.MENU_HIDE_KEYBOARD:
                 //noinspection ConstantConditions
-                Utils.hideKeyboard(getView());
+                App.hideKeyboard(getView());
                 return true;
 
             case R.id.MENU_PREFS_SEARCH_SITES:

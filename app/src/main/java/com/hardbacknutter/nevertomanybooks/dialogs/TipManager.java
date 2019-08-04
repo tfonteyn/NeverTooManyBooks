@@ -36,7 +36,7 @@ import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertomanybooks.R;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.utils.Utils;
+import com.hardbacknutter.nevertomanybooks.utils.LinkifyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -228,7 +228,7 @@ public final class TipManager {
             if (messageView != null) {
                 String tipText = context.getString(stringId, args);
                 // allow links
-                messageView.setText(Utils.linkifyHtml(tipText));
+                messageView.setText(LinkifyUtils.html(tipText));
                 // clicking a link, start a browser (or whatever)
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }

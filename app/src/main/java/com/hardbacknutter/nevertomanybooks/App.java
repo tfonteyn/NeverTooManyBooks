@@ -35,6 +35,7 @@ import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
@@ -565,6 +566,15 @@ public class App
      */
     public static Locale getSystemLocale() {
         return sSystemInitialLocale;
+    }
+
+    /**
+     * Hide the keyboard.
+     */
+    public static void hideKeyboard(@NonNull final View view) {
+        InputMethodManager imm = (InputMethodManager)
+                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**

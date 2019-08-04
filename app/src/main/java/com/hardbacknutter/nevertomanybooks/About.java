@@ -35,7 +35,7 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertomanybooks.debug.Logger;
-import com.hardbacknutter.nevertomanybooks.utils.Utils;
+import com.hardbacknutter.nevertomanybooks.utils.LinkifyUtils;
 
 /**
  * This is the About page.
@@ -73,7 +73,7 @@ public class About
         }
 
         view = findViewById(R.id.sourcecode6);
-        view.setText(Utils.linkifyHtml(
+        view.setText(LinkifyUtils.html(
                 getString(R.string.url_sourcecode6, getString(R.string.lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -86,12 +86,12 @@ public class About
 
         // Information to original creators site.
         view = findViewById(R.id.website);
-        view.setText(Utils.linkifyHtml(
+        view.setText(LinkifyUtils.html(
                 getString(R.string.url_website, getString(R.string.lbl_website))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.sourcecode);
-        view.setText(Utils.linkifyHtml(
+        view.setText(LinkifyUtils.html(
                 getString(R.string.url_sourcecode, getString(R.string.lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }
