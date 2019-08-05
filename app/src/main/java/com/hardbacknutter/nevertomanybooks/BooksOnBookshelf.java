@@ -448,7 +448,7 @@ public class BooksOnBookshelf
         final int count = mModel.getListCursor().getCount();
         if (mModel.getTopRow() >= count) {
             // the list is shorter then it used to be, just scroll to the end
-            mModel.setAndSaveTopRow(count - 1);
+            savePosition(count - 1);
             mLinearLayoutManager.scrollToPosition(mModel.getTopRow());
         } else {
             mLinearLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(),
@@ -588,12 +588,17 @@ public class BooksOnBookshelf
      * in length by, potentially, n*2 items. The current code will return to the old position
      * in the list after such an operation...which will be too far down.
      */
-    private void savePosition() {
-        if (isDestroyed()) {
-            return;
+    private void savePosition(final int topRow) {
+        if (!isDestroyed()) {
+            mModel.savePosition(topRow, mListView);
         }
+    }
 
-        mModel.savePosition(mLinearLayoutManager.findFirstVisibleItemPosition(), mListView);
+    /** Convenience method for {@link #savePosition(int)}. */
+    private void savePosition() {
+        if (!isDestroyed()) {
+            mModel.savePosition(mLinearLayoutManager.findFirstVisibleItemPosition(), mListView);
+        }
     }
 
     /**
@@ -777,7 +782,7 @@ public class BooksOnBookshelf
             BooklistBuilder booklistBuilder = mModel.getListCursor().getBuilder();
             // do the work, and re-position.
             booklistBuilder.expandAll(expand);
-            mModel.setAndSaveTopRow(booklistBuilder.getPosition(oldAbsPos));
+            savePosition(booklistBuilder.getPosition(oldAbsPos));
 
             // pass in a new cursor and display the list.
             // the old cursor will get closed afterwards.

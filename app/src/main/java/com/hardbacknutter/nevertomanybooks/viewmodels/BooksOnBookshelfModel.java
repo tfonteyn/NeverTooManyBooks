@@ -46,16 +46,20 @@ import java.util.Objects;
 
 /**
  * First attempt to split of into a model for BoB.
+ *
+ * URGENT: experimental... {@link #initBookList}. TMP_USE_BOB_EXTRAS_TASK=false;
+ * When set to false, "extra" field bookshelves (if selected) will not be populated.
  */
 public class BooksOnBookshelfModel
         extends ViewModel {
+
+    public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
 
     /** Preference name - Saved position of last top row. */
     public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
     /** Preference name - Saved position of last top row offset from view top. */
     public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
-    /** URGENT: experimental... {@link #initBookList}. */
-    public static final boolean TMP_USE_BOB_EXTRAS_TASK = false;
+
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     private final MutableLiveData<Object> mUserMessage = new MutableLiveData<>();
@@ -307,30 +311,7 @@ public class BooksOnBookshelfModel
          * Keeping the current row/pos is probably the most useful thing we can
          * do since we *may* come back to a similar list.
          */
-        setAndSaveTopRow(topRow, listView);
-    }
-
-    public void setAndSaveTopRow(final int topRow) {
-        setAndSaveTopRow(topRow, null);
-    }
-
-    /**
-     * @param topRow   the top row to store
-     * @param listView used to derive the top row offset
-     */
-    private void setAndSaveTopRow(final int topRow,
-                                  @Nullable final RecyclerView listView) {
-        mTopRow = topRow;
-        if (listView != null) {
-            View topView = listView.getChildAt(0);
-            if (topView != null) {
-                mTopRowOffset = topView.getTop();
-            } else {
-                mTopRowOffset = 0;
-            }
-        }
-        //noinspection ConstantConditions
-        savePosition(listView.getContext());
+        savePosition(topRow, listView);
     }
 
     public int getTopRow() {
@@ -366,21 +347,26 @@ public class BooksOnBookshelfModel
     public void savePosition(final int topRow,
                              @NonNull final RecyclerView listView) {
         if (mListHasBeenLoaded) {
-            setAndSaveTopRow(topRow, listView);
-        }
-    }
+            mTopRow = topRow;
+            View topView = listView.getChildAt(0);
+            if (topView != null) {
+                mTopRowOffset = topView.getTop();
+            } else {
+                mTopRowOffset = 0;
+            }
 
-    private void savePosition(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putInt(PREF_BOB_TOP_ROW, mTopRow)
-                         .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
-                         .apply();
+            Context context = listView.getContext();
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                             .putInt(PREF_BOB_TOP_ROW, mTopRow)
+                             .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
+                             .apply();
+        }
     }
 
     /**
      * Queue a rebuild of the underlying cursor and data.
      *
-     * @param context       Current context for accessing resources.
+     * @param context       Current context
      * @param isFullRebuild Indicates whole table structure needs rebuild,
      *                      versus just do a reselect of underlying data
      */
